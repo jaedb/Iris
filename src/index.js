@@ -10,12 +10,11 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, Route, Link, hashHistory } from 'react-router'
-import reducer from './reducer'
 
-import App from './App'
-import LibraryAlbums from './library/LibraryAlbums'
-import Album from './common/Album'
-import NowPlaying from './routes/NowPlaying'
+import store from './bootstrap.js'
+import App from './components/App'
+import Album from './components/Album'
+import Queue from './components/Queue'
 
 import Services from './services/Services'
 
@@ -38,14 +37,12 @@ Promise.all(Services.setup())
  **/
 
 ReactDOM.render(
-	<Provider store={ createStore( reducer, { todos: [] } ) }>
+	<Provider store={store}>
 		<Router history={hashHistory}>
 			<Route path="/" component={App}>
 	
 				<Route path="album/:id" component={Album} />
-				<Route path="library/albums" component={LibraryAlbums} />
-
-				<Route path="now-playing" component={NowPlaying} />
+				<Route path="queue" component={Queue} />
 
 			</Route>
 		</Router>

@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Services from '../services/Services'
-import Tracklist from '../common/Tracklist'
-import * as actions from '../actions'
+import TrackList from '../components/TrackList'
+import * as queueActions from '../actions/queueActions'
 
 class NowPlaying extends React.Component{
 
@@ -31,7 +31,7 @@ class NowPlaying extends React.Component{
 	renderTracks(){
 		if( this.state.tracks ){
 			return (
-				<Tracklist tracks={this.state.tracks} />
+				<TrackList tracks={this.state.tracks} />
 			);
 		}
 		return null;
@@ -60,7 +60,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		queueActions: bindActionCreators(queueActions, dispatch)
 	}
 }
 

@@ -3,8 +3,8 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import Tracklist from '../common/Tracklist'
-import * as actions from './actions'
+import TrackList from './TrackList'
+import * as albumActions from '../actions/albumActions'
 
 class Album extends React.Component{
 
@@ -47,7 +47,7 @@ class Album extends React.Component{
 				<div>
 					<h3>{ this.state.album.name }</h3>
 					<h3>{ this.state.album.label }</h3>
-					<Tracklist tracks={this.state.album.tracks.items} />
+					<TrackList tracks={this.state.album.tracks.items} />
 				</div>
 			);
 		}
@@ -77,7 +77,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		albumActions: bindActionCreators(albumActions, dispatch)
 	}
 }
 

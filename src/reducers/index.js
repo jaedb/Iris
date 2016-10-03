@@ -6,15 +6,13 @@
  **/
 
 // import all of our application reducers
-import todos from './todos/reducer'
-import config from './config/reducer'
+import album from './album'
 
 import { combineReducers } from 'redux'
 
 // combine them into one root reducer
 export default combineReducers({
-    todos,
-    config
+    album
 })
 
 

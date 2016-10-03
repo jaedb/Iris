@@ -1,5 +1,5 @@
 
-import * as actions from './actions'
+import * as actions from '../actions/albumActions'
 
 export default function album(album = {}, action) {
     switch (action.type) {

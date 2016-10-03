@@ -5,8 +5,8 @@ import { createStore, bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
-import * as actions from './actions'
-import Services from './services/Services'
+import * as actions from '../actions/index'
+import Services from '../services/Services'
 
 
 /**
@@ -49,7 +49,7 @@ class App extends React.Component{
 		return (
 			<div>
 	        	<ul role="nav">
-					<li><Link to="/now-playing">Now playing</Link></li>
+					<li><Link to="/queue">Now playing</Link></li>
 					<li><Link to="/album/6N51k5TP5pSZYPf7bLffLe">808's and Heartbreak</Link></li>
 					<li><Link to="/album/1PgfRdl3lPyACfUGH4pquG">A million</Link></li>
 					<li><Link to="/library/albums">Library: Albums</Link></li>
