@@ -1,21 +1,24 @@
 
-import * as actions from '../actions/mopidy'
-
 export default function reducer(mopidy = {}, action){
-	console.log(action);
     switch (action.type) {
 
-        case actions.STATUS_CHANGED:
+        case 'STATUS':
             return Object.assign({}, mopidy, {
             	online: action.online	
             });
 
-        case actions.UPDATE_TRACKLIST:
+        case 'TRACKLIST':
             return Object.assign({}, mopidy, {
             	tracks: action.tracks	
             });
 
-        case actions.VOLUME_CHANGED:
+        case 'TRACKINFOCUS':
+        	console.log( action );
+            return Object.assign({}, mopidy, {
+            	trackInFocus: action.trackInFocus	
+            });
+
+        case 'VOLUME':
             return Object.assign({}, mopidy, {
             	volume: action.volume	
             });

@@ -29,9 +29,14 @@ class MopidyService extends React.Component{
 		switch( type ){
 
 			case 'state:online':
-				this.updateStatus(true);
+				this.props.actions.updateStatus( true );
 				this.getTracklist();
+				this.getTrackInFocus();
 				this.getVolume();
+				break;
+
+			case 'state:offline':
+				this.props.actions.updateStatus( false );
 				break;
 
 			case 'event:tracklistChanged':
@@ -39,7 +44,7 @@ class MopidyService extends React.Component{
 				break;
 
 			case 'event:volumeChanged':
-				this.props.actions.volumeChanged(data.volume);
+				this.props.actions.updateVolume( data.volume );
 				break;
 
 			default:
@@ -47,28 +52,36 @@ class MopidyService extends React.Component{
 		}
 	}
 
-	updateStatus( online = false ){
-		this.props.actions.updateStatus( online );
-	}
-
 	getVolume(){
 		let self = this;
 		this.connection.playback.getVolume()
-			.then( function(volume){
-				self.props.actions.volumeChanged(volume);
+			.then( function( volume ){
+				self.props.actions.updateVolume( volume );
 			});
+	}
+
+	setVolume( volume ){
+		this.props.actions.updateVolume( volume );
 	}
 
 	getTracklist(){
 		let self = this;
 		this.connection.tracklist.getTlTracks()
-			.then( function(tracks){
-				self.props.actions.updateTracklist(tracks);
+			.then( function( tracks ){
+				self.props.actions.updateTracklist( tracks );
+			});
+	}
+
+	getTrackInFocus(){
+		let self = this;
+		this.connection.playback.getCurrentTlTrack()
+			.then( function( tltrack ){
+				self.props.actions.updateTrackInFocus( tltrack );
 			});
 	}
 
 	render(){
-		return <pre>{ JSON.stringify(this.props.mopidy, null, 2) }</pre>;
+		return null
 	}
 }
 

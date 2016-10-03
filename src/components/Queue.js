@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Services from '../services/Services'
 import TrackList from '../components/TrackList'
+import Track from '../components/Track'
 import * as actions from '../actions/mopidy'
 
 class Queue extends React.Component{
@@ -13,7 +14,20 @@ class Queue extends React.Component{
 		super(props);
 	}
 
-	renderTracks(){
+	componentDidMount(){
+		console.log('mounted');
+	}
+
+	renderTrackInFocus(){
+		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
+			return (
+				<Track track={this.props.mopidy.trackInFocus.track} />
+			);
+		}
+		return null;
+	}
+
+	renderTrackList(){
 		if( this.props.mopidy && this.props.mopidy.tracks ){
 			return (
 				<TrackList tracks={this.props.mopidy.tracks} />
@@ -26,7 +40,9 @@ class Queue extends React.Component{
 		return (
 			<div>
 				<h3>Now playing</h3>
-				{ this.renderTracks() }
+				{ this.renderTrackInFocus() }
+				<h4>Other tracks</h4>
+				{ this.renderTrackList() }
 			</div>
 		);
 	}
