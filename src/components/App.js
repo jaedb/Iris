@@ -1,4 +1,8 @@
 
+/**
+ * Root level application
+ **/
+
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux'
@@ -9,16 +13,10 @@ import * as actions from '../actions/index'
 import Services from '../services/Services'
 
 
-/**
- * The application 'brain'
- *
- * All data handling and fetching is done through this handler
- **/
 class App extends React.Component{
 
 	constructor(props){
 		super(props);
-
 		this.handleClick = this.handleClick.bind(this);
 	}
 

@@ -18,13 +18,9 @@ class NowPlaying extends React.Component{
 
 	// on render
 	componentDidMount(){
-		var self = this;
 		Services.get('services.mopidy')
 			.then( function(MopidyService){
-				MopidyService.connection.tracklist.getTlTracks()
-					.then( function(tracks){
-						self.setState({ tracks : tracks });
-					});
+				MopidyService.getCurrentTracklist();
 			})
 	}
 

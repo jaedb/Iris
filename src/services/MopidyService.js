@@ -1,35 +1,69 @@
 
 import Mopidy from 'mopidy'
 
-function MopidyService( connection ){
-	this.connection = connection;
-};
 
-MopidyService.attachKey = 'services.mopidy';
+/**
+ * Create an IOC wrapper for our MopidyService instance
+ * 
+ * This initiates our service, and provides a container for our connection. We wrap
+ * this in a Promise so any requests to .get() will be delayed until we're connected. Genius!
+ **/
 
-MopidyService.attach = function( app ){
-	console.info('MopidyService: Attaching...');
+let MopidyServiceWrapper = {
+	attachKey: 'services.mopidy',
+	attach: function( store ){
+		console.info('MopidyServiceWrapper: Attaching...');
+		var service = new MopidyService( store );
+		return new Promise((resolve) => {
+			service.connection.on('state:online', () => {
+				resolve( service );
+			});
+		});
+	}
+}
 
-	return new Promise((resolve) => {
+export default MopidyServiceWrapper
+
+
+/**
+ * Mopidy service
+ *
+ * Handles internal requests and passes them on to our connection
+ **/
+class MopidyService {
+
+	constructor( store ){
 		var mopidyhost = 'music.plasticstudio.co';//window.location.hostname;
 		var mopidyport = "6680";
 		var protocol = 'ws';
-		var connection = new Mopidy({
+
+		this.connection = new Mopidy({
 			webSocketUrl: protocol+"://" + mopidyhost + ":" + mopidyport + "/mopidy/ws",
 			callingConvention: 'by-position-or-by-name'
 		});
-		connection.on((a, msg) => {
-			//console.log(msg);
-			// msg && msg.method ?
-			//   console.log('<-', msg.method) :
-			//   (msg ? console.log('->', JSON.parse(msg.data)) : console.log('->', msg));
-		});
-		connection.on('state:online', () => {
-			console.info('MopidyService: Attached');
-			var service = new MopidyService( connection );
-			resolve( service );
-		});
-	});
-}
+		this.connection.on(
+			(type, message) => this.handleMessage( type, message )
+		);
+		this.store = store;
+	}
 
-export default MopidyService;
+	setConnection( connection ){
+		this.connection = connection;
+	}
+
+	clearConnection(){
+		this.connection = false;
+	}
+
+	handleMessage( type, message ){
+		//console.log( message );
+	}
+
+	getCurrentTracklist(){
+		this.connection.tracklist.getTlTracks()
+			.then( function(tracks){
+				console.log(tracks);
+			});
+	}
+
+}
