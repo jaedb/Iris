@@ -4,7 +4,17 @@ export default function reducer(mopidy = {}, action){
 
         case 'STATUS':
             return Object.assign({}, mopidy, {
-            	online: action.online	
+                online: action.online   
+            });
+
+        case 'STATE':
+            return Object.assign({}, mopidy, {
+                state: action.state 
+            });
+
+        case 'CONSUME':
+            return Object.assign({}, mopidy, {
+            	consume: action.consume	
             });
 
         case 'TRACKLIST':

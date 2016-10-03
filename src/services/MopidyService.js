@@ -18,7 +18,7 @@ class MopidyService extends React.Component{
 		super(props)
 
 		this.connection = new Mopidy({
-			webSocketUrl: "ws://music.barnsley.nz:6680/mopidy/ws",
+			webSocketUrl: "ws://music.james:6680/mopidy/ws",
 			callingConvention: 'by-position-or-by-name'
 		});
 
@@ -30,9 +30,13 @@ class MopidyService extends React.Component{
 
 			case 'state:online':
 				this.props.actions.updateStatus( true );
+				this.getState();
 				this.getTracklist();
 				this.getTrackInFocus();
 				this.getVolume();
+				this.getConsume();
+				//this.getShuffle();
+				//this.getRandom();
 				break;
 
 			case 'state:offline':
@@ -44,12 +48,20 @@ class MopidyService extends React.Component{
 				break;
 
 			//case 'event:trackPlaybackEnded':
+			case 'event:playbackStateChanged':
 			case 'event:trackPlaybackStarted':
 				this.getTrackInFocus();
+				this.getState();
 				break;
 
 			case 'event:volumeChanged':
 				this.props.actions.updateVolume( data.volume );
+				break;
+
+			case 'event:optionsChanged':
+				this.getConsume();
+				//this.getShuffle();
+				//this.getRandom();
 				break;
 
 			default:
@@ -85,8 +97,42 @@ class MopidyService extends React.Component{
 			});
 	}
 
+	getState(){
+		let self = this;
+		this.connection.playback.getState()
+			.then( function( state ){
+				self.props.actions.updateState( state );
+			});
+	}
+
+	getConsume(){
+		let self = this;
+		this.connection.tracklist.getConsume()
+			.then( function( consume ){
+				self.props.actions.updateConsume( consume );
+			});
+	}
+
 	render(){
-		return null
+		console.log( this.props.mopidy );
+		var playButton = <a onClick={() => this.connection.playback.play()}>Play</a>;
+		if( this.props.mopidy.state == 'playing' ){
+			playButton = <a onClick={() => this.connection.playback.pause()}>Pause</a>;
+		}
+
+		var consumeButton = <a onClick={() => this.connection.tracklist.setConsume(true)}>Consume</a>;
+		if( this.props.mopidy.consume ){
+			consumeButton = <a onClick={() => this.connection.tracklist.setConsume(false)}>Un-Consume</a>;
+		}
+
+		return (
+			<div>
+				{ playButton }
+				<a onClick={() => this.connection.playback.previous()}>Previous</a>
+				<a onClick={() => this.connection.playback.next()}>Next</a>
+				{ consumeButton }
+			</div>
+		);
 	}
 }
 

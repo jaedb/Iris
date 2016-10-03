@@ -10,6 +10,20 @@ export function updateStatus( online ){
 	}
 }
 
+export function updateState( state ){
+	return {
+		type: 'STATE',
+		state: state
+	}
+}
+
+export function updateConsume( consume ){
+	return {
+		type: 'CONSUME',
+		consume: consume
+	}
+}
+
 export function updateTracklist( tracks ){
 	return {
 		type: 'TRACKLIST',
