@@ -43,6 +43,11 @@ class MopidyService extends React.Component{
 				this.getTracklist();
 				break;
 
+			//case 'event:trackPlaybackEnded':
+			case 'event:trackPlaybackStarted':
+				this.getTrackInFocus();
+				break;
+
 			case 'event:volumeChanged':
 				this.props.actions.updateVolume( data.volume );
 				break;
