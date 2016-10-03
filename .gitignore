@@ -1,0 +1,4 @@
+/node_modules/
+/production/
+*.orig
+Thumbs.db

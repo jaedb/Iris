@@ -1,0 +1,35 @@
+{
+	"name": "test-reactor",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"dependencies": {
+		"babel": "^5.8.29",
+		"babel-core": "6.14.0",
+		"babel-loader": "6.2.5",
+		"babel-preset-es2015": "*",
+		"babel-preset-react": "*",
+		"flux": "^2.1.1",
+		"redux": "*",
+		"react": "*",
+		"react-dom": "*",
+		"react-router": "*",	
+		"redux": "*",
+		"react-redux": "*",
+		"redux-devtools": "*",
+		"webpack": "^1.13.2",
+		"webpack-strip": "*",
+		"node-sass": "*",
+		"extract-text-webpack-plugin": "*",
+		"jquery": "3.1.1",
+    	"mopidy": "^0.5.0",
+		"expose-loader": "*",
+		"kioc": "1.0.4"
+	},
+	"scripts": {
+		"dev": "cp src/index.html production/index.html & NODE_ENV=development webpack",
+		"prod": "NODE_ENV=production webpack"
+	},
+	"author": "James Barnsley",
+	"license": "ISC"
+}
