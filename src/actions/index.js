@@ -1,4 +1,4 @@
 
 import albumActions from './albumActions'
-import mopidyServiceActions from './mopidyServiceActions'
+import mopidy from './mopidy'
 

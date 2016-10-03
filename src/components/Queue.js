@@ -5,29 +5,18 @@ import { bindActionCreators } from 'redux'
 
 import Services from '../services/Services'
 import TrackList from '../components/TrackList'
-import * as queueActions from '../actions/queueActions'
+import * as actions from '../actions/mopidy'
 
-class NowPlaying extends React.Component{
+class Queue extends React.Component{
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			tracks: []
-		}
-	}
-
-	// on render
-	componentDidMount(){
-		Services.get('services.mopidy')
-			.then( function(MopidyService){
-				MopidyService.getCurrentTracklist();
-			})
 	}
 
 	renderTracks(){
-		if( this.state.tracks ){
+		if( this.props.mopidy && this.props.mopidy.tracks ){
 			return (
-				<TrackList tracks={this.state.tracks} />
+				<TrackList tracks={this.props.mopidy.tracks} />
 			);
 		}
 		return null;
@@ -56,8 +45,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		queueActions: bindActionCreators(queueActions, dispatch)
+		actions: bindActionCreators(actions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NowPlaying)
+export default connect(mapStateToProps, mapDispatchToProps)(Queue)

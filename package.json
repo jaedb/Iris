@@ -1,5 +1,5 @@
 {
-	"name": "test-reactor",
+	"name": "iris",
 	"version": "1.0.0",
 	"description": "",
 	"main": "app.js",
@@ -27,7 +27,7 @@
 		"kioc": "1.0.4"
 	},
 	"scripts": {
-		"dev": "cp src/index.html production/index.html & NODE_ENV=development webpack",
+		"dev": "mkdir production & cp src/index.html production/index.html & NODE_ENV=development webpack",
 		"prod": "NODE_ENV=production webpack"
 	},
 	"author": "James Barnsley",

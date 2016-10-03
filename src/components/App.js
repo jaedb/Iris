@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 
 import * as actions from '../actions/index'
 import Services from '../services/Services'
+import MopidyService from '../services/MopidyService'
 
 
 class App extends React.Component{
@@ -33,13 +34,6 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
-		Services.get('services.mopidy')
-			.then( function(MopidyService){
-				MopidyService.connection.playback.getState()
-					.then( function(state){
-						console.log('App.js > playback state', state);
-					});
-			})
 	}
 
 	render(){
@@ -55,6 +49,7 @@ class App extends React.Component{
 					<li><a onClick={this.handleClick}>Authorize</a></li>
 		        </ul>
 		        {this.props.children}
+		        <MopidyService />
 	        </div>
 		);
 	}

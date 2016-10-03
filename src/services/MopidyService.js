@@ -1,28 +1,10 @@
 
 import Mopidy from 'mopidy'
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-
-/**
- * Create an IOC wrapper for our MopidyService instance
- * 
- * This initiates our service, and provides a container for our connection. We wrap
- * this in a Promise so any requests to .get() will be delayed until we're connected. Genius!
- **/
-
-let MopidyServiceWrapper = {
-	attachKey: 'services.mopidy',
-	attach: function( store ){
-		console.info('MopidyServiceWrapper: Attaching...');
-		var service = new MopidyService( store );
-		return new Promise((resolve) => {
-			service.connection.on('state:online', () => {
-				resolve( service );
-			});
-		});
-	}
-}
-
-export default MopidyServiceWrapper
+import * as actions from '../actions/mopidy'
 
 
 /**
@@ -30,40 +12,81 @@ export default MopidyServiceWrapper
  *
  * Handles internal requests and passes them on to our connection
  **/
-class MopidyService {
+class MopidyService extends React.Component{
 
-	constructor( store ){
-		var mopidyhost = 'music.plasticstudio.co';//window.location.hostname;
-		var mopidyport = "6680";
-		var protocol = 'ws';
+	constructor( props ){
+		super(props)
 
 		this.connection = new Mopidy({
-			webSocketUrl: protocol+"://" + mopidyhost + ":" + mopidyport + "/mopidy/ws",
+			webSocketUrl: "ws://music.barnsley.nz:6680/mopidy/ws",
 			callingConvention: 'by-position-or-by-name'
 		});
-		this.connection.on(
-			(type, message) => this.handleMessage( type, message )
-		);
-		this.store = store;
+
+		this.connection.on( (type, data) => this.handleMessage( type, data ) );
 	}
 
-	setConnection( connection ){
-		this.connection = connection;
+	handleMessage( type, data ){
+		switch( type ){
+
+			case 'state:online':
+				this.updateStatus(true);
+				this.getTracklist();
+				this.getVolume();
+				break;
+
+			case 'event:tracklistChanged':
+				this.getTracklist();
+				break;
+
+			case 'event:volumeChanged':
+				this.props.actions.volumeChanged(data.volume);
+				break;
+
+			default:
+				//console.log( 'MopidyService: Unhandled event', type, message );
+		}
 	}
 
-	clearConnection(){
-		this.connection = false;
+	updateStatus( online = false ){
+		this.props.actions.updateStatus( online );
 	}
 
-	handleMessage( type, message ){
-		//console.log( message );
-	}
-
-	getCurrentTracklist(){
-		this.connection.tracklist.getTlTracks()
-			.then( function(tracks){
-				console.log(tracks);
+	getVolume(){
+		let self = this;
+		this.connection.playback.getVolume()
+			.then( function(volume){
+				self.props.actions.volumeChanged(volume);
 			});
 	}
 
+	getTracklist(){
+		let self = this;
+		this.connection.tracklist.getTlTracks()
+			.then( function(tracks){
+				self.props.actions.updateTracklist(tracks);
+			});
+	}
+
+	render(){
+		return <pre>{ JSON.stringify(this.props.mopidy, null, 2) }</pre>;
+	}
 }
+
+
+/**
+ * Export our component
+ *
+ * We also integrate our global store, using connect()
+ **/
+
+const mapStateToProps = (state, ownProps) => {
+	return state;
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		actions: bindActionCreators(actions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MopidyService)

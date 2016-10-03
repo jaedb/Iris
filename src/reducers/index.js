@@ -7,12 +7,14 @@
 
 // import all of our application reducers
 import album from './album'
+import mopidy from './mopidy'
 
 import { combineReducers } from 'redux'
 
 // combine them into one root reducer
 export default combineReducers({
-    album
+    album,
+    mopidy
 })
 
 
