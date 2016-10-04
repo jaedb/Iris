@@ -24,14 +24,14 @@ export function updateConsume( consume ){
 	}
 }
 
-export function updateTracklist( tracks ){
+export function updateTlTracks( tracks ){
 	return {
 		type: 'TRACKLIST',
 		tracks: tracks
 	}
 }
 
-export function updateTrackInFocus( tltrack ){
+export function updateCurrentTlTrack( tltrack ){
 	return {
 		type: 'TRACKINFOCUS',
 		trackInFocus: tltrack

@@ -8,7 +8,7 @@ var output_dir = __dirname +"/production"
 var config = {
 	
 	context: __dirname,
-	entry: "./src/index.js",
+	entry: "./src/js/index.js",
 	
 	output: {
 		path: output_dir,

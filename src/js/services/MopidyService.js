@@ -3,6 +3,7 @@ import Mopidy from 'mopidy'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
 import * as actions from '../actions/mopidy'
 
@@ -30,11 +31,11 @@ class MopidyService extends React.Component{
 
 			case 'state:online':
 				this.props.actions.updateStatus( true );
-				this.getState();
-				this.getTracklist();
-				this.getTrackInFocus();
-				this.getVolume();
-				this.getConsume();
+				this.get( 'playback', 'State' );
+				this.get( 'playback', 'Volume' );
+				this.get( 'tracklist', 'Consume' );
+				this.get( 'tracklist', 'TlTracks' );
+				this.get( 'playback', 'CurrentTlTrack' );
 				//this.getShuffle();
 				//this.getRandom();
 				break;
@@ -44,14 +45,14 @@ class MopidyService extends React.Component{
 				break;
 
 			case 'event:tracklistChanged':
-				this.getTracklist();
+				this.get( 'tracklist', 'TlTracks' );
 				break;
 
 			//case 'event:trackPlaybackEnded':
 			case 'event:playbackStateChanged':
 			case 'event:trackPlaybackStarted':
-				this.getTrackInFocus();
-				this.getState();
+				this.get( 'playback', 'State' );
+				this.get( 'playback', 'CurrentTlTrack' );
 				break;
 
 			case 'event:volumeChanged':
@@ -59,7 +60,7 @@ class MopidyService extends React.Component{
 				break;
 
 			case 'event:optionsChanged':
-				this.getConsume();
+				this.get( 'tracklist', 'Consume' );
 				//this.getShuffle();
 				//this.getRandom();
 				break;
@@ -69,68 +70,43 @@ class MopidyService extends React.Component{
 		}
 	}
 
-	getVolume(){
+	get( model, property ){
+		console.log('MopidyServie: getting '+model+'.'+property);
 		let self = this;
-		this.connection.playback.getVolume()
-			.then( function( volume ){
-				self.props.actions.updateVolume( volume );
+		this.connection[model]['get'+property]()
+			.then( function( response ){
+				self.props.actions['update'+property]( response );
 			});
 	}
 
-	setVolume( volume ){
-		this.props.actions.updateVolume( volume );
-	}
-
-	getTracklist(){
+	set( model, property ){
+		console.log('MopidyServie: setting '+model+'.'+property);
 		let self = this;
-		this.connection.tracklist.getTlTracks()
-			.then( function( tracks ){
-				self.props.actions.updateTracklist( tracks );
-			});
-	}
-
-	getTrackInFocus(){
-		let self = this;
-		this.connection.playback.getCurrentTlTrack()
-			.then( function( tltrack ){
-				self.props.actions.updateTrackInFocus( tltrack );
-			});
-	}
-
-	getState(){
-		let self = this;
-		this.connection.playback.getState()
-			.then( function( state ){
-				self.props.actions.updateState( state );
-			});
-	}
-
-	getConsume(){
-		let self = this;
-		this.connection.tracklist.getConsume()
-			.then( function( consume ){
-				self.props.actions.updateConsume( consume );
+		this.connection[model]['get'+property]()
+			.then( function( response ){
+				self.props.actions['update'+property]( response );
 			});
 	}
 
 	render(){
 		console.log( this.props.mopidy );
-		var playButton = <a onClick={() => this.connection.playback.play()}>Play</a>;
+		var playButton = <a onClick={() => this.connection.playback.play()}><FontAwesome name="play" /> </a>
 		if( this.props.mopidy.state == 'playing' ){
-			playButton = <a onClick={() => this.connection.playback.pause()}>Pause</a>;
+			playButton = <a onClick={() => this.connection.playback.pause()}><FontAwesome name="pause" /> </a>
 		}
 
-		var consumeButton = <a onClick={() => this.connection.tracklist.setConsume(true)}>Consume</a>;
+		var consumeButton = <a onClick={() => this.connection.tracklist.setConsume(true)}>Consume </a>
 		if( this.props.mopidy.consume ){
-			consumeButton = <a onClick={() => this.connection.tracklist.setConsume(false)}>Un-Consume</a>;
+			consumeButton = <a onClick={() => this.connection.tracklist.setConsume(false)}>Un-Consume </a>
 		}
 
 		return (
 			<div>
 				{ playButton }
-				<a onClick={() => this.connection.playback.previous()}>Previous</a>
-				<a onClick={() => this.connection.playback.next()}>Next</a>
+				<a onClick={() => this.connection.playback.previous()}><FontAwesome name="step-backward" /> </a>
+				<a onClick={() => this.connection.playback.next()}><FontAwesome name="step-forward" /> </a>
 				{ consumeButton }
+				{ this.props.mopidy.volume }
 			</div>
 		);
 	}

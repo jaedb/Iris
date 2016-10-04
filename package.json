@@ -24,10 +24,11 @@
 		"jquery": "3.1.1",
     	"mopidy": "^0.5.0",
 		"expose-loader": "*",
-		"kioc": "1.0.4"
+		"kioc": "1.0.4",
+		"react-fontawesome": "*"
 	},
 	"scripts": {
-		"dev": "mkdir production & cp src/index.html production/index.html & NODE_ENV=development webpack",
+		"dev": "mkdir production & cp src/index.html production/index.html & cp -R src/fonts production/fonts & NODE_ENV=development webpack & sass src/scss/app.scss production/app.css",
 		"prod": "NODE_ENV=production webpack"
 	},
 	"author": "James Barnsley",
