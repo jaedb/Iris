@@ -8,6 +8,10 @@ export default class TrackList extends React.Component{
 		super(props);
 	}
 
+	handleClick( e ){
+		console.log('Track clicked', e)
+	}
+
 	render(){
 
 		if( this.props.tracks ){
@@ -19,7 +23,7 @@ export default class TrackList extends React.Component{
 									track.track.tlid = track.tlid;
 									track = track.track;
 								}
-								return <Track key={track.uri} track={track} />
+								return <Track key={track.uri} track={track} onClick={(e) => this.handleClick(e)} />
 							}
 						)
 					}

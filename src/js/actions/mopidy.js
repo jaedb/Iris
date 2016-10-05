@@ -24,6 +24,20 @@ export function updateConsume( consume ){
 	}
 }
 
+export function updateRandom( random ){
+	return {
+		type: 'RANDOM',
+		random: random
+	}
+}
+
+export function updateRepeat( repeat ){
+	return {
+		type: 'REPEAT',
+		repeat: repeat
+	}
+}
+
 export function updateTlTracks( tracks ){
 	return {
 		type: 'TRACKLIST',

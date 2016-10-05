@@ -7,7 +7,11 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
+	handleClick( e ){
+		console.log('Track clicked', this.props.track.name)
+	}
+
 	render(){
-		return <div className="track">#{this.props.track.uri}: {this.props.track.name}</div>
+		return <div className="track" onClick={(e) => this.handleClick(e)}>#{this.props.track.uri}: {this.props.track.name}</div>
 	}
 }

@@ -34,10 +34,10 @@ class MopidyService extends React.Component{
 				this.get( 'playback', 'State' );
 				this.get( 'playback', 'Volume' );
 				this.get( 'tracklist', 'Consume' );
+				this.get( 'tracklist', 'Random' );
+				this.get( 'tracklist', 'Repeat' );
 				this.get( 'tracklist', 'TlTracks' );
 				this.get( 'playback', 'CurrentTlTrack' );
-				//this.getShuffle();
-				//this.getRandom();
 				break;
 
 			case 'state:offline':
@@ -61,8 +61,8 @@ class MopidyService extends React.Component{
 
 			case 'event:optionsChanged':
 				this.get( 'tracklist', 'Consume' );
-				//this.getShuffle();
-				//this.getRandom();
+				this.get( 'tracklist', 'Random' );
+				this.get( 'tracklist', 'Repeat' );
 				break;
 
 			default:
@@ -70,23 +70,51 @@ class MopidyService extends React.Component{
 		}
 	}
 
+
+	/**
+	 * Get something from Mopidy
+	 *
+	 * Sends request to Mopidy server, and updates our local storage on return
+	 * @param string model Mopidy model (playback, tracklist, etc)
+	 * @param string property the property to get (TlTracks, Consume, etc)
+	 **/
 	get( model, property ){
-		console.log('MopidyServie: getting '+model+'.'+property);
+		console.log('MopidyServie: '+model+'.get'+property);
 		let self = this;
 		this.connection[model]['get'+property]()
-			.then( function( response ){
-				self.props.actions['update'+property]( response );
-			});
+			.then(
+				function( response ){
+					self.props.actions['update'+property]( response );
+				},
+				function( error ){
+					console.error( error );
+				}
+			);
 	}
 
-	set( model, property ){
-		console.log('MopidyServie: setting '+model+'.'+property);
+
+	/**
+	 * Set something in Mopidy
+	 *
+	 * Sends request to Mopidy server, and updates our local storage on return
+	 * @param string model Mopidy model (playback, tracklist, etc)
+	 * @param string property the property to get (TlTracks, Consume, etc)
+	 * @param mixed value
+	 **/
+	set( model, property, value ){
+		console.log('MopidyServie: '+model+'.set'+property, value);
 		let self = this;
-		this.connection[model]['get'+property]()
-			.then( function( response ){
-				self.props.actions['update'+property]( response );
-			});
+		this.connection[model]['set'+property]( value )
+			.then(
+				function( response ){
+					self.props.actions['update'+property]( response );
+				},
+				function( error ){
+					console.error( error );
+				}
+			);
 	}
+
 
 	render(){
 		console.log( this.props.mopidy );
@@ -95,9 +123,19 @@ class MopidyService extends React.Component{
 			playButton = <a onClick={() => this.connection.playback.pause()}><FontAwesome name="pause" /> </a>
 		}
 
-		var consumeButton = <a onClick={() => this.connection.tracklist.setConsume(true)}>Consume </a>
+		var consumeButton = <a onClick={() => this.set('tracklist', 'Consume', [true])}>Consume </a>
 		if( this.props.mopidy.consume ){
-			consumeButton = <a onClick={() => this.connection.tracklist.setConsume(false)}>Un-Consume </a>
+			consumeButton = <a onClick={() => this.set('tracklist', 'Consume', [false])}>Un-Consume </a>
+		}
+
+		var randomButton = <a onClick={() => this.set('tracklist', 'Random', [true])}>Random </a>
+		if( this.props.mopidy.random ){
+			randomButton = <a onClick={() => this.set('tracklist', 'Random', [false])}>Un-Random </a>
+		}
+
+		var repeatButton = <a onClick={() => this.set('tracklist', 'Repeat', [true])}>Repeat </a>
+		if( this.props.mopidy.repeat ){
+			repeatButton = <a onClick={() => this.set('tracklist', 'Repeat', [false])}>Un-Repeat </a>
 		}
 
 		return (
@@ -106,6 +144,8 @@ class MopidyService extends React.Component{
 				<a onClick={() => this.connection.playback.previous()}><FontAwesome name="step-backward" /> </a>
 				<a onClick={() => this.connection.playback.next()}><FontAwesome name="step-forward" /> </a>
 				{ consumeButton }
+				{ randomButton }
+				{ repeatButton }
 				{ this.props.mopidy.volume }
 			</div>
 		);

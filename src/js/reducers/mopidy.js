@@ -14,7 +14,17 @@ export default function reducer(mopidy = {}, action){
 
         case 'CONSUME':
             return Object.assign({}, mopidy, {
-            	consume: action.consume	
+                consume: action.consume 
+            });
+
+        case 'RANDOM':
+            return Object.assign({}, mopidy, {
+                random: action.random 
+            });
+
+        case 'REPEAT':
+            return Object.assign({}, mopidy, {
+                repeat: action.repeat 
             });
 
         case 'TRACKLIST':
