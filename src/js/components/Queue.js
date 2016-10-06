@@ -21,7 +21,7 @@ class Queue extends React.Component{
 	renderTrackInFocus(){
 		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
 			return (
-				<Track track={this.props.mopidy.trackInFocus.track} />
+				<div>{ this.props.mopidy.trackInFocus.track.name }</div>
 			);
 		}
 		return null;

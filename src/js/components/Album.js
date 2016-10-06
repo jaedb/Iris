@@ -46,7 +46,6 @@ class Album extends React.Component{
 			return (
 				<div>
 					<h3>{ this.state.album.name }</h3>
-					<h3>{ this.state.album.label }</h3>
 					<TrackList tracks={this.state.album.tracks.items} />
 				</div>
 			);

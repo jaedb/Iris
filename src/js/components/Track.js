@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react'
+import FontAwesome from 'react-fontawesome'
 
 export default class Track extends React.Component{
 
@@ -7,11 +8,26 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
-	handleClick( e ){
-		console.log('Track clicked', this.props.track.name)
+	toggleSelected( e ){
+		return this.props.toggleSelected();
+	}
+
+	playTrack( e ){
+		return this.props.playTrack();
 	}
 
 	render(){
-		return <div className="track" onClick={(e) => this.handleClick(e)}>#{this.props.track.uri}: {this.props.track.name}</div>
+
+		var selectedIcon = 'square-o';
+		if( typeof(this.props.track.selected) !== 'undefined' && this.props.track.selected ){
+			selectedIcon = 'check-square-o';
+		}
+
+		return (
+			<div className="track" onDoubleClick={ (e) => this.playTrack(e) }>
+				<FontAwesome name={selectedIcon} fixedWidth onClick={ (e) => this.toggleSelected(e) } />
+				#{this.props.track.uri}: {this.props.track.name}
+			</div>
+		);
 	}
 }
