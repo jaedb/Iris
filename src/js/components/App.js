@@ -1,8 +1,4 @@
 
-/**
- * Root level application
- **/
-
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux'
@@ -14,26 +10,13 @@ import Services from '../services/Services'
 import MopidyService from '../services/MopidyService'
 
 
+/**
+ * Root level application
+ **/
 class App extends React.Component{
 
 	constructor(props){
 		super(props);
-		this.handleClick = this.handleClick.bind(this);
-	}
-
-	handleClick(){
-		console.log('click');
-		//this.props.providerActions.authorizeSpotify();
-		Services.get('services.mopidy')
-			.then( function(MopidyService){
-				MopidyService.connection.playback.getState()
-					.then( function(state){
-						console.log('App.js > playback state', state);
-					});
-			})
-	}
-
-	componentDidMount(){
 	}
 
 	render(){

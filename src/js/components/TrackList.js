@@ -1,8 +1,13 @@
 
 import React, { PropTypes } from 'react'
-import Track from './Track'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as actions from '../actions/mopidy'
 
-export default class TrackList extends React.Component{
+import Track from './Track'
+import MopidyService from '../services/MopidyService'
+
+class TrackList extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -21,6 +26,7 @@ export default class TrackList extends React.Component{
 	playTrack( index ){
 		var tracks = this.state.tracks;
 		console.log('playTrack', tracks[index].tlid)
+		this.props.actions.changeTrack( index )
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -58,3 +64,22 @@ export default class TrackList extends React.Component{
 		return null;
 	}
 }
+
+
+/**
+ * Export our component
+ *
+ * We also integrate our global store, using connect()
+ **/
+
+const mapStateToProps = (state, ownProps) => {
+	return state;
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		actions: bindActionCreators(actions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackList)

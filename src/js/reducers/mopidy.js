@@ -40,7 +40,12 @@ export default function reducer(mopidy = {}, action){
 
         case 'VOLUME':
             return Object.assign({}, mopidy, {
-            	volume: action.volume	
+                volume: action.volume   
+            });
+
+        case 'CHANGE_TRACK':
+            return Object.assign({}, mopidy, {
+            	tlid: action.tlid	
             });
 
         default:

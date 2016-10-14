@@ -14,10 +14,6 @@ class Queue extends React.Component{
 		super(props);
 	}
 
-	componentDidMount(){
-		console.log('mounted');
-	}
-
 	renderTrackInFocus(){
 		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
 			return (

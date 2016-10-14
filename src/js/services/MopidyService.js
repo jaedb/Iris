@@ -79,7 +79,7 @@ class MopidyService extends React.Component{
 	 * @param string property the property to get (TlTracks, Consume, etc)
 	 **/
 	get( model, property ){
-		console.log('MopidyServie: '+model+'.get'+property);
+		console.log('MopidyService: '+model+'.get'+property);
 		let self = this;
 		this.connection[model]['get'+property]()
 			.then(
@@ -113,6 +113,10 @@ class MopidyService extends React.Component{
 					console.error( error );
 				}
 			);
+	}
+
+	changeTlTrack( tlid ){
+		console.log('Changing track to '+ tlid)
 	}
 
 

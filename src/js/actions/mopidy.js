@@ -58,3 +58,11 @@ export function updateVolume( volume ){
 		volume: volume
 	}
 }
+
+export function changeTrack( tlid ){
+	return {
+		type: 'CHANGE_TRACK',
+		tlid: tlid
+	}
+}
+

@@ -1,7 +1,8 @@
 {
 	"name": "iris",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Mopidy HTTP interface",
+	"repository": "https://github.com/jaedb/iris",
 	"main": "app.js",
 	"dependencies": {
 		"babel": "^5.8.29",
@@ -17,6 +18,7 @@
 		"redux": "*",
 		"react-redux": "*",
 		"redux-devtools": "*",
+		"redux-thunk": "*",
 		"webpack": "^1.13.2",
 		"webpack-strip": "*",
 		"node-sass": "*",
