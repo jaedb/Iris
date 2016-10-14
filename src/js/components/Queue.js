@@ -3,10 +3,11 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import Services from '../services/Services'
+import FontAwesome from 'react-fontawesome'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
-import * as actions from '../actions/mopidy'
+import Player from '../components/Player'
+import * as actions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
 
@@ -39,6 +40,7 @@ class Queue extends React.Component{
 				{ this.renderTrackInFocus() }
 				<h4>Other tracks</h4>
 				{ this.renderTrackList() }
+				<Player />
 			</div>
 		);
 	}

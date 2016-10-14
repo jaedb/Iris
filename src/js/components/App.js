@@ -6,8 +6,7 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import * as actions from '../actions/index'
-import Services from '../services/Services'
-import MopidyService from '../services/MopidyService'
+import * as mopidyActions from '../services/mopidy/actions'
 
 
 /**
@@ -17,6 +16,10 @@ class App extends React.Component{
 
 	constructor(props){
 		super(props);
+	}
+
+	componentDidMount(){
+		this.props.mopidyActions.connect();
 	}
 
 	render(){
@@ -32,7 +35,6 @@ class App extends React.Component{
 					<li><a onClick={this.handleClick}>Authorize</a></li>
 		        </ul>
 		        {this.props.children}
-		        <MopidyService />
 	        </div>
 		);
 	}
@@ -50,7 +52,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		actions: bindActionCreators(actions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
 

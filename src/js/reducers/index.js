@@ -7,7 +7,7 @@
 
 // import all of our application reducers
 import album from './album'
-import mopidy from './mopidy'
+import mopidy from '../services/mopidy/reducer'
 
 import { combineReducers } from 'redux'
 

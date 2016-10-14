@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import * as actions from '../actions/mopidy'
+import * as actions from '../services/mopidy/actions'
 
 
 /**
@@ -16,14 +16,21 @@ import * as actions from '../actions/mopidy'
 class MopidyService extends React.Component{
 
 	constructor( props ){
-		super(props)
-
+		super(props);
+/*
 		this.connection = new Mopidy({
-			webSocketUrl: "ws://music.james:6680/mopidy/ws",
+			webSocketUrl: "ws://tv.barnsley.nz:6680/mopidy/ws",
+			//webSocketUrl: "ws://music.james:6680/mopidy/ws",
 			callingConvention: 'by-position-or-by-name'
 		});
 
 		this.connection.on( (type, data) => this.handleMessage( type, data ) );
+		*/
+	}
+
+	componentDidMount(){
+
+		this.props.actions.connect();
 	}
 
 	handleMessage( type, data ){

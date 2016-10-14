@@ -2,10 +2,9 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as actions from '../actions/mopidy'
+import * as actions from '../services/mopidy/actions'
 
 import Track from './Track'
-import MopidyService from '../services/MopidyService'
 
 class TrackList extends React.Component{
 

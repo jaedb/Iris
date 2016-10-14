@@ -2,43 +2,46 @@
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
-        case 'STATUS':
+        case 'CONNECTING':
+            return Object.assign({}, mopidy, { connected: false, connecting: true });
+
+        case 'CONNECTED':
+            return Object.assign({}, mopidy, { connected: true, connecting: false });
+
+        case 'DISCONNECTED':
+            return Object.assign({}, mopidy, { connected: false, connecting: false });
+
+        case 'State':
             return Object.assign({}, mopidy, {
-                online: action.online   
+                state: action.data 
             });
 
-        case 'STATE':
+        case 'Consume':
             return Object.assign({}, mopidy, {
-                state: action.state 
+                consume: action.data 
             });
 
-        case 'CONSUME':
+        case 'Random':
             return Object.assign({}, mopidy, {
-                consume: action.consume 
+                random: action.data 
             });
 
-        case 'RANDOM':
+        case 'Repeat':
             return Object.assign({}, mopidy, {
-                random: action.random 
+                repeat: action.data 
             });
 
-        case 'REPEAT':
+        case 'TlTracks':
             return Object.assign({}, mopidy, {
-                repeat: action.repeat 
+            	tracks: action.data	
             });
 
-        case 'TRACKLIST':
+        case 'CurrentTlTrack':
             return Object.assign({}, mopidy, {
-            	tracks: action.tracks	
+            	trackInFocus: action.data	
             });
 
-        case 'TRACKINFOCUS':
-        	console.log( action );
-            return Object.assign({}, mopidy, {
-            	trackInFocus: action.trackInFocus	
-            });
-
-        case 'VOLUME':
+        case 'Volume':
             return Object.assign({}, mopidy, {
                 volume: action.volume   
             });
