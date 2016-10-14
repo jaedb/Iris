@@ -1,4 +1,5 @@
 /node_modules/
 /production/
+/.sass-cache/
 *.orig
 Thumbs.db
