@@ -24,8 +24,22 @@ class TrackList extends React.Component{
 
 	playTrack( index ){
 		var tracks = this.state.tracks;
-		console.log('playTrack', tracks[index].tlid)
-		this.props.actions.changeTrack( index )
+		this.props.actions.changeTrack( tracks[index].tlid )
+	}
+
+	deleteSelected(){
+
+		function isSelected( track ){
+			return ( typeof(track.selected) !== 'undefined' && track.selected );
+		}
+
+		var selectedTracks = this.state.tracks.filter(isSelected)
+		var selectedTracksTlids = [];
+		for( var i = 0; i < selectedTracks.length; i++ ){
+			selectedTracksTlids.push( selectedTracks[i].tlid )
+		}
+
+		this.props.actions.removeTracks( selectedTracksTlids )
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -36,28 +50,31 @@ class TrackList extends React.Component{
 		let self = this;
 		if( this.state.tracks ){
 			return (
-				<ul>
-					{
-						this.state.tracks.map(
-							(track, index) => {
+				<div>
+					<ul>
+						{
+							this.state.tracks.map(
+								(track, index) => {
 
-								// flatten nested track objects (as in the case of TlTracks)
-								if( typeof(track.track) !== 'undefined' ){
-									for( var property in track.track ){
-										if( track.track.hasOwnProperty(property) ){
-											track[property] = track.track[property]
+									// flatten nested track objects (as in the case of TlTracks)
+									if( typeof(track.track) !== 'undefined' ){
+										for( var property in track.track ){
+											if( track.track.hasOwnProperty(property) ){
+												track[property] = track.track[property]
+											}
 										}
 									}
+									return <Track
+											key={index+'_'+track.uri} 
+											track={track} 
+											playTrack={() => self.playTrack(index)}
+											toggleSelected={() => self.toggleSelected(index)} />
 								}
-								return <Track
-										key={index+'_'+track.uri} 
-										track={track} 
-										playTrack={() => self.playTrack(index)}
-										toggleSelected={() => self.toggleSelected(index)} />
-							}
-						)
-					}
-				</ul>
+							)
+						}
+					</ul>
+					<button onClick={() => this.deleteSelected()}>Delete selected</button>
+				</div>
 			);
 		}
 		return null;

@@ -2,53 +2,56 @@
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
-        case 'CONNECTING':
+        case 'MOPIDY_CONNECTING':
             return Object.assign({}, mopidy, { connected: false, connecting: true });
 
-        case 'CONNECTED':
+        case 'MOPIDY_CONNECTED':
             return Object.assign({}, mopidy, { connected: true, connecting: false });
 
-        case 'DISCONNECTED':
+        case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
 
-        case 'State':
+        case 'MOPIDY_CHANGE_TRACK':
+            return Object.assign({}, mopidy, {
+            	tlid: action.tlid	
+            });
+
+        /**
+         * Websocket-initiated actions
+         **/
+        case 'MOPIDY_State':
             return Object.assign({}, mopidy, {
                 state: action.data 
             });
 
-        case 'Consume':
+        case 'MOPIDY_Consume':
             return Object.assign({}, mopidy, {
                 consume: action.data 
             });
 
-        case 'Random':
+        case 'MOPIDY_Random':
             return Object.assign({}, mopidy, {
                 random: action.data 
             });
 
-        case 'Repeat':
+        case 'MOPIDY_Repeat':
             return Object.assign({}, mopidy, {
                 repeat: action.data 
             });
 
-        case 'TlTracks':
+        case 'MOPIDY_TlTracks':
             return Object.assign({}, mopidy, {
-            	tracks: action.data	
+                tracks: action.data 
             });
 
-        case 'CurrentTlTrack':
+        case 'MOPIDY_CurrentTlTrack':
             return Object.assign({}, mopidy, {
-            	trackInFocus: action.data	
+                trackInFocus: action.data   
             });
 
-        case 'Volume':
+        case 'MOPIDY_Volume':
             return Object.assign({}, mopidy, {
-                volume: action.volume   
-            });
-
-        case 'CHANGE_TRACK':
-            return Object.assign({}, mopidy, {
-            	tlid: action.tlid	
+                volume: action.data   
             });
 
         default:

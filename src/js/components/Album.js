@@ -18,18 +18,20 @@ class Album extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.loadAlbum( this.props.params.id );
+		this.loadAlbum( this.props.params.uri );
 	}
 
 	// when props changed
 	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.id != this.props.params.id ){
-			this.loadAlbum( nextProps.params.id );
+		if( nextProps.params.uri != this.props.params.uri ){
+			this.loadAlbum( nextProps.params.uri );
 		}
 	}
 
-	loadAlbum( id ){
+	loadAlbum( uri ){
 		let self = this;
+
+		var id = uri.replace('spotify:album:','');
 
         $.ajax({
 			method: 'GET',

@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 
 import * as actions from '../actions/index'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as spotifyActions from '../services/spotify/actions'
+import SpotifyAuthenticationFrame from './SpotifyAuthenticationFrame'
 
 
 /**
@@ -28,12 +30,9 @@ class App extends React.Component{
 			<div>
 	        	<ul role="nav">
 					<li><Link to="/queue">Now playing</Link></li>
-					<li><Link to="/album/6N51k5TP5pSZYPf7bLffLe">808's and Heartbreak</Link></li>
-					<li><Link to="/album/1PgfRdl3lPyACfUGH4pquG">A million</Link></li>
 					<li><Link to="/library/albums">Library: Albums</Link></li>
-					<li><Link to="/album">Album</Link></li>
-					<li><a onClick={this.handleClick}>Authorize</a></li>
 		        </ul>
+		        <SpotifyAuthenticationFrame />
 		        {this.props.children}
 	        </div>
 		);
@@ -53,7 +52,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		actions: bindActionCreators(actions, dispatch),
-		mopidyActions: bindActionCreators(mopidyActions, dispatch)
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }
 

@@ -37,8 +37,12 @@ class Player extends React.Component{
 		return (
 			<div>
 				{ playButton }
-				<a onClick={() => this.props.actions.instruct('playback.previous')}><FontAwesome name="step-backward" /> </a>
-				<a onClick={() => this.props.actions.instruct('playback.next')}><FontAwesome name="step-forward" /> </a>
+				<a onClick={() => this.props.actions.instruct('playback.previous')}>
+					<FontAwesome name="step-backward" />
+				</a>&nbsp;
+				<a onClick={() => this.props.actions.instruct('playback.next')}>
+					<FontAwesome name="step-forward" />
+				</a>&nbsp;
 				{ consumeButton }
 				{ randomButton }
 				{ repeatButton }

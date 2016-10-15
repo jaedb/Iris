@@ -7,6 +7,8 @@ import FontAwesome from 'react-fontawesome'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import Player from '../components/Player'
+import ArtistList from '../components/ArtistList'
+import AlbumLink from '../components/AlbumLink'
 import * as actions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
@@ -18,7 +20,11 @@ class Queue extends React.Component{
 	renderTrackInFocus(){
 		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
 			return (
-				<div>{ this.props.mopidy.trackInFocus.track.name }</div>
+				<div>
+					<div>{ this.props.mopidy.trackInFocus.track.name }</div>
+					<div><ArtistList artists={ this.props.mopidy.trackInFocus.track.artists } /></div>
+					<div><AlbumLink album={ this.props.mopidy.trackInFocus.track.album } /></div>
+				</div>
 			);
 		}
 		return null;

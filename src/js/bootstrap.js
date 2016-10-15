@@ -1,16 +1,24 @@
 
 console.info('Bootstrapping...');
 
-import { createStore, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk'
-import reducer from './reducers/index'
-import mopidyMiddleware from './services/mopidy/middleware'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 
-// create our global store
+import mopidy from './services/mopidy/reducer'
+import spotify from './services/spotify/reducer'
+
+import thunk from 'redux-thunk'
+import mopidyMiddleware from './services/mopidy/middleware'
+import spotifyMiddleware from './services/spotify/middleware'
+
+let reducers = combineReducers({
+    mopidy,
+    spotify
+});
+
 let store = createStore(
-	reducer, 
+	reducers, 
 	{}, 
-	applyMiddleware( thunk, mopidyMiddleware )
+	applyMiddleware( thunk, mopidyMiddleware, spotifyMiddleware )
 );
 
 export default store;

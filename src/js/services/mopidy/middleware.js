@@ -4,27 +4,15 @@ import actions from './actions'
 
 const MopidyMiddleware = (function(){ 
 
+    // container for the actual Mopidy socket
     var socket = null;
 
-    const onOpen = (ws, store, token) => evt => {
-        console.log('opened')
-        //Send a handshake, or authenticate with remote end
-
-        //Tell the store we're connected
-        //store.dispatch(actions.connected());
-    }
-
-    const onClose = (ws, store) => evt => {
-        //Tell the store we've disconnected
-        //store.dispatch(actions.disconnected());
-    }
-
+    // handle all manner of socket messages
     const handleMessage = (ws, store, type, data) => {
-
         switch( type ){
 
             case 'state:online':
-                //store.dispatch( actions.updateStatus( true ) );
+                store.dispatch({ type: 'MOPIDY_CONNECTED' });
                 instruct( ws, store, 'playback.getState' );
                 instruct( ws, store, 'playback.getVolume' );
                 instruct( ws, store, 'tracklist.getConsume' );
@@ -35,7 +23,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'state:offline':
-                store.dispatch( actions.updateStatus( false ) );
+                store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
                 break;
 
             case 'event:tracklistChanged':
@@ -50,7 +38,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:volumeChanged':
-                store.dispatch( actions.updateVolume( data.volume ) );
+                store.dispatch({ type: 'MOPIDY_Volume', data: data.volume });
                 break;
 
             case 'event:optionsChanged':
@@ -60,35 +48,22 @@ const MopidyMiddleware = (function(){
                 break;
 
             default:
-                //console.log( 'MopidyService: Unhandled event', type, message );
+                //console.log( 'MopidyService: Unhandled message', type, message );
         }
     }
 
 
-    function doStuff( ws, store ){
-        console.log('doing stuff', store);
-        ws.playback.getState()
-            .then(
-                response => {
-                    store.dispatch({ type: 'STATE', state: response })
-                },
-                error => {
-                    console.error( error );
-                }
-            );
-    }
-
-
     /**
-     * Get something from Mopidy
+     * Call something with Mopidy
      *
      * Sends request to Mopidy server, and updates our local storage on return
-     * @param object ws Websocket
-     * @param string model Mopidy model (playback, tracklist, etc)
-     * @param string property the property to get (TlTracks, Consume, etc)
+     * @param object ws = Mopidy class that wraps a Websocket
+     * @param string model = which Mopidy model (playback, tracklist, etc)
+     * @param string property = TlTracks, Consume, etc
+     * @param string value (optional) = value of the property to pass
      **/
     const instruct = ( ws, store, call, value = false ) => {
-        console.log('Mopidy: '+call, value);
+
         var callParts = call.split('.');
         var model = callParts[0];
         var method = callParts[1];
@@ -96,30 +71,38 @@ const MopidyMiddleware = (function(){
         property = property.replace('get','');
         property = property.replace('set','');
 
+        // if we have a value, we need to include in our payload
         if( value ){
             ws[model][method]( value )
                 .then(
-                    response => store.dispatch({ type: property, model: model, data: response }),
+                    response => store.dispatch({ type: 'MOPIDY_'+property, model: model, data: response }),
                     error => console.error( error )
                 );
+
+        // no value, so omit the payload
         }else{
             ws[model][method]()
                 .then(
-                    response => store.dispatch({ type: property, model: model, data: response }),
+                    response => store.dispatch({ type: 'MOPIDY_'+property, model: model, data: response }),
                     error => console.error( error )
                 );
         }
     }
 
+    /**
+     * Middleware
+     *
+     * This behaves like an action interceptor. We listen for specific actions
+     * and handle special functionality. If the action is not in our switch, then
+     * it just proceeds to the next middleware, or default functionality
+     **/
     return store => next => action => {
-
         switch(action.type) {
 
-            //The user wants us to connect
-            case 'CONNECT':
+            case 'MOPIDY_CONNECT':
 
                 if(socket != null) socket.close();
-                store.dispatch({ type: 'CONNECTING' });
+                store.dispatch({ type: 'MOPIDY_CONNECTING' });
 
                 socket = new Mopidy({
                     webSocketUrl: "ws://tv.barnsley.nz:6680/mopidy/ws",
@@ -130,19 +113,20 @@ const MopidyMiddleware = (function(){
 
                 break;
 
-            //The user wants us to disconnect
-            case 'DISCONNECT':
+            case 'MOPIDY_DISCONNECT':
                 if(socket != null) socket.close();
                 socket = null;                
-                store.dispatch({ type: 'DISCONNECTED' });
+                store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
                 break;
 
-            //Send the 'SEND_MESSAGE' action down the websocket to the server
-            case 'INSTRUCT':
+            // send an instruction to the websocket
+            case 'MOPIDY_INSTRUCT':
+            case 'MOPIDY_CHANGE_TRACK':
+            case 'MOPIDY_REMOVE_TRACKS':
                 instruct( socket, store, action.call, action.value )
                 break;
 
-            //This action is irrelevant to us, pass it on to the next middleware
+            // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);
         }

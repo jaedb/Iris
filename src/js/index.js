@@ -18,7 +18,7 @@ ReactDOM.render(
 		<Router history={hashHistory}>
 			<Route path="/" component={App}>
 	
-				<Route path="album/:id" component={Album} />
+				<Route path="album/:uri" component={Album} />
 				<Route path="queue" component={Queue} />
 
 			</Route>
