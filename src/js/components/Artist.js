@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import TrackList from './TrackList'
 import * as spotifyActions from '../services/spotify/actions'
 
-class Album extends React.Component{
+class Artist extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -14,50 +14,25 @@ class Album extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.loadAlbum( this.props.params.uri );
+		this.props.spotifyActions.loadArtist( this.props.params.uri );
 	}
 
 	// when props changed
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
-			this.props.spotifyActions.loadAlbum( nextProps.params.uri );
+			this.props.spotifyActions.loadArtist( nextProps.params.uri );
 		}
 	}
 
-	loadAlbum( uri ){
-		let self = this;
-
-		var id = uri.replace('spotify:album:','');
-
-        $.ajax({
-			method: 'GET',
-			cache: true,
-			url: 'https://api.spotify.com/v1/albums/'+id,
-			success: function(album){
-        		self.setState({ album: album });
-        	}
-        });
-	}
-
-	renderAlbum(){
-		if( this.props.spotify.album ){
+	render(){
+		if( this.props.spotify.artist ){
 			return (
 				<div>
-					<h3>{ this.props.spotify.album.name }</h3>
-					<TrackList tracks={this.props.spotify.album.tracks.items} />
+					<h3>{ this.props.spotify.artist.name }</h3>
 				</div>
 			);
 		}
 		return null;
-	}
-
-	render(){
-		return (
-			<div>
-				<h3>Single album</h3>
-				{ this.renderAlbum() }
-			</div>
-		);
 	}
 }
 
@@ -78,4 +53,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Album)
+export default connect(mapStateToProps, mapDispatchToProps)(Artist)

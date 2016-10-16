@@ -104,8 +104,11 @@ const MopidyMiddleware = (function(){
                 if(socket != null) socket.close();
                 store.dispatch({ type: 'MOPIDY_CONNECTING' });
 
+                var domain = "tv.barnsley.nz";
+                if( window.location.hostname == 'iris.james' ) domain = 'music.james';
+                
                 socket = new Mopidy({
-                    webSocketUrl: "ws://tv.barnsley.nz:6680/mopidy/ws",
+                    webSocketUrl: 'ws://'+domain+':6680/mopidy/ws',
                     callingConvention: 'by-position-or-by-name'
                 });
 

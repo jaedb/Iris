@@ -5,10 +5,10 @@ import { createStore, bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
-import * as actions from '../actions/index'
+import Player from '../components/Player'
+
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
-import SpotifyAuthenticationFrame from './SpotifyAuthenticationFrame'
 
 
 /**
@@ -30,10 +30,11 @@ class App extends React.Component{
 			<div>
 	        	<ul role="nav">
 					<li><Link to="/queue">Now playing</Link></li>
-					<li><Link to="/library/albums">Library: Albums</Link></li>
+					<li><Link to="/library/artists">Library: My artists</Link></li>
+					<li><Link to="/settings">Settings</Link></li>
 		        </ul>
-		        <SpotifyAuthenticationFrame />
 		        {this.props.children}
+		        <Player />
 	        </div>
 		);
 	}
@@ -51,7 +52,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

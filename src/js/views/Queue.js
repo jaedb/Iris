@@ -44,9 +44,9 @@ class Queue extends React.Component{
 			<div>
 				<h3>Now playing</h3>
 				{ this.renderTrackInFocus() }
+				<Player />
 				<h4>Other tracks</h4>
 				{ this.renderTrackList() }
-				<Player />
 			</div>
 		);
 	}
