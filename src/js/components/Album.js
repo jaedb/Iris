@@ -4,27 +4,23 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TrackList from './TrackList'
-import * as albumActions from '../actions/albumActions'
+import * as spotifyActions from '../services/spotify/actions'
 
 class Album extends React.Component{
 
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			album: false
-		}
 	}
 
 	// on render
 	componentDidMount(){
-		this.loadAlbum( this.props.params.uri );
+		this.props.spotifyActions.loadAlbum( this.props.params.uri );
 	}
 
 	// when props changed
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
-			this.loadAlbum( nextProps.params.uri );
+			this.props.spotifyActions.loadAlbum( nextProps.params.uri );
 		}
 	}
 
@@ -44,11 +40,11 @@ class Album extends React.Component{
 	}
 
 	renderAlbum(){
-		if( this.state.album ){
+		if( this.props.spotify.album ){
 			return (
 				<div>
-					<h3>{ this.state.album.name }</h3>
-					<TrackList tracks={this.state.album.tracks.items} />
+					<h3>{ this.props.spotify.album.name }</h3>
+					<TrackList tracks={this.props.spotify.album.tracks.items} />
 				</div>
 			);
 		}
@@ -78,7 +74,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		albumActions: bindActionCreators(albumActions, dispatch)
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }
 

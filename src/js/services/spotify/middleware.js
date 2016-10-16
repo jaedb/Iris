@@ -4,8 +4,24 @@ import actions from './actions'
 const SpotifyMiddleware = (function(){
 
     return store => next => action => {
-        
+
         switch(action.type) {
+
+            case 'SPOTIFY_LOAD_ALBUM':
+
+                // clear the current album
+                store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false })
+
+                var id = action.uri.replace('spotify:album:','');
+                $.ajax({
+                    method: 'GET',
+                    cache: true,
+                    url: 'https://api.spotify.com/v1/albums/'+id,
+                    success: function(album){
+                        store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: album })
+                    }
+                });
+                break;
 
             case 'SPOTIFY_CONNECT':
 

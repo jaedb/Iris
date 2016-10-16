@@ -14,6 +14,9 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_DISCONNECTED':
             return Object.assign({}, spotify, { connected: false, connecting: false });
 
+        case 'SPOTIFY_ALBUM_LOADED':
+            return Object.assign({}, spotify, { album: action.data });
+
         default:
             return spotify
     }
