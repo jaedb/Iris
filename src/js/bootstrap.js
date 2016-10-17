@@ -16,10 +16,18 @@ let reducers = combineReducers({
     spotify
 });
 
-// load our state from localStorage
-var initialState = {};
-if( localStorage.getItem('state') ){
-	initialState = JSON.parse( localStorage.getItem('state') );
+// set application defaults
+var initialState = {
+	mopidy: {
+		host: window.location.hostname,
+		port: 6680
+	}
+};
+
+// if we've got a stored version of mopidy state, load and merge
+if( localStorage.getItem('mopidy') ){
+	var storedMopidy = JSON.parse( localStorage.getItem('mopidy') );
+	Object.assign(initialState, { mopidy: storedMopidy } );
 }
 
 let store = createStore(

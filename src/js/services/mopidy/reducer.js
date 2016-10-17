@@ -11,6 +11,12 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
 
+        case 'MOPIDY_SET_CONFIG':
+            return Object.assign({}, mopidy, {
+                host: action.host, 
+                port: action.port
+            });
+
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
             	tlid: action.tlid	

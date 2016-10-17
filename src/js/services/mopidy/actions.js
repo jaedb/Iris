@@ -15,6 +15,14 @@ export function disconnect(){
 	}
 }
 
+export function setConfig( host, port ){
+	return {
+		type: 'MOPIDY_SET_CONFIG',
+		host: host,
+		port: port
+	}
+}
+
 export function changeTrack( tlid ){
 	return {
 		type: 'MOPIDY_CHANGE_TRACK',

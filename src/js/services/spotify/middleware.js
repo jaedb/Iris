@@ -80,6 +80,11 @@ const SpotifyMiddleware = (function(){
                 console.log('Spotify wants to DISconnect')
                 break;
 
+            case 'SPOTIFY_COMPLETE_AUTHORIZATION':
+                next(action);
+                localStorage.setItem('spotify', JSON.stringify({ access_token: action.data.access_token, refresh_token: action.data.refresh_token }));
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

@@ -104,11 +104,10 @@ const MopidyMiddleware = (function(){
                 if(socket != null) socket.close();
                 store.dispatch({ type: 'MOPIDY_CONNECTING' });
 
-                var domain = "tv.barnsley.nz";
-                if( window.location.hostname == 'iris.james' ) domain = 'music.james';
-                
+                var state = store.getState();
+
                 socket = new Mopidy({
-                    webSocketUrl: 'ws://'+domain+':6680/mopidy/ws',
+                    webSocketUrl: 'ws://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws',
                     callingConvention: 'by-position-or-by-name'
                 });
 
@@ -127,6 +126,11 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CHANGE_TRACK':
             case 'MOPIDY_REMOVE_TRACKS':
                 instruct( socket, store, action.call, action.value )
+                break;
+
+            case 'MOPIDY_SET_CONFIG':
+                next(action);
+                localStorage.setItem('mopidy', JSON.stringify({ host: action.host, port: action.port }));
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware

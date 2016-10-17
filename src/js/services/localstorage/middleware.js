@@ -12,7 +12,7 @@ const localstorageMiddleware = (function(){
 
         // get the state, and plug it in to our localStorage
         var state = store.getState();
-        localStorage.setItem('state', JSON.stringify(state));
+        //localStorage.setItem('state', JSON.stringify(state));
     }
 
 })();
