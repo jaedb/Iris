@@ -9,7 +9,7 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, { authorizing: true });
 
         case 'SPOTIFY_COMPLETE_AUTHORIZATION':
-            return Object.assign({}, spotify, { authorizing: false, authorization: action.data });
+            return Object.assign({}, spotify, { authorizing: false, authorization: action.data, token: action.data.access_token });
 
         case 'SPOTIFY_REMOVE_AUTHORIZATION':
             return Object.assign({}, spotify, { authorizing: false, authorization: false });
@@ -27,7 +27,7 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, { artist: action.data });
 
         case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
-            return Object.assign({}, spotify, { library_artists: action.data });
+            return Object.assign({}, spotify, { libraryArtists: action.data });
 
         default:
             return spotify

@@ -24,22 +24,7 @@ class Album extends React.Component{
 		}
 	}
 
-	loadAlbum( uri ){
-		let self = this;
-
-		var id = uri.replace('spotify:album:','');
-
-        $.ajax({
-			method: 'GET',
-			cache: true,
-			url: 'https://api.spotify.com/v1/albums/'+id,
-			success: function(album){
-        		self.setState({ album: album });
-        	}
-        });
-	}
-
-	renderAlbum(){
+	render(){
 		if( this.props.spotify.album ){
 			return (
 				<div>
@@ -49,15 +34,6 @@ class Album extends React.Component{
 			);
 		}
 		return null;
-	}
-
-	render(){
-		return (
-			<div>
-				<h3>Single album</h3>
-				{ this.renderAlbum() }
-			</div>
-		);
 	}
 }
 

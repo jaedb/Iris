@@ -9,6 +9,8 @@ export default class ConfirmationButton extends React.Component{
 		this.state = {
 			confirming: false
 		}
+		this.confirming = false;
+		this.unconfirmTimer = false;
 	}
 
 	handleClick(e){
@@ -18,6 +20,19 @@ export default class ConfirmationButton extends React.Component{
 		}else{
 			this.setState({ confirming: true });
 		}
+	}
+
+	handleMouseEnter(e){
+		clearTimeout( this.unconfirmTimer );
+	}
+
+	handleMouseLeave(e){
+		this.unconfirmTimer = setTimeout(
+			function(){
+				this.setState({ confirming: false });
+			}.bind(this),
+			1500
+		);
 	}
 
 	render(){
@@ -31,9 +46,13 @@ export default class ConfirmationButton extends React.Component{
 		}
 
 		return (
-			<span className={className} onClick={ (e) => this.handleClick(e) }>
-				{ content }
-			</span>
+			<button
+				className={className}
+				onClick={ (e) => this.handleClick(e) }
+				onMouseLeave={ (e) => this.handleMouseLeave(e) }
+				onMouseEnter={ (e) => this.handleMouseEnter(e) }>
+					{ content }
+			</button>
 		);
 	}
 }

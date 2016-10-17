@@ -11,13 +11,22 @@ const SpotifyMiddleware = (function(){
      * @param data mixed = request payload
      * @return ajax promise
      **/
-    const sendRequest = (endpoint, method = 'GET', data = false) => {
-        return $.ajax({
+    const sendRequest = (token, endpoint, method = 'GET', data = false) => {
+    
+        var options = {
             method: method,
             cache: true,
             url: 'https://api.spotify.com/v1/'+endpoint,
             data: data
-        });
+        };
+
+        if( token ){
+            options.headers = {
+                Authorization: 'Bearer '+ token
+            }
+        }
+
+        return $.ajax( options );
     }
 
     /**
@@ -32,7 +41,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false })
                 var id = action.uri.replace('spotify:album:','');
 
-                sendRequest('albums/'+id)
+                sendRequest( false, 'albums/'+id )
                     .then( (response) => {                
                         store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: response })
                     });
@@ -44,9 +53,21 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false })
                 var id = action.uri.replace('spotify:artist:','');
 
-                sendRequest('artists/'+id)
+                sendRequest( false, 'artists/'+id )
                     .then( (response) => {                
                         store.dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: response })
+                    });
+                break;
+
+
+            case 'SPOTIFY_LOAD_LIBRARY_ARTISTS':
+
+                store.dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false })
+                var token = store.getState().spotify.token;
+
+                sendRequest( token, 'me/following?type=artist' )
+                    .then( (response) => {                
+                        store.dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: response })
                     });
                 break;
 

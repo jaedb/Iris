@@ -17,8 +17,8 @@ class Settings extends React.Component{
 	}
 
 	resetAllSettings(){
-		localStorage.removeItem('state');
-		window.location.reload();
+		localStorage.clear();
+		window.location.reload(true);
 	}
 
 	render(){

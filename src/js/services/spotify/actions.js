@@ -48,3 +48,9 @@ export function loadArtist( uri ){
 	}
 }
 
+export function loadLibraryArtists(){
+	return {
+		type: 'SPOTIFY_LOAD_LIBRARY_ARTISTS'
+	}
+}
+
