@@ -13,6 +13,10 @@ export default class ConfirmationButton extends React.Component{
 		this.unconfirmTimer = false;
 	}
 
+	componentWillUnmount(){
+		clearTimeout( this.unconfirmTimer );
+	}
+
 	handleClick(e){
 		if( this.state.confirming ){
 			this.setState({ confirming: false });
@@ -27,12 +31,14 @@ export default class ConfirmationButton extends React.Component{
 	}
 
 	handleMouseLeave(e){
-		this.unconfirmTimer = setTimeout(
-			function(){
-				this.setState({ confirming: false });
-			}.bind(this),
-			1500
-		);
+		if( this.state.confirming ){
+			this.unconfirmTimer = setTimeout(
+				function(){
+					this.setState({ confirming: false });
+				}.bind(this),
+				1500
+			);
+		}
 	}
 
 	render(){

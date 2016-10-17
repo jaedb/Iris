@@ -10,6 +10,8 @@ import { Router, Route, Link, hashHistory } from 'react-router'
 
 import store from './bootstrap.js'
 
+require('../scss/app.scss');
+
 import App from './views/App'
 import Album from './views/Album'
 import Artist from './views/Artist'

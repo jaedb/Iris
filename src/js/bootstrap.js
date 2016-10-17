@@ -9,7 +9,7 @@ import spotify from './services/spotify/reducer'
 import thunk from 'redux-thunk'
 import mopidyMiddleware from './services/mopidy/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
-import localstorageMiddleware from './services/localstorageMiddleware'
+import localstorageMiddleware from './services/localstorage/middleware'
 
 let reducers = combineReducers({
     mopidy,

@@ -10,12 +10,15 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
-	toggleSelected( e ){
-		return this.props.toggleSelected();
+	handleClick( e ){
+		var target = $(e.target);
+		if( !target.is('a') && target.closest('a').length <= 0 ){
+			this.props.handleClick(e);
+		}
 	}
 
-	playTrack( e ){
-		return this.props.playTrack();
+	handleDoubleClick( e ){
+		return this.props.handleDoubleClick(e);
 	}
 
 	render(){
@@ -28,11 +31,21 @@ export default class Track extends React.Component{
 		return (
 			<div
 				className="track"
-				onDoubleClick={ (e) => this.playTrack(e) }>
-					<FontAwesome name={selectedIcon} fixedWidth onClick={ (e) => this.toggleSelected(e) } />
-					{this.props.track.name}
-					<ArtistList artists={this.props.track.artists} />
-					{ this.props.track.album ? <AlbumLink album={this.props.track.album} /> : null }
+				onDoubleClick={ (e) => this.handleDoubleClick(e) }
+				onClick={ (e) => this.handleClick(e) }>
+					<FontAwesome name={selectedIcon} fixedWidth />
+					<span className="name">
+						{this.props.track.name}
+					</span>
+					<span className="artists">
+						<ArtistList artists={this.props.track.artists} />
+					</span>
+					<span className="album">
+						{ this.props.track.album ? <AlbumLink album={this.props.track.album} /> : null }
+					</span>
+					<span className="duration">
+						{ this.props.track.duration }
+					</span>
 			</div>
 		);
 	}

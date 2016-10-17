@@ -12,17 +12,44 @@ class TrackList extends React.Component{
 		super(props);
 
 		this.state = {
-			tracks: this.props.tracks
+			tracks: this.props.tracks,
+			lastSelectedTrack: false
 		}
 	}
 
-	toggleSelected( index ){
+	handleClick( e, index ){
 		var tracks = this.state.tracks;
-		tracks[index].selected = !tracks[index].selected;
-		this.setState({ tracks: tracks });
+
+		if( e.ctrlKey ){
+
+			tracks[index].selected = !tracks[index].selected;
+
+		}else if( e.shiftKey ){
+
+			if( this.state.lastSelectedTrack < index ){
+				var start = this.state.lastSelectedTrack;
+				var end = index;
+			}else{
+				var start = index;
+				var end = this.state.lastSelectedTrack;
+			}
+
+			for( var i = start; i <= end; i++ ){
+				tracks[i].selected = true;
+			}
+
+		}else{
+
+			for( var i = 0; i < tracks.length; i++ ){
+				tracks[i].selected = false;
+			}
+			tracks[index].selected = !tracks[index].selected;
+		}
+
+		this.setState({ tracks: tracks, lastSelectedTrack: index });
 	}
 
-	playTrack( index ){
+	handleDoubleClick( e, index ){
 		var tracks = this.state.tracks;
 		this.props.actions.changeTrack( tracks[index].tlid )
 	}
@@ -67,8 +94,8 @@ class TrackList extends React.Component{
 									return <Track
 											key={index+'_'+track.uri} 
 											track={track} 
-											playTrack={() => self.playTrack(index)}
-											toggleSelected={() => self.toggleSelected(index)} />
+											handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
+											handleClick={(e) => self.handleClick(e, index)} />
 								}
 							)
 						}

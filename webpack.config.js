@@ -1,3 +1,4 @@
+
 var dev = process.env.NODE_ENV !== "production";
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -17,7 +18,9 @@ var config = {
 	
 	module: {
 		loaders: [
-			{ test: require.resolve('jquery'), loader: 'expose?jQuery!expose?$' },
+			{
+				test: require.resolve('jquery'), loader: 'expose?jQuery!expose?$'
+			},
 			{
 				// loading JSX (aka Babel) into browser-friendly ES6
 				test: /\.js$/,
@@ -37,6 +40,11 @@ var config = {
 					'css'+(dev? '?sourceMap=true': ''),
 					'sass'+(dev? '?outputStyle=expanded&sourceMap=true&sourceMapContents=true': '')
 				])
+			},
+			{
+				// load external resources (ie Google fonts)
+				test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
+				loader: 'url-loader?limit=100000'
 			}
 		]
 	},
