@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import FontAwesome from 'react-fontawesome'
+import VolumeSlider from './VolumeSlider'
 import * as actions from '../services/mopidy/actions'
 
 class Player extends React.Component{
@@ -46,7 +47,9 @@ class Player extends React.Component{
 				{ consumeButton }
 				{ randomButton }
 				{ repeatButton }
-				{ this.props.mopidy.volume }
+				<VolumeSlider
+					volume={ this.props.mopidy.volume } 
+					onChange={(volume) => this.props.actions.instruct('playback.setVolume', { volume: volume })} />
 			</div>
 		);
 	}
