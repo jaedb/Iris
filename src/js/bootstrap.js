@@ -30,6 +30,12 @@ if( localStorage.getItem('mopidy') ){
 	Object.assign(initialState, { mopidy: storedMopidy } );
 }
 
+// if we've got a stored version of spotify state, load and merge
+if( localStorage.getItem('spotify') ){
+	var storedSpotify = JSON.parse( localStorage.getItem('spotify') );
+	Object.assign(initialState, { spotify: storedSpotify } );
+}
+
 let store = createStore(
 	reducers, 
 	initialState, 

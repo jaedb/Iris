@@ -128,11 +128,6 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, action.call, action.value )
                 break;
 
-            case 'MOPIDY_SET_CONFIG':
-                next(action);
-                localStorage.setItem('mopidy', JSON.stringify({ host: action.host, port: action.port }));
-                break;
-
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

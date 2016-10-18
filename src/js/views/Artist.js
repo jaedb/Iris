@@ -29,6 +29,7 @@ class Artist extends React.Component{
 			return (
 				<div>
 					<h3>{ this.props.spotify.artist.name }</h3>
+					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
 				</div>
 			);
 		}

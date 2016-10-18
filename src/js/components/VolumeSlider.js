@@ -6,6 +6,13 @@ export default class VolumeSlider extends React.Component{
 
 	constructor(props) {
 		super(props);
+		this.state = {
+			volume: 0
+		}
+	}
+
+	componentWillReceiveProps( nextProps ){
+		this.setState({ volume: nextProps.volume })
 	}
 
 	handleChange(e){

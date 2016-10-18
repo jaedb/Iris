@@ -10,9 +10,25 @@ const localstorageMiddleware = (function(){
         // this way, any reducers and middleware do their thing BEFORE we store our new state
         next(action);
 
-        // get the state, and plug it in to our localStorage
-        var state = store.getState();
-        //localStorage.setItem('state', JSON.stringify(state));
+        switch( action.type ){
+
+            case 'MOPIDY_SET_CONFIG':
+                var mopidy = {
+                    host: action.host,
+                    port: action.port
+                };
+                localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                break;
+
+            case 'SPOTIFY_COMPLETE_AUTHORIZATION':
+                var spotify = {
+                    authorized: true, 
+                    access_token: action.data.access_token, 
+                    refresh_token: action.data.refresh_token
+                };
+                localStorage.setItem('spotify', JSON.stringify(spotify));
+                break;
+        }
     }
 
 })();

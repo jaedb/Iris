@@ -21,6 +21,22 @@ export default class Track extends React.Component{
 		return this.props.handleDoubleClick(e);
 	}
 
+	formatDuration(){
+		if( typeof(this.props.track.duration_ms) !== 'undefined' ){
+			var ms = this.props.track.duration_ms;
+		}else if( typeof(this.props.track.length) !== 'undefined' ){
+			var ms = this.props.track.length;
+		}else{
+			return null;
+		}
+
+		var time = new Date(ms);
+		var min = time.getMinutes();
+		var sec = time.getSeconds();
+		if( sec < 10 ) sec = '0'+sec;
+		return min+':'+sec;
+	}
+
 	render(){
 
 		var selectedIcon = 'square-o';
@@ -44,7 +60,7 @@ export default class Track extends React.Component{
 						{ this.props.track.album ? <AlbumLink album={this.props.track.album} /> : null }
 					</span>
 					<span className="duration">
-						{ this.props.track.duration }
+						{ this.formatDuration() }
 					</span>
 			</div>
 		);

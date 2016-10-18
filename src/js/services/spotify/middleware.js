@@ -42,7 +42,13 @@ const SpotifyMiddleware = (function(){
                 var id = action.uri.replace('spotify:album:','');
 
                 sendRequest( false, 'albums/'+id )
-                    .then( (response) => {                
+                    .then( (response) => {
+                        for( var i = 0; i < response.tracks.items.length; i++ ){
+                            response.tracks.items[i].album = {
+                                name: response.name,
+                                uri: response.uri
+                            }
+                        }
                         store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: response })
                     });
                 break;
@@ -63,7 +69,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_LOAD_LIBRARY_ARTISTS':
 
                 store.dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false })
-                var token = store.getState().spotify.token;
+                var token = store.getState().spotify.access_token;
 
                 sendRequest( token, 'me/following?type=artist' )
                     .then( (response) => {                
@@ -78,11 +84,6 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_DISCONNECT':
                 console.log('Spotify wants to DISconnect')
-                break;
-
-            case 'SPOTIFY_COMPLETE_AUTHORIZATION':
-                next(action);
-                localStorage.setItem('spotify', JSON.stringify({ access_token: action.data.access_token, refresh_token: action.data.refresh_token }));
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware
