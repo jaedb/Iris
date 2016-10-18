@@ -3,6 +3,13 @@
  * Actions and Action Creators
  **/
 
+export function setConfig( config ){
+	return {
+		type: 'MOPIDY_SET_CONFIG',
+		config: config
+	}
+}
+
 export function connect(){
 	return {
 		type: 'MOPIDY_CONNECT'
@@ -12,14 +19,6 @@ export function connect(){
 export function disconnect(){
 	return {
 		type: 'MOPIDY_DISCONNECT'
-	}
-}
-
-export function setConfig( host, port ){
-	return {
-		type: 'MOPIDY_SET_CONFIG',
-		host: host,
-		port: port
 	}
 }
 

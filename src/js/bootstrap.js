@@ -21,6 +21,10 @@ var initialState = {
 	mopidy: {
 		host: window.location.hostname,
 		port: 6680
+	},
+	spotify: {
+		country: 'NZ',
+		locale: 'en_NZ'
 	}
 };
 

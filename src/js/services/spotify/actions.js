@@ -3,6 +3,13 @@
  * Actions and Action Creators
  **/
 
+export function setConfig( config ){
+	return {
+		type: 'SPOTIFY_SET_CONFIG',
+		config: config
+	}
+}
+
 export function startAuthorization(){
 	return {
 		type: 'SPOTIFY_START_AUTHORIZATION'

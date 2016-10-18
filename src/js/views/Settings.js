@@ -17,7 +17,9 @@ class Settings extends React.Component{
 
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
-			mopidy_port: this.props.mopidy.port
+			mopidy_port: this.props.mopidy.port,
+			spotify_country: this.props.spotify.country,
+			spotify_locale: this.props.spotify.locale
 		};
 	}
 
@@ -26,17 +28,22 @@ class Settings extends React.Component{
 		window.location.reload(true);
 	}
 
-	setConfig(){
-		this.props.mopidyActions.setConfig( this.state.mopidy_host, this.state.mopidy_port );
+	setMopidyConfig(){
+		this.props.mopidyActions.setConfig({ host: this.state.mopidy_host, port: this.state.mopidy_port });
 		window.location.reload(true);
+	}
+
+	setSpotifyConfig(){
+		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
 	}
 
 	render(){
 		return (
 			<div>
 				<h3>Settings</h3>
+
 				<h4>Mopidy</h4>
-				<form onSubmit={() => this.setConfig()}>
+				<form onSubmit={() => this.setMopidyConfig()}>
 					<label>
 						<span className="label">Host</span>
 						<input onChange={ e => this.setState({ mopidy_host: e.target.value })} value={ this.state.mopidy_host } />
@@ -47,8 +54,22 @@ class Settings extends React.Component{
 					</label>
 					<button type="submit">Apply</button>
 				</form>
+
 				<h4>Spotify</h4>
+				<form onSubmit={() => this.setSpotifyConfig()}>
+					<label>
+						<span className="label">Country</span>
+						<input onChange={ e => this.setState({ spotify_country: e.target.value })} value={ this.state.spotify_country } />
+					</label>
+					<label>
+						<span className="label">Locale</span>
+						<input onChange={ e => this.setState({ spotify_locale: e.target.value })} value={ this.state.spotify_locale } />
+					</label>
+					<button type="submit">Apply</button>
+				</form>
+
 		        <SpotifyAuthenticationFrame />
+
 		        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			</div>
 		);

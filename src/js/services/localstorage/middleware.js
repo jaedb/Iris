@@ -14,10 +14,18 @@ const localstorageMiddleware = (function(){
 
             case 'MOPIDY_SET_CONFIG':
                 var mopidy = {
-                    host: action.host,
-                    port: action.port
+                    host: action.config.host,
+                    port: action.config.port
                 };
                 localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                break;
+
+            case 'SPOTIFY_SET_CONFIG':
+                var spotify = {
+                    country: action.config.country,
+                    locale: action.config.locale
+                };
+                localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
             case 'SPOTIFY_COMPLETE_AUTHORIZATION':

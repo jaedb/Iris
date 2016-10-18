@@ -33,8 +33,10 @@ const SpotifyMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
-        switch(action.type) {
 
+        var state = store.getState();
+
+        switch(action.type){
 
             case 'SPOTIFY_LOAD_ALBUM':
 
@@ -57,11 +59,23 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_LOAD_ARTIST':
 
                 store.dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false })
+                store.dispatch({ type: 'SPOTIFY_ARTIST_ALBUMS_LOADED', data: false })
+
                 var id = action.uri.replace('spotify:artist:','');
 
                 sendRequest( false, 'artists/'+id )
                     .then( (response) => {                
                         store.dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: response })
+                    });
+
+                sendRequest( false, 'artists/'+id+'/albums' )
+                    .then( (response) => {
+                        store.dispatch({ type: 'SPOTIFY_ARTIST_ALBUMS_LOADED', data: response })
+                    });
+
+                sendRequest( false, 'artists/'+id+'/top-tracks?country='+state.spotify.country )
+                    .then( (response) => {
+                        store.dispatch({ type: 'SPOTIFY_ARTIST_TRACKS_LOADED', data: response })
                     });
                 break;
 
@@ -69,9 +83,8 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_LOAD_LIBRARY_ARTISTS':
 
                 store.dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false })
-                var token = store.getState().spotify.access_token;
 
-                sendRequest( token, 'me/following?type=artist' )
+                sendRequest( state.spotify.access_token, 'me/following?type=artist' )
                     .then( (response) => {                
                         store.dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: response })
                     });
