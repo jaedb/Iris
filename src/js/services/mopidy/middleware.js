@@ -128,6 +128,13 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, action.call, action.value )
                 break;
 
+            case 'MOPIDY_PLAY_TRACKS':
+                var callback = function(){
+                    store.dispatch({ type: 'MOPIDY_TEST', model: 'yeah', data: {} })
+                }
+                instruct( socket, store, action.call, action.value, callback )
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

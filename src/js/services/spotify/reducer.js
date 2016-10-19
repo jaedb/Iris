@@ -8,11 +8,12 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_START_AUTHORIZATION':
             return Object.assign({}, spotify, { authorizing: true });
 
-        case 'SPOTIFY_COMPLETE_AUTHORIZATION':
+        case 'SPOTIFY_AUTHORIZATION_COMPLETE':
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorized: true,
-                authorization: action.data, 
+                authorization: action.data,
+                me: action.data.me,
                 token: action.data.access_token
             });
 
@@ -20,7 +21,9 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorization: false,
-                authorized: false
+                authorized: false,
+                token: false,
+                me: false
             });
 
         case 'SPOTIFY_CONNECTED':

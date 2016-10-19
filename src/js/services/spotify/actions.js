@@ -22,9 +22,9 @@ export function removeAuthorization(){
 	}
 }
 
-export function completeAuthorization( data ){
+export function authorizationGranted( data ){
 	return {
-		type: 'SPOTIFY_COMPLETE_AUTHORIZATION',
+		type: 'SPOTIFY_AUTHORIZATION_GRANTED',
 		data: data
 	}
 }

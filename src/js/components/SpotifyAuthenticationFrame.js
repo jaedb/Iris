@@ -24,9 +24,20 @@ class SpotifyAuthenticationFrame extends React.Component{
 			if( !/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin) ) return false;
 			
 			var data = JSON.parse(event.data);
-			self.props.actions.completeAuthorization( data );
+			self.props.actions.authorizationGranted( data );
 
 		}, false);
+	}
+
+	renderMe(){
+		if( this.props.spotify.me ){
+			if( this.props.spotify.me.display_name ){
+				return <span>Logged in as { this.props.spotify.me.display_name }</span>
+			}else{
+				return <span>Logged in as { this.props.spotify.me.id }</span>
+			}
+		}
+		return null;
 	}
 
 	renderAuthorizeButton(){
@@ -39,7 +50,10 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else if( this.props.spotify.authorized ){
 			return (
-				<button onClick={() => this.props.actions.removeAuthorization()}>Log out</button>
+				<div>
+					<button onClick={() => this.props.actions.removeAuthorization()}>Log out</button>
+					{ this.renderMe() }
+				</div>
 			);
 		}else{
 			return (

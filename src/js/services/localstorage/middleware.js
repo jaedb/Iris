@@ -5,6 +5,8 @@ const localstorageMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
+        
+        console.log(action)
 
         // proceed as normal first
         // this way, any reducers and middleware do their thing BEFORE we store our new state
@@ -28,12 +30,18 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
-            case 'SPOTIFY_COMPLETE_AUTHORIZATION':
-                var spotify = {
-                    authorized: true, 
-                    access_token: action.data.access_token, 
-                    refresh_token: action.data.refresh_token
-                };
+            case 'SPOTIFY_AUTHORIZATION_COMPLETE':
+                var spotify = JSON.parse( localStorage.getItem('spotify') );
+                if( !spotify ) spotify = {};
+                console.log(spotify)
+                Object.assign(
+                    spotify,{
+                        authorized: true, 
+                        access_token: action.data.access_token, 
+                        refresh_token: action.data.refresh_token,
+                        me: action.data.me
+                    }
+                );
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
         }

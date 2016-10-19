@@ -30,6 +30,14 @@ export function changeTrack( tlid ){
 	}
 }
 
+export function playTracks( uris ){
+	return {
+		type: 'MOPIDY_PLAY_TRACKS',
+		call: 'tracklist.add',
+		value: { at_position: 0, uris: uris }
+	}
+}
+
 export function removeTracks( tlids ){
 	return {
 		type: 'MOPIDY_REMOVE_TRACKS',

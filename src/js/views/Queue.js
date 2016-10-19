@@ -33,10 +33,27 @@ class Queue extends React.Component{
 	renderTrackList(){
 		if( this.props.mopidy && this.props.mopidy.tracks ){
 			return (
-				<TrackList tracks={this.props.mopidy.tracks} />
+				<TrackList
+					tracks={this.props.mopidy.tracks} 
+					removeTracks={ tracks => this.removeTracks( tracks ) }
+					playTracks={ null }
+					playTrack={ track => this.playTrack( track ) }
+					/>
 			);
 		}
 		return null;
+	}
+
+	removeTracks( tracks ){
+		var tlids = [];
+		for( var i = 0; i < tracks.length; i++ ){
+			tlids.push( tracks[i].tlid )
+		}
+		this.props.actions.removeTracks( tlids )
+	}
+
+	playTrack( track ){		
+		this.props.actions.changeTrack( track.tlid )
 	}
 
 	render(){

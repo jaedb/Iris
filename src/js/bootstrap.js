@@ -24,20 +24,21 @@ var initialState = {
 	},
 	spotify: {
 		country: 'NZ',
-		locale: 'en_NZ'
+		locale: 'en_NZ',
+		me: false
 	}
 };
 
 // if we've got a stored version of mopidy state, load and merge
 if( localStorage.getItem('mopidy') ){
 	var storedMopidy = JSON.parse( localStorage.getItem('mopidy') );
-	Object.assign(initialState, { mopidy: storedMopidy } );
+	initialState.mopidy = Object.assign(initialState.mopidy, storedMopidy );
 }
 
 // if we've got a stored version of spotify state, load and merge
 if( localStorage.getItem('spotify') ){
 	var storedSpotify = JSON.parse( localStorage.getItem('spotify') );
-	Object.assign(initialState, { spotify: storedSpotify } );
+	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
 let store = createStore(

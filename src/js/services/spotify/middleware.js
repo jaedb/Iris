@@ -38,6 +38,15 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
+            case 'SPOTIFY_AUTHORIZATION_GRANTED':
+                sendRequest( action.data.access_token, 'me' )
+                    .then( (response) => {
+                        var data = action.data;
+                        data.me = response;
+                        store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_COMPLETE', data: data })
+                    });
+                break;
+
             case 'SPOTIFY_LOAD_ALBUM':
 
                 store.dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false })

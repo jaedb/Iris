@@ -49,24 +49,24 @@ class TrackList extends React.Component{
 		this.setState({ tracks: tracks, lastSelectedTrack: index });
 	}
 
-	handleDoubleClick( e, index ){
-		var tracks = this.state.tracks;
-		this.props.actions.changeTrack( tracks[index].tlid )
-	}
-
-	deleteSelected(){
-
+	selectedTracks(){
 		function isSelected( track ){
 			return ( typeof(track.selected) !== 'undefined' && track.selected );
 		}
+		return this.state.tracks.filter(isSelected)
+	}
 
-		var selectedTracks = this.state.tracks.filter(isSelected)
-		var selectedTracksTlids = [];
-		for( var i = 0; i < selectedTracks.length; i++ ){
-			selectedTracksTlids.push( selectedTracks[i].tlid )
-		}
+	handleDoubleClick( e, index ){
+		var tracks = this.state.tracks;
+		this.props.playTrack( tracks[index] )
+	}
 
-		this.props.actions.removeTracks( selectedTracksTlids )
+	playTracks(){
+		this.props.playTracks( this.selectedTracks() )
+	}
+
+	removeTracks(){
+		this.props.removeTracks( this.selectedTracks() )
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -100,7 +100,8 @@ class TrackList extends React.Component{
 							)
 						}
 					</ul>
-					<button onClick={() => this.deleteSelected()}>Delete selected</button>
+					<button onClick={() => this.removeTracks()}>Delete selected</button>
+					<button onClick={() => this.playTracks()}>Play selected</button>
 				</div>
 			);
 		}
