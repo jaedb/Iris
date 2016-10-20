@@ -20,7 +20,9 @@ let reducers = combineReducers({
 var initialState = {
 	mopidy: {
 		host: window.location.hostname,
-		port: 6680
+		port: 6680,
+		volume: 0,
+		progress: 0
 	},
 	spotify: {
 		country: 'NZ',

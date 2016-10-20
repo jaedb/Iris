@@ -16,7 +16,10 @@ export default class VolumeSlider extends React.Component{
 	}
 
 	handleChange(e){
-		this.props.onChange( parseInt(e.target.value) )
+		var newVolume = parseInt(e.target.value);
+		if( this.props.volume != newVolume ){
+			this.props.onChange( newVolume )
+		}
 	}
 
 	render(){
