@@ -1,6 +1,6 @@
 
 import Mopidy from 'mopidy'
-import actions from './actions'
+var actions = require('./actions.js')
 
 const MopidyMiddleware = (function(){ 
 
@@ -38,7 +38,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:volumeChanged':
-                store.dispatch({ type: 'MOPIDY_Volume', data: data.volume });
+                store.dispatch({ type: 'MOPIDY_VOLUME', data: data.volume });
                 break;
 
             case 'event:optionsChanged':
@@ -61,8 +61,9 @@ const MopidyMiddleware = (function(){
      * @param string model = which Mopidy model (playback, tracklist, etc)
      * @param string property = TlTracks, Consume, etc
      * @param string value (optional) = value of the property to pass
+     * @return promise
      **/
-    const instruct = ( ws, store, call, value = false ) => {
+    const instruct = ( ws, store, call, value = {} ) => {
 
         var callParts = call.split('.');
         var model = callParts[0];
@@ -71,22 +72,19 @@ const MopidyMiddleware = (function(){
         property = property.replace('get','');
         property = property.replace('set','');
 
-        // if we have a value, we need to include in our payload
-        if( value ){
+        return new Promise( (resolve, reject) => {
             ws[model][method]( value )
                 .then(
-                    response => store.dispatch({ type: 'MOPIDY_'+property, model: model, data: response }),
-                    error => console.error( error )
+                    response => {
+                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), model: model, data: response });
+                        resolve(response);
+                    },
+                    error => {
+                        console.error(error)
+                        reject(error);
+                    }
                 );
-
-        // no value, so omit the payload
-        }else{
-            ws[model][method]()
-                .then(
-                    response => store.dispatch({ type: 'MOPIDY_'+property, model: model, data: response }),
-                    error => console.error( error )
-                );
-        }
+        });
     }
 
     /**
@@ -97,6 +95,7 @@ const MopidyMiddleware = (function(){
      * it just proceeds to the next middleware, or default functionality
      **/
     return store => next => action => {
+
         switch(action.type) {
 
             case 'MOPIDY_CONNECT':
@@ -129,10 +128,20 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_PLAY_TRACKS':
-                var callback = function(){
-                    store.dispatch({ type: 'MOPIDY_TEST', model: 'yeah', data: {} })
-                }
-                instruct( socket, store, action.call, action.value, callback )
+
+                // add our first track
+                instruct( socket, store, 'tracklist.add', { uri: action.uris[0], at_position: 0 } )
+                    .then( response => {
+
+                        // play it
+                        store.dispatch( actions.changeTrack( response[0].tlid ) );
+
+                        // add the rest of our uris (if any)
+                        action.uris.shift();
+                        if( action.uris.length > 0 ){
+                            store.dispatch( actions.enqueueTracks( action.uris, 1 ) )
+                        }
+                    })
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware

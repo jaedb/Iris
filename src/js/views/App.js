@@ -31,6 +31,8 @@ class App extends React.Component{
 	        	<ul role="nav">
 					<li><Link to="/queue">Now playing</Link></li>
 					<li><Link to="/library/artists">Library: My artists</Link></li>
+					<li><Link to="/library/albums">Library: My albums</Link></li>
+					<li><Link to="/library/playlists">Library: My playlists</Link></li>
 					<li><Link to="/settings">Settings</Link></li>
 		        </ul>
 		        {this.props.children}

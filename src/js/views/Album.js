@@ -15,27 +15,14 @@ class Album extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.loadAlbum( this.props.params.uri );
+		this.props.spotifyActions.getAlbum( this.props.params.uri );
 	}
 
 	// when props changed
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
-			this.props.spotifyActions.loadAlbum( nextProps.params.uri );
+			this.props.spotifyActions.getAlbum( nextProps.params.uri );
 		}
-	}
-
-	playTracks( tracks ){
-		var uris = [];
-		for( var i = 0; i < tracks.length; i++ ){
-			uris.push( tracks[i].uri )
-		}
-		this.props.mopidyActions.playTracks( uris )
-	}
-
-	playTrack( track ){		
-		var uris = [track.uri];
-		this.props.mopidyActions.playTracks( uris )
 	}
 
 	render(){
@@ -43,12 +30,7 @@ class Album extends React.Component{
 			return (
 				<div>
 					<h3>{ this.props.spotify.album.name }</h3>
-					<TrackList
-						tracks={this.props.spotify.album.tracks.items} 
-						removeTracks={ null }
-						playTracks={ tracks => this.playTracks( tracks ) }
-						playTrack={ track => this.playTrack( track ) }
-						/>
+					<TrackList tracks={this.props.spotify.album.tracks.items} />
 				</div>
 			);
 		}

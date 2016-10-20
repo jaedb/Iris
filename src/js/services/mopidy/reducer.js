@@ -2,9 +2,6 @@
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
-        case 'MOPIDY_CONNECTING':
-            return Object.assign({}, mopidy, { connected: false, connecting: true });
-
         case 'MOPIDY_CONNECTED':
             return Object.assign({}, mopidy, { connected: true, connecting: false });
 
@@ -25,37 +22,37 @@ export default function reducer(mopidy = {}, action){
         /**
          * Websocket-initiated actions
          **/
-        case 'MOPIDY_State':
+        case 'MOPIDY_STATE':
             return Object.assign({}, mopidy, {
                 state: action.data 
             });
 
-        case 'MOPIDY_Consume':
+        case 'MOPIDY_CONSUME':
             return Object.assign({}, mopidy, {
                 consume: action.data 
             });
 
-        case 'MOPIDY_Random':
+        case 'MOPIDY_RANDOM':
             return Object.assign({}, mopidy, {
                 random: action.data 
             });
 
-        case 'MOPIDY_Repeat':
+        case 'MOPIDY_REPEAT':
             return Object.assign({}, mopidy, {
                 repeat: action.data 
             });
 
-        case 'MOPIDY_TlTracks':
+        case 'MOPIDY_TLTRACKS':
             return Object.assign({}, mopidy, {
                 tracks: action.data 
             });
 
-        case 'MOPIDY_CurrentTlTrack':
+        case 'MOPIDY_CURRENTTLTRACK':
             return Object.assign({}, mopidy, {
                 trackInFocus: action.data   
             });
 
-        case 'MOPIDY_Volume':
+        case 'MOPIDY_VOLUME':
             return Object.assign({}, mopidy, {
                 volume: action.data   
             });

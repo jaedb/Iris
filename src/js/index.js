@@ -18,6 +18,8 @@ import Artist from './views/Artist'
 import Queue from './views/Queue'
 import Settings from './views/Settings'
 import LibraryArtists from './views/LibraryArtists'
+import LibraryAlbums from './views/LibraryAlbums'
+import LibraryTracks from './views/LibraryTracks'
 
 ReactDOM.render(
 	<Provider store={store}>
@@ -25,6 +27,8 @@ ReactDOM.render(
 			<Route path="/" component={App}>
 	
 				<Route path="library/artists" component={LibraryArtists} />
+				<Route path="library/albums" component={LibraryAlbums} />
+				<Route path="library/tracks" component={LibraryTracks} />
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri" component={Artist} />
 				<Route path="queue" component={Queue} />

@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as actions from '../services/mopidy/actions'
+import * as mopidyActions from '../services/mopidy/actions'
 
 import Track from './Track'
 
@@ -15,6 +15,10 @@ class TrackList extends React.Component{
 			tracks: this.props.tracks,
 			lastSelectedTrack: false
 		}
+	}
+
+	componentWillReceiveProps( nextProps ){
+		this.setState({ tracks: nextProps.tracks });
 	}
 
 	handleClick( e, index ){
@@ -49,6 +53,11 @@ class TrackList extends React.Component{
 		this.setState({ tracks: tracks, lastSelectedTrack: index });
 	}
 
+	handleDoubleClick( e, index ){
+		var tracks = this.state.tracks;
+		this.playTrack( tracks[index] )
+	}
+
 	selectedTracks(){
 		function isSelected( track ){
 			return ( typeof(track.selected) !== 'undefined' && track.selected );
@@ -56,21 +65,38 @@ class TrackList extends React.Component{
 		return this.state.tracks.filter(isSelected)
 	}
 
-	handleDoubleClick( e, index ){
-		var tracks = this.state.tracks;
-		this.props.playTrack( tracks[index] )
+	playTracks(){
+
+		var tracks = this.selectedTracks();
+
+		if( typeof(this.props.playTracks) !== 'undefined' ){
+			return this.props.playTracks( tracks );
+		}
+
+		var uris = [];
+		for( var i = 0; i < tracks.length; i++ ){
+			uris.push( tracks[i].uri )
+		}
+		return this.props.mopidyActions.playTracks( uris )
 	}
 
-	playTracks(){
-		this.props.playTracks( this.selectedTracks() )
+	playTrack( track ){
+
+		if( typeof(this.props.playTrack) !== 'undefined' ){
+			return this.props.playTrack( this.selectedTracks() );
+		}
+
+		var uris = [track.uri];
+		this.props.mopidyActions.playTracks( uris )
 	}
 
 	removeTracks(){
-		this.props.removeTracks( this.selectedTracks() )
-	}
 
-	componentWillReceiveProps( nextProps ){
-		this.setState({ tracks: nextProps.tracks });
+		var tracks = this.selectedTracks();
+		
+		if( typeof(this.props.removeTracks) !== 'undefined' ){
+			return this.props.removeTracks( tracks );
+		}
 	}
 
 	render(){
@@ -122,7 +148,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
 

@@ -33,8 +33,18 @@ export function changeTrack( tlid ){
 export function playTracks( uris ){
 	return {
 		type: 'MOPIDY_PLAY_TRACKS',
+		uris: uris
+	}
+}
+
+export function enqueueTracks( uris, at_position = false ){
+	if( typeof(uris) !== 'array' ) uris = [uris];
+	var value = { uris: uris };
+	if( at_position ) value.at_position = at_position;
+	return {
+		type: 'MOPIDY_ENQUEUE_TRACKS',
 		call: 'tracklist.add',
-		value: { at_position: 0, uris: uris }
+		value: value
 	}
 }
 
@@ -54,3 +64,18 @@ export function instruct( call, value ){
 	}
 }
 
+export function play(){
+	return instruct('playback.play');
+}
+
+export function pause(){
+	return instruct('playback.pause');
+}
+
+export function next(){
+	return instruct('playback.next');
+}
+
+export function previous(){
+	return instruct('playback.previous');
+}

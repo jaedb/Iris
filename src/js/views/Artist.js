@@ -16,13 +16,13 @@ class Artist extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.loadArtist( this.props.params.uri );
+		this.props.spotifyActions.getArtist( this.props.params.uri );
 	}
 
 	// when props changed
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
-			this.props.spotifyActions.loadArtist( nextProps.params.uri );
+			this.props.spotifyActions.getArtist( nextProps.params.uri );
 		}
 	}
 
@@ -32,7 +32,7 @@ class Artist extends React.Component{
 				<div>
 					<h3>{ this.props.spotify.artist.name }</h3>
 					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
-					{ this.props.spotify.artist_top_tracks ? <TrackList tracks={ this.props.spotify.artist_top_tracks.tracks } /> : null }
+					{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					{ this.props.spotify.artist_albums ? <AlbumGrid items={ this.props.spotify.artist_albums } /> : null }
 				</div>
 			);

@@ -13,11 +13,22 @@ class Player extends React.Component{
 		super(props);
 	}
 
+	renderTrackInFocus(){
+		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
+			return (
+				<div>
+					<div>{ this.props.mopidy.trackInFocus.track.name }</div>
+				</div>
+			);
+		}
+		return null;
+	}
+
 	renderControls(){
 
-		var playButton = <a onClick={() => this.props.actions.instruct('playback.play')}><FontAwesome name="play" /> </a>
+		var playButton = <a onClick={() => this.props.actions.play()}><FontAwesome name="play" /> </a>
 		if( this.props.mopidy.state == 'playing' ){
-			playButton = <a onClick={() => this.props.actions.instruct('playback.pause')}><FontAwesome name="pause" /> </a>
+			playButton = <a onClick={() => this.props.actions.pause()}><FontAwesome name="pause" /> </a>
 		}
 
 		var consumeButton = <a onClick={() => this.props.actions.instruct('tracklist.setConsume', [true])}>Consume </a>
@@ -37,11 +48,12 @@ class Player extends React.Component{
 
 		return (
 			<div>
+				{ this.renderTrackInFocus() }
 				{ playButton }
-				<a onClick={() => this.props.actions.instruct('playback.previous')}>
+				<a onClick={() => this.props.actions.previous()}>
 					<FontAwesome name="step-backward" />
 				</a>&nbsp;
-				<a onClick={() => this.props.actions.instruct('playback.next')}>
+				<a onClick={() => this.props.actions.next()}>
 					<FontAwesome name="step-forward" />
 				</a>&nbsp;
 				{ consumeButton }
