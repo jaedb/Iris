@@ -74,6 +74,49 @@ export function removeAuthorization(){
 	return { type: 'SPOTIFY_REMOVE_AUTHORIZATION' }
 }
 
+export function refreshToken(){
+    return (dispatch, getState) => {    
+
+        dispatch({ type: 'SPOTIFY_TOKEN_REFRESHING' });
+
+        $.ajax({
+                method: 'GET',
+                url: '//jamesbarnsley.co.nz/spotmop.php?action=refresh&refresh_token='+getState().spotify.refresh_token,
+                dataType: "json",
+                timeout: 10000
+            })
+            .then( response => {
+
+                response.expires = new Date().getTime() + 3600000;
+
+                dispatch({
+                    type: 'SPOTIFY_TOKEN_REFRESHED',
+                    data: response
+                });
+            });
+    }
+}
+
+
+/**
+ * Get current user
+ **/
+export function getMe(){
+    return (dispatch, getState) => {
+
+        // flush out the previous store value
+        dispatch({ type: 'SPOTIFY_ME_LOADED', data: false });
+
+        sendRequest( getState().spotify.access_token, 'me' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_ME_LOADED',
+                    data: response
+                });
+            });
+    }
+}
+
 
 /**
  * Get a single artist
@@ -86,7 +129,6 @@ export function getArtist( uri ){
 		// flush out the previous store value
         dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false });
 
-		var id = uri.replace('spotify:artist:','');
 		var artist = {};
 
 		// while we're fiddling about, go get the albums
@@ -95,12 +137,12 @@ export function getArtist( uri ){
 		// get both the artist and the top tracks
 		$.when(
 
-	        sendRequest( false, 'artists/'+id )
+	        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) )
 	            .then( response => {
 	            	Object.assign(artist, response);
 	            }),
 
-	        sendRequest( false, 'artists/'+id+'/top-tracks?country='+getState().spotify.country )
+	        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
 	            .then( response => {
 	            	Object.assign(artist, response);
 	            })
@@ -116,7 +158,7 @@ export function getArtist( uri ){
 
 export function getArtistAlbums( uri ){
 	return dispatch => {
-        sendRequest( false, 'artists/'+ uri.replace('spotify:artist:','') +'/albums' )
+        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) +'/albums' )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
@@ -132,15 +174,15 @@ export function getArtistAlbums( uri ){
  * @oaram uri string
  **/
 export function getAlbum( uri ){
-	return dispatch => {
+    return dispatch => {
 
-		// flush out the previous store value
+        // flush out the previous store value
         dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
 
-        sendRequest( false, 'albums/'+ uri.replace('spotify:album:','') )
+        sendRequest( false, 'albums/'+ getFromUri('albumid', uri) )
             .then( response => {
 
-            	// inject the parent album object into each track for consistent track objects
+                // inject the parent album object into each track for consistent track objects
                 for( var i = 0; i < response.tracks.items.length; i++ ){
                     response.tracks.items[i].album = {
                         name: response.name,
@@ -149,11 +191,48 @@ export function getAlbum( uri ){
                 }
 
                 dispatch({
-                	type: 'SPOTIFY_ALBUM_LOADED',
+                    type: 'SPOTIFY_ALBUM_LOADED',
+                    data: response
+                });
+            });
+    }
+}
+
+/**
+ * Single playlist
+ *
+ * @oaram uri string
+ **/
+export function getPlaylist( uri ){
+    return (dispatch, getState) => {
+
+		// flush out the previous store value
+        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
+
+        sendRequest( getState().spotify.access_token, 'users/'+ getFromUri('userid',uri) +'/playlists/'+ getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+            .then( response => {
+                dispatch({
+                	type: 'SPOTIFY_PLAYLIST_LOADED',
                 	data: response
                 });
             });
 	}
+}
+
+
+export function getLibraryPlaylists(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
+
+        sendRequest( getState().spotify.access_token, 'me/playlists' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
+                    data: response
+                });
+            });
+    }
 }
 
 
@@ -193,7 +272,7 @@ export function getLibraryTracks(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'me/tracks' )
+        sendRequest( getState().spotify.access_token, 'me/tracks?limit=50' )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
@@ -201,4 +280,48 @@ export function getLibraryTracks(){
                 });
             });
 	}
+}
+
+
+
+
+
+/**
+ * Get an element from a URI
+ * @param element = string, the element we wish to extract
+ * @param uri = string
+ **/
+function getFromUri( element, uri ){
+    var exploded = uri.split(':');          
+    if( element == 'userid' && exploded[1] == 'user' )
+        return exploded[2];             
+    if( element == 'playlistid' && exploded[3] == 'playlist' )
+        return exploded[4];
+    if( element == 'artistid' && exploded[1] == 'artist' )
+        return exploded[2];             
+    if( element == 'albumid' && exploded[1] == 'album' )
+        return exploded[2];             
+    if( element == 'trackid' && exploded[1] == 'track' )
+        return exploded[2];             
+    return null;
+}
+
+/**
+ * Identify what kind of asset a URI is (playlist, album, etc)
+ * @param uri = string
+ * @return string
+ **/
+function uriType( uri ){
+    var exploded = uri.split(':');
+    if( exploded[0] == 'spotify' && exploded[1] == 'track' )
+        return 'track'; 
+    if( exploded[0] == 'spotify' && exploded[1] == 'artist' )
+        return 'artist';        
+    if( exploded[0] == 'spotify' && exploded[1] == 'album' )
+        return 'album';     
+    if( exploded[0] == 'spotify' && exploded[1] == 'user' && exploded[3] == 'playlist' )
+        return 'playlist';      
+    if( exploded[0] == 'spotify' && exploded[1] == 'user' && exploded.length == 3 )
+        return 'user';      
+    return null;
 }

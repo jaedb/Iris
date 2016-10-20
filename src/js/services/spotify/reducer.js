@@ -5,16 +5,12 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CONNECTING':
             return Object.assign({}, spotify, { connected: false, connecting: true });
 
-        case 'SPOTIFY_START_AUTHORIZATION':
-            return Object.assign({}, spotify, { authorizing: true });
-
-        case 'SPOTIFY_AUTHORIZATION_COMPLETE':
+        case 'SPOTIFY_AUTHORIZATION_GRANTED':
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorized: true,
                 authorization: action.data,
-                me: action.data.me,
-                token: action.data.access_token
+                access_token: action.data.access_token
             });
 
         case 'SPOTIFY_REMOVE_AUTHORIZATION':
@@ -22,15 +18,31 @@ export default function reducer(spotify = {}, action){
                 authorizing: false, 
                 authorization: false,
                 authorized: false,
-                token: false,
+                access_token: false,
                 me: false
             });
 
         case 'SPOTIFY_CONNECTED':
             return Object.assign({}, spotify, { connected: true, connecting: false });
 
+        case 'SPOTIFY_TOKEN_REFRESHING':
+            return Object.assign({}, spotify, { refreshing_token: true });
+
+        case 'SPOTIFY_TOKEN_REFRESHED':
+            return Object.assign({}, spotify, {
+                refreshing_token: false,
+                authorization: action.data,
+                access_token: action.data.access_token
+            });
+
         case 'SPOTIFY_DISCONNECTED':
             return Object.assign({}, spotify, { connected: false, connecting: false });
+
+        case 'SPOTIFY_ME_LOADED':
+            return Object.assign({}, spotify, { me: action.data });
+
+        case 'SPOTIFY_PLAYLIST_LOADED':
+            return Object.assign({}, spotify, { playlist: action.data });
 
         case 'SPOTIFY_ALBUM_LOADED':
             return Object.assign({}, spotify, { album: action.data });
@@ -41,11 +53,17 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_ARTIST_ALBUMS_LOADED':            
             return Object.assign({}, spotify, { artist_albums: action.data });
 
+        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
+            return Object.assign({}, spotify, { libraryPlaylists: action.data });
+
         case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
             return Object.assign({}, spotify, { libraryArtists: action.data });
 
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
             return Object.assign({}, spotify, { libraryAlbums: action.data });
+
+        case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
+            return Object.assign({}, spotify, { libraryTracks: action.data });
 
         default:
             return spotify

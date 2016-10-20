@@ -10,6 +10,11 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=frame',
+			authorizing: false
+		}
 	}
 
 	componentDidMount(){
@@ -25,28 +30,41 @@ class SpotifyAuthenticationFrame extends React.Component{
 			
 			var data = JSON.parse(event.data);
 			self.props.actions.authorizationGranted( data );
+			self.props.actions.getMe();
+
+			// and turn off our authorizing switch
+			self.setState({
+				frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=frame',
+				authorizing: false
+			})
 
 		}, false);
 	}
 
+	startAuthorization(){
+		this.setState({
+			frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=authorize&app='+location.protocol+'//'+window.location.host,
+			authorizing: true
+		})
+	}
+
 	renderMe(){
-		if( this.props.spotify.me ){
-			if( this.props.spotify.me.display_name ){
-				return <span>Logged in as { this.props.spotify.me.display_name }</span>
-			}else{
-				return <span>Logged in as { this.props.spotify.me.id }</span>
-			}
+		if( !this.props.spotify.me ) return null;
+
+		if( this.props.spotify.me.display_name ){
+			return <span>Logged in as { this.props.spotify.me.display_name }</span>
+		}else{
+			return <span>Logged in as { this.props.spotify.me.id }</span>
 		}
-		return null;
 	}
 
 	renderAuthorizeButton(){
-		if( this.props.spotify.authorizing ){
+		if( this.state.authorizing ){
 			return (
-				<span>
+				<button disabled>
 					<FontAwesome name="circle-o-notch" spin />
-					<span>Authorizing...</span>
-				</span>
+					Authorizing...
+				</button>
 			);
 		}else if( this.props.spotify.authorized ){
 			return (
@@ -57,20 +75,34 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else{
 			return (
-				<button onClick={() => this.props.actions.startAuthorization()}>Log in</button>
+				<button onClick={() => this.startAuthorization()}>Log in</button>
+			);
+		}
+	}
+
+	renderRefreshButton(){
+		if( !this.props.spotify.authorized ) return null;
+
+		if( this.props.spotify.refreshing_token ){
+			return (
+				<button disabled>
+					<FontAwesome name="circle-o-notch" spin />
+					Refreshing...
+				</button>
+			);
+		}else{
+			return (
+				<button onClick={() => this.props.actions.refreshToken()}>Refresh token</button>
 			);
 		}
 	}
 
 	render(){
-		var src = '//jamesbarnsley.co.nz/spotmop.php?action=frame';
-		if( this.props.spotify.authorizing ){
-			src = '//jamesbarnsley.co.nz/spotmop.php?action=authorize&app='+location.protocol+'//'+window.location.host;
-		}
 		return (
 			<div>
 				{ this.renderAuthorizeButton() }
-				<iframe src={src} style={{ display: 'none' }}></iframe>
+				{ this.renderRefreshButton() }
+				<iframe src={this.state.frameUrl} style={{ display: 'none' }}></iframe>
 			</div>
 		);
 	}

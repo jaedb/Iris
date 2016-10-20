@@ -16,8 +16,19 @@ export default function reducer(mopidy = {}, action){
 
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
-            	tlid: action.tlid	
+                tlid: action.tlid
             });
+
+        case 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK':
+            for( var i = 0; i < mopidy.tracks.length; i++ ){
+                if( mopidy.tracks[i].tlid == action.data.tlid ){
+                    action.data.track.playing = true;
+                    Object.assign(mopidy.tracks[i], action.data);
+                }else{
+                    mopidy.tracks[i].track.playing = false;
+                }
+            }
+            return Object.assign({}, mopidy, { tracks: mopidy.tracks });
 
         /**
          * Websocket-initiated actions

@@ -19,7 +19,10 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'tracklist.getRandom' );
                 instruct( ws, store, 'tracklist.getRepeat' );
                 instruct( ws, store, 'tracklist.getTlTracks' );
-                instruct( ws, store, 'playback.getCurrentTlTrack' );
+                instruct( ws, store, 'playback.getCurrentTlTrack' )
+                    .then( currentTlTrack => {
+                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
+                    });
                 break;
 
             case 'state:offline':
@@ -27,14 +30,20 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:tracklistChanged':
-                instruct( ws, store, 'tracklist.getTlTracks' );
+                instruct( ws, store, 'tracklist.getTlTracks' )
+                    .then( currentTlTrack => {
+                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
+                    });
                 break;
 
             //case 'event:trackPlaybackEnded':
             case 'event:playbackStateChanged':
             case 'event:trackPlaybackStarted':
                 instruct( ws, store, 'playback.getState' );
-                instruct( ws, store, 'playback.getCurrentTlTrack' );
+                instruct( ws, store, 'playback.getCurrentTlTrack' )
+                    .then( currentTlTrack => {
+                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
+                    });
                 break;
 
             case 'event:volumeChanged':
@@ -122,8 +131,6 @@ const MopidyMiddleware = (function(){
 
             // send an instruction to the websocket
             case 'MOPIDY_INSTRUCT':
-            case 'MOPIDY_CHANGE_TRACK':
-            case 'MOPIDY_REMOVE_TRACKS':
                 instruct( socket, store, action.call, action.value )
                 break;
 

@@ -4,12 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import TrackList from '../components/TrackList'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
-
-class LibraryTracks extends React.Component{
+class LibraryArtists extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -17,15 +15,22 @@ class LibraryTracks extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryTracks();
+		this.props.spotifyActions.getLibraryArtists();
 	}
 
 	render(){
-		if( this.props.spotify.libraryAlbums ){
+		if( this.props.spotify.libraryArtists ){
 			return (
 				<div>
-					<h3>My tracks</h3>
-					<TrackList tracks={this.props.spotify.libraryTracks.tracks} />
+					<h3>My artists</h3>
+					<ul>
+						{
+							this.props.spotify.libraryArtists.artists.items.map( (artist, index) => {
+								var link = '/artist/' + artist.uri;
+								return <li key={index}><Link to={link}>{ artist.name }</Link></li>
+							})
+						}
+					</ul>
 				</div>
 			);
 		}
@@ -51,4 +56,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryTracks)
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryArtists)

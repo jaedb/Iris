@@ -24,7 +24,7 @@ export function disconnect(){
 
 export function changeTrack( tlid ){
 	return {
-		type: 'MOPIDY_CHANGE_TRACK',
+		type: 'MOPIDY_INSTRUCT',
 		call: 'playback.play',
 		value: { tlid: tlid }
 	}
@@ -38,11 +38,11 @@ export function playTracks( uris ){
 }
 
 export function enqueueTracks( uris, at_position = false ){
-	if( typeof(uris) !== 'array' ) uris = [uris];
+	if( typeof(uris) !== 'object' ) uris = [uris];
 	var value = { uris: uris };
 	if( at_position ) value.at_position = at_position;
 	return {
-		type: 'MOPIDY_ENQUEUE_TRACKS',
+		type: 'MOPIDY_INSTRUCT',
 		call: 'tracklist.add',
 		value: value
 	}
@@ -50,7 +50,7 @@ export function enqueueTracks( uris, at_position = false ){
 
 export function removeTracks( tlids ){
 	return {
-		type: 'MOPIDY_REMOVE_TRACKS',
+		type: 'MOPIDY_INSTRUCT',
 		call: 'tracklist.remove',
 		value: { tlid: tlids }
 	}

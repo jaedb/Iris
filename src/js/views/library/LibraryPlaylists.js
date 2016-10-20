@@ -4,12 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import AlbumGrid from '../components/AlbumGrid'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
-
-class LibraryAlbums extends React.Component{
+class LibraryPlaylists extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -17,15 +15,22 @@ class LibraryAlbums extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryAlbums();
+		this.props.spotifyActions.getLibraryPlaylists();
 	}
 
 	render(){
-		if( this.props.spotify.libraryAlbums ){
+		if( this.props.spotify.libraryPlaylists ){
 			return (
 				<div>
-					<h3>My albums</h3>
-					<AlbumGrid items={this.props.spotify.libraryAlbums} />
+					<h3>My playlists</h3>
+					<ul>
+						{
+							this.props.spotify.libraryPlaylists.items.map( (playlist, index) => {
+								var link = '/playlist/' + playlist.uri;
+								return <li key={index}><Link to={link}>{ playlist.name }</Link></li>
+							})
+						}
+					</ul>
 				</div>
 			);
 		}
@@ -51,4 +56,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryAlbums)
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryPlaylists)

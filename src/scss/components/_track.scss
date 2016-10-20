@@ -8,18 +8,46 @@
 	-ms-user-select: none;
 	user-select: none;
 
-	.name,
-	.artists,
-	.album,
-	.duration {
-		width: 20%;
+	position: relative;
+	padding: 8px 10px 8px 30px;
+	border-top: 1px solid #EEEEEE;
+	border-bottom: 1px solid #EEEEEE;
+	margin-bottom: -1px;
+
+	.col {
+		width: 10%;
 		min-height: 1px;
 		float: left;
+
+		&.name,
+		&.artists,
+		&.album {
+			width: 30%;
+		}
+	}
+
+	.select-state {
+		position: absolute;
+		top: 10px;
+		left: 10px;
 	}
 
 	&::after {
 		content: '';
 		clear: both;
 		display: block;
+	}
+
+	&.playing {
+		font-weight: bold;
+	}
+
+	&.selected,
+	&.selected:hover {
+		background: #FFF39C;
+	}
+
+	&:hover{
+		background: #F4F4F4;
 	}
 }
