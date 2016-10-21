@@ -5,12 +5,16 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CONNECTING':
             return Object.assign({}, spotify, { connected: false, connecting: true });
 
+        case 'SPOTIFY_CONNECTED':
+            return Object.assign({}, spotify, { connected: true, connecting: false });
+
         case 'SPOTIFY_AUTHORIZATION_GRANTED':
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorized: true,
                 authorization: action.data,
-                access_token: action.data.access_token
+                access_token: action.data.access_token,
+                token_expiry: action.data.token_expiry
             });
 
         case 'SPOTIFY_REMOVE_AUTHORIZATION':
@@ -22,9 +26,6 @@ export default function reducer(spotify = {}, action){
                 me: false
             });
 
-        case 'SPOTIFY_CONNECTED':
-            return Object.assign({}, spotify, { connected: true, connecting: false });
-
         case 'SPOTIFY_TOKEN_REFRESHING':
             return Object.assign({}, spotify, { refreshing_token: true });
 
@@ -32,7 +33,8 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, {
                 refreshing_token: false,
                 authorization: action.data,
-                access_token: action.data.access_token
+                access_token: action.data.access_token,
+                token_expiry: action.data.token_expiry
             });
 
         case 'SPOTIFY_DISCONNECTED':

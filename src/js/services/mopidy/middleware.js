@@ -143,6 +143,9 @@ const MopidyMiddleware = (function(){
                         // play it
                         store.dispatch( actions.changeTrack( response[0].tlid ) );
 
+                        // TODO: perhaps force update of currentTlTrack before we proceed?
+                        // this will make the UI feel snappier...
+
                         // add the rest of our uris (if any)
                         action.uris.shift();
                         if( action.uris.length > 0 ){

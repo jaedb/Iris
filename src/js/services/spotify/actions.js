@@ -30,7 +30,6 @@ export function loadAlbum( uri ){
 }
 
 
-
 /**
  * Send an ajax request to the Spotify API
  *
@@ -67,6 +66,7 @@ export function startAuthorization(){
 }
 
 export function authorizationGranted( data ){
+    data.token_expiry = new Date().getTime() + data.expires_in;
 	return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
 }
 
@@ -74,26 +74,58 @@ export function removeAuthorization(){
 	return { type: 'SPOTIFY_REMOVE_AUTHORIZATION' }
 }
 
-export function refreshToken(){
-    return (dispatch, getState) => {    
 
-        dispatch({ type: 'SPOTIFY_TOKEN_REFRESHING' });
+/**
+* Check an access token validity
+*
+* @return Promise
+**/
+function checkToken( dispatch, getState ){
+    return new Promise( (resolve, reject) => {
 
+        // is our token_expiry still in the future?
+        if( new Date().getTime() < getState().spotify.token_expiry ){
+            resolve();
+            return
+        }
+        
+        // token is expiring/expired
+        doRefreshToken( dispatch, getState )
+            .then(
+                response => {
+                    resolve();
+                },
+                error => reject(error)
+            );
+    });
+}
+
+function doRefreshToken( dispatch, getState ){
+    return new Promise( (resolve, reject) => {
         $.ajax({
                 method: 'GET',
                 url: '//jamesbarnsley.co.nz/spotmop.php?action=refresh&refresh_token='+getState().spotify.refresh_token,
                 dataType: "json",
                 timeout: 10000
             })
-            .then( response => {
+            .then(
+                response => {
+                    response.token_expiry = new Date().getTime() + response.expires_in;
+                    dispatch({
+                        type: 'SPOTIFY_TOKEN_REFRESHED',
+                        data: response
+                    });
+                    resolve();
+                },
+                error => reject(error)
+            );
+    })
+}
 
-                response.expires = new Date().getTime() + 3600000;
-
-                dispatch({
-                    type: 'SPOTIFY_TOKEN_REFRESHED',
-                    data: response
-                });
-            });
+export function refreshToken(){
+    return (dispatch, getState) => {
+        dispatch({ type: 'SPOTIFY_TOKEN_REFRESHING' });
+        doRefreshToken( dispatch, getState );
     }
 }
 
@@ -270,14 +302,18 @@ export function getLibraryAlbums(){
 export function getLibraryTracks(){
 	return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
+        checkToken( dispatch, getState )
+            .then( () => {
 
-        sendRequest( getState().spotify.access_token, 'me/tracks?limit=50' )
-            .then( response => {
-                dispatch({
-                	type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
-                	data: response
-                });
+                dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
+
+                sendRequest( getState().spotify.access_token, 'me/tracks?limit=50' )
+                    .then( response => {
+                        dispatch({
+                            type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
+                            data: response
+                        });
+                    });
             });
 	}
 }

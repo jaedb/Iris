@@ -20,6 +20,7 @@ export default function reducer(mopidy = {}, action){
             });
 
         case 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK':
+            if( !action.data ) return mopidy;
             for( var i = 0; i < mopidy.tracks.length; i++ ){
                 if( mopidy.tracks[i].tlid == action.data.tlid ){
                     action.data.track.playing = true;

@@ -52,7 +52,7 @@ class Queue extends React.Component{
 		this.props.actions.removeTracks( tlids )
 	}
 
-	playTrack( track ){		
+	playTrack( track ){
 		this.props.actions.changeTrack( track.tlid )
 	}
 

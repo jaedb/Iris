@@ -83,7 +83,7 @@ class TrackList extends React.Component{
 	playTrack( track ){
 
 		if( typeof(this.props.playTrack) !== 'undefined' ){
-			return this.props.playTrack( this.selectedTracks() );
+			return this.props.playTrack( track );
 		}
 
 		var uris = [track.uri];
