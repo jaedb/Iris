@@ -33,27 +33,39 @@ export function loadAlbum( uri ){
 /**
  * Send an ajax request to the Spotify API
  *
+ * @param dispatch obj
+ * @param getState obj
  * @param endpoint string = the url to query (ie /albums/:uri)
  * @param method string
  * @param data mixed = request payload
- * @return ajax promise
+ * @return Promise
  **/
-const sendRequest = (token, endpoint, method = 'GET', data = false) => {
+const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false) => {
 
     var options = {
         method: method,
         cache: true,
         url: 'https://api.spotify.com/v1/'+endpoint,
+        headers: {
+            Authorization: 'Bearer '+ getState().spotify.access_token
+        },
         data: data
     };
 
-    if( token ){
-        options.headers = {
-            Authorization: 'Bearer '+ token
+    return new Promise( (resolve, reject) => {         
+        checkToken( dispatch, getState )
+            .then( response => {                    
+                $.ajax( options )
+                    .then( 
+                        response => resolve(response),
+                        error => {
+                            console.error(error)
+                            reject(error)
+                        }
+                    )
+            });
         }
-    }
-
-    return $.ajax( options );
+    );
 }
 
 
@@ -110,7 +122,7 @@ function doRefreshToken( dispatch, getState ){
             })
             .then(
                 response => {
-                    response.token_expiry = new Date().getTime() + response.expires_in;
+                    response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
                     dispatch({
                         type: 'SPOTIFY_TOKEN_REFRESHED',
                         data: response
@@ -139,7 +151,7 @@ export function getMe(){
         // flush out the previous store value
         dispatch({ type: 'SPOTIFY_ME_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'me' )
+        sendRequest( dispatch, getState, 'me' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_ME_LOADED',
@@ -169,12 +181,12 @@ export function getArtist( uri ){
 		// get both the artist and the top tracks
 		$.when(
 
-	        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) )
+	        sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) )
 	            .then( response => {
 	            	Object.assign(artist, response);
 	            }),
 
-	        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+	        sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
 	            .then( response => {
 	            	Object.assign(artist, response);
 	            })
@@ -189,8 +201,8 @@ export function getArtist( uri ){
 }
 
 export function getArtistAlbums( uri ){
-	return dispatch => {
-        sendRequest( false, 'artists/'+ getFromUri('artistid', uri) +'/albums' )
+    return (dispatch, getState) => {
+        sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) +'/albums' )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
@@ -206,12 +218,12 @@ export function getArtistAlbums( uri ){
  * @oaram uri string
  **/
 export function getAlbum( uri ){
-    return dispatch => {
+    return (dispatch, getState) => {
 
         // flush out the previous store value
         dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
 
-        sendRequest( false, 'albums/'+ getFromUri('albumid', uri) )
+        sendRequest( dispatch, getState, 'albums/'+ getFromUri('albumid', uri) )
             .then( response => {
 
                 // inject the parent album object into each track for consistent track objects
@@ -241,7 +253,7 @@ export function getPlaylist( uri ){
 		// flush out the previous store value
         dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'users/'+ getFromUri('userid',uri) +'/playlists/'+ getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+        sendRequest( dispatch, getState, 'users/'+ getFromUri('userid',uri) +'/playlists/'+ getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_PLAYLIST_LOADED',
@@ -257,7 +269,7 @@ export function getLibraryPlaylists(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'me/playlists' )
+        sendRequest( dispatch, getState, 'me/playlists' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
@@ -273,7 +285,7 @@ export function getLibraryArtists(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'me/following?type=artist' )
+        sendRequest( dispatch, getState, 'me/following?type=artist' )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
@@ -289,7 +301,7 @@ export function getLibraryAlbums(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED', data: false });
 
-        sendRequest( getState().spotify.access_token, 'me/albums' )
+        sendRequest( dispatch, getState, 'me/albums' )
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
@@ -302,18 +314,14 @@ export function getLibraryAlbums(){
 export function getLibraryTracks(){
 	return (dispatch, getState) => {
 
-        checkToken( dispatch, getState )
-            .then( () => {
+        dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
 
-                dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
-
-                sendRequest( getState().spotify.access_token, 'me/tracks?limit=50' )
-                    .then( response => {
-                        dispatch({
-                            type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
-                            data: response
-                        });
-                    });
+        sendRequest( dispatch, getState, 'me/tracks?limit=50' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
+                    data: response
+                });
             });
 	}
 }
