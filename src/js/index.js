@@ -6,7 +6,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { Router, Route, Link, hashHistory } from 'react-router'
+import { Router, Route, Link, browserHistory } from 'react-router'
 
 import store from './bootstrap.js'
 
@@ -26,7 +26,7 @@ import LibraryPlaylists from './views/library/LibraryPlaylists'
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={hashHistory}>
+		<Router history={browserHistory}>
 			<Route path="/" component={App}>
 	
 				<Route path="library/artists" component={LibraryArtists} />

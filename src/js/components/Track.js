@@ -39,7 +39,7 @@ export default class Track extends React.Component{
 
 	render(){
 
-		var className = 'track';
+		var className = 'list-item track';
 		var selectedIcon = 'square-o';
 		if( typeof(this.props.track.selected) !== 'undefined' && this.props.track.selected ){
 			selectedIcon = 'check-square-o';

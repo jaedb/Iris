@@ -22,6 +22,19 @@ export function disconnect(){
 	}
 }
 
+export function instruct( call, value ){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: call,
+		value: value
+	}
+}
+
+
+/**
+ * Playback-oriented actions
+ **/
+
 export function changeTrack( tlid ){
 	return {
 		type: 'MOPIDY_INSTRUCT',
@@ -56,14 +69,6 @@ export function removeTracks( tlids ){
 	}
 }
 
-export function instruct( call, value ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: call,
-		value: value
-	}
-}
-
 export function play(){
 	return instruct('playback.play');
 }
@@ -79,3 +84,14 @@ export function next(){
 export function previous(){
 	return instruct('playback.previous');
 }
+
+
+
+/**
+ * Asset-oriented actions
+ **/
+
+export function getPlaylists(){
+	return { type: 'MOPIDY_PLAYLISTS' }
+}
+

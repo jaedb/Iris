@@ -154,6 +154,13 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_PLAYLISTS':
+                instruct( socket, store, 'playlists.asList' )
+                    .then( response => {
+                        store.dispatch({ type: 'MOPIDY_PLAYLISTS_LOADED', data: response });
+                    })
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

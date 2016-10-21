@@ -31,6 +31,11 @@ export default function reducer(mopidy = {}, action){
             }
             return Object.assign({}, mopidy, { tracks: mopidy.tracks });
 
+        case 'MOPIDY_PLAYLISTS_LOADED':
+            if( !action.data ) return mopidy;
+            return Object.assign({}, mopidy, { playlists: action.data });
+
+
         /**
          * Websocket-initiated actions
          **/

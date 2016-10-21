@@ -1,0 +1,81 @@
+
+.list-item {
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	display: block;
+	position: relative;
+	padding: 8px 10px 8px 30px;
+	border-top: 1px solid #EEEEEE;
+	border-bottom: 1px solid #EEEEEE;
+	margin-bottom: -1px;
+
+	.col {
+		width: 10%;
+		min-height: 1px;
+		float: left;
+	}
+
+	&::after {
+		content: '';
+		clear: both;
+		display: block;
+	}
+
+	&.selected {
+		background: #FFF39C !important;
+	}
+
+	&:not(.header):hover {
+		background: #F4F4F4;
+		cursor: pointer;
+	}
+
+	&.header {
+		font-size: 10px;
+		color: #CCCCCC;
+		text-transform: uppercase;
+		border-top: 0;
+	}
+
+
+	&.track {
+
+		.col {
+			&.name,
+			&.artists,
+			&.album {
+				width: 30%;
+			}
+		}
+
+		.select-state {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+		}
+
+		&.playing {
+			font-weight: bold;
+		}
+	}
+
+
+	&.playlist {
+
+		.col {
+			&.name {
+				width: 30%;
+			}
+			&.owner {
+				width: 20%;
+			}
+		}
+	}
+}
+

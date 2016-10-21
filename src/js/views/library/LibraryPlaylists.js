@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
+import PlaylistListItem from '../../components/PlaylistListItem'
+
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -15,26 +17,60 @@ class LibraryPlaylists extends React.Component{
 
 	// on render
 	componentDidMount(){
+		if( this.props.mopidy.connected ) this.loadPlaylists();
+	}
+
+	componentWillReceiveProps( nextProps ){
+		if( !this.props.mopidy.connected && nextProps.mopidy.connected ) this.loadPlaylists();
+	}
+
+	loadPlaylists(){
 		this.props.spotifyActions.getLibraryPlaylists();
+		this.props.mopidyActions.getPlaylists();
+	}
+
+	compiledPlaylistSources(){
+		var playlists = [];
+
+		if( this.props.mopidy.playlists ){
+			Object.assign(playlists, this.props.mopidy.playlists)
+		}
+
+		if( this.props.spotify.libraryPlaylists ){
+			Object.assign(playlists, this.props.spotify.libraryPlaylists.items)
+		}
+
+		return playlists;
+	}
+
+	renderPlaylists(){
+		if( !this.compiledPlaylistSources() ) return null;
+
+		return (
+			<ul>
+				<li className="list-item header playlist">
+					<span className="col name">Name</span>
+					<span className="col owner">Owner</span>
+					<span className="col source">Source</span>
+				</li>
+				{
+					this.compiledPlaylistSources().map( (playlist, index) => {
+						return (
+							<PlaylistListItem key={index} item={playlist} />
+						);
+					})
+				}
+			</ul>
+		);
 	}
 
 	render(){
-		if( this.props.spotify.libraryPlaylists ){
-			return (
-				<div>
-					<h3>My playlists</h3>
-					<ul>
-						{
-							this.props.spotify.libraryPlaylists.items.map( (playlist, index) => {
-								var link = '/playlist/' + playlist.uri;
-								return <li key={index}><Link to={link}>{ playlist.name }</Link></li>
-							})
-						}
-					</ul>
-				</div>
-			);
-		}
-		return null;
+		return (
+			<div>
+				<h3>My playlists</h3>
+				{ this.renderPlaylists() }
+			</div>
+		)
 	}
 }
 

@@ -105,6 +105,12 @@ class TrackList extends React.Component{
 			return (
 				<div>
 					<ul>
+						<li className="list-item header track">
+							<span className="col name">Name</span>
+							<span className="col artists">Artists</span>
+							<span className="col album">Album</span>
+							<span className="col duration">Duration</span>
+						</li>
 						{
 							this.state.tracks.map(
 								(track, index) => {
