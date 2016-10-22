@@ -117,6 +117,14 @@ class TrackList extends React.Component{
 
 									// flatten nested track objects (as in the case of TlTracks)
 									if( typeof(track.track) !== 'undefined' ){
+
+										// see if we're the current tlTrack
+										if( self.props.mopidy.trackInFocus && self.props.mopidy.trackInFocus.tlid == track.tlid ){
+											track.playing = true;
+										}else{
+											track.playing = false;
+										}
+
 										for( var property in track.track ){
 											if( track.track.hasOwnProperty(property) ){
 												track[property] = track.track[property]

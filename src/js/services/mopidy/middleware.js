@@ -19,10 +19,7 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'tracklist.getRandom' );
                 instruct( ws, store, 'tracklist.getRepeat' );
                 instruct( ws, store, 'tracklist.getTlTracks' );
-                instruct( ws, store, 'playback.getCurrentTlTrack' )
-                    .then( currentTlTrack => {
-                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
-                    });
+                instruct( ws, store, 'playback.getCurrentTlTrack' );
                 break;
 
             case 'state:offline':
@@ -30,20 +27,14 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:tracklistChanged':
-                instruct( ws, store, 'tracklist.getTlTracks' )
-                    .then( currentTlTrack => {
-                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
-                    });
+                instruct( ws, store, 'tracklist.getTlTracks' );
                 break;
 
             //case 'event:trackPlaybackEnded':
             case 'event:playbackStateChanged':
             case 'event:trackPlaybackStarted':
                 instruct( ws, store, 'playback.getState' );
-                instruct( ws, store, 'playback.getCurrentTlTrack' )
-                    .then( currentTlTrack => {
-                        store.dispatch({ type: 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK', data: currentTlTrack })
-                    });
+                instruct( ws, store, 'playback.getCurrentTlTrack' );
                 break;
 
             case 'event:volumeChanged':
