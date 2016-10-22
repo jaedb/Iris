@@ -1,4 +1,0 @@
-RewriteEngine On
-
-RewriteCond %{REQUEST_URI} !/production/ [NC]
-RewriteRule (.*) /production/$1 [NC,L]
