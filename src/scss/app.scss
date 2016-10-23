@@ -1,10 +1,13 @@
 
 @import 'vendor/font-awesome/index';
 
+@import 'global/variables';
 @import 'global/core';
 @import 'global/reset';
 @import 'global/forms';
 
+@import 'components/sidebar';
 @import 'components/lists';
 @import 'components/track';
+@import 'components/header';
 

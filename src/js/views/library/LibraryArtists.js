@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
+import Header from '../../components/Header'
+
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -22,7 +24,10 @@ class LibraryArtists extends React.Component{
 		if( this.props.spotify.libraryArtists ){
 			return (
 				<div>
-					<h3>My artists</h3>
+					<Header
+						icon="mic"
+						title="My artists"
+						/>
 					<ul>
 						{
 							this.props.spotify.libraryArtists.artists.items.map( (artist, index) => {

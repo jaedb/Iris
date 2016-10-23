@@ -1,0 +1,73 @@
+
+aside{
+	
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	background: #333333;
+	width: 200px;
+
+	nav {
+
+		a {
+			font-size: 16px;
+			color: #FFFFFF;
+			text-decoration: none;
+			display: block;
+			padding: 6px 18px 6px 14px;
+			border-left: 4px solid transparent;
+
+			&.active {
+				border-color: $turquoise;
+				background: rgba( 0,0,0,0.1 );
+			}
+
+			&:hover {
+				background: rgba( 255,255,255,0.1 );
+			}
+		}
+
+		section {
+			padding: 10px 0;
+
+			title {
+				display: block;
+				padding: 0 18px 2px;
+				font-size: 11px;
+				text-transform: uppercase;
+				opacity: 0.5;
+				color: #FFFFFF;
+			}
+		}
+
+	}
+
+	.player {
+		.track-in-focus {
+			font-size: 16px;
+			text-transform: uppercase;
+			text-align: center;
+			color: #FFFFFF;
+
+			.title {
+				@include one_line_text
+			}
+
+			.artist-list {
+				opacity: 0.5;
+				@include one_line_text
+
+				.artist a {
+					color: inherit;
+					text-decoration: none;
+					border-bottom: 1px dotted transparent;
+
+					&:hover {
+						border-color: #FFFFFF !important;
+					}
+				}
+			}
+		}
+	}
+}

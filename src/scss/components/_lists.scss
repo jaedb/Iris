@@ -41,6 +41,7 @@
 		color: #CCCCCC;
 		text-transform: uppercase;
 		border-top: 0;
+		padding-bottom: 2px;
 	}
 
 
@@ -61,7 +62,7 @@
 		}
 
 		&.playing {
-			font-weight: bold;
+			font-weight: 500;
 		}
 	}
 

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import TrackList from '../../components/TrackList'
+import Header from '../../components/Header'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -24,7 +25,7 @@ class LibraryTracks extends React.Component{
 		if( this.props.spotify.libraryTracks ){
 			return (
 				<div>
-					<h3>My tracks</h3>
+					<Header icon="music" title="My tracks" />
 					<TrackList tracks={this.props.spotify.libraryTracks.items} />
 				</div>
 			);

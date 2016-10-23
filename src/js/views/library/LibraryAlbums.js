@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import AlbumGrid from '../../components/AlbumGrid'
+import Header from '../../components/Header'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -24,7 +25,10 @@ class LibraryAlbums extends React.Component{
 		if( this.props.spotify.libraryAlbums ){
 			return (
 				<div>
-					<h3>My albums</h3>
+					<Header
+						icon="cd"
+						title="My albums"
+						/>
 					<AlbumGrid items={this.props.spotify.libraryAlbums} />
 				</div>
 			);

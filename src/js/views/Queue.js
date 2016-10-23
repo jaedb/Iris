@@ -9,6 +9,8 @@ import Track from '../components/Track'
 import Player from '../components/Player'
 import ArtistList from '../components/ArtistList'
 import AlbumLink from '../components/AlbumLink'
+import Header from '../components/Header'
+
 import * as actions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
@@ -60,9 +62,11 @@ class Queue extends React.Component{
 	render(){
 		return (
 			<div>
-				<h3>Now playing</h3>
+				<Header
+					icon="play"
+					title="Now playing"
+					/>
 				{ this.renderTrackInFocus() }
-				<Player />
 				<h4>Other tracks</h4>
 				{ this.renderTrackList() }
 			</div>

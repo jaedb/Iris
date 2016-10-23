@@ -5,7 +5,7 @@ import { createStore, bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
-import Player from '../components/Player'
+import Sidebar from '../components/Sidebar'
 
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -25,19 +25,12 @@ class App extends React.Component{
 	}
 
 	render(){
-
 		return (
 			<div>
-	        	<ul role="nav">
-					<li><Link to="/queue">Now playing</Link></li>
-					<li><Link to="/library/artists">Library: My artists</Link></li>
-					<li><Link to="/library/albums">Library: My albums</Link></li>
-					<li><Link to="/library/tracks">Library: My tracks</Link></li>
-					<li><Link to="/library/playlists">Library: My playlists</Link></li>
-					<li><Link to="/settings">Settings</Link></li>
-		        </ul>
-		        {this.props.children}
-		        <Player />
+		        <Sidebar />
+		        <main>
+		      		{this.props.children}
+		        </main>
 	        </div>
 		);
 	}

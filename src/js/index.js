@@ -6,7 +6,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { Router, Route, Link, browserHistory } from 'react-router'
+import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 
 import store from './bootstrap.js'
 
@@ -28,6 +28,9 @@ ReactDOM.render(
 	<Provider store={store}>
 		<Router history={browserHistory}>
 			<Route path="/" component={App}>
+
+     			<IndexRoute component={Queue} />
+				<Route path="/queue" component={Queue} />
 	
 				<Route path="library/artists" component={LibraryArtists} />
 				<Route path="library/albums" component={LibraryAlbums} />
@@ -37,7 +40,6 @@ ReactDOM.render(
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />
-				<Route path="queue" component={Queue} />
 				<Route path="settings" component={Settings} />
 
 			</Route>

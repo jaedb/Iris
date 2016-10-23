@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TrackList from '../components/TrackList'
+import Header from '../components/Header'
+
 import * as spotifyActions from '../services/spotify/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
@@ -29,7 +31,10 @@ class Album extends React.Component{
 		if( this.props.spotify.album ){
 			return (
 				<div>
-					<h3>{ this.props.spotify.album.name }</h3>
+					<Header
+						icon="cd"
+						title={ this.props.spotify.album.name }
+						/>
 					<TrackList tracks={this.props.spotify.album.tracks.items} />
 				</div>
 			);

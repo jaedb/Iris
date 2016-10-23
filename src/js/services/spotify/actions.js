@@ -41,25 +41,21 @@ export function loadAlbum( uri ){
  * @return Promise
  **/
 const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false) => {
-
-    var options = {
-        method: method,
-        cache: true,
-        url: 'https://api.spotify.com/v1/'+endpoint,
-        headers: {
-            Authorization: 'Bearer '+ getState().spotify.access_token
-        },
-        data: data
-    };
-
     return new Promise( (resolve, reject) => {         
-        checkToken( dispatch, getState )
-            .then( response => {                    
-                $.ajax( options )
-                    .then( 
+        getToken( dispatch, getState )
+            .then( response => {
+                $.ajax({
+                        method: method,
+                        cache: true,
+                        url: 'https://api.spotify.com/v1/'+endpoint,
+                        headers: {
+                            Authorization: 'Bearer '+ response
+                        },
+                        data: data
+                    }).then( 
                         response => resolve(response),
                         error => {
-                            console.error(error)
+                            console.error('sendRequest', error)
                             reject(error)
                         }
                     )
@@ -92,27 +88,30 @@ export function removeAuthorization(){
 *
 * @return Promise
 **/
-function checkToken( dispatch, getState ){
+function getToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
-        // is our token_expiry still in the future?
+        // token is okay for now, so just resolve with the current token
         if( new Date().getTime() < getState().spotify.token_expiry ){
-            resolve();
+            resolve(getState().spotify.access_token);
             return
         }
         
-        // token is expiring/expired
-        doRefreshToken( dispatch, getState )
+        // token is expiring/expired, so go get a new one and resolve that
+        refreshToken( dispatch, getState )
             .then(
                 response => {
-                    resolve();
+                    resolve(response.access_token);
                 },
-                error => reject(error)
+                error => {
+                    console.error('getToken', error)
+                    reject(error)
+                }
             );
     });
 }
 
-function doRefreshToken( dispatch, getState ){
+function refreshToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
         $.ajax({
                 method: 'GET',
@@ -127,9 +126,12 @@ function doRefreshToken( dispatch, getState ){
                         type: 'SPOTIFY_TOKEN_REFRESHED',
                         data: response
                     });
-                    resolve();
+                    resolve(response);
                 },
-                error => reject(error)
+                error => {
+                    console.error('refreshToken', error)
+                    reject(error)
+                }
             );
     })
 }

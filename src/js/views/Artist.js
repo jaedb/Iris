@@ -30,7 +30,10 @@ class Artist extends React.Component{
 		if( this.props.spotify.artist ){
 			return (
 				<div>
-					<h3>{ this.props.spotify.artist.name }</h3>
+					<Header
+						icon="mic"
+						title={ this.props.spotify.artist.name }
+						/>
 					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
 					{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					{ this.props.spotify.artist_albums ? <AlbumGrid items={ this.props.spotify.artist_albums } /> : null }

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import PlaylistListItem from '../../components/PlaylistListItem'
+import Header from '../../components/Header'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -67,7 +68,10 @@ class LibraryPlaylists extends React.Component{
 	render(){
 		return (
 			<div>
-				<h3>My playlists</h3>
+				<Header
+					icon="playlist"
+					title="My playlists"
+					/>
 				{ this.renderPlaylists() }
 			</div>
 		)

@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
+import Header from '../components/Header'
 
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -40,7 +41,10 @@ class Settings extends React.Component{
 	render(){
 		return (
 			<div>
-				<h3>Settings</h3>
+				<Header
+					icon="cog"
+					title="Settings"
+					/>
 
 				<h4>Mopidy</h4>
 				<form onSubmit={() => this.setMopidyConfig()}>
