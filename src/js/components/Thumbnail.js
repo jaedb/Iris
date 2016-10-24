@@ -5,22 +5,41 @@ export default class Thumbnail extends React.Component{
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			small: false,
+			medium: false,
+			large: false,
+			huge: false
+		}
 	}
 
-	sizedImageURL(){
-		var images = this.props.images;
-		switch( this.props.size ){
-			case 'small':
-				break;
+	componentDidMount(){
+		this.mapImageSizes();
+	}
 
-			default:
-				return images[images.length-1].url
+	componentWillReceiveProps( nextProps ){
+		this.mapImageSizes();
+	}
+
+	mapImageSizes(){
+		var images = this.props.images;
+		for( var i = 0; i < images.length; i++ ){
+			if( images[i].height > 800 ){
+				this.setState({ huge: images[i].url });
+			}else if( images[i].height > 600 ){
+				this.setState({ large: images[i].url });
+			}else if( images[i].height > 280 ){
+				this.setState({ medium: images[i].url });
+			}else{
+				this.setState({ small: images[i].url });
+			}
 		}
 	}
 
 	render(){
 		return (
-			<img src={ this.sizedImageURL() } />
+			<img className={ 'thumbnail '+ this.props.size } src={ this.state[this.props.size] } />
 		);
 	}
 }

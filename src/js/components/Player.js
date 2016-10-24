@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import VolumeSlider from './VolumeSlider'
 import ArtistList from './ArtistList'
+import Thumbnail from './Thumbnail'
 
 import * as mopidyActions from '../services/mopidy/actions'
 
@@ -16,63 +17,74 @@ class Player extends React.Component{
 	}
 
 	renderTrackInFocus(){
-		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
+		if( this.props.mopidy && this.props.mopidy.currentTlTrack ){
 			return (
 				<div className="track-in-focus">
-					<div className="title">{ this.props.mopidy.trackInFocus.track.name }</div>
-					<ArtistList artists={ this.props.mopidy.trackInFocus.track.artists } />
+					{ this.props.spotify.track && !this.props.mini ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
+					<div className="title">{ this.props.mopidy.currentTlTrack.track.name }</div>
+					<ArtistList artists={ this.props.mopidy.currentTlTrack.track.artists } />
 				</div>
 			);
 		}
 		return null;
 	}
 
-	renderControls(){
-
-		var playButton = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
+	renderPlayButton(){
+		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
 		if( this.props.mopidy.state == 'playing' ){
-			playButton = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
+			button = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
+		return button;
+	}
 
-		var consumeButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}>Consume </a>
+	renderConsumeButton(){
+		if( this.props.mini ) return null;
+		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /></a>
 		if( this.props.mopidy.consume ){
-			consumeButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}>Un-Consume </a>
+			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /></a>
 		}
+		return button;
+	}
 
-		var randomButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}>Random </a>
+	renderRandomButton(){
+		if( this.props.mini ) return null;
+		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /></a>
 		if( this.props.mopidy.random ){
-			randomButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}>Un-Random </a>
+			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /></a>
 		}
+		return button;
+	}
 
-		var repeatButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}>Repeat </a>
+	renderRepeatButton(){
+		if( this.props.mini ) return null;
+		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /></a>
 		if( this.props.mopidy.repeat ){
-			repeatButton = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}>Un-Repeat </a>
+			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /></a>
 		}
-
-		return (
-			<div className="player">
-				{ this.renderTrackInFocus() }
-				{ playButton }
-				<a onClick={() => this.props.mopidyActions.previous()}>
-					<FontAwesome name="step-backward" />
-				</a>&nbsp;
-				<a onClick={() => this.props.mopidyActions.next()}>
-					<FontAwesome name="step-forward" />
-				</a>&nbsp;
-				{ consumeButton }
-				{ randomButton }
-				{ repeatButton }
-				<VolumeSlider
-					volume={ this.props.mopidy.volume } 
-					onChange={(volume) => this.props.mopidyActions.instruct('playback.setVolume', { volume: volume })} />
-			</div>
-		);
+		return button;
 	}
 
 	render(){
 		return (
-			<div>
-				{ this.renderControls() }
+			<div className="player">
+
+				{ this.renderTrackInFocus() }
+
+				<div className="controls">
+					{ this.renderPlayButton() }
+					<a onClick={() => this.props.mopidyActions.previous()}>
+						<FontAwesome name="step-backward" />
+					</a>&nbsp;
+					<a onClick={() => this.props.mopidyActions.next()}>
+						<FontAwesome name="step-forward" />
+					</a>&nbsp;
+					{ this.renderConsumeButton() }
+					{ this.renderRandomButton() }
+					{ this.renderRepeatButton() }
+					<VolumeSlider
+						volume={ this.props.mopidy.volume } 
+						onChange={(volume) => this.props.mopidyActions.instruct('playback.setVolume', { volume: volume })} />
+				</div>
 			</div>
 		);
 	}

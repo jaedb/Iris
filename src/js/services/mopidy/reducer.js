@@ -66,7 +66,7 @@ export default function reducer(mopidy = {}, action){
 
         case 'MOPIDY_CURRENTTLTRACK':
             return Object.assign({}, mopidy, {
-                trackInFocus: action.data   
+                currentTlTrack: action.data   
             });
 
         case 'MOPIDY_VOLUME':

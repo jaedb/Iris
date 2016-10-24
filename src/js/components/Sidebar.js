@@ -5,6 +5,8 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Player from '../components/Player'
+import Icon from '../components/Icon'
+import Thumbnail from '../components/Thumbnail'
 
 import FontAwesome from 'react-fontawesome'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -22,11 +24,16 @@ class Sidebar extends React.Component{
 	render(){
 		return (
 			<aside>
+				
+				{ this.props.spotify && this.props.spotify.track ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
 
 	        	<nav>
 
 	        		<section>
-						<Link activeClassName="active" to="/queue">Now playing</Link>
+						<Link activeClassName="active" to="/queue">
+							<Icon name="play" className="white" />
+							Now playing
+						</Link>
 					</section>
 
 					<section>
@@ -35,19 +42,34 @@ class Sidebar extends React.Component{
 
 					<section>
 						<title>My Music</title>
-						<Link activeClassName="active" to="/library/playlists">Playlists</Link>
-						<Link activeClassName="active" to="/library/artists">Artists</Link>
-						<Link activeClassName="active" to="/library/albums">Albums</Link>
-						<Link activeClassName="active" to="/library/tracks">Tracks</Link>
+						<Link activeClassName="active" to="/library/playlists">
+							<Icon name="playlist" className="white" />
+							Playlists
+						</Link>
+						<Link activeClassName="active" to="/library/artists">
+							<Icon name="mic" className="white" />
+							Artists
+						</Link>
+						<Link activeClassName="active" to="/library/albums">
+							<Icon name="cd" className="white" />
+							Albums
+						</Link>
+						<Link activeClassName="active" to="/library/tracks">
+							<Icon name="music" className="white" />
+							Tracks
+						</Link>
 					</section>
 
 					<section>
-						<Link activeClassName="active" to="/settings">Settings</Link>
+						<Link activeClassName="active" to="/settings">
+							<Icon name="cog" className="white" />
+							Settings
+						</Link>
 					</section>
 
 		        </nav>
 
-		        <Player />
+		        <Player mini={ true } />
 
 			</aside>
 		);

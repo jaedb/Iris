@@ -7,6 +7,15 @@ aside{
 	bottom: 0;
 	background: #333333;
 	width: 200px;
+	overflow: hidden;
+
+	.thumbnail {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		z-index: -1;
+		opacity: 0.1;
+	}
 
 	nav {
 
@@ -17,6 +26,13 @@ aside{
 			display: block;
 			padding: 6px 18px 6px 14px;
 			border-left: 4px solid transparent;
+
+			.icon {
+				height: 14px;
+				padding-right: 8px;
+				vertical-align: top;
+				margin-top: 4px;
+			}
 
 			&.active {
 				border-color: $turquoise;
@@ -44,6 +60,12 @@ aside{
 	}
 
 	.player {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 14px;
+
 		.track-in-focus {
 			font-size: 16px;
 			text-transform: uppercase;
@@ -56,6 +78,7 @@ aside{
 
 			.artist-list {
 				opacity: 0.5;
+				display: block;
 				@include one_line_text
 
 				.artist a {
@@ -66,6 +89,27 @@ aside{
 					&:hover {
 						border-color: #FFFFFF !important;
 					}
+				}
+			}
+		}
+
+		.controls {
+			text-align: center;
+
+			a {
+				color: #FFFFFF;
+				cursor: pointer;
+				font-size: 14px;
+				padding: 8px;
+				display: inline-block;
+				opacity: 0.8;
+
+				&.active {
+					color: $turquoise;
+				}
+
+				&:hover {
+					opacity: 1.0;
 				}
 			}
 		}

@@ -30,10 +30,12 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'tracklist.getTlTracks' );
                 break;
 
-            //case 'event:trackPlaybackEnded':
             case 'event:playbackStateChanged':
-            case 'event:trackPlaybackStarted':
                 instruct( ws, store, 'playback.getState' );
+                break;
+
+            //case 'event:trackPlaybackEnded':
+            case 'event:trackPlaybackStarted':
                 instruct( ws, store, 'playback.getCurrentTlTrack' );
                 break;
 

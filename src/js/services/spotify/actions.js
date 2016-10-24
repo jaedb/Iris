@@ -22,13 +22,6 @@ export function disconnect(){
 	}
 }
 
-export function loadAlbum( uri ){
-	return {
-		type: 'SPOTIFY_LOAD_ALBUM',
-		uri: uri
-	}
-}
-
 
 /**
  * Send an ajax request to the Spotify API
@@ -55,7 +48,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                     }).then( 
                         response => resolve(response),
                         error => {
-                            console.error('sendRequest', error)
+                            console.error('Could not send request to '+endpoint, error, data)
                             reject(error)
                         }
                     )
@@ -96,17 +89,12 @@ function getToken( dispatch, getState ){
             resolve(getState().spotify.access_token);
             return
         }
-        
+
         // token is expiring/expired, so go get a new one and resolve that
         refreshToken( dispatch, getState )
             .then(
-                response => {
-                    resolve(response.access_token);
-                },
-                error => {
-                    console.error('getToken', error)
-                    reject(error)
-                }
+                response => resolve(response.access_token),
+                error => reject(error)
             );
     });
 }
@@ -129,17 +117,17 @@ function refreshToken( dispatch, getState ){
                     resolve(response);
                 },
                 error => {
-                    console.error('refreshToken', error)
+                    console.error('Could not refresh token', error)
                     reject(error)
                 }
             );
     })
 }
 
-export function refreshToken(){
+export function refreshingToken(){
     return (dispatch, getState) => {
         dispatch({ type: 'SPOTIFY_TOKEN_REFRESHING' });
-        doRefreshToken( dispatch, getState );
+        refreshToken( dispatch, getState );
     }
 }
 
@@ -160,6 +148,29 @@ export function getMe(){
                     data: response
                 });
             });
+    }
+}
+
+
+/**
+ * Get a single track
+ *
+ * @param uri string
+ **/
+export function getTrack( uri ){
+    return (dispatch, getState) => {
+
+        // flush out the previous store value
+        dispatch({ type: 'SPOTIFY_TRACK_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'tracks/'+ getFromUri('trackid', uri) )
+            .then( response => {
+                    dispatch({
+                        type: 'SPOTIFY_TRACK_LOADED',
+                        data: response
+                    });
+                }
+            );
     }
 }
 

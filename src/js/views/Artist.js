@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
+import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 
@@ -30,10 +31,7 @@ class Artist extends React.Component{
 		if( this.props.spotify.artist ){
 			return (
 				<div>
-					<Header
-						icon="mic"
-						title={ this.props.spotify.artist.name }
-						/>
+					<Header icon="mic" title={ this.props.spotify.artist.name } />
 					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
 					{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					{ this.props.spotify.artist_albums ? <AlbumGrid items={ this.props.spotify.artist_albums } /> : null }
