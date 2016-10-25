@@ -1,0 +1,29 @@
+
+
+.thumbnail {
+	width: 100%;
+	max-width: 300px;
+	overflow: hidden;
+	
+	.image {
+		width: 100%;
+		padding-bottom: 100%;
+		position: relative;
+		background-repeat: no-repeat;
+		background-color: #DDDDDD;
+		background-position: 50% 50%;
+		background-size: cover;
+	}
+
+	&.circle {
+		border-radius: 50%;
+	}
+}
+
+.parallax {
+	height: 300px;
+	overflow: hidden;
+	.thumbnail {
+		max-width: none;
+	}
+}

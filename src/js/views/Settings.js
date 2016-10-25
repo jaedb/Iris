@@ -48,7 +48,7 @@ class Settings extends React.Component{
 
 				<section>
 
-					<h3>Mopidy</h3>
+					<h3 className="underline">Mopidy</h3>
 					<form onSubmit={() => this.setMopidyConfig()}>
 						<label>
 							<span className="label">Host</span>
@@ -61,7 +61,7 @@ class Settings extends React.Component{
 						<button type="submit">Apply</button>
 					</form>
 
-					<h3>Spotify</h3>
+					<h3 className="underline">Spotify</h3>
 					<form onSubmit={() => this.setSpotifyConfig()}>
 						<label>
 							<span className="label">Country</span>

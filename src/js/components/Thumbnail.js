@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react'
+import * as helpers from '../helpers'
 
 export default class Thumbnail extends React.Component{
 
@@ -24,22 +25,33 @@ export default class Thumbnail extends React.Component{
 
 	mapImageSizes(){
 		var images = this.props.images;
-		for( var i = 0; i < images.length; i++ ){
-			if( images[i].height > 800 ){
-				this.setState({ huge: images[i].url });
-			}else if( images[i].height > 600 ){
-				this.setState({ large: images[i].url });
-			}else if( images[i].height > 280 ){
-				this.setState({ medium: images[i].url });
-			}else{
-				this.setState({ small: images[i].url });
+		var state = this.state;
+
+		if( images.length <= 0 ){
+			state = {
+				small: require('../../images/no-image.svg'),
+				medium: require('../../images/no-image.svg'),
+				large: require('../../images/no-image.svg'),
+				huge: require('../../images/no-image.svg')
 			}
+		}else{
+			state = helpers.SizedImages( images );
 		}
+
+		this.setState( state );
 	}
 
 	render(){
+		var style = {
+			backgroundImage: 'url("'+this.state[this.props.size]+'")'
+		}
+		var className = 'thumbnail '+this.props.size;
+		if( this.props.circle ) className += ' circle';
+		
 		return (
-			<img className={ 'thumbnail '+ this.props.size } src={ this.state[this.props.size] } />
+			<div className={className}>
+				<div className="image" style={style}></div>
+			</div>
 		);
 	}
 }

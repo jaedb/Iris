@@ -10,7 +10,9 @@ export default class ListItem extends React.Component{
 	}
 
 	handleClick(e){
-		browserHistory.push( this.props.link );
+		if( e.target.tagName.toLowerCase() !== 'a' ){
+			browserHistory.push( this.props.link );
+		}
 	}
 
 	render(){

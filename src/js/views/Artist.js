@@ -6,6 +6,9 @@ import { bindActionCreators } from 'redux'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
+import Thumbnail from '../components/Thumbnail'
+import Parallax from '../components/Parallax'
+import RelatedArtistList from '../components/RelatedArtistList'
 
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -32,7 +35,10 @@ class Artist extends React.Component{
 			return (
 				<div>
 					<Header icon="mic" title={ this.props.spotify.artist.name } />
+					{ this.props.spotify.artist.images ? <Parallax images={ this.props.spotify.artist.images } /> : null }
+					{ this.props.spotify.artist.images ? <Thumbnail size="huge" images={ this.props.spotify.artist.images } /> : null }
 					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
+					{ this.props.spotify.artist.related_artists ? <RelatedArtistList artists={ this.props.spotify.artist.related_artists } /> : null }
 					{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					{ this.props.spotify.artist_albums ? <AlbumGrid items={ this.props.spotify.artist_albums } /> : null }
 				</div>

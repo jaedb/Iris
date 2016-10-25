@@ -199,9 +199,14 @@ export function getArtist( uri ){
 	            	Object.assign(artist, response);
 	            }),
 
-	        sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+            sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+                .then( response => {
+                    Object.assign(artist, response);
+                }),
+
+	        sendRequest( dispatch, getState, 'artists/'+ getFromUri('artistid', uri) +'/related-artists' )
 	            .then( response => {
-	            	Object.assign(artist, response);
+	            	Object.assign(artist, { related_artists: response.artists });
 	            })
 
 	    ).then( () => {
