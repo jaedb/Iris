@@ -10,8 +10,10 @@ export default class ArtistGrid extends React.Component{
 
 	render(){
 		if( this.props.artists ){
+			var className = "grid artist-grid"
+			if( this.props.className ) className += ' '+this.props.className
 			return (
-				<ul className="grid artist-grid">
+				<div className={className}>
 					{
 						this.props.artists.map(
 							(artist, index) => {
@@ -20,7 +22,7 @@ export default class ArtistGrid extends React.Component{
 							}
 						)
 					}
-				</ul>
+				</div>
 			);
 		}
 		return null;

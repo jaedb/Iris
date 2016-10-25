@@ -31,6 +31,11 @@ main {
 		padding: 40px;
 	}
 
+	h1 {
+		font-weight: 100;
+		font-size: 26px;
+	}
+
 	h3 {
 		font-size: 14px;
 		margin-bottom: 14px;
@@ -38,24 +43,46 @@ main {
 
 		&.underline {
 			padding-bottom: 4px;
-			border-bottom: 1px solid #000000;			
+			border-bottom: 1px solid #000000;
 		}
 	}
+
+	.no-top-padding {		padding-top: 0; }
+	.no-bottom-padding {	padding-bottom: 0; }
+	.no-right-padding {		padding-right: 0; }
+	.no-left-padding {		padding-left: 0; }
+
+	.top-padding {			padding-top: 20px; }
+	.bottom-padding {		padding-bottom: 20px; }
+	.right-padding {		padding-right: 40px; }
+	.left-padding {			padding-left: 40px; }
 }
 
 .col {
 	min-height: 1px;
 	float: left;
 
-	&.c2w1 {	width: 50%; }
-	&.c3w1 {	width: 33.3334%; }
-	&.c3w2 {	width: 66.6667%; }
-	&.c4w1 {	width: 25%; }
-	&.c4w3 {	width: 75%; }
-	&.c5w1 {	width: 20%; }
-	&.c5w2 {	width: 40%; }
-	&.c5w3 {	width: 60%; }
-	&.c5w4 {	width: 80%; }
+	&.w5 {		width: 5%; }
+	&.w10 {		width: 10%; }
+	&.w15 {		width: 15%; }
+	&.w20 {		width: 20%; }
+	&.w25 {		width: 25%; }
+	&.w30 {		width: 30%; }
+	&.w33 {		width: 33.3334%; }
+	&.w35 {		width: 35%; }
+	&.w40 {		width: 40%; }
+	&.w45 {		width: 45%; }
+	&.w50 {		width: 50%; }
+	&.w55 {		width: 55%; }
+	&.w60 {		width: 60%; }
+	&.w65 {		width: 65%; }
+	&.w66 {		width: 66.6667%; }
+	&.w70 {		width: 70%; }
+	&.w75 {		width: 75%; }
+	&.w80 {		width: 80%; }
+	&.w85 {		width: 85%; }
+	&.w90 {		width: 90%; }
+	&.w95 {		width: 95%; }
 }
 
 .cf{

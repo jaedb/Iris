@@ -15,6 +15,10 @@
 		background-size: cover;
 	}
 
+	&.small {
+		max-width: 50px;
+	}
+
 	&.circle {
 		border-radius: 50%;
 	}

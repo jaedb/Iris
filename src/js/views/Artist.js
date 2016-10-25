@@ -35,20 +35,27 @@ class Artist extends React.Component{
 			return (
 				<div>
 					<Parallax images={ this.props.spotify.artist.images } />
+
 					<div className="intro">
 						<Thumbnail size="huge" images={ this.props.spotify.artist.images } />
 						<h1>{ this.props.spotify.artist.name }</h1>
 						<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
 					</div>
-					<div className="col c3w2">
-						<h3>Top tracks</h3>
+
+					<div className="col w70">
+						<h3 className="left-padding">Top tracks</h3>
 						{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					</div>
-					<div className="col c3w1 cf">
+
+					<div className="col w5"></div>
+
+					<div className="col w25 cf">
 						<h3>Related artists</h3>
 						{ this.props.spotify.artist.related_artists ? <ArtistList artists={ this.props.spotify.artist.related_artists.slice(0,6) } /> : null }
 					</div>
-					{ this.props.spotify.artist_albums ? <AlbumGrid albums={ this.props.spotify.artist_albums.items } /> : null }
+
+					<h3 className="left-padding">Albums</h3>
+					{ this.props.spotify.artist_albums ? <AlbumGrid className="no-top-padding" albums={ this.props.spotify.artist_albums.items } /> : null }
 				</div>
 			);
 		}

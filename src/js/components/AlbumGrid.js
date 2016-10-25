@@ -10,8 +10,10 @@ export default class AlbumGrid extends React.Component{
 
 	render(){
 		if( this.props.albums ){
+			var className = "grid album-grid"
+			if( this.props.className ) className += ' '+this.props.className
 			return (
-				<ul className="grid album-grid">
+				<div className={className}>
 					{
 						this.props.albums.map(
 							(album, index) => {
@@ -21,7 +23,7 @@ export default class AlbumGrid extends React.Component{
 							}
 						)
 					}
-				</ul>
+				</div>
 			);
 		}
 		return null;

@@ -1,8 +1,11 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
+
 import FontAwesome from 'react-fontawesome'
+import Thumbnail from './Thumbnail'
 
 import * as actions from '../services/spotify/actions'
 
@@ -51,11 +54,13 @@ class SpotifyAuthenticationFrame extends React.Component{
 	renderMe(){
 		if( !this.props.spotify.me ) return null;
 
-		if( this.props.spotify.me.display_name ){
-			return <span>Logged in as { this.props.spotify.me.display_name }</span>
-		}else{
-			return <span>Logged in as { this.props.spotify.me.id }</span>
-		}
+		return (
+			<div>
+				<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
+				Logged in as {this.props.spotify.me.display_name ? this.props.spotify.me.display_name : null }
+				<Link to={'/user/'+this.props.spotify.me.id}>{ this.props.spotify.me.id }</Link>
+			</div>
+		)
 	}
 
 	renderAuthorizeButton(){
@@ -92,7 +97,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else{
 			return (
-				<button onClick={() => this.props.actions.refreshToken()}>Refresh token</button>
+				<button onClick={() => this.props.actions.refreshingToken()}>Refresh token</button>
 			);
 		}
 	}
