@@ -1,8 +1,15 @@
 
 $turquoise: #08d58f;
+$secondary_grey: #888888;
 
 @mixin one_line_text {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+@mixin clear {
+	content: '';
+	clear: both;
+	display: block;
 }

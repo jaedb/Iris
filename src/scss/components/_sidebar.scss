@@ -5,10 +5,11 @@ aside{
 	top: 0;
 	left: 0;
 	bottom: 0;
-	background: #333333;
+	background: #111111;
 	width: 200px;
 	overflow: hidden;
-
+	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
+	
 	.thumbnail {
 		position: absolute;
 		top: 0;
@@ -36,11 +37,11 @@ aside{
 
 			&.active {
 				border-color: $turquoise;
-				background: rgba( 0,0,0,0.1 );
+				background: rgba( 0, 0, 0, 0.5 );
 			}
 
 			&:hover {
-				background: rgba( 255,255,255,0.1 );
+				background: rgba( 255, 255, 255, 0.1 );
 			}
 		}
 
@@ -73,13 +74,13 @@ aside{
 			color: #FFFFFF;
 
 			.title {
-				@include one_line_text
+				@include one_line_text;
 			}
 
 			.artist-list {
 				opacity: 0.5;
 				display: block;
-				@include one_line_text
+				@include one_line_text;
 
 				.artist a {
 					color: inherit;

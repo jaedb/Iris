@@ -40,9 +40,7 @@ export default class Track extends React.Component{
 	render(){
 
 		var className = 'list-item track';
-		var selectedIcon = 'square-o';
 		if( typeof(this.props.track.selected) !== 'undefined' && this.props.track.selected ){
-			selectedIcon = 'check-square-o';
 			className += ' selected';
 		}
 
@@ -55,12 +53,12 @@ export default class Track extends React.Component{
 				className={className}
 				onDoubleClick={ (e) => this.handleDoubleClick(e) }
 				onClick={ (e) => this.handleClick(e) }>
-					<FontAwesome name={selectedIcon} className="select-state" fixedWidth />
+					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
 						{this.props.track.name}
 					</span>
 					<span className="col artists">
-						<ArtistList artists={this.props.track.artists} />
+						{ this.props.track.artists ? <ArtistList artists={this.props.track.artists} /> : null }
 					</span>
 					<span className="col album">
 						{ this.props.track.album ? <AlbumLink album={this.props.track.album} /> : null }

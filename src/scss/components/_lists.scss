@@ -10,7 +10,7 @@
 
 	display: block;
 	position: relative;
-	padding: 8px 10px 8px 30px;
+	padding: 9px 10px 9px 40px;
 	border-top: 1px solid #EEEEEE;
 	border-bottom: 1px solid #EEEEEE;
 	margin-bottom: -1px;
@@ -22,9 +22,7 @@
 	}
 
 	&::after {
-		content: '';
-		clear: both;
-		display: block;
+		@include clear;
 	}
 
 	&.selected {
@@ -57,12 +55,13 @@
 
 		.select-state {
 			position: absolute;
-			top: 10px;
-			left: 10px;
+			top: 12px;
+			left: 15px;
+			font-size: 10px;
 		}
 
 		&.playing {
-			font-weight: 500;
+			font-weight: 600;
 		}
 	}
 

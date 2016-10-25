@@ -46,35 +46,39 @@ class Settings extends React.Component{
 					title="Settings"
 					/>
 
-				<h4>Mopidy</h4>
-				<form onSubmit={() => this.setMopidyConfig()}>
-					<label>
-						<span className="label">Host</span>
-						<input onChange={ e => this.setState({ mopidy_host: e.target.value })} value={ this.state.mopidy_host } />
-					</label>
-					<label>
-						<span className="label">Port</span>
-						<input onChange={ e => this.setState({ mopidy_port: e.target.value })} value={ this.state.mopidy_port } />
-					</label>
-					<button type="submit">Apply</button>
-				</form>
+				<section>
 
-				<h4>Spotify</h4>
-				<form onSubmit={() => this.setSpotifyConfig()}>
-					<label>
-						<span className="label">Country</span>
-						<input onChange={ e => this.setState({ spotify_country: e.target.value })} value={ this.state.spotify_country } />
-					</label>
-					<label>
-						<span className="label">Locale</span>
-						<input onChange={ e => this.setState({ spotify_locale: e.target.value })} value={ this.state.spotify_locale } />
-					</label>
-					<button type="submit">Apply</button>
-				</form>
+					<h3>Mopidy</h3>
+					<form onSubmit={() => this.setMopidyConfig()}>
+						<label>
+							<span className="label">Host</span>
+							<input onChange={ e => this.setState({ mopidy_host: e.target.value })} value={ this.state.mopidy_host } />
+						</label>
+						<label>
+							<span className="label">Port</span>
+							<input onChange={ e => this.setState({ mopidy_port: e.target.value })} value={ this.state.mopidy_port } />
+						</label>
+						<button type="submit">Apply</button>
+					</form>
 
-		        <SpotifyAuthenticationFrame />
+					<h3>Spotify</h3>
+					<form onSubmit={() => this.setSpotifyConfig()}>
+						<label>
+							<span className="label">Country</span>
+							<input onChange={ e => this.setState({ spotify_country: e.target.value })} value={ this.state.spotify_country } />
+						</label>
+						<label>
+							<span className="label">Locale</span>
+							<input onChange={ e => this.setState({ spotify_locale: e.target.value })} value={ this.state.spotify_locale } />
+						</label>
+						<button type="submit">Apply</button>
+					</form>
 
-		        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+			        <SpotifyAuthenticationFrame />
+
+			        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+
+		        </section>
 			</div>
 		);
 	}

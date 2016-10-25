@@ -34,7 +34,7 @@
 		"react-fontawesome": "*"
 	},
 	"scripts": {
-		"dev": "mkdir production & cp src/index.html production/index.html & cp -R src/fonts production/fonts & NODE_ENV=development webpack & sass src/scss/app.scss production/app.css",
+		"dev": "./build.sh & NODE_ENV=development webpack & sass src/scss/app.scss production/app.css",
 		"prod": "NODE_ENV=production webpack"
 	},
 	"author": "James Barnsley",

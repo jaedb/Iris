@@ -19,18 +19,6 @@ export default function reducer(mopidy = {}, action){
                 tlid: action.tlid
             });
 
-        case 'MOPIDY_HIGHLIGHT_CURRENT_TLTRACK':
-            if( !action.data ) return mopidy;
-            for( var i = 0; i < mopidy.tracks.length; i++ ){
-                if( mopidy.tracks[i].tlid == action.data.tlid ){
-                    action.data.track.playing = true;
-                    Object.assign(mopidy.tracks[i], action.data);
-                }else{
-                    mopidy.tracks[i].track.playing = false;
-                }
-            }
-            return Object.assign({}, mopidy, { tracks: mopidy.tracks });
-
         case 'MOPIDY_PLAYLISTS_LOADED':
             if( !action.data ) return mopidy;
             return Object.assign({}, mopidy, { playlists: action.data });
@@ -65,8 +53,16 @@ export default function reducer(mopidy = {}, action){
             });
 
         case 'MOPIDY_CURRENTTLTRACK':
+            var tracks = [];
+            Object.assign(tracks, mopidy.tracks);
+
+            for( var i = 0; i < tracks.length; i++ ){
+                Object.assign(tracks[i].track, { playing: ( tracks[i].tlid == action.data.tlid ) });
+            }
+
             return Object.assign({}, mopidy, {
-                currentTlTrack: action.data   
+                currentTlTrack: action.data,
+                tracks: tracks
             });
 
         case 'MOPIDY_VOLUME':

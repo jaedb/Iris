@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import GridItem from './GridItem'
+import AlbumGridItem from './AlbumGridItem'
 
 export default class AlbumGrid extends React.Component{
 
@@ -15,9 +15,7 @@ export default class AlbumGrid extends React.Component{
 					{
 						this.props.items.items.map(
 							(album, index) => {
-								var link = album.uri;
-								if( album.album ) link = album.album.uri;
-								return <GridItem item={album} key={index} link={'/album/'+link} />
+								return <AlbumGridItem item={album} key={index} />
 							}
 						)
 					}

@@ -1,0 +1,37 @@
+
+.grid {
+
+	padding: 40px 20px;
+
+	.grid-item {
+		width: 16%;
+		margin: 0 2% 3%;
+		display: inline-block;
+		vertical-align: top;
+		border-bottom: 0;
+
+		.thumbnail {
+			max-width: 100%;
+		}
+
+		.name {
+			@include one_line_text;
+			padding-top: 8px;
+		}
+
+		.secondary {
+			@include one_line_text;
+			padding-top: 2px;
+			color: $secondary_grey;
+		}
+
+		&:nth-child(5)::after {
+			@include clear;
+		}
+
+		&:hover{
+			cursor: pointer;
+			opacity: 0.75;
+		}
+	}
+}
