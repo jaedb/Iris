@@ -42,3 +42,22 @@ main {
 		}
 	}
 }
+
+.col {
+	min-height: 1px;
+	float: left;
+
+	&.c2w1 {	width: 50%; }
+	&.c3w1 {	width: 33.3334%; }
+	&.c3w2 {	width: 66.6667%; }
+	&.c4w1 {	width: 25%; }
+	&.c4w3 {	width: 75%; }
+	&.c5w1 {	width: 20%; }
+	&.c5w2 {	width: 40%; }
+	&.c5w3 {	width: 60%; }
+	&.c5w4 {	width: 80%; }
+}
+
+.cf{
+	@include clearfix;
+}

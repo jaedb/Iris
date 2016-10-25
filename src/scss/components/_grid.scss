@@ -25,8 +25,8 @@
 			color: $secondary_grey;
 		}
 
-		&:nth-child(5)::after {
-			@include clear;
+		&:nth-child(5) {
+			@include clearfix;
 		}
 
 		&:hover{

@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import FontAwesome from 'react-fontawesome'
-import ArtistList from './ArtistList'
+import ArtistSentence from './ArtistSentence'
 import AlbumLink from './AlbumLink'
 
 export default class Track extends React.Component{
@@ -58,7 +58,7 @@ export default class Track extends React.Component{
 						{this.props.track.name}
 					</span>
 					<span className="col artists">
-						{ this.props.track.artists ? <ArtistList artists={this.props.track.artists} /> : null }
+						{ this.props.track.artists ? <ArtistSentence artists={this.props.track.artists} /> : null }
 					</span>
 					<span className="col album">
 						{ this.props.track.album ? <AlbumLink album={this.props.track.album} /> : null }

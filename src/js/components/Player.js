@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import FontAwesome from 'react-fontawesome'
 import VolumeSlider from './VolumeSlider'
-import ArtistList from './ArtistList'
+import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
 
 import * as mopidyActions from '../services/mopidy/actions'
@@ -22,7 +22,7 @@ class Player extends React.Component{
 				<div className="track-in-focus">
 					{ this.props.spotify.track && !this.props.mini ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
 					<div className="title">{ this.props.mopidy.currentTlTrack.track.name }</div>
-					<ArtistList artists={ this.props.mopidy.currentTlTrack.track.artists } />
+					<ArtistSentence artists={ this.props.mopidy.currentTlTrack.track.artists } />
 				</div>
 			);
 		}

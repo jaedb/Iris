@@ -8,7 +8,7 @@ import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
-import RelatedArtistList from '../components/RelatedArtistList'
+import ArtistList from '../components/ArtistList'
 
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -34,13 +34,21 @@ class Artist extends React.Component{
 		if( this.props.spotify.artist ){
 			return (
 				<div>
-					<Header icon="mic" title={ this.props.spotify.artist.name } />
-					{ this.props.spotify.artist.images ? <Parallax images={ this.props.spotify.artist.images } /> : null }
-					{ this.props.spotify.artist.images ? <Thumbnail size="huge" images={ this.props.spotify.artist.images } /> : null }
-					<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
-					{ this.props.spotify.artist.related_artists ? <RelatedArtistList artists={ this.props.spotify.artist.related_artists } /> : null }
-					{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
-					{ this.props.spotify.artist_albums ? <AlbumGrid items={ this.props.spotify.artist_albums } /> : null }
+					<Parallax images={ this.props.spotify.artist.images } />
+					<div className="intro">
+						<Thumbnail size="huge" images={ this.props.spotify.artist.images } />
+						<h1>{ this.props.spotify.artist.name }</h1>
+						<p>{ this.props.spotify.artist.followers.total.toLocaleString() } followers</p>
+					</div>
+					<div className="col c3w2">
+						<h3>Top tracks</h3>
+						{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
+					</div>
+					<div className="col c3w1 cf">
+						<h3>Related artists</h3>
+						{ this.props.spotify.artist.related_artists ? <ArtistList artists={ this.props.spotify.artist.related_artists.slice(0,6) } /> : null }
+					</div>
+					{ this.props.spotify.artist_albums ? <AlbumGrid albums={ this.props.spotify.artist_albums.items } /> : null }
 				</div>
 			);
 		}

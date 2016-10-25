@@ -7,7 +7,7 @@ import FontAwesome from 'react-fontawesome'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import Player from '../components/Player'
-import ArtistList from '../components/ArtistList'
+import ArtistSentence from '../components/ArtistSentence'
 import AlbumLink from '../components/AlbumLink'
 import Header from '../components/Header'
 
@@ -24,7 +24,7 @@ class Queue extends React.Component{
 			return (
 				<div>
 					<div>{ this.props.mopidy.trackInFocus.track.name }</div>
-					<div><ArtistList artists={ this.props.mopidy.trackInFocus.track.artists } /></div>
+					<div><ArtistSentence artists={ this.props.mopidy.trackInFocus.track.artists } /></div>
 					<div><AlbumLink album={ this.props.mopidy.trackInFocus.track.album } /></div>
 				</div>
 			);

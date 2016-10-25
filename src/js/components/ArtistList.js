@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
 import { Link } from 'react-router'
+import Thumbnail from './Thumbnail'
 
 export default class ArtistList extends React.Component{
 
@@ -14,17 +14,12 @@ export default class ArtistList extends React.Component{
 			<span className="artist-list">
 				{
 					this.props.artists.map( (artist, index) => {
-						var separator = null;
-						if( index == this.props.artists.length - 2 ){
-							separator = ' and ';
-						}else if( index < this.props.artists.length - 2 ){
-							separator = ', ';
-						}
 						var link = '/artist/' + artist.uri;
 						return (
-							<span className="artist" key={artist.uri}>
-								<Link to={ link }>{ artist.name }</Link>{ separator }
-							</span>
+							<Link to={ link } key={artist.uri} className="artist">
+								<Thumbnail circle={true} size="small" images={artist.images} />
+								<span className="name">{ artist.name }</span>
+							</Link>
 						);
 					})
 				}

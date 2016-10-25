@@ -1,21 +1,22 @@
 
 import React, { PropTypes } from 'react'
-import AlbumGridItem from './AlbumGridItem'
+import GridItem from './GridItem'
 
-export default class AlbumGrid extends React.Component{
+export default class ArtistGrid extends React.Component{
 
 	constructor(props) {
 		super(props);
 	}
 
 	render(){
-		if( this.props.items ){
+		if( this.props.artists ){
 			return (
-				<ul className="grid album-grid">
+				<ul className="grid artist-grid">
 					{
-						this.props.items.items.map(
-							(album, index) => {
-								return <AlbumGridItem item={album} key={index} />
+						this.props.artists.map(
+							(artist, index) => {
+								var link = artist.uri;
+								return <GridItem item={artist} key={index} link={'/artist/'+link} />
 							}
 						)
 					}

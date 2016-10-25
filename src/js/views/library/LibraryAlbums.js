@@ -29,7 +29,7 @@ class LibraryAlbums extends React.Component{
 						icon="cd"
 						title="My albums"
 						/>
-					<AlbumGrid items={this.props.spotify.libraryAlbums} />
+					<AlbumGrid albums={this.props.spotify.libraryAlbums.items} />
 				</div>
 			);
 		}

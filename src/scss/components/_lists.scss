@@ -14,15 +14,12 @@
 	border-top: 1px solid #EEEEEE;
 	border-bottom: 1px solid #EEEEEE;
 	margin-bottom: -1px;
+	@include clearfix;
 
 	.col {
 		width: 10%;
 		min-height: 1px;
 		float: left;
-	}
-
-	&::after {
-		@include clear;
 	}
 
 	&.selected {
@@ -79,3 +76,30 @@
 	}
 }
 
+.artist-list {
+	.artist {
+		display: block;
+		border: 0;
+		margin-bottom: 15px;
+		@include clearfix;
+
+		.thumbnail {
+			width: 50px;
+			margin-right: 20px;
+			float: left;
+			border: 3px solid transparent;
+		}
+
+		.name {
+			display: inline-block;
+			padding-top: 15px;
+		}
+
+		&:hover {
+			.thumbnail {
+				border-color: $turquoise;
+				opacity: 0.8;
+			}
+		}
+	}
+}

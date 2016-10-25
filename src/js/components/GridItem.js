@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import { Link, browserHistory } from 'react-router'
 
 import Thumbnail from './Thumbnail'
-import ArtistList from './ArtistList'
+import ArtistSentence from './ArtistSentence'
 
 export default class GridItem extends React.Component{
 
@@ -28,7 +28,7 @@ export default class GridItem extends React.Component{
 				{ item.images ? <Thumbnail size="medium" images={item.images} /> : item.name }
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
-					{ item.artists ? <ArtistList artists={ item.artists } /> : null }
+					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
 				</div>
 			</div>
 		);
