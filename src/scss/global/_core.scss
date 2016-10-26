@@ -45,6 +45,10 @@ main {
 			padding-bottom: 4px;
 			border-bottom: 1px solid #000000;
 		}
+
+		&:not(:first-child){
+			padding-top: 40px;
+		}
 	}
 
 	.no-top-padding {		padding-top: 0; }

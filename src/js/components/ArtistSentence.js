@@ -22,8 +22,8 @@ export default class ArtistSentence extends React.Component{
 						}
 						var link = '/artist/' + artist.uri;
 						return (
-							<span className="artist" key={artist.uri}>
-								<Link to={ link }>{ artist.name }</Link>{ separator }
+							<span key={artist.uri}>
+								<Link className="artist" to={ link }>{ artist.name }</Link>{ separator }
 							</span>
 						);
 					})

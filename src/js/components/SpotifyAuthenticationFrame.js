@@ -68,6 +68,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			return (
 				<button disabled>
 					<FontAwesome name="circle-o-notch" spin />
+					&nbsp;
 					Authorizing...
 				</button>
 			);
@@ -92,6 +93,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			return (
 				<button disabled>
 					<FontAwesome name="circle-o-notch" spin />
+					&nbsp;
 					Refreshing...
 				</button>
 			);

@@ -1,14 +1,87 @@
 
-input {
-	padding: 5px 8px;
-	border: 1px solid #000000;
+button,
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="email"],
+input[type="date"] {
+	padding: 10px 14px;
+	background: #FFFFFF;
+	color: #000000;
+	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
+	font-size: 14px;
 }
 
+.button,
 button,
 input[type="button"],
 input[type="submit"] {
-	padding: 5px 8px;
-	background: #000000;
-	color: #FFFFFF;
+	@include animate();
+	padding: 10px 20px;
 	border: 0;
+	color: #000000;
+	background: $light_grey;
+
+	&:hover{
+		cursor: pointer;
+		background: darken( $light_grey, 6%);
+	}
+
+	&.primary {
+		background: $turquoise;
+		color: #FFFFFF;
+		&:hover {
+			background: darken( $turquoise, 6% );
+		}
+	}
+
+	&.confirming,
+	&.destructive {
+		background: $red;
+		color: #FFFFFF;
+		&:hover {
+			background: darken( $red, 6% );
+		}
+	}
+
+	&[disabled],
+	&[disabled="disabled"] {
+		background: $light_grey !important;
+		color: $mid_grey !important;
+		cursor: not-allowed !important;
+	}
+}
+
+label {
+	display: block;
+	padding-bottom: 8px;
+	@include clearfix;
+
+	.label {
+		display: block;
+		padding-top: 10px;
+		width: 15%;
+		float: left;
+	}
+
+	input {
+		width: 60%;
+	}
+}
+
+.slider {
+	margin: 10px 0;
+	height: 5px;
+	position: relative;
+	background: rgba(255,255,255,0.3);
+	cursor: pointer;
+
+	.progress {
+		left: 0;
+		top: 0;
+		height: 100%;
+		background: $turquoise;
+		pointer-events: none;
+	}
 }

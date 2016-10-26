@@ -15,21 +15,24 @@ export default class VolumeSlider extends React.Component{
 		this.setState({ volume: nextProps.volume })
 	}
 
-	handleChange(e){
-		var newVolume = parseInt(e.target.value);
-		if( this.props.volume != newVolume ){
-			this.props.onChange( newVolume )
+	handleClick(e){
+		var slider = e.target;
+		if( slider.className != 'slider' ) slider = slider.parentElement;
+
+		var sliderX = e.clientX - slider.getBoundingClientRect().left;
+		var sliderWidth = slider.getBoundingClientRect().width;
+		var percent = parseInt( sliderX / sliderWidth * 100 );
+		
+		if( this.props.volume != percent ){
+			this.props.onChange( percent )
 		}
-	}
+	} 
 
 	render(){
 		return (
-			<input
-				type="range"
-				value={this.props.volume}
-				min="0"
-				max="100"
-				onChange={ (e) => this.handleChange(e) } />
+			<div className="slider" onClick={ (e) => this.handleClick(e) } >
+				<div className="progress" style={{ width: this.props.volume+'%' }}></div>
+			</div>
 		);
 	}
 }

@@ -15,7 +15,7 @@ export default class PlaylistListItem extends React.Component{
 	renderOwner(){
 		if( !this.props.item.owner ) return null;
 		return (			
-			<Link to={ '/user/'+this.props.item.owner.uri }>
+			<Link to={ '/user/'+this.props.item.owner.id }>
 				{ this.props.item.owner.id }
 			</Link>
 		);
