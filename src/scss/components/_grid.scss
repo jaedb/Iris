@@ -11,6 +11,7 @@
 		border-bottom: 0;
 
 		.thumbnail {
+			@include animate();
 			max-width: 100%;
 		}
 
@@ -31,7 +32,10 @@
 
 		&:hover{
 			cursor: pointer;
-			opacity: 0.75;
+
+			.thumbnail {
+				opacity: 0.75;
+			}
 		}
 	}
 

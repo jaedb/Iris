@@ -12,10 +12,10 @@ aside{
 	
 	.thumbnail {
 		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
+		top: -30px;
+		right: -30px;
+		bottom: -30px;
+		left: -30px;
 		height: auto;
 		width: auto;
 		max-width: none;
@@ -23,6 +23,7 @@ aside{
 		opacity: 0.2;
 
 		.image {
+			@include blur();
 			padding-bottom: 0;
 			height: 100%;
 		}

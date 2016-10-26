@@ -405,7 +405,7 @@ export function getCategory( id ){
 }
 
 export function getCategoryPlaylists( id ){
-	return (dispatch, getState) => {
+    return (dispatch, getState) => {
 
         dispatch({ type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', data: false });
 
@@ -414,6 +414,21 @@ export function getCategoryPlaylists( id ){
                 dispatch({
                     type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
                     data: response.playlists
+                });
+            });
+    }
+}
+
+export function getNewReleases(){
+	return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_NEW_RELEASES_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().spotify.country+'&limit=50' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_NEW_RELEASES_LOADED',
+                    data: response.albums
                 });
             });
 	}

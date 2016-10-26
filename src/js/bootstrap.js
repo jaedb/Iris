@@ -3,6 +3,7 @@ console.info('Bootstrapping...');
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
+import ui from './services/ui/reducer'
 import mopidy from './services/mopidy/reducer'
 import spotify from './services/spotify/reducer'
 
@@ -12,6 +13,7 @@ import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
 let reducers = combineReducers({
+    ui,
     mopidy,
     spotify
 });
@@ -28,6 +30,11 @@ var initialState = {
 		country: 'NZ',
 		locale: 'en_NZ',
 		me: false
+	},
+	ui: {
+		context_menu: {
+			show: false
+		}
 	}
 };
 

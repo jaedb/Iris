@@ -50,6 +50,10 @@ class Sidebar extends React.Component{
 							<Icon name="star" className="white" />
 							Featured playlists
 						</Link>
+						<Link activeClassName="active" to="/discover/new-releases">
+							<Icon name="leaf" className="white" />
+							New releases
+						</Link>
 					</section>
 
 					<section>

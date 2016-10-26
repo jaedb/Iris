@@ -10,15 +10,25 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
-	handleClick( e ){
+	handleClick(e){
 		var target = $(e.target);
 		if( !target.is('a') && target.closest('a').length <= 0 ){
 			this.props.handleClick(e);
 		}
 	}
 
-	handleDoubleClick( e ){
+	handleDoubleClick(e){
 		return this.props.handleDoubleClick(e);
+	}
+
+	handleContextMenu(e){
+		e.preventDefault();
+
+		// trigger a regular click event
+		if( !this.props.track.selected ) this.handleClick(e);
+
+		// notify our tracklist
+		this.props.handleContextMenu(e);
 	}
 
 	formatDuration(){
@@ -52,7 +62,8 @@ export default class Track extends React.Component{
 			<div
 				className={className}
 				onDoubleClick={ (e) => this.handleDoubleClick(e) }
-				onClick={ (e) => this.handleClick(e) }>
+				onClick={ (e) => this.handleClick(e) }
+				onContextMenu={ (e) => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
 						{this.props.track.name}

@@ -26,3 +26,8 @@ $red: #cf2d2d;
 		 -o-transition: all $speed ease-in-out;
 		    transition: all $speed ease-in-out; 
 }
+
+@mixin blur( $size: 10px ) {
+	-webkit-filter: blur( $size );
+	filter: blur( $size );
+}

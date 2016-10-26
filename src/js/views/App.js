@@ -6,7 +6,9 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from '../components/Sidebar'
+import ContextMenu from '../components/ContextMenu'
 
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -31,6 +33,8 @@ class App extends React.Component{
 		        <main>
 		      		{this.props.children}
 		        </main>
+		        { this.props.ui.context_menu.test }
+		        <ContextMenu state={this.props.ui.context_menu} />
 	        </div>
 		);
 	}
@@ -48,6 +52,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

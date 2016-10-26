@@ -82,6 +82,9 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { category_playlists: action.data });
 
+        case 'SPOTIFY_NEW_RELEASES_LOADED':
+            return Object.assign({}, spotify, { new_releases: action.data });
+
         default:
             return spotify
     }

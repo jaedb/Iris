@@ -36,7 +36,7 @@ class Queue extends React.Component{
 		if( this.props.mopidy && this.props.mopidy.tracks ){
 			return (
 				<TrackList
-					type="tltrack"
+					context="queue"
 					tracks={this.props.mopidy.tracks} 
 					removeTracks={ tracks => this.removeTracks( tracks ) }
 					playTracks={ null }

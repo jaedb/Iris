@@ -23,6 +23,7 @@ import Discover from './views/discover/Discover'
 import DiscoverFeatured from './views/discover/DiscoverFeatured'
 import DiscoverCategories from './views/discover/DiscoverCategories'
 import DiscoverCategory from './views/discover/DiscoverCategory'
+import DiscoverNewReleases from './views/discover/DiscoverNewReleases'
 
 import LibraryArtists from './views/library/LibraryArtists'
 import LibraryAlbums from './views/library/LibraryAlbums'
@@ -41,6 +42,7 @@ ReactDOM.render(
 				<Route path="/discover/featured" component={DiscoverFeatured} />
 				<Route path="/discover/categories" component={DiscoverCategories} />
 				<Route path="/discover/categories/:id" component={DiscoverCategory} />
+				<Route path="/discover/new-releases" component={DiscoverNewReleases} />
 
 				<Route path="/library/artists" component={LibraryArtists} />
 				<Route path="/library/albums" component={LibraryAlbums} />

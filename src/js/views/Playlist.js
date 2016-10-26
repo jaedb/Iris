@@ -29,10 +29,14 @@ class Playlist extends React.Component{
 
 	render(){
 		if( this.props.spotify.playlist ){
+			
+			var context = null;
+			if( this.props.spotify.playlist.owner.id == this.props.spotify.me.id ) context = 'editable-playlist'
+
 			return (
 				<div className="view playlist-view">
 					<Header icon="playlist" title={ this.props.spotify.playlist.name } />
-					<TrackList tracks={this.props.spotify.playlist.tracks.items} />
+					<TrackList context={context} tracks={this.props.spotify.playlist.tracks.items} />
 				</div>
 			);
 		}

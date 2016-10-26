@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as uiActions from '../services/ui/actions'
 
 import Track from './Track'
 
@@ -22,6 +23,8 @@ class TrackList extends React.Component{
 	}
 
 	handleClick( e, index ){
+		if( this.props.ui.context_menu.show ) this.props.uiActions.hideContextMenu();
+
 		var tracks = this.state.tracks;
 
 		if( e.ctrlKey ){
@@ -54,8 +57,17 @@ class TrackList extends React.Component{
 	}
 
 	handleDoubleClick( e, index ){
+		if( this.props.ui.context_menu.show ) this.props.uiActions.hideContextMenu();
+
 		var tracks = this.state.tracks;
 		this.playTrack( tracks[index] )
+	}
+
+	handleContextMenu( e, index ){
+		var data = {
+			selected_tracks: this.selectedTracks()
+		}
+		this.props.uiActions.showContextMenu( e, this.props.context, data )
 	}
 
 	selectedTracks(){
@@ -103,46 +115,44 @@ class TrackList extends React.Component{
 		let self = this;
 		if( this.state.tracks ){
 			return (
-				<div>
-					<ul>
-						<li className="list-item header track">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col duration">Duration</span>
-						</li>
-						{
-							this.state.tracks.map(
-								(track, index) => {
+				<ul>
+					<li className="list-item header track">
+						<span className="col name">Name</span>
+						<span className="col artists">Artists</span>
+						<span className="col album">Album</span>
+						<span className="col duration">Duration</span>
+					</li>
+					{
+						this.state.tracks.map(
+							(track, index) => {
 
-									// flatten nested track objects (as in the case of TlTracks)
-									if( typeof(track.track) !== 'undefined' ){
+								// flatten nested track objects (as in the case of TlTracks)
+								if( typeof(track.track) !== 'undefined' ){
 
-										// see if we're the current tlTrack
-										if( self.props.mopidy.trackInFocus && self.props.mopidy.trackInFocus.tlid == track.tlid ){
-											track.playing = true;
-										}else{
-											track.playing = false;
-										}
+									// see if we're the current tlTrack
+									// TODO: figure out why this isn't fired when the tracklist changes
+									if( self.props.mopidy.trackInFocus && self.props.mopidy.trackInFocus.tlid == track.tlid ){
+										track.playing = true;
+									}else{
+										track.playing = false;
+									}
 
-										for( var property in track.track ){
-											if( track.track.hasOwnProperty(property) ){
-												track[property] = track.track[property]
-											}
+									for( var property in track.track ){
+										if( track.track.hasOwnProperty(property) ){
+											track[property] = track.track[property]
 										}
 									}
-									return <Track
-											key={index+'_'+track.uri} 
-											track={track} 
-											handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
-											handleClick={(e) => self.handleClick(e, index)} />
 								}
-							)
-						}
-					</ul>
-					<button onClick={() => this.removeTracks()}>Delete selected</button>
-					<button onClick={() => this.playTracks()}>Play selected</button>
-				</div>
+								return <Track
+										key={index+'_'+track.uri} 
+										track={track} 
+										handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
+										handleClick={(e) => self.handleClick(e, index)}
+										handleContextMenu={(e) => self.handleContextMenu(e, index)} />
+							}
+						)
+					}
+				</ul>
 			);
 		}
 		return null;
@@ -162,7 +172,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		mopidyActions: bindActionCreators(mopidyActions, dispatch)
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch)
 	}
 }
 
