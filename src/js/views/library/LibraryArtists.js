@@ -22,18 +22,15 @@ class LibraryArtists extends React.Component{
 	}
 
 	render(){
-		if( this.props.spotify.libraryArtists ){
-			return (
-				<div>
-					<Header
-						icon="mic"
-						title="My artists"
-						/>
-					<ArtistGrid artists={this.props.spotify.libraryArtists.artists.items} />
-				</div>
-			);
-		}
-		return null;
+		return (
+			<div className="view library-artists-view">
+				<Header
+					icon="mic"
+					title="My artists"
+					/>
+				{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.artists.items} /> : null }
+			</div>
+		);
 	}
 }
 

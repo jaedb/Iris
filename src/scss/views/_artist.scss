@@ -1,1 +1,14 @@
 
+.artist-view {
+	.intro {
+		position: relative;
+		margin-bottom: 20px;
+		@include clearfix;
+
+		.thumbnail {
+			max-width: 200px;
+			margin: -100px 20px 0 40px;
+			float: left;
+		}
+	}
+}

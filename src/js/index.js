@@ -19,6 +19,11 @@ import Playlist from './views/Playlist'
 import Queue from './views/Queue'
 import Settings from './views/Settings'
 
+import Discover from './views/discover/Discover'
+import DiscoverFeatured from './views/discover/DiscoverFeatured'
+import DiscoverCategories from './views/discover/DiscoverCategories'
+import DiscoverCategory from './views/discover/DiscoverCategory'
+
 import LibraryArtists from './views/library/LibraryArtists'
 import LibraryAlbums from './views/library/LibraryAlbums'
 import LibraryTracks from './views/library/LibraryTracks'
@@ -32,15 +37,20 @@ ReactDOM.render(
      			<IndexRoute component={Queue} />
 				<Route path="/queue" component={Queue} />
 	
-				<Route path="library/artists" component={LibraryArtists} />
-				<Route path="library/albums" component={LibraryAlbums} />
-				<Route path="library/tracks" component={LibraryTracks} />
-				<Route path="library/playlists" component={LibraryPlaylists} />
+				<Route path="/discover" component={Discover} />
+				<Route path="/discover/featured" component={DiscoverFeatured} />
+				<Route path="/discover/categories" component={DiscoverCategories} />
+				<Route path="/discover/categories/:id" component={DiscoverCategory} />
+
+				<Route path="/library/artists" component={LibraryArtists} />
+				<Route path="/library/albums" component={LibraryAlbums} />
+				<Route path="/library/tracks" component={LibraryTracks} />
+				<Route path="/library/playlists" component={LibraryPlaylists} />
 				
-				<Route path="album/:uri" component={Album} />
-				<Route path="artist/:uri" component={Artist} />
-				<Route path="playlist/:uri" component={Playlist} />
-				<Route path="settings" component={Settings} />
+				<Route path="/album/:uri" component={Album} />
+				<Route path="/artist/:uri" component={Artist} />
+				<Route path="/playlist/:uri" component={Playlist} />
+				<Route path="/settings" component={Settings} />
 
 			</Route>
 		</Router>

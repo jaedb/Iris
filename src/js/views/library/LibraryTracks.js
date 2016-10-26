@@ -22,15 +22,12 @@ class LibraryTracks extends React.Component{
 	}
 
 	render(){
-		if( this.props.spotify.libraryTracks ){
-			return (
-				<div>
-					<Header icon="music" title="My tracks" />
-					<TrackList tracks={this.props.spotify.libraryTracks.items} />
-				</div>
-			);
-		}
-		return null;
+		return (
+			<div className="view library-tracks-view">
+				<Header icon="music" title="My tracks" />
+				{ this.props.spotify.library_tracks ? <TrackList tracks={this.props.spotify.library_tracks.items} /> : null }
+			</div>
+		);
 	}
 }
 

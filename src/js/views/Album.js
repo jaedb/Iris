@@ -30,7 +30,7 @@ class Album extends React.Component{
 	render(){
 		if( this.props.spotify.album ){
 			return (
-				<div>
+				<div className="view album-view">
 					<Header
 						icon="cd"
 						title={ this.props.spotify.album.name }

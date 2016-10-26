@@ -25,10 +25,12 @@ export default class GridItem extends React.Component{
 		}
 		return (
 			<div className="grid-item" onClick={ (e) => this.handleClick(e) }>
-				{ item.images ? <Thumbnail size="medium" images={item.images} /> : item.name }
+				{ item.images ? <Thumbnail size="medium" images={item.images} /> : null }
+				{ item.icons ? <Thumbnail size="medium" images={item.icons} /> : null }
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
 					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
+					{ item.type == 'playlist' ? item.tracks.total+' tracks' : null }
 				</div>
 			</div>
 		);

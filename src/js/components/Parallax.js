@@ -15,10 +15,12 @@ export default class Parallax extends React.Component{
 				width: 0,
 				height: 0
 			},
-			original: {},
 			image: {},
-			imageObject: {}
+			loaded: false
 		}
+
+		// we need to manually bind this as eventListener doesn't work with anonymous functions
+		this.handleResize = this.handleResize.bind(this);
 	}
 
 	componentDidMount(){
@@ -26,13 +28,21 @@ export default class Parallax extends React.Component{
 		this.loadImage( url )
 			.then(
 				response => {
-					this.setState({ image: response })
+					this.setState({ image: response, loaded: true })
 					this.updateCanvas( response )
 				}
 			)
 
-		$(window).resize(() => this.updateCanvas( this.state.image ));
+        window.addEventListener("resize", this.handleResize);
 	}
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
+    }
+
+    handleResize(){
+    	this.updateCanvas( this.state.image );
+    }
 
 	loadImage( url ){		
 		return new Promise( (resolve, reject) => {
@@ -137,7 +147,12 @@ export default class Parallax extends React.Component{
 	render(){
 		return (
 			<div className="parallax">
-				<canvas id="parallax-canvas" width={this.state.canvas.width} height={this.state.canvas.height}></canvas>
+				<canvas 
+					id="parallax-canvas" 
+					className={ this.state.loaded ? 'loaded' : null } 
+					width={this.state.canvas.width} 
+					height={this.state.canvas.height}>
+				</canvas>
 			</div>
 		);
 	}

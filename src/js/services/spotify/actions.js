@@ -330,7 +330,7 @@ export function getLibraryAlbums(){
 }
 
 export function getLibraryTracks(){
-	return (dispatch, getState) => {
+    return (dispatch, getState) => {
 
         dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
 
@@ -339,6 +339,81 @@ export function getLibraryTracks(){
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
                     data: response
+                });
+            });
+    }
+}
+
+export function getFeaturedPlaylists(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
+
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth();
+        if( month < 10 ) month = '0'+month;
+        var day = date.getDay();
+        if( day < 10 ) day = '0'+day;
+        var hour = date.getHours();
+        if( hour < 10 ) hour = '0'+hour;
+        var min = date.getMinutes();
+        if( min < 10 ) min = '0'+min;
+        var sec = date.getSeconds();
+        if( sec < 10 ) sec = '0'+sec;
+
+        var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
+
+        sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
+                    data: response
+                });
+            });
+    }
+}
+
+export function getCategories(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_CATEGORIES_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'browse/categories?limit=50' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_CATEGORIES_LOADED',
+                    data: response.categories
+                });
+            });
+    }
+}
+
+export function getCategory( id ){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_CATEGORY_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'browse/categories/'+id )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_CATEGORY_LOADED',
+                    data: response
+                });
+            });
+    }
+}
+
+export function getCategoryPlaylists( id ){
+	return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                    data: response.playlists
                 });
             });
 	}

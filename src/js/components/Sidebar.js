@@ -38,6 +38,18 @@ class Sidebar extends React.Component{
 
 					<section>
 						<title>Discover</title>
+						<Link activeClassName="active" to="/discover">
+							<Icon name="compass" className="white" />
+							Discover
+						</Link>
+						<Link activeClassName="active" to="/discover/categories">
+							<Icon name="grid" className="white" />
+							Genre / Mood
+						</Link>
+						<Link activeClassName="active" to="/discover/featured">
+							<Icon name="star" className="white" />
+							Featured playlists
+						</Link>
 					</section>
 
 					<section>

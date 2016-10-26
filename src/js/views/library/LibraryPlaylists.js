@@ -37,8 +37,8 @@ class LibraryPlaylists extends React.Component{
 			Object.assign(playlists, this.props.mopidy.playlists)
 		}
 
-		if( this.props.spotify.libraryPlaylists ){
-			Object.assign(playlists, this.props.spotify.libraryPlaylists.items)
+		if( this.props.spotify.library_playlists ){
+			Object.assign(playlists, this.props.spotify.library_playlists.items)
 		}
 
 		return playlists;
@@ -67,7 +67,7 @@ class LibraryPlaylists extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<div className="view library-playlists-view">
 				<Header
 					icon="playlist"
 					title="My playlists"

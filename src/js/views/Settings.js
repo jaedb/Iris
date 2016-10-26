@@ -40,7 +40,7 @@ class Settings extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<div className="view settings-view">
 				<Header
 					icon="cog"
 					title="Settings"

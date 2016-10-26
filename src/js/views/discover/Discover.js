@@ -2,15 +2,12 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 
-import AlbumGrid from '../../components/AlbumGrid'
 import Header from '../../components/Header'
 
-import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
-class LibraryAlbums extends React.Component{
+class Discover extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -18,19 +15,26 @@ class LibraryAlbums extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryAlbums();
+		this.props.spotifyActions.getPlaylist( this.props.params.uri );
+	}
+
+	// when props changed
+	componentWillReceiveProps( nextProps ){
+		if( nextProps.params.uri != this.props.params.uri ){
+			this.props.spotifyActions.getPlaylist( nextProps.params.uri );
+		}
 	}
 
 	render(){
-		return (
-			<div className="view library-albums-view">
-				<Header
-					icon="cd"
-					title="My albums"
-					/>
-				{ this.props.spotify.library_albums ? <AlbumGrid albums={this.props.spotify.library_albums.items} /> : null }
-			</div>
-		);
+		if( this.props.spotify.playlist ){
+			return (
+				<div className="view discover-view">
+					<Header icon="compass" title="Discover" />
+					<h1>To come</h1>
+				</div>
+			);
+		}
+		return null;
 	}
 }
 
@@ -47,9 +51,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryAlbums)
+export default connect(mapStateToProps, mapDispatchToProps)(Discover)

@@ -61,7 +61,7 @@ class Queue extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<div className="view queue-view">
 				<Header
 					icon="play"
 					title="Now playing"

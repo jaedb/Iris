@@ -34,4 +34,21 @@
 			opacity: 0.75;
 		}
 	}
+
+	&.category-grid {
+		.grid-item {
+			position: relative;
+
+			.name {
+				position: absolute;
+				bottom: 15%;
+				left: 0;
+				right: 0;
+				text-align: center;
+				font-size: 14px;
+				font-weight: 600;
+				color: #FFFFFF;
+			}
+		}
+	}
 }

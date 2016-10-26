@@ -30,7 +30,7 @@ class Playlist extends React.Component{
 	render(){
 		if( this.props.spotify.playlist ){
 			return (
-				<div>
+				<div className="view playlist-view">
 					<Header icon="playlist" title={ this.props.spotify.playlist.name } />
 					<TrackList tracks={this.props.spotify.playlist.tracks.items} />
 				</div>

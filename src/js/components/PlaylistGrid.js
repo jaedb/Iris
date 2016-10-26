@@ -2,22 +2,22 @@
 import React, { PropTypes } from 'react'
 import GridItem from './GridItem'
 
-export default class ArtistGrid extends React.Component{
+export default class PlaylistGrid extends React.Component{
 
 	constructor(props) {
 		super(props);
 	}
 
 	render(){
-		if( this.props.artists ){
-			var className = "grid artist-grid"
+		if( this.props.playlists ){
+			var className = "grid playlist-grid"
 			if( this.props.className ) className += ' '+this.props.className
 			return (
 				<div className={className}>
 					{
-						this.props.artists.map(
-							(artist, index) => {
-								return <GridItem item={artist} key={index} link={'/artist/'+artist.uri} />
+						this.props.playlists.map(
+							(playlist, index) => {
+								return <GridItem item={playlist} key={index} link={'/playlist/'+playlist.uri} />
 							}
 						)
 					}

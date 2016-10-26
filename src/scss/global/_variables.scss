@@ -1,6 +1,7 @@
 
 $turquoise: #08d58f;
 $light_grey: #DDDDDD;
+$dark_grey: #333333;
 $secondary_grey: #888888;
 
 @mixin one_line_text {
@@ -15,4 +16,11 @@ $secondary_grey: #888888;
 		clear: both;
 		display: block;
 	}
+}
+
+@mixin animate( $speed: 0.2s ){
+	-webkit-transition: all $speed ease-in-out;
+	   -moz-transition: all $speed ease-in-out;
+		 -o-transition: all $speed ease-in-out;
+		    transition: all $speed ease-in-out; 
 }

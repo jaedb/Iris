@@ -33,7 +33,7 @@ class Artist extends React.Component{
 	render(){
 		if( this.props.spotify.artist ){
 			return (
-				<div>
+				<div className="view artist-view">
 					<Parallax images={ this.props.spotify.artist.images } />
 
 					<div className="intro">
@@ -49,10 +49,12 @@ class Artist extends React.Component{
 
 					<div className="col w5"></div>
 
-					<div className="col w25 cf">
+					<div className="col w25">
 						<h3>Related artists</h3>
 						{ this.props.spotify.artist.related_artists ? <ArtistList artists={ this.props.spotify.artist.related_artists.slice(0,6) } /> : null }
 					</div>
+
+					<div className="cf"></div>
 
 					<h3 className="left-padding">Albums</h3>
 					{ this.props.spotify.artist_albums ? <AlbumGrid className="no-top-padding" albums={ this.props.spotify.artist_albums.items } /> : null }
