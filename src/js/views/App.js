@@ -20,20 +20,42 @@ class App extends React.Component{
 
 	constructor(props){
 		super(props);
-
 		this.handleKeyUp = this.handleKeyUp.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 	}
 
 	componentWillMount(){
 		this.props.mopidyActions.connect();
 		window.addEventListener("keyup", this.handleKeyUp, false);
+		window.addEventListener("keydown", this.handleKeyDown, false);
 	}
 
 	componentWillUnmount(){
 		window.removeEventListener("keyup", this.handleKeyUp, false);
+		window.removeEventListener("keydown", this.handleKeyDown, false);
+	}
+
+	shouldTriggerShortcut(e){
+		var ignoreNodes = ['INPUT', 'TEXTAREA'];
+		var keyCodes = [32];
+
+		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
+			return false;
+		}
+
+		if( keyCodes.indexOf(e.keyCode) > -1 ){
+			e.preventDefault();
+			return true;
+		}
+	}
+
+	handleKeyDown(e){
+		this.shouldTriggerShortcut(e);
 	}
 
 	handleKeyUp(e){
+		if( !this.shouldTriggerShortcut(e) ) return;
+
 		switch(e.keyCode){			
 			case 32: // spacebar
 				if( this.props.mopidy.state == 'playing' ){
