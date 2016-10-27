@@ -87,8 +87,13 @@ label {
 		float: left;
 	}
 
-	input {
-		width: 60%;
+	.input {
+		width: 85%;
+		float: left;
+		
+		input {
+			width: 60%;
+		}
 	}
 }
 

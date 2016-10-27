@@ -12,7 +12,8 @@ const SpotifyMiddleware = (function(){
         switch(action.type){
 
             // when our mopidy server current track changes
-            case 'MOPIDY_CURRENTTLTRACK':
+            case 'MOPIDY_CURRENTTLTRACK_XX':
+                // DISABLED AS IT CAUSES ISSUE
 
                 // proceed as usual so we don't inhibit default functionality
                 next(action)

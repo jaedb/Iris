@@ -6,13 +6,32 @@ const localstorageMiddleware = (function(){
      **/
     return store => next => action => {
         
-        console.log(action)
+        console.log(action, store.getState())
 
         // proceed as normal first
         // this way, any reducers and middleware do their thing BEFORE we store our new state
         next(action);
 
         switch( action.type ){
+
+            case 'PUSHER_SET_CONFIG':
+                var pusher = {
+                    username: action.config.username,
+                    port: action.config.port
+                };
+                localStorage.setItem('pusher', JSON.stringify(pusher));
+                break;
+
+            case 'PUSHER_CONNECTED':
+                var pusher = JSON.parse( localStorage.getItem('pusher') );
+                if( !pusher ) pusher = {};
+                Object.assign(
+                    pusher,{
+                        connectionid: action.connection.connectionid
+                    }
+                );
+                localStorage.setItem('pusher', JSON.stringify(pusher));
+                break;
 
             case 'MOPIDY_SET_CONFIG':
                 var mopidy = {

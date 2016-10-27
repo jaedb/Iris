@@ -40,16 +40,23 @@ const PusherMiddleware = (function(){
                 store.dispatch({ type: 'PUSHER_CONNECTING' });
 
                 var state = store.getState();
+                var connection = {
+                    clientid: Math.random().toString(36).substr(2, 9),
+                    connectionid: helpers.generateGuid(),
+                    username: Math.random().toString(36).substr(2, 9)
+                }
+                //if( state.pusher.username ) connection.username = state.pusher.username;
 
                 socket = new WebSocket(
-                    'ws://'+state.mopidy.host+':'+state.pusher.port+'/pusher'
+                    'ws://'+state.mopidy.host+':'+state.pusher.port+'/pusher',
+                    [ connection.clientid, connection.connectionid, connection.username ]
                 );
 
-                socket.onopen = function(){
-                    store.dispatch({ type: 'PUSHER_CONNECTED' });
+                socket.onopen = () => {
+                    store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
                 };
 
-                socket.onmessage = function(message){
+                socket.onmessage = (message) => {
                     var message = JSON.parse(message.data);
                     handleMessage( socket, store, message )
                 };
@@ -58,6 +65,11 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_CONNECTED':
                 makeRequest({ action: 'get_version' });
+                return next(action);
+                break;
+
+            case 'PUSHER_INSTRUCT':
+                makeRequest({ action: action.action, data: action.data });
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware

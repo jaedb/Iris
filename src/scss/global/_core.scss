@@ -92,3 +92,7 @@ main {
 .cf{
 	@include clearfix;
 }
+
+.one-liner{
+	@include one_line_text;
+}

@@ -22,17 +22,22 @@ let reducers = combineReducers({
 });
 
 // set application defaults
+// TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
 	mopidy: {
+		connected: false,
 		host: window.location.hostname,
 		port: 6680,
 		volume: 0,
 		progress: 0
 	},
 	pusher: {
+		connections: [],
+		connected: false,
 		port: 6681
 	},
 	spotify: {
+		connected: false,
 		country: 'NZ',
 		locale: 'en_NZ',
 		me: false
@@ -65,7 +70,7 @@ if( localStorage.getItem('spotify') ){
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware( thunk, localstorageMiddleware, pusherMiddleware, mopidyMiddleware, spotifyMiddleware )
+	applyMiddleware( thunk, localstorageMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
 );
 
 export default store;
