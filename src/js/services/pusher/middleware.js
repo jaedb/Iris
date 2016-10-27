@@ -1,5 +1,6 @@
 
 var actions = require('./actions.js')
+var helpers = require('../../helpers.js')
 
 const PusherMiddleware = (function(){ 
 
@@ -10,8 +11,16 @@ const PusherMiddleware = (function(){
     const handleMessage = (ws, store, message) => {
         switch( message.action ){
             default:
-                store.dispatch({ type: 'PUSHER_'+message.action.toUpperCase(), data: message.data })
+                var name = message.action.toUpperCase();
+                name = name.replace('GET_','');
+                store.dispatch({ type: 'PUSHER_'+name, data: message.data })
         }
+    }
+
+    const makeRequest = (data) => {
+        data.type = 'query';
+        data.message_id = helpers.generateGuid();
+        socket.send( JSON.stringify(data) );
     }
 
     /**
@@ -45,6 +54,10 @@ const PusherMiddleware = (function(){
                     handleMessage( socket, store, message )
                 };
 
+                break;
+
+            case 'PUSHER_CONNECTED':
+                makeRequest({ action: 'get_version' });
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware
