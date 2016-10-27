@@ -68,6 +68,11 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+            case 'PUSHER_CLIENT_CONNECTED':
+                makeRequest({ action: 'get_connections' });
+                return next(action);
+                break;
+
             case 'PUSHER_INSTRUCT':
                 makeRequest({ action: action.action, data: action.data });
                 break;

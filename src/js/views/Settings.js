@@ -20,22 +20,11 @@ class Settings extends React.Component{
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
-			pusher_username: '',
+			pusher_username: this.props.pusher.username,
 			pusher_port: this.props.pusher.port,
 			spotify_country: this.props.spotify.country,
 			spotify_locale: this.props.spotify.locale
 		};
-	}
-
-	componentWillReceiveProps( newProps ){
-		if( this.props.pusher.connectionid != newProps.pusher.connectionid ){
-
-			function isCurrentConnection(connection){
-				return connection.connectionid == newProps.pusher.connectionid;
-			}
-			var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
-			this.setState({ pusher_username: currentConnection.username })
-		}
 	}
 
 	resetAllSettings(){

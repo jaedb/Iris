@@ -37,3 +37,15 @@ export let generateGuid = function(){
 		return v.toString(16);
 	});
 }
+
+
+export let getCurrentPusherConnection = function( connections, connectionid ){
+	function isCurrentConnection(connection){
+		return connection.connectionid == newProps.pusher.connectionid;
+	}
+	
+	var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
+	if( !currentConnection ) return false;
+
+	return currentConnection;
+}

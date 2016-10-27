@@ -14,8 +14,16 @@ export default function reducer(pusher = {}, action){
                 port: action.port
             });
 
-        case 'PUSHER_CLIENT_CONNECTED':
-            return Object.assign({}, pusher, { connection: action.data });
+        case 'PUSHER_CONNECTION_UPDATED':
+            function byID(connection){
+                return connection.connectionid == action.data.connections.connectionid;
+            }
+            var connection = pusher.connections.find(byID);
+            var index = pusher.connections.indexOf(connection);
+            var connections = Object.assign([], pusher.connections);
+            connections[index] = action.data.connections;
+
+            return Object.assign({}, pusher, { connections: connections });
 
         case 'PUSHER_CONNECTIONS':
             return Object.assign({}, pusher, { connections: action.data.connections });
