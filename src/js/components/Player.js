@@ -16,13 +16,13 @@ class Player extends React.Component{
 		super(props);
 	}
 
-	renderTrackInFocus(){
-		if( this.props.mopidy && this.props.mopidy.currentTlTrack ){
+	renderTrack(){
+		if( this.props.mopidy && this.props.mopidy.current_tltrack ){
 			return (
 				<div className="track-in-focus">
 					{ this.props.spotify.track && !this.props.mini ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
-					<div className="title">{ this.props.mopidy.currentTlTrack.track.name }</div>
-					<ArtistSentence artists={ this.props.mopidy.currentTlTrack.track.artists } />
+					<div className="title">{ this.props.mopidy.current_tltrack.track.name }</div>
+					<ArtistSentence artists={ this.props.mopidy.current_tltrack.track.artists } />
 				</div>
 			);
 		}
@@ -68,7 +68,7 @@ class Player extends React.Component{
 		return (
 			<div className="player">
 
-				{ this.renderTrackInFocus() }
+				{ this.renderTrack() }
 
 				<div className="controls">
 					{ this.renderPlayButton() }

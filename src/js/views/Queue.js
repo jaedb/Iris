@@ -11,7 +11,7 @@ import ArtistSentence from '../components/ArtistSentence'
 import AlbumLink from '../components/AlbumLink'
 import Header from '../components/Header'
 
-import * as actions from '../services/mopidy/actions'
+import * as mopidyActions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
 
@@ -39,7 +39,7 @@ class Queue extends React.Component{
 					context="queue"
 					tracks={this.props.mopidy.tracks} 
 					removeTracks={ tracks => this.removeTracks( tracks ) }
-					playTracks={ null }
+					playTracks={ tracks => this.playTracks( tracks ) }
 					playTrack={ track => this.playTrack( track ) }
 					/>
 			);
@@ -52,11 +52,15 @@ class Queue extends React.Component{
 		for( var i = 0; i < tracks.length; i++ ){
 			tlids.push( tracks[i].tlid )
 		}
-		this.props.actions.removeTracks( tlids )
+		this.props.mopidyActions.removeTracks( tlids )
 	}
 
 	playTrack( track ){
-		this.props.actions.changeTrack( track.tlid )
+		this.props.mopidyActions.changeTrack( track.tlid )
+	}
+
+	playTracks( tracks ){
+		this.props.mopidyActions.changeTrack( tracks[0].tlid )
 	}
 
 	render(){
@@ -86,7 +90,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
 

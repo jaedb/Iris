@@ -29,14 +29,16 @@ class TrackList extends React.Component{
 	}
 
 	handleKeyUp(e){
+		if( this.selectedTracks().length <= 0 ) return;
+
 		switch(e.keyCode){
 			
 			case 13: // enter
-				this.playTrack( this.state.tracks[this.state.lastSelectedTrack] );
+				 this.playTracks();
 				break;
 			
 			case 46: // delete
-				console.log('delete')
+				 this.removeTracks();
 				break;
 		}
 	}
@@ -81,9 +83,7 @@ class TrackList extends React.Component{
 
 	handleDoubleClick( e, index ){
 		if( this.props.ui.context_menu.show ) this.props.uiActions.hideContextMenu();
-
-		var tracks = this.state.tracks;
-		this.playTrack( tracks[index] )
+		this.playTracks()
 	}
 
 	handleContextMenu( e, index ){
@@ -104,10 +104,12 @@ class TrackList extends React.Component{
 
 		var tracks = this.selectedTracks();
 
+		// if we've got a specific action, run it
 		if( typeof(this.props.playTracks) !== 'undefined' ){
 			return this.props.playTracks( tracks );
 		}
 
+		// default to playing a bunch of uris
 		var uris = [];
 		for( var i = 0; i < tracks.length; i++ ){
 			uris.push( tracks[i].uri )
@@ -115,23 +117,16 @@ class TrackList extends React.Component{
 		return this.props.mopidyActions.playTracks( uris )
 	}
 
-	playTrack( track ){
-
-		if( typeof(this.props.playTrack) !== 'undefined' ){
-			return this.props.playTrack( track );
-		}
-
-		var uris = [track.uri];
-		this.props.mopidyActions.playTracks( uris )
-	}
-
 	removeTracks(){
 
 		var tracks = this.selectedTracks();
 		
+		// if we've got a specific action, run it
 		if( typeof(this.props.removeTracks) !== 'undefined' ){
 			return this.props.removeTracks( tracks );
 		}
+
+		// by default, do nothing
 	}
 
 	render(){
