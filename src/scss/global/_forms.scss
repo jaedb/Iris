@@ -36,12 +36,34 @@ input[type="submit"] {
 		}
 	}
 
+	&.secondary {
+		background: #000000;
+		color: #FFFFFF;
+		&:hover {
+			background: lighten( #000000, 20% );
+		}
+	}
+
 	&.confirming,
 	&.destructive {
 		background: $red;
 		color: #FFFFFF;
 		&:hover {
 			background: darken( $red, 6% );
+		}
+	}
+
+	&.timing-out {
+		position: relative;
+		&::before {
+			@include animate_timeout(2s);
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			width: 0;
+			background: rgba(255,255,255,0.15);
 		}
 	}
 

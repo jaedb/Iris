@@ -58,7 +58,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			<div>
 				<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
 				Logged in as {this.props.spotify.me.display_name ? this.props.spotify.me.display_name : null }
-				<Link to={'/user/'+this.props.spotify.me.id}>{ this.props.spotify.me.id }</Link>
+				&nbsp;(<Link to={'/user/'+this.props.spotify.me.id}>{ this.props.spotify.me.id }</Link>)
 			</div>
 		)
 	}

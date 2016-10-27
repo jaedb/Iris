@@ -19,6 +19,7 @@ class Settings extends React.Component{
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
+			pusher_port: this.props.pusher.port,
 			spotify_country: this.props.spotify.country,
 			spotify_locale: this.props.spotify.locale
 		};
@@ -36,6 +37,10 @@ class Settings extends React.Component{
 
 	setSpotifyConfig(){
 		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
+	}
+
+	setPusherConfig(){
+		this.props.pusherActions.setConfig({ port: this.state.pusher_port });
 	}
 
 	render(){
@@ -64,7 +69,19 @@ class Settings extends React.Component{
 								onChange={ e => this.setState({ mopidy_port: e.target.value })} 
 								value={ this.state.mopidy_port } />
 						</label>
-						<button type="submit">Apply</button>
+						<button type="submit" className="secondary">Apply</button>
+					</form>
+
+					<h3 className="underline">Pusher</h3>
+					<form onSubmit={() => this.setPusherConfig()}>
+						<label>
+							<span className="label">Port</span>
+							<input 
+								type="text"
+								onChange={ e => this.setState({ pusher_port: e.target.value })} 
+								value={ this.state.pusher_port } />
+						</label>
+						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 					<h3 className="underline">Spotify</h3>
@@ -83,7 +100,7 @@ class Settings extends React.Component{
 								onChange={ e => this.setState({ spotify_locale: e.target.value })} 
 								value={ this.state.spotify_locale } />
 						</label>
-						<button type="submit">Apply</button>
+						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 			        <SpotifyAuthenticationFrame />

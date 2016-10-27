@@ -20,11 +20,22 @@ $red: #cf2d2d;
 	}
 }
 
-@mixin animate( $speed: 0.2s ){
-	-webkit-transition: all $speed ease-in-out;
-	   -moz-transition: all $speed ease-in-out;
-		 -o-transition: all $speed ease-in-out;
-		    transition: all $speed ease-in-out; 
+@mixin animate( $duration: 0.2s, $easing: ease-in-out ){
+	-webkit-transition: all $duration $easing;
+	   -moz-transition: all $duration $easing;
+		 -o-transition: all $duration $easing;
+		    transition: all $duration $easing; 
+}
+
+@keyframes fill_from_left {
+    from {	width: 0%; }
+    to {	width: 100%; }
+}
+
+@mixin animate_timeout( $duration: 0.2s ){
+    animation-name: fill_from_left;
+    animation-duration: $duration;
+    animation-timing-function: linear;
 }
 
 @mixin blur( $size: 10px ) {

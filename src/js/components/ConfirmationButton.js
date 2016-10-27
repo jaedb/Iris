@@ -7,6 +7,7 @@ export default class ConfirmationButton extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
+			timing_out: false,
 			confirming: false
 		}
 		this.confirming = false;
@@ -27,16 +28,18 @@ export default class ConfirmationButton extends React.Component{
 	}
 
 	handleMouseEnter(e){
+		this.setState({ timing_out: false });
 		clearTimeout( this.unconfirmTimer );
 	}
 
 	handleMouseLeave(e){
 		if( this.state.confirming ){
+			this.setState({ timing_out: true });
 			this.unconfirmTimer = setTimeout(
 				function(){
 					this.setState({ confirming: false });
 				}.bind(this),
-				1500
+				2000
 			);
 		}
 	}
@@ -49,6 +52,7 @@ export default class ConfirmationButton extends React.Component{
 		if( this.state.confirming ){
 			className += ' confirming';	
 			content = this.props.confirmingContent;
+			if( this.state.timing_out ) className += ' timing-out';
 		}
 
 		return (

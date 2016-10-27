@@ -9,6 +9,7 @@ import Sidebar from '../components/Sidebar'
 import ContextMenu from '../components/ContextMenu'
 
 import * as uiActions from '../services/ui/actions'
+import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -25,7 +26,9 @@ class App extends React.Component{
 	}
 
 	componentWillMount(){
+		this.props.pusherActions.connect();
 		this.props.mopidyActions.connect();
+
 		window.addEventListener("keyup", this.handleKeyUp, false);
 		window.addEventListener("keydown", this.handleKeyDown, false);
 	}
@@ -94,6 +97,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
