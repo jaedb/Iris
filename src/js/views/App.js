@@ -20,10 +20,29 @@ class App extends React.Component{
 
 	constructor(props){
 		super(props);
+
+		this.handleKeyUp = this.handleKeyUp.bind(this);
 	}
 
-	componentDidMount(){
+	componentWillMount(){
 		this.props.mopidyActions.connect();
+		window.addEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	componentWillUnmount(){
+		window.removeEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	handleKeyUp(e){
+		switch(e.keyCode){			
+			case 32: // spacebar
+				if( this.props.mopidy.state == 'playing' ){
+					this.props.mopidyActions.pause();
+				}else{
+					this.props.mopidyActions.play();
+				}
+				break;
+		}
 	}
 
 	render(){

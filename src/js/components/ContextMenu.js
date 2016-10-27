@@ -89,10 +89,14 @@ class ContextMenu extends React.Component{
 			selectedTracksUris.push( selectedTracks[i].uri );
 		}
 
-		// TODO: figure out what index the currentTlTrack is (.indexOf()?)
-		var currentTrackIndex = 1;
+		var current_tltrack = this.props.mopidy.current_tltrack;
+		function isCurrentTlid( tltrack ){
+			return ( tltrack.tlid == current_tltrack.tlid );
+		}
+		var currentTrack = this.props.mopidy.tracks.find( isCurrentTlid );
+		var currentTrackIndex = this.props.mopidy.tracks.indexOf( currentTrack );
 
-		this.props.mopidyActions.enqueueTracks(selectedTracksUris, currentTrackIndex);
+		this.props.mopidyActions.enqueueTracks(selectedTracksUris, currentTrackIndex+1);
 		this.props.uiActions.hideContextMenu();
 	}
 

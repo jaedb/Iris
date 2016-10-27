@@ -16,6 +16,29 @@ class TrackList extends React.Component{
 			tracks: this.props.tracks,
 			lastSelectedTrack: false
 		}
+
+		this.handleKeyUp = this.handleKeyUp.bind(this)
+	}
+
+	componentWillMount(){
+		window.addEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	componentWillUnmount(){
+		window.removeEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	handleKeyUp(e){
+		switch(e.keyCode){
+			
+			case 13: // enter
+				this.playTrack( this.state.tracks[this.state.lastSelectedTrack] );
+				break;
+			
+			case 46: // delete
+				console.log('delete')
+				break;
+		}
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -131,7 +154,7 @@ class TrackList extends React.Component{
 
 									// see if we're the current tlTrack
 									// TODO: figure out why this isn't fired when the tracklist changes
-									if( self.props.mopidy.trackInFocus && self.props.mopidy.trackInFocus.tlid == track.tlid ){
+									if( self.props.mopidy.current_tltrack && self.props.mopidy.current_tltrack.tlid == track.tlid ){
 										track.playing = true;
 									}else{
 										track.playing = false;

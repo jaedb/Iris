@@ -61,7 +61,7 @@ export default function reducer(mopidy = {}, action){
             }
 
             return Object.assign({}, mopidy, {
-                currentTlTrack: action.data,
+                current_tltrack: action.data,
                 tracks: tracks
             });
 
