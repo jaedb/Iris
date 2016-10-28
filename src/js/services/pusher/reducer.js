@@ -3,16 +3,23 @@ export default function reducer(pusher = {}, action){
     switch (action.type) {
 
         case 'PUSHER_CONNECTED':
-            return Object.assign({}, pusher, { connected: true, connecting: false, connectionid: action.connection.connectionid });
+            return Object.assign({}, pusher, { 
+                connected: true, 
+                connecting: false, 
+                connectionid: action.connection.connectionid, 
+                username: action.connection.username
+            });
 
         case 'PUSHER_DISCONNECTED':
             return Object.assign({}, pusher, { connected: false, connecting: false });
 
         case 'PUSHER_SET_CONFIG':
             return Object.assign({}, pusher, { 
-                username: action.username,
                 port: action.port
             });
+
+        case 'PUSHER_CHANGE_USERNAME':
+            return Object.assign({}, pusher, { username: action.data.connection.username });
 
         case 'PUSHER_CONNECTION_UPDATED':
             function byID(connection){

@@ -71,8 +71,8 @@ export function authorizationGranted( data ){
 	return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
 }
 
-export function removeAuthorization(){
-	return { type: 'SPOTIFY_REMOVE_AUTHORIZATION' }
+export function authorizationRevoked(){
+	return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' }
 }
 
 

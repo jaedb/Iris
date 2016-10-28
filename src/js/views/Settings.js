@@ -30,20 +30,35 @@ class Settings extends React.Component{
 	resetAllSettings(){
 		localStorage.clear();
 		window.location.reload(true);
+		return false;
 	}
 
-	setMopidyConfig(){
+	setMopidyConfig(e){
+		e.preventDefault();
 		this.props.mopidyActions.setConfig({ host: this.state.mopidy_host, port: this.state.mopidy_port });
 		window.location.reload(true);
+		return false;
 	}
 
-	setPusherConfig(){
+	setPusherConfig(e){
+		e.preventDefault();
+		this.props.pusherActions.changeUsername( this.state.pusher_username );
 		this.props.pusherActions.setConfig({ port: this.state.pusher_port });
-		this.props.pusherActions.setUsername( this.state.pusher_username );
+		return false;
 	}
 
-	setSpotifyConfig(){
+	setSpotifyConfig(e){
+		e.preventDefault();
 		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
+		return false;
+	}
+
+	componentWillReceiveProps(newProps){
+		if( this.state.pusher_username != newProps.pusher.username ){
+			this.setState({
+				pusher_username: newProps.pusher.username
+			})
+		}
 	}
 
 	render(){
@@ -57,7 +72,7 @@ class Settings extends React.Component{
 				<section>
 
 					<h3 className="underline">Mopidy</h3>
-					<form onSubmit={() => this.setMopidyConfig()}>
+					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<label>
 							<div className="label">Host</div>
 							<div className="input">
@@ -80,7 +95,7 @@ class Settings extends React.Component{
 					</form>
 
 					<h3 className="underline">Pusher</h3>
-					<form onSubmit={() => this.setPusherConfig()}>
+					<form onSubmit={(e) => this.setPusherConfig(e)}>
 						<label>
 							<div className="label">Username</div>
 							<div className="input">
@@ -103,7 +118,7 @@ class Settings extends React.Component{
 					</form>
 
 					<h3 className="underline">Spotify</h3>
-					<form onSubmit={() => this.setSpotifyConfig()}>
+					<form onSubmit={(e) => this.setSpotifyConfig(e)}>
 						<label>
 							<div className="label">Country</div>
 							<div className="input">

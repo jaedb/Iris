@@ -45,7 +45,7 @@ const PusherMiddleware = (function(){
                     connectionid: helpers.generateGuid(),
                     username: Math.random().toString(36).substr(2, 9)
                 }
-                //if( state.pusher.username ) connection.username = state.pusher.username;
+                if( state.pusher.username ) connection.username = state.pusher.username;
 
                 socket = new WebSocket(
                     'ws://'+state.mopidy.host+':'+state.pusher.port+'/pusher',
@@ -54,6 +54,7 @@ const PusherMiddleware = (function(){
 
                 socket.onopen = () => {
                     store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
+                    store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
                 };
 
                 socket.onmessage = (message) => {

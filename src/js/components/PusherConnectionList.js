@@ -34,9 +34,11 @@ class PusherConnectionList extends React.Component{
 			<div className="pusher-connection-list">
 				{
 					this.props.pusher.connections.map( (connection, index) => {
+						var isMe = false;
+						if( connection.connectionid == this.props.pusher.connectionid ) isMe = true;
 						return (
 							<div className="connection cf" key={connection.connectionid}>
-								<div className="col w20 one-liner">{ connection.username }</div>
+								<div className="col w20">{ connection.username } { isMe ? <span>(you)</span> : null }</div>
 								<div className="col w20 one-liner">{ connection.ip }</div>
 								<div className="col w20 one-liner">{ connection.connectionid }</div>
 							</div>

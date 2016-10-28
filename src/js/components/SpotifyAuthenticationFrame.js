@@ -75,7 +75,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 		}else if( this.props.spotify.authorized ){
 			return (
 				<div>
-					<button onClick={() => this.props.actions.removeAuthorization()}>Log out</button>
+					<button onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
 					{ this.renderMe() }
 				</div>
 			);

@@ -32,6 +32,7 @@ var initialState = {
 		progress: 0
 	},
 	pusher: {
+		username: '',
 		connections: [],
 		connected: false,
 		port: 6681

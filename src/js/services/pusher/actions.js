@@ -10,11 +10,11 @@ export function setConfig( config ){
 	}
 }
 
-export function setUsername( username ){
+export function changeUsername( username ){
 	return {
 		type: 'PUSHER_INSTRUCT',
-		action: 'set_username',
-		data: { username: username }
+		action: 'change_username',
+		data: username
 	}
 }
 
