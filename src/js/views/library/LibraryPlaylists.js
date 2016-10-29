@@ -18,16 +18,21 @@ class LibraryPlaylists extends React.Component{
 
 	// on render
 	componentDidMount(){
-		if( this.props.mopidy.connected ) this.loadPlaylists();
+		if( this.props.mopidy.connected ){
+			this.props.mopidyActions.getPlaylists();
+		}
+		if( this.props.spotify.authorized ){
+		this.props.spotifyActions.getLibraryPlaylists();
+		}
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( !this.props.mopidy.connected && nextProps.mopidy.connected ) this.loadPlaylists();
-	}
-
-	loadPlaylists(){
-		this.props.spotifyActions.getLibraryPlaylists();
-		this.props.mopidyActions.getPlaylists();
+		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+			this.props.mopidyActions.getPlaylists();
+		}
+		if( !this.props.spotify.authorized && nextProps.spotify.authorized ){
+			this.props.spotifyActions.getLibraryPlaylists();
+		}
 	}
 
 	compiledPlaylistSources(){

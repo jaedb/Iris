@@ -38,9 +38,11 @@ class PusherConnectionList extends React.Component{
 						if( connection.connectionid == this.props.pusher.connectionid ) isMe = true;
 						return (
 							<div className="connection cf" key={connection.connectionid}>
-								<div className="col w20">{ connection.username } { isMe ? <span>(you)</span> : null }</div>
-								<div className="col w20 one-liner">{ connection.ip }</div>
-								<div className="col w20 one-liner">{ connection.connectionid }</div>
+								<div className="col w30">{ connection.username } { isMe ? <span>(you)</span> : null }</div>
+								<div className="col w70">
+									{ connection.ip }
+									<span className="grey-text"> ({ connection.connectionid })</span>
+								</div>
 							</div>
 						);
 					})

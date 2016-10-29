@@ -101,26 +101,56 @@ function getToken( dispatch, getState ){
 
 function refreshToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
-        $.ajax({
-                method: 'GET',
-                url: '//jamesbarnsley.co.nz/spotmop.php?action=refresh&refresh_token='+getState().spotify.refresh_token,
-                dataType: "json",
-                timeout: 10000
-            })
-            .then(
-                response => {
-                    response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
-                    dispatch({
-                        type: 'SPOTIFY_TOKEN_REFRESHED',
-                        data: response
-                    });
-                    resolve(response);
-                },
-                error => {
-                    console.error('Could not refresh token', error)
-                    reject(error)
-                }
-            );
+
+        if( getState().spotify.authorized ){
+
+            $.ajax({
+                    method: 'GET',
+                    url: '//jamesbarnsley.co.nz/spotmop.php?action=refresh&refresh_token='+getState().spotify.refresh_token,
+                    dataType: "json",
+                    timeout: 10000
+                })
+                .then(
+                    response => {
+                        response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
+                        response.source = 'spotify';
+                        dispatch({
+                            type: 'SPOTIFY_TOKEN_REFRESHED',
+                            data: response
+                        });
+                        resolve(response);
+                    },
+                    error => {
+                        console.error('Could not refresh token', error)
+                        reject(error)
+                    }
+                );
+
+        }else{
+
+            $.ajax({
+                    method: 'GET',
+                    url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/spotmop/http?action=refresh_spotify_token',
+                    dataType: "json",
+                    timeout: 10000
+                })
+                .then(
+                    response => {
+                        response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
+                        response.source = 'mopidy';
+                        dispatch({
+                            type: 'SPOTIFY_TOKEN_REFRESHED',
+                            data: response
+                        });
+                        resolve(response);
+                    },
+                    error => {
+                        console.error('Could not refresh token', error)
+                        reject(error)
+                    }
+                );
+        }
+
     })
 }
 

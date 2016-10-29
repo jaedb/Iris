@@ -96,3 +96,7 @@ main {
 .one-liner{
 	@include one_line_text;
 }
+
+.grey-text {
+	color: $mid_grey;
+}

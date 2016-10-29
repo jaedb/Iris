@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome'
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
+import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 
 import * as pusherActions from '../services/pusher/actions'
@@ -142,15 +143,21 @@ class Settings extends React.Component{
 
 			        <SpotifyAuthenticationFrame />
 
-			        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-
 					<h3 className="underline">Advanced</h3>
+					<label>
+						<div className="label">Version</div>
+						<div className="input">
+			        		<VersionManager />
+			        	</div>
+			        </label>
 					<label>
 						<div className="label">Connections</div>
 						<div className="input">
 			        		<PusherConnectionList />
 			        	</div>
 			        </label>
+
+			        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 
 		        </section>
 			</div>

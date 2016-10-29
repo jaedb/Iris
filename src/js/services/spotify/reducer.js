@@ -17,6 +17,16 @@ export default function reducer(spotify = {}, action){
                 token_expiry: action.data.token_expiry
             });
 
+        case 'PUSHER_SPOTIFY_TOKEN':
+            if( spotify.authorized ) return spotify;
+            return Object.assign({}, spotify, { 
+                authorizing: false, 
+                authorized: false,
+                authorization: false,
+                access_token: action.data.access_token,
+                token_expiry: action.data.token_expiry
+            });
+
         case 'SPOTIFY_AUTHORIZATION_REVOKED':
             return Object.assign({}, spotify, { 
                 authorizing: false, 

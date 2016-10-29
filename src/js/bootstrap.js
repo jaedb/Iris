@@ -35,7 +35,10 @@ var initialState = {
 		username: '',
 		connections: [],
 		connected: false,
-		port: 6681
+		port: 6681,
+		version: {
+			current: '0.0.0'
+		}
 	},
 	spotify: {
 		connected: false,

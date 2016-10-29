@@ -30,6 +30,12 @@ export function disconnect(){
 	}
 }
 
+export function performUpgrade(){
+	return {
+		type: 'PUSHER_UPGRADING'
+	}
+}
+
 export function getConnectionList(){
 	return {
 		type: 'PUSHER_INSTRUCT',

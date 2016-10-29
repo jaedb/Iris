@@ -36,7 +36,13 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { connections: action.data.connections });
 
         case 'PUSHER_VERSION':
-            return Object.assign({}, pusher, { version: action.data });
+            return Object.assign({}, pusher, { 
+                version: action.data.version,
+                upgrading: false
+            });
+
+        case 'PUSHER_UPGRADING':
+            return Object.assign({}, pusher, { upgrading: true });
 
         default:
             return pusher

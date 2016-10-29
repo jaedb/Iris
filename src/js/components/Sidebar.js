@@ -17,10 +17,6 @@ class Sidebar extends React.Component{
 		super(props);
 	}
 
-	componentDidMount(){
-		console.log( this.props )
-	}
-
 	render(){
 		return (
 			<aside>
@@ -62,15 +58,15 @@ class Sidebar extends React.Component{
 							<Icon name="playlist" className="white" />
 							Playlists
 						</Link>
-						<Link activeClassName="active" to="/library/artists">
+						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/artists">
 							<Icon name="mic" className="white" />
 							Artists
 						</Link>
-						<Link activeClassName="active" to="/library/albums">
+						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/albums">
 							<Icon name="cd" className="white" />
 							Albums
 						</Link>
-						<Link activeClassName="active" to="/library/tracks">
+						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/tracks">
 							<Icon name="music" className="white" />
 							Tracks
 						</Link>
