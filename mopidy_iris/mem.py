@@ -1,0 +1,2 @@
+queuemanager = None
+localfiles = None

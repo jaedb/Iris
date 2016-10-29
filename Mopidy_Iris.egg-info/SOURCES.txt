@@ -1,0 +1,14 @@
+MANIFEST.in
+setup.cfg
+setup.py
+Mopidy_Iris.egg-info/PKG-INFO
+Mopidy_Iris.egg-info/SOURCES.txt
+Mopidy_Iris.egg-info/dependency_links.txt
+Mopidy_Iris.egg-info/entry_points.txt
+Mopidy_Iris.egg-info/not-zip-safe
+Mopidy_Iris.egg-info/requires.txt
+Mopidy_Iris.egg-info/top_level.txt
+mopidy_iris/__init__.py
+mopidy_iris/frontend.py
+mopidy_iris/mem.py
+mopidy_iris/pusher.py

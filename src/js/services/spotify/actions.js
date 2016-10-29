@@ -130,7 +130,7 @@ function refreshToken( dispatch, getState ){
 
             $.ajax({
                     method: 'GET',
-                    url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/spotmop/http?action=refresh_spotify_token',
+                    url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http?action=refresh_spotify_token',
                     dataType: "json",
                     timeout: 10000
                 })

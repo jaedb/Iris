@@ -4,7 +4,7 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var node_dir = __dirname + '/node_modules';
-var output_dir = __dirname +"/production"
+var output_dir = __dirname +"/mopidy_iris/static"
 
 var config = {
 	
