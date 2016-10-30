@@ -3,10 +3,10 @@
  * Actions and Action Creators
  **/
 
-export function setConfig( config ){
+export function setPort( port ){
 	return {
-		type: 'PUSHER_SET_CONFIG',
-		config: config
+		type: 'PUSHER_SET_PORT',
+		port: port
 	}
 }
 

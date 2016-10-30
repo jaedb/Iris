@@ -1,0 +1,24 @@
+
+.album-view {
+	.intro {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 300px;
+		background: $light_grey;
+
+		.thumbnail {
+			float: none;
+			margin: 0 auto;
+		}
+
+		h1 {
+			padding-top: 30px;
+		}
+	}
+
+	.main {
+		padding-left: 300px;
+	}
+}

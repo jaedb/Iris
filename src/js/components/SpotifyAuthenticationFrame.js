@@ -15,7 +15,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 		super(props);
 
 		this.state = {
-			frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=frame',
+			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
 			authorizing: false
 		}
 	}
@@ -27,26 +27,34 @@ class SpotifyAuthenticationFrame extends React.Component{
 		// listen for incoming messages from the authorization iframe
 		// this is triggered when authentication is granted from the popup
 		window.addEventListener('message', function(event){
-			
-			// only allow incoming data from our authorized authenticator proxy
-			if( !/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin) ) return false;
-			
-			var data = JSON.parse(event.data);
-			self.props.actions.authorizationGranted( data );
-			self.props.actions.getMe();
 
-			// and turn off our authorizing switch
-			self.setState({
-				frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=frame',
-				authorizing: false
-			})
+			if(event.data == 'closed'){
+				self.setState({
+					frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
+					authorizing: false
+				})	
+			}else{
+				
+				// only allow incoming data from our authorized authenticator proxy
+				if( !/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin) ) return false;
+				
+				var data = JSON.parse(event.data);
+				self.props.actions.authorizationGranted( data );
+				self.props.actions.getMe();
+
+				// and turn off our authorizing switch
+				self.setState({
+					frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
+					authorizing: false
+				})				
+			}
 
 		}, false);
 	}
 
 	startAuthorization(){
 		this.setState({
-			frameUrl: '//jamesbarnsley.co.nz/spotmop.php?action=authorize&app='+location.protocol+'//'+window.location.host,
+			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
 	}

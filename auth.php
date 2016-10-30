@@ -3,10 +3,10 @@
 // allow cross-domain requests
 header("Access-Control-Allow-Origin: *");
 
-$url = 'http://jamesbarnsley.co.nz/spotmop.php';
+$url = 'http://jamesbarnsley.co.nz/auth.php';
 
 if( isset($_GET['app']) )
-	setcookie( 'spotmop_app', $_GET['app'], time()+3600 );
+	setcookie( 'mopidy_iris', $_GET['app'], time()+3600 );
 
 
 
@@ -73,13 +73,13 @@ if( isset($_GET['code']) ){
 */
 function getAuthorizationCode( $url ){
 
-	$popup = 'https://accounts.spotify.com/authorize?client_id=a87fb4dbed30475b8cec38523dff53e2&redirect_uri='.$url.'&scope=playlist-modify-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-library-read%20user-library-modify%20user-follow-modify%20user-follow-read%20user-top-read&response_type=code&show_dialog=true';
+	$popup = 'https://accounts.spotify.com/authorize?client_id=01d4ca2e9f4f415c80502431a6aa4200&redirect_uri='.$url.'&scope=playlist-modify-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-library-read%20user-library-modify%20user-follow-modify%20user-follow-read%20user-top-read&response_type=code&show_dialog=true';
 	
 	?>
 		<script tye="text/javascript">
 		
 			// open an authentication request window (to spotify)
-			var spotmopWindow = window.open("<?php echo $popup ?>","spotmop","height=680,width=400");
+			var popup = window.open("<?php echo $popup ?>","popup","height=680,width=400");
 			
 			// listen for incoming messages from the popup
 			window.addEventListener('message', function(event){
@@ -91,6 +91,15 @@ function getAuthorizationCode( $url ){
 				// pass the message on to the Angular application
 				window.parent.postMessage( event.data, '*' );
 			}, false);
+
+			var timer = setInterval(checkPopup, 1000);
+			function checkPopup(){
+			    if( popup.closed ){
+					window.parent.postMessage( 'closed', '*' );
+					clearInterval(timer);
+			    }
+			}
+
 		</script>
 	<?php
 }
@@ -109,8 +118,8 @@ function getToken( $code, $url ){
 		throw new Exception('Failed to initialize');
 		
 	$post_data = array(
-			'client_id' => 'a87fb4dbed30475b8cec38523dff53e2',
-			'client_secret' => 'd7c89d0753ef4068bba1678c6cf26ed6',
+			'client_id' => '01d4ca2e9f4f415c80502431a6aa4200',
+			'client_secret' => '7352c9c74791478ab02be0f004ec9541',
 			'grant_type' => 'authorization_code',
 			'code' => $code,
 			'redirect_uri' => $url
@@ -150,8 +159,8 @@ function refreshToken($refresh_token){
 	$ch = curl_init();
 
 	$post_data = array(
-			'client_id' => 'a87fb4dbed30475b8cec38523dff53e2',
-			'client_secret' => 'd7c89d0753ef4068bba1678c6cf26ed6',
+			'client_id' => '01d4ca2e9f4f415c80502431a6aa4200',
+			'client_secret' => '7352c9c74791478ab02be0f004ec9541',
 			'grant_type' => 'refresh_token',
 			'refresh_token' => $refresh_token
 		);

@@ -14,7 +14,7 @@ class VersionManager extends React.Component{
 		super(props);
 	}
 
-	renderUpdateButton(){
+	renderUpgradeButton(){
 		if( this.props.pusher.upgrading ){
 			return (
 				<button disabled>
@@ -30,7 +30,7 @@ class VersionManager extends React.Component{
 		}
 
 		if( this.props.pusher.version.upgrade_available ){
-			return <button className="secondary" onClick={() => this.props.pusherActions.performUpdate()}>Update now</button>
+			return <button className="secondary" onClick={() => this.props.pusherActions.performUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
 		}
 
 		return null;
@@ -40,7 +40,7 @@ class VersionManager extends React.Component{
 		return (
 			<div className="version-manager">
 				<span>{ this.props.pusher.version.current } installed</span>
-				{ this.renderUpdateButton() }
+				{ this.renderUpgradeButton() }
 			</div>
 		);
 	}

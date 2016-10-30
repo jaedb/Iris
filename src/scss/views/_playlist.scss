@@ -1,0 +1,30 @@
+
+.album-view {
+	.intro {
+		@include clearfix;
+		position: relative;
+		text-align: center;
+		color: #FFFFFF;
+		padding: 20px;
+		height: 40vh;
+		z-index: 2;
+
+		.parallax {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			z-index: -1;
+		}
+
+		.thumbnail {
+			float: none;
+			margin: 0 auto;
+			max-width: 160px;
+		}
+
+		h1 {
+			padding-top: 30px;
+		}
+	}
+}

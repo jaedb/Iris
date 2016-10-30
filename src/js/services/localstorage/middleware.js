@@ -14,18 +14,6 @@ const localstorageMiddleware = (function(){
 
         switch( action.type ){
 
-            case 'PUSHER_SET_CONFIG':
-                var pusher = JSON.parse( localStorage.getItem('pusher') );
-                if( !pusher ) pusher = {};
-                Object.assign(
-                    pusher,{
-                        username: action.config.username,
-                        port: action.config.port
-                    }
-                );
-                localStorage.setItem('pusher', JSON.stringify(pusher));
-                break;
-
             case 'PUSHER_CONNECTED':
                 var pusher = JSON.parse( localStorage.getItem('pusher') );
                 if( !pusher ) pusher = {};
@@ -35,6 +23,13 @@ const localstorageMiddleware = (function(){
                         connectionid: action.connection.connectionid
                     }
                 );
+                localStorage.setItem('pusher', JSON.stringify(pusher));
+                break;
+
+            case 'PUSHER_SET_PORT':
+                var pusher = JSON.parse( localStorage.getItem('pusher') );
+                if( !pusher ) pusher = {};
+                Object.assign( pusher, { port: action.port } );
                 localStorage.setItem('pusher', JSON.stringify(pusher));
                 break;
 

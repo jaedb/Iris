@@ -2890,8 +2890,14 @@ body {
   overflow-x: hidden;
 }
 
+main,
+footer {
+  margin-left: 200px;
+}
+
 main {
-  padding-left: 200px;
+  position: relative;
+  min-height: 100vh;
 }
 
 main a {
@@ -2909,8 +2915,8 @@ main section {
 }
 
 main h1 {
-  font-weight: 100;
-  font-size: 26px;
+  font-weight: 500;
+  font-size: 40px;
 }
 
 main h3 {
@@ -3063,6 +3069,14 @@ main .left-padding {
 
 .grey-text {
   color: #AAAAAA;
+}
+
+footer {
+  display: block;
+  color: #DDDDDD;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
 }
 
 * {
@@ -3625,7 +3639,7 @@ main header h1 {
 
 .artist-view .intro {
   position: relative;
-  margin-bottom: 20px;
+  margin: -100px 0 20px 0;
 }
 
 .artist-view .intro::after {
@@ -3636,8 +3650,35 @@ main header h1 {
 
 .artist-view .intro .thumbnail {
   max-width: 200px;
-  margin: -100px 20px 0 40px;
+  margin: 0 20px 0 40px;
   float: left;
+}
+
+.artist-view .intro h1 {
+  color: #FFFFFF;
+  padding-top: 30px;
+}
+
+.album-view .intro {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background: #DDDDDD;
+}
+
+.album-view .intro .thumbnail {
+  float: none;
+  margin: 0 auto;
+}
+
+.album-view .intro h1 {
+  padding-top: 30px;
+}
+
+.album-view .main {
+  padding-left: 300px;
 }
 
 /*# sourceMappingURL=app.css.map*/

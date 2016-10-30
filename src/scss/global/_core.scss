@@ -13,9 +13,14 @@ body {
 	overflow-x: hidden;
 }
 
-main {
+main,
+footer {
+	margin-left: 200px;
+}
 
-	padding-left: 200px;
+main {
+	position: relative;
+	min-height: 100vh;
 
 	a {
 		color: inherit;
@@ -32,8 +37,8 @@ main {
 	}
 
 	h1 {
-		font-weight: 100;
-		font-size: 26px;
+		font-weight: 500;
+		font-size: 40px;
 	}
 
 	h3 {
@@ -99,4 +104,12 @@ main {
 
 .grey-text {
 	color: $mid_grey;
+}
+
+footer {
+	display: block;
+	color: $light_grey;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	text-align: center;
 }

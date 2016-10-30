@@ -1,3 +1,0 @@
-[mopidy.ext]
-iris = mopidy_iris:IrisExtension
-

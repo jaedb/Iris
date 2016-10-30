@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -d public_html ]; then
-	mkdir public_html;
+	ln -s mopidy_iris/static public_html
 fi
 
 cp src/index.html public_html/index.html

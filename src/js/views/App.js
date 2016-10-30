@@ -77,6 +77,9 @@ class App extends React.Component{
 		        <main>
 		      		{this.props.children}
 		        </main>
+		      	<footer>
+		      		Iris by James Barnsley &nbsp;|&nbsp; v{ this.props.pusher.version.current }
+		      	</footer>
 		        { this.props.ui.context_menu.test }
 		        <ContextMenu state={this.props.ui.context_menu} />
 	        </div>

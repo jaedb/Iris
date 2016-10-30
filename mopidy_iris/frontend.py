@@ -201,7 +201,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     ##
     def perform_upgrade( self ):
         try:
-            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Spotmop"])
+            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
             return True
         except subprocess.CalledProcessError:
             return False

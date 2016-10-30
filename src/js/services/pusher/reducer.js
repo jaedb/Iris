@@ -13,10 +13,8 @@ export default function reducer(pusher = {}, action){
         case 'PUSHER_DISCONNECTED':
             return Object.assign({}, pusher, { connected: false, connecting: false });
 
-        case 'PUSHER_SET_CONFIG':
-            return Object.assign({}, pusher, { 
-                port: action.port
-            });
+        case 'PUSHER_SET_PORT':
+            return Object.assign({}, pusher, { port: action.port });
 
         case 'PUSHER_CHANGE_USERNAME':
             return Object.assign({}, pusher, { username: action.data.connection.username });

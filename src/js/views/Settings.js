@@ -41,13 +41,6 @@ class Settings extends React.Component{
 		return false;
 	}
 
-	setPusherConfig(e){
-		e.preventDefault();
-		this.props.pusherActions.changeUsername( this.state.pusher_username );
-		this.props.pusherActions.setConfig({ port: this.state.pusher_port });
-		return false;
-	}
-
 	setSpotifyConfig(e){
 		e.preventDefault();
 		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
@@ -96,13 +89,14 @@ class Settings extends React.Component{
 					</form>
 
 					<h3 className="underline">Pusher</h3>
-					<form onSubmit={(e) => this.setPusherConfig(e)}>
+					<form>
 						<label>
 							<div className="label">Username</div>
 							<div className="input">
 							<input 
 								type="text"
-								onChange={ e => this.setState({ pusher_username: e.target.value })} 
+								onChange={ e => this.setState({ pusher_username: e.target.value }) } 
+								onBlur={ e => this.props.pusherActions.changeUsername( this.state.pusher_username ) } 
 								value={ this.state.pusher_username } />
 							</div>
 						</label>
@@ -112,10 +106,10 @@ class Settings extends React.Component{
 							<input 
 								type="text"
 								onChange={ e => this.setState({ pusher_port: e.target.value })} 
+								onBlur={ e => this.props.pusherActions.setPort({ port: this.state.pusher_port }) } 
 								value={ this.state.pusher_port } />
 							</div>
 						</label>
-						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 					<h3 className="underline">Spotify</h3>
@@ -126,6 +120,7 @@ class Settings extends React.Component{
 							<input 
 								type="text"
 								onChange={ e => this.setState({ spotify_country: e.target.value })} 
+								onBlur={ e => this.setSpotifyConfig(e) } 
 								value={ this.state.spotify_country } />
 							</div>
 						</label>
@@ -135,10 +130,10 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ spotify_locale: e.target.value })} 
+									onBlur={ e => this.setSpotifyConfig(e) } 
 									value={ this.state.spotify_locale } />
 							</div>
 						</label>
-						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 			        <SpotifyAuthenticationFrame />
