@@ -4,3 +4,4 @@ public_html
 /.sass-cache/
 *.orig
 Thumbs.db
+*.pyc

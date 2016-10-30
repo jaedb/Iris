@@ -1068,7 +1068,7 @@
 	
 	            $.ajax({
 	                method: 'GET',
-	                url: '//' + getState().mopidy.host + ':' + getState().mopidy.port + '/iris/http?action=refresh_spotify_token',
+	                url: '//' + getState().mopidy.host + ':' + getState().mopidy.port + '/iris/http/refresh_spotify_token',
 	                dataType: "json",
 	                timeout: 10000
 	            }).then(function (response) {
@@ -7629,7 +7629,7 @@
 /* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
