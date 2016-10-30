@@ -104,6 +104,8 @@ function refreshToken( dispatch, getState ){
 
         if( getState().spotify.authorized ){
 
+            console.log('Refreshing token as '+getState().spotify.expires_in+' older than '+new Date().getTime())
+
             $.ajax({
                     method: 'GET',
                     url: '//jamesbarnsley.co.nz/spotmop.php?action=refresh&refresh_token='+getState().spotify.refresh_token,

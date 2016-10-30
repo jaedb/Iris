@@ -66,7 +66,6 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_CONNECTED':
                 makeRequest({ action: 'get_version' });
-                makeRequest({ action: 'get_spotify_token' });
                 return next(action);
                 break;
 
