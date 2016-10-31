@@ -17,6 +17,12 @@ export default class GridItem extends React.Component{
 		}
 	}
 
+	renderThumbnail(){
+		if( this.props.item.images ) return <Thumbnail size="medium" images={this.props.item.images} />
+		if( this.props.item.icons ) return <Thumbnail size="medium" images={this.props.item.icons} />
+		return <Thumbnail size="medium" images={[]} />
+	}
+
 	render(){
 		var item = this.props.item;
 		if( typeof(item.album) !== 'undefined' ){
@@ -25,8 +31,7 @@ export default class GridItem extends React.Component{
 		}
 		return (
 			<div className="grid-item" onClick={ (e) => this.handleClick(e) }>
-				{ item.images ? <Thumbnail size="medium" images={item.images} /> : null }
-				{ item.icons ? <Thumbnail size="medium" images={item.icons} /> : null }
+				{ this.renderThumbnail() }
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
 					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }

@@ -5959,6 +5959,13 @@
 				}
 			}
 		}, {
+			key: 'renderThumbnail',
+			value: function renderThumbnail() {
+				if (this.props.item.images) return _react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: this.props.item.images });
+				if (this.props.item.icons) return _react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: this.props.item.icons });
+				return _react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: [] });
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
@@ -5973,8 +5980,7 @@
 					{ className: 'grid-item', onClick: function onClick(e) {
 							return _this2.handleClick(e);
 						} },
-					item.images ? _react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: item.images }) : null,
-					item.icons ? _react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: item.icons }) : null,
+					this.renderThumbnail(),
 					_react2.default.createElement(
 						'div',
 						{ className: 'name' },
@@ -7514,9 +7520,15 @@
 						'div',
 						{ className: className },
 						this.props.albums.map(function (album, index) {
-							var link = album.uri;
-							if (album.album) link = album.album.uri;
-							return _react2.default.createElement(_GridItem2.default, { item: album, key: index, link: '/album/' + link });
+	
+							// handle nested album objects (as in Album Library)
+							if (album.album) {
+								var flatAlbum = album.album;
+								flatAlbum.added_at = album.added_at;
+								album = flatAlbum;
+							}
+	
+							return _react2.default.createElement(_GridItem2.default, { item: album, key: index, link: '/album/' + album.uri });
 						})
 					);
 				}
@@ -10581,7 +10593,7 @@
 /* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11288,6 +11300,10 @@
 	
 	var _AlbumLink2 = _interopRequireDefault(_AlbumLink);
 	
+	var _Dater = __webpack_require__(379);
+	
+	var _Dater2 = _interopRequireDefault(_Dater);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -11330,35 +11346,15 @@
 				this.props.handleContextMenu(e);
 			}
 		}, {
-			key: 'formatDuration',
-			value: function formatDuration() {
-				if (typeof this.props.track.duration_ms !== 'undefined') {
-					var ms = this.props.track.duration_ms;
-				} else if (typeof this.props.track.length !== 'undefined') {
-					var ms = this.props.track.length;
-				} else {
-					return null;
-				}
-	
-				var time = new Date(ms);
-				var min = time.getMinutes();
-				var sec = time.getSeconds();
-				if (sec < 10) sec = '0' + sec;
-				return min + ':' + sec;
-			}
-		}, {
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
 	
-				var className = 'list-item track';
-				if (typeof this.props.track.selected !== 'undefined' && this.props.track.selected) {
-					className += ' selected';
-				}
+				var track = this.props.track;
 	
-				if (this.props.track.playing) {
-					className += ' playing';
-				}
+				var className = 'list-item track';
+				if (typeof track.selected !== 'undefined' && track.selected) className += ' selected';
+				if (track.playing) className += ' playing';
 	
 				return _react2.default.createElement(
 					'div',
@@ -11377,22 +11373,23 @@
 					_react2.default.createElement(
 						'span',
 						{ className: 'col name' },
-						this.props.track.name
+						track.name
 					),
 					_react2.default.createElement(
 						'span',
 						{ className: 'col artists' },
-						this.props.track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.props.track.artists }) : null
+						track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : null
 					),
 					_react2.default.createElement(
 						'span',
 						{ className: 'col album' },
-						this.props.track.album ? _react2.default.createElement(_AlbumLink2.default, { album: this.props.track.album }) : null
+						track.album ? _react2.default.createElement(_AlbumLink2.default, { album: track.album }) : null
 					),
 					_react2.default.createElement(
 						'span',
 						{ className: 'col duration' },
-						this.formatDuration()
+						track.duration_ms ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration_ms }) : null,
+						track.length ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.length }) : null
 					)
 				);
 			}
@@ -19117,6 +19114,8 @@
 	            });
 	
 	        case 'MOPIDY_CURRENTTLTRACK':
+	            if (!action.data) return mopidy;
+	
 	            var tracks = [];
 	            Object.assign(tracks, mopidy.tracks);
 	
@@ -19566,6 +19565,14 @@
 	
 	var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 	
+	var _ArtistGrid = __webpack_require__(155);
+	
+	var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
+	
+	var _Dater = __webpack_require__(379);
+	
+	var _Dater2 = _interopRequireDefault(_Dater);
+	
 	var _actions = __webpack_require__(11);
 	
 	var spotifyActions = _interopRequireWildcard(_actions);
@@ -19612,31 +19619,65 @@
 				}
 			}
 		}, {
+			key: 'totalTime',
+			value: function totalTime() {
+				if (!this.props.spotify.album) return null;
+				var tracks = this.props.spotify.tracks.items;
+				var duration = 0;
+				for (var i = 0; i < tracks.length; i++) {
+					duration += tracks[i].duration_ms;
+				}
+				return duration;
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				if (this.props.spotify.album) {
+					var album = this.props.spotify.album;
 					return _react2.default.createElement(
 						'div',
 						{ className: 'view album-view' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'intro' },
-							_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: this.props.spotify.album.images })
+							_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: album.images }),
+							_react2.default.createElement(_ArtistGrid2.default, { artists: album.artists }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'details' },
+								_react2.default.createElement(
+									'div',
+									null,
+									album.tracks.total,
+									' tracks, ',
+									this.totalTime
+								),
+								_react2.default.createElement(
+									'div',
+									null,
+									'Released ',
+									_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
+								)
+							)
 						),
 						_react2.default.createElement(
 							'div',
 							{ className: 'main' },
 							_react2.default.createElement(
-								'h1',
-								null,
-								this.props.spotify.album.name
+								'div',
+								{ className: 'title' },
+								_react2.default.createElement(
+									'h1',
+									null,
+									album.name
+								),
+								_react2.default.createElement(
+									'h3',
+									null,
+									_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
+								)
 							),
-							_react2.default.createElement(
-								'h3',
-								null,
-								_react2.default.createElement(_ArtistSentence2.default, { artists: this.props.spotify.album.artists })
-							),
-							_react2.default.createElement(_TrackList2.default, { tracks: this.props.spotify.album.tracks.items })
+							_react2.default.createElement(_TrackList2.default, { tracks: album.tracks.items })
 						)
 					);
 				}
@@ -19805,12 +19846,6 @@
 						null,
 						this.props.children
 					),
-					_react2.default.createElement(
-						'footer',
-						null,
-						'Iris by James Barnsley \xA0|\xA0 v',
-						this.props.pusher.version.current
-					),
 					this.props.ui.context_menu.test,
 					_react2.default.createElement(_ContextMenu2.default, { state: this.props.ui.context_menu })
 				);
@@ -19954,7 +19989,7 @@
 							'div',
 							{ className: 'col w70' },
 							_react2.default.createElement(
-								'h3',
+								'h4',
 								{ className: 'left-padding' },
 								'Top tracks'
 							),
@@ -19965,7 +20000,7 @@
 							'div',
 							{ className: 'col w25' },
 							_react2.default.createElement(
-								'h3',
+								'h4',
 								null,
 								'Related artists'
 							),
@@ -19973,7 +20008,7 @@
 						),
 						_react2.default.createElement('div', { className: 'cf' }),
 						_react2.default.createElement(
-							'h3',
+							'h4',
 							{ className: 'left-padding' },
 							'Albums'
 						),
@@ -20029,9 +20064,13 @@
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
-	var _Header = __webpack_require__(18);
+	var _Thumbnail = __webpack_require__(31);
 	
-	var _Header2 = _interopRequireDefault(_Header);
+	var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+	
+	var _Dater = __webpack_require__(379);
+	
+	var _Dater2 = _interopRequireDefault(_Dater);
 	
 	var _actions = __webpack_require__(11);
 	
@@ -20083,14 +20122,42 @@
 			value: function render() {
 				if (this.props.spotify.playlist) {
 	
+					var playlist = this.props.spotify.playlist;
 					var context = null;
-					if (this.props.spotify.playlist.owner.id == this.props.spotify.me.id) context = 'editable-playlist';
+					if (playlist.owner.id == this.props.spotify.me.id) context = 'editable-playlist';
 	
 					return _react2.default.createElement(
 						'div',
 						{ className: 'view playlist-view' },
-						_react2.default.createElement(_Header2.default, { icon: 'playlist', title: this.props.spotify.playlist.name }),
-						_react2.default.createElement(_TrackList2.default, { context: context, tracks: this.props.spotify.playlist.tracks.items })
+						_react2.default.createElement(
+							'div',
+							{ className: 'intro' },
+							_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'details' },
+								_react2.default.createElement(
+									'div',
+									null,
+									playlist.tracks.total,
+									' tracks'
+								)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'main' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								_react2.default.createElement(
+									'h1',
+									null,
+									playlist.name
+								)
+							),
+							_react2.default.createElement(_TrackList2.default, { context: context, tracks: playlist.tracks.items })
+						)
 					);
 				}
 				return null;
@@ -20426,7 +20493,7 @@
 						'section',
 						null,
 						_react2.default.createElement(
-							'h3',
+							'h4',
 							{ className: 'underline' },
 							'Mopidy'
 						),
@@ -20480,7 +20547,7 @@
 							)
 						),
 						_react2.default.createElement(
-							'h3',
+							'h4',
 							{ className: 'underline' },
 							'Pusher'
 						),
@@ -20533,7 +20600,7 @@
 							)
 						),
 						_react2.default.createElement(
-							'h3',
+							'h4',
 							{ className: 'underline' },
 							'Spotify'
 						),
@@ -20589,7 +20656,7 @@
 						),
 						_react2.default.createElement(_SpotifyAuthenticationFrame2.default, null),
 						_react2.default.createElement(
-							'h3',
+							'h4',
 							{ className: 'underline' },
 							'Advanced'
 						),
@@ -48674,6 +48741,85 @@
 	
 	module.exports = isPlainObject;
 
+
+/***/ },
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Dater = function (_React$Component) {
+		_inherits(Dater, _React$Component);
+	
+		function Dater(props) {
+			_classCallCheck(this, Dater);
+	
+			return _possibleConstructorReturn(this, (Dater.__proto__ || Object.getPrototypeOf(Dater)).call(this, props));
+		}
+	
+		_createClass(Dater, [{
+			key: 'calculate',
+			value: function calculate() {
+				switch (this.props.type) {
+	
+					case 'length':
+						var time = new Date(this.props.data);
+						var min = time.getMinutes();
+						var sec = time.getSeconds();
+						if (sec < 10) sec = '0' + sec;
+						return min + ':' + sec;
+						break;
+	
+					case 'date':
+						// TODO: nice date formatting
+						return this.props.data;
+						break;
+	
+					default:
+						return null;
+				}
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'span',
+					{ className: 'dater' },
+					this.calculate()
+				);
+			}
+		}]);
+	
+		return Dater;
+	}(_react2.default.Component);
+	
+	exports.default = Dater;
 
 /***/ }
 /******/ ])));

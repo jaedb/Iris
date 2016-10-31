@@ -6,19 +6,67 @@
 		left: 0;
 		bottom: 0;
 		width: 300px;
-		background: $light_grey;
+		background: $faint_grey;
 
 		.thumbnail {
 			float: none;
 			margin: 0 auto;
 		}
 
-		h1 {
-			padding-top: 30px;
+		.details {
+			padding: 30px;
+			color: $mid_grey;
+			text-transform: uppercase;
+		}
+
+		.artist-grid {
+			padding: 0;
+			margin: 0;
+
+			.grid-item {
+				margin: 0;
+				width: 50%;
+				position: relative;
+
+				.thumbnail .image {
+					background-color: $secondary_grey;
+				}
+
+				.name {
+					@include animate();
+					position: absolute;
+					top: 35%;
+					left: 0;
+					right: 0;
+					text-align: center;
+					color: #FFFFFF;
+					opacity: 0;
+					z-index: 2;
+					font-weight: bold;
+				}
+
+				&:hover {
+					.name {
+						opacity: 1;
+					}
+				}
+			}
 		}
 	}
 
 	.main {
+
+		.title {
+			padding: 30px 40px;
+
+			h3 {
+				color: $mid_grey;
+				a:hover {
+					color: darken($mid_grey, 20%);
+				}
+			}
+		}
+
 		padding-left: 300px;
 	}
 }

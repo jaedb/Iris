@@ -43,20 +43,20 @@ class Artist extends React.Component{
 					</div>
 
 					<div className="col w70">
-						<h3 className="left-padding">Top tracks</h3>
+						<h4 className="left-padding">Top tracks</h4>
 						{ this.props.spotify.artist.tracks ? <TrackList tracks={ this.props.spotify.artist.tracks } /> : null }
 					</div>
 
 					<div className="col w5"></div>
 
 					<div className="col w25">
-						<h3>Related artists</h3>
+						<h4>Related artists</h4>
 						{ this.props.spotify.artist.related_artists ? <ArtistList artists={ this.props.spotify.artist.related_artists.slice(0,6) } /> : null }
 					</div>
 
 					<div className="cf"></div>
 
-					<h3 className="left-padding">Albums</h3>
+					<h4 className="left-padding">Albums</h4>
 					{ this.props.spotify.artist_albums ? <AlbumGrid className="no-top-padding" albums={ this.props.spotify.artist_albums.items } /> : null }
 				</div>
 			);

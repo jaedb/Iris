@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TrackList from '../components/TrackList'
-import Header from '../components/Header'
+import Thumbnail from '../components/Thumbnail'
+import Dater from '../components/Dater'
 
 import * as spotifyActions from '../services/spotify/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -30,13 +31,24 @@ class Playlist extends React.Component{
 	render(){
 		if( this.props.spotify.playlist ){
 			
+			var playlist = this.props.spotify.playlist;
 			var context = null;
-			if( this.props.spotify.playlist.owner.id == this.props.spotify.me.id ) context = 'editable-playlist'
+			if( playlist.owner.id == this.props.spotify.me.id ) context = 'editable-playlist'
 
 			return (
 				<div className="view playlist-view">
-					<Header icon="playlist" title={ this.props.spotify.playlist.name } />
-					<TrackList context={context} tracks={this.props.spotify.playlist.tracks.items} />
+					<div className="intro">
+						<Thumbnail size="large" images={ playlist.images } />
+						<div className="details">
+							<div>{ playlist.tracks.total } tracks</div>
+						</div>
+					</div>
+					<div className="main">
+						<div className="title">
+							<h1>{ playlist.name }</h1>
+						</div>
+						<TrackList context={context} tracks={ playlist.tracks.items } />
+					</div>
 				</div>
 			);
 		}

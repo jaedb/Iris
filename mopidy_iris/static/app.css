@@ -2919,18 +2919,29 @@ main h1 {
   font-size: 40px;
 }
 
+main h2 {
+  font-weight: 500;
+  font-size: 30px;
+}
+
 main h3 {
+  font-weight: 100;
+  font-style: italic;
+  font-size: 20px;
+}
+
+main h4 {
   font-size: 14px;
   margin-bottom: 14px;
   text-transform: uppercase;
 }
 
-main h3.underline {
+main h4.underline {
   padding-bottom: 4px;
   border-bottom: 1px solid #000000;
 }
 
-main h3:not(:first-child) {
+main h4:not(:first-child) {
   padding-top: 40px;
 }
 
@@ -3665,7 +3676,7 @@ main header h1 {
   left: 0;
   bottom: 0;
   width: 300px;
-  background: #DDDDDD;
+  background: #EEEEEE;
 }
 
 .album-view .intro .thumbnail {
@@ -3673,12 +3684,132 @@ main header h1 {
   margin: 0 auto;
 }
 
-.album-view .intro h1 {
-  padding-top: 30px;
+.album-view .intro .details {
+  padding: 30px;
+  color: #AAAAAA;
+  text-transform: uppercase;
+}
+
+.album-view .intro .artist-grid {
+  padding: 0;
+  margin: 0;
+}
+
+.album-view .intro .artist-grid .grid-item {
+  margin: 0;
+  width: 50%;
+  position: relative;
+}
+
+.album-view .intro .artist-grid .grid-item .thumbnail .image {
+  background-color: #888888;
+}
+
+.album-view .intro .artist-grid .grid-item .name {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  position: absolute;
+  top: 35%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #FFFFFF;
+  opacity: 0;
+  z-index: 2;
+  font-weight: bold;
+}
+
+.album-view .intro .artist-grid .grid-item:hover .name {
+  opacity: 1;
 }
 
 .album-view .main {
   padding-left: 300px;
+}
+
+.album-view .main .title {
+  padding: 30px 40px;
+}
+
+.album-view .main .title h3 {
+  color: #AAAAAA;
+}
+
+.album-view .main .title h3 a:hover {
+  color: #777777;
+}
+
+.playlist-view .intro {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background: #EEEEEE;
+}
+
+.playlist-view .intro .thumbnail {
+  float: none;
+  margin: 0 auto;
+}
+
+.playlist-view .intro .details {
+  padding: 30px;
+  color: #AAAAAA;
+  text-transform: uppercase;
+}
+
+.playlist-view .intro .artist-grid {
+  padding: 0;
+  margin: 0;
+}
+
+.playlist-view .intro .artist-grid .grid-item {
+  margin: 0;
+  width: 50%;
+  position: relative;
+}
+
+.playlist-view .intro .artist-grid .grid-item .thumbnail .image {
+  background-color: #888888;
+}
+
+.playlist-view .intro .artist-grid .grid-item .name {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  position: absolute;
+  top: 35%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #FFFFFF;
+  opacity: 0;
+  z-index: 2;
+  font-weight: bold;
+}
+
+.playlist-view .intro .artist-grid .grid-item:hover .name {
+  opacity: 1;
+}
+
+.playlist-view .main {
+  padding-left: 300px;
+}
+
+.playlist-view .main .title {
+  padding: 30px 40px;
+}
+
+.playlist-view .main .title h3 {
+  color: #AAAAAA;
+}
+
+.playlist-view .main .title h3 a:hover {
+  color: #777777;
 }
 
 /*# sourceMappingURL=app.css.map*/

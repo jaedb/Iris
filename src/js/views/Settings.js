@@ -65,7 +65,7 @@ class Settings extends React.Component{
 
 				<section>
 
-					<h3 className="underline">Mopidy</h3>
+					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<label>
 							<div className="label">Host</div>
@@ -88,7 +88,7 @@ class Settings extends React.Component{
 						<button type="submit" className="secondary">Apply</button>
 					</form>
 
-					<h3 className="underline">Pusher</h3>
+					<h4 className="underline">Pusher</h4>
 					<form>
 						<label>
 							<div className="label">Username</div>
@@ -112,7 +112,7 @@ class Settings extends React.Component{
 						</label>
 					</form>
 
-					<h3 className="underline">Spotify</h3>
+					<h4 className="underline">Spotify</h4>
 					<form onSubmit={(e) => this.setSpotifyConfig(e)}>
 						<label>
 							<div className="label">Country</div>
@@ -138,7 +138,7 @@ class Settings extends React.Component{
 
 			        <SpotifyAuthenticationFrame />
 
-					<h3 className="underline">Advanced</h3>
+					<h4 className="underline">Advanced</h4>
 					<label>
 						<div className="label">Version</div>
 						<div className="input">

@@ -28,7 +28,7 @@ class Artist extends React.Component{
 		if( this.props.spotify.artist ){
 			return (
 				<div>
-					<h3>{ this.props.spotify.artist.name }</h3>
+					<h4>{ this.props.spotify.artist.name }</h4>
 				</div>
 			);
 		}

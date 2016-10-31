@@ -53,6 +53,8 @@ export default function reducer(mopidy = {}, action){
             });
 
         case 'MOPIDY_CURRENTTLTRACK':
+            if( !action.data ) return mopidy;
+            
             var tracks = [];
             Object.assign(tracks, mopidy.tracks);
 
