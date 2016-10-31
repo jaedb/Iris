@@ -72,6 +72,11 @@ export default function reducer(mopidy = {}, action){
                 volume: action.data   
             });
 
+        case 'MOPIDY_BROWSE':
+            return Object.assign({}, mopidy, {
+                browse: action.data   
+            });
+
         default:
             return mopidy
     }

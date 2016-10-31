@@ -1,11 +1,26 @@
 
 .playlist-view {
+	.main {
+		padding-left: 35%;
+
+		.title {
+			padding: 30px 40px;
+
+			h3 {
+				color: $mid_grey;
+				a:hover {
+					color: darken($mid_grey, 20%);
+				}
+			}
+		}
+	}
+
 	.intro {
 		position: absolute;
 		top: 0;
 		left: 0;
 		bottom: 0;
-		width: 300px;
+		width: 35%;
 		background: $faint_grey;
 
 		.thumbnail {
@@ -52,21 +67,5 @@
 				}
 			}
 		}
-	}
-
-	.main {
-
-		.title {
-			padding: 30px 40px;
-
-			h3 {
-				color: $mid_grey;
-				a:hover {
-					color: darken($mid_grey, 20%);
-				}
-			}
-		}
-
-		padding-left: 300px;
 	}
 }

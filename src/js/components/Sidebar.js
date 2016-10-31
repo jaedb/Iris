@@ -70,6 +70,10 @@ class Sidebar extends React.Component{
 							<Icon name="music" className="white" />
 							Tracks
 						</Link>
+						<Link activeClassName="active" to="/library/local">
+							<Icon name="folder" className="white" />
+							Local
+						</Link>
 					</section>
 
 					<section>

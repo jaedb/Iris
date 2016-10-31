@@ -3670,12 +3670,28 @@ main header h1 {
   padding-top: 30px;
 }
 
+.album-view .main {
+  padding-left: 35%;
+}
+
+.album-view .main .title {
+  padding: 30px 40px;
+}
+
+.album-view .main .title h3 {
+  color: #AAAAAA;
+}
+
+.album-view .main .title h3 a:hover {
+  color: #777777;
+}
+
 .album-view .intro {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
+  width: 35%;
   background: #EEEEEE;
 }
 
@@ -3725,19 +3741,19 @@ main header h1 {
   opacity: 1;
 }
 
-.album-view .main {
-  padding-left: 300px;
+.playlist-view .main {
+  padding-left: 35%;
 }
 
-.album-view .main .title {
+.playlist-view .main .title {
   padding: 30px 40px;
 }
 
-.album-view .main .title h3 {
+.playlist-view .main .title h3 {
   color: #AAAAAA;
 }
 
-.album-view .main .title h3 a:hover {
+.playlist-view .main .title h3 a:hover {
   color: #777777;
 }
 
@@ -3746,7 +3762,7 @@ main header h1 {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
+  width: 35%;
   background: #EEEEEE;
 }
 
@@ -3794,22 +3810,6 @@ main header h1 {
 
 .playlist-view .intro .artist-grid .grid-item:hover .name {
   opacity: 1;
-}
-
-.playlist-view .main {
-  padding-left: 300px;
-}
-
-.playlist-view .main .title {
-  padding: 30px 40px;
-}
-
-.playlist-view .main .title h3 {
-  color: #AAAAAA;
-}
-
-.playlist-view .main .title h3 a:hover {
-  color: #777777;
 }
 
 /*# sourceMappingURL=app.css.map*/

@@ -147,6 +147,14 @@
 	
 	var _LibraryPlaylists2 = _interopRequireDefault(_LibraryPlaylists);
 	
+	var _LibraryLocal = __webpack_require__(380);
+	
+	var _LibraryLocal2 = _interopRequireDefault(_LibraryLocal);
+	
+	var _LibraryLocalDirectory = __webpack_require__(381);
+	
+	var _LibraryLocalDirectory2 = _interopRequireDefault(_LibraryLocalDirectory);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	/**
@@ -175,6 +183,8 @@
 				_react2.default.createElement(_reactRouter.Route, { path: '/library/albums', component: _LibraryAlbums2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/library/tracks', component: _LibraryTracks2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/library/playlists', component: _LibraryPlaylists2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/library/local', component: _LibraryLocal2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/library/local/directory/:uri', component: _LibraryLocalDirectory2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/album/:uri', component: _Album2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/artist/:uri', component: _Artist2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/playlist/:uri', component: _Playlist2.default }),
@@ -1721,6 +1731,7 @@
 	exports.next = next;
 	exports.previous = previous;
 	exports.getPlaylists = getPlaylists;
+	exports.getBrowse = getBrowse;
 	
 	/**
 	 * Actions and Action Creators
@@ -1815,6 +1826,14 @@
 	
 	function getPlaylists() {
 		return { type: 'MOPIDY_PLAYLISTS' };
+	}
+	
+	function getBrowse(uri) {
+		return {
+			type: 'MOPIDY_INSTRUCT',
+			call: 'library.browse',
+			value: { uri: uri }
+		};
 	}
 
 /***/ },
@@ -18309,6 +18328,12 @@
 								{ activeClassName: 'active', disabled: !this.props.spotify.authorized, to: '/library/tracks' },
 								_react2.default.createElement(_Icon2.default, { name: 'music', className: 'white' }),
 								'Tracks'
+							),
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ activeClassName: 'active', to: '/library/local' },
+								_react2.default.createElement(_Icon2.default, { name: 'folder', className: 'white' }),
+								'Local'
 							)
 						),
 						_react2.default.createElement(
@@ -19131,6 +19156,11 @@
 	        case 'MOPIDY_VOLUME':
 	            return Object.assign({}, mopidy, {
 	                volume: action.data
+	            });
+	
+	        case 'MOPIDY_BROWSE':
+	            return Object.assign({}, mopidy, {
+	                browse: action.data
 	            });
 	
 	        default:
@@ -48820,6 +48850,209 @@
 	}(_react2.default.Component);
 	
 	exports.default = Dater;
+
+/***/ },
+/* 380 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(8);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _Header = __webpack_require__(18);
+	
+	var _Header2 = _interopRequireDefault(_Header);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LibraryLocal = function (_React$Component) {
+		_inherits(LibraryLocal, _React$Component);
+	
+		function LibraryLocal(props) {
+			_classCallCheck(this, LibraryLocal);
+	
+			return _possibleConstructorReturn(this, (LibraryLocal.__proto__ || Object.getPrototypeOf(LibraryLocal)).call(this, props));
+		}
+	
+		_createClass(LibraryLocal, [{
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'view library-local-view' },
+					_react2.default.createElement(_Header2.default, { icon: 'folder', title: 'Local' }),
+					_react2.default.createElement(
+						_reactRouter.Link,
+						{ to: '/library/local/directory/local:directory' },
+						'Folders'
+					)
+				);
+			}
+		}]);
+	
+		return LibraryLocal;
+	}(_react2.default.Component);
+	
+	exports.default = LibraryLocal;
+
+/***/ },
+/* 381 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(8);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _Header = __webpack_require__(18);
+	
+	var _Header2 = _interopRequireDefault(_Header);
+	
+	var _actions = __webpack_require__(16);
+	
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	var _actions2 = __webpack_require__(11);
+	
+	var spotifyActions = _interopRequireWildcard(_actions2);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LibraryLocalDirectory = function (_React$Component) {
+		_inherits(LibraryLocalDirectory, _React$Component);
+	
+		function LibraryLocalDirectory(props) {
+			_classCallCheck(this, LibraryLocalDirectory);
+	
+			return _possibleConstructorReturn(this, (LibraryLocalDirectory.__proto__ || Object.getPrototypeOf(LibraryLocalDirectory)).call(this, props));
+		}
+	
+		// on render
+	
+	
+		_createClass(LibraryLocalDirectory, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.loadDirectory();
+			}
+		}, {
+			key: 'componentWillReceiveProps',
+			value: function componentWillReceiveProps(nextProps) {
+	
+				// mopidy goes online
+				if (!this.props.mopidy.connected && nextProps.mopidy.connected) {
+					this.loadDirectory();
+				}
+	
+				// our uri changes
+				if (nextProps.params.uri != this.props.params.uri) {
+					this.loadDirectory(nextProps.params.uri);
+				}
+			}
+		}, {
+			key: 'loadDirectory',
+			value: function loadDirectory() {
+				var uri = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.params.uri;
+	
+				if (this.props.mopidy.connected) {
+					this.props.mopidyActions.getBrowse(uri);
+				}
+			}
+		}, {
+			key: 'renderDirectory',
+			value: function renderDirectory() {
+				if (!this.props.mopidy.browse) return null;
+	
+				return _react2.default.createElement(
+					'div',
+					null,
+					this.props.mopidy.browse.map(function (directory) {
+						return _react2.default.createElement(
+							'div',
+							{ key: directory.uri },
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ to: '/library/local/directory/' + encodeURIComponent(directory.uri) },
+								directory.name
+							)
+						);
+					})
+				);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'view library-local-view' },
+					_react2.default.createElement(_Header2.default, { icon: 'music', title: 'Local' }),
+					this.renderDirectory()
+				);
+			}
+		}]);
+	
+		return LibraryLocalDirectory;
+	}(_react2.default.Component);
+	
+	/**
+	 * Export our component
+	 *
+	 * We also integrate our global store, using connect()
+	 **/
+	
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+		return state;
+	};
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+		return {
+			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+			spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryLocalDirectory);
 
 /***/ }
 /******/ ])));

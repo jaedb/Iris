@@ -95,3 +95,11 @@ export function getPlaylists(){
 	return { type: 'MOPIDY_PLAYLISTS' }
 }
 
+export function getBrowse( uri ){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: 'library.browse',
+		value: { uri: uri }
+	}
+}
+
