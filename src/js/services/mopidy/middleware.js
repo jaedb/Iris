@@ -154,6 +154,47 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_PLAYLIST':
+                instruct( socket, store, 'playlists.lookup', action.data )
+                    .then( response => {
+                        var playlist = response;
+                        playlist.tracks = {
+                            items: response.tracks,
+                            total: response.tracks.length
+                        }
+                        
+                        var uris = [];
+                        for( var i = 0; i < playlist.tracks.items.length; i++ ){
+                            uris.push( playlist.tracks.items[i].uri );
+                        }
+
+                        instruct( socket, store, 'library.lookup', { uris: uris } )
+                            .then( response => {
+
+                                for(var uri in response){
+                                    if (response.hasOwnProperty(uri)) {
+
+                                        var track = response[uri][0];
+                                        
+                                        // find the track reference, and drop in the full track data
+                                        function getByURI( trackReference ){
+                                            return track.uri == trackReference.uri
+                                        }
+                                        var trackReferences = playlist.tracks.items.filter(getByURI);
+                                        
+                                        // there could be multiple instances of this track, so accommodate this
+                                        for( var j = 0; j < trackReferences.length; j++){
+                                            var key = playlist.tracks.items.indexOf( trackReferences[j] );
+                                            playlist.tracks.items[ key ] = track;
+                                        }
+                                    }
+                                }
+
+                                store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
+                            })
+                    })
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

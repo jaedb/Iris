@@ -103,3 +103,10 @@ export function getBrowse( uri ){
 	}
 }
 
+export function getPlaylist( uri ){
+	return { 
+		type: 'MOPIDY_PLAYLIST', 
+		data: { uri: uri } 
+	}
+}
+

@@ -956,6 +956,8 @@
 	exports.getNewReleases = getNewReleases;
 	exports.getURL = getURL;
 	
+	var helpers = __webpack_require__(63);
+	
 	/**
 	 * Send an ajax request to the Spotify API
 	 *
@@ -1138,7 +1140,7 @@
 	        // flush out the previous store value
 	        dispatch({ type: 'SPOTIFY_TRACK_LOADED', data: false });
 	
-	        sendRequest(dispatch, getState, 'tracks/' + getFromUri('trackid', uri)).then(function (response) {
+	        sendRequest(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
 	            dispatch({
 	                type: 'SPOTIFY_TRACK_LOADED',
 	                data: response
@@ -1164,11 +1166,11 @@
 	        dispatch(getArtistAlbums(uri));
 	
 	        // get both the artist and the top tracks
-	        $.when(sendRequest(dispatch, getState, 'artists/' + getFromUri('artistid', uri)).then(function (response) {
+	        $.when(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
 	            Object.assign(artist, response);
-	        }), sendRequest(dispatch, getState, 'artists/' + getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+	        }), sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
 	            Object.assign(artist, response);
-	        }), sendRequest(dispatch, getState, 'artists/' + getFromUri('artistid', uri) + '/related-artists').then(function (response) {
+	        }), sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
 	            Object.assign(artist, { related_artists: response.artists });
 	        })).then(function () {
 	            dispatch({
@@ -1181,7 +1183,7 @@
 	
 	function getArtistAlbums(uri) {
 	    return function (dispatch, getState) {
-	        sendRequest(dispatch, getState, 'artists/' + getFromUri('artistid', uri) + '/albums').then(function (response) {
+	        sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums').then(function (response) {
 	            dispatch({
 	                type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
 	                data: response
@@ -1201,7 +1203,7 @@
 	        // flush out the previous store value
 	        dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
 	
-	        sendRequest(dispatch, getState, 'albums/' + getFromUri('albumid', uri)).then(function (response) {
+	        sendRequest(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
 	
 	            // inject the parent album object into each track for consistent track objects
 	            for (var i = 0; i < response.tracks.items.length; i++) {
@@ -1230,7 +1232,7 @@
 	        // flush out the previous store value
 	        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
 	
-	        sendRequest(dispatch, getState, 'users/' + getFromUri('userid', uri) + '/playlists/' + getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+	        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
 	            dispatch({
 	                type: 'SPOTIFY_PLAYLIST_LOADED',
 	                data: response
@@ -1389,36 +1391,6 @@
 	            });
 	        });
 	    };
-	}
-	
-	/**
-	 * Get an element from a URI
-	 * @param element = string, the element we wish to extract
-	 * @param uri = string
-	 **/
-	function getFromUri(element, uri) {
-	    var exploded = uri.split(':');
-	    if (element == 'userid' && exploded[1] == 'user') return exploded[2];
-	    if (element == 'playlistid' && exploded[3] == 'playlist') return exploded[4];
-	    if (element == 'artistid' && exploded[1] == 'artist') return exploded[2];
-	    if (element == 'albumid' && exploded[1] == 'album') return exploded[2];
-	    if (element == 'trackid' && exploded[1] == 'track') return exploded[2];
-	    return null;
-	}
-	
-	/**
-	 * Identify what kind of asset a URI is (playlist, album, etc)
-	 * @param uri = string
-	 * @return string
-	 **/
-	function uriType(uri) {
-	    var exploded = uri.split(':');
-	    if (exploded[0] == 'spotify' && exploded[1] == 'track') return 'track';
-	    if (exploded[0] == 'spotify' && exploded[1] == 'artist') return 'artist';
-	    if (exploded[0] == 'spotify' && exploded[1] == 'album') return 'album';
-	    if (exploded[0] == 'spotify' && exploded[1] == 'user' && exploded[3] == 'playlist') return 'playlist';
-	    if (exploded[0] == 'spotify' && exploded[1] == 'user' && exploded.length == 3) return 'user';
-	    return null;
 	}
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
@@ -1748,6 +1720,7 @@
 	exports.previous = previous;
 	exports.getPlaylists = getPlaylists;
 	exports.getBrowse = getBrowse;
+	exports.getPlaylist = getPlaylist;
 	
 	/**
 	 * Actions and Action Creators
@@ -1849,6 +1822,13 @@
 			type: 'MOPIDY_INSTRUCT',
 			call: 'library.browse',
 			value: { uri: uri }
+		};
+	}
+	
+	function getPlaylist(uri) {
+		return {
+			type: 'MOPIDY_PLAYLIST',
+			data: { uri: uri }
 		};
 	}
 
@@ -7635,6 +7615,66 @@
 	
 		return currentConnection;
 	};
+	
+	/**
+	 * Figure out a URI's source namespace
+	 * @param uri = string
+	 **/
+	var uriSource = exports.uriSource = function uriSource(uri) {
+		var exploded = uri.split(':');
+		return exploded[0];
+	};
+	
+	/**
+	 * Get an element from a URI
+	 * @param element = string, the element we wish to extract
+	 * @param uri = string
+	 **/
+	var getFromUri = exports.getFromUri = function getFromUri(element, uri) {
+		var exploded = uri.split(':');
+	
+		if (exploded[0] == 'spotify') {
+	
+			if (element == 'userid' && exploded[1] == 'user') return exploded[2];
+			if (element == 'playlistid' && exploded[3] == 'playlist') return exploded[4];
+			if (element == 'artistid' && exploded[1] == 'artist') return exploded[2];
+			if (element == 'albumid' && exploded[1] == 'album') return exploded[2];
+			if (element == 'trackid' && exploded[1] == 'track') return exploded[2];
+			return null;
+		}
+	
+		return null;
+	};
+	
+	/**
+	 * Identify what kind of asset a URI is (playlist, album, etc)
+	 * @param uri = string
+	 * @return string
+	 **/
+	var uriType = exports.uriType = function uriType(uri) {
+		var exploded = uri.split(':');
+	
+		if (exploded[0] == 'spotify') {
+			switch (exploded[1]) {
+				case 'track':
+					return 'track';
+					break;
+				case 'artist':
+					return 'artist';
+					break;
+				case 'album':
+					return 'album';
+					break;
+				case 'user':
+					if (exploded[3] == 'playlist') return 'playlist';
+					if (exploded.length == 3) return 'user';
+					return null;
+					break;
+			}
+		}
+	
+		return null;
+	};
 
 /***/ },
 /* 64 */
@@ -10637,7 +10677,7 @@
 /* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -19087,6 +19127,45 @@
 	                        });
 	                        break;
 	
+	                    case 'MOPIDY_PLAYLIST':
+	                        instruct(socket, store, 'playlists.lookup', action.data).then(function (response) {
+	                            var playlist = response;
+	                            playlist.tracks = {
+	                                items: response.tracks,
+	                                total: response.tracks.length
+	                            };
+	
+	                            var uris = [];
+	                            for (var i = 0; i < playlist.tracks.items.length; i++) {
+	                                uris.push(playlist.tracks.items[i].uri);
+	                            }
+	
+	                            instruct(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
+	
+	                                for (var uri in response) {
+	                                    if (response.hasOwnProperty(uri)) {
+	
+	                                        // find the track reference, and drop in the full track data
+	                                        var getByURI = function getByURI(trackReference) {
+	                                            return track.uri == trackReference.uri;
+	                                        };
+	
+	                                        var track = response[uri][0];
+	                                        var trackReferences = playlist.tracks.items.filter(getByURI);
+	
+	                                        // there could be multiple instances of this track, so accommodate this
+	                                        for (var j = 0; j < trackReferences.length; j++) {
+	                                            var key = playlist.tracks.items.indexOf(trackReferences[j]);
+	                                            playlist.tracks.items[key] = track;
+	                                        }
+	                                    }
+	                                }
+	
+	                                store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
+	                            });
+	                        });
+	                        break;
+	
 	                    // This action is irrelevant to us, pass it on to the next middleware
 	                    default:
 	                        return next(action);
@@ -19186,6 +19265,11 @@
 	        case 'MOPIDY_BROWSE':
 	            return Object.assign({}, mopidy, {
 	                browse: action.data
+	            });
+	
+	        case 'MOPIDY_PLAYLIST_LOADED':
+	            return Object.assign({}, mopidy, {
+	                playlist: action.data
 	            });
 	
 	        default:
@@ -20206,6 +20290,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
+	var helpers = __webpack_require__(63);
+	
 	var Playlist = function (_React$Component) {
 		_inherits(Playlist, _React$Component);
 	
@@ -20215,30 +20301,40 @@
 			return _possibleConstructorReturn(this, (Playlist.__proto__ || Object.getPrototypeOf(Playlist)).call(this, props));
 		}
 	
-		// on render
-	
-	
 		_createClass(Playlist, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				this.props.spotifyActions.getPlaylist(this.props.params.uri);
+				this.loadPlaylist();
 			}
-	
-			// when props changed
-	
 		}, {
 			key: 'componentWillReceiveProps',
 			value: function componentWillReceiveProps(nextProps) {
 				if (nextProps.params.uri != this.props.params.uri) {
-					this.props.spotifyActions.getPlaylist(nextProps.params.uri);
+					this.loadPlaylist(nextProps);
+				} else if (!this.props.mopidy.connected && nextProps.mopidy.connected) {
+					if (helpers.uriSource(this.props.params.uri) == 'm3u') {
+						this.loadPlaylist(nextProps);
+					}
 				}
 			}
 		}, {
-			key: 'render',
-			value: function render() {
-				if (this.props.spotify.playlist) {
+			key: 'loadPlaylist',
+			value: function loadPlaylist() {
+				var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 	
+				var source = helpers.uriSource(props.params.uri);
+				if (source == 'spotify') {
+					this.props.spotifyActions.getPlaylist(props.params.uri);
+				} else if (source == 'm3u' && props.mopidy.connected) {
+					this.props.mopidyActions.getPlaylist(props.params.uri);
+				}
+			}
+		}, {
+			key: 'renderSpotifyPlaylist',
+			value: function renderSpotifyPlaylist() {
+				if (this.props.spotify.playlist) {
 					var playlist = this.props.spotify.playlist;
+	
 					var context = null;
 					if (playlist.owner.id == this.props.spotify.me.id) context = 'editable-playlist';
 	
@@ -20276,6 +20372,56 @@
 						)
 					);
 				}
+				return null;
+			}
+		}, {
+			key: 'renderMopidyPlaylist',
+			value: function renderMopidyPlaylist() {
+				if (this.props.mopidy.playlist) {
+					var playlist = this.props.mopidy.playlist;
+	
+					return _react2.default.createElement(
+						'div',
+						{ className: 'view playlist-view' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'intro' },
+							playlist.images ? _react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }) : null,
+							_react2.default.createElement(
+								'div',
+								{ className: 'details' },
+								_react2.default.createElement(
+									'div',
+									null,
+									'Last updated ',
+									playlist.last_modified
+								)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'main' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								_react2.default.createElement(
+									'h1',
+									null,
+									playlist.name
+								)
+							),
+							_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items })
+						)
+					);
+				}
+				return null;
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var source = helpers.uriSource(this.props.params.uri);
+				if (source == 'spotify') return this.renderSpotifyPlaylist();
+				if (source == 'm3u') return this.renderMopidyPlaylist();
 				return null;
 			}
 		}]);

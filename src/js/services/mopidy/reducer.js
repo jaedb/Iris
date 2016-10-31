@@ -77,6 +77,11 @@ export default function reducer(mopidy = {}, action){
                 browse: action.data   
             });
 
+        case 'MOPIDY_PLAYLIST_LOADED':
+            return Object.assign({}, mopidy, {
+                playlist: action.data
+            });
+
         default:
             return mopidy
     }

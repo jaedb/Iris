@@ -49,3 +49,74 @@ export let getCurrentPusherConnection = function( connections, connectionid ){
 
 	return currentConnection;
 }
+
+
+
+
+/**
+ * Figure out a URI's source namespace
+ * @param uri = string
+ **/
+export let uriSource = function( uri ){
+    var exploded = uri.split(':');
+    return exploded[0]
+}
+
+
+
+/**
+ * Get an element from a URI
+ * @param element = string, the element we wish to extract
+ * @param uri = string
+ **/
+export let getFromUri = function( element, uri ){
+    var exploded = uri.split(':');         
+
+    if( exploded[0] == 'spotify' ){
+
+	    if( element == 'userid' && exploded[1] == 'user' )
+	        return exploded[2];             
+	    if( element == 'playlistid' && exploded[3] == 'playlist' )
+	        return exploded[4];
+	    if( element == 'artistid' && exploded[1] == 'artist' )
+	        return exploded[2];             
+	    if( element == 'albumid' && exploded[1] == 'album' )
+	        return exploded[2];             
+	    if( element == 'trackid' && exploded[1] == 'track' )
+	        return exploded[2];             
+	    return null;
+
+	}
+
+	return null
+}
+
+/**
+ * Identify what kind of asset a URI is (playlist, album, etc)
+ * @param uri = string
+ * @return string
+ **/
+export let uriType = function( uri ){
+    var exploded = uri.split(':');
+
+    if( exploded[0] == 'spotify' ){
+    	switch( exploded[1] ){
+    		case 'track':
+    			return 'track'
+    			break;
+    		case 'artist':
+    			return 'artist'
+    			break;
+    		case 'album':
+    			return 'album'
+    			break;
+    		case 'user':
+    			if( exploded[3] == 'playlist' ) return 'playlist'
+    			if( exploded.length == 3 ) return 'user'
+    			return null
+    			break;
+    	}
+    }
+
+    return null;
+}
