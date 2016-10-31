@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
 import PlaylistGrid from '../../components/PlaylistGrid'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -26,6 +27,11 @@ class DiscoverCategory extends React.Component{
 		}
 	}
 
+	loadMore(){
+		if( !this.props.spotify.new_releases || !this.props.spotify.new_releases.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
+	}
+
 	render(){
 		if( !this.props.spotify.category ) return null;
 
@@ -33,6 +39,7 @@ class DiscoverCategory extends React.Component{
 			<div className="view discover-categories-view">
 				<Header icon="grid" title={this.props.spotify.category.name} />
 				{ this.props.spotify.category_playlists ? <PlaylistGrid playlists={this.props.spotify.category_playlists.items} /> : null }
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

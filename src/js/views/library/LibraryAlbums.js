@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 
 import AlbumGrid from '../../components/AlbumGrid'
 import Header from '../../components/Header'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -16,9 +17,13 @@ class LibraryAlbums extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.props.spotifyActions.getLibraryAlbums();
+	}
+
+	loadMore(){
+		if( !this.props.spotify.library_albums || !this.props.spotify.library_albums.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.library_albums.next, 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE' );
 	}
 
 	render(){
@@ -29,6 +34,7 @@ class LibraryAlbums extends React.Component{
 					title="My albums"
 					/>
 				{ this.props.spotify.library_albums ? <AlbumGrid albums={this.props.spotify.library_albums.items} /> : null }
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

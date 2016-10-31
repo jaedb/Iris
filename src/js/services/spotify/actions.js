@@ -1,29 +1,5 @@
 
 /**
- * Actions and Action Creators
- **/
-
-export function setConfig( config ){
-	return {
-		type: 'SPOTIFY_SET_CONFIG',
-		config: config
-	}
-}
-
-export function connect(){
-	return {
-		type: 'SPOTIFY_CONNECTING'
-	}
-}
-
-export function disconnect(){
-	return {
-		type: 'SPOTIFY_DISCONNECT'
-	}
-}
-
-
-/**
  * Send an ajax request to the Spotify API
  *
  * @param dispatch obj
@@ -37,42 +13,28 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
     return new Promise( (resolve, reject) => {         
         getToken( dispatch, getState )
             .then( response => {
+
+                var url = 'https://api.spotify.com/v1/'+endpoint
+                if( endpoint.startsWith('https://api.spotify.com/') ) url = endpoint;
+
                 $.ajax({
                         method: method,
                         cache: true,
-                        url: 'https://api.spotify.com/v1/'+endpoint,
+                        url: url,
                         headers: {
                             Authorization: 'Bearer '+ response
                         },
                         data: data
                     }).then( 
                         response => resolve(response),
-                        error => {
-                            console.error('Could not send request to '+endpoint, error, data)
+                        (xhr, status, error) => {
+                            console.error( endpoint+' failed', xhr.responseText)
                             reject(error)
                         }
                     )
             });
         }
     );
-}
-
-
-/**
- * Handle authorization process
- **/
-
-export function startAuthorization(){
-	return { type: 'SPOTIFY_START_AUTHORIZATION' }
-}
-
-export function authorizationGranted( data ){
-    data.token_expiry = new Date().getTime() + data.expires_in;
-	return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
-}
-
-export function authorizationRevoked(){
-	return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' }
 }
 
 
@@ -152,6 +114,48 @@ function refreshToken( dispatch, getState ){
         }
 
     })
+}
+
+
+/**
+ * Actions and Action Creators
+ **/
+
+export function setConfig( config ){
+    return {
+        type: 'SPOTIFY_SET_CONFIG',
+        config: config
+    }
+}
+
+export function connect(){
+    return {
+        type: 'SPOTIFY_CONNECTING'
+    }
+}
+
+export function disconnect(){
+    return {
+        type: 'SPOTIFY_DISCONNECT'
+    }
+}
+
+
+/**
+ * Handle authorization process
+ **/
+
+export function startAuthorization(){
+    return { type: 'SPOTIFY_START_AUTHORIZATION' }
+}
+
+export function authorizationGranted( data ){
+    data.token_expiry = new Date().getTime() + data.expires_in;
+    return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
+}
+
+export function authorizationRevoked(){
+    return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' }
 }
 
 export function refreshingToken(){
@@ -337,7 +341,7 @@ export function getLibraryArtists(){
             .then( response => {
                 dispatch({
                 	type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-                	data: response
+                	data: response.artists
                 });
             });
 	}
@@ -450,7 +454,7 @@ export function getCategoryPlaylists( id ){
 }
 
 export function getNewReleases(){
-	return (dispatch, getState) => {
+    return (dispatch, getState) => {
 
         dispatch({ type: 'SPOTIFY_NEW_RELEASES_LOADED', data: false });
 
@@ -459,6 +463,18 @@ export function getNewReleases(){
                 dispatch({
                     type: 'SPOTIFY_NEW_RELEASES_LOADED',
                     data: response.albums
+                });
+            });
+    }
+}
+
+export function getURL( url, action_name ){
+	return (dispatch, getState) => {
+        sendRequest( dispatch, getState, url )
+            .then( response => {
+                dispatch({
+                    type: action_name,
+                    data: response
                 });
             });
 	}

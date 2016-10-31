@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
+import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
@@ -28,6 +29,11 @@ class Artist extends React.Component{
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.props.spotifyActions.getArtist( nextProps.params.uri );
 		}
+	}
+
+	loadMore(){
+		if( !this.props.spotify.artist_albums || !this.props.spotify.artist_albums.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
 	}
 
 	render(){
@@ -58,6 +64,7 @@ class Artist extends React.Component{
 
 					<h4 className="left-padding">Albums</h4>
 					{ this.props.spotify.artist_albums ? <AlbumGrid className="no-top-padding" albums={ this.props.spotify.artist_albums.items } /> : null }
+					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</div>
 			);
 		}

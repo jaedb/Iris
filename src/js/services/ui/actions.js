@@ -16,4 +16,11 @@ export function hideContextMenu(){
 	}
 }
 
+export function lazyLoading( start ){
+    return {
+        type: 'UI_LAZY_LOADING',
+        start: start
+    }
+}
+
 

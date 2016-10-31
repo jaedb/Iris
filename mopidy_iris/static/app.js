@@ -954,29 +954,7 @@
 	exports.getCategory = getCategory;
 	exports.getCategoryPlaylists = getCategoryPlaylists;
 	exports.getNewReleases = getNewReleases;
-	
-	/**
-	 * Actions and Action Creators
-	 **/
-	
-	function setConfig(config) {
-	    return {
-	        type: 'SPOTIFY_SET_CONFIG',
-	        config: config
-	    };
-	}
-	
-	function connect() {
-	    return {
-	        type: 'SPOTIFY_CONNECTING'
-	    };
-	}
-	
-	function disconnect() {
-	    return {
-	        type: 'SPOTIFY_DISCONNECT'
-	    };
-	}
+	exports.getURL = getURL;
 	
 	/**
 	 * Send an ajax request to the Spotify API
@@ -994,40 +972,27 @@
 	
 	    return new Promise(function (resolve, reject) {
 	        getToken(dispatch, getState).then(function (response) {
+	
+	            var url = 'https://api.spotify.com/v1/' + endpoint;
+	            if (endpoint.startsWith('https://api.spotify.com/')) url = endpoint;
+	
 	            $.ajax({
 	                method: method,
 	                cache: true,
-	                url: 'https://api.spotify.com/v1/' + endpoint,
+	                url: url,
 	                headers: {
 	                    Authorization: 'Bearer ' + response
 	                },
 	                data: data
 	            }).then(function (response) {
 	                return resolve(response);
-	            }, function (error) {
-	                console.error('Could not send request to ' + endpoint, error, data);
+	            }, function (xhr, status, error) {
+	                console.error(endpoint + ' failed', xhr.responseText);
 	                reject(error);
 	            });
 	        });
 	    });
 	};
-	
-	/**
-	 * Handle authorization process
-	 **/
-	
-	function startAuthorization() {
-	    return { type: 'SPOTIFY_START_AUTHORIZATION' };
-	}
-	
-	function authorizationGranted(data) {
-	    data.token_expiry = new Date().getTime() + data.expires_in;
-	    return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data };
-	}
-	
-	function authorizationRevoked() {
-	    return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' };
-	}
 	
 	/**
 	* Check an access token validity
@@ -1095,6 +1060,46 @@
 	            });
 	        }
 	    });
+	}
+	
+	/**
+	 * Actions and Action Creators
+	 **/
+	
+	function setConfig(config) {
+	    return {
+	        type: 'SPOTIFY_SET_CONFIG',
+	        config: config
+	    };
+	}
+	
+	function connect() {
+	    return {
+	        type: 'SPOTIFY_CONNECTING'
+	    };
+	}
+	
+	function disconnect() {
+	    return {
+	        type: 'SPOTIFY_DISCONNECT'
+	    };
+	}
+	
+	/**
+	 * Handle authorization process
+	 **/
+	
+	function startAuthorization() {
+	    return { type: 'SPOTIFY_START_AUTHORIZATION' };
+	}
+	
+	function authorizationGranted(data) {
+	    data.token_expiry = new Date().getTime() + data.expires_in;
+	    return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data };
+	}
+	
+	function authorizationRevoked() {
+	    return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' };
 	}
 	
 	function refreshingToken() {
@@ -1256,7 +1261,7 @@
 	        sendRequest(dispatch, getState, 'me/following?type=artist').then(function (response) {
 	            dispatch({
 	                type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-	                data: response
+	                data: response.artists
 	            });
 	        });
 	    };
@@ -1370,6 +1375,17 @@
 	            dispatch({
 	                type: 'SPOTIFY_NEW_RELEASES_LOADED',
 	                data: response.albums
+	            });
+	        });
+	    };
+	}
+	
+	function getURL(url, action_name) {
+	    return function (dispatch, getState) {
+	        sendRequest(dispatch, getState, url).then(function (response) {
+	            dispatch({
+	                type: action_name,
+	                data: response
 	            });
 	        });
 	    };
@@ -3834,12 +3850,13 @@
 		}, {
 			key: 'componentWillReceiveProps',
 			value: function componentWillReceiveProps(nextProps) {
-				this.mapImageSizes();
+				this.mapImageSizes(nextProps.images);
 			}
 		}, {
 			key: 'mapImageSizes',
 			value: function mapImageSizes() {
-				var images = this.props.images;
+				var images = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.images;
+	
 				var state = this.state;
 	
 				if (images.length <= 0) {
@@ -7630,6 +7647,7 @@
 	});
 	exports.showContextMenu = showContextMenu;
 	exports.hideContextMenu = hideContextMenu;
+	exports.lazyLoading = lazyLoading;
 	function showContextMenu(e) {
 	    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 	    var data = arguments[2];
@@ -7646,6 +7664,13 @@
 	function hideContextMenu() {
 	    return {
 	        type: 'UI_HIDE_CONTEXT_MENU'
+	    };
+	}
+	
+	function lazyLoading(start) {
+	    return {
+	        type: 'UI_LAZY_LOADING',
+	        start: start
 	    };
 	}
 
@@ -10612,7 +10637,7 @@
 /* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -19420,6 +19445,9 @@
 	    value: true
 	});
 	exports.default = reducer;
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function reducer() {
 	    var spotify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    var action = arguments[1];
@@ -19492,14 +19520,38 @@
 	        case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
 	            return Object.assign({}, spotify, { artist_albums: action.data });
 	
+	        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
+	            return Object.assign({}, spotify, { artist_albums: {
+	                    href: action.data.href,
+	                    next: action.data.next,
+	                    previous: action.data.previous,
+	                    items: [].concat(_toConsumableArray(spotify.artist_albums.items), _toConsumableArray(action.data.items))
+	                } });
+	
 	        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
 	            return Object.assign({}, spotify, { library_playlists: action.data });
 	
 	        case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
 	            return Object.assign({}, spotify, { library_artists: action.data });
 	
+	        case 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE':
+	            return Object.assign({}, spotify, { library_artists: {
+	                    href: action.data.artists.href,
+	                    next: action.data.artists.next,
+	                    previous: action.data.artists.previous,
+	                    items: [].concat(_toConsumableArray(spotify.library_artists.items), _toConsumableArray(action.data.artists.items))
+	                } });
+	
 	        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
 	            return Object.assign({}, spotify, { library_albums: action.data });
+	
+	        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE':
+	            return Object.assign({}, spotify, { library_albums: {
+	                    href: action.data.href,
+	                    next: action.data.next,
+	                    previous: action.data.previous,
+	                    items: [].concat(_toConsumableArray(spotify.library_albums.items), _toConsumableArray(action.data.items))
+	                } });
 	
 	        case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
 	            return Object.assign({}, spotify, { library_tracks: action.data });
@@ -19516,8 +19568,24 @@
 	        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
 	            return Object.assign({}, spotify, { category_playlists: action.data });
 	
+	        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+	            return Object.assign({}, spotify, { category_playlists: {
+	                    href: action.data.href,
+	                    next: action.data.next,
+	                    previous: action.data.previous,
+	                    items: [].concat(_toConsumableArray(spotify.category_playlists.items), _toConsumableArray(action.data.items))
+	                } });
+	
 	        case 'SPOTIFY_NEW_RELEASES_LOADED':
 	            return Object.assign({}, spotify, { new_releases: action.data });
+	
+	        case 'SPOTIFY_NEW_RELEASES_LOADED_MORE':
+	            return Object.assign({}, spotify, { new_releases: {
+	                    href: action.data.albums.href,
+	                    next: action.data.albums.next,
+	                    previous: action.data.albums.previous,
+	                    items: [].concat(_toConsumableArray(spotify.new_releases.items), _toConsumableArray(action.data.albums.items))
+	                } });
 	
 	        default:
 	            return spotify;
@@ -19553,6 +19621,9 @@
 	
 	        case 'UI_HIDE_CONTEXT_MENU':
 	            return Object.assign({}, ui, { context_menu: { show: false } });
+	
+	        case 'UI_LAZY_LOADING':
+	            return Object.assign({}, ui, { lazy_loading: action.start });
 	
 	        default:
 	            return ui;
@@ -19926,6 +19997,10 @@
 	
 	var _redux = __webpack_require__(6);
 	
+	var _LazyLoadListener = __webpack_require__(382);
+	
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+	
 	var _Header = __webpack_require__(18);
 	
 	var _Header2 = _interopRequireDefault(_Header);
@@ -19992,8 +20067,16 @@
 				}
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.artist_albums || !this.props.spotify.artist_albums.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				if (this.props.spotify.artist) {
 					return _react2.default.createElement(
 						'div',
@@ -20042,7 +20125,10 @@
 							{ className: 'left-padding' },
 							'Albums'
 						),
-						this.props.spotify.artist_albums ? _react2.default.createElement(_AlbumGrid2.default, { className: 'no-top-padding', albums: this.props.spotify.artist_albums.items }) : null
+						this.props.spotify.artist_albums ? _react2.default.createElement(_AlbumGrid2.default, { className: 'no-top-padding', albums: this.props.spotify.artist_albums.items }) : null,
+						_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+								return _this2.loadMore();
+							} })
 					);
 				}
 				return null;
@@ -20974,6 +21060,10 @@
 	
 	var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
 	
+	var _LazyLoadListener = __webpack_require__(382);
+	
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+	
 	var _actions = __webpack_require__(11);
 	
 	var spotifyActions = _interopRequireWildcard(_actions);
@@ -21012,15 +21102,26 @@
 				}
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.new_releases || !this.props.spotify.new_releases.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				if (!this.props.spotify.category) return null;
 	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view discover-categories-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'grid', title: this.props.spotify.category.name }),
-					this.props.spotify.category_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.category_playlists.items }) : null
+					this.props.spotify.category_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.category_playlists.items }) : null,
+					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+							return _this2.loadMore();
+						} })
 				);
 			}
 		}]);
@@ -21166,9 +21267,17 @@
 	
 	var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
 	
-	var _actions = __webpack_require__(11);
+	var _LazyLoadListener = __webpack_require__(382);
 	
-	var spotifyActions = _interopRequireWildcard(_actions);
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+	
+	var _actions = __webpack_require__(64);
+	
+	var uiActions = _interopRequireWildcard(_actions);
+	
+	var _actions2 = __webpack_require__(11);
+	
+	var spotifyActions = _interopRequireWildcard(_actions2);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -21189,22 +21298,30 @@
 			return _possibleConstructorReturn(this, (DiscoverNewReleases.__proto__ || Object.getPrototypeOf(DiscoverNewReleases)).call(this, props));
 		}
 	
-		// on render
-	
-	
 		_createClass(DiscoverNewReleases, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
 				this.props.spotifyActions.getNewReleases();
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.new_releases || !this.props.spotify.new_releases.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view discover-new-releases-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'leaf', title: 'New Releases' }),
-					this.props.spotify.new_releases ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.new_releases.items }) : null
+					this.props.spotify.new_releases ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.new_releases.items }) : null,
+					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+							return _this2.loadMore();
+						} })
 				);
 			}
 		}]);
@@ -21224,6 +21341,7 @@
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		return {
+			uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
 			spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 		};
 	};
@@ -21260,6 +21378,10 @@
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
+	var _LazyLoadListener = __webpack_require__(382);
+	
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+	
 	var _actions = __webpack_require__(16);
 	
 	var mopidyActions = _interopRequireWildcard(_actions);
@@ -21287,17 +21409,22 @@
 			return _possibleConstructorReturn(this, (LibraryAlbums.__proto__ || Object.getPrototypeOf(LibraryAlbums)).call(this, props));
 		}
 	
-		// on render
-	
-	
 		_createClass(LibraryAlbums, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
 				this.props.spotifyActions.getLibraryAlbums();
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.library_albums || !this.props.spotify.library_albums.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.library_albums.next, 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view library-albums-view' },
@@ -21305,7 +21432,10 @@
 						icon: 'cd',
 						title: 'My albums'
 					}),
-					this.props.spotify.library_albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.library_albums.items }) : null
+					this.props.spotify.library_albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.library_albums.items }) : null,
+					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+							return _this2.loadMore();
+						} })
 				);
 			}
 		}]);
@@ -21354,6 +21484,10 @@
 	
 	var _reactRouter = __webpack_require__(12);
 	
+	var _LazyLoadListener = __webpack_require__(382);
+	
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+	
 	var _Header = __webpack_require__(18);
 	
 	var _Header2 = _interopRequireDefault(_Header);
@@ -21398,8 +21532,16 @@
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.library_artists || !this.props.spotify.library_artists.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.library_artists.next, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view library-artists-view' },
@@ -21407,7 +21549,10 @@
 						icon: 'mic',
 						title: 'My artists'
 					}),
-					this.props.spotify.library_artists ? _react2.default.createElement(_ArtistGrid2.default, { artists: this.props.spotify.library_artists.artists.items }) : null
+					this.props.spotify.library_artists ? _react2.default.createElement(_ArtistGrid2.default, { artists: this.props.spotify.library_artists.items }) : null,
+					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+							return _this2.loadMore();
+						} })
 				);
 			}
 		}]);
@@ -49053,6 +49198,89 @@
 	};
 	
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryLocalDirectory);
+
+/***/ },
+/* 382 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LazyLoadListener = function (_React$Component) {
+		_inherits(LazyLoadListener, _React$Component);
+	
+		function LazyLoadListener(props) {
+			_classCallCheck(this, LazyLoadListener);
+	
+			var _this = _possibleConstructorReturn(this, (LazyLoadListener.__proto__ || Object.getPrototypeOf(LazyLoadListener)).call(this, props));
+	
+			_this.state = { loading: false };
+			_this.handleScroll = _this.handleScroll.bind(_this);
+			return _this;
+		}
+	
+		_createClass(LazyLoadListener, [{
+			key: "componentWillMount",
+			value: function componentWillMount() {
+				window.addEventListener("scroll", this.handleScroll, false);
+			}
+		}, {
+			key: "componentWillUnmount",
+			value: function componentWillUnmount() {
+				window.removeEventListener("scroll", this.handleScroll, false);
+			}
+		}, {
+			key: "handleScroll",
+			value: function handleScroll(e) {
+				if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+					if (!this.state.loading) {
+						this.setState({ loading: true });
+						this.props.loadMore();
+					}
+				} else if (this.state.loading) {
+					this.setState({ loading: false });
+				}
+			}
+		}, {
+			key: "render",
+			value: function render() {
+				if (this.loading) {
+					return _react2.default.createElement(
+						"div",
+						{ className: "lazy-loader loading" },
+						_react2.default.createElement(
+							"div",
+							{ className: "content" },
+							"LOADING"
+						)
+					);
+				} else {
+					return _react2.default.createElement("div", { className: "lazy-loader" });
+				}
+			}
+		}]);
+	
+		return LazyLoadListener;
+	}(_react2.default.Component);
+	
+	exports.default = LazyLoadListener;
 
 /***/ }
 /******/ ])));

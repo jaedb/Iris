@@ -68,14 +68,38 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_ARTIST_ALBUMS_LOADED':            
             return Object.assign({}, spotify, { artist_albums: action.data });
 
+        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
+            return Object.assign({}, spotify, { artist_albums: {
+                href: action.data.href,
+                next: action.data.next,
+                previous: action.data.previous,
+                items: [ ...spotify.artist_albums.items, ...action.data.items ]
+            }});
+
         case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { library_playlists: action.data });
 
         case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
             return Object.assign({}, spotify, { library_artists: action.data });
 
+        case 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE':
+            return Object.assign({}, spotify, { library_artists: {
+                href: action.data.artists.href,
+                next: action.data.artists.next,
+                previous: action.data.artists.previous,
+                items: [ ...spotify.library_artists.items, ...action.data.artists.items ]
+            }});
+
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
             return Object.assign({}, spotify, { library_albums: action.data });
+
+        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE':
+            return Object.assign({}, spotify, { library_albums: {
+                href: action.data.href,
+                next: action.data.next,
+                previous: action.data.previous,
+                items: [ ...spotify.library_albums.items, ...action.data.items ]
+            }});
 
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
             return Object.assign({}, spotify, { library_tracks: action.data });
@@ -92,8 +116,24 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { category_playlists: action.data });
 
+        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+            return Object.assign({}, spotify, { category_playlists: {
+                href: action.data.href,
+                next: action.data.next,
+                previous: action.data.previous,
+                items: [ ...spotify.category_playlists.items, ...action.data.items ]
+            }});
+
         case 'SPOTIFY_NEW_RELEASES_LOADED':
             return Object.assign({}, spotify, { new_releases: action.data });
+
+        case 'SPOTIFY_NEW_RELEASES_LOADED_MORE':
+            return Object.assign({}, spotify, { new_releases: {
+                href: action.data.albums.href,
+                next: action.data.albums.next,
+                previous: action.data.albums.previous,
+                items: [ ...spotify.new_releases.items, ...action.data.albums.items ]
+            }});
 
         default:
             return spotify

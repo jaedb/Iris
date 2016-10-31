@@ -5,7 +5,9 @@ import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
 import AlbumGrid from '../../components/AlbumGrid'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
+import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverNewReleases extends React.Component{
@@ -14,9 +16,13 @@ class DiscoverNewReleases extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.props.spotifyActions.getNewReleases();
+	}
+
+	loadMore(){
+		if( !this.props.spotify.new_releases || !this.props.spotify.new_releases.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
 	}
 
 	render(){
@@ -24,6 +30,7 @@ class DiscoverNewReleases extends React.Component{
 			<div className="view discover-new-releases-view">
 				<Header icon="leaf" title="New Releases" />
 				{ this.props.spotify.new_releases ? <AlbumGrid albums={this.props.spotify.new_releases.items} /> : null }
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}
@@ -42,6 +49,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

@@ -3262,6 +3262,11 @@ label .input input {
   pointer-events: none;
 }
 
+.lazy-loader {
+  height: 50px;
+  color: #DDDDDD;
+}
+
 .context-menu {
   position: fixed;
   left: 0;

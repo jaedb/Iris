@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
+import LazyLoadListener from '../../components/LazyLoadListener'
 import Header from '../../components/Header'
 import ArtistGrid from '../../components/ArtistGrid'
 
@@ -21,6 +22,11 @@ class LibraryArtists extends React.Component{
 		this.props.spotifyActions.getLibraryArtists();
 	}
 
+	loadMore(){
+		if( !this.props.spotify.library_artists || !this.props.spotify.library_artists.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.library_artists.next, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
+	}
+
 	render(){
 		return (
 			<div className="view library-artists-view">
@@ -28,7 +34,8 @@ class LibraryArtists extends React.Component{
 					icon="mic"
 					title="My artists"
 					/>
-				{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.artists.items} /> : null }
+				{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.items} /> : null }
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

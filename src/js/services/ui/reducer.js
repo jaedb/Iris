@@ -16,6 +16,9 @@ export default function reducer(ui = {}, action){
         case 'UI_HIDE_CONTEXT_MENU':
             return Object.assign({}, ui, { context_menu: { show: false } });
 
+        case 'UI_LAZY_LOADING':
+            return Object.assign({}, ui, { lazy_loading: action.start });
+
         default:
             return ui
     }

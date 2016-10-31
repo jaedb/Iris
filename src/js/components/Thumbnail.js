@@ -20,11 +20,10 @@ export default class Thumbnail extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		this.mapImageSizes();
+		this.mapImageSizes( nextProps.images );
 	}
 
-	mapImageSizes(){
-		var images = this.props.images;
+	mapImageSizes( images = this.props.images ){
 		var state = this.state;
 
 		if( images.length <= 0 ){
