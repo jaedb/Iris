@@ -17,6 +17,7 @@ export default class LibraryLocal extends React.Component{
 			<div className="view library-local-view">
 				<Header icon="folder" title="Local" />
 				<Link to="/library/local/directory/local:directory">Folders</Link>
+				<Link to="/library/local/artists">Artists</Link>
 			</div>
 		);
 	}

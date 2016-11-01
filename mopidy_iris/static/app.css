@@ -3066,6 +3066,10 @@ main .left-padding {
   width: 95%;
 }
 
+.col.w100 {
+  width: 100%;
+}
+
 .cf::after {
   content: '';
   clear: both;
@@ -3497,12 +3501,6 @@ aside .player .controls a:hover {
   display: block;
 }
 
-.list-item .col {
-  width: 10%;
-  min-height: 1px;
-  float: left;
-}
-
 .list-item.selected {
   background: #FFF39C !important;
 }
@@ -3510,6 +3508,7 @@ aside .player .controls a:hover {
 .list-item:not(.header):hover {
   background: #EEEEEE;
   cursor: pointer;
+  border-color: #EEEEEE;
 }
 
 .list-item.header {

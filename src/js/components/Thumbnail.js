@@ -34,7 +34,7 @@ export default class Thumbnail extends React.Component{
 				huge: require('../../images/no-image.svg')
 			}
 		}else{
-			state = helpers.SizedImages( images );
+			state = helpers.sizedImages( images );
 		}
 
 		this.setState( state );

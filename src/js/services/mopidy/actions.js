@@ -124,3 +124,9 @@ export function getArtist( uri ){
 	}
 }
 
+export function getArtists(){
+	return { 
+		type: 'MOPIDY_ARTISTS'
+	}
+}
+

@@ -11,24 +11,19 @@
 	display: block;
 	position: relative;
 	padding: 9px 10px 9px 40px;
-	border-top: 1px solid #EEEEEE;
-	border-bottom: 1px solid #EEEEEE;
+	border-top: 1px solid $faint_grey;
+	border-bottom: 1px solid $faint_grey;
 	margin-bottom: -1px;
 	@include clearfix;
-
-	.col {
-		width: 10%;
-		min-height: 1px;
-		float: left;
-	}
 
 	&.selected {
 		background: #FFF39C !important;
 	}
 
 	&:not(.header):hover {
-		background: #EEEEEE;
+		background: $faint_grey;
 		cursor: pointer;
+		border-color: $faint_grey;
 	}
 
 	&.header {

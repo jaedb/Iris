@@ -1,6 +1,6 @@
 
 
-export let SizedImages = function( images ){
+export let sizedImages = function( images ){
 
 	var sizes = {
 		small: false,
@@ -14,7 +14,7 @@ export let SizedImages = function( images ){
 	for( var i = 0; i < images.length; i++ ){
 
 		// spotify-styled images
-		if( images[i].height ){
+		if( typeof(images[i].height) !== 'undefined' ){
 			if( images[i].height > 800 ){
 				sizes.huge = images[i].url;
 			}else if( images[i].height > 600 ){

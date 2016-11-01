@@ -155,6 +155,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_PLAYLIST':
+                store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
                 instruct( socket, store, 'playlists.lookup', action.data )
                     .then( response => {
                         var playlist = response;
@@ -196,6 +197,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ALBUM':
+                store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
                         var album = response[0].album;
@@ -238,14 +240,13 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ARTIST':
+                store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: false });
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
-                        var artist = {
-                            name: 'yeah',
-                            images: [],
-                            albums: [],
-                            tracks: response.slice(0,10)
-                        }
+                        var artist = response[0].artists[0];
+                        artist.images = [];
+                        artist.albums = [];
+                        artist.tracks = response.slice(0,10);
                         
                         for( var i = 0; i < response.length; i++ ){
                             var album = response[i].album;
@@ -260,6 +261,16 @@ const MopidyMiddleware = (function(){
                         }
                         
                         store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: artist });
+                    })
+                break;
+
+            case 'MOPIDY_ARTISTS':
+                store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: false });
+                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                    .then( response => {
+                        var artists = response;
+                        
+                        store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: artists });
                     })
                 break;
 

@@ -98,19 +98,8 @@ class Artist extends React.Component{
 					<h1>{ artist.name }</h1>
 				</div>
 
-				<div className="col w70">
-					<h4 className="left-padding">Top tracks</h4>
-					{ artist.tracks ? <TrackList tracks={ artist.tracks } /> : null }
-				</div>
-
-				<div className="col w5"></div>
-
-				<div className="col w25">
-					<h4>Related artists</h4>
-					{ artist.related_artists ? <ArtistList artists={ artist.artist.related_artists.slice(0,6) } /> : null }
-				</div>
-
-				<div className="cf"></div>
+				<h4 className="left-padding">Top tracks</h4>
+				{ artist.tracks ? <TrackList tracks={ artist.tracks } /> : null }
 
 				<h4 className="left-padding">Albums</h4>
 				{ artist.albums ? <AlbumGrid className="no-top-padding" albums={ artist.albums } /> : null }

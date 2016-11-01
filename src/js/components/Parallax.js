@@ -24,7 +24,7 @@ export default class Parallax extends React.Component{
 	}
 
 	componentDidMount(){
-		var url = helpers.SizedImages( this.props.images ).huge;
+		var url = helpers.sizedImages( this.props.images ).huge;
 		this.loadImage( url )
 			.then(
 				response => {

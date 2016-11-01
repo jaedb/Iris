@@ -31,6 +31,7 @@ import LibraryTracks from './views/library/LibraryTracks'
 import LibraryPlaylists from './views/library/LibraryPlaylists'
 import LibraryLocal from './views/library/LibraryLocal'
 import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
+import LibraryLocalArtists from './views/library/LibraryLocalArtists'
 
 ReactDOM.render(
 	<Provider store={store}>
@@ -52,6 +53,7 @@ ReactDOM.render(
 				<Route path="library/playlists" component={LibraryPlaylists} />
 				<Route path="library/local" component={LibraryLocal} />
 				<Route path="library/local/directory/:uri" component={LibraryLocalDirectory} />
+				<Route path="library/local/artists" component={LibraryLocalArtists} />
 				
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri" component={Artist} />
