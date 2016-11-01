@@ -195,6 +195,47 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_ALBUM':
+                instruct( socket, store, 'library.lookup', action.data )
+                    .then( response => {
+                        var album = response[0].album;
+                        album.tracks = {
+                            items: response,
+                            total: response.length
+                        }
+                        
+                        var uris = [];
+                        for( var i = 0; i < album.tracks.items.length; i++ ){
+                            uris.push( album.tracks.items[i].uri );
+                        }
+
+                        instruct( socket, store, 'library.lookup', { uris: uris } )
+                            .then( response => {
+
+                                for(var uri in response){
+                                    if (response.hasOwnProperty(uri)) {
+
+                                        var track = response[uri][0];
+                                        
+                                        // find the track reference, and drop in the full track data
+                                        function getByURI( trackReference ){
+                                            return track.uri == trackReference.uri
+                                        }
+                                        var trackReferences = album.tracks.items.filter(getByURI);
+                                        
+                                        // there could be multiple instances of this track, so accommodate this
+                                        for( var j = 0; j < trackReferences.length; j++){
+                                            var key = album.tracks.items.indexOf( trackReferences[j] );
+                                            album.tracks.items[ key ] = track;
+                                        }
+                                    }
+                                }
+
+                                store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: album });
+                            })
+                    })
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

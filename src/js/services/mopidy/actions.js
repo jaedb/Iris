@@ -110,3 +110,10 @@ export function getPlaylist( uri ){
 	}
 }
 
+export function getAlbum( uri ){
+	return { 
+		type: 'MOPIDY_ALBUM', 
+		data: { uri: uri } 
+	}
+}
+

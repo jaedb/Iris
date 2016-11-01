@@ -82,6 +82,11 @@ export default function reducer(mopidy = {}, action){
                 playlist: action.data
             });
 
+        case 'MOPIDY_ALBUM_LOADED':
+            return Object.assign({}, mopidy, {
+                album: action.data
+            });
+
         default:
             return mopidy
     }

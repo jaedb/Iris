@@ -1721,6 +1721,7 @@
 	exports.getPlaylists = getPlaylists;
 	exports.getBrowse = getBrowse;
 	exports.getPlaylist = getPlaylist;
+	exports.getAlbum = getAlbum;
 	
 	/**
 	 * Actions and Action Creators
@@ -1828,6 +1829,13 @@
 	function getPlaylist(uri) {
 		return {
 			type: 'MOPIDY_PLAYLIST',
+			data: { uri: uri }
+		};
+	}
+	
+	function getAlbum(uri) {
+		return {
+			type: 'MOPIDY_ALBUM',
 			data: { uri: uri }
 		};
 	}
@@ -19166,6 +19174,45 @@
 	                        });
 	                        break;
 	
+	                    case 'MOPIDY_ALBUM':
+	                        instruct(socket, store, 'library.lookup', action.data).then(function (response) {
+	                            var album = response[0].album;
+	                            album.tracks = {
+	                                items: response,
+	                                total: response.length
+	                            };
+	
+	                            var uris = [];
+	                            for (var i = 0; i < album.tracks.items.length; i++) {
+	                                uris.push(album.tracks.items[i].uri);
+	                            }
+	
+	                            instruct(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
+	
+	                                for (var uri in response) {
+	                                    if (response.hasOwnProperty(uri)) {
+	
+	                                        // find the track reference, and drop in the full track data
+	                                        var getByURI = function getByURI(trackReference) {
+	                                            return track.uri == trackReference.uri;
+	                                        };
+	
+	                                        var track = response[uri][0];
+	                                        var trackReferences = album.tracks.items.filter(getByURI);
+	
+	                                        // there could be multiple instances of this track, so accommodate this
+	                                        for (var j = 0; j < trackReferences.length; j++) {
+	                                            var key = album.tracks.items.indexOf(trackReferences[j]);
+	                                            album.tracks.items[key] = track;
+	                                        }
+	                                    }
+	                                }
+	
+	                                store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: album });
+	                            });
+	                        });
+	                        break;
+	
 	                    // This action is irrelevant to us, pass it on to the next middleware
 	                    default:
 	                        return next(action);
@@ -19270,6 +19317,11 @@
 	        case 'MOPIDY_PLAYLIST_LOADED':
 	            return Object.assign({}, mopidy, {
 	                playlist: action.data
+	            });
+	
+	        case 'MOPIDY_ALBUM_LOADED':
+	            return Object.assign({}, mopidy, {
+	                album: action.data
 	            });
 	
 	        default:
@@ -19776,6 +19828,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
+	var helpers = __webpack_require__(63);
+	
 	var Album = function (_React$Component) {
 		_inherits(Album, _React$Component);
 	
@@ -19791,16 +19845,29 @@
 		_createClass(Album, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				this.props.spotifyActions.getAlbum(this.props.params.uri);
+				this.loadAlbum();
 			}
-	
-			// when props changed
-	
 		}, {
 			key: 'componentWillReceiveProps',
 			value: function componentWillReceiveProps(nextProps) {
 				if (nextProps.params.uri != this.props.params.uri) {
-					this.props.spotifyActions.getAlbum(nextProps.params.uri);
+					this.loadAlbum(nextProps);
+				} else if (!this.props.mopidy.connected && nextProps.mopidy.connected) {
+					if (helpers.uriSource(this.props.params.uri) == 'local') {
+						this.loadAlbum(nextProps);
+					}
+				}
+			}
+		}, {
+			key: 'loadAlbum',
+			value: function loadAlbum() {
+				var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
+	
+				var source = helpers.uriSource(props.params.uri);
+				if (source == 'spotify') {
+					this.props.spotifyActions.getAlbum(props.params.uri);
+				} else if (source == 'local' && props.mopidy.connected) {
+					this.props.mopidyActions.getAlbum(props.params.uri);
 				}
 			}
 		}, {
@@ -19817,56 +19884,57 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				if (this.props.spotify.album) {
-					var album = this.props.spotify.album;
-					return _react2.default.createElement(
+				var source = helpers.uriSource(this.props.params.uri);
+				if (source == 'spotify') var album = this.props.spotify.album;
+				if (source == 'local') var album = this.props.mopidy.album;
+				if (!album) return null;
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: 'view album-view' },
+					_react2.default.createElement(
 						'div',
-						{ className: 'view album-view' },
+						{ className: 'intro' },
+						_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: album.images }),
+						_react2.default.createElement(_ArtistGrid2.default, { artists: album.artists }),
 						_react2.default.createElement(
 							'div',
-							{ className: 'intro' },
-							_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: album.images }),
-							_react2.default.createElement(_ArtistGrid2.default, { artists: album.artists }),
+							{ className: 'details' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'details' },
-								_react2.default.createElement(
-									'div',
-									null,
-									album.tracks.total,
-									' tracks, ',
-									this.totalTime
-								),
-								_react2.default.createElement(
-									'div',
-									null,
-									'Released ',
-									_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
-								)
+								null,
+								album.tracks.total,
+								' tracks, ',
+								this.totalTime
+							),
+							_react2.default.createElement(
+								'div',
+								null,
+								'Released ',
+								_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'main' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							_react2.default.createElement(
+								'h1',
+								null,
+								album.name
+							),
+							_react2.default.createElement(
+								'h3',
+								null,
+								_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
 							)
 						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'main' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'title' },
-								_react2.default.createElement(
-									'h1',
-									null,
-									album.name
-								),
-								_react2.default.createElement(
-									'h3',
-									null,
-									_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
-								)
-							),
-							_react2.default.createElement(_TrackList2.default, { tracks: album.tracks.items })
-						)
-					);
-				}
-				return null;
+						_react2.default.createElement(_TrackList2.default, { tracks: album.tracks.items })
+					)
+				);
 			}
 		}]);
 	
@@ -20330,99 +20398,52 @@
 				}
 			}
 		}, {
-			key: 'renderSpotifyPlaylist',
-			value: function renderSpotifyPlaylist() {
-				if (this.props.spotify.playlist) {
-					var playlist = this.props.spotify.playlist;
-	
-					var context = null;
-					if (playlist.owner.id == this.props.spotify.me.id) context = 'editable-playlist';
-	
-					return _react2.default.createElement(
-						'div',
-						{ className: 'view playlist-view' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'intro' },
-							_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }),
-							_react2.default.createElement(
-								'div',
-								{ className: 'details' },
-								_react2.default.createElement(
-									'div',
-									null,
-									playlist.tracks.total,
-									' tracks'
-								)
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'main' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'title' },
-								_react2.default.createElement(
-									'h1',
-									null,
-									playlist.name
-								)
-							),
-							_react2.default.createElement(_TrackList2.default, { context: context, tracks: playlist.tracks.items })
-						)
-					);
-				}
-				return null;
-			}
-		}, {
-			key: 'renderMopidyPlaylist',
-			value: function renderMopidyPlaylist() {
-				if (this.props.mopidy.playlist) {
-					var playlist = this.props.mopidy.playlist;
-	
-					return _react2.default.createElement(
-						'div',
-						{ className: 'view playlist-view' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'intro' },
-							playlist.images ? _react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }) : null,
-							_react2.default.createElement(
-								'div',
-								{ className: 'details' },
-								_react2.default.createElement(
-									'div',
-									null,
-									'Last updated ',
-									playlist.last_modified
-								)
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'main' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'title' },
-								_react2.default.createElement(
-									'h1',
-									null,
-									playlist.name
-								)
-							),
-							_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items })
-						)
-					);
-				}
-				return null;
-			}
-		}, {
 			key: 'render',
 			value: function render() {
 				var source = helpers.uriSource(this.props.params.uri);
-				if (source == 'spotify') return this.renderSpotifyPlaylist();
-				if (source == 'm3u') return this.renderMopidyPlaylist();
-				return null;
+				if (source == 'spotify') var playlist = this.props.spotify.playlist;
+				if (source == 'm3u') var playlist = this.props.mopidy.playlist;
+				if (!playlist) return null;
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: 'view playlist-view' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'intro' },
+						playlist.images ? _react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }) : null,
+						_react2.default.createElement(
+							'div',
+							{ className: 'details' },
+							_react2.default.createElement(
+								'div',
+								null,
+								playlist.tracks.total,
+								' tracks'
+							),
+							_react2.default.createElement(
+								'div',
+								null,
+								'Last updated ',
+								playlist.last_modified
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'main' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							_react2.default.createElement(
+								'h1',
+								null,
+								playlist.name
+							)
+						),
+						_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items })
+					)
+				);
 			}
 		}]);
 	
