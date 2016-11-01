@@ -20,7 +20,6 @@ class Album extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.loadAlbum();
 	}
@@ -44,12 +43,11 @@ class Album extends React.Component{
 		}
 	}
 
-	totalTime(){
-		if( !this.props.spotify.album ) return null
-		var tracks = this.props.spotify.tracks.items;
+	totalTime( tracks = [] ){
 		var duration = 0;
 		for( var i = 0; i < tracks.length; i++ ){
-			duration += tracks[i].duration_ms;
+			if( tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
+			if( tracks[i].length ) duration += parseInt(tracks[i].length);
 		}
 		return duration;
 	}
@@ -63,11 +61,11 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view">
 				<div className="intro">
-					<Thumbnail size="large" images={ album.images } />
+					<Thumbnail size="large" images={ ( album.images ? album.images : [] ) } />
 					<ArtistGrid artists={ album.artists } />
 					<div className="details">
-						<div>{ album.tracks.total } tracks, { this.totalTime }</div>
-						<div>Released <Dater type="date" data={ album.release_date } /></div>
+						<div>{ album.tracks.total } tracks, <Dater type="length" data={this.totalTime(album.tracks.items)} /> mins</div>
+						{ album.release_date ? <div>Released <Dater type="date" data={ album.release_date } /></div> : null }
 					</div>
 				</div>
 				<div className="main">

@@ -199,6 +199,7 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
                         var album = response[0].album;
+                        album.artists = response[0].artists;
                         album.tracks = {
                             items: response,
                             total: response.length
@@ -233,6 +234,32 @@ const MopidyMiddleware = (function(){
 
                                 store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: album });
                             })
+                    })
+                break;
+
+            case 'MOPIDY_ARTIST':
+                instruct( socket, store, 'library.lookup', action.data )
+                    .then( response => {
+                        var artist = {
+                            name: 'yeah',
+                            images: [],
+                            albums: [],
+                            tracks: response.slice(0,10)
+                        }
+                        
+                        for( var i = 0; i < response.length; i++ ){
+                            var album = response[i].album;
+
+                            function getByURI( albumToCheck ){
+                                return album.uri == albumToCheck.uri
+                            }
+                            var existingAlbum = artist.albums.find(getByURI);
+                            if( !existingAlbum ){
+                                artist.albums.push(album)
+                            }
+                        }
+                        
+                        store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: artist });
                     })
                 break;
 

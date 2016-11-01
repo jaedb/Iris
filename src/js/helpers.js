@@ -9,9 +9,12 @@ export let SizedImages = function( images ){
 		huge: false
 	}
 
-	if( images.length > 0 ){
+	if( images.length <= 0 ) return sizes;
 
-		for( var i = 0; i < images.length; i++ ){
+	for( var i = 0; i < images.length; i++ ){
+
+		// spotify-styled images
+		if( images[i].height ){
 			if( images[i].height > 800 ){
 				sizes.huge = images[i].url;
 			}else if( images[i].height > 600 ){
@@ -21,12 +24,16 @@ export let SizedImages = function( images ){
 			}else{
 				sizes.small = images[i].url;
 			}
-		}
 
-		if( !sizes.medium )	sizes.medium = sizes.small;
-		if( !sizes.large )	sizes.large = sizes.medium;
-		if( !sizes.huge ) 	sizes.huge = sizes.large;
+		// Mopidy-Images styled images
+		}else if( typeof(images[i]) == 'string' ){
+			sizes.small = images[i]
+		}
 	}
+
+	if( !sizes.medium )	sizes.medium = sizes.small;
+	if( !sizes.large ) sizes.large = sizes.medium;
+	if( !sizes.huge ) sizes.huge = sizes.large;
 
 	return sizes;
 }

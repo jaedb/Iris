@@ -117,3 +117,10 @@ export function getAlbum( uri ){
 	}
 }
 
+export function getArtist( uri ){
+	return { 
+		type: 'MOPIDY_ARTIST', 
+		data: { uri: uri } 
+	}
+}
+

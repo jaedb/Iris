@@ -3703,6 +3703,7 @@ main header h1 {
 .album-view .intro .thumbnail {
   float: none;
   margin: 0 auto;
+  max-width: none;
 }
 
 .album-view .intro .details {
@@ -3774,6 +3775,7 @@ main header h1 {
 .playlist-view .intro .thumbnail {
   float: none;
   margin: 0 auto;
+  max-width: none;
 }
 
 .playlist-view .intro .details {

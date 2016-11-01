@@ -1,6 +1,11 @@
 RewriteEngine On
 
 RewriteBase /
+
+# Handle Mopidy-Images requests
+# TODO: Look to move this into the Thumbnail component 
+RewriteRule ^images/(.*)$ http://%{HTTP_HOST}:6680/images/$1 [NC,L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]

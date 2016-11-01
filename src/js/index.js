@@ -38,25 +38,25 @@ ReactDOM.render(
 			<Route path="/" component={App}>
 
      			<IndexRoute component={Queue} />
-				<Route path="/queue" component={Queue} />
+				<Route path="queue" component={Queue} />
 	
-				<Route path="/discover" component={Discover} />
-				<Route path="/discover/featured" component={DiscoverFeatured} />
-				<Route path="/discover/categories" component={DiscoverCategories} />
-				<Route path="/discover/categories/:id" component={DiscoverCategory} />
-				<Route path="/discover/new-releases" component={DiscoverNewReleases} />
+				<Route path="discover" component={Discover} />
+				<Route path="discover/featured" component={DiscoverFeatured} />
+				<Route path="discover/categories" component={DiscoverCategories} />
+				<Route path="discover/categories/:id" component={DiscoverCategory} />
+				<Route path="discover/new-releases" component={DiscoverNewReleases} />
 
-				<Route path="/library/artists" component={LibraryArtists} />
-				<Route path="/library/albums" component={LibraryAlbums} />
-				<Route path="/library/tracks" component={LibraryTracks} />
-				<Route path="/library/playlists" component={LibraryPlaylists} />
-				<Route path="/library/local" component={LibraryLocal} />
-				<Route path="/library/local/directory/:uri" component={LibraryLocalDirectory} />
+				<Route path="library/artists" component={LibraryArtists} />
+				<Route path="library/albums" component={LibraryAlbums} />
+				<Route path="library/tracks" component={LibraryTracks} />
+				<Route path="library/playlists" component={LibraryPlaylists} />
+				<Route path="library/local" component={LibraryLocal} />
+				<Route path="library/local/directory/:uri" component={LibraryLocalDirectory} />
 				
-				<Route path="/album/:uri" component={Album} />
-				<Route path="/artist/:uri" component={Artist} />
-				<Route path="/playlist/:uri" component={Playlist} />
-				<Route path="/settings" component={Settings} />
+				<Route path="album/:uri" component={Album} />
+				<Route path="artist/:uri" component={Artist} />
+				<Route path="playlist/:uri" component={Playlist} />
+				<Route path="settings" component={Settings} />
 
 			</Route>
 		</Router>
