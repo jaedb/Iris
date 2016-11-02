@@ -32,7 +32,11 @@ export default class List extends React.Component{
 							<Link to={ this.props.link_prefix + encodeURIComponent(row.uri)} className="list-item cf" key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
-										return <div className={'col w'+col.width} key={col_index}>{ row[col.name] }</div>
+										return (
+											<div className={'col w'+col.width} key={col_index}>
+												{ row[col.name] ? row[col.name] : <span>-</span> }
+											</div>
+										)
 									})
 								}
 							</Link>

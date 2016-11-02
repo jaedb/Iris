@@ -3094,6 +3094,16 @@ footer {
   text-align: center;
 }
 
+.details {
+  list-style-type: none;
+  color: #AAAAAA;
+  text-transform: uppercase;
+}
+
+.details li {
+  padding-bottom: 4px;
+}
+
 * {
   border: 0;
   margin: 0;
@@ -3684,6 +3694,7 @@ main header h1 {
 .artist-view .intro h1 {
   color: #FFFFFF;
   padding-top: 30px;
+  padding-bottom: 45px;
 }
 
 .album-view .main {
@@ -3719,13 +3730,6 @@ main header h1 {
 
 .album-view .intro .details {
   padding: 30px;
-  color: #AAAAAA;
-  text-transform: uppercase;
-  list-style-type: none;
-}
-
-.album-view .intro .details li {
-  padding-bottom: 4px;
 }
 
 .album-view .intro .artist-grid {
@@ -3796,13 +3800,6 @@ main header h1 {
 
 .playlist-view .intro .details {
   padding: 30px;
-  color: #AAAAAA;
-  text-transform: uppercase;
-  list-style-type: none;
-}
-
-.playlist-view .intro .details li {
-  padding-bottom: 4px;
 }
 
 .playlist-view .intro .artist-grid {

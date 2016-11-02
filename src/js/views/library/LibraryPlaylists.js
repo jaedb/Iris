@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import PlaylistListItem from '../../components/PlaylistListItem'
+import List from '../../components/List'
 import Header from '../../components/Header'
 
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -39,35 +39,26 @@ class LibraryPlaylists extends React.Component{
 		var playlists = [];
 
 		if( this.props.mopidy.playlists ){
-			Object.assign(playlists, this.props.mopidy.playlists)
+			playlists = [...playlists, ...this.props.mopidy.playlists]
 		}
 
 		if( this.props.spotify.library_playlists ){
-			Object.assign(playlists, this.props.spotify.library_playlists.items)
+			playlists = [...playlists, ...this.props.spotify.library_playlists.items]
 		}
 
 		return playlists;
 	}
 
 	renderPlaylists(){
-		if( !this.compiledPlaylistSources() ) return null;
+		var playlists = this.compiledPlaylistSources()
+		if( !playlists ) return null
 
-		return (
-			<ul>
-				<li className="list-item header playlist">
-					<span className="col name">Name</span>
-					<span className="col owner">Owner</span>
-					<span className="col source">Source</span>
-				</li>
-				{
-					this.compiledPlaylistSources().map( (playlist, index) => {
-						return (
-							<PlaylistListItem key={index} item={playlist} />
-						);
-					})
-				}
-			</ul>
-		);
+		var columns = [
+			{ name: 'name', width: '50'},
+			{ name: 'uri', width: '25'}
+		]
+
+		return <List columns={columns} rows={playlists} link_prefix="/playlist/" />
 	}
 
 	render(){

@@ -61,8 +61,7 @@ class Album extends React.Component{
 					<Thumbnail size="large" images={ ( album.images ? album.images : [] ) } />
 					<ArtistGrid artists={ artists } />
 					<ul className="details">
-						<li>{ album.tracks.total } tracks</li>
-						<li><Dater type="total-time" data={album.tracks.items} /> play time</li>
+						<li>{ album.tracks.total } tracks, <Dater type="total-time" data={album.tracks.items} /></li>
 						{ album.release_date ? <li>Released <Dater type="date" data={ album.release_date } /></li> : null }
 						{ source == 'spotify' ? <li><FontAwesome name={source} /> Spotify playlist</li> : null }
 						{ source == 'local' ? <li><FontAwesome name='folder' /> Local playlist</li> : null }	

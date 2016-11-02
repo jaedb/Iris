@@ -61,7 +61,10 @@ class Artist extends React.Component{
 				<div className="intro">
 					<Thumbnail size="huge" images={ artist.images } />
 					<h1>{ artist.name }</h1>
-					<p>{ artist.followers.total.toLocaleString() } followers</p>
+					<ul className="details">
+						<li>{ artist.followers.total.toLocaleString() } followers</li>
+						{ artist.popularity ? <li>{ artist.popularity }% popularity</li> : null }
+					</ul>
 				</div>
 
 				<div className="col w70">

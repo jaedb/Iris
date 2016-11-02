@@ -125,3 +125,13 @@ footer {
 	padding-bottom: 50px;
 	text-align: center;
 }
+
+.details {
+	list-style-type: none;
+	color: $mid_grey;
+	text-transform: uppercase;
+
+	li {
+		padding-bottom: 4px;
+	}
+}

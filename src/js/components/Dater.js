@@ -10,7 +10,8 @@ export default class Dater extends React.Component{
 	formatDuration( milliseconds = false ){
 		if( !milliseconds ) return null
 
-		var string, total_hours, total_minutes, total_seconds, minutes, seconds;
+		var string = '';
+		var total_hours, total_minutes, total_seconds, minutes, seconds;
 
 		// get total values for each 
 		total_seconds = Math.floor( milliseconds / 1000 )
@@ -21,11 +22,13 @@ export default class Dater extends React.Component{
 		seconds = total_seconds - ( total_minutes * 60 )
 		if( seconds <= 9 ) seconds = '0'+ seconds
 
+		// get left-over number of minutes
 		minutes = total_minutes - ( total_hours * 60 )
-		if( minutes <= 9 ) minutes = '0'+ minutes
+		if( minutes <= 9 && total_hours ) minutes = '0'+ minutes
 
-		if( total_hours ) string = total_hours+':'
-		string += minutes+':'+seconds;
+		if( total_hours ) string += total_hours+':'
+		if( minutes ) string += minutes+':'
+		if( seconds ) string += seconds
 
 		return string
 	}
@@ -48,8 +51,15 @@ export default class Dater extends React.Component{
 				break
 
 			case 'date':
-				// TODO: nice date formatting
-				return this.props.data
+				var date = new Date(this.props.data)
+				return date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear()
+				break
+
+			case 'ago':
+				var date = new Date(this.props.data)
+				var diff = new Date() - date
+				// todo: calculate nice diff
+				return diff
 				break
 
 			default:

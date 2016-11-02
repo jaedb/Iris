@@ -52,9 +52,8 @@ class Playlist extends React.Component{
 				<div className="intro">
 					{ playlist.images ? <Thumbnail size="large" images={ playlist.images } /> : null }
 					<ul className="details">
-						<li>{ playlist.tracks.total } tracks</li>
-						<li><Dater type="total-time" data={playlist.tracks.items} /> play time</li>
-						{ playlist.last_modified ? <li>Updated { playlist.last_modified }</li> : null }
+						<li>{ playlist.tracks.total } tracks, <Dater type="total-time" data={playlist.tracks.items} /></li>
+						{ playlist.last_modified ? <li>Updated <Dater type="ago" data={playlist.last_modified} /> ago</li> : null }
 						{ source == 'spotify' ? <li><FontAwesome name={source} /> Spotify playlist</li> : null }
 						{ source == 'm3u' ? <li><FontAwesome name='folder' /> Local playlist</li> : null }	
 					</ul>
