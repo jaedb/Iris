@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Header from '../../components/Header'
+import List from '../../components/List'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -24,46 +25,30 @@ class LibraryLocalDirectory extends React.Component{
 
 		// mopidy goes online
 		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
-			this.loadDirectory();
+			this.loadDirectory( nextProps );
 		}
 
 		// our uri changes
 		if( nextProps.params.uri != this.props.params.uri ){
-			this.loadDirectory(nextProps.params.uri);
+			this.loadDirectory( nextProps );
 		}
 	}
 
-	loadDirectory(uri = this.props.params.uri){
-		if( this.props.mopidy.connected ){
-			this.props.mopidyActions.getBrowse(uri);
+	loadDirectory( props = this.props ){
+		if( props.mopidy.connected ){
+			this.props.mopidyActions.getDirectory( props.params.uri );
 		}
-	}
-
-	renderDirectory(){
-		if( !this.props.mopidy.browse ) return null
-
-		return (
-			<div>
-				{
-					this.props.mopidy.browse.map( directory => {
-						return (
-							<div key={directory.uri}>
-								<Link to={'/library/local/directory/'+encodeURIComponent(directory.uri)}>
-									{ directory.name }
-								</Link>
-							</div>
-						)
-					})
-				}
-			</div>
-		)
 	}
 
 	render(){
+		if( !this.props.mopidy.directory ) return null
+
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title="Local" />
-				{ this.renderDirectory() }
+				<Header icon="music" title="Local files" />
+				<div>
+					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.directory} link_prefix="/library/local/directory/" />
+				</div>
 			</div>
 		);
 	}

@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 let helpers = require('../helpers.js')
 
 import TrackList from '../components/TrackList'
@@ -43,30 +44,29 @@ class Album extends React.Component{
 		}
 	}
 
-	totalTime( tracks = [] ){
-		var duration = 0;
-		for( var i = 0; i < tracks.length; i++ ){
-			if( tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
-			if( tracks[i].length ) duration += parseInt(tracks[i].length);
-		}
-		return duration;
-	}
-
 	render(){
 		var source = helpers.uriSource( this.props.params.uri );
-		if( source == 'spotify' ) var album = this.props.spotify.album
-		if( source == 'local' ) var album = this.props.mopidy.album
+		if( source == 'spotify' ){
+			var album = this.props.spotify.album
+			var artists = this.props.spotify.artists
+		}else if( source == 'local' ){
+			var album = this.props.mopidy.album
+			var artists = []
+		}
 		if( !album ) return null;
 
 		return (
 			<div className="view album-view">
 				<div className="intro">
 					<Thumbnail size="large" images={ ( album.images ? album.images : [] ) } />
-					<ArtistGrid artists={ album.artists } />
-					<div className="details">
-						<div>{ album.tracks.total } tracks, <Dater type="length" data={this.totalTime(album.tracks.items)} /> mins</div>
-						{ album.release_date ? <div>Released <Dater type="date" data={ album.release_date } /></div> : null }
-					</div>
+					<ArtistGrid artists={ artists } />
+					<ul className="details">
+						<li>{ album.tracks.total } tracks</li>
+						<li><Dater type="total-time" data={album.tracks.items} /> play time</li>
+						{ album.release_date ? <li>Released <Dater type="date" data={ album.release_date } /></li> : null }
+						{ source == 'spotify' ? <li><FontAwesome name={source} /> Spotify playlist</li> : null }
+						{ source == 'local' ? <li><FontAwesome name='folder' /> Local playlist</li> : null }	
+					</ul>
 				</div>
 				<div className="main">
 					<div className="title">

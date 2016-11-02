@@ -72,9 +72,9 @@ export default function reducer(mopidy = {}, action){
                 volume: action.data   
             });
 
-        case 'MOPIDY_BROWSE':
+        case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
-                browse: action.data   
+                directory: action.data   
             });
 
         case 'MOPIDY_PLAYLIST_LOADED':
@@ -95,6 +95,11 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_ARTISTS_LOADED':
             return Object.assign({}, mopidy, {
                 artists: action.data
+            });
+
+        case 'MOPIDY_ALBUMS_LOADED':
+            return Object.assign({}, mopidy, {
+                albums: action.data
             });
 
         default:

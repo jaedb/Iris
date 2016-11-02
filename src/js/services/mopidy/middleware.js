@@ -264,13 +264,27 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_DIRECTORY':
+                store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false });
+                instruct( socket, store, 'library.browse', action.data )
+                    .then( response => {                    
+                        store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: response });
+                    })
+                break;
+
             case 'MOPIDY_ARTISTS':
                 store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: false });
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
-                    .then( response => {
-                        var artists = response;
-                        
-                        store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: artists });
+                    .then( response => {                    
+                        store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: response });
+                    })
+                break;
+
+            case 'MOPIDY_ALBUMS':
+                store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: false });
+                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                    .then( response => {                     
+                        store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: response });
                     })
                 break;
 

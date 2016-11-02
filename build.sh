@@ -4,6 +4,6 @@ if [ ! -d public_html ]; then
 	ln -s mopidy_iris/static public_html
 fi
 
-cp src/index.html public_html/index.html
-cp src/.htaccess public_html/.htaccess
-cp -R src/fonts public_html/fonts
+cp src/index.html mopidy_iris/static/index.html
+cp src/.htaccess mopidy_iris/static/.htaccess
+rsync -avr src/assets/ mopidy_iris/static/assets/

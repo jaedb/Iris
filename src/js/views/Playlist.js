@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 let helpers = require('../helpers.js')
 
 import TrackList from '../components/TrackList'
@@ -50,10 +51,13 @@ class Playlist extends React.Component{
 			<div className="view playlist-view">
 				<div className="intro">
 					{ playlist.images ? <Thumbnail size="large" images={ playlist.images } /> : null }
-					<div className="details">
-						<div>{ playlist.tracks.total } tracks</div>
-						<div>Last updated { playlist.last_modified }</div>
-					</div>
+					<ul className="details">
+						<li>{ playlist.tracks.total } tracks</li>
+						<li><Dater type="total-time" data={playlist.tracks.items} /> play time</li>
+						{ playlist.last_modified ? <li>Updated { playlist.last_modified }</li> : null }
+						{ source == 'spotify' ? <li><FontAwesome name={source} /> Spotify playlist</li> : null }
+						{ source == 'm3u' ? <li><FontAwesome name='folder' /> Local playlist</li> : null }	
+					</ul>
 				</div>
 				<div className="main">
 					<div className="title">

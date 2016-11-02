@@ -217,40 +217,63 @@ export function getTrack( uri ){
  * @param uri string
  **/
 export function getArtist( uri ){
-	return (dispatch, getState) => {
+    return (dispatch, getState) => {
 
-		// flush out the previous store value
+        // flush out the previous store value
         dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false });
 
-		var artist = {};
+        var artist = {};
 
-		// while we're fiddling about, go get the albums
-		dispatch(getArtistAlbums(uri));
+        // while we're fiddling about, go get the albums
+        dispatch(getArtistAlbums(uri));
 
-		// get both the artist and the top tracks
-		$.when(
+        // get both the artist and the top tracks
+        $.when(
 
-	        sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) )
-	            .then( response => {
-	            	Object.assign(artist, response);
-	            }),
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) )
+                .then( response => {
+                    Object.assign(artist, response);
+                }),
 
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
                 .then( response => {
                     Object.assign(artist, response);
                 }),
 
-	        sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
-	            .then( response => {
-	            	Object.assign(artist, { related_artists: response.artists });
-	            })
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
+                .then( response => {
+                    Object.assign(artist, { related_artists: response.artists });
+                })
 
-	    ).then( () => {
+        ).then( () => {
             dispatch({
-            	type: 'SPOTIFY_ARTIST_LOADED',
-            	data: artist
+                type: 'SPOTIFY_ARTIST_LOADED',
+                data: artist
             });
-	    });
+        });
+    }
+}
+
+export function getArtists( uris ){
+	return (dispatch, getState) => {
+
+		// flush out the previous store value
+        dispatch({ type: 'SPOTIFY_ARTISTS_LOADED', data: false });
+
+        // now get all the artists for this album (full objects)
+        var ids = '';
+        for( var i = 0; i < uris.length; i++ ){
+            if( ids != '' ) ids += ','
+            ids += helpers.getFromUri( 'artistid', uris[i] );
+        }
+
+        sendRequest( dispatch, getState, 'artists/?ids='+ids )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_ARTISTS_LOADED',
+                    data: response.artists
+                });
+            });
 	}
 }
 
@@ -279,6 +302,13 @@ export function getAlbum( uri ){
 
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
+
+                // now get all the artists for this album (full objects)
+                var artist_uris = [];
+                for( var i = 0; i < response.artists.length; i++ ){
+                    artist_uris.push( response.artists[i].uri )
+                }
+                dispatch(getArtists(artist_uris));
 
                 // inject the parent album object into each track for consistent track objects
                 for( var i = 0; i < response.tracks.items.length; i++ ){

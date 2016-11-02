@@ -11,7 +11,7 @@ export default class Icon extends React.Component{
 	render(){
 		var className = 'icon';
 		if( this.props.className ) className += ' '+this.props.className;
-		var src = require('../../images/icons/'+this.props.name+'.svg');
+		var src = require('../../assets/icons/'+this.props.name+'.svg');
 		return <img className={className} src={src} />;
 	}
 }

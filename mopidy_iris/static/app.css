@@ -3620,6 +3620,18 @@ aside .player .controls a:hover {
   opacity: 0.75;
 }
 
+@media (max-width: 850px) {
+  .grid .grid-item {
+    width: 21%;
+  }
+}
+
+@media (max-width: 650px) {
+  .grid .grid-item {
+    width: 29.3334%;
+  }
+}
+
 .grid.category-grid .grid-item {
   position: relative;
 }
@@ -3709,6 +3721,11 @@ main header h1 {
   padding: 30px;
   color: #AAAAAA;
   text-transform: uppercase;
+  list-style-type: none;
+}
+
+.album-view .intro .details li {
+  padding-bottom: 4px;
 }
 
 .album-view .intro .artist-grid {
@@ -3781,6 +3798,11 @@ main header h1 {
   padding: 30px;
   color: #AAAAAA;
   text-transform: uppercase;
+  list-style-type: none;
+}
+
+.playlist-view .intro .details li {
+  padding-bottom: 4px;
 }
 
 .playlist-view .intro .artist-grid {

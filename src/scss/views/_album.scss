@@ -33,6 +33,11 @@
 			padding: 30px;
 			color: $mid_grey;
 			text-transform: uppercase;
+			list-style-type: none;
+
+			li {
+				padding-bottom: 4px;
+			}
 		}
 
 		.artist-grid {

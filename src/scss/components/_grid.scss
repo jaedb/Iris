@@ -37,6 +37,14 @@
 				opacity: 0.75;
 			}
 		}
+
+		@include responsive( 850px ){
+			width: 21%;
+		}
+
+		@include responsive( 650px ){
+			width: 29.3334%;
+		}
 	}
 
 	&.category-grid {

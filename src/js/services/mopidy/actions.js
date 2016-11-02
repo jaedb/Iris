@@ -95,17 +95,16 @@ export function getPlaylists(){
 	return { type: 'MOPIDY_PLAYLISTS' }
 }
 
-export function getBrowse( uri ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'library.browse',
-		value: { uri: uri }
-	}
-}
-
 export function getPlaylist( uri ){
 	return { 
 		type: 'MOPIDY_PLAYLIST', 
+		data: { uri: uri } 
+	}
+}
+
+export function getDirectory( uri ){
+	return { 
+		type: 'MOPIDY_DIRECTORY', 
 		data: { uri: uri } 
 	}
 }
@@ -127,6 +126,12 @@ export function getArtist( uri ){
 export function getArtists(){
 	return { 
 		type: 'MOPIDY_ARTISTS'
+	}
+}
+
+export function getAlbums(){
+	return { 
+		type: 'MOPIDY_ALBUMS'
 	}
 }
 

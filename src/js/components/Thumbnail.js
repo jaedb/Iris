@@ -28,10 +28,10 @@ export default class Thumbnail extends React.Component{
 
 		if( images.length <= 0 ){
 			state = {
-				small: require('../../images/no-image.svg'),
-				medium: require('../../images/no-image.svg'),
-				large: require('../../images/no-image.svg'),
-				huge: require('../../images/no-image.svg')
+				small: require('../../assets/no-image.svg'),
+				medium: require('../../assets/no-image.svg'),
+				large: require('../../assets/no-image.svg'),
+				huge: require('../../assets/no-image.svg')
 			}
 		}else{
 			state = helpers.sizedImages( images );

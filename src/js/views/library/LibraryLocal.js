@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Header from '../../components/Header'
+import GridItem from '../../components/GridItem'
 
 export default class LibraryLocal extends React.Component{
 
@@ -13,11 +14,37 @@ export default class LibraryLocal extends React.Component{
 	}
 
 	render(){
+
+		var grid_items = [
+			{
+				name: 'Artists',
+				link: '/library/local/artists',
+				icons: ['/assets/backgrounds/category-artists.jpg']
+			},
+			{
+				name: 'Albums',
+				link: '/library/local/albums',
+				icons: ['/assets/backgrounds/category-albums.jpg']
+			},
+			{
+				name: 'Folders',
+				link: '/library/local/directory/local:directory',
+				icons: ['/assets/backgrounds/category-folders.jpg']
+			}
+		]
+
 		return (
 			<div className="view library-local-view">
 				<Header icon="folder" title="Local" />
-				<Link to="/library/local/directory/local:directory">Folders</Link>
-				<Link to="/library/local/artists">Artists</Link>
+				<div className="grid category-grid">				
+					{
+						grid_items.map(
+							(item, index) => {
+								return <GridItem item={item} key={index} link={item.link} />
+							}
+						)
+					}
+				</div>
 			</div>
 		);
 	}

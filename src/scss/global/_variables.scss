@@ -43,3 +43,11 @@ $red: #cf2d2d;
 	-webkit-filter: blur( $size );
 	filter: blur( $size );
 }
+
+@mixin responsive( $width ){
+	@media (max-width: $width){ 
+		@content;
+	}
+}
+
+
