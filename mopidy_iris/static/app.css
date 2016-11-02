@@ -3356,6 +3356,22 @@ label .input input {
   filter: invert(1);
 }
 
+.search-form input {
+  background: transparent;
+  border-bottom: 1px solid #FFFFFF;
+  padding: 16px 0 8px;
+  width: 100%;
+  color: #FFFFFF;
+}
+
+.search-form input:focus, .search-form input:active {
+  border-color: #08d58f;
+}
+
+.search-form.sidebar {
+  padding: 10px 15px 0 15px;
+}
+
 aside {
   position: fixed;
   top: 0;
@@ -3385,6 +3401,10 @@ aside .thumbnail .image {
   filter: blur(10px);
   padding-bottom: 0;
   height: 100%;
+}
+
+aside nav {
+  padding-top: 20px;
 }
 
 aside nav a {
@@ -3593,6 +3613,12 @@ aside .player .controls a:hover {
   border-bottom: 0;
 }
 
+.grid .grid-item:nth-child(5)::after {
+  content: '';
+  clear: both;
+  display: block;
+}
+
 .grid .grid-item .thumbnail {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
@@ -3616,30 +3642,12 @@ aside .player .controls a:hover {
   color: #888888;
 }
 
-.grid .grid-item:nth-child(5)::after {
-  content: '';
-  clear: both;
-  display: block;
-}
-
 .grid .grid-item:hover {
   cursor: pointer;
 }
 
 .grid .grid-item:hover .thumbnail {
   opacity: 0.75;
-}
-
-@media (max-width: 850px) {
-  .grid .grid-item {
-    width: 21%;
-  }
-}
-
-@media (max-width: 650px) {
-  .grid .grid-item {
-    width: 29.3334%;
-  }
 }
 
 .grid.category-grid .grid-item {
@@ -3655,6 +3663,74 @@ aside .player .controls a:hover {
   font-size: 14px;
   font-weight: 600;
   color: #FFFFFF;
+}
+
+@media (max-width: 2400px) {
+  .grid.mini .grid-item {
+    width: 29.33333%;
+  }
+  .grid.mini .grid-item:nth-child(3)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+  .grid:not(.mini) .grid-item {
+    width: 12.66667%;
+  }
+  .grid:not(.mini) .grid-item:nth-child(6)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+}
+
+@media (max-width: 1200px) {
+  .grid.mini .grid-item {
+    width: 46%;
+  }
+  .grid.mini .grid-item:nth-child(2)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+  .grid:not(.mini) .grid-item {
+    width: 16%;
+  }
+  .grid:not(.mini) .grid-item:nth-child(5)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+}
+
+@media (max-width: 850px) {
+  .grid.mini .grid-item {
+    width: 46%;
+  }
+  .grid.mini .grid-item:nth-child(2)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+  .grid:not(.mini) .grid-item {
+    width: 21%;
+  }
+  .grid:not(.mini) .grid-item:nth-child(4)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+}
+
+@media (max-width: 650px) {
+  .grid:not(.mini) .grid-item {
+    width: 29.33333%;
+  }
+  .grid:not(.mini) .grid-item:nth-child(3)::after {
+    content: '';
+    clear: both;
+    display: block;
+  }
 }
 
 main header {

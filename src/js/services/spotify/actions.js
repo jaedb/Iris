@@ -501,11 +501,32 @@ export function getNewReleases(){
 }
 
 export function getURL( url, action_name ){
-	return (dispatch, getState) => {
+    return (dispatch, getState) => {
         sendRequest( dispatch, getState, url )
             .then( response => {
                 dispatch({
                     type: action_name,
+                    data: response
+                });
+            });
+    }
+}
+
+export function getSearchResults( query, type = 'album,artist,playlist,track', limit = 50, offset = 0 ){
+	return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_SEARCH_RESULTS_LOADED', data: false });
+
+        var url = 'search?q='+query
+        url += '&type='+type
+        url += '&country='+getState().spotify.country
+        url += '&limit='+limit
+        url += '&offset='+offset
+
+        sendRequest( dispatch, getState, url )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     data: response
                 });
             });

@@ -138,6 +138,9 @@ export default function reducer(spotify = {}, action){
                 items: [ ...spotify.new_releases.items, ...action.data.albums.items ]
             }});
 
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED':
+            return Object.assign({}, spotify, { search_results: action.data });
+
         default:
             return spotify
     }

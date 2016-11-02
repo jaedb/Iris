@@ -4,9 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import Player from '../components/Player'
-import Icon from '../components/Icon'
-import Thumbnail from '../components/Thumbnail'
+import Player from './Player'
+import Icon from './Icon'
+import Thumbnail from './Thumbnail'
+import SearchForm from './SearchForm'
 
 import FontAwesome from 'react-fontawesome'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -22,6 +23,8 @@ class Sidebar extends React.Component{
 			<aside>
 				
 				{ this.props.spotify && this.props.spotify.track ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
+
+	        	<SearchForm context="sidebar" />
 
 	        	<nav>
 

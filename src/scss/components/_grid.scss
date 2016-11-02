@@ -1,10 +1,17 @@
 
+@mixin grid_item( $cols ){
+	width: ( 0% + (( 100 / $cols ) - 4 ));
+	&:nth-child(#{$cols}) {
+		@include clearfix;
+	}
+}
+
 .grid {
 
 	padding: 40px 20px;
 
 	.grid-item {
-		width: 16%;
+		@include grid_item( 5 )
 		margin: 0 2% 3%;
 		display: inline-block;
 		vertical-align: top;
@@ -26,24 +33,12 @@
 			color: $secondary_grey;
 		}
 
-		&:nth-child(5) {
-			@include clearfix;
-		}
-
 		&:hover{
 			cursor: pointer;
 
 			.thumbnail {
 				opacity: 0.75;
 			}
-		}
-
-		@include responsive( 850px ){
-			width: 21%;
-		}
-
-		@include responsive( 650px ){
-			width: 29.3334%;
 		}
 	}
 
@@ -61,6 +56,53 @@
 				font-weight: 600;
 				color: #FFFFFF;
 			}
+		}
+	}
+
+	@include responsive( 2400px ){
+		&.mini {
+			.grid-item {
+				@include grid_item( 3 )
+			}			
+		}
+		&:not(.mini){
+			.grid-item {
+				@include grid_item( 6 )
+			}	
+		}
+	}
+
+	@include responsive( 1200px ){
+		&.mini {
+			.grid-item {
+				@include grid_item( 2 )
+			}			
+		}
+		&:not(.mini){
+			.grid-item {
+				@include grid_item( 5 )
+			}	
+		}
+	}
+
+	@include responsive( 850px ){
+		&.mini {
+			.grid-item {
+				@include grid_item( 2 )
+			}			
+		}
+		&:not(.mini){
+			.grid-item {
+				@include grid_item( 4 )
+			}	
+		}
+	}
+
+	@include responsive( 650px ){
+		&:not(.mini){
+			.grid-item {
+				@include grid_item( 3 )
+			}	
 		}
 	}
 }

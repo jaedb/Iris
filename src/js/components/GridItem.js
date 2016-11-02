@@ -36,6 +36,7 @@ export default class GridItem extends React.Component{
 				<div className="secondary">
 					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
 					{ item.type == 'playlist' ? item.tracks.total+' tracks' : null }
+					{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
 				</div>
 			</div>
 		);
