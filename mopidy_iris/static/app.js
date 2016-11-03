@@ -1479,8 +1479,11 @@
 	exports.removeTracks = removeTracks;
 	exports.play = play;
 	exports.pause = pause;
+	exports.stop = stop;
 	exports.next = next;
 	exports.previous = previous;
+	exports.seek = seek;
+	exports.getTimePosition = getTimePosition;
 	exports.getPlaylists = getPlaylists;
 	exports.getPlaylist = getPlaylist;
 	exports.getDirectory = getDirectory;
@@ -1568,12 +1571,31 @@
 		return instruct('playback.pause');
 	}
 	
+	function stop() {
+		return instruct('playback.stop');
+	}
+	
 	function next() {
 		return instruct('playback.next');
 	}
 	
 	function previous() {
 		return instruct('playback.previous');
+	}
+	
+	function seek(time_position) {
+		return {
+			type: 'MOPIDY_INSTRUCT',
+			call: 'playback.seek',
+			value: { time_position: time_position }
+		};
+	}
+	
+	function getTimePosition() {
+		return {
+			type: 'MOPIDY_INSTRUCT',
+			call: 'playback.getTimePosition'
+		};
 	}
 	
 	/**
@@ -11128,7 +11150,7 @@
 /* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11530,13 +11552,15 @@
 	
 	var _redux = __webpack_require__(6);
 	
+	var _reactRouter = __webpack_require__(12);
+	
 	var _reactFontawesome = __webpack_require__(18);
 	
 	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 	
-	var _VolumeSlider = __webpack_require__(168);
+	var _ProgressSlider = __webpack_require__(385);
 	
-	var _VolumeSlider2 = _interopRequireDefault(_VolumeSlider);
+	var _ProgressSlider2 = _interopRequireDefault(_ProgressSlider);
 	
 	var _ArtistSentence = __webpack_require__(42);
 	
@@ -11570,24 +11594,6 @@
 		}
 	
 		_createClass(Player, [{
-			key: 'renderTrack',
-			value: function renderTrack() {
-				if (this.props.mopidy && this.props.mopidy.current_tltrack) {
-					return _react2.default.createElement(
-						'div',
-						{ className: 'track-in-focus' },
-						this.props.spotify.track && !this.props.mini ? _react2.default.createElement(_Thumbnail2.default, { size: 'large', images: this.props.spotify.track.album.images }) : null,
-						_react2.default.createElement(
-							'div',
-							{ className: 'title' },
-							this.props.mopidy.current_tltrack.track.name
-						),
-						_react2.default.createElement(_ArtistSentence2.default, { artists: this.props.mopidy.current_tltrack.track.artists })
-					);
-				}
-				return null;
-			}
-		}, {
 			key: 'renderPlayButton',
 			value: function renderPlayButton() {
 				var _this2 = this;
@@ -11617,7 +11623,6 @@
 			value: function renderConsumeButton() {
 				var _this3 = this;
 	
-				if (this.props.mini) return null;
 				var button = _react2.default.createElement(
 					'a',
 					{ onClick: function onClick() {
@@ -11641,7 +11646,6 @@
 			value: function renderRandomButton() {
 				var _this4 = this;
 	
-				if (this.props.mini) return null;
 				var button = _react2.default.createElement(
 					'a',
 					{ onClick: function onClick() {
@@ -11665,7 +11669,6 @@
 			value: function renderRepeatButton() {
 				var _this5 = this;
 	
-				if (this.props.mini) return null;
 				var button = _react2.default.createElement(
 					'a',
 					{ onClick: function onClick() {
@@ -11685,18 +11688,29 @@
 				return button;
 			}
 		}, {
-			key: 'render',
-			value: function render() {
+			key: 'renderMiniPlayer',
+			value: function renderMiniPlayer() {
 				var _this6 = this;
+	
+				var mopidy_track = false;
+				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') mopidy_track = this.props.mopidy.current_tltrack;
 	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'player' },
-					this.renderTrack(),
+					_react2.default.createElement(
+						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							mopidy_track ? mopidy_track.track.name : null
+						),
+						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'controls' },
-						this.renderPlayButton(),
 						_react2.default.createElement(
 							'a',
 							{ onClick: function onClick() {
@@ -11705,6 +11719,7 @@
 							_react2.default.createElement(_reactFontawesome2.default, { name: 'step-backward' })
 						),
 						'\xA0',
+						this.renderPlayButton(),
 						_react2.default.createElement(
 							'a',
 							{ onClick: function onClick() {
@@ -11713,16 +11728,86 @@
 							_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
 						),
 						'\xA0',
-						this.renderConsumeButton(),
-						this.renderRandomButton(),
-						this.renderRepeatButton(),
-						_react2.default.createElement(_VolumeSlider2.default, {
-							volume: this.props.mopidy.volume,
-							onChange: function onChange(volume) {
-								return _this6.props.mopidyActions.instruct('playback.setVolume', { volume: volume });
-							} })
+						_react2.default.createElement(_ProgressSlider2.default, null)
 					)
 				);
+			}
+		}, {
+			key: 'renderFullPlayer',
+			value: function renderFullPlayer() {
+				var _this7 = this;
+	
+				var mopidy_track = false;
+				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') mopidy_track = this.props.mopidy.current_tltrack;
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: 'player' },
+					this.props.spotify.track && !this.props.mini ? _react2.default.createElement(
+						_reactRouter.Link,
+						{ className: 'artwork', to: '/album/' + this.props.spotify.track.album.uri },
+						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: this.props.spotify.track.album.images })
+					) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'controls cf' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'pull-left' },
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this7.props.mopidyActions.previous();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-backward' })
+							),
+							'\xA0',
+							this.renderPlayButton(),
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this7.props.mopidyActions.stop();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'stop' })
+							),
+							'\xA0',
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this7.props.mopidyActions.next();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
+							),
+							'\xA0'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pull-right' },
+							this.renderConsumeButton(),
+							this.renderRandomButton(),
+							this.renderRepeatButton()
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							mopidy_track ? mopidy_track.track.name : null
+						),
+						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
+					)
+				);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				if (this.props.mini) {
+					return this.renderMiniPlayer();
+				} else {
+					return this.renderFullPlayer();
+				}
 			}
 		}]);
 	
@@ -19052,87 +19137,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(VersionManager);
 
 /***/ },
-/* 168 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(2);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactFontawesome = __webpack_require__(18);
-	
-	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var VolumeSlider = function (_React$Component) {
-		_inherits(VolumeSlider, _React$Component);
-	
-		function VolumeSlider(props) {
-			_classCallCheck(this, VolumeSlider);
-	
-			var _this = _possibleConstructorReturn(this, (VolumeSlider.__proto__ || Object.getPrototypeOf(VolumeSlider)).call(this, props));
-	
-			_this.state = {
-				volume: 0
-			};
-			return _this;
-		}
-	
-		_createClass(VolumeSlider, [{
-			key: 'componentWillReceiveProps',
-			value: function componentWillReceiveProps(nextProps) {
-				this.setState({ volume: nextProps.volume });
-			}
-		}, {
-			key: 'handleClick',
-			value: function handleClick(e) {
-				var slider = e.target;
-				if (slider.className != 'slider') slider = slider.parentElement;
-	
-				var sliderX = e.clientX - slider.getBoundingClientRect().left;
-				var sliderWidth = slider.getBoundingClientRect().width;
-				var percent = parseInt(sliderX / sliderWidth * 100);
-	
-				if (this.props.volume != percent) {
-					this.props.onChange(percent);
-				}
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var _this2 = this;
-	
-				return _react2.default.createElement(
-					'div',
-					{ className: 'slider', onClick: function onClick(e) {
-							return _this2.handleClick(e);
-						} },
-					_react2.default.createElement('div', { className: 'progress', style: { width: this.props.volume + '%' } })
-				);
-			}
-		}]);
-	
-		return VolumeSlider;
-	}(_react2.default.Component);
-	
-	exports.default = VolumeSlider;
-
-/***/ },
+/* 168 */,
 /* 169 */
 /***/ function(module, exports) {
 
@@ -19285,6 +19290,7 @@
 	                instruct(ws, store, 'tracklist.getRepeat');
 	                instruct(ws, store, 'tracklist.getTlTracks');
 	                instruct(ws, store, 'playback.getCurrentTlTrack');
+	                instruct(ws, store, 'playback.getTimePosition');
 	                break;
 	
 	            case 'state:offline':
@@ -19299,7 +19305,14 @@
 	                instruct(ws, store, 'playback.getState');
 	                break;
 	
-	            //case 'event:trackPlaybackEnded':
+	            case 'event:seeked':
+	                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position });
+	                break;
+	
+	            case 'event:trackPlaybackEnded':
+	                instruct(ws, store, 'playback.getTimePosition');
+	                break;
+	
 	            case 'event:trackPlaybackStarted':
 	                instruct(ws, store, 'playback.getCurrentTlTrack');
 	                break;
@@ -19649,6 +19662,11 @@
 	                volume: action.data
 	            });
 	
+	        case 'MOPIDY_TIMEPOSITION':
+	            return Object.assign({}, mopidy, {
+	                time_position: action.data
+	            });
+	
 	        case 'MOPIDY_DIRECTORY_LOADED':
 	            return Object.assign({}, mopidy, {
 	                directory: action.data
@@ -19904,14 +19922,14 @@
 	                switch (action.type) {
 	
 	                    // when our mopidy server current track changes
-	                    case 'MOPIDY_CURRENTTLTRACK_XX':
+	                    case 'MOPIDY_CURRENTTLTRACK':
 	                        // DISABLED AS IT CAUSES ISSUE
 	
 	                        // proceed as usual so we don't inhibit default functionality
 	                        next(action);
 	
 	                        // if the current track is a spotify track
-	                        if (action.data.track.uri.substring(0, 14) == 'spotify:track:') {
+	                        if (action.data && action.data.track.uri.substring(0, 14) == 'spotify:track:') {
 	                            store.dispatch(actions.getTrack(action.data.track.uri));
 	                        }
 	
@@ -20972,9 +20990,17 @@
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _actions = __webpack_require__(11);
+	var _actions = __webpack_require__(37);
 	
-	var mopidyActions = _interopRequireWildcard(_actions);
+	var uiActions = _interopRequireWildcard(_actions);
+	
+	var _actions2 = __webpack_require__(9);
+	
+	var spotifyActions = _interopRequireWildcard(_actions2);
+	
+	var _actions3 = __webpack_require__(11);
+	
+	var mopidyActions = _interopRequireWildcard(_actions3);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -20996,32 +21022,6 @@
 		}
 	
 		_createClass(Queue, [{
-			key: 'renderTrackInFocus',
-			value: function renderTrackInFocus() {
-				if (this.props.mopidy && this.props.mopidy.trackInFocus) {
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'div',
-							null,
-							this.props.mopidy.trackInFocus.track.name
-						),
-						_react2.default.createElement(
-							'div',
-							null,
-							_react2.default.createElement(_ArtistSentence2.default, { artists: this.props.mopidy.trackInFocus.track.artists })
-						),
-						_react2.default.createElement(
-							'div',
-							null,
-							_react2.default.createElement(_AlbumLink2.default, { album: this.props.mopidy.trackInFocus.track.album })
-						)
-					);
-				}
-				return null;
-			}
-		}, {
 			key: 'renderTrackList',
 			value: function renderTrackList() {
 				var _this2 = this;
@@ -21068,11 +21068,7 @@
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view queue-view' },
-					_react2.default.createElement(_Header2.default, {
-						icon: 'play',
-						title: 'Now playing'
-					}),
-					this.renderTrackInFocus(),
+					_react2.default.createElement(_Player2.default, null),
 					this.renderTrackList()
 				);
 			}
@@ -21093,6 +21089,8 @@
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		return {
+			uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+			spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
 			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
 		};
 	};
@@ -50163,6 +50161,154 @@
 	
 	module.exports = isPlainObject;
 
+
+/***/ },
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(7);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _actions = __webpack_require__(11);
+	
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ProgressSlider = function (_React$Component) {
+		_inherits(ProgressSlider, _React$Component);
+	
+		function ProgressSlider(props) {
+			_classCallCheck(this, ProgressSlider);
+	
+			var _this = _possibleConstructorReturn(this, (ProgressSlider.__proto__ || Object.getPrototypeOf(ProgressSlider)).call(this, props));
+	
+			_this.state = {
+				animating: false
+			};
+			return _this;
+		}
+	
+		_createClass(ProgressSlider, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this2 = this;
+	
+				if (this.props.mopidy.connected && this.props.mopidy.state == 'playing') {
+					this.setState({ animating: true });
+				}
+	
+				setInterval(function () {
+					_this2.updateProgress();
+				}, 10000);
+			}
+		}, {
+			key: 'componentWillReceiveProps',
+			value: function componentWillReceiveProps(nextProps) {
+				if (this.state.animating && nextProps.mopidy.state != 'playing') {
+					this.setState({ animating: false });
+					console.log('stop animating'); // doesn't work?
+				}
+			}
+		}, {
+			key: 'updateProgress',
+			value: function updateProgress() {
+				if (this.props.mopidy.connected && this.props.mopidy.state == 'playing') {
+					this.setState({ animating: true });
+					this.props.mopidyActions.getTimePosition();
+				}
+			}
+		}, {
+			key: 'handleClick',
+			value: function handleClick(e) {
+				var slider = e.target;
+				if (slider.className != 'slider') slider = slider.parentElement;
+	
+				var sliderX = e.clientX - slider.getBoundingClientRect().left;
+				var sliderWidth = slider.getBoundingClientRect().width;
+				var percent = (sliderX / sliderWidth).toFixed(2);
+	
+				if (this.props.mopidy.connected && typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
+					var destination_time = this.props.mopidy.current_tltrack.track.length * percent;
+					this.props.mopidyActions.seek(destination_time);
+					this.setState({ animating: false });
+				}
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this3 = this;
+	
+				var className = 'slider';
+				if (this.state.animating) className += ' animating';
+				var percent = 0;
+				if (this.props.mopidy.connected && typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
+					percent = this.props.mopidy.time_position / this.props.mopidy.current_tltrack.track.length;
+					percent = percent * 100;
+					if (percent > 100) percent = 100;
+				}
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: className, onClick: function onClick(e) {
+							return _this3.handleClick(e);
+						} },
+					_react2.default.createElement('div', { className: 'progress', style: { width: percent + '%' } })
+				);
+			}
+		}]);
+	
+		return ProgressSlider;
+	}(_react2.default.Component);
+	
+	/**
+	 * Export our component
+	 *
+	 * We also integrate our global store, using connect()
+	 **/
+	
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+		return state;
+	};
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+		return {
+			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ProgressSlider);
 
 /***/ }
 /******/ ])));

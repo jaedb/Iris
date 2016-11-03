@@ -20,6 +20,7 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'tracklist.getRepeat' );
                 instruct( ws, store, 'tracklist.getTlTracks' );
                 instruct( ws, store, 'playback.getCurrentTlTrack' );
+                instruct( ws, store, 'playback.getTimePosition' );
                 break;
 
             case 'state:offline':
@@ -34,7 +35,14 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'playback.getState' );
                 break;
 
-            //case 'event:trackPlaybackEnded':
+            case 'event:seeked':
+                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position });
+                break;
+
+            case 'event:trackPlaybackEnded':
+                instruct( ws, store, 'playback.getTimePosition' );
+                break;
+
             case 'event:trackPlaybackStarted':
                 instruct( ws, store, 'playback.getCurrentTlTrack' );
                 break;

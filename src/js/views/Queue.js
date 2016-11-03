@@ -11,25 +11,14 @@ import ArtistSentence from '../components/ArtistSentence'
 import AlbumLink from '../components/AlbumLink'
 import Header from '../components/Header'
 
+import * as uiActions from '../services/ui/actions'
+import * as spotifyActions from '../services/spotify/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
 
 	constructor(props) {
 		super(props);
-	}
-
-	renderTrackInFocus(){
-		if( this.props.mopidy && this.props.mopidy.trackInFocus ){
-			return (
-				<div>
-					<div>{ this.props.mopidy.trackInFocus.track.name }</div>
-					<div><ArtistSentence artists={ this.props.mopidy.trackInFocus.track.artists } /></div>
-					<div><AlbumLink album={ this.props.mopidy.trackInFocus.track.album } /></div>
-				</div>
-			);
-		}
-		return null;
 	}
 
 	renderTrackList(){
@@ -66,11 +55,7 @@ class Queue extends React.Component{
 	render(){
 		return (
 			<div className="view queue-view">
-				<Header
-					icon="play"
-					title="Now playing"
-					/>
-				{ this.renderTrackInFocus() }
+				<Player />
 				{ this.renderTrackList() }
 			</div>
 		);
@@ -90,6 +75,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }

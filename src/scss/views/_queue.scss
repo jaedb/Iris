@@ -1,0 +1,35 @@
+
+.queue-view {
+
+	.player {
+		text-align: center;
+		padding: 40px 0;
+
+		.artwork,
+		.controls a {
+			border: 0;
+		}
+
+		.artwork,
+		.controls {
+			display: block;
+			max-width: 400px;
+			margin: 0 auto;
+		}
+
+		.controls {
+			padding: 20px 0;
+			a {
+				font-size: 18px;
+			}
+		}
+
+		.thumbnail {
+			max-width: none;
+		}
+
+		.current-track {
+			font-weight: 700;
+		}
+	}
+}

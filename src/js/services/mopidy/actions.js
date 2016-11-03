@@ -77,12 +77,31 @@ export function pause(){
 	return instruct('playback.pause');
 }
 
+export function stop(){
+	return instruct('playback.stop');
+}
+
 export function next(){
 	return instruct('playback.next');
 }
 
 export function previous(){
 	return instruct('playback.previous');
+}
+
+export function seek( time_position ){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: 'playback.seek',
+		value: { time_position: time_position }
+	}
+}
+
+export function getTimePosition(){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: 'playback.getTimePosition'
+	}
 }
 
 

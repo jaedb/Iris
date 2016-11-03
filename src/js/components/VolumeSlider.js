@@ -24,7 +24,7 @@ export default class VolumeSlider extends React.Component{
 		var percent = parseInt( sliderX / sliderWidth * 100 );
 		
 		if( this.props.volume != percent ){
-			this.props.onChange( percent )
+			this.props.onChange( volume )
 		}
 	} 
 

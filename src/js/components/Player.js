@@ -2,9 +2,10 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 
 import FontAwesome from 'react-fontawesome'
-import VolumeSlider from './VolumeSlider'
+import ProgressSlider from './ProgressSlider'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
 
@@ -16,19 +17,6 @@ class Player extends React.Component{
 		super(props);
 	}
 
-	renderTrack(){
-		if( this.props.mopidy && this.props.mopidy.current_tltrack ){
-			return (
-				<div className="track-in-focus">
-					{ this.props.spotify.track && !this.props.mini ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
-					<div className="title">{ this.props.mopidy.current_tltrack.track.name }</div>
-					<ArtistSentence artists={ this.props.mopidy.current_tltrack.track.artists } />
-				</div>
-			);
-		}
-		return null;
-	}
-
 	renderPlayButton(){
 		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
 		if( this.props.mopidy.state == 'playing' ){
@@ -38,7 +26,6 @@ class Player extends React.Component{
 	}
 
 	renderConsumeButton(){
-		if( this.props.mini ) return null;
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /></a>
 		if( this.props.mopidy.consume ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /></a>
@@ -47,7 +34,6 @@ class Player extends React.Component{
 	}
 
 	renderRandomButton(){
-		if( this.props.mini ) return null;
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /></a>
 		if( this.props.mopidy.random ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /></a>
@@ -56,7 +42,6 @@ class Player extends React.Component{
 	}
 
 	renderRepeatButton(){
-		if( this.props.mini ) return null;
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /></a>
 		if( this.props.mopidy.repeat ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /></a>
@@ -64,29 +49,75 @@ class Player extends React.Component{
 		return button;
 	}
 
-	render(){
+	renderMiniPlayer(){
+		var mopidy_track = false;
+		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ) mopidy_track = this.props.mopidy.current_tltrack;
+
 		return (
 			<div className="player">
 
-				{ this.renderTrack() }
+				<div className="current-track">
+					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
+					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
+				</div>
 
 				<div className="controls">
-					{ this.renderPlayButton() }
 					<a onClick={() => this.props.mopidyActions.previous()}>
 						<FontAwesome name="step-backward" />
 					</a>&nbsp;
+					{ this.renderPlayButton() }
 					<a onClick={() => this.props.mopidyActions.next()}>
 						<FontAwesome name="step-forward" />
 					</a>&nbsp;
-					{ this.renderConsumeButton() }
-					{ this.renderRandomButton() }
-					{ this.renderRepeatButton() }
-					<VolumeSlider
-						volume={ this.props.mopidy.volume } 
-						onChange={(volume) => this.props.mopidyActions.instruct('playback.setVolume', { volume: volume })} />
+					<ProgressSlider />
 				</div>
 			</div>
 		);
+	}
+
+	renderFullPlayer(){
+		var mopidy_track = false;
+		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ) mopidy_track = this.props.mopidy.current_tltrack;
+
+		return (
+			<div className="player">
+
+				{ this.props.spotify.track && !this.props.mini ? <Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}><Thumbnail size="huge" images={this.props.spotify.track.album.images} /></Link> : null }
+
+				<div className="controls cf">
+					<div className="pull-left">
+						<a onClick={() => this.props.mopidyActions.previous()}>
+							<FontAwesome name="step-backward" />
+						</a>&nbsp;
+						{ this.renderPlayButton() }
+						<a onClick={() => this.props.mopidyActions.stop()}>
+							<FontAwesome name="stop" />
+						</a>&nbsp;
+						<a onClick={() => this.props.mopidyActions.next()}>
+							<FontAwesome name="step-forward" />
+						</a>&nbsp;
+					</div>
+					<div className="pull-right">
+						{ this.renderConsumeButton() }
+						{ this.renderRandomButton() }
+						{ this.renderRepeatButton() }
+					</div>
+				</div>
+
+				<div className="current-track">
+					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
+					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
+				</div>
+			</div>
+		);
+	}
+
+	render(){
+		if( this.props.mini ){
+			return this.renderMiniPlayer()
+		}else{
+			return this.renderFullPlayer()
+		}
 	}
 }
 

@@ -72,6 +72,11 @@ export default function reducer(mopidy = {}, action){
                 volume: action.data   
             });
 
+        case 'MOPIDY_TIMEPOSITION':
+            return Object.assign({}, mopidy, {
+                time_position: action.data
+            });
+
         case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
                 directory: action.data   

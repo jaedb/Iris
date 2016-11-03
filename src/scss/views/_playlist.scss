@@ -59,6 +59,10 @@
 					font-weight: bold;
 				}
 
+				.secondary {
+					display: none;
+				}
+
 				&:hover {
 					.name {
 						opacity: 1;

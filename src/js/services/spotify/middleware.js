@@ -12,14 +12,14 @@ const SpotifyMiddleware = (function(){
         switch(action.type){
 
             // when our mopidy server current track changes
-            case 'MOPIDY_CURRENTTLTRACK_XX':
+            case 'MOPIDY_CURRENTTLTRACK':
                 // DISABLED AS IT CAUSES ISSUE
 
                 // proceed as usual so we don't inhibit default functionality
                 next(action)
 
                 // if the current track is a spotify track
-                if( action.data.track.uri.substring(0,14) == 'spotify:track:' ){
+                if( action.data && action.data.track.uri.substring(0,14) == 'spotify:track:' ){
                     store.dispatch( actions.getTrack( action.data.track.uri ) )
                 }
 

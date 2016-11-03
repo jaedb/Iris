@@ -106,7 +106,15 @@ main {
 	&.w100 {	width: 100%; }
 }
 
-.cf{
+.pull-left {
+	float: left;
+}
+
+.pull-right {
+	float: right;
+}
+
+.cf {
 	@include clearfix;
 }
 

@@ -3070,6 +3070,14 @@ main .left-padding {
   width: 100%;
 }
 
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
 .cf::after {
   content: '';
   clear: both;
@@ -3372,6 +3380,56 @@ label .input input {
   padding: 10px 15px 0 15px;
 }
 
+.player .current-track {
+  font-size: 16px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.player .current-track .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player .current-track .artist-sentence {
+  opacity: 0.5;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player .current-track .artist-sentence .artist {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted transparent;
+}
+
+.player .controls {
+  text-align: center;
+}
+
+.player .controls a {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px;
+  display: inline-block;
+  opacity: 0.8;
+}
+
+.player .controls a.active {
+  color: #08d58f;
+}
+
+.player .controls a:hover {
+  opacity: 1.0;
+}
+
+.player .slider.animating .progress {
+  /* @include animate(10s); */
+}
+
 aside {
   position: fixed;
   top: 0;
@@ -3456,58 +3514,11 @@ aside .player {
   left: 0;
   right: 0;
   padding: 14px;
-}
-
-aside .player .track-in-focus {
-  font-size: 16px;
-  text-transform: uppercase;
-  text-align: center;
   color: #FFFFFF;
 }
 
-aside .player .track-in-focus .title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-aside .player .track-in-focus .artist-sentence {
-  opacity: 0.5;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-aside .player .track-in-focus .artist-sentence .artist {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px dotted transparent;
-}
-
-aside .player .track-in-focus .artist-sentence .artist:hover {
+aside .player .artist-sentence .artist:hover {
   border-color: #FFFFFF !important;
-}
-
-aside .player .controls {
-  text-align: center;
-}
-
-aside .player .controls a {
-  color: #FFFFFF;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 8px;
-  display: inline-block;
-  opacity: 0.8;
-}
-
-aside .player .controls a.active {
-  color: #08d58f;
-}
-
-aside .player .controls a:hover {
-  opacity: 1.0;
 }
 
 .list-item {
@@ -3829,7 +3840,7 @@ main header h1 {
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   position: absolute;
-  top: 35%;
+  top: 40%;
   left: 0;
   right: 0;
   text-align: center;
@@ -3837,6 +3848,10 @@ main header h1 {
   opacity: 0;
   z-index: 2;
   font-weight: bold;
+}
+
+.album-view .intro .artist-grid .grid-item .secondary {
+  display: none;
 }
 
 .album-view .intro .artist-grid .grid-item:hover .name {
@@ -3909,8 +3924,45 @@ main header h1 {
   font-weight: bold;
 }
 
+.playlist-view .intro .artist-grid .grid-item .secondary {
+  display: none;
+}
+
 .playlist-view .intro .artist-grid .grid-item:hover .name {
   opacity: 1;
+}
+
+.queue-view .player {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.queue-view .player .artwork,
+.queue-view .player .controls a {
+  border: 0;
+}
+
+.queue-view .player .artwork,
+.queue-view .player .controls {
+  display: block;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.queue-view .player .controls {
+  padding: 20px 0;
+}
+
+.queue-view .player .controls a {
+  font-size: 18px;
+}
+
+.queue-view .player .thumbnail {
+  max-width: none;
+}
+
+.queue-view .player .current-track {
+  font-weight: 700;
 }
 
 /*# sourceMappingURL=app.css.map*/
