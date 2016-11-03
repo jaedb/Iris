@@ -65,27 +65,37 @@ class Search extends React.Component{
 	render(){
 		return (
 			<div className="view search-view">
+			
 				<Header
 					icon="search"
 					title="Search results"
 					/>
 
-				<div className="cf">
-					<div className="col w33">
-						<h4>Artists</h4>
-						<ArtistGrid className="mini" artists={ this.compiledArtists() } />
-					</div>
-					<div className="col w33">
-						<h4 >Albums</h4>
-						<AlbumGrid className="mini" albums={ this.compiledAlbums() } />
-					</div>
-					<div className="col w33">
-						<h4>Playlists</h4>
-						<PlaylistGrid className="mini" playlists={ this.compiledPlaylists() } />
-					</div>
+				<div className="search-result-sections cf">
+					<section>
+						<div className="inner">
+								<h4>Artists</h4>
+								<ArtistGrid className="mini" artists={ this.compiledArtists() } />
+						</div>
+					</section>
+					<section>
+						<div className="inner">
+							<h4 >Albums</h4>
+							<AlbumGrid className="mini" albums={ this.compiledAlbums() } />
+						</div>
+					</section>
+					<section>
+						<div className="inner">
+							<h4>Playlists</h4>
+							<PlaylistGrid className="mini" playlists={ this.compiledPlaylists() } />
+						</div>
+					</section>
 				</div>
 
-				<TrackList tracks={ this.compiledTracks() } />
+				<section className="list-wrapper">
+					<TrackList tracks={ this.compiledTracks() } />
+				</section>
+
 			</div>
 		);
 	}

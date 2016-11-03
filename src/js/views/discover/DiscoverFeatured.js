@@ -23,7 +23,9 @@ class DiscoverFeatured extends React.Component{
 		return (
 			<div className="view discover-featured-view">
 				<Header icon="star" title="Featured playlists" />
-				{ this.props.spotify.featured_playlists ? <PlaylistGrid playlists={this.props.spotify.featured_playlists.playlists.items} /> : null }
+				<section className="grid-wrapper">
+					{ this.props.spotify.featured_playlists ? <PlaylistGrid playlists={this.props.spotify.featured_playlists.playlists.items} /> : null }
+				</section>
 			</div>
 		);
 	}

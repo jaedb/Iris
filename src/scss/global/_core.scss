@@ -32,8 +32,12 @@ main {
 		}
 	}
 
-	section {
-		padding: 40px;
+	section.grid-wrapper {
+		padding: 40px 20px;
+	}
+
+	section.list-wrapper {
+		padding: 20px 0;
 	}
 
 	h1 {

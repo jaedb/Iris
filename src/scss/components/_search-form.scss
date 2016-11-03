@@ -1,5 +1,7 @@
 
 .search-form {
+	z-index: 2;
+	position: relative;
 
 	input {
 		background: transparent;

@@ -8,8 +8,6 @@
 
 .grid {
 
-	padding: 40px 20px;
-
 	.grid-item {
 		@include grid_item( 5 )
 		margin: 0 2% 3%;

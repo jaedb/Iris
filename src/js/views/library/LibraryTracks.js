@@ -25,7 +25,9 @@ class LibraryTracks extends React.Component{
 		return (
 			<div className="view library-tracks-view">
 				<Header icon="music" title="My tracks" />
-				{ this.props.spotify.library_tracks ? <TrackList tracks={this.props.spotify.library_tracks.items} /> : null }
+				<section className="list-wrapper">
+					{ this.props.spotify.library_tracks ? <TrackList tracks={this.props.spotify.library_tracks.items} /> : null }
+				</section>
 			</div>
 		);
 	}

@@ -46,9 +46,9 @@ class LibraryLocalDirectory extends React.Component{
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local files" />
-				<div>
+				<section className="list-wrapper">
 					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.directory} link_prefix="/library/local/directory/" />
-				</div>
+				</section>
 			</div>
 		);
 	}

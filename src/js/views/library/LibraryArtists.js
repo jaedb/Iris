@@ -34,7 +34,9 @@ class LibraryArtists extends React.Component{
 					icon="mic"
 					title="My artists"
 					/>
-				{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.items} /> : null }
+				<section className="grid-wrapper">
+					{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.items} /> : null }
+				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);

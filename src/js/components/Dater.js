@@ -7,7 +7,13 @@ export default class Dater extends React.Component{
 		super(props);
 	}
 
-	formatDuration( milliseconds = false ){
+	/**
+	 * Format time duration
+	 *
+	 * @param milliseconds int
+	 * @return string (HH:mm:ss)
+	 **/
+	durationTime( milliseconds = false ){
 		if( !milliseconds ) return null
 
 		var string = '';
@@ -34,6 +40,28 @@ export default class Dater extends React.Component{
 		return string
 	}
 
+	/**
+	 * Format time duration as a human-friendly sentence
+	 *
+	 * @param milliseconds int
+	 * @return string (eg 2+ hours)
+	 **/
+	durationSentence( milliseconds = false ){
+		if( !milliseconds ) return null
+
+		var string = '';
+		var total_hours, total_minutes, total_seconds, minutes, seconds;
+
+		// get total values for each 
+		total_seconds = Math.floor( milliseconds / 1000 )
+		total_minutes = Math.floor( milliseconds / (1000 * 60) )
+		total_hours = Math.floor(milliseconds / (1000 * 60 * 60))
+
+		if( total_hours > 1 ) return total_hours+'+ hrs'
+		if( total_minutes > 1 ) return total_minutes+' mins'
+		if( total_seconds ) return total_seconds+' sec'
+	}
+
 	calculate(){
 		switch(this.props.type){
 
@@ -44,11 +72,11 @@ export default class Dater extends React.Component{
 					if( tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
 					if( tracks[i].length ) duration += parseInt(tracks[i].length);
 				}
-				return this.formatDuration(duration)
+				return this.durationSentence(duration)
 				break
 
 			case 'length':
-				return this.formatDuration(this.props.data)
+				return this.durationTime(this.props.data)
 				break
 
 			case 'date':

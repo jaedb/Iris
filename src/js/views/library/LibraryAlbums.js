@@ -33,7 +33,9 @@ class LibraryAlbums extends React.Component{
 					icon="cd"
 					title="My albums"
 					/>
-				{ this.props.spotify.library_albums ? <AlbumGrid albums={this.props.spotify.library_albums.items} /> : null }
+				<section className="grid-wrapper">
+					{ this.props.spotify.library_albums ? <AlbumGrid albums={this.props.spotify.library_albums.items} /> : null }
+				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);

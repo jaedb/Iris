@@ -23,7 +23,9 @@ class DiscoverCategories extends React.Component{
 		return (
 			<div className="view discover-categories-view">
 				<Header icon="grid" title="Genre / Mood" />
-				{ this.props.spotify.categories ? <CategoryGrid categories={this.props.spotify.categories.items} /> : null }
+				<section className="grid-wrapper">
+					{ this.props.spotify.categories ? <CategoryGrid categories={this.props.spotify.categories.items} /> : null }
+				</section>
 			</div>
 		);
 	}

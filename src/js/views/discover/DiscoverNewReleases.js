@@ -29,7 +29,9 @@ class DiscoverNewReleases extends React.Component{
 		return (
 			<div className="view discover-new-releases-view">
 				<Header icon="leaf" title="New Releases" />
-				{ this.props.spotify.new_releases ? <AlbumGrid albums={this.props.spotify.new_releases.items} /> : null }
+				<section className="grid-wrapper">
+					{ this.props.spotify.new_releases ? <AlbumGrid albums={this.props.spotify.new_releases.items} /> : null }
+				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);

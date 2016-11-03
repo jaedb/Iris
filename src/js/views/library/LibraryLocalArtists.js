@@ -38,9 +38,9 @@ class LibraryLocalArtists extends React.Component{
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local artists" />
-				<div>
+				<section className="list-wrapper">
 					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.artists} link_prefix="/artist/" />
-				</div>
+				</section>
 			</div>
 		);
 	}

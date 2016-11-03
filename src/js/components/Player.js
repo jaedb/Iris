@@ -77,12 +77,15 @@ class Player extends React.Component{
 
 	renderFullPlayer(){
 		var mopidy_track = false;
-		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ) mopidy_track = this.props.mopidy.current_tltrack;
+		var images = [];
+		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
+			mopidy_track = this.props.mopidy.current_tltrack;
+		}
 
 		return (
 			<div className="player">
 
-				{ this.props.spotify.track && !this.props.mini ? <Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}><Thumbnail size="huge" images={this.props.spotify.track.album.images} /></Link> : null }
+				{ this.props.spotify.track && !this.props.mini ? <Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}><Thumbnail size="huge" images={this.props.spotify.track.album.images} /></Link> : <Link className="artwork"><Thumbnail size="huge" images={[]} /></Link> }
 
 				<div className="controls cf">
 					<div className="pull-left">

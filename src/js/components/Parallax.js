@@ -16,11 +16,13 @@ export default class Parallax extends React.Component{
 				height: 0
 			},
 			image: {},
-			loaded: false
+			loaded: false,
+			url: false
 		}
 
 		// we need to manually bind this as eventListener doesn't work with anonymous functions
 		this.handleResize = this.handleResize.bind(this);
+		this.handleScroll = this.handleScroll.bind(this);
 	}
 
 	componentDidMount(){
@@ -28,20 +30,31 @@ export default class Parallax extends React.Component{
 		this.loadImage( url )
 			.then(
 				response => {
-					this.setState({ image: response, loaded: true })
+					this.setState({ url: url, image: response, loaded: true })
 					this.updateCanvas( response )
 				}
 			)
 
         window.addEventListener("resize", this.handleResize);
+        window.addEventListener("scroll", this.handleScroll);
 	}
 
-    componentWillUnmount() {
+    componentWillUnmount(){
         window.removeEventListener("resize", this.handleResize);
+        window.removeEventListener("scroll", this.handleScroll);
     }
 
-    handleResize(){
+    handleResize(e){
     	this.updateCanvas( this.state.image );
+    }
+
+    handleScroll(e){
+
+    	// this DOES work, but is in no way high-performing
+		this.setState(
+			{ scrollTop: e.pageY }, 
+			this.updateCanvas( this.state.image ) 
+		)
     }
 
 	loadImage( url ){		

@@ -36,15 +36,17 @@ export default class LibraryLocal extends React.Component{
 		return (
 			<div className="view library-local-view">
 				<Header icon="folder" title="Local" />
-				<div className="grid category-grid">				
-					{
-						grid_items.map(
-							(item, index) => {
-								return <GridItem item={item} key={index} link={item.link} />
-							}
-						)
-					}
-				</div>
+				<section className="grid-wrapper">
+					<div className="grid category-grid">				
+						{
+							grid_items.map(
+								(item, index) => {
+									return <GridItem item={item} key={index} link={item.link} />
+								}
+							)
+						}
+					</div>
+				</section>
 			</div>
 		);
 	}

@@ -56,7 +56,7 @@ class Artist extends React.Component{
 
 		return (
 			<div className="view artist-view">
-				<Parallax images={ artist.images } />
+				<Parallax images={artist.images} />
 
 				<div className="intro">
 					<Thumbnail size="huge" images={ artist.images } />

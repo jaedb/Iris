@@ -8106,9 +8106,17 @@
 			return _possibleConstructorReturn(this, (Dater.__proto__ || Object.getPrototypeOf(Dater)).call(this, props));
 		}
 	
+		/**
+	  * Format time duration
+	  *
+	  * @param milliseconds int
+	  * @return string (HH:mm:ss)
+	  **/
+	
+	
 		_createClass(Dater, [{
-			key: 'formatDuration',
-			value: function formatDuration() {
+			key: 'durationTime',
+			value: function durationTime() {
 				var milliseconds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 	
 				if (!milliseconds) return null;
@@ -8136,6 +8144,33 @@
 	
 				return string;
 			}
+	
+			/**
+	   * Format time duration as a human-friendly sentence
+	   *
+	   * @param milliseconds int
+	   * @return string (eg 2+ hours)
+	   **/
+	
+		}, {
+			key: 'durationSentence',
+			value: function durationSentence() {
+				var milliseconds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+	
+				if (!milliseconds) return null;
+	
+				var string = '';
+				var total_hours, total_minutes, total_seconds, minutes, seconds;
+	
+				// get total values for each 
+				total_seconds = Math.floor(milliseconds / 1000);
+				total_minutes = Math.floor(milliseconds / (1000 * 60));
+				total_hours = Math.floor(milliseconds / (1000 * 60 * 60));
+	
+				if (total_hours > 1) return total_hours + '+ hrs';
+				if (total_minutes > 1) return total_minutes + ' mins';
+				if (total_seconds) return total_seconds + ' sec';
+			}
 		}, {
 			key: 'calculate',
 			value: function calculate() {
@@ -8148,11 +8183,11 @@
 							if (tracks[i].duration_ms) duration += parseInt(tracks[i].duration_ms);
 							if (tracks[i].length) duration += parseInt(tracks[i].length);
 						}
-						return this.formatDuration(duration);
+						return this.durationSentence(duration);
 						break;
 	
 					case 'length':
-						return this.formatDuration(this.props.data);
+						return this.durationTime(this.props.data);
 						break;
 	
 					case 'date':
@@ -11150,7 +11185,7 @@
 /* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11379,11 +11414,13 @@
 					height: 0
 				},
 				image: {},
-				loaded: false
+				loaded: false,
+				url: false
 			};
 	
 			// we need to manually bind this as eventListener doesn't work with anonymous functions
 			_this.handleResize = _this.handleResize.bind(_this);
+			_this.handleScroll = _this.handleScroll.bind(_this);
 			return _this;
 		}
 	
@@ -11394,21 +11431,30 @@
 	
 				var url = helpers.sizedImages(this.props.images).huge;
 				this.loadImage(url).then(function (response) {
-					_this2.setState({ image: response, loaded: true });
+					_this2.setState({ url: url, image: response, loaded: true });
 					_this2.updateCanvas(response);
 				});
 	
 				window.addEventListener("resize", this.handleResize);
+				window.addEventListener("scroll", this.handleScroll);
 			}
 		}, {
 			key: 'componentWillUnmount',
 			value: function componentWillUnmount() {
 				window.removeEventListener("resize", this.handleResize);
+				window.removeEventListener("scroll", this.handleScroll);
 			}
 		}, {
 			key: 'handleResize',
-			value: function handleResize() {
+			value: function handleResize(e) {
 				this.updateCanvas(this.state.image);
+			}
+		}, {
+			key: 'handleScroll',
+			value: function handleScroll(e) {
+	
+				// this DOES work, but is in no way high-performing
+				this.setState({ scrollTop: e.pageY }, this.updateCanvas(this.state.image));
 			}
 		}, {
 			key: 'loadImage',
@@ -11738,7 +11784,10 @@
 				var _this7 = this;
 	
 				var mopidy_track = false;
-				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') mopidy_track = this.props.mopidy.current_tltrack;
+				var images = [];
+				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
+					mopidy_track = this.props.mopidy.current_tltrack;
+				}
 	
 				return _react2.default.createElement(
 					'div',
@@ -11747,7 +11796,11 @@
 						_reactRouter.Link,
 						{ className: 'artwork', to: '/album/' + this.props.spotify.track.album.uri },
 						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: this.props.spotify.track.album.images })
-					) : null,
+					) : _react2.default.createElement(
+						_reactRouter.Link,
+						{ className: 'artwork' },
+						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: [] })
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'controls cf' },
@@ -21237,39 +21290,55 @@
 					}),
 					_react2.default.createElement(
 						'div',
-						{ className: 'cf' },
+						{ className: 'search-result-sections cf' },
 						_react2.default.createElement(
-							'div',
-							{ className: 'col w33' },
+							'section',
+							null,
 							_react2.default.createElement(
-								'h4',
-								null,
-								'Artists'
-							),
-							_react2.default.createElement(_ArtistGrid2.default, { className: 'mini', artists: this.compiledArtists() })
+								'div',
+								{ className: 'inner' },
+								_react2.default.createElement(
+									'h4',
+									null,
+									'Artists'
+								),
+								_react2.default.createElement(_ArtistGrid2.default, { className: 'mini', artists: this.compiledArtists() })
+							)
 						),
 						_react2.default.createElement(
-							'div',
-							{ className: 'col w33' },
+							'section',
+							null,
 							_react2.default.createElement(
-								'h4',
-								null,
-								'Albums'
-							),
-							_react2.default.createElement(_AlbumGrid2.default, { className: 'mini', albums: this.compiledAlbums() })
+								'div',
+								{ className: 'inner' },
+								_react2.default.createElement(
+									'h4',
+									null,
+									'Albums'
+								),
+								_react2.default.createElement(_AlbumGrid2.default, { className: 'mini', albums: this.compiledAlbums() })
+							)
 						),
 						_react2.default.createElement(
-							'div',
-							{ className: 'col w33' },
+							'section',
+							null,
 							_react2.default.createElement(
-								'h4',
-								null,
-								'Playlists'
-							),
-							_react2.default.createElement(_PlaylistGrid2.default, { className: 'mini', playlists: this.compiledPlaylists() })
+								'div',
+								{ className: 'inner' },
+								_react2.default.createElement(
+									'h4',
+									null,
+									'Playlists'
+								),
+								_react2.default.createElement(_PlaylistGrid2.default, { className: 'mini', playlists: this.compiledPlaylists() })
+							)
 						)
 					),
-					_react2.default.createElement(_TrackList2.default, { tracks: this.compiledTracks() })
+					_react2.default.createElement(
+						'section',
+						{ className: 'list-wrapper' },
+						_react2.default.createElement(_TrackList2.default, { tracks: this.compiledTracks() })
+					)
 				);
 			}
 		}]);
@@ -21820,7 +21889,11 @@
 					'div',
 					{ className: 'view discover-categories-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'grid', title: 'Genre / Mood' }),
-					this.props.spotify.categories ? _react2.default.createElement(_CategoryGrid2.default, { categories: this.props.spotify.categories.items }) : null
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.categories ? _react2.default.createElement(_CategoryGrid2.default, { categories: this.props.spotify.categories.items }) : null
+					)
 				);
 			}
 		}]);
@@ -21932,7 +22005,11 @@
 					'div',
 					{ className: 'view discover-categories-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'grid', title: this.props.spotify.category.name }),
-					this.props.spotify.category_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.category_playlists.items }) : null,
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.category_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.category_playlists.items }) : null
+					),
 					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
@@ -22027,7 +22104,11 @@
 					'div',
 					{ className: 'view discover-featured-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'star', title: 'Featured playlists' }),
-					this.props.spotify.featured_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.featured_playlists.playlists.items }) : null
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.featured_playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: this.props.spotify.featured_playlists.playlists.items }) : null
+					)
 				);
 			}
 		}]);
@@ -22132,7 +22213,11 @@
 					'div',
 					{ className: 'view discover-new-releases-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'leaf', title: 'New Releases' }),
-					this.props.spotify.new_releases ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.new_releases.items }) : null,
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.new_releases ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.new_releases.items }) : null
+					),
 					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
@@ -22246,7 +22331,11 @@
 						icon: 'cd',
 						title: 'My albums'
 					}),
-					this.props.spotify.library_albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.library_albums.items }) : null,
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.library_albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.spotify.library_albums.items }) : null
+					),
 					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
@@ -22363,7 +22452,11 @@
 						icon: 'mic',
 						title: 'My artists'
 					}),
-					this.props.spotify.library_artists ? _react2.default.createElement(_ArtistGrid2.default, { artists: this.props.spotify.library_artists.items }) : null,
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper' },
+						this.props.spotify.library_artists ? _react2.default.createElement(_ArtistGrid2.default, { artists: this.props.spotify.library_artists.items }) : null
+					),
 					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
@@ -22463,11 +22556,15 @@
 					{ className: 'view library-local-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'folder', title: 'Local' }),
 					_react2.default.createElement(
-						'div',
-						{ className: 'grid category-grid' },
-						grid_items.map(function (item, index) {
-							return _react2.default.createElement(_GridItem2.default, { item: item, key: index, link: item.link });
-						})
+						'section',
+						{ className: 'grid-wrapper' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'grid category-grid' },
+							grid_items.map(function (item, index) {
+								return _react2.default.createElement(_GridItem2.default, { item: item, key: index, link: item.link });
+							})
+						)
 					)
 				);
 			}
@@ -22686,8 +22783,8 @@
 					{ className: 'view library-local-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'music', title: 'Local artists' }),
 					_react2.default.createElement(
-						'div',
-						null,
+						'section',
+						{ className: 'list-wrapper' },
 						_react2.default.createElement(_List2.default, { columns: [{ name: 'name', width: '100' }], rows: this.props.mopidy.artists, link_prefix: '/artist/' })
 					)
 				);
@@ -22814,8 +22911,8 @@
 					{ className: 'view library-local-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'music', title: 'Local files' }),
 					_react2.default.createElement(
-						'div',
-						null,
+						'section',
+						{ className: 'list-wrapper' },
 						_react2.default.createElement(_List2.default, { columns: [{ name: 'name', width: '100' }], rows: this.props.mopidy.directory, link_prefix: '/library/local/directory/' })
 					)
 				);
@@ -22961,7 +23058,11 @@
 						icon: 'playlist',
 						title: 'My playlists'
 					}),
-					this.renderPlaylists()
+					_react2.default.createElement(
+						'section',
+						{ className: 'list-wrapper' },
+						this.renderPlaylists()
+					)
 				);
 			}
 		}]);
@@ -23060,7 +23161,11 @@
 					'div',
 					{ className: 'view library-tracks-view' },
 					_react2.default.createElement(_Header2.default, { icon: 'music', title: 'My tracks' }),
-					this.props.spotify.library_tracks ? _react2.default.createElement(_TrackList2.default, { tracks: this.props.spotify.library_tracks.items }) : null
+					_react2.default.createElement(
+						'section',
+						{ className: 'list-wrapper' },
+						this.props.spotify.library_tracks ? _react2.default.createElement(_TrackList2.default, { tracks: this.props.spotify.library_tracks.items }) : null
+					)
 				);
 			}
 		}]);

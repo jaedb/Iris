@@ -68,7 +68,9 @@ class LibraryPlaylists extends React.Component{
 					icon="playlist"
 					title="My playlists"
 					/>
-				{ this.renderPlaylists() }
+				<section className="list-wrapper">
+					{ this.renderPlaylists() }
+				</section>
 			</div>
 		)
 	}

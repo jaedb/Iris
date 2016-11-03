@@ -2910,8 +2910,12 @@ main a:hover {
   border-color: #000000;
 }
 
-main section {
-  padding: 40px;
+main section.grid-wrapper {
+  padding: 40px 20px;
+}
+
+main section.list-wrapper {
+  padding: 20px 0;
 }
 
 main h1 {
@@ -3364,6 +3368,11 @@ label .input input {
   filter: invert(1);
 }
 
+.search-form {
+  z-index: 2;
+  position: relative;
+}
+
 .search-form input {
   background: transparent;
   border-bottom: 1px solid #FFFFFF;
@@ -3450,7 +3459,7 @@ aside .thumbnail {
   height: auto;
   width: auto;
   max-width: none;
-  z-index: -1;
+  z-index: 1;
   opacity: 0.2;
 }
 
@@ -3462,6 +3471,8 @@ aside .thumbnail .image {
 }
 
 aside nav {
+  z-index: 2;
+  position: relative;
   padding-top: 20px;
 }
 
@@ -3513,6 +3524,7 @@ aside .player {
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 2;
   padding: 14px;
   color: #FFFFFF;
 }
@@ -3610,10 +3622,6 @@ aside .player .artist-sentence .artist:hover {
 .artist-list .artist:hover .thumbnail {
   border-color: #08d58f;
   opacity: 0.8;
-}
-
-.grid {
-  padding: 40px 20px;
 }
 
 .grid .grid-item {
@@ -3963,6 +3971,19 @@ main header h1 {
 
 .queue-view .player .current-track {
   font-weight: 700;
+}
+
+.search-view .search-result-sections {
+  padding: 0 10px;
+}
+
+.search-view .search-result-sections section {
+  width: 33.3334%;
+  float: left;
+}
+
+.search-view .search-result-sections section .inner {
+  padding: 10px;
 }
 
 /*# sourceMappingURL=app.css.map*/
