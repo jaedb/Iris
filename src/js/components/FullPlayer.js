@@ -11,7 +11,7 @@ import Thumbnail from './Thumbnail'
 
 import * as mopidyActions from '../services/mopidy/actions'
 
-class Player extends React.Component{
+class FullPlayer extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -49,33 +49,7 @@ class Player extends React.Component{
 		return button;
 	}
 
-	renderMiniPlayer(){
-		var mopidy_track = false;
-		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ) mopidy_track = this.props.mopidy.current_tltrack;
-
-		return (
-			<div className="player">
-
-				<div className="current-track">
-					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
-					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
-				</div>
-
-				<div className="controls">
-					<a onClick={() => this.props.mopidyActions.previous()}>
-						<FontAwesome name="step-backward" />
-					</a>&nbsp;
-					{ this.renderPlayButton() }
-					<a onClick={() => this.props.mopidyActions.next()}>
-						<FontAwesome name="step-forward" />
-					</a>&nbsp;
-					<ProgressSlider />
-				</div>
-			</div>
-		);
-	}
-
-	renderFullPlayer(){
+	render(){
 		var mopidy_track = false;
 		var images = [];
 		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
@@ -114,14 +88,6 @@ class Player extends React.Component{
 			</div>
 		);
 	}
-
-	render(){
-		if( this.props.mini ){
-			return this.renderMiniPlayer()
-		}else{
-			return this.renderFullPlayer()
-		}
-	}
 }
 
 
@@ -141,4 +107,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Player)
+export default connect(mapStateToProps, mapDispatchToProps)(FullPlayer)

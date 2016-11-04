@@ -49,3 +49,29 @@
 		}
 	}
 }
+
+.volume-control {
+	position: relative;
+
+	a {
+		position: relative;
+		z-index: 99;
+	}
+
+	&:hover {
+		.slider-wrapper {
+			display: block;
+		}
+	}
+
+	.slider-wrapper {
+		display: none;
+		position: absolute;
+		bottom: 0;
+		left: -4px;
+		height: 80px;
+		padding: 5px 5px 35px 5px;
+		background: rgba(0,0,0,0.8);
+		z-index: 98;
+	}
+}

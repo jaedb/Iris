@@ -98,17 +98,61 @@ label {
 }
 
 .slider {
-	margin: 10px 0;
-	height: 5px;
 	position: relative;
-	background: rgba(255,255,255,0.3);
 	cursor: pointer;
 
-	.progress {
-		left: 0;
-		top: 0;
+	.track {
+		position: absolute;
+		background: rgba(255,255,255,0.3);
+		@include animate()
+
+		.progress {
+			position: absolute;
+			background: $turquoise;
+			pointer-events: none;
+			left: 0;
+		}
+	}
+
+	&.horizontal {
+		margin: 10px 0;
+		height: 20px;
+
+		.track {
+			height: 2px;
+			top: 9px;
+			right: 0;
+			left: 0;
+
+			.progress {
+				top: 0;
+				height: 100%;
+			}
+		}
+
+		&:hover {
+			.track {
+				top: 7px;
+				height: 6px;
+			}
+		}
+	}
+
+	&.vertical {
+		margin: 10px 0;
+		width: 20px;
 		height: 100%;
-		background: $turquoise;
-		pointer-events: none;
+
+		.track {
+			width: 2px;
+			top: 0;
+			bottom: 0;
+			left: 9px;
+
+			.progress {
+				bottom: 0;
+				width: 100%;
+			}
+		}
 	}
 }

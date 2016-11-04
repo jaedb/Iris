@@ -3273,19 +3273,64 @@ label .input input {
 }
 
 .slider {
-  margin: 10px 0;
-  height: 5px;
   position: relative;
-  background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
 }
 
-.slider .progress {
-  left: 0;
-  top: 0;
-  height: 100%;
+.slider .track {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.slider .track .progress {
+  position: absolute;
   background: #08d58f;
   pointer-events: none;
+  left: 0;
+}
+
+.slider.horizontal {
+  margin: 10px 0;
+  height: 20px;
+}
+
+.slider.horizontal .track {
+  height: 2px;
+  top: 9px;
+  right: 0;
+  left: 0;
+}
+
+.slider.horizontal .track .progress {
+  top: 0;
+  height: 100%;
+}
+
+.slider.horizontal:hover .track {
+  top: 7px;
+  height: 6px;
+}
+
+.slider.vertical {
+  margin: 10px 0;
+  width: 20px;
+  height: 100%;
+}
+
+.slider.vertical .track {
+  width: 2px;
+  top: 0;
+  bottom: 0;
+  left: 9px;
+}
+
+.slider.vertical .track .progress {
+  bottom: 0;
+  width: 100%;
 }
 
 .lazy-loader {
@@ -3437,6 +3482,30 @@ label .input input {
 
 .player .slider.animating .progress {
   /* @include animate(10s); */
+}
+
+.volume-control {
+  position: relative;
+}
+
+.volume-control a {
+  position: relative;
+  z-index: 99;
+}
+
+.volume-control:hover .slider-wrapper {
+  display: block;
+}
+
+.volume-control .slider-wrapper {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: -4px;
+  height: 80px;
+  padding: 5px 5px 35px 5px;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 98;
 }
 
 aside {

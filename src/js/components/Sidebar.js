@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import Player from './Player'
+import MiniPlayer from './MiniPlayer'
 import Icon from './Icon'
 import Thumbnail from './Thumbnail'
 import SearchForm from './SearchForm'
@@ -88,7 +88,7 @@ class Sidebar extends React.Component{
 
 		        </nav>
 
-		        <Player mini={ true } />
+		        <MiniPlayer />
 
 			</aside>
 		);

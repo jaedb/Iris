@@ -89,6 +89,14 @@ export function previous(){
 	return instruct('playback.previous');
 }
 
+export function setVolume( volume ){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: 'playback.setVolume',
+		value: { volume: volume }
+	}
+}
+
 export function seek( time_position ){
 	return {
 		type: 'MOPIDY_INSTRUCT',

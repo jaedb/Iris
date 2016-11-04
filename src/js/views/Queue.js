@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
-import Player from '../components/Player'
+import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
 import AlbumLink from '../components/AlbumLink'
 import Header from '../components/Header'
@@ -55,7 +55,7 @@ class Queue extends React.Component{
 	render(){
 		return (
 			<div className="view queue-view">
-				<Player />
+				<FullPlayer />
 				{ this.renderTrackList() }
 			</div>
 		);

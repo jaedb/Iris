@@ -57,7 +57,7 @@ class ProgressSlider extends React.Component{
 	} 
 
 	render(){
-		var className = 'slider'
+		var className = 'slider horizontal'
 		if( this.state.animating ) className += ' animating'
 		var percent = 0
 		if( this.props.mopidy.connected && typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
@@ -68,7 +68,9 @@ class ProgressSlider extends React.Component{
 
 		return (
 			<div className={className} onClick={ (e) => this.handleClick(e) } >
-				<div className="progress" style={{ width: (percent)+'%' }}></div>
+				<div className="track">
+					<div className="progress" style={{ width: (percent)+'%' }}></div>
+				</div>
 			</div>
 		);
 	}

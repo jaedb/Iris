@@ -1482,6 +1482,7 @@
 	exports.stop = stop;
 	exports.next = next;
 	exports.previous = previous;
+	exports.setVolume = setVolume;
 	exports.seek = seek;
 	exports.getTimePosition = getTimePosition;
 	exports.getPlaylists = getPlaylists;
@@ -1581,6 +1582,14 @@
 	
 	function previous() {
 		return instruct('playback.previous');
+	}
+	
+	function setVolume(volume) {
+		return {
+			type: 'MOPIDY_INSTRUCT',
+			call: 'playback.setVolume',
+			value: { volume: volume }
+		};
 	}
 	
 	function seek(time_position) {
@@ -11185,7 +11194,7 @@
 /* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11579,313 +11588,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69)))
 
 /***/ },
-/* 103 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(2);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactRedux = __webpack_require__(7);
-	
-	var _redux = __webpack_require__(6);
-	
-	var _reactRouter = __webpack_require__(12);
-	
-	var _reactFontawesome = __webpack_require__(18);
-	
-	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-	
-	var _ProgressSlider = __webpack_require__(385);
-	
-	var _ProgressSlider2 = _interopRequireDefault(_ProgressSlider);
-	
-	var _ArtistSentence = __webpack_require__(42);
-	
-	var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
-	
-	var _Thumbnail = __webpack_require__(28);
-	
-	var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-	
-	var _actions = __webpack_require__(11);
-	
-	var mopidyActions = _interopRequireWildcard(_actions);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Player = function (_React$Component) {
-		_inherits(Player, _React$Component);
-	
-		function Player(props) {
-			_classCallCheck(this, Player);
-	
-			return _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, props));
-		}
-	
-		_createClass(Player, [{
-			key: 'renderPlayButton',
-			value: function renderPlayButton() {
-				var _this2 = this;
-	
-				var button = _react2.default.createElement(
-					'a',
-					{ onClick: function onClick() {
-							return _this2.props.mopidyActions.play();
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'play' }),
-					' '
-				);
-				if (this.props.mopidy.state == 'playing') {
-					button = _react2.default.createElement(
-						'a',
-						{ onClick: function onClick() {
-								return _this2.props.mopidyActions.pause();
-							} },
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'pause' }),
-						' '
-					);
-				}
-				return button;
-			}
-		}, {
-			key: 'renderConsumeButton',
-			value: function renderConsumeButton() {
-				var _this3 = this;
-	
-				var button = _react2.default.createElement(
-					'a',
-					{ onClick: function onClick() {
-							return _this3.props.mopidyActions.instruct('tracklist.setConsume', [true]);
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' })
-				);
-				if (this.props.mopidy.consume) {
-					button = _react2.default.createElement(
-						'a',
-						{ className: 'active', onClick: function onClick() {
-								return _this3.props.mopidyActions.instruct('tracklist.setConsume', [false]);
-							} },
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' })
-					);
-				}
-				return button;
-			}
-		}, {
-			key: 'renderRandomButton',
-			value: function renderRandomButton() {
-				var _this4 = this;
-	
-				var button = _react2.default.createElement(
-					'a',
-					{ onClick: function onClick() {
-							return _this4.props.mopidyActions.instruct('tracklist.setRandom', [true]);
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'random' })
-				);
-				if (this.props.mopidy.random) {
-					button = _react2.default.createElement(
-						'a',
-						{ className: 'active', onClick: function onClick() {
-								return _this4.props.mopidyActions.instruct('tracklist.setRandom', [false]);
-							} },
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'random' })
-					);
-				}
-				return button;
-			}
-		}, {
-			key: 'renderRepeatButton',
-			value: function renderRepeatButton() {
-				var _this5 = this;
-	
-				var button = _react2.default.createElement(
-					'a',
-					{ onClick: function onClick() {
-							return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [true]);
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' })
-				);
-				if (this.props.mopidy.repeat) {
-					button = _react2.default.createElement(
-						'a',
-						{ className: 'active', onClick: function onClick() {
-								return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [false]);
-							} },
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' })
-					);
-				}
-				return button;
-			}
-		}, {
-			key: 'renderMiniPlayer',
-			value: function renderMiniPlayer() {
-				var _this6 = this;
-	
-				var mopidy_track = false;
-				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') mopidy_track = this.props.mopidy.current_tltrack;
-	
-				return _react2.default.createElement(
-					'div',
-					{ className: 'player' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'current-track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'title' },
-							mopidy_track ? mopidy_track.track.name : null
-						),
-						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'controls' },
-						_react2.default.createElement(
-							'a',
-							{ onClick: function onClick() {
-									return _this6.props.mopidyActions.previous();
-								} },
-							_react2.default.createElement(_reactFontawesome2.default, { name: 'step-backward' })
-						),
-						'\xA0',
-						this.renderPlayButton(),
-						_react2.default.createElement(
-							'a',
-							{ onClick: function onClick() {
-									return _this6.props.mopidyActions.next();
-								} },
-							_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
-						),
-						'\xA0',
-						_react2.default.createElement(_ProgressSlider2.default, null)
-					)
-				);
-			}
-		}, {
-			key: 'renderFullPlayer',
-			value: function renderFullPlayer() {
-				var _this7 = this;
-	
-				var mopidy_track = false;
-				var images = [];
-				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
-					mopidy_track = this.props.mopidy.current_tltrack;
-				}
-	
-				return _react2.default.createElement(
-					'div',
-					{ className: 'player' },
-					this.props.spotify.track && !this.props.mini ? _react2.default.createElement(
-						_reactRouter.Link,
-						{ className: 'artwork', to: '/album/' + this.props.spotify.track.album.uri },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: this.props.spotify.track.album.images })
-					) : _react2.default.createElement(
-						_reactRouter.Link,
-						{ className: 'artwork' },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: [] })
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'controls cf' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'pull-left' },
-							_react2.default.createElement(
-								'a',
-								{ onClick: function onClick() {
-										return _this7.props.mopidyActions.previous();
-									} },
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-backward' })
-							),
-							'\xA0',
-							this.renderPlayButton(),
-							_react2.default.createElement(
-								'a',
-								{ onClick: function onClick() {
-										return _this7.props.mopidyActions.stop();
-									} },
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'stop' })
-							),
-							'\xA0',
-							_react2.default.createElement(
-								'a',
-								{ onClick: function onClick() {
-										return _this7.props.mopidyActions.next();
-									} },
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
-							),
-							'\xA0'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'pull-right' },
-							this.renderConsumeButton(),
-							this.renderRandomButton(),
-							this.renderRepeatButton()
-						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'current-track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'title' },
-							mopidy_track ? mopidy_track.track.name : null
-						),
-						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
-					)
-				);
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				if (this.props.mini) {
-					return this.renderMiniPlayer();
-				} else {
-					return this.renderFullPlayer();
-				}
-			}
-		}]);
-	
-		return Player;
-	}(_react2.default.Component);
-	
-	/**
-	 * Export our component
-	 *
-	 * We also integrate our global store, using connect()
-	 **/
-	
-	var mapStateToProps = function mapStateToProps(state, ownProps) {
-		return state;
-	};
-	
-	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-		return {
-			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
-		};
-	};
-	
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Player);
-
-/***/ },
+/* 103 */,
 /* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -18694,9 +18397,9 @@
 	
 	var _reactRouter = __webpack_require__(12);
 	
-	var _Player = __webpack_require__(103);
+	var _MiniPlayer = __webpack_require__(386);
 	
-	var _Player2 = _interopRequireDefault(_Player);
+	var _MiniPlayer2 = _interopRequireDefault(_MiniPlayer);
 	
 	var _Icon = __webpack_require__(101);
 	
@@ -18841,7 +18544,7 @@
 							)
 						)
 					),
-					_react2.default.createElement(_Player2.default, { mini: true })
+					_react2.default.createElement(_MiniPlayer2.default, null)
 				);
 			}
 		}]);
@@ -21027,9 +20730,9 @@
 	
 	var _Track2 = _interopRequireDefault(_Track);
 	
-	var _Player = __webpack_require__(103);
+	var _FullPlayer = __webpack_require__(387);
 	
-	var _Player2 = _interopRequireDefault(_Player);
+	var _FullPlayer2 = _interopRequireDefault(_FullPlayer);
 	
 	var _ArtistSentence = __webpack_require__(42);
 	
@@ -21121,7 +20824,7 @@
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view queue-view' },
-					_react2.default.createElement(_Player2.default, null),
+					_react2.default.createElement(_FullPlayer2.default, null),
 					this.renderTrackList()
 				);
 			}
@@ -50375,7 +50078,7 @@
 			value: function render() {
 				var _this3 = this;
 	
-				var className = 'slider';
+				var className = 'slider horizontal';
 				if (this.state.animating) className += ' animating';
 				var percent = 0;
 				if (this.props.mopidy.connected && typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
@@ -50389,7 +50092,11 @@
 					{ className: className, onClick: function onClick(e) {
 							return _this3.handleClick(e);
 						} },
-					_react2.default.createElement('div', { className: 'progress', style: { width: percent + '%' } })
+					_react2.default.createElement(
+						'div',
+						{ className: 'track' },
+						_react2.default.createElement('div', { className: 'progress', style: { width: percent + '%' } })
+					)
 				);
 			}
 		}]);
@@ -50414,6 +50121,520 @@
 	};
 	
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ProgressSlider);
+
+/***/ },
+/* 386 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(7);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _reactFontawesome = __webpack_require__(18);
+	
+	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+	
+	var _ProgressSlider = __webpack_require__(385);
+	
+	var _ProgressSlider2 = _interopRequireDefault(_ProgressSlider);
+	
+	var _VolumeControl = __webpack_require__(388);
+	
+	var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
+	
+	var _ArtistSentence = __webpack_require__(42);
+	
+	var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+	
+	var _Thumbnail = __webpack_require__(28);
+	
+	var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+	
+	var _actions = __webpack_require__(11);
+	
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var MiniPlayer = function (_React$Component) {
+		_inherits(MiniPlayer, _React$Component);
+	
+		function MiniPlayer(props) {
+			_classCallCheck(this, MiniPlayer);
+	
+			return _possibleConstructorReturn(this, (MiniPlayer.__proto__ || Object.getPrototypeOf(MiniPlayer)).call(this, props));
+		}
+	
+		_createClass(MiniPlayer, [{
+			key: 'renderPlayButton',
+			value: function renderPlayButton() {
+				var _this2 = this;
+	
+				var button = _react2.default.createElement(
+					'a',
+					{ onClick: function onClick() {
+							return _this2.props.mopidyActions.play();
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'play' }),
+					' '
+				);
+				if (this.props.mopidy.state == 'playing') {
+					button = _react2.default.createElement(
+						'a',
+						{ onClick: function onClick() {
+								return _this2.props.mopidyActions.pause();
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'pause' }),
+						' '
+					);
+				}
+				return button;
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this3 = this;
+	
+				var mopidy_track = false;
+				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') mopidy_track = this.props.mopidy.current_tltrack;
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: 'player' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							mopidy_track ? mopidy_track.track.name : null
+						),
+						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'controls' },
+						this.renderPlayButton(),
+						_react2.default.createElement(
+							'a',
+							{ onClick: function onClick() {
+									return _this3.props.mopidyActions.next();
+								} },
+							_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
+						),
+						'\xA0',
+						_react2.default.createElement(_VolumeControl2.default, null),
+						_react2.default.createElement(_ProgressSlider2.default, null)
+					)
+				);
+			}
+		}]);
+	
+		return MiniPlayer;
+	}(_react2.default.Component);
+	
+	/**
+	 * Export our component
+	 *
+	 * We also integrate our global store, using connect()
+	 **/
+	
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+		return state;
+	};
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+		return {
+			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(MiniPlayer);
+
+/***/ },
+/* 387 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(7);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _reactFontawesome = __webpack_require__(18);
+	
+	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+	
+	var _ProgressSlider = __webpack_require__(385);
+	
+	var _ProgressSlider2 = _interopRequireDefault(_ProgressSlider);
+	
+	var _ArtistSentence = __webpack_require__(42);
+	
+	var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+	
+	var _Thumbnail = __webpack_require__(28);
+	
+	var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+	
+	var _actions = __webpack_require__(11);
+	
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var FullPlayer = function (_React$Component) {
+		_inherits(FullPlayer, _React$Component);
+	
+		function FullPlayer(props) {
+			_classCallCheck(this, FullPlayer);
+	
+			return _possibleConstructorReturn(this, (FullPlayer.__proto__ || Object.getPrototypeOf(FullPlayer)).call(this, props));
+		}
+	
+		_createClass(FullPlayer, [{
+			key: 'renderPlayButton',
+			value: function renderPlayButton() {
+				var _this2 = this;
+	
+				var button = _react2.default.createElement(
+					'a',
+					{ onClick: function onClick() {
+							return _this2.props.mopidyActions.play();
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'play' }),
+					' '
+				);
+				if (this.props.mopidy.state == 'playing') {
+					button = _react2.default.createElement(
+						'a',
+						{ onClick: function onClick() {
+								return _this2.props.mopidyActions.pause();
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'pause' }),
+						' '
+					);
+				}
+				return button;
+			}
+		}, {
+			key: 'renderConsumeButton',
+			value: function renderConsumeButton() {
+				var _this3 = this;
+	
+				var button = _react2.default.createElement(
+					'a',
+					{ onClick: function onClick() {
+							return _this3.props.mopidyActions.instruct('tracklist.setConsume', [true]);
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' })
+				);
+				if (this.props.mopidy.consume) {
+					button = _react2.default.createElement(
+						'a',
+						{ className: 'active', onClick: function onClick() {
+								return _this3.props.mopidyActions.instruct('tracklist.setConsume', [false]);
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' })
+					);
+				}
+				return button;
+			}
+		}, {
+			key: 'renderRandomButton',
+			value: function renderRandomButton() {
+				var _this4 = this;
+	
+				var button = _react2.default.createElement(
+					'a',
+					{ onClick: function onClick() {
+							return _this4.props.mopidyActions.instruct('tracklist.setRandom', [true]);
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'random' })
+				);
+				if (this.props.mopidy.random) {
+					button = _react2.default.createElement(
+						'a',
+						{ className: 'active', onClick: function onClick() {
+								return _this4.props.mopidyActions.instruct('tracklist.setRandom', [false]);
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'random' })
+					);
+				}
+				return button;
+			}
+		}, {
+			key: 'renderRepeatButton',
+			value: function renderRepeatButton() {
+				var _this5 = this;
+	
+				var button = _react2.default.createElement(
+					'a',
+					{ onClick: function onClick() {
+							return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [true]);
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' })
+				);
+				if (this.props.mopidy.repeat) {
+					button = _react2.default.createElement(
+						'a',
+						{ className: 'active', onClick: function onClick() {
+								return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [false]);
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' })
+					);
+				}
+				return button;
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this6 = this;
+	
+				var mopidy_track = false;
+				var images = [];
+				if (typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
+					mopidy_track = this.props.mopidy.current_tltrack;
+				}
+	
+				return _react2.default.createElement(
+					'div',
+					{ className: 'player' },
+					this.props.spotify.track && !this.props.mini ? _react2.default.createElement(
+						_reactRouter.Link,
+						{ className: 'artwork', to: '/album/' + this.props.spotify.track.album.uri },
+						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: this.props.spotify.track.album.images })
+					) : _react2.default.createElement(
+						_reactRouter.Link,
+						{ className: 'artwork' },
+						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: [] })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'controls cf' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'pull-left' },
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this6.props.mopidyActions.previous();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-backward' })
+							),
+							'\xA0',
+							this.renderPlayButton(),
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this6.props.mopidyActions.stop();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'stop' })
+							),
+							'\xA0',
+							_react2.default.createElement(
+								'a',
+								{ onClick: function onClick() {
+										return _this6.props.mopidyActions.next();
+									} },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'step-forward' })
+							),
+							'\xA0'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'pull-right' },
+							this.renderConsumeButton(),
+							this.renderRandomButton(),
+							this.renderRepeatButton()
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							mopidy_track ? mopidy_track.track.name : null
+						),
+						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
+					)
+				);
+			}
+		}]);
+	
+		return FullPlayer;
+	}(_react2.default.Component);
+	
+	/**
+	 * Export our component
+	 *
+	 * We also integrate our global store, using connect()
+	 **/
+	
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+		return state;
+	};
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+		return {
+			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(FullPlayer);
+
+/***/ },
+/* 388 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(7);
+	
+	var _redux = __webpack_require__(6);
+	
+	var _reactRouter = __webpack_require__(12);
+	
+	var _reactFontawesome = __webpack_require__(18);
+	
+	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+	
+	var _actions = __webpack_require__(11);
+	
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var VolumeControl = function (_React$Component) {
+		_inherits(VolumeControl, _React$Component);
+	
+		function VolumeControl(props) {
+			_classCallCheck(this, VolumeControl);
+	
+			return _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).call(this, props));
+		}
+	
+		_createClass(VolumeControl, [{
+			key: 'handleClick',
+			value: function handleClick(e) {
+				var slider = e.target;
+	
+				var sliderY = e.clientY - slider.getBoundingClientRect().top;
+				var sliderHeight = slider.getBoundingClientRect().height;
+				var percent = 100 - parseInt(sliderY / sliderHeight * 100);
+	
+				this.props.mopidyActions.setVolume(percent);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this2 = this;
+	
+				return _react2.default.createElement(
+					'span',
+					{ className: 'volume-control' },
+					_react2.default.createElement(
+						'a',
+						{ onClick: function onClick() {
+								return _this2.props.mopidyActions.toggleMute();
+							} },
+						_react2.default.createElement(_reactFontawesome2.default, { name: 'volume-off' }),
+						' '
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'slider-wrapper' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'slider vertical', onClick: function onClick(e) {
+									return _this2.handleClick(e);
+								} },
+							_react2.default.createElement(
+								'div',
+								{ className: 'track' },
+								_react2.default.createElement('div', { className: 'progress', style: { height: this.props.mopidy.volume + '%' } })
+							)
+						)
+					)
+				);
+			}
+		}]);
+	
+		return VolumeControl;
+	}(_react2.default.Component);
+	
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+		return state;
+	};
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+		return {
+			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(VolumeControl);
 
 /***/ }
 /******/ ])));
