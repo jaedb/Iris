@@ -55,8 +55,13 @@ class Queue extends React.Component{
 	render(){
 		return (
 			<div className="view queue-view">
+
 				<FullPlayer />
-				{ this.renderTrackList() }
+
+				<section className="list-wrapper">
+					{ this.renderTrackList() }
+				</section>
+				
 			</div>
 		);
 	}

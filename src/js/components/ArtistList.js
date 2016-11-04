@@ -11,7 +11,7 @@ export default class ArtistList extends React.Component{
 
 	render(){
 		return (
-			<span className="artist-list">
+			<div className="artist-list">
 				{
 					this.props.artists.map( (artist, index) => {
 						var link = '/artist/' + artist.uri;
@@ -23,7 +23,7 @@ export default class ArtistList extends React.Component{
 						);
 					})
 				}
-			</span>
+			</div>
 		);
 	}
 }

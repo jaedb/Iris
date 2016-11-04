@@ -17758,7 +17758,7 @@
 			key: 'render',
 			value: function render() {
 				return _react2.default.createElement(
-					'span',
+					'div',
 					{ className: 'artist-list' },
 					this.props.artists.map(function (artist, index) {
 						var link = '/artist/' + artist.uri;
@@ -18676,17 +18676,25 @@
 	
 				return _react2.default.createElement(
 					'div',
-					null,
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.spotify.me.images }),
-					'Logged in as ',
-					this.props.spotify.me.display_name ? this.props.spotify.me.display_name : null,
-					'\xA0(',
+					{ className: 'artist-list' },
 					_react2.default.createElement(
-						_reactRouter.Link,
-						{ to: '/user/' + this.props.spotify.me.id },
-						this.props.spotify.me.id
-					),
-					')'
+						'div',
+						{ className: 'artist' },
+						_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.spotify.me.images }),
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Logged in as ',
+							this.props.spotify.me.display_name ? this.props.spotify.me.display_name : null,
+							'\xA0(',
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ to: '/user/' + this.props.spotify.me.id },
+								this.props.spotify.me.id
+							),
+							')'
+						)
+					)
 				);
 			}
 		}, {
@@ -18705,14 +18713,14 @@
 					return _react2.default.createElement(
 						'div',
 						null,
+						this.renderMe(),
 						_react2.default.createElement(
 							'button',
 							{ onClick: function onClick() {
 									return _this2.props.actions.authorizationRevoked();
 								} },
 							'Log out'
-						),
-						this.renderMe()
+						)
 					);
 				} else {
 					return _react2.default.createElement(
@@ -20825,7 +20833,11 @@
 					'div',
 					{ className: 'view queue-view' },
 					_react2.default.createElement(_FullPlayer2.default, null),
-					this.renderTrackList()
+					_react2.default.createElement(
+						'section',
+						{ className: 'list-wrapper' },
+						this.renderTrackList()
+					)
 				);
 			}
 		}]);

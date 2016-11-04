@@ -75,22 +75,23 @@
 	.artist {
 		display: block;
 		border: 0;
-		margin-bottom: 15px;
+		margin-bottom: 5px;
 		@include clearfix;
 
 		.thumbnail {
+			@include animate();
 			width: 50px;
-			margin-right: 20px;
+			margin-right: 15px;
 			float: left;
 			border: 3px solid transparent;
 		}
 
 		.name {
-			display: inline-block;
-			padding-top: 15px;
+			display: block;
+			padding-top: 20px;
 		}
 
-		&:hover {
+		&.a:hover {
 			.thumbnail {
 				border-color: $turquoise;
 				opacity: 0.8;

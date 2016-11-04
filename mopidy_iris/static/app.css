@@ -3310,11 +3310,6 @@ label .input input {
   height: 100%;
 }
 
-.slider.horizontal:hover .track {
-  top: 7px;
-  height: 6px;
-}
-
 .slider.vertical {
   margin: 10px 0;
   width: 20px;
@@ -3438,6 +3433,7 @@ label .input input {
   font-size: 16px;
   text-transform: uppercase;
   text-align: center;
+  padding-bottom: 15px;
 }
 
 .player .current-track .title {
@@ -3480,7 +3476,11 @@ label .input input {
   opacity: 1.0;
 }
 
-.player .slider.animating .progress {
+.player .slider.horizontal {
+  margin-bottom: 0;
+}
+
+.player .slider.horizontal.animating .progress {
   /* @include animate(10s); */
 }
 
@@ -3667,7 +3667,7 @@ aside .player .artist-sentence .artist:hover {
 .artist-list .artist {
   display: block;
   border: 0;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .artist-list .artist::after {
@@ -3677,18 +3677,22 @@ aside .player .artist-sentence .artist:hover {
 }
 
 .artist-list .artist .thumbnail {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   width: 50px;
-  margin-right: 20px;
+  margin-right: 15px;
   float: left;
   border: 3px solid transparent;
 }
 
 .artist-list .artist .name {
-  display: inline-block;
-  padding-top: 15px;
+  display: block;
+  padding-top: 20px;
 }
 
-.artist-list .artist:hover .thumbnail {
+.artist-list .artist.a:hover .thumbnail {
   border-color: #08d58f;
   opacity: 0.8;
 }
@@ -3861,6 +3865,10 @@ main header h1 {
   padding-bottom: 45px;
 }
 
+.artist-view .artist-list {
+  padding-top: 15px;
+}
+
 .album-view .main {
   padding-left: 35%;
 }
@@ -4011,7 +4019,7 @@ main header h1 {
 
 .queue-view .player {
   text-align: center;
-  padding: 40px 0;
+  padding: 40px 0 10px;
 }
 
 .queue-view .player .artwork,
@@ -4053,6 +4061,10 @@ main header h1 {
 
 .search-view .search-result-sections section .inner {
   padding: 10px;
+}
+
+.settings-view section {
+  padding: 40px;
 }
 
 /*# sourceMappingURL=app.css.map*/
