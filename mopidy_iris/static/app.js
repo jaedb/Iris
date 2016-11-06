@@ -1461,6 +1461,7 @@
 	exports.getArtist = getArtist;
 	exports.getArtists = getArtists;
 	exports.getAlbums = getAlbums;
+	exports.getSearchResults = getSearchResults;
 	
 	/**
 	 * Actions and Action Creators
@@ -1621,6 +1622,25 @@
 	function getAlbums() {
 		return {
 			type: 'MOPIDY_ALBUMS'
+		};
+	}
+	
+	/**
+	 * Other general actions
+	 **/
+	
+	function getSearchResults(query) {
+		var fields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['any'];
+		var backends = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	
+		var queryObj = {};
+		for (var i = 0; i < fields.length; i++) {
+			queryObj[fields[i]] = [query];
+		}
+		return {
+			type: 'MOPIDY_INSTRUCT',
+			call: 'library.search',
+			value: { query: queryObj, uris: backends }
 		};
 	}
 
@@ -4187,6 +4207,8 @@
 		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				var self = this;
 				if (this.state.tracks) {
 					return _react2.default.createElement(
@@ -4236,6 +4258,7 @@
 								}
 							}
 							return _react2.default.createElement(_Track2.default, {
+								show_source_icon: _this2.props.show_source_icon,
 								key: index + '_' + track.uri,
 								track: track,
 								handleDoubleClick: function handleDoubleClick(e) {
@@ -4349,6 +4372,18 @@
 	var uriSource = exports.uriSource = function uriSource(uri) {
 		var exploded = uri.split(':');
 		return exploded[0];
+	};
+	
+	var sourceIcon = exports.sourceIcon = function sourceIcon(uri) {
+		var source = uriSource(uri);
+		switch (source) {
+			case 'local':
+			case 'm3u':
+				return 'folder';
+				break;
+			default:
+				return source;
+		}
 	};
 	
 	/**
@@ -8304,7 +8339,7 @@
 /* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11832,6 +11867,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
+	var helpers = __webpack_require__(33);
+	
 	var Track = function (_React$Component) {
 		_inherits(Track, _React$Component);
 	
@@ -11910,7 +11947,8 @@
 						{ className: 'col duration' },
 						track.duration_ms ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration_ms }) : null,
 						track.length ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.length }) : null
-					)
+					),
+					this.props.show_source_icon ? _react2.default.createElement(_reactFontawesome2.default, { className: 'source', name: helpers.sourceIcon(track.uri) }) : null
 				);
 			}
 		}]);
@@ -19657,6 +19695,7 @@
 	                instruct(ws, store, 'tracklist.getTlTracks');
 	                instruct(ws, store, 'playback.getCurrentTlTrack');
 	                instruct(ws, store, 'playback.getTimePosition');
+	                instruct(ws, store, 'getUriSchemes');
 	                break;
 	
 	            case 'state:offline':
@@ -19715,13 +19754,20 @@
 	        var callParts = call.split('.');
 	        var model = callParts[0];
 	        var method = callParts[1];
-	        var property = method;
+	        if (method) {
+	            var mopidyObject = ws[model][method];
+	            var property = method;
+	        } else {
+	            var mopidyObject = ws[model];
+	            var property = model;
+	        }
+	
 	        property = property.replace('get', '');
 	        property = property.replace('set', '');
 	
 	        return new Promise(function (resolve, reject) {
-	            ws[model][method](value).then(function (response) {
-	                store.dispatch({ type: 'MOPIDY_' + property.toUpperCase(), model: model, data: response });
+	            mopidyObject(value).then(function (response) {
+	                store.dispatch({ type: 'MOPIDY_' + property.toUpperCase(), call: call, data: response });
 	                resolve(response);
 	            }, function (error) {
 	                console.error(error);
@@ -19953,6 +19999,9 @@
 	    value: true
 	});
 	exports.default = reducer;
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function reducer() {
 	    var mopidy = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    var action = arguments[1];
@@ -19980,12 +20029,13 @@
 	                tlid: action.tlid
 	            });
 	
-	        case 'MOPIDY_PLAYLISTS_LOADED':
-	            if (!action.data) return mopidy;
-	            return Object.assign({}, mopidy, { playlists: action.data });
+	        case 'MOPIDY_URISCHEMES':
+	            return Object.assign({}, mopidy, {
+	                uri_schemes: action.data
+	            });
 	
 	        /**
-	         * Websocket-initiated actions
+	         * State-oriented actions
 	         **/
 	        case 'MOPIDY_STATE':
 	            return Object.assign({}, mopidy, {
@@ -20007,6 +20057,20 @@
 	                repeat: action.data
 	            });
 	
+	        case 'MOPIDY_VOLUME':
+	            return Object.assign({}, mopidy, {
+	                volume: action.data
+	            });
+	
+	        case 'MOPIDY_TIMEPOSITION':
+	            return Object.assign({}, mopidy, {
+	                time_position: action.data
+	            });
+	
+	        /**
+	         * Asset-oriented actions
+	         **/
+	
 	        case 'MOPIDY_TLTRACKS':
 	            return Object.assign({}, mopidy, {
 	                tracks: action.data
@@ -20027,15 +20091,9 @@
 	                tracks: tracks
 	            });
 	
-	        case 'MOPIDY_VOLUME':
-	            return Object.assign({}, mopidy, {
-	                volume: action.data
-	            });
-	
-	        case 'MOPIDY_TIMEPOSITION':
-	            return Object.assign({}, mopidy, {
-	                time_position: action.data
-	            });
+	        case 'MOPIDY_PLAYLISTS_LOADED':
+	            if (!action.data) return mopidy;
+	            return Object.assign({}, mopidy, { playlists: action.data });
 	
 	        case 'MOPIDY_DIRECTORY_LOADED':
 	            return Object.assign({}, mopidy, {
@@ -20065,6 +20123,15 @@
 	        case 'MOPIDY_ALBUMS_LOADED':
 	            return Object.assign({}, mopidy, {
 	                albums: action.data
+	            });
+	
+	        case 'MOPIDY_SEARCH':
+	            var results = [];
+	            for (var i = 0; i < action.data.length; i++) {
+	                results = [].concat(_toConsumableArray(results), _toConsumableArray(action.data[i].tracks));
+	            }
+	            return Object.assign({}, mopidy, {
+	                search_results_tracks: results
 	            });
 	
 	        default:
@@ -21446,6 +21513,7 @@
 	
 				if (this.props.mopidy && this.props.mopidy.tracks) {
 					return _react2.default.createElement(_TrackList2.default, {
+						show_source_icon: true,
 						context: 'queue',
 						tracks: this.props.mopidy.tracks,
 						removeTracks: function removeTracks(tracks) {
@@ -21620,6 +21688,7 @@
 				var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 	
 				this.props.spotifyActions.getSearchResults(props.params.query);
+				if (props.mopidy.connected) this.props.mopidyActions.getSearchResults(props.params.query);
 			}
 		}, {
 			key: 'loadMore',
@@ -21637,7 +21706,7 @@
 	
 				// merge our mopidy results in
 				if (this.props.mopidy['search_results_' + type]) {
-					results = [].concat(_toConsumableArray(results), _toConsumableArray(this.props.mopidy.search_results[type]));
+					results = [].concat(_toConsumableArray(results), _toConsumableArray(this.props.mopidy['search_results_' + type]));
 				}
 	
 				// merge our spotify results in
@@ -21706,7 +21775,7 @@
 							_react2.default.createElement(
 								'section',
 								{ className: 'list-wrapper' },
-								_react2.default.createElement(_TrackList2.default, { tracks: this.compiledResults('tracks') })
+								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') })
 							),
 							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
@@ -21781,14 +21850,14 @@
 								{ className: 'list-wrapper' },
 								_react2.default.createElement(
 									'h4',
-									null,
+									{ className: 'left-padding' },
 									_react2.default.createElement(
 										_reactRouter.Link,
 										{ to: '/search/' + this.props.params.query + '/tracks' },
 										'Tracks'
 									)
 								),
-								_react2.default.createElement(_TrackList2.default, { tracks: this.compiledResults('tracks') })
+								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') })
 							),
 							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 									return _this2.loadMore('tracks');

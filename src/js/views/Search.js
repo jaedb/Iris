@@ -34,6 +34,7 @@ class Search extends React.Component{
 
 	performSearch( props = this.props ){
 		this.props.spotifyActions.getSearchResults( props.params.query )
+		if( props.mopidy.connected ) this.props.mopidyActions.getSearchResults( props.params.query )
 	}
 
 	loadMore(type){
@@ -53,7 +54,7 @@ class Search extends React.Component{
 
 		// merge our mopidy results in
 		if( this.props.mopidy['search_results_'+type] ){
-			results = [...results, ...this.props.mopidy.search_results[type]]
+			results = [...results, ...this.props.mopidy['search_results_'+type]]
 		}
 
 		// merge our spotify results in
@@ -105,7 +106,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList tracks={ this.compiledResults('tracks') } />
+							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
 						</section>
 						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 					</div>
@@ -137,8 +138,8 @@ class Search extends React.Component{
 						</div>
 
 						<section className="list-wrapper">
-							<h4><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList tracks={ this.compiledResults('tracks') } />
+							<h4 className="left-padding"><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
+							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
 						</section>
 
 						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>

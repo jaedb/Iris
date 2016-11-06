@@ -16,6 +16,13 @@
 	margin-bottom: -1px;
 	@include clearfix;
 
+	.source {
+		color: $mid_grey;
+		position: absolute;
+		top: 10px;
+		right: 15px;
+	}
+
 	&.selected {
 		background: #FFF39C !important;
 	}

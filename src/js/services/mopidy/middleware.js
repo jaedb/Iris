@@ -21,6 +21,7 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'tracklist.getTlTracks' );
                 instruct( ws, store, 'playback.getCurrentTlTrack' );
                 instruct( ws, store, 'playback.getTimePosition' );
+                instruct( ws, store, 'getUriSchemes' );
                 break;
 
             case 'state:offline':
@@ -78,15 +79,22 @@ const MopidyMiddleware = (function(){
         var callParts = call.split('.');
         var model = callParts[0];
         var method = callParts[1];
-        var property = method;
+        if( method ){
+            var mopidyObject = ws[model][method]
+            var property = method;
+        }else{
+            var mopidyObject = ws[model]
+            var property = model;
+        }
+
         property = property.replace('get','');
         property = property.replace('set','');
 
         return new Promise( (resolve, reject) => {
-            ws[model][method]( value )
+            mopidyObject( value )
                 .then(
                     response => {
-                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), model: model, data: response });
+                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), call: call, data: response });
                         resolve(response);
                     },
                     error => {

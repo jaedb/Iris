@@ -69,6 +69,18 @@ export let uriSource = function( uri ){
     return exploded[0]
 }
 
+export let sourceIcon = function( uri ){
+	var source = uriSource(uri)
+	switch( source ){
+		case 'local':
+		case 'm3u':
+			return 'folder'
+			break
+		default:
+			return source
+	}
+}
+
 
 
 /**

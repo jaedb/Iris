@@ -162,6 +162,7 @@ class TrackList extends React.Component{
 									}
 								}
 								return <Track
+										show_source_icon={ this.props.show_source_icon }
 										key={index+'_'+track.uri} 
 										track={track} 
 										handleDoubleClick={(e) => self.handleDoubleClick(e, index)}

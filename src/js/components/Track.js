@@ -4,6 +4,7 @@ import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import AlbumLink from './AlbumLink'
 import Dater from './Dater'
+var helpers = require('../helpers.js')
 
 export default class Track extends React.Component{
 
@@ -59,6 +60,7 @@ export default class Track extends React.Component{
 						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
 						{ track.length ? <Dater type="length" data={track.length} /> : null }
 					</span>
+					{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(track.uri)} /> : null }
 			</div>
 		);
 	}

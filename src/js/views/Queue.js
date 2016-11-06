@@ -25,6 +25,7 @@ class Queue extends React.Component{
 		if( this.props.mopidy && this.props.mopidy.tracks ){
 			return (
 				<TrackList
+					show_source_icon={true}
 					context="queue"
 					tracks={this.props.mopidy.tracks} 
 					removeTracks={ tracks => this.removeTracks( tracks ) }

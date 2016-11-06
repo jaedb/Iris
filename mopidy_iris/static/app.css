@@ -3636,6 +3636,13 @@ aside .player .artist-sentence .artist:hover {
   display: block;
 }
 
+.list-item .source {
+  color: #AAAAAA;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
 .list-item.selected {
   background: #FFF39C !important;
 }
@@ -4064,7 +4071,7 @@ main header h1 {
 }
 
 .search-view .search-result-sections {
-  padding: 0 10px;
+  padding: 20px 20px 0;
 }
 
 .search-view .search-result-sections section {
