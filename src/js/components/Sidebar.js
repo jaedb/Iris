@@ -83,6 +83,7 @@ class Sidebar extends React.Component{
 						<Link activeClassName="active" to="/settings">
 							<Icon name="cog" className="white" />
 							Settings
+							{ !this.props.mopidy.connected || !this.props.spotify.connected || !this.props.pusher.connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 						</Link>
 					</section>
 

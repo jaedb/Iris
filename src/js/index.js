@@ -42,7 +42,13 @@ ReactDOM.render(
 
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
+				<Route path="settings" component={Settings} />
+				
 				<Route path="search/:query" component={Search} />
+				<Route path="search/:query/:type" component={Search} />
+				<Route path="album/:uri" component={Album} />
+				<Route path="artist/:uri" component={Artist} />
+				<Route path="playlist/:uri" component={Playlist} />
 	
 				<Route path="discover" component={Discover} />
 				<Route path="discover/featured" component={DiscoverFeatured} />
@@ -58,11 +64,6 @@ ReactDOM.render(
 				<Route path="library/local/artists" component={LibraryLocalArtists} />
 				<Route path="library/local/albums" component={LibraryLocalAlbums} />
 				<Route path="library/local/directory/:uri" component={LibraryLocalDirectory} />
-				
-				<Route path="album/:uri" component={Album} />
-				<Route path="artist/:uri" component={Artist} />
-				<Route path="playlist/:uri" component={Playlist} />
-				<Route path="settings" component={Settings} />
 
 			</Route>
 		</Router>

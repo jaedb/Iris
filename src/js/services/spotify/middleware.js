@@ -11,9 +11,11 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
+            case 'SPOTIFY_CONNECT':
+                store.dispatch( actions.getMe() )
+
             // when our mopidy server current track changes
             case 'MOPIDY_CURRENTTLTRACK':
-                // DISABLED AS IT CAUSES ISSUE
 
                 // proceed as usual so we don't inhibit default functionality
                 next(action)

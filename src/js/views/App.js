@@ -28,6 +28,7 @@ class App extends React.Component{
 	componentWillMount(){
 		this.props.pusherActions.connect();
 		this.props.mopidyActions.connect();
+		this.props.spotifyActions.connect();
 
 		window.addEventListener("keyup", this.handleKeyUp, false);
 		window.addEventListener("keydown", this.handleKeyDown, false);

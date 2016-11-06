@@ -55,6 +55,34 @@ class Settings extends React.Component{
 		}
 	}
 
+	renderConnectionStatus(service){
+		if( this.props[service].connected ){
+			return (
+				<span className="text green-text connection-status">
+					<FontAwesome name="check" />
+					&nbsp;
+					Connected
+				</span>
+			)
+		}else if( this.props[service].connecting ){			
+			return (
+				<span className="text grey-text connection-status">
+					<FontAwesome name="circle-o-notch" spin />
+					&nbsp;
+					Connecting
+				</span>
+			)
+		}else{			
+			return (
+				<span className="text red-text connection-status">
+					<FontAwesome name="exclamation-triangle" />
+					&nbsp;
+					Not connected
+				</span>
+			)
+		}
+	}
+
 	render(){
 		return (
 			<div className="view settings-view">
@@ -68,21 +96,27 @@ class Settings extends React.Component{
 					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<label>
+							<div className="label">Status</div>
+							<div className="input">
+								{ this.renderConnectionStatus('mopidy') }
+							</div>
+						</label>
+						<label>
 							<div className="label">Host</div>
 							<div className="input">
-							<input 
-								type="text"
-								onChange={ e => this.setState({ mopidy_host: e.target.value })} 
-								value={ this.state.mopidy_host } />
+								<input 
+									type="text"
+									onChange={ e => this.setState({ mopidy_host: e.target.value })} 
+									value={ this.state.mopidy_host } />
 							</div>
 						</label>
 						<label>
 							<div className="label">Port</div>
 							<div className="input">
-							<input 
-								type="text"
-								onChange={ e => this.setState({ mopidy_port: e.target.value })} 
-								value={ this.state.mopidy_port } />
+								<input 
+									type="text"
+									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
+									value={ this.state.mopidy_port } />
 							</div>
 						</label>
 						<button type="submit" className="secondary">Apply</button>
@@ -91,23 +125,29 @@ class Settings extends React.Component{
 					<h4 className="underline">Pusher</h4>
 					<form>
 						<label>
+							<div className="label">Status</div>
+							<div className="input">
+								{ this.renderConnectionStatus('pusher') }
+							</div>
+						</label>
+						<label>
 							<div className="label">Username</div>
 							<div className="input">
-							<input 
-								type="text"
-								onChange={ e => this.setState({ pusher_username: e.target.value }) } 
-								onBlur={ e => this.props.pusherActions.changeUsername( this.state.pusher_username ) } 
-								value={ this.state.pusher_username } />
+								<input 
+									type="text"
+									onChange={ e => this.setState({ pusher_username: e.target.value }) } 
+									onBlur={ e => this.props.pusherActions.changeUsername( this.state.pusher_username ) } 
+									value={ this.state.pusher_username } />
 							</div>
 						</label>
 						<label>
 							<div className="label">Port</div>
 							<div className="input">
-							<input 
-								type="text"
-								onChange={ e => this.setState({ pusher_port: e.target.value })} 
-								onBlur={ e => this.props.pusherActions.setPort({ port: this.state.pusher_port }) } 
-								value={ this.state.pusher_port } />
+								<input 
+									type="text"
+									onChange={ e => this.setState({ pusher_port: e.target.value })} 
+									onBlur={ e => this.props.pusherActions.setPort({ port: this.state.pusher_port }) } 
+									value={ this.state.pusher_port } />
 							</div>
 						</label>
 					</form>
@@ -115,13 +155,19 @@ class Settings extends React.Component{
 					<h4 className="underline">Spotify</h4>
 					<form onSubmit={(e) => this.setSpotifyConfig(e)}>
 						<label>
+							<div className="label">Status</div>
+							<div className="input">
+								{ this.renderConnectionStatus('spotify') }
+							</div>
+						</label>
+						<label>
 							<div className="label">Country</div>
 							<div className="input">
-							<input 
-								type="text"
-								onChange={ e => this.setState({ spotify_country: e.target.value })} 
-								onBlur={ e => this.setSpotifyConfig(e) } 
-								value={ this.state.spotify_country } />
+								<input 
+									type="text"
+									onChange={ e => this.setState({ spotify_country: e.target.value })} 
+									onBlur={ e => this.setSpotifyConfig(e) } 
+									value={ this.state.spotify_country } />
 							</div>
 						</label>
 						<label>
@@ -141,13 +187,13 @@ class Settings extends React.Component{
 					<h4 className="underline">Advanced</h4>
 					<label>
 						<div className="label">Version</div>
-						<div className="input">
+						<div className="input read-only">
 			        		<VersionManager />
 			        	</div>
 			        </label>
 					<label>
 						<div className="label">Connections</div>
-						<div className="input">
+						<div className="input read-only">
 			        		<PusherConnectionList />
 			        	</div>
 			        </label>

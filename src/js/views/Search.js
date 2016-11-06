@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -9,6 +10,7 @@ import TrackList from '../components/TrackList'
 import ArtistGrid from '../components/ArtistGrid'
 import AlbumGrid from '../components/AlbumGrid'
 import PlaylistGrid from '../components/PlaylistGrid'
+import LazyLoadListener from '../components/LazyLoadListener'
 
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -34,68 +36,122 @@ class Search extends React.Component{
 		this.props.spotifyActions.getSearchResults( props.params.query )
 	}
 
-	compiledTracks(){
-		var tracks = [];
-		if( this.props.mopidy.search_results ) tracks = [...tracks, ...this.props.mopidy.search_results.tracks]
-		if( this.props.spotify.search_results ) tracks = [...tracks, ...this.props.spotify.search_results.tracks.items]
-		return tracks;
+	loadMore(type){
+		if( !this.props.spotify['search_results_'+type] || 
+			!this.props.spotify['search_results_'+type].next ){
+			return
+		}
+
+		this.props.spotifyActions.getURL( 
+			this.props.spotify['search_results_'+type].next, 
+			'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+ type.toUpperCase()
+		);
 	}
 
-	compiledArtists(){
-		var artists = [];
-		if( this.props.mopidy.search_results ) artists = [...artists, ...this.props.mopidy.search_results.artists]
-		if( this.props.spotify.search_results ) artists = [...artists, ...this.props.spotify.search_results.artists.items]
-		return artists.splice(0,9)
+	compiledResults(type){
+		var results = [];
+
+		// merge our mopidy results in
+		if( this.props.mopidy['search_results_'+type] ){
+			results = [...results, ...this.props.mopidy.search_results[type]]
+		}
+
+		// merge our spotify results in
+		if( this.props.spotify['search_results_'+type] && 
+			this.props.spotify['search_results_'+type].items ){
+			results = [...results, ...this.props.spotify['search_results_'+type].items]
+		}
+
+		return results;
 	}
 
-	compiledAlbums(){
-		var albums = [];
-		if( this.props.mopidy.search_results ) tracks = [...albums, ...this.props.mopidy.search_results.albums]
-		if( this.props.spotify.search_results ) albums = [...albums, ...this.props.spotify.search_results.albums.items]
-		return albums.splice(0,9)
-	}
+	renderResults(){
+		switch( this.props.params.type ){
 
-	compiledPlaylists(){
-		var playlists = [];
-		if( this.props.mopidy.search_results ) playlists = [...playlists, ...this.props.mopidy.search_results.playlists]
-		if( this.props.spotify.search_results ) playlists = [...playlists, ...this.props.spotify.search_results.playlists.items]
-		return playlists.splice(0,9)
+			case 'artists':
+				return (
+					<div>
+						<section className="grid-wrapper">
+							<ArtistGrid artists={ this.compiledResults('artists') } />
+						</section>
+						<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
+					</div>
+				)
+				break
+
+			case 'albums':
+				return (
+					<div>
+						<section className="grid-wrapper">
+							<AlbumGrid albums={ this.compiledResults('albums') } />
+						</section>
+						<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
+					</div>
+				)
+				break
+
+			case 'playlists':
+				return (
+					<div>
+						<section className="grid-wrapper">
+							<PlaylistGrid playlists={ this.compiledResults('playlists') } />
+						</section>
+						<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
+					</div>
+				)
+				break
+
+			case 'tracks':
+				return (
+					<div>
+						<section className="list-wrapper">
+							<TrackList tracks={ this.compiledResults('tracks') } />
+						</section>
+						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
+					</div>
+				)
+				break
+
+			default:
+				return (
+					<div>
+						<div className="search-result-sections cf">
+							<section>
+								<div className="inner">
+									<h4><Link to={'/search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
+									<ArtistGrid className="mini" artists={ this.compiledResults('artists').splice(0,6) } />
+								</div>
+							</section>
+							<section>
+								<div className="inner">
+									<h4><Link to={'/search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
+									<AlbumGrid className="mini" albums={ this.compiledResults('albums').splice(0,6) } />
+								</div>
+							</section>
+							<section>
+								<div className="inner">
+									<h4><Link to={'/search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
+									<PlaylistGrid className="mini" playlists={ this.compiledResults('playlists').splice(0,6) } />
+								</div>
+							</section>
+						</div>
+
+						<section className="list-wrapper">
+							<h4><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
+							<TrackList tracks={ this.compiledResults('tracks') } />
+						</section>
+
+						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
+					</div>
+				)
+		}
 	}
 
 	render(){
 		return (
-			<div className="view search-view">
-			
-				<Header
-					icon="search"
-					title="Search results"
-					/>
-
-				<div className="search-result-sections cf">
-					<section>
-						<div className="inner">
-								<h4>Artists</h4>
-								<ArtistGrid className="mini" artists={ this.compiledArtists() } />
-						</div>
-					</section>
-					<section>
-						<div className="inner">
-							<h4 >Albums</h4>
-							<AlbumGrid className="mini" albums={ this.compiledAlbums() } />
-						</div>
-					</section>
-					<section>
-						<div className="inner">
-							<h4>Playlists</h4>
-							<PlaylistGrid className="mini" playlists={ this.compiledPlaylists() } />
-						</div>
-					</section>
-				</div>
-
-				<section className="list-wrapper">
-					<TrackList tracks={ this.compiledTracks() } />
-				</section>
-
+			<div className="view search-view">			
+				<Header icon="search" title="Search results" />
+				{ this.renderResults() }
 			</div>
 		);
 	}

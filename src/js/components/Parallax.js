@@ -49,8 +49,7 @@ export default class Parallax extends React.Component{
     }
 
     handleScroll(e){
-
-    	// this DOES work, but is in no way high-performing
+    	// this DOES work, but is in no way high-performing and only on Firefox
 		this.setState(
 			{ scrollTop: e.pageY }, 
 			this.updateCanvas( this.state.image ) 

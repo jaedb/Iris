@@ -58,7 +58,10 @@ function getToken( dispatch, getState ){
         refreshToken( dispatch, getState )
             .then(
                 response => resolve(response.access_token),
-                error => reject(error)
+                error => {
+                    dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                    reject(error)
+                }
             );
     });
 }
@@ -131,14 +134,16 @@ export function setConfig( config ){
 }
 
 export function connect(){
-    return {
-        type: 'SPOTIFY_CONNECTING'
-    }
-}
+    return (dispatch, getState) => {
 
-export function disconnect(){
-    return {
-        type: 'SPOTIFY_DISCONNECT'
+        dispatch({ type: 'SPOTIFY_CONNECTING' });
+
+        sendRequest( dispatch, getState, 'browse/categories?limit=1' )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_CONNECTED'
+                });
+            });
     }
 }
 

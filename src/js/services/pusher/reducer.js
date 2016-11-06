@@ -2,6 +2,10 @@
 export default function reducer(pusher = {}, action){
     switch (action.type) {
 
+        case 'PUSHER_CONNECT':
+        case 'PUSHER_CONNECTING':
+            return Object.assign({}, pusher, { connected: false, connecting: true });
+
         case 'PUSHER_CONNECTED':
             return Object.assign({}, pusher, { 
                 connected: true, 

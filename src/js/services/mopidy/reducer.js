@@ -2,6 +2,10 @@
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
+        case 'MOPIDY_CONNECT':
+        case 'MOPIDY_CONNECTING':
+            return Object.assign({}, mopidy, { connected: false, connecting: true });
+
         case 'MOPIDY_CONNECTED':
             return Object.assign({}, mopidy, { connected: true, connecting: false });
 

@@ -3098,6 +3098,14 @@ main .left-padding {
   color: #AAAAAA;
 }
 
+.red-text {
+  color: #cf2d2d;
+}
+
+.green-text {
+  color: #47af2a;
+}
+
 footer {
   display: block;
   color: #DDDDDD;
@@ -3270,6 +3278,11 @@ label .input {
 
 label .input input {
   width: 60%;
+}
+
+label .input .text {
+  display: inline-block;
+  padding: 10px 14px;
 }
 
 .slider {

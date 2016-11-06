@@ -122,13 +122,10 @@ main {
 	@include clearfix;
 }
 
-.one-liner{
-	@include one_line_text;
-}
-
-.grey-text {
-	color: $mid_grey;
-}
+.one-liner { @include one_line_text; }
+.grey-text { color: $mid_grey; }
+.red-text { color: $red; }
+.green-text { color: $green; }
 
 footer {
 	display: block;

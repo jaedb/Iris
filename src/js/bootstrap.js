@@ -32,10 +32,10 @@ var initialState = {
 		progress: 0
 	},
 	pusher: {
-		username: '',
-		connections: [],
 		connected: false,
 		port: 6681,
+		username: '',
+		connections: [],
 		version: {
 			current: '0.0.0'
 		}
