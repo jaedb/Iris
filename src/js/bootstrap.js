@@ -4,6 +4,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import ui from './services/ui/reducer'
 import pusher from './services/pusher/reducer'
 import mopidy from './services/mopidy/reducer'
+import lastfm from './services/lastfm/reducer'
 import spotify from './services/spotify/reducer'
 
 import thunk from 'redux-thunk'
@@ -16,6 +17,7 @@ let reducers = combineReducers({
     ui,
     pusher,
     mopidy,
+    lastfm,
     spotify
 });
 
@@ -37,6 +39,11 @@ var initialState = {
 		version: {
 			current: '0.0.0'
 		}
+	},
+	lastfm: {
+		album: {},
+		artist: {},
+		track: {}
 	},
 	spotify: {
 		connected: false,

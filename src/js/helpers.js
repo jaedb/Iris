@@ -25,6 +25,24 @@ export let sizedImages = function( images ){
 				sizes.small = images[i].url;
 			}
 
+		// lastfm-styled images
+		}else if( typeof(images[i].size) !== 'undefined' ){
+			switch( images[i].size ){
+				case 'mega':
+				case 'extralarge':
+					sizes.huge = images[i]['#text']
+					break
+				case 'large':
+					sizes.large = images[i]['#text']
+					break
+				case 'medium':
+					sizes.medium = images[i]['#text']
+					break
+				case 'small':
+					sizes.small = images[i]['#text']
+					break
+			}
+
 		// Mopidy-Images styled images
 		}else if( typeof(images[i]) == 'string' ){
 			sizes.small = images[i]
@@ -34,7 +52,7 @@ export let sizedImages = function( images ){
 	if( !sizes.medium )	sizes.medium = sizes.small;
 	if( !sizes.large ) sizes.large = sizes.medium;
 	if( !sizes.huge ) sizes.huge = sizes.large;
-
+	
 	return sizes;
 }
 
@@ -89,22 +107,20 @@ export let sourceIcon = function( uri ){
  * @param uri = string
  **/
 export let getFromUri = function( element, uri ){
-    var exploded = uri.split(':');         
+    var exploded = uri.split(':');
+
+    if( element == 'mbid'){
+        var index = exploded.indexOf('mbid')
+        return exploded[index+1]
+    }
 
     if( exploded[0] == 'spotify' ){
-
-	    if( element == 'userid' && exploded[1] == 'user' )
-	        return exploded[2];             
-	    if( element == 'playlistid' && exploded[3] == 'playlist' )
-	        return exploded[4];
-	    if( element == 'artistid' && exploded[1] == 'artist' )
-	        return exploded[2];             
-	    if( element == 'albumid' && exploded[1] == 'album' )
-	        return exploded[2];             
-	    if( element == 'trackid' && exploded[1] == 'track' )
-	        return exploded[2];             
+	    if( element == 'userid' && exploded[1] == 'user' ) return exploded[2];
+	    if( element == 'playlistid' && exploded[3] == 'playlist' ) return exploded[4];
+	    if( element == 'artistid' && exploded[1] == 'artist' ) return exploded[2];
+	    if( element == 'albumid' && exploded[1] == 'album' ) return exploded[2];
+	    if( element == 'trackid' && exploded[1] == 'track' ) return exploded[2];
 	    return null;
-
 	}
 
 	return null

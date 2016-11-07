@@ -77,8 +77,8 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={ this.compiledResults('artists') } />
+							<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
 						</section>
-						<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
 					</div>
 				)
 				break
@@ -88,8 +88,8 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={ this.compiledResults('albums') } />
+							<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
 						</section>
-						<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
 					</div>
 				)
 				break
@@ -99,8 +99,8 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={ this.compiledResults('playlists') } />
+							<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
 						</section>
-						<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
 					</div>
 				)
 				break
@@ -110,8 +110,8 @@ class Search extends React.Component{
 					<div>
 						<section className="list-wrapper">
 							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
+							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
-						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 					</div>
 				)
 				break
@@ -143,9 +143,9 @@ class Search extends React.Component{
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
+							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
-						<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 					</div>
 				)
 		}

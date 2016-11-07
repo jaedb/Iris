@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react'
+import FontAwesome from 'react-fontawesome'
 
 export default class LazyLoadListener extends React.Component{
 
@@ -29,10 +30,6 @@ export default class LazyLoadListener extends React.Component{
 	}
 
 	render(){
-		if( this.loading ){
-			return <div className='lazy-loader loading'><div className="content">LOADING</div></div>
-		}else{
-			return <div className='lazy-loader'></div>
-		}
+		return <div className='lazy-loader'></div>
 	}
 }

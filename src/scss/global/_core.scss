@@ -71,10 +71,10 @@ main {
 		}
 	}
 
-	.no-top-padding {		padding-top: 0; }
-	.no-bottom-padding {	padding-bottom: 0; }
-	.no-right-padding {		padding-right: 0; }
-	.no-left-padding {		padding-left: 0; }
+	.no-top-padding {		padding-top: 0 !important; }
+	.no-bottom-padding {	padding-bottom: 0 !important; }
+	.no-right-padding {		padding-right: 0 !important; }
+	.no-left-padding {		padding-left: 0 !important; }
 
 	.top-padding {			padding-top: 20px; }
 	.bottom-padding {		padding-bottom: 20px; }

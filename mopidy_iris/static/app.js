@@ -3799,6 +3799,24 @@
 					sizes.small = images[i].url;
 				}
 	
+				// lastfm-styled images
+			} else if (typeof images[i].size !== 'undefined') {
+				switch (images[i].size) {
+					case 'mega':
+					case 'extralarge':
+						sizes.huge = images[i]['#text'];
+						break;
+					case 'large':
+						sizes.large = images[i]['#text'];
+						break;
+					case 'medium':
+						sizes.medium = images[i]['#text'];
+						break;
+					case 'small':
+						sizes.small = images[i]['#text'];
+						break;
+				}
+	
 				// Mopidy-Images styled images
 			} else if (typeof images[i] == 'string') {
 				sizes.small = images[i];
@@ -3860,8 +3878,12 @@
 	var getFromUri = exports.getFromUri = function getFromUri(element, uri) {
 		var exploded = uri.split(':');
 	
-		if (exploded[0] == 'spotify') {
+		if (element == 'mbid') {
+			var index = exploded.indexOf('mbid');
+			return exploded[index + 1];
+		}
 	
+		if (exploded[0] == 'spotify') {
 			if (element == 'userid' && exploded[1] == 'user') return exploded[2];
 			if (element == 'playlistid' && exploded[3] == 'playlist') return exploded[4];
 			if (element == 'artistid' && exploded[1] == 'artist') return exploded[2];
@@ -4859,7 +4881,7 @@
 /* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -4870,6 +4892,10 @@
 	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactFontawesome = __webpack_require__(15);
+	
+	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -4893,17 +4919,17 @@
 		}
 	
 		_createClass(LazyLoadListener, [{
-			key: "componentWillMount",
+			key: 'componentWillMount',
 			value: function componentWillMount() {
 				window.addEventListener("scroll", this.handleScroll, false);
 			}
 		}, {
-			key: "componentWillUnmount",
+			key: 'componentWillUnmount',
 			value: function componentWillUnmount() {
 				window.removeEventListener("scroll", this.handleScroll, false);
 			}
 		}, {
-			key: "handleScroll",
+			key: 'handleScroll',
 			value: function handleScroll(e) {
 				if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
 					if (!this.state.loading) {
@@ -4915,21 +4941,9 @@
 				}
 			}
 		}, {
-			key: "render",
+			key: 'render',
 			value: function render() {
-				if (this.loading) {
-					return _react2.default.createElement(
-						"div",
-						{ className: "lazy-loader loading" },
-						_react2.default.createElement(
-							"div",
-							{ className: "content" },
-							"LOADING"
-						)
-					);
-				} else {
-					return _react2.default.createElement("div", { className: "lazy-loader" });
-				}
+				return _react2.default.createElement('div', { className: 'lazy-loader' });
 			}
 		}]);
 	
@@ -17755,9 +17769,13 @@
 	
 	var _reducer6 = _interopRequireDefault(_reducer5);
 	
-	var _reducer7 = __webpack_require__(176);
+	var _reducer7 = __webpack_require__(388);
 	
 	var _reducer8 = _interopRequireDefault(_reducer7);
+	
+	var _reducer9 = __webpack_require__(176);
+	
+	var _reducer10 = _interopRequireDefault(_reducer9);
 	
 	var _reduxThunk = __webpack_require__(343);
 	
@@ -17785,7 +17803,8 @@
 		ui: _reducer2.default,
 		pusher: _reducer4.default,
 		mopidy: _reducer6.default,
-		spotify: _reducer8.default
+		lastfm: _reducer8.default,
+		spotify: _reducer10.default
 	});
 	
 	// set application defaults
@@ -17806,6 +17825,11 @@
 			version: {
 				current: '0.0.0'
 			}
+		},
+		lastfm: {
+			album: {},
+			artist: {},
+			track: {}
 		},
 		spotify: {
 			connected: false,
@@ -19686,7 +19710,9 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var actions = __webpack_require__(11);
+	var helpers = __webpack_require__(29);
+	var mopidyActions = __webpack_require__(11);
+	var lastfmActions = __webpack_require__(387);
 	
 	var MopidyMiddleware = function () {
 	
@@ -19855,7 +19881,7 @@
 	                        instruct(socket, store, 'tracklist.add', { uri: action.uris[0], at_position: 0 }).then(function (response) {
 	
 	                            // play it
-	                            store.dispatch(actions.changeTrack(response[0].tlid));
+	                            store.dispatch(mopidyActions.changeTrack(response[0].tlid));
 	
 	                            // TODO: perhaps force update of currentTlTrack before we proceed?
 	                            // this will make the UI feel snappier...
@@ -19863,7 +19889,7 @@
 	                            // add the rest of our uris (if any)
 	                            action.uris.shift();
 	                            if (action.uris.length > 0) {
-	                                store.dispatch(actions.enqueueTracks(action.uris, 1));
+	                                store.dispatch(mopidyActions.enqueueTracks(action.uris, 1));
 	                            }
 	                        });
 	                        break;
@@ -19919,6 +19945,7 @@
 	                        instruct(socket, store, 'library.lookup', action.data).then(function (response) {
 	                            var album = response[0].album;
 	                            album.artists = response[0].artists;
+	                            if (!album.images) album.images = [];
 	                            album.tracks = {
 	                                items: response,
 	                                total: response.length
@@ -19927,6 +19954,17 @@
 	                            var uris = [];
 	                            for (var i = 0; i < album.tracks.items.length; i++) {
 	                                uris.push(album.tracks.items[i].uri);
+	                            }
+	
+	                            // load artwork from LastFM
+	                            if (album.images.length <= 0) {
+	
+	                                var mbid = helpers.getFromUri('mbid', album.uri);
+	                                if (mbid) {
+	                                    store.dispatch(lastfmActions.getAlbum(false, false, mbid));
+	                                } else {
+	                                    store.dispatch(lastfmActions.getAlbum(album.artists[0].name, album.name));
+	                                }
 	                            }
 	
 	                            instruct(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
@@ -19959,8 +19997,8 @@
 	                        store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: false });
 	                        instruct(socket, store, 'library.lookup', action.data).then(function (response) {
 	                            var artist = response[0].artists[0];
-	                            artist.images = [];
-	                            artist.albums = [];
+	                            if (!artist.images) artist.images = [];
+	                            if (!artist.albums) artist.albums = [];
 	                            artist.tracks = response.slice(0, 10);
 	
 	                            var _loop = function _loop() {
@@ -19982,6 +20020,15 @@
 	                                var existingAlbum;
 	
 	                                _loop();
+	                            }
+	
+	                            // load artwork from LastFM
+	                            if (artist.images.length <= 0) {
+	                                if (artist.musicbrainz_id) {
+	                                    store.dispatch(lastfmActions.getArtist(false, artist.musicbrainz_id));
+	                                } else {
+	                                    store.dispatch(lastfmActions.getArtist(artist.name));
+	                                }
 	                            }
 	
 	                            store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: artist });
@@ -20728,13 +20775,21 @@
 	
 	var _Dater2 = _interopRequireDefault(_Dater);
 	
-	var _actions = __webpack_require__(10);
+	var _LazyLoadListener = __webpack_require__(39);
 	
-	var spotifyActions = _interopRequireWildcard(_actions);
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 	
-	var _actions2 = __webpack_require__(11);
+	var _actions = __webpack_require__(11);
 	
-	var mopidyActions = _interopRequireWildcard(_actions2);
+	var mopidyActions = _interopRequireWildcard(_actions);
+	
+	var _actions2 = __webpack_require__(387);
+	
+	var lastfmActions = _interopRequireWildcard(_actions2);
+	
+	var _actions3 = __webpack_require__(10);
+	
+	var spotifyActions = _interopRequireWildcard(_actions3);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -20779,6 +20834,7 @@
 				var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 	
 				var source = helpers.uriSource(props.params.uri);
+	
 				if (source == 'spotify') {
 					this.props.spotifyActions.getAlbum(props.params.uri);
 				} else if (source == 'local' && props.mopidy.connected) {
@@ -20786,17 +20842,44 @@
 				}
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.album || !this.props.spotify.album.tracks.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.album.tracks.next, 'SPOTIFY_ALBUM_LOADED_MORE');
+			}
+		}, {
+			key: 'album',
+			value: function album() {
+				var album = {
+					name: false,
+					tracks: {
+						items: []
+					},
+					artists: [],
+					images: []
+				};
+	
+				switch (helpers.uriSource(this.props.params.uri)) {
+	
+					case 'spotify':
+						Object.assign(album, this.props.spotify.album);
+						album.artists = this.props.spotify.artists;
+						break;
+	
+					case 'local':
+						Object.assign(album, this.props.mopidy.album);
+						if (this.props.lastfm.album.image) album.images = this.props.lastfm.album.image;
+						break;
+				}
+	
+				return album;
+			}
+		}, {
 			key: 'render',
 			value: function render() {
-				var source = helpers.uriSource(this.props.params.uri);
-				if (source == 'spotify') {
-					var album = this.props.spotify.album;
-					var artists = this.props.spotify.artists;
-				} else if (source == 'local') {
-					var album = this.props.mopidy.album;
-					var artists = [];
-				}
-				if (!album) return null;
+				var _this2 = this;
+	
+				var album = this.album();
 	
 				return _react2.default.createElement(
 					'div',
@@ -20804,8 +20887,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: 'intro' },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: album.images ? album.images : [] }),
-						_react2.default.createElement(_ArtistGrid2.default, { artists: artists }),
+						_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: album.images }),
+						_react2.default.createElement(_ArtistGrid2.default, { artists: album.artists }),
 						_react2.default.createElement(
 							'ul',
 							{ className: 'details' },
@@ -20822,18 +20905,14 @@
 								'Released ',
 								_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
 							) : null,
-							source == 'spotify' ? _react2.default.createElement(
+							_react2.default.createElement(
 								'li',
 								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: source }),
-								' Spotify playlist'
-							) : null,
-							source == 'local' ? _react2.default.createElement(
-								'li',
-								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
-								' Local playlist'
-							) : null
+								_react2.default.createElement(_reactFontawesome2.default, { name: helpers.sourceIcon(this.props.params.uri) }),
+								' ',
+								helpers.uriSource(this.props.params.uri),
+								' playlist'
+							)
 						)
 					),
 					_react2.default.createElement(
@@ -20853,7 +20932,14 @@
 								_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
 							)
 						),
-						_react2.default.createElement(_TrackList2.default, { tracks: album.tracks.items })
+						_react2.default.createElement(
+							'section',
+							{ className: 'list-wrapper' },
+							_react2.default.createElement(_TrackList2.default, { tracks: album.tracks.items }),
+							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+									return _this2.loadMore();
+								} })
+						)
 					)
 				);
 			}
@@ -20875,6 +20961,7 @@
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		return {
 			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+			lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
 			spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 		};
 	};
@@ -21071,6 +21158,10 @@
 	
 	var _redux = __webpack_require__(6);
 	
+	var _reactFontawesome = __webpack_require__(15);
+	
+	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+	
 	var _LazyLoadListener = __webpack_require__(39);
 	
 	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
@@ -21103,9 +21194,13 @@
 	
 	var mopidyActions = _interopRequireWildcard(_actions);
 	
-	var _actions2 = __webpack_require__(10);
+	var _actions2 = __webpack_require__(387);
 	
-	var spotifyActions = _interopRequireWildcard(_actions2);
+	var lastfmActions = _interopRequireWildcard(_actions2);
+	
+	var _actions3 = __webpack_require__(10);
+	
+	var spotifyActions = _interopRequireWildcard(_actions3);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -21163,8 +21258,8 @@
 				this.props.spotifyActions.getURL(this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE');
 			}
 		}, {
-			key: 'renderSpotifyAlbum',
-			value: function renderSpotifyAlbum() {
+			key: 'renderSpotifyArtist',
+			value: function renderSpotifyArtist() {
 				var _this2 = this;
 	
 				if (!this.props.spotify.artist) return null;
@@ -21198,7 +21293,13 @@
 								null,
 								artist.popularity,
 								'% popularity'
-							) : null
+							) : null,
+							_react2.default.createElement(
+								'li',
+								null,
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'spotify' }),
+								' Spotify artist'
+							)
 						)
 					),
 					_react2.default.createElement(
@@ -21228,17 +21329,23 @@
 						{ className: 'left-padding' },
 						'Albums'
 					),
-					albums ? _react2.default.createElement(_AlbumGrid2.default, { className: 'no-top-padding', albums: albums.items }) : null,
-					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-							return _this2.loadMore();
-						} })
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper no-top-padding' },
+						albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: albums.items }) : null,
+						_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+								return _this2.loadMore();
+							} })
+					)
 				);
 			}
 		}, {
-			key: 'renderMopidyAlbum',
-			value: function renderMopidyAlbum() {
+			key: 'renderMopidyArtist',
+			value: function renderMopidyArtist() {
 				if (!this.props.mopidy.artist) return null;
 				var artist = this.props.mopidy.artist;
+	
+				if (this.props.lastfm.artist.image && this.props.lastfm.artist.name == artist.name) artist.images = this.props.lastfm.artist.image;
 	
 				return _react2.default.createElement(
 					'div',
@@ -21252,6 +21359,22 @@
 							'h1',
 							null,
 							artist.name
+						),
+						_react2.default.createElement(
+							'ul',
+							{ className: 'details' },
+							_react2.default.createElement(
+								'li',
+								null,
+								artist.albums.length.toLocaleString(),
+								' albums'
+							),
+							_react2.default.createElement(
+								'li',
+								null,
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
+								' Local artist'
+							)
 						)
 					),
 					_react2.default.createElement(
@@ -21265,15 +21388,19 @@
 						{ className: 'left-padding' },
 						'Albums'
 					),
-					artist.albums ? _react2.default.createElement(_AlbumGrid2.default, { className: 'no-top-padding', albums: artist.albums }) : null
+					_react2.default.createElement(
+						'section',
+						{ className: 'grid-wrapper no-top-padding' },
+						artist.albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: artist.albums }) : null
+					)
 				);
 			}
 		}, {
 			key: 'render',
 			value: function render() {
 				var source = helpers.uriSource(this.props.params.uri);
-				if (source == 'spotify') return this.renderSpotifyAlbum();
-				if (source == 'local') return this.renderMopidyAlbum();
+				if (source == 'spotify') return this.renderSpotifyArtist();
+				if (source == 'local') return this.renderMopidyArtist();
 			}
 		}]);
 	
@@ -21293,6 +21420,7 @@
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		return {
 			mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+			lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
 			spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 		};
 	};
@@ -21408,8 +21536,13 @@
 				var _this2 = this;
 	
 				var source = helpers.uriSource(this.props.params.uri);
-				if (source == 'spotify') var playlist = this.props.spotify.playlist;
-				if (source == 'm3u') var playlist = this.props.mopidy.playlist;
+				var source_name = source;
+				if (source == 'spotify') {
+					var playlist = this.props.spotify.playlist;
+				} else if (source == 'm3u') {
+					var playlist = this.props.mopidy.playlist;
+					source_name = 'local';
+				}
 				if (!playlist) return null;
 	
 				return _react2.default.createElement(
@@ -21436,18 +21569,14 @@
 								_react2.default.createElement(_Dater2.default, { type: 'ago', data: playlist.last_modified }),
 								' ago'
 							) : null,
-							source == 'spotify' ? _react2.default.createElement(
+							_react2.default.createElement(
 								'li',
 								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: source }),
-								' Spotify playlist'
-							) : null,
-							source == 'm3u' ? _react2.default.createElement(
-								'li',
-								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
-								' Local playlist'
-							) : null
+								_react2.default.createElement(_reactFontawesome2.default, { name: helpers.sourceIcon(this.props.params.uri) }),
+								' ',
+								source_name,
+								' playlist'
+							)
 						)
 					),
 					_react2.default.createElement(
@@ -21462,11 +21591,15 @@
 								playlist.name
 							)
 						),
-						_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items })
-					),
-					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-							return _this2.loadMore();
-						} })
+						_react2.default.createElement(
+							'section',
+							{ className: 'list-wrapper' },
+							_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items }),
+							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+									return _this2.loadMore();
+								} })
+						)
+					)
 				);
 			}
 		}]);
@@ -21798,11 +21931,11 @@
 							_react2.default.createElement(
 								'section',
 								{ className: 'grid-wrapper' },
-								_react2.default.createElement(_ArtistGrid2.default, { artists: this.compiledResults('artists') })
-							),
-							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-									return _this2.loadMore('artists');
-								} })
+								_react2.default.createElement(_ArtistGrid2.default, { artists: this.compiledResults('artists') }),
+								_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+										return _this2.loadMore('artists');
+									} })
+							)
 						);
 						break;
 	
@@ -21813,11 +21946,11 @@
 							_react2.default.createElement(
 								'section',
 								{ className: 'grid-wrapper' },
-								_react2.default.createElement(_AlbumGrid2.default, { albums: this.compiledResults('albums') })
-							),
-							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-									return _this2.loadMore('albums');
-								} })
+								_react2.default.createElement(_AlbumGrid2.default, { albums: this.compiledResults('albums') }),
+								_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+										return _this2.loadMore('albums');
+									} })
+							)
 						);
 						break;
 	
@@ -21828,11 +21961,11 @@
 							_react2.default.createElement(
 								'section',
 								{ className: 'grid-wrapper' },
-								_react2.default.createElement(_PlaylistGrid2.default, { playlists: this.compiledResults('playlists') })
-							),
-							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-									return _this2.loadMore('playlists');
-								} })
+								_react2.default.createElement(_PlaylistGrid2.default, { playlists: this.compiledResults('playlists') }),
+								_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+										return _this2.loadMore('playlists');
+									} })
+							)
 						);
 						break;
 	
@@ -21843,11 +21976,11 @@
 							_react2.default.createElement(
 								'section',
 								{ className: 'list-wrapper' },
-								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') })
-							),
-							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-									return _this2.loadMore('tracks');
-								} })
+								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') }),
+								_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+										return _this2.loadMore('tracks');
+									} })
+							)
 						);
 						break;
 	
@@ -21925,11 +22058,11 @@
 										'Tracks'
 									)
 								),
-								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') })
-							),
-							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
-									return _this2.loadMore('tracks');
-								} })
+								_react2.default.createElement(_TrackList2.default, { show_source_icon: true, tracks: this.compiledResults('tracks') }),
+								_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+										return _this2.loadMore('tracks');
+									} })
+							)
 						);
 				}
 			}
@@ -50973,6 +51106,150 @@
 	
 	module.exports = isPlainObject;
 
+
+/***/ },
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */,
+/* 386 */,
+/* 387 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.getArtist = getArtist;
+	exports.getAlbum = getAlbum;
+	exports.getTrack = getTrack;
+	
+	var helpers = __webpack_require__(29);
+	
+	/**
+	 * Send an ajax request to the Spotify API
+	 *
+	 * @param dispatch obj
+	 * @param getState obj
+	 * @param endpoint params = the url params to send
+	 **/
+	var sendRequest = function sendRequest(dispatch, getState, params) {
+	    return new Promise(function (resolve, reject) {
+	
+	        var url = '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&' + params;
+	
+	        $.ajax({
+	            method: 'GET',
+	            cache: true,
+	            url: url
+	        }).then(function (response) {
+	            return resolve(response);
+	        }, function (xhr, status, error) {
+	            console.error(params + ' failed', xhr.responseText);
+	            reject(error);
+	        });
+	    });
+	};
+	
+	function getArtist(artist) {
+	    var mbid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	
+	    return function (dispatch, getState) {
+	
+	        dispatch({ type: 'LASTFM_ARTIST_LOADED', data: false });
+	
+	        if (mbid) {
+	            var params = 'method=artist.getInfo&mbid=' + mbid;
+	        } else {
+	            artist = encodeURIComponent(artist);
+	            var params = 'method=artist.getInfo&artist=' + artist;
+	        }
+	        sendRequest(dispatch, getState, params).then(function (response) {
+	            if (response.artist) {
+	                dispatch({
+	                    type: 'LASTFM_ARTIST_LOADED',
+	                    data: response.artist
+	                });
+	            }
+	        });
+	    };
+	}
+	
+	function getAlbum(artist, album) {
+	    var mbid = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	
+	    return function (dispatch, getState) {
+	
+	        dispatch({ type: 'LASTFM_ALBUM_LOADED', data: false });
+	
+	        if (mbid) {
+	            var params = 'method=album.getInfo&mbid=' + mbid;
+	        } else {
+	            artist = encodeURIComponent(artist);
+	            album = encodeURIComponent(album);
+	            var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
+	        }
+	        sendRequest(dispatch, getState, params).then(function (response) {
+	            if (response.album) {
+	                dispatch({
+	                    type: 'LASTFM_ALBUM_LOADED',
+	                    data: response.album
+	                });
+	            }
+	        });
+	    };
+	}
+	
+	function getTrack(artist, track) {
+	    return function (dispatch, getState) {
+	
+	        dispatch({ type: 'LASTFM_TRACK_LOADED', data: false });
+	
+	        artist = encodeURIComponent(artist);
+	        sendRequest(dispatch, getState, 'method=track.getInfo&track=' + track + '&artist=' + artist).then(function (response) {
+	            if (response.track) {
+	                dispatch({
+	                    type: 'LASTFM_TRACK_LOADED',
+	                    data: response.track
+	                });
+	            }
+	        });
+	    };
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(70)))
+
+/***/ },
+/* 388 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = reducer;
+	function reducer() {
+	    var lastfm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var action = arguments[1];
+	
+	    switch (action.type) {
+	
+	        case 'LASTFM_ARTIST_LOADED':
+	            return Object.assign({}, lastfm, { artist: action.data });
+	
+	        case 'LASTFM_ALBUM_LOADED':
+	            return Object.assign({}, lastfm, { album: action.data });
+	
+	        case 'LASTFM_TRACK_LOADED':
+	            return Object.assign({}, lastfm, { track: action.data });
+	
+	        default:
+	            return lastfm;
+	    }
+	}
 
 /***/ }
 /******/ ])));

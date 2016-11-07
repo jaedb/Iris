@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 let helpers = require('../helpers.js')
 
 import LazyLoadListener from '../components/LazyLoadListener'
@@ -13,6 +14,7 @@ import Parallax from '../components/Parallax'
 import ArtistList from '../components/ArtistList'
 
 import * as mopidyActions from '../services/mopidy/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class Artist extends React.Component{
@@ -49,7 +51,7 @@ class Artist extends React.Component{
 		this.props.spotifyActions.getURL( this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
 	}
 
-	renderSpotifyAlbum(){
+	renderSpotifyArtist(){
 		if( !this.props.spotify.artist ) return null
 		var artist = this.props.spotify.artist
 		var albums = this.props.spotify.artist_albums
@@ -64,6 +66,7 @@ class Artist extends React.Component{
 					<ul className="details">
 						<li>{ artist.followers.total.toLocaleString() } followers</li>
 						{ artist.popularity ? <li>{ artist.popularity }% popularity</li> : null }
+						<li><FontAwesome name='spotify' /> Spotify artist</li>
 					</ul>
 				</div>
 
@@ -82,15 +85,19 @@ class Artist extends React.Component{
 				<div className="cf"></div>
 
 				<h4 className="left-padding">Albums</h4>
-				{ albums ? <AlbumGrid className="no-top-padding" albums={ albums.items } /> : null }
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<section className="grid-wrapper no-top-padding">
+					{ albums ? <AlbumGrid albums={ albums.items } /> : null }
+					<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				</section>
 			</div>
 		);
 	}
 
-	renderMopidyAlbum(){
+	renderMopidyArtist(){
 		if( !this.props.mopidy.artist ) return null
 		var artist = this.props.mopidy.artist
+		
+		if( this.props.lastfm.artist.image && this.props.lastfm.artist.name == artist.name ) artist.images = this.props.lastfm.artist.image
 
 		return (
 			<div className="view artist-view">
@@ -99,21 +106,27 @@ class Artist extends React.Component{
 				<div className="intro">
 					<Thumbnail size="huge" images={ artist.images } />
 					<h1>{ artist.name }</h1>
+					<ul className="details">
+						<li>{ artist.albums.length.toLocaleString() } albums</li>
+						<li><FontAwesome name='folder' /> Local artist</li>
+					</ul>
 				</div>
 
 				<h4 className="left-padding">Top tracks</h4>
 				{ artist.tracks ? <TrackList tracks={ artist.tracks } /> : null }
 
 				<h4 className="left-padding">Albums</h4>
-				{ artist.albums ? <AlbumGrid className="no-top-padding" albums={ artist.albums } /> : null }
+				<section className="grid-wrapper no-top-padding">
+					{ artist.albums ? <AlbumGrid albums={ artist.albums } /> : null }
+				</section>
 			</div>
 		);
 	}
 
 	render(){
 		var source = helpers.uriSource( this.props.params.uri );
-		if( source == 'spotify' ) return this.renderSpotifyAlbum()
-		if( source == 'local' ) return this.renderMopidyAlbum()
+		if( source == 'spotify' ) return this.renderSpotifyArtist()
+		if( source == 'local' ) return this.renderMopidyArtist()
 	}
 }
 
@@ -131,6 +144,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

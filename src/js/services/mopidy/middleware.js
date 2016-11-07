@@ -1,6 +1,9 @@
 
 import Mopidy from 'mopidy'
-var actions = require('./actions.js')
+
+var helpers = require('../../helpers.js')
+var mopidyActions = require('./actions.js')
+var lastfmActions = require('../lastfm/actions.js')
 
 const MopidyMiddleware = (function(){ 
 
@@ -169,7 +172,7 @@ const MopidyMiddleware = (function(){
                     .then( response => {
 
                         // play it
-                        store.dispatch( actions.changeTrack( response[0].tlid ) );
+                        store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );
 
                         // TODO: perhaps force update of currentTlTrack before we proceed?
                         // this will make the UI feel snappier...
@@ -177,7 +180,7 @@ const MopidyMiddleware = (function(){
                         // add the rest of our uris (if any)
                         action.uris.shift();
                         if( action.uris.length > 0 ){
-                            store.dispatch( actions.enqueueTracks( action.uris, 1 ) )
+                            store.dispatch( mopidyActions.enqueueTracks( action.uris, 1 ) )
                         }
                     })
                 break;
@@ -237,6 +240,7 @@ const MopidyMiddleware = (function(){
                     .then( response => {
                         var album = response[0].album;
                         album.artists = response[0].artists;
+                        if( !album.images ) album.images = []
                         album.tracks = {
                             items: response,
                             total: response.length
@@ -245,6 +249,17 @@ const MopidyMiddleware = (function(){
                         var uris = [];
                         for( var i = 0; i < album.tracks.items.length; i++ ){
                             uris.push( album.tracks.items[i].uri );
+                        }
+
+                         // load artwork from LastFM
+                        if( album.images.length <= 0 ){
+
+                            var mbid = helpers.getFromUri('mbid',album.uri)
+                            if( mbid ){
+                                store.dispatch( lastfmActions.getAlbum( false, false, mbid ) )
+                            }else{
+                                store.dispatch( lastfmActions.getAlbum( album.artists[0].name, album.name ) )
+                            }
                         }
 
                         instruct( socket, store, 'library.lookup', { uris: uris } )
@@ -279,8 +294,8 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
                         var artist = response[0].artists[0];
-                        artist.images = [];
-                        artist.albums = [];
+                        if( !artist.images ) artist.images = [];
+                        if( !artist.albums ) artist.albums = [];
                         artist.tracks = response.slice(0,10);
                         
                         for( var i = 0; i < response.length; i++ ){
@@ -292,6 +307,15 @@ const MopidyMiddleware = (function(){
                             var existingAlbum = artist.albums.find(getByURI);
                             if( !existingAlbum ){
                                 artist.albums.push(album)
+                            }
+                        }
+
+                        // load artwork from LastFM
+                        if( artist.images.length <= 0 ){
+                            if( artist.musicbrainz_id ){
+                                store.dispatch( lastfmActions.getArtist( false, artist.musicbrainz_id ) )
+                            }else{
+                                store.dispatch( lastfmActions.getArtist( artist.name ) )
                             }
                         }
                         

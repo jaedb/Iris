@@ -2950,19 +2950,19 @@ main h4:not(:first-child) {
 }
 
 main .no-top-padding {
-  padding-top: 0;
+  padding-top: 0 !important;
 }
 
 main .no-bottom-padding {
-  padding-bottom: 0;
+  padding-bottom: 0 !important;
 }
 
 main .no-right-padding {
-  padding-right: 0;
+  padding-right: 0 !important;
 }
 
 main .no-left-padding {
-  padding-left: 0;
+  padding-left: 0 !important;
 }
 
 main .top-padding {
@@ -3341,11 +3341,6 @@ label .input .text {
   width: 100%;
 }
 
-.lazy-loader {
-  height: 50px;
-  color: #DDDDDD;
-}
-
 .context-menu {
   position: fixed;
   left: 0;
@@ -3555,7 +3550,7 @@ aside .thumbnail .image {
 aside nav {
   z-index: 2;
   position: relative;
-  padding-top: 20px;
+  padding-top: 8px;
 }
 
 aside nav a {
@@ -3712,7 +3707,7 @@ aside .player .artist-sentence .artist:hover {
   padding-top: 20px;
 }
 
-.artist-list .artist.a:hover .thumbnail {
+.artist-list a.artist:hover .thumbnail {
   border-color: #08d58f;
   opacity: 0.8;
 }

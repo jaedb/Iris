@@ -49,8 +49,13 @@ class Playlist extends React.Component{
 
 	render(){
 		var source = helpers.uriSource( this.props.params.uri );
-		if( source == 'spotify' ) var playlist = this.props.spotify.playlist
-		if( source == 'm3u' ) var playlist = this.props.mopidy.playlist
+		var source_name = source
+		if( source == 'spotify' ){
+			var playlist = this.props.spotify.playlist
+		}else if( source == 'm3u' ){
+			var playlist = this.props.mopidy.playlist
+			source_name = 'local'
+		}
 		if( !playlist ) return null;
 
 		return (
@@ -60,17 +65,21 @@ class Playlist extends React.Component{
 					<ul className="details">
 						<li>{ playlist.tracks.total } tracks, <Dater type="total-time" data={playlist.tracks.items} /></li>
 						{ playlist.last_modified ? <li>Updated <Dater type="ago" data={playlist.last_modified} /> ago</li> : null }
-						{ source == 'spotify' ? <li><FontAwesome name={source} /> Spotify playlist</li> : null }
-						{ source == 'm3u' ? <li><FontAwesome name='folder' /> Local playlist</li> : null }	
+						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {source_name} playlist</li>
 					</ul>
 				</div>
 				<div className="main">
+
 					<div className="title">
 						<h1>{ playlist.name }</h1>
 					</div>
-					<TrackList tracks={ playlist.tracks.items } />
+
+					<section className="list-wrapper">
+						<TrackList tracks={ playlist.tracks.items } />
+						<LazyLoadListener loadMore={ () => this.loadMore() }/>
+					</section>
+					
 				</div>
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		)
 	}
