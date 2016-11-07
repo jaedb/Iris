@@ -658,7 +658,7 @@
 	exports.__esModule = true;
 	exports.createMemoryHistory = exports.hashHistory = exports.browserHistory = exports.applyRouterMiddleware = exports.formatPattern = exports.useRouterHistory = exports.match = exports.routerShape = exports.locationShape = exports.PropTypes = exports.RoutingContext = exports.RouterContext = exports.createRoutes = exports.useRoutes = exports.RouteContext = exports.Lifecycle = exports.History = exports.Route = exports.Redirect = exports.IndexRoute = exports.IndexRedirect = exports.withRouter = exports.IndexLink = exports.Link = exports.Router = undefined;
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	Object.defineProperty(exports, 'createRoutes', {
 	  enumerable: true,
@@ -933,7 +933,7 @@
 	exports.getURL = getURL;
 	exports.getSearchResults = getSearchResults;
 	
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	/**
 	 * Send an ajax request to the Spotify API
@@ -1058,6 +1058,8 @@
 	
 	        dispatch({ type: 'SPOTIFY_CONNECTING' });
 	
+	        // send a generic request to ensure spotify is up and running
+	        // there is no 'test' or 'ping' endpoint on the Spotify API
 	        sendRequest(dispatch, getState, 'browse/categories?limit=1').then(function (response) {
 	            dispatch({
 	                type: 'SPOTIFY_CONNECTED'
@@ -1630,13 +1632,14 @@
 	 **/
 	
 	function getSearchResults(query) {
-		var fields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['any'];
-		var backends = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+		var backends = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+		var fields = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ['any'];
 	
 		var queryObj = {};
 		for (var i = 0; i < fields.length; i++) {
 			queryObj[fields[i]] = [query];
 		}
+	
 		return {
 			type: 'MOPIDY_INSTRUCT',
 			call: 'library.search',
@@ -3015,7 +3018,7 @@
 	    _assign = __webpack_require__(9);
 	
 	var CallbackQueue = __webpack_require__(125);
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	var ReactFeatureFlags = __webpack_require__(133);
 	var ReactReconciler = __webpack_require__(43);
 	var Transaction = __webpack_require__(50);
@@ -3267,7 +3270,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _helpers = __webpack_require__(33);
+	var _helpers = __webpack_require__(29);
 	
 	var helpers = _interopRequireWildcard(_helpers);
 	
@@ -3507,7 +3510,7 @@
 	
 	var _assign = __webpack_require__(9);
 	
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	
 	var emptyFunction = __webpack_require__(22);
 	var warning = __webpack_require__(4);
@@ -3764,6 +3767,144 @@
 
 /***/ },
 /* 29 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	var sizedImages = exports.sizedImages = function sizedImages(images) {
+	
+		var sizes = {
+			small: false,
+			medium: false,
+			large: false,
+			huge: false
+		};
+	
+		if (images.length <= 0) return sizes;
+	
+		for (var i = 0; i < images.length; i++) {
+	
+			// spotify-styled images
+			if (typeof images[i].height !== 'undefined') {
+				if (images[i].height > 800) {
+					sizes.huge = images[i].url;
+				} else if (images[i].height > 600) {
+					sizes.large = images[i].url;
+				} else if (images[i].height > 280) {
+					sizes.medium = images[i].url;
+				} else {
+					sizes.small = images[i].url;
+				}
+	
+				// Mopidy-Images styled images
+			} else if (typeof images[i] == 'string') {
+				sizes.small = images[i];
+			}
+		}
+	
+		if (!sizes.medium) sizes.medium = sizes.small;
+		if (!sizes.large) sizes.large = sizes.medium;
+		if (!sizes.huge) sizes.huge = sizes.large;
+	
+		return sizes;
+	};
+	
+	var generateGuid = exports.generateGuid = function generateGuid() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+			var r = Math.random() * 16 | 0,
+			    v = c == 'x' ? r : r & 0x3 | 0x8;
+			return v.toString(16);
+		});
+	};
+	
+	var getCurrentPusherConnection = exports.getCurrentPusherConnection = function getCurrentPusherConnection(connections, connectionid) {
+		function isCurrentConnection(connection) {
+			return connection.connectionid == newProps.pusher.connectionid;
+		}
+	
+		var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
+		if (!currentConnection) return false;
+	
+		return currentConnection;
+	};
+	
+	/**
+	 * Figure out a URI's source namespace
+	 * @param uri = string
+	 **/
+	var uriSource = exports.uriSource = function uriSource(uri) {
+		var exploded = uri.split(':');
+		return exploded[0];
+	};
+	
+	var sourceIcon = exports.sourceIcon = function sourceIcon(uri) {
+		var source = uriSource(uri);
+		switch (source) {
+			case 'local':
+			case 'm3u':
+				return 'folder';
+				break;
+			default:
+				return source;
+		}
+	};
+	
+	/**
+	 * Get an element from a URI
+	 * @param element = string, the element we wish to extract
+	 * @param uri = string
+	 **/
+	var getFromUri = exports.getFromUri = function getFromUri(element, uri) {
+		var exploded = uri.split(':');
+	
+		if (exploded[0] == 'spotify') {
+	
+			if (element == 'userid' && exploded[1] == 'user') return exploded[2];
+			if (element == 'playlistid' && exploded[3] == 'playlist') return exploded[4];
+			if (element == 'artistid' && exploded[1] == 'artist') return exploded[2];
+			if (element == 'albumid' && exploded[1] == 'album') return exploded[2];
+			if (element == 'trackid' && exploded[1] == 'track') return exploded[2];
+			return null;
+		}
+	
+		return null;
+	};
+	
+	/**
+	 * Identify what kind of asset a URI is (playlist, album, etc)
+	 * @param uri = string
+	 * @return string
+	 **/
+	var uriType = exports.uriType = function uriType(uri) {
+		var exploded = uri.split(':');
+	
+		if (exploded[0] == 'spotify') {
+			switch (exploded[1]) {
+				case 'track':
+					return 'track';
+					break;
+				case 'artist':
+					return 'artist';
+					break;
+				case 'album':
+					return 'album';
+					break;
+				case 'user':
+					if (exploded[3] == 'playlist') return 'playlist';
+					if (exploded.length == 3) return 'user';
+					return null;
+					break;
+			}
+		}
+	
+		return null;
+	};
+
+/***/ },
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3861,7 +4002,7 @@
 	}
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -3988,7 +4129,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4027,7 +4168,7 @@
 	module.exports = keyOf;
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4298,144 +4439,6 @@
 	};
 	
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(TrackList);
-
-/***/ },
-/* 33 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	var sizedImages = exports.sizedImages = function sizedImages(images) {
-	
-		var sizes = {
-			small: false,
-			medium: false,
-			large: false,
-			huge: false
-		};
-	
-		if (images.length <= 0) return sizes;
-	
-		for (var i = 0; i < images.length; i++) {
-	
-			// spotify-styled images
-			if (typeof images[i].height !== 'undefined') {
-				if (images[i].height > 800) {
-					sizes.huge = images[i].url;
-				} else if (images[i].height > 600) {
-					sizes.large = images[i].url;
-				} else if (images[i].height > 280) {
-					sizes.medium = images[i].url;
-				} else {
-					sizes.small = images[i].url;
-				}
-	
-				// Mopidy-Images styled images
-			} else if (typeof images[i] == 'string') {
-				sizes.small = images[i];
-			}
-		}
-	
-		if (!sizes.medium) sizes.medium = sizes.small;
-		if (!sizes.large) sizes.large = sizes.medium;
-		if (!sizes.huge) sizes.huge = sizes.large;
-	
-		return sizes;
-	};
-	
-	var generateGuid = exports.generateGuid = function generateGuid() {
-		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = Math.random() * 16 | 0,
-			    v = c == 'x' ? r : r & 0x3 | 0x8;
-			return v.toString(16);
-		});
-	};
-	
-	var getCurrentPusherConnection = exports.getCurrentPusherConnection = function getCurrentPusherConnection(connections, connectionid) {
-		function isCurrentConnection(connection) {
-			return connection.connectionid == newProps.pusher.connectionid;
-		}
-	
-		var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
-		if (!currentConnection) return false;
-	
-		return currentConnection;
-	};
-	
-	/**
-	 * Figure out a URI's source namespace
-	 * @param uri = string
-	 **/
-	var uriSource = exports.uriSource = function uriSource(uri) {
-		var exploded = uri.split(':');
-		return exploded[0];
-	};
-	
-	var sourceIcon = exports.sourceIcon = function sourceIcon(uri) {
-		var source = uriSource(uri);
-		switch (source) {
-			case 'local':
-			case 'm3u':
-				return 'folder';
-				break;
-			default:
-				return source;
-		}
-	};
-	
-	/**
-	 * Get an element from a URI
-	 * @param element = string, the element we wish to extract
-	 * @param uri = string
-	 **/
-	var getFromUri = exports.getFromUri = function getFromUri(element, uri) {
-		var exploded = uri.split(':');
-	
-		if (exploded[0] == 'spotify') {
-	
-			if (element == 'userid' && exploded[1] == 'user') return exploded[2];
-			if (element == 'playlistid' && exploded[3] == 'playlist') return exploded[4];
-			if (element == 'artistid' && exploded[1] == 'artist') return exploded[2];
-			if (element == 'albumid' && exploded[1] == 'album') return exploded[2];
-			if (element == 'trackid' && exploded[1] == 'track') return exploded[2];
-			return null;
-		}
-	
-		return null;
-	};
-	
-	/**
-	 * Identify what kind of asset a URI is (playlist, album, etc)
-	 * @param uri = string
-	 * @return string
-	 **/
-	var uriType = exports.uriType = function uriType(uri) {
-		var exploded = uri.split(':');
-	
-		if (exploded[0] == 'spotify') {
-			switch (exploded[1]) {
-				case 'track':
-					return 'track';
-					break;
-				case 'artist':
-					return 'artist';
-					break;
-				case 'album':
-					return 'album';
-					break;
-				case 'user':
-					if (exploded[3] == 'playlist') return 'playlist';
-					if (exploded.length == 3) return 'user';
-					return null;
-					break;
-			}
-		}
-	
-		return null;
-	};
 
 /***/ },
 /* 34 */
@@ -4834,7 +4837,7 @@
 						var link = '/artist/' + artist.uri;
 						return _react2.default.createElement(
 							'span',
-							{ key: artist.uri },
+							{ key: 'index_' + artist.uri },
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: 'artist', to: link },
@@ -6615,7 +6618,7 @@
 	
 	var _getRouteParams2 = _interopRequireDefault(_getRouteParams);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _routerWarning = __webpack_require__(16);
 	
@@ -11489,7 +11492,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _helpers = __webpack_require__(33);
+	var _helpers = __webpack_require__(29);
 	
 	var helpers = _interopRequireWildcard(_helpers);
 	
@@ -11867,7 +11870,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	var Track = function (_React$Component) {
 		_inherits(Track, _React$Component);
@@ -12345,7 +12348,7 @@
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _PatternUtils = __webpack_require__(40);
 	
@@ -13627,7 +13630,7 @@
 	var _prodInvariant = __webpack_require__(5),
 	    _assign = __webpack_require__(9);
 	
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	
 	var invariant = __webpack_require__(3);
 	
@@ -13963,7 +13966,7 @@
 	
 	'use strict';
 	
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	var ReactElement = __webpack_require__(21);
 	
 	var emptyFunction = __webpack_require__(22);
@@ -14171,7 +14174,7 @@
 	var emptyObject = __webpack_require__(51);
 	var invariant = __webpack_require__(3);
 	var keyMirror = __webpack_require__(65);
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	var warning = __webpack_require__(4);
 	
 	var MIXINS_KEY = keyOf({ mixins: null });
@@ -17778,8 +17781,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	console.info('Bootstrapping...');
-	
 	var reducers = (0, _redux.combineReducers)({
 		ui: _reducer2.default,
 		pusher: _reducer4.default,
@@ -17836,6 +17837,8 @@
 		var storedSpotify = JSON.parse(localStorage.getItem('spotify'));
 		initialState.spotify = Object.assign(initialState.spotify, storedSpotify);
 	}
+	
+	console.log('Bootstrapping', initialState);
 	
 	var store = (0, _redux.createStore)(reducers, initialState, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware8.default, _middleware4.default, _middleware2.default, _middleware6.default));
 	
@@ -18101,7 +18104,7 @@
 	
 	var _redux = __webpack_require__(6);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -19560,11 +19563,13 @@
 	        return function (next) {
 	            return function (action) {
 	
-	                console.log(action); //, store.getState())
-	
 	                // proceed as normal first
 	                // this way, any reducers and middleware do their thing BEFORE we store our new state
 	                next(action);
+	
+	                // append our state to a global variable. This gives us access to debug the store at any point
+	                window._store = store;
+	                console.log(action);
 	
 	                switch (action.type) {
 	
@@ -19597,6 +19602,13 @@
 	                            host: action.config.host,
 	                            port: action.config.port
 	                        };
+	                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
+	                        break;
+	
+	                    case 'MOPIDY_URISCHEMES_FILTERED':
+	                        var mopidy = JSON.parse(localStorage.getItem('mopidy'));
+	                        if (!mopidy) mopidy = {};
+	                        Object.assign(mopidy, { uri_schemes: action.data });
 	                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
 	                        break;
 	
@@ -19818,6 +19830,25 @@
 	                        instruct(socket, store, action.call, action.value);
 	                        break;
 	
+	                    // send an instruction to the websocket
+	                    case 'MOPIDY_URISCHEMES':
+	                        var uri_schemes = action.data;
+	                        var remove = ['http', 'https', 'mms', 'rtmp', 'rtmps', 'rtsp', 'sc', 'yt', 'spotify'];
+	
+	                        // remove all our ignored types
+	                        for (var i = 0; i < remove.length; i++) {
+	                            var index = uri_schemes.indexOf(remove[i]);
+	                            if (index > -1) uri_schemes.splice(index, 1);
+	                        }
+	
+	                        // append with ':' to make them a mopidy URI
+	                        for (var i = 0; i < uri_schemes.length; i++) {
+	                            uri_schemes[i] = uri_schemes[i] + ':';
+	                        }
+	
+	                        store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
+	                        break;
+	
 	                    case 'MOPIDY_PLAY_TRACKS':
 	
 	                        // add our first track
@@ -20029,7 +20060,7 @@
 	                tlid: action.tlid
 	            });
 	
-	        case 'MOPIDY_URISCHEMES':
+	        case 'MOPIDY_URISCHEMES_FILTERED':
 	            return Object.assign({}, mopidy, {
 	                uri_schemes: action.data
 	            });
@@ -20128,7 +20159,7 @@
 	        case 'MOPIDY_SEARCH':
 	            var results = [];
 	            for (var i = 0; i < action.data.length; i++) {
-	                results = [].concat(_toConsumableArray(results), _toConsumableArray(action.data[i].tracks));
+	                if (action.data[i].tracks) results = [].concat(_toConsumableArray(results), _toConsumableArray(action.data[i].tracks));
 	            }
 	            return Object.assign({}, mopidy, {
 	                search_results_tracks: results
@@ -20150,7 +20181,7 @@
 	});
 	
 	var actions = __webpack_require__(45);
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	var PusherMiddleware = function () {
 	
@@ -20467,8 +20498,28 @@
 	        case 'SPOTIFY_PLAYLIST_LOADED':
 	            return Object.assign({}, spotify, { playlist: action.data });
 	
+	        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
+	            var playlist = spotify.playlist;
+	            Object.assign(playlist, { tracks: {
+	                    href: action.data.href,
+	                    next: action.data.next,
+	                    previous: action.data.previous,
+	                    items: [].concat(_toConsumableArray(spotify.playlist.tracks.items), _toConsumableArray(action.data.items))
+	                } });
+	            return Object.assign({}, spotify, { playlist: playlist });
+	
 	        case 'SPOTIFY_ALBUM_LOADED':
 	            return Object.assign({}, spotify, { album: action.data });
+	
+	        case 'SPOTIFY_ALBUM_LOADED_MORE':
+	            var album = spotify.album;
+	            Object.assign(album, { tracks: {
+	                    href: action.data.href,
+	                    next: action.data.next,
+	                    previous: action.data.previous,
+	                    items: [].concat(_toConsumableArray(spotify.album.tracks.items), _toConsumableArray(action.data.items))
+	                } });
+	            return Object.assign({}, spotify, { album: album });
 	
 	        case 'SPOTIFY_ARTIST_LOADED':
 	            return Object.assign({}, spotify, { artist: action.data });
@@ -20653,7 +20704,7 @@
 	
 	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -20695,7 +20746,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	var Album = function (_React$Component) {
 		_inherits(Album, _React$Component);
@@ -21028,7 +21079,7 @@
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -21066,7 +21117,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	var Artist = function (_React$Component) {
 		_inherits(Artist, _React$Component);
@@ -21272,7 +21323,7 @@
 	
 	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -21283,6 +21334,10 @@
 	var _Dater = __webpack_require__(68);
 	
 	var _Dater2 = _interopRequireDefault(_Dater);
+	
+	var _LazyLoadListener = __webpack_require__(39);
+	
+	var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 	
 	var _actions = __webpack_require__(10);
 	
@@ -21302,7 +21357,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var helpers = __webpack_require__(33);
+	var helpers = __webpack_require__(29);
 	
 	var Playlist = function (_React$Component) {
 		_inherits(Playlist, _React$Component);
@@ -21342,8 +21397,16 @@
 				}
 			}
 		}, {
+			key: 'loadMore',
+			value: function loadMore() {
+				if (!this.props.spotify.playlist || !this.props.spotify.playlist.tracks.next) return;
+				this.props.spotifyActions.getURL(this.props.spotify.playlist.tracks.next, 'SPOTIFY_PLAYLIST_LOADED_MORE');
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+	
 				var source = helpers.uriSource(this.props.params.uri);
 				if (source == 'spotify') var playlist = this.props.spotify.playlist;
 				if (source == 'm3u') var playlist = this.props.mopidy.playlist;
@@ -21400,7 +21463,10 @@
 							)
 						),
 						_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items })
-					)
+					),
+					_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
+							return _this2.loadMore();
+						} })
 				);
 			}
 		}]);
@@ -21451,7 +21517,7 @@
 	
 	var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -21617,7 +21683,7 @@
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -21678,7 +21744,7 @@
 		}, {
 			key: 'componentWillReceiveProps',
 			value: function componentWillReceiveProps(newProps) {
-				if (this.props.params.query != newProps.params.query) {
+				if (this.props.params.query != newProps.params.query || !this.props.mopidy.connected && newProps.mopidy.connected) {
 					this.performSearch(newProps);
 				}
 			}
@@ -21688,7 +21754,9 @@
 				var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 	
 				this.props.spotifyActions.getSearchResults(props.params.query);
-				if (props.mopidy.connected) this.props.mopidyActions.getSearchResults(props.params.query);
+				if (props.mopidy.connected) {
+					this.props.mopidyActions.getSearchResults(props.params.query, props.mopidy.uri_schemes);
+				}
 			}
 		}, {
 			key: 'loadMore',
@@ -23713,7 +23781,7 @@
 	
 	var _reactRouter = __webpack_require__(8);
 	
-	var _TrackList = __webpack_require__(32);
+	var _TrackList = __webpack_require__(33);
 	
 	var _TrackList2 = _interopRequireDefault(_TrackList);
 	
@@ -37547,7 +37615,7 @@
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _InternalPropTypes = __webpack_require__(35);
 	
@@ -37683,7 +37751,7 @@
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _InternalPropTypes = __webpack_require__(35);
 	
@@ -37817,7 +37885,7 @@
 	
 	var _RouterContext2 = _interopRequireDefault(_RouterContext);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _RouterUtils = __webpack_require__(114);
 	
@@ -38625,7 +38693,7 @@
 	
 	var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	var _RouterUtils = __webpack_require__(114);
 	
@@ -38716,7 +38784,7 @@
 	
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 	
-	var _RouteUtils = __webpack_require__(29);
+	var _RouteUtils = __webpack_require__(30);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -39822,7 +39890,7 @@
 	var SyntheticCompositionEvent = __webpack_require__(311);
 	var SyntheticInputEvent = __webpack_require__(314);
 	
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	
 	var END_KEYCODES = [9, 13, 27, 32]; // Tab, Return, Esc, Space
 	var START_KEYCODE = 229;
@@ -40432,7 +40500,7 @@
 	var getEventTarget = __webpack_require__(94);
 	var isEventSupported = __webpack_require__(96);
 	var isTextInputElement = __webpack_require__(148);
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	
 	var topLevelTypes = EventConstants.topLevelTypes;
 	
@@ -40805,7 +40873,7 @@
 	
 	'use strict';
 	
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	
 	/**
 	 * Module that is injectable into `EventPluginHub`, that specifies a
@@ -40842,7 +40910,7 @@
 	var ReactDOMComponentTree = __webpack_require__(12);
 	var SyntheticMouseEvent = __webpack_require__(62);
 	
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	
 	var topLevelTypes = EventConstants.topLevelTypes;
 	
@@ -40949,7 +41017,7 @@
 	
 	var _assign = __webpack_require__(9);
 	
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	
 	var getTextContentAccessor = __webpack_require__(146);
 	
@@ -42699,7 +42767,7 @@
 	var escapeTextContentForBrowser = __webpack_require__(63);
 	var invariant = __webpack_require__(3);
 	var isEventSupported = __webpack_require__(96);
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	var shallowEqual = __webpack_require__(100);
 	var validateDOMNesting = __webpack_require__(99);
 	var warning = __webpack_require__(4);
@@ -45795,7 +45863,7 @@
 	
 	var EventListener = __webpack_require__(150);
 	var ExecutionEnvironment = __webpack_require__(17);
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	var ReactDOMComponentTree = __webpack_require__(12);
 	var ReactUpdates = __webpack_require__(24);
 	
@@ -46740,7 +46808,7 @@
 	var _assign = __webpack_require__(9);
 	
 	var CallbackQueue = __webpack_require__(125);
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	var ReactBrowserEventEmitter = __webpack_require__(60);
 	var ReactInputSelection = __webpack_require__(135);
 	var ReactInstrumentation = __webpack_require__(19);
@@ -47008,7 +47076,7 @@
 	
 	var _assign = __webpack_require__(9);
 	
-	var PooledClass = __webpack_require__(30);
+	var PooledClass = __webpack_require__(31);
 	var Transaction = __webpack_require__(50);
 	var ReactInstrumentation = __webpack_require__(19);
 	var ReactServerUpdateQueue = __webpack_require__(305);
@@ -47565,7 +47633,7 @@
 	
 	var getActiveElement = __webpack_require__(152);
 	var isTextInputElement = __webpack_require__(148);
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	var shallowEqual = __webpack_require__(100);
 	
 	var topLevelTypes = EventConstants.topLevelTypes;
@@ -47778,7 +47846,7 @@
 	var emptyFunction = __webpack_require__(22);
 	var getEventCharCode = __webpack_require__(92);
 	var invariant = __webpack_require__(3);
-	var keyOf = __webpack_require__(31);
+	var keyOf = __webpack_require__(32);
 	
 	var topLevelTypes = EventConstants.topLevelTypes;
 	

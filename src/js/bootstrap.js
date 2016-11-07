@@ -1,6 +1,4 @@
 
-console.info('Bootstrapping...');
-
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import ui from './services/ui/reducer'
@@ -70,6 +68,8 @@ if( localStorage.getItem('spotify') ){
 	var storedSpotify = JSON.parse( localStorage.getItem('spotify') );
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
+
+console.log('Bootstrapping', initialState)
 
 let store = createStore(
 	reducers, 

@@ -5,12 +5,14 @@ const localstorageMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
-        
-        console.log(action);//, store.getState())
 
         // proceed as normal first
         // this way, any reducers and middleware do their thing BEFORE we store our new state
         next(action);
+
+        // append our state to a global variable. This gives us access to debug the store at any point
+        window._store = store
+        console.log(action)
 
         switch( action.type ){
 
@@ -45,6 +47,13 @@ const localstorageMiddleware = (function(){
                     host: action.config.host,
                     port: action.config.port
                 };
+                localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                break;
+
+            case 'MOPIDY_URISCHEMES_FILTERED':
+                var mopidy = JSON.parse( localStorage.getItem('mopidy') );
+                if( !mopidy ) mopidy = {};
+                Object.assign( mopidy, { uri_schemes: action.data });
                 localStorage.setItem('mopidy', JSON.stringify(mopidy));
                 break;
 

@@ -138,6 +138,8 @@ export function connect(){
 
         dispatch({ type: 'SPOTIFY_CONNECTING' });
 
+        // send a generic request to ensure spotify is up and running
+        // there is no 'test' or 'ping' endpoint on the Spotify API
         sendRequest( dispatch, getState, 'browse/categories?limit=1' )
             .then( response => {
                 dispatch({

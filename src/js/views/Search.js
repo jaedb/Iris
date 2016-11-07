@@ -27,14 +27,17 @@ class Search extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps){
-		if( this.props.params.query != newProps.params.query ){
-			this.performSearch( newProps )
+		if( this.props.params.query != newProps.params.query ||
+			!this.props.mopidy.connected && newProps.mopidy.connected ){
+				this.performSearch( newProps )
 		}
 	}
 
 	performSearch( props = this.props ){
 		this.props.spotifyActions.getSearchResults( props.params.query )
-		if( props.mopidy.connected ) this.props.mopidyActions.getSearchResults( props.params.query )
+		if( props.mopidy.connected ){
+			this.props.mopidyActions.getSearchResults( props.params.query, props.mopidy.uri_schemes )
+		}
 	}
 
 	loadMore(type){

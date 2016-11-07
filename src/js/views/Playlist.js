@@ -8,6 +8,7 @@ let helpers = require('../helpers.js')
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
 import Dater from '../components/Dater'
+import LazyLoadListener from '../components/LazyLoadListener'
 
 import * as spotifyActions from '../services/spotify/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -41,6 +42,11 @@ class Playlist extends React.Component{
 		}
 	}
 
+	loadMore(){
+		if( !this.props.spotify.playlist || !this.props.spotify.playlist.tracks.next ) return
+		this.props.spotifyActions.getURL( this.props.spotify.playlist.tracks.next, 'SPOTIFY_PLAYLIST_LOADED_MORE' );
+	}
+
 	render(){
 		var source = helpers.uriSource( this.props.params.uri );
 		if( source == 'spotify' ) var playlist = this.props.spotify.playlist
@@ -64,6 +70,7 @@ class Playlist extends React.Component{
 					</div>
 					<TrackList tracks={ playlist.tracks.items } />
 				</div>
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		)
 	}

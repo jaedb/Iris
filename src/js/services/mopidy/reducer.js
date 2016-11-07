@@ -23,7 +23,7 @@ export default function reducer(mopidy = {}, action){
                 tlid: action.tlid
             });
 
-        case 'MOPIDY_URISCHEMES':
+        case 'MOPIDY_URISCHEMES_FILTERED':
             return Object.assign({}, mopidy, {
                 uri_schemes: action.data
             });
@@ -124,7 +124,7 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_SEARCH':
             var results = []
             for( var i = 0; i < action.data.length; i++ ){
-                results = [...results, ...action.data[i].tracks]
+                if( action.data[i].tracks ) results = [...results, ...action.data[i].tracks]
             }
             return Object.assign({}, mopidy, {
                 search_results_tracks: results

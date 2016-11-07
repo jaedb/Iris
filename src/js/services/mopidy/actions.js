@@ -167,14 +167,16 @@ export function getAlbums(){
  * Other general actions
  **/
 
-export function getSearchResults(query, fields = ['any'], backends = null){
+export function getSearchResults(query, backends = null, fields = ['any']){
 	var queryObj = {};
 	for( var i = 0; i < fields.length; i++ ){
 		queryObj[fields[i]] = [query];
 	}
+
 	return {
 		type: 'MOPIDY_INSTRUCT',
 		call: 'library.search',
 		value: { query: queryObj, uris: backends }
 	}
 }
+ 
