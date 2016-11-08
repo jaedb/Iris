@@ -112,6 +112,13 @@ export function getTimePosition(){
 	}
 }
 
+export function setTimePosition( time_position ){
+	return {
+		type: 'MOPIDY_TIMEPOSITION',
+		data: time_position
+	}
+}
+
 
 
 /**

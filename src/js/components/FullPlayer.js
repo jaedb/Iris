@@ -80,6 +80,11 @@ class FullPlayer extends React.Component{
 
 				{ artwork }
 
+				<div className="current-track">
+					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
+					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
+				</div>
+
 				<div className="controls cf">
 					<div className="pull-left">
 						<a onClick={() => this.props.mopidyActions.previous()}>
@@ -100,10 +105,8 @@ class FullPlayer extends React.Component{
 					</div>
 				</div>
 
-				<div className="current-track">
-					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
-					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
-				</div>
+				<ProgressSlider />
+
 			</div>
 		);
 	}

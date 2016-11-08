@@ -3285,62 +3285,6 @@ label .input .text {
   padding: 10px 14px;
 }
 
-.slider {
-  position: relative;
-  cursor: pointer;
-}
-
-.slider .track {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-}
-
-.slider .track .progress {
-  position: absolute;
-  background: #08d58f;
-  pointer-events: none;
-  left: 0;
-}
-
-.slider.horizontal {
-  margin: 10px 0;
-  height: 20px;
-}
-
-.slider.horizontal .track {
-  height: 2px;
-  top: 9px;
-  right: 0;
-  left: 0;
-}
-
-.slider.horizontal .track .progress {
-  top: 0;
-  height: 100%;
-}
-
-.slider.vertical {
-  margin: 10px 0;
-  width: 20px;
-  height: 100%;
-}
-
-.slider.vertical .track {
-  width: 2px;
-  top: 0;
-  bottom: 0;
-  left: 9px;
-}
-
-.slider.vertical .track .progress {
-  bottom: 0;
-  width: 100%;
-}
-
 .context-menu {
   position: fixed;
   left: 0;
@@ -3435,6 +3379,62 @@ label .input .text {
 
 .search-form.sidebar {
   padding: 10px 15px 0 15px;
+}
+
+.slider {
+  position: relative;
+  cursor: pointer;
+}
+
+.slider .track {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.slider .track .progress {
+  position: absolute;
+  background: #08d58f;
+  pointer-events: none;
+  left: 0;
+}
+
+.slider.horizontal {
+  margin: 10px 0;
+  height: 20px;
+}
+
+.slider.horizontal .track {
+  height: 2px;
+  top: 9px;
+  right: 0;
+  left: 0;
+}
+
+.slider.horizontal .track .progress {
+  top: 0;
+  height: 100%;
+}
+
+.slider.vertical {
+  margin: 10px 0;
+  width: 20px;
+  height: 100%;
+}
+
+.slider.vertical .track {
+  width: 2px;
+  top: 0;
+  bottom: 0;
+  left: 9px;
+}
+
+.slider.vertical .track .progress {
+  bottom: 0;
+  width: 100%;
 }
 
 .player .current-track {
@@ -4047,7 +4047,8 @@ main header h1 {
 }
 
 .queue-view .player .artwork,
-.queue-view .player .controls {
+.queue-view .player .controls,
+.queue-view .player .slider {
   display: block;
   max-width: 400px;
   margin: 0 auto;
@@ -4066,7 +4067,12 @@ main header h1 {
 }
 
 .queue-view .player .current-track {
+  padding: 20px 0 0 0;
   font-weight: 700;
+}
+
+.queue-view .player .slider .track {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .search-view .search-result-sections {

@@ -17,26 +17,27 @@ class ProgressSlider extends React.Component{
 	}
 
 	componentDidMount(){
-
-		if( this.props.mopidy.connected && this.props.mopidy.state == 'playing' ){
-			this.setState({ animating: true })
-		}
-
+		var interval_counter = 0
 		setInterval(() => {
-			this.updateProgress()
-		}, 10000);
-	}
+			if( this.props.mopidy.state == 'playing' ){
 
-	componentWillReceiveProps( nextProps ){
-		if( this.state.animating && nextProps.mopidy.state != 'playing' ){
-			this.setState({ animating: false })
-			console.log('stop animating')	// doesn't work?
-		}
+				// every 10 seconds get real position from Mopidy
+				if( interval_counter % 10 == 0 ){
+					this.updateProgress()
+				}else{
+					var time_position = this.props.mopidy.time_position
+
+					// only add 600ms every 1000ms as Mopidy's time tracker is a bit shit
+					this.props.mopidyActions.setTimePosition( time_position + 600 )					
+				}
+
+				interval_counter++
+			}
+		}, 1000);
 	}
 
 	updateProgress(){
 		if( this.props.mopidy.connected && this.props.mopidy.state == 'playing' ){
-			this.setState({ animating: true })
 			this.props.mopidyActions.getTimePosition()
 		}
 	}
@@ -57,8 +58,6 @@ class ProgressSlider extends React.Component{
 	} 
 
 	render(){
-		var className = 'slider horizontal'
-		if( this.state.animating ) className += ' animating'
 		var percent = 0
 		if( this.props.mopidy.connected && typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
 			percent = this.props.mopidy.time_position / this.props.mopidy.current_tltrack.track.length
@@ -67,7 +66,7 @@ class ProgressSlider extends React.Component{
 		}
 
 		return (
-			<div className={className} onClick={ (e) => this.handleClick(e) } >
+			<div className='slider horizontal' onClick={ (e) => this.handleClick(e) } >
 				<div className="track">
 					<div className="progress" style={{ width: (percent)+'%' }}></div>
 				</div>

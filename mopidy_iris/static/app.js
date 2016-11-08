@@ -1456,6 +1456,7 @@
 	exports.setVolume = setVolume;
 	exports.seek = seek;
 	exports.getTimePosition = getTimePosition;
+	exports.setTimePosition = setTimePosition;
 	exports.getPlaylists = getPlaylists;
 	exports.getPlaylist = getPlaylist;
 	exports.getDirectory = getDirectory;
@@ -1576,6 +1577,13 @@
 		return {
 			type: 'MOPIDY_INSTRUCT',
 			call: 'playback.getTimePosition'
+		};
+	}
+	
+	function setTimePosition(time_position) {
+		return {
+			type: 'MOPIDY_TIMEPOSITION',
+			data: time_position
 		};
 	}
 	
@@ -11432,7 +11440,7 @@
 /* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
 	/** @author Brian Cavalier */
 	/** @author John Hann */
 	
@@ -11890,27 +11898,28 @@
 			value: function componentDidMount() {
 				var _this2 = this;
 	
-				if (this.props.mopidy.connected && this.props.mopidy.state == 'playing') {
-					this.setState({ animating: true });
-				}
-	
+				var interval_counter = 0;
 				setInterval(function () {
-					_this2.updateProgress();
-				}, 10000);
-			}
-		}, {
-			key: 'componentWillReceiveProps',
-			value: function componentWillReceiveProps(nextProps) {
-				if (this.state.animating && nextProps.mopidy.state != 'playing') {
-					this.setState({ animating: false });
-					console.log('stop animating'); // doesn't work?
-				}
+					if (_this2.props.mopidy.state == 'playing') {
+	
+						// every 10 seconds get real position from Mopidy
+						if (interval_counter % 10 == 0) {
+							_this2.updateProgress();
+						} else {
+							var time_position = _this2.props.mopidy.time_position;
+	
+							// only add 600ms every 1000ms as Mopidy's time tracker is a bit shit
+							_this2.props.mopidyActions.setTimePosition(time_position + 600);
+						}
+	
+						interval_counter++;
+					}
+				}, 1000);
 			}
 		}, {
 			key: 'updateProgress',
 			value: function updateProgress() {
 				if (this.props.mopidy.connected && this.props.mopidy.state == 'playing') {
-					this.setState({ animating: true });
 					this.props.mopidyActions.getTimePosition();
 				}
 			}
@@ -11935,8 +11944,6 @@
 			value: function render() {
 				var _this3 = this;
 	
-				var className = 'slider horizontal';
-				if (this.state.animating) className += ' animating';
 				var percent = 0;
 				if (this.props.mopidy.connected && typeof this.props.mopidy.current_tltrack !== 'undefined' && typeof this.props.mopidy.current_tltrack.track !== 'undefined') {
 					percent = this.props.mopidy.time_position / this.props.mopidy.current_tltrack.track.length;
@@ -11946,7 +11953,7 @@
 	
 				return _react2.default.createElement(
 					'div',
-					{ className: className, onClick: function onClick(e) {
+					{ className: 'slider horizontal', onClick: function onClick(e) {
 							return _this3.handleClick(e);
 						} },
 					_react2.default.createElement(
@@ -18689,6 +18696,16 @@
 					artwork,
 					_react2.default.createElement(
 						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							mopidy_track ? mopidy_track.track.name : null
+						),
+						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'controls cf' },
 						_react2.default.createElement(
 							'div',
@@ -18727,16 +18744,7 @@
 							this.renderRepeatButton()
 						)
 					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'current-track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'title' },
-							mopidy_track ? mopidy_track.track.name : null
-						),
-						mopidy_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: mopidy_track.track.artists }) : null
-					)
+					_react2.default.createElement(_ProgressSlider2.default, null)
 				);
 			}
 		}]);
