@@ -22,6 +22,8 @@ export default class PlaylistListItem extends React.Component{
 	}
 
 	render(){
+		if( !this.props.item ) return null
+
 		return (
 			<ListItem extraClasses="playlist" link={ '/playlist/'+this.props.item.uri }>
 				<span className="col name">

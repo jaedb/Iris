@@ -45,11 +45,9 @@
 	&.track {
 
 		.col {
-			&.name,
+			&.name { width: 40%; }
 			&.artists,
-			&.album {
-				width: 30%;
-			}
+			&.album { width: 26%; }
 		}
 
 		.select-state {

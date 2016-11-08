@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome'
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
+import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 
@@ -185,16 +186,31 @@ class Settings extends React.Component{
 			        <SpotifyAuthenticationFrame />
 
 					<h4 className="underline">Advanced</h4>
-					<label>
-						<div className="label">Version</div>
-						<div className="input read-only">
-			        		<VersionManager />
-			        	</div>
-			        </label>
+
 					<label>
 						<div className="label">Connections</div>
-						<div className="input read-only">
-			        		<PusherConnectionList />
+						<div className="input">
+							<span className="text">
+			        			<PusherConnectionList />
+			        		</span>
+			        	</div>
+			        </label>
+					
+					<label>
+						<div className="label">Backends</div>
+						<div className="input">
+							<span className="text">
+				        		<URISchemesList />
+			        		</span>
+			        	</div>
+			        </label>
+					
+					<label>
+						<div className="label">Version</div>
+						<div className="input">
+							<span className="text">
+				        		<VersionManager />
+			        		</span>
 			        	</div>
 			        </label>
 

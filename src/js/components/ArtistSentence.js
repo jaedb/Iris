@@ -10,6 +10,8 @@ export default class ArtistSentence extends React.Component{
 	}
 
 	render(){
+		if( !this.props.artists ) return <span>-</span>
+
 		return (
 			<span className="artist-sentence">
 				{
@@ -20,10 +22,16 @@ export default class ArtistSentence extends React.Component{
 						}else if( index < this.props.artists.length - 2 ){
 							separator = ', ';
 						}
-						var link = '/artist/' + artist.uri;
+						if( !artist.name ) artist.name = '-'
+						if( artist.uri ){
+							var content = <Link className="artist" to={'/artist/'+artist.uri}>{ artist.name }</Link>
+						}else{
+							var content = <span>{ artist.name }</span>
+						}
 						return (
 							<span key={'index_'+artist.uri}>
-								<Link className="artist" to={ link }>{ artist.name }</Link>{ separator }
+								{ content }
+								{ separator }
 							</span>
 						);
 					})

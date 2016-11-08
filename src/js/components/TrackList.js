@@ -130,51 +130,50 @@ class TrackList extends React.Component{
 	}
 
 	render(){
+		if( !this.state.tracks ) return null
+
 		let self = this;
-		if( this.state.tracks ){
-			return (
-				<ul>
-					<li className="list-item header track">
-						<span className="col name">Name</span>
-						<span className="col artists">Artists</span>
-						<span className="col album">Album</span>
-						<span className="col duration">Duration</span>
-					</li>
-					{
-						this.state.tracks.map(
-							(track, index) => {
+		return (
+			<ul>
+				<li className="list-item header track">
+					<span className="col name">Name</span>
+					<span className="col artists">Artists</span>
+					<span className="col album">Album</span>
+					<span className="col duration">Length</span>
+				</li>
+				{
+					this.state.tracks.map(
+						(track, index) => {
 
-								// flatten nested track objects (as in the case of TlTracks)
-								if( typeof(track.track) !== 'undefined' ){
+							// flatten nested track objects (as in the case of TlTracks)
+							if( typeof(track.track) !== 'undefined' ){
 
-									// see if we're the current tlTrack
-									// TODO: figure out why this isn't fired when the tracklist changes
-									if( self.props.mopidy.current_tltrack && self.props.mopidy.current_tltrack.tlid == track.tlid ){
-										track.playing = true;
-									}else{
-										track.playing = false;
-									}
+								// see if we're the current tlTrack
+								// TODO: figure out why this isn't fired when the tracklist changes
+								if( self.props.mopidy.current_tltrack && self.props.mopidy.current_tltrack.tlid == track.tlid ){
+									track.playing = true;
+								}else{
+									track.playing = false;
+								}
 
-									for( var property in track.track ){
-										if( track.track.hasOwnProperty(property) ){
-											track[property] = track.track[property]
-										}
+								for( var property in track.track ){
+									if( track.track.hasOwnProperty(property) ){
+										track[property] = track.track[property]
 									}
 								}
-								return <Track
-										show_source_icon={ this.props.show_source_icon }
-										key={index+'_'+track.uri} 
-										track={track} 
-										handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
-										handleClick={(e) => self.handleClick(e, index)}
-										handleContextMenu={(e) => self.handleContextMenu(e, index)} />
 							}
-						)
-					}
-				</ul>
-			);
-		}
-		return null;
+							return <Track
+									show_source_icon={ this.props.show_source_icon }
+									key={index+'_'+track.uri} 
+									track={track} 
+									handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
+									handleClick={(e) => self.handleClick(e, index)}
+									handleContextMenu={(e) => self.handleContextMenu(e, index)} />
+						}
+					)
+				}
+			</ul>
+		);
 	}
 }
 

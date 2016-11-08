@@ -65,8 +65,8 @@
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 6 )
-			}	
+				@include grid_item( 5 )
+			}
 		}
 	}
 

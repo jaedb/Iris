@@ -34,8 +34,9 @@ export default class Track extends React.Component{
 	}
 
 	render(){
-		var track = this.props.track;
+		if( !this.props.track ) return null
 
+		var track = this.props.track;
 		var className = 'list-item track';
 		if( typeof(track.selected) !== 'undefined' && track.selected ) className += ' selected';
 		if( track.playing ) className += ' playing';

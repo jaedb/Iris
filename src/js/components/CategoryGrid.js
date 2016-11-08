@@ -9,22 +9,21 @@ export default class CategoryGrid extends React.Component{
 	}
 
 	render(){
-		if( this.props.categories ){
-			var className = "grid category-grid"
-			if( this.props.className ) className += ' '+this.props.className
-			return (
-				<div className={className}>
-					{
-						this.props.categories.map(
-							(category, index) => {
-								return <GridItem item={category} key={index} link={'/discover/categories/'+category.id} />
-							}
-						)
-					}
-				</div>
-			);
-		}
-		return null;
+		if( !this.props.categories ) return null
+
+		var className = "grid category-grid"
+		if( this.props.className ) className += ' '+this.props.className
+		return (
+			<div className={className}>
+				{
+					this.props.categories.map(
+						(category, index) => {
+							return <GridItem item={category} key={index} link={'/discover/categories/'+category.id} />
+						}
+					)
+				}
+			</div>
+		);
 	}
 }
 

@@ -149,7 +149,7 @@ const MopidyMiddleware = (function(){
             // send an instruction to the websocket
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','yt','spotify']
+                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
 
                 // remove all our ignored types
                 for( var i = 0; i < remove.length; i++ ){

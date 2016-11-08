@@ -56,10 +56,29 @@ class FullPlayer extends React.Component{
 			mopidy_track = this.props.mopidy.current_tltrack;
 		}
 
+		var artwork = <span className="artwork"><Thumbnail size="huge" images={[]} /></span>
+
+		if( this.props.spotify.track ){
+			artwork = (
+				<Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}>
+					<Thumbnail size="huge" images={this.props.spotify.track.album.images} />
+				</Link>
+			)
+		}else if( mopidy_track.track && mopidy_track.track.album && mopidy_track.track.album.images ){			
+			artwork = (
+				<span className="artwork">
+					<Thumbnail size="huge" images={mopidy_track.track.album.images} />
+				</span>
+			)
+		}else{
+			// TODO: get artwork from lastFM
+		}
+
+
 		return (
 			<div className="player">
 
-				{ this.props.spotify.track && !this.props.mini ? <Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}><Thumbnail size="huge" images={this.props.spotify.track.album.images} /></Link> : <Link className="artwork"><Thumbnail size="huge" images={[]} /></Link> }
+				{ artwork }
 
 				<div className="controls cf">
 					<div className="pull-left">

@@ -10,6 +10,8 @@ export default class ArtistList extends React.Component{
 	}
 
 	render(){
+		if( !this.props.artists ) return null
+
 		return (
 			<div className="artist-list">
 				{

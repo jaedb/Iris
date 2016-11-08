@@ -3656,8 +3656,12 @@ aside .player .artist-sentence .artist:hover {
   padding-bottom: 2px;
 }
 
-.list-item.track .col.name, .list-item.track .col.artists, .list-item.track .col.album {
-  width: 30%;
+.list-item.track .col.name {
+  width: 40%;
+}
+
+.list-item.track .col.artists, .list-item.track .col.album {
+  width: 26%;
 }
 
 .list-item.track .select-state {
@@ -3782,9 +3786,9 @@ aside .player .artist-sentence .artist:hover {
     display: block;
   }
   .grid:not(.mini) .grid-item {
-    width: 12.66667%;
+    width: 16%;
   }
-  .grid:not(.mini) .grid-item:nth-child(6)::after {
+  .grid:not(.mini) .grid-item:nth-child(5)::after {
     content: '';
     clear: both;
     display: block;

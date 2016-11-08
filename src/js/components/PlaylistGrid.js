@@ -9,22 +9,21 @@ export default class PlaylistGrid extends React.Component{
 	}
 
 	render(){
-		if( this.props.playlists ){
-			var className = "grid playlist-grid"
-			if( this.props.className ) className += ' '+this.props.className
-			return (
-				<div className={className}>
-					{
-						this.props.playlists.map(
-							(playlist, index) => {
-								return <GridItem item={playlist} key={index} link={'/playlist/'+playlist.uri} />
-							}
-						)
-					}
-				</div>
-			);
-		}
-		return null;
+		if( !this.props.playlists ) return null
+
+		var className = "grid playlist-grid"
+		if( this.props.className ) className += ' '+this.props.className
+		return (
+			<div className={className}>
+				{
+					this.props.playlists.map(
+						(playlist, index) => {
+							return <GridItem item={playlist} key={index} link={'/playlist/'+playlist.uri} />
+						}
+					)
+				}
+			</div>
+		);
 	}
 }
 

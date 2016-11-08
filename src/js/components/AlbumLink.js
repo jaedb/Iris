@@ -10,6 +10,9 @@ export default class AlbumLink extends React.Component{
 	}
 
 	render(){
+		if( !this.props.album ) return <span>-</span>
+		if( !this.props.album.uri ) return <span>{ this.props.album.name }</span>
+
 		var link = '/album/' + this.props.album.uri;
 		return (
 			<Link to={link} className="album-link">{ this.props.album.name }</Link>

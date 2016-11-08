@@ -23,6 +23,8 @@ export default class List extends React.Component{
 	}
 
 	render(){
+		if( !this.props.rows ) return null
+
 		return (
 			<div className="list">
 				{ this.renderHeader() }
