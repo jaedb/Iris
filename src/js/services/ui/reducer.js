@@ -19,6 +19,11 @@ export default function reducer(ui = {}, action){
         case 'UI_LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
 
+        case 'UI_CURRENT_TRACK':
+            var current_track = ui.current_track;
+            Object.assign({}, current_track, action.track );
+            return Object.assign({}, ui, { current_track: current_track });
+
         default:
             return ui
     }

@@ -49,6 +49,30 @@ class FullPlayer extends React.Component{
 		return button;
 	}
 
+	renderArtwork(){
+		if( this.props.spotify.track ){
+			return (
+				<Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}>
+					<Thumbnail size="huge" images={this.props.spotify.track.album.images} />
+				</Link>
+			)
+		}else if( 
+			this.props.mopidy.current_tltrack && 
+			this.props.mopidy.current_tltrack.track && 
+			this.props.mopidy.current_tltrack.track.album && 
+			this.props.mopidy.current_tltrack.track.album.images ){			
+			return (
+				<span className="artwork">
+					<Thumbnail size="huge" images={mopidy_track.track.album.images} />
+				</span>
+			)
+		}
+
+		// TODO: get artwork from lastFM
+
+		return <span className="artwork"><Thumbnail size="huge" images={[]} /></span>
+	}
+
 	render(){
 		var mopidy_track = false;
 		var images = [];
@@ -56,29 +80,11 @@ class FullPlayer extends React.Component{
 			mopidy_track = this.props.mopidy.current_tltrack;
 		}
 
-		var artwork = <span className="artwork"><Thumbnail size="huge" images={[]} /></span>
-
-		if( this.props.spotify.track ){
-			artwork = (
-				<Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}>
-					<Thumbnail size="huge" images={this.props.spotify.track.album.images} />
-				</Link>
-			)
-		}else if( mopidy_track.track && mopidy_track.track.album && mopidy_track.track.album.images ){			
-			artwork = (
-				<span className="artwork">
-					<Thumbnail size="huge" images={mopidy_track.track.album.images} />
-				</span>
-			)
-		}else{
-			// TODO: get artwork from lastFM
-		}
-
 
 		return (
 			<div className="player">
 
-				{ artwork }
+				{ this.renderArtwork() }
 
 				<div className="current-track">
 					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>

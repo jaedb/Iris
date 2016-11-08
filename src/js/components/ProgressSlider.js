@@ -28,7 +28,8 @@ class ProgressSlider extends React.Component{
 					var time_position = this.props.mopidy.time_position
 
 					// only add 600ms every 1000ms as Mopidy's time tracker is a bit shit
-					this.props.mopidyActions.setTimePosition( time_position + 600 )					
+					// TODO: Why does this kill UI?
+					//this.props.mopidyActions.setTimePosition( time_position + 600 )					
 				}
 
 				interval_counter++

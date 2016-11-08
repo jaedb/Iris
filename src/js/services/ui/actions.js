@@ -16,6 +16,13 @@ export function hideContextMenu(){
 	}
 }
 
+export function setCurrentTrack( track ){
+    return {
+        type: 'UI_CURRENT_TRACK',
+        track: track
+    }
+}
+
 export function lazyLoading( start ){
     return {
         type: 'UI_LAZY_LOADING',
