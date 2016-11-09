@@ -44,6 +44,18 @@ export default class Parallax extends React.Component{
         window.removeEventListener("scroll", this.handleScroll);
     }
 
+	componentWillReceiveProps( nextProps ){
+		var url = helpers.sizedImages( nextProps.images ).huge;
+		this.setState({ url: url, image: false, loaded: false })
+		this.loadImage( url )
+			.then(
+				response => {
+					this.setState({ url: url, image: response, loaded: true })
+					this.updateCanvas( response )
+				}
+			)
+	}
+
     handleResize(e){
     	this.updateCanvas( this.state.image );
     }
