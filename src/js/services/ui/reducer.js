@@ -2,7 +2,13 @@
 export default function reducer(ui = {}, action){
     switch (action.type) {
 
-        case 'UI_SHOW_CONTEXT_MENU':
+        case 'LAZY_LOADING':
+            return Object.assign({}, ui, { lazy_loading: action.start });
+
+        /**
+         * Context menu
+         **/
+        case 'SHOW_CONTEXT_MENU':
             return Object.assign({}, ui, { 
             	context_menu: { 
             		show: true,
@@ -13,11 +19,14 @@ export default function reducer(ui = {}, action){
             	}
             });
 
-        case 'UI_HIDE_CONTEXT_MENU':
+        case 'HIDE_CONTEXT_MENU':
             return Object.assign({}, ui, { context_menu: { show: false } });
 
-        case 'UI_LAZY_LOADING':
-            return Object.assign({}, ui, { lazy_loading: action.start });
+
+        /**
+         * General assets
+         * Playlists/albums/etc
+         **/
 
         case 'SPOTIFY_ALBUM_LOADED':
         case 'MOPIDY_ALBUM_LOADED':
@@ -87,7 +96,7 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { search_results: action.data })
 
         case 'MOPIDY_SEARCH':
-        
+
             // collate all our different sources into one array
             var tracks = []
             for( var i = 0; i < action.data.length; i++ ){

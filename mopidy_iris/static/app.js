@@ -4547,7 +4547,7 @@
 	    var data = arguments[2];
 	
 	    return {
-	        type: 'UI_SHOW_CONTEXT_MENU',
+	        type: 'SHOW_CONTEXT_MENU',
 	        position_x: e.clientX,
 	        position_y: e.clientY,
 	        context: context,
@@ -4557,7 +4557,7 @@
 	
 	function hideContextMenu() {
 	    return {
-	        type: 'UI_HIDE_CONTEXT_MENU'
+	        type: 'HIDE_CONTEXT_MENU'
 	    };
 	}
 	
@@ -4579,7 +4579,7 @@
 	
 	function lazyLoading(start) {
 	    return {
-	        type: 'UI_LAZY_LOADING',
+	        type: 'LAZY_LOADING',
 	        start: start
 	    };
 	}
@@ -20970,7 +20970,13 @@
 	
 	    switch (action.type) {
 	
-	        case 'UI_SHOW_CONTEXT_MENU':
+	        case 'LAZY_LOADING':
+	            return Object.assign({}, ui, { lazy_loading: action.start });
+	
+	        /**
+	         * Context menu
+	         **/
+	        case 'SHOW_CONTEXT_MENU':
 	            return Object.assign({}, ui, {
 	                context_menu: {
 	                    show: true,
@@ -20981,11 +20987,13 @@
 	                }
 	            });
 	
-	        case 'UI_HIDE_CONTEXT_MENU':
+	        case 'HIDE_CONTEXT_MENU':
 	            return Object.assign({}, ui, { context_menu: { show: false } });
 	
-	        case 'UI_LAZY_LOADING':
-	            return Object.assign({}, ui, { lazy_loading: action.start });
+	        /**
+	         * General assets
+	         * Playlists/albums/etc
+	         **/
 	
 	        case 'SPOTIFY_ALBUM_LOADED':
 	        case 'MOPIDY_ALBUM_LOADED':

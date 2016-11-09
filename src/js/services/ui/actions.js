@@ -2,7 +2,7 @@
 
 export function showContextMenu( e, context = false, data ){
     return {
-        type: 'UI_SHOW_CONTEXT_MENU',
+        type: 'SHOW_CONTEXT_MENU',
         position_x: e.clientX,
         position_y: e.clientY,
         context: context,
@@ -12,7 +12,7 @@ export function showContextMenu( e, context = false, data ){
 
 export function hideContextMenu(){
     return {
-        type: 'UI_HIDE_CONTEXT_MENU'
+        type: 'HIDE_CONTEXT_MENU'
     }
 }
 
@@ -34,7 +34,7 @@ export function searchStarted(){
 
 export function lazyLoading( start ){
     return {
-        type: 'UI_LAZY_LOADING',
+        type: 'LAZY_LOADING',
         start: start
     }
 }
