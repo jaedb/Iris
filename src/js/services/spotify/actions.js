@@ -345,18 +345,29 @@ export function getPlaylist( uri ){
 	}
 }
 
+function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
+    if( lastResponse.next ){
+        sendRequest( dispatch, getState, lastResponse.next )
+            .then( response => {
+                playlists = [...playlists, ...response.items]
+                loadNextPlaylistsBatch( dispatch, getState, playlists, response )
+            });
+    }else{
+        dispatch({
+            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
+            data: playlists
+        });
+    }
+}
 
-export function getLibraryPlaylists(){
+export function getAllLibraryPlaylists(){
     return (dispatch, getState) => {
 
         dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'me/playlists' )
+        sendRequest( dispatch, getState, 'me/playlists?limit=50' )
             .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-                    data: response
-                });
+                loadNextPlaylistsBatch( dispatch, getState, response.items, response )
             });
     }
 }

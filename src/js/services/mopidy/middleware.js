@@ -206,8 +206,8 @@ const MopidyMiddleware = (function(){
                             },
                             response,
                             {
-                                tracks: response.tracks,
-                                total_tracks: response.tracks.length
+                                tracks: ( response.tracks ? response.tracks : [] ),
+                                tracks_total: ( response.tracks ? response.tracks.length : 0 )
                             }
                         )
                         
@@ -223,17 +223,19 @@ const MopidyMiddleware = (function(){
                                     if (response.hasOwnProperty(uri)) {
 
                                         var track = response[uri][0];
-                                        
-                                        // find the track reference, and drop in the full track data
-                                        function getByURI( trackReference ){
-                                            return track.uri == trackReference.uri
-                                        }
-                                        var trackReferences = playlist.tracks.filter(getByURI);
-                                        
-                                        // there could be multiple instances of this track, so accommodate this
-                                        for( var j = 0; j < trackReferences.length; j++){
-                                            var key = playlist.tracks.indexOf( trackReferences[j] );
-                                            playlist.tracks[ key ] = track;
+                                        if( track ){
+                                            
+                                            // find the track reference, and drop in the full track data
+                                            function getByURI( trackReference ){
+                                                return track.uri == trackReference.uri
+                                            }
+                                            var trackReferences = playlist.tracks.filter(getByURI);
+                                            
+                                            // there could be multiple instances of this track, so accommodate this
+                                            for( var j = 0; j < trackReferences.length; j++){
+                                                var key = playlist.tracks.indexOf( trackReferences[j] );
+                                                playlist.tracks[ key ] = track;
+                                            }
                                         }
                                     }
                                 }

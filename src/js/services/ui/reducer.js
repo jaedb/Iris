@@ -132,6 +132,23 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { playlist: playlist });
 
 
+        /**
+         * Library Playlists
+         **/
+
+        case 'MOPIDY_PLAYLISTS_LOADED':
+            if( !action.data ) return ui
+            return Object.assign({}, ui, { 
+                playlists: [...ui.playlists, ...action.data],
+            });
+
+        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
+            if( !action.data ) return ui
+            return Object.assign({}, ui, { 
+                playlists: [...ui.playlists, ...action.data]
+            });
+
+
 
         /**
          * Current track and tracklist

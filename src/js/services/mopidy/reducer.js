@@ -67,10 +67,6 @@ export default function reducer(mopidy = {}, action){
          * Asset-oriented actions
          **/
 
-        case 'MOPIDY_PLAYLISTS_LOADED':
-            if( !action.data ) return mopidy;
-            return Object.assign({}, mopidy, { playlists: action.data });
-
         case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
                 directory: action.data   

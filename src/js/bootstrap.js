@@ -63,7 +63,8 @@ var initialState = {
 			albums: [],
 			playlists: [],
 			tracks: []
-		}
+		},
+		playlists: []
 	}
 };
 

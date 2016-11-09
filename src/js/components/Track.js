@@ -49,13 +49,13 @@ export default class Track extends React.Component{
 				onContextMenu={ (e) => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
-						{track.name}
+						{ track.name ? track.name : '-' }
 					</span>
 					<span className="col artists">
-						{ track.artists ? <ArtistSentence artists={track.artists} /> : null }
+						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
 					</span>
 					<span className="col album">
-						{ track.album ? <AlbumLink album={track.album} /> : null }
+						{ track.album ? <AlbumLink album={track.album} /> : '-' }
 					</span>
 					<span className="col duration">
 						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
