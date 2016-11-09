@@ -27,7 +27,6 @@ class Album extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		console.log('componentWillReceiveProps')
 
 		// if our URI has changed, fetch new album
 		if( nextProps.params.uri != this.props.params.uri ){
@@ -55,13 +54,8 @@ class Album extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.album.tracks.next ) return
-		this.props.spotifyActions.getURL( this.props.album.tracks.next, 'SPOTIFY_ALBUM_LOADED_MORE' );
-	}
-
-	renderThumbnail(){
-		if( !this.props.album.images ) return <Thumbnail size="large" images={[]} />
-		return <Thumbnail size="large" images={ this.props.album.images } />
+		if( !this.props.album.tracks_more ) return
+		this.props.spotifyActions.getURL( this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
 	}
 
 	render(){
@@ -70,10 +64,10 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view">
 				<div className="intro">
-					{ this.renderThumbnail() }
+					<Thumbnail size="large" images={ this.props.album.images } />
 					<ArtistGrid artists={ this.props.album.artists } />
 					<ul className="details">
-						<li>{ this.props.album.tracks.total } tracks, <Dater type="total-time" data={this.props.album.tracks.items} /></li>
+						<li>{ this.props.album.tracks_total } tracks, <Dater type="total-time" data={this.props.album.tracks} /></li>
 						{ this.props.album.release_date ? <li>Released <Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist</li>	
 					</ul>
@@ -86,7 +80,7 @@ class Album extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						<TrackList tracks={ this.props.album.tracks.items } />
+						{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					

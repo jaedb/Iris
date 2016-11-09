@@ -28,23 +28,31 @@ export default function reducer(ui = {}, action){
          * Playlists/albums/etc
          **/
 
-        case 'SPOTIFY_ALBUM_LOADED':
         case 'MOPIDY_ALBUM_LOADED':
             return Object.assign({}, ui, { album: action.data });
 
         case 'LASTFM_ALBUM_LOADED':
-            //if( !action.data.image ) return ui
-            var album = Object.assign(ui.album, { images: action.data.image })
+            if( !action.data.image ) return ui
+
+            var album = Object.assign({}, ui.album, { images: action.data.image })
             return Object.assign({}, ui, { album: album });
 
+        case 'SPOTIFY_ALBUM_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { album: false })
+
+            console.log(action.data)
+            var album = Object.assign({}, { images: [] }, action.data, {
+                tracks: action.data.tracks.items,
+                tracks_total: action.data.tracks.total,
+                tracks_more: action.data.tracks.next
+            })
+            return Object.assign({}, ui, { album: album })
+
         case 'SPOTIFY_ALBUM_LOADED_MORE':
-            var album = ui.album
-            Object.assign(album, { tracks: {
-                href: action.data.href,
-                next: action.data.next,
-                previous: action.data.previous,
-                items: [ ...ui.album.tracks.items, ...action.data.items ]
-            }})
+            var album = Object.assign({}, ui.album, {
+                tracks: [ ...ui.album.tracks, ...action.data.items ],
+                tracks_more: action.data.next
+            })
             return Object.assign({}, ui, { album: album });
 
 
