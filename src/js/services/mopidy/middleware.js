@@ -198,15 +198,21 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
                 instruct( socket, store, 'playlists.lookup', action.data )
                     .then( response => {
-                        var playlist = response;
-                        playlist.tracks = {
-                            items: response.tracks,
-                            total: response.tracks.length
-                        }
+                        var playlist = Object.assign(
+                            {},
+                            {
+                                images: []
+                            },
+                            response,
+                            {
+                                tracks: response.tracks,
+                                total_tracks: response.tracks.length
+                            }
+                        )
                         
                         var uris = [];
-                        for( var i = 0; i < playlist.tracks.items.length; i++ ){
-                            uris.push( playlist.tracks.items[i].uri );
+                        for( var i = 0; i < playlist.tracks.length; i++ ){
+                            uris.push( playlist.tracks[i].uri );
                         }
 
                         instruct( socket, store, 'library.lookup', { uris: uris } )
@@ -221,12 +227,12 @@ const MopidyMiddleware = (function(){
                                         function getByURI( trackReference ){
                                             return track.uri == trackReference.uri
                                         }
-                                        var trackReferences = playlist.tracks.items.filter(getByURI);
+                                        var trackReferences = playlist.tracks.filter(getByURI);
                                         
                                         // there could be multiple instances of this track, so accommodate this
                                         for( var j = 0; j < trackReferences.length; j++){
-                                            var key = playlist.tracks.items.indexOf( trackReferences[j] );
-                                            playlist.tracks.items[ key ] = track;
+                                            var key = playlist.tracks.indexOf( trackReferences[j] );
+                                            playlist.tracks[ key ] = track;
                                         }
                                     }
                                 }

@@ -81,11 +81,6 @@ export default function reducer(mopidy = {}, action){
                 playlist: action.data
             });
 
-        case 'MOPIDY_ARTIST_LOADED':
-            return Object.assign({}, mopidy, {
-                artist: action.data
-            });
-
         case 'MOPIDY_ARTISTS_LOADED':
             return Object.assign({}, mopidy, {
                 artists: action.data

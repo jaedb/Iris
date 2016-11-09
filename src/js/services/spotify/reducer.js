@@ -55,35 +55,8 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_ME_LOADED':
             return Object.assign({}, spotify, { me: action.data });
 
-        case 'SPOTIFY_PLAYLIST_LOADED':
-            return Object.assign({}, spotify, { playlist: action.data });
-
-        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
-            var playlist = spotify.playlist
-            Object.assign(playlist, { tracks: {
-                href: action.data.href,
-                next: action.data.next,
-                previous: action.data.previous,
-                items: [ ...spotify.playlist.tracks.items, ...action.data.items ]
-            }})
-            return Object.assign({}, spotify, { playlist: playlist });
-
-        case 'SPOTIFY_ARTIST_LOADED':
-            return Object.assign({}, spotify, { artist: action.data });
-
         case 'SPOTIFY_ARTISTS_LOADED':
             return Object.assign({}, spotify, { artists: action.data });
-
-        case 'SPOTIFY_ARTIST_ALBUMS_LOADED':            
-            return Object.assign({}, spotify, { artist_albums: action.data });
-
-        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
-            return Object.assign({}, spotify, { artist_albums: {
-                href: action.data.href,
-                next: action.data.next,
-                previous: action.data.previous,
-                items: [ ...spotify.artist_albums.items, ...action.data.items ]
-            }});
 
         case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { library_playlists: action.data });

@@ -231,9 +231,6 @@ export function getArtist( uri ){
 
         var artist = {};
 
-        // while we're fiddling about, go get the albums
-        dispatch(getArtistAlbums(uri));
-
         // get both the artist and the top tracks
         $.when(
 
@@ -250,6 +247,11 @@ export function getArtist( uri ){
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
                     Object.assign(artist, { related_artists: response.artists });
+                }),
+
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
+                .then( response => {
+                    Object.assign(artist, { albums: response.items, albums_more: response.next });
                 })
 
         ).then( () => {
@@ -279,18 +281,6 @@ export function getArtists( uris ){
                 dispatch({
                     type: 'SPOTIFY_ARTISTS_LOADED',
                     data: response.artists
-                });
-            });
-	}
-}
-
-export function getArtistAlbums( uri ){
-    return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
-            .then( response => {
-                dispatch({
-                	type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                	data: response
                 });
             });
 	}

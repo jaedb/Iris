@@ -24,11 +24,11 @@ export default function reducer(ui = {}, action){
 
 
         /**
-         * General assets
-         * Playlists/albums/etc
+         * Albums
          **/
 
         case 'MOPIDY_ALBUM_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { album: false })
             return Object.assign({}, ui, { album: action.data });
 
         case 'LASTFM_ALBUM_LOADED':
@@ -40,7 +40,6 @@ export default function reducer(ui = {}, action){
         case 'SPOTIFY_ALBUM_LOADED':
             if( !action.data ) return Object.assign({}, ui, { album: false })
 
-            console.log(action.data)
             var album = Object.assign({}, { images: [] }, action.data, {
                 tracks: action.data.tracks.items,
                 tracks_total: action.data.tracks.total,
@@ -54,6 +53,84 @@ export default function reducer(ui = {}, action){
                 tracks_more: action.data.next
             })
             return Object.assign({}, ui, { album: album });
+
+
+
+        /**
+         * Artists
+         **/
+
+        case 'MOPIDY_ARTIST_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { artist: false })
+            return Object.assign({}, ui, { artist: action.data })
+
+        case 'LASTFM_ARTIST_LOADED':
+            if( !action.data.image ) return ui
+
+            var artist = Object.assign({}, ui.artist, { images: action.data.image, bio: action.data.bio })
+            return Object.assign({}, ui, { artist: artist });
+
+        case 'SPOTIFY_ARTIST_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { artist: false })
+            return Object.assign({}, ui, { artist: action.data })
+
+        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
+            var artist = Object.assign({}, ui.artist, {
+                albums: [ ...ui.artist.albums, ...action.data.items ],
+                albums_more: action.data.next
+            })
+            return Object.assign({}, ui, { artist: artist });
+
+
+        /**
+         * Playlists
+         **/
+
+        case 'MOPIDY_PLAYLIST_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { playlist: false })
+            return Object.assign({}, ui, { playlist: action.data })
+
+        case 'SPOTIFY_PLAYLIST_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { playlist: false })
+
+            var tracks = []
+            for( var i = 0; i < action.data.tracks.items.length; i++ ){
+                tracks.push( Object.assign(
+                    {},
+                    action.data.tracks.items[i].track,
+                    {
+                        added_by: action.data.tracks.items[i].added_by,
+                        added_at: action.data.tracks.items[i].added_at
+                    }
+                ))
+            }
+
+            var playlist = Object.assign({}, action.data, {
+                tracks: tracks,
+                tracks_more: action.data.tracks.next,
+                tracks_total: action.data.tracks.total
+            })
+            return Object.assign({}, ui, { playlist: playlist });
+
+        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
+            var tracks = []
+            for( var i = 0; i < action.data.items.length; i++ ){
+                tracks.push( Object.assign(
+                    {},
+                    action.data.items[i].track,
+                    {
+                        added_by: action.data.items[i].added_by,
+                        added_at: action.data.items[i].added_at
+                    }
+                ))
+            }
+
+            var playlist = Object.assign({}, ui.playlist, {
+                tracks: [...ui.playlist.tracks, ...tracks],
+                tracks_more: action.data.next
+            })
+            return Object.assign({}, ui, { playlist: playlist });
+
 
 
         /**

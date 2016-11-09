@@ -918,7 +918,6 @@
 	exports.getTrack = getTrack;
 	exports.getArtist = getArtist;
 	exports.getArtists = getArtists;
-	exports.getArtistAlbums = getArtistAlbums;
 	exports.getAlbum = getAlbum;
 	exports.getPlaylist = getPlaylist;
 	exports.getLibraryPlaylists = getLibraryPlaylists;
@@ -1143,9 +1142,6 @@
 	
 	        var artist = {};
 	
-	        // while we're fiddling about, go get the albums
-	        dispatch(getArtistAlbums(uri));
-	
 	        // get both the artist and the top tracks
 	        $.when(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
 	            Object.assign(artist, response);
@@ -1153,6 +1149,8 @@
 	            Object.assign(artist, response);
 	        }), sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
 	            Object.assign(artist, { related_artists: response.artists });
+	        }), sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums').then(function (response) {
+	            Object.assign(artist, { albums: response.items, albums_more: response.next });
 	        })).then(function () {
 	            dispatch({
 	                type: 'SPOTIFY_ARTIST_LOADED',
@@ -1179,17 +1177,6 @@
 	            dispatch({
 	                type: 'SPOTIFY_ARTISTS_LOADED',
 	                data: response.artists
-	            });
-	        });
-	    };
-	}
-	
-	function getArtistAlbums(uri) {
-	    return function (dispatch, getState) {
-	        sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums').then(function (response) {
-	            dispatch({
-	                type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-	                data: response
 	            });
 	        });
 	    };
@@ -19841,7 +19828,7 @@
 /* 172 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -19852,12 +19839,6 @@
 	    var action = arguments[1];
 	
 	    switch (action.type) {
-	
-	        case 'LASTFM_ARTIST_LOADED':
-	            return Object.assign({}, lastfm, { artist: action.data });
-	
-	        case 'LASTFM_TRACK_LOADED':
-	            return Object.assign({}, lastfm, { track: action.data });
 	
 	        default:
 	            return lastfm;
@@ -20201,15 +20182,16 @@
 	                    case 'MOPIDY_PLAYLIST':
 	                        store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
 	                        instruct(socket, store, 'playlists.lookup', action.data).then(function (response) {
-	                            var playlist = response;
-	                            playlist.tracks = {
-	                                items: response.tracks,
-	                                total: response.tracks.length
-	                            };
+	                            var playlist = Object.assign({}, {
+	                                images: []
+	                            }, response, {
+	                                tracks: response.tracks,
+	                                total_tracks: response.tracks.length
+	                            });
 	
 	                            var uris = [];
-	                            for (var i = 0; i < playlist.tracks.items.length; i++) {
-	                                uris.push(playlist.tracks.items[i].uri);
+	                            for (var i = 0; i < playlist.tracks.length; i++) {
+	                                uris.push(playlist.tracks[i].uri);
 	                            }
 	
 	                            instruct(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
@@ -20223,12 +20205,12 @@
 	                                        };
 	
 	                                        var track = response[uri][0];
-	                                        var trackReferences = playlist.tracks.items.filter(getByURI);
+	                                        var trackReferences = playlist.tracks.filter(getByURI);
 	
 	                                        // there could be multiple instances of this track, so accommodate this
 	                                        for (var j = 0; j < trackReferences.length; j++) {
-	                                            var key = playlist.tracks.items.indexOf(trackReferences[j]);
-	                                            playlist.tracks.items[key] = track;
+	                                            var key = playlist.tracks.indexOf(trackReferences[j]);
+	                                            playlist.tracks[key] = track;
 	                                        }
 	                                    }
 	                                }
@@ -20454,11 +20436,6 @@
 	        case 'MOPIDY_PLAYLIST_LOADED':
 	            return Object.assign({}, mopidy, {
 	                playlist: action.data
-	            });
-	
-	        case 'MOPIDY_ARTIST_LOADED':
-	            return Object.assign({}, mopidy, {
-	                artist: action.data
 	            });
 	
 	        case 'MOPIDY_ARTISTS_LOADED':
@@ -20799,35 +20776,8 @@
 	        case 'SPOTIFY_ME_LOADED':
 	            return Object.assign({}, spotify, { me: action.data });
 	
-	        case 'SPOTIFY_PLAYLIST_LOADED':
-	            return Object.assign({}, spotify, { playlist: action.data });
-	
-	        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
-	            var playlist = spotify.playlist;
-	            Object.assign(playlist, { tracks: {
-	                    href: action.data.href,
-	                    next: action.data.next,
-	                    previous: action.data.previous,
-	                    items: [].concat(_toConsumableArray(spotify.playlist.tracks.items), _toConsumableArray(action.data.items))
-	                } });
-	            return Object.assign({}, spotify, { playlist: playlist });
-	
-	        case 'SPOTIFY_ARTIST_LOADED':
-	            return Object.assign({}, spotify, { artist: action.data });
-	
 	        case 'SPOTIFY_ARTISTS_LOADED':
 	            return Object.assign({}, spotify, { artists: action.data });
-	
-	        case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-	            return Object.assign({}, spotify, { artist_albums: action.data });
-	
-	        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
-	            return Object.assign({}, spotify, { artist_albums: {
-	                    href: action.data.href,
-	                    next: action.data.next,
-	                    previous: action.data.previous,
-	                    items: [].concat(_toConsumableArray(spotify.artist_albums.items), _toConsumableArray(action.data.items))
-	                } });
 	
 	        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
 	            return Object.assign({}, spotify, { library_playlists: action.data });
@@ -20933,11 +20883,11 @@
 	            return Object.assign({}, ui, { context_menu: { show: false } });
 	
 	        /**
-	         * General assets
-	         * Playlists/albums/etc
+	         * Albums
 	         **/
 	
 	        case 'MOPIDY_ALBUM_LOADED':
+	            if (!action.data) return Object.assign({}, ui, { album: false });
 	            return Object.assign({}, ui, { album: action.data });
 	
 	        case 'LASTFM_ALBUM_LOADED':
@@ -20949,7 +20899,6 @@
 	        case 'SPOTIFY_ALBUM_LOADED':
 	            if (!action.data) return Object.assign({}, ui, { album: false });
 	
-	            console.log(action.data);
 	            var album = Object.assign({}, { images: [] }, action.data, {
 	                tracks: action.data.tracks.items,
 	                tracks_total: action.data.tracks.total,
@@ -20963,6 +20912,72 @@
 	                tracks_more: action.data.next
 	            });
 	            return Object.assign({}, ui, { album: album });
+	
+	        /**
+	         * Artists
+	         **/
+	
+	        case 'MOPIDY_ARTIST_LOADED':
+	            if (!action.data) return Object.assign({}, ui, { artist: false });
+	            return Object.assign({}, ui, { artist: action.data });
+	
+	        case 'LASTFM_ARTIST_LOADED':
+	            if (!action.data.image) return ui;
+	
+	            var artist = Object.assign({}, ui.artist, { images: action.data.image, bio: action.data.bio });
+	            return Object.assign({}, ui, { artist: artist });
+	
+	        case 'SPOTIFY_ARTIST_LOADED':
+	            if (!action.data) return Object.assign({}, ui, { artist: false });
+	            return Object.assign({}, ui, { artist: action.data });
+	
+	        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
+	            var artist = Object.assign({}, ui.artist, {
+	                albums: [].concat(_toConsumableArray(ui.artist.albums), _toConsumableArray(action.data.items)),
+	                albums_more: action.data.next
+	            });
+	            return Object.assign({}, ui, { artist: artist });
+	
+	        /**
+	         * Playlists
+	         **/
+	
+	        case 'MOPIDY_PLAYLIST_LOADED':
+	            if (!action.data) return Object.assign({}, ui, { playlist: false });
+	            return Object.assign({}, ui, { playlist: action.data });
+	
+	        case 'SPOTIFY_PLAYLIST_LOADED':
+	            if (!action.data) return Object.assign({}, ui, { playlist: false });
+	
+	            var tracks = [];
+	            for (var i = 0; i < action.data.tracks.items.length; i++) {
+	                tracks.push(Object.assign({}, action.data.tracks.items[i].track, {
+	                    added_by: action.data.tracks.items[i].added_by,
+	                    added_at: action.data.tracks.items[i].added_at
+	                }));
+	            }
+	
+	            var playlist = Object.assign({}, action.data, {
+	                tracks: tracks,
+	                tracks_more: action.data.tracks.next,
+	                tracks_total: action.data.tracks.total
+	            });
+	            return Object.assign({}, ui, { playlist: playlist });
+	
+	        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
+	            var tracks = [];
+	            for (var i = 0; i < action.data.items.length; i++) {
+	                tracks.push(Object.assign({}, action.data.items[i].track, {
+	                    added_by: action.data.items[i].added_by,
+	                    added_at: action.data.items[i].added_at
+	                }));
+	            }
+	
+	            var playlist = Object.assign({}, ui.playlist, {
+	                tracks: [].concat(_toConsumableArray(ui.playlist.tracks), _toConsumableArray(tracks)),
+	                tracks_more: action.data.next
+	            });
+	            return Object.assign({}, ui, { playlist: playlist });
 	
 	        /**
 	         * Current track and tracklist
@@ -21558,7 +21573,7 @@
 			value: function componentWillReceiveProps(nextProps) {
 				if (nextProps.params.uri != this.props.params.uri) {
 					this.loadArtist(nextProps);
-				} else if (!this.props.mopidy.connected && nextProps.mopidy.connected) {
+				} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 					if (helpers.uriSource(this.props.params.uri) == 'local') {
 						this.loadArtist(nextProps);
 					}
@@ -21572,59 +21587,70 @@
 				var source = helpers.uriSource(props.params.uri);
 				if (source == 'spotify') {
 					this.props.spotifyActions.getArtist(props.params.uri);
-				} else if (source == 'local' && props.mopidy.connected) {
+				} else if (source == 'local' && props.mopidy_connected) {
 					this.props.mopidyActions.getArtist(props.params.uri);
 				}
 			}
 		}, {
 			key: 'loadMore',
 			value: function loadMore() {
-				if (!this.props.spotify.artist_albums || !this.props.spotify.artist_albums.next) return;
-				this.props.spotifyActions.getURL(this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE');
+				if (!this.props.artist.albums_more) return;
+				this.props.spotifyActions.getURL(this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE');
 			}
 		}, {
-			key: 'renderSpotifyArtist',
-			value: function renderSpotifyArtist() {
+			key: 'render',
+			value: function render() {
 				var _this2 = this;
 	
-				if (!this.props.spotify.artist) return null;
-				var artist = this.props.spotify.artist;
-				var albums = this.props.spotify.artist_albums;
+				if (!this.props.artist) return null;
+				var scheme = helpers.uriSource(this.props.params.uri);
 	
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view artist-view' },
-					_react2.default.createElement(_Parallax2.default, { images: artist.images }),
+					_react2.default.createElement(_Parallax2.default, { images: this.props.artist.images }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'intro' },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: artist.images }),
+						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: this.props.artist.images }),
 						_react2.default.createElement(
 							'h1',
 							null,
-							artist.name
+							this.props.artist.name
 						),
 						_react2.default.createElement(
 							'ul',
 							{ className: 'details' },
-							_react2.default.createElement(
+							this.props.artist.followers ? _react2.default.createElement(
 								'li',
 								null,
-								artist.followers.total.toLocaleString(),
+								this.props.artist.followers.total.toLocaleString(),
 								' followers'
-							),
-							artist.popularity ? _react2.default.createElement(
+							) : null,
+							this.props.artist.popularity ? _react2.default.createElement(
 								'li',
 								null,
-								artist.popularity,
+								this.props.artist.popularity,
 								'% popularity'
 							) : null,
 							_react2.default.createElement(
 								'li',
 								null,
+								this.props.artist.albums.length.toLocaleString(),
+								' albums'
+							),
+							scheme == 'spotify' ? _react2.default.createElement(
+								'li',
+								null,
 								_react2.default.createElement(_reactFontawesome2.default, { name: 'spotify' }),
 								' Spotify artist'
-							)
+							) : null,
+							scheme == 'local' ? _react2.default.createElement(
+								'li',
+								null,
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
+								' Local artist'
+							) : null
 						)
 					),
 					_react2.default.createElement(
@@ -21635,7 +21661,7 @@
 							{ className: 'left-padding' },
 							'Top tracks'
 						),
-						artist.tracks ? _react2.default.createElement(_TrackList2.default, { tracks: artist.tracks }) : null
+						this.props.artist.tracks ? _react2.default.createElement(_TrackList2.default, { tracks: this.props.artist.tracks }) : null
 					),
 					_react2.default.createElement('div', { className: 'col w5' }),
 					_react2.default.createElement(
@@ -21646,7 +21672,7 @@
 							null,
 							'Related artists'
 						),
-						artist.related_artists ? _react2.default.createElement(_ArtistList2.default, { artists: artist.related_artists.slice(0, 6) }) : null
+						this.props.artist.related_artists ? _react2.default.createElement(_ArtistList2.default, { artists: this.props.artist.related_artists.slice(0, 6) }) : null
 					),
 					_react2.default.createElement('div', { className: 'cf' }),
 					_react2.default.createElement(
@@ -21657,75 +21683,12 @@
 					_react2.default.createElement(
 						'section',
 						{ className: 'grid-wrapper no-top-padding' },
-						albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: albums.items }) : null,
+						this.props.artist.albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: this.props.artist.albums }) : null,
 						_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 								return _this2.loadMore();
 							} })
 					)
 				);
-			}
-		}, {
-			key: 'renderMopidyArtist',
-			value: function renderMopidyArtist() {
-				if (!this.props.mopidy.artist) return null;
-				var artist = this.props.mopidy.artist;
-	
-				if (this.props.lastfm.artist.image && this.props.lastfm.artist.name == artist.name) artist.images = this.props.lastfm.artist.image;
-	
-				return _react2.default.createElement(
-					'div',
-					{ className: 'view artist-view' },
-					_react2.default.createElement(_Parallax2.default, { images: artist.images }),
-					_react2.default.createElement(
-						'div',
-						{ className: 'intro' },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'huge', images: artist.images }),
-						_react2.default.createElement(
-							'h1',
-							null,
-							artist.name
-						),
-						_react2.default.createElement(
-							'ul',
-							{ className: 'details' },
-							_react2.default.createElement(
-								'li',
-								null,
-								artist.albums.length.toLocaleString(),
-								' albums'
-							),
-							_react2.default.createElement(
-								'li',
-								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
-								' Local artist'
-							)
-						)
-					),
-					_react2.default.createElement(
-						'h4',
-						{ className: 'left-padding' },
-						'Top tracks'
-					),
-					artist.tracks ? _react2.default.createElement(_TrackList2.default, { tracks: artist.tracks }) : null,
-					_react2.default.createElement(
-						'h4',
-						{ className: 'left-padding' },
-						'Albums'
-					),
-					_react2.default.createElement(
-						'section',
-						{ className: 'grid-wrapper no-top-padding' },
-						artist.albums ? _react2.default.createElement(_AlbumGrid2.default, { albums: artist.albums }) : null
-					)
-				);
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var source = helpers.uriSource(this.props.params.uri);
-				if (source == 'spotify') return this.renderSpotifyArtist();
-				if (source == 'local') return this.renderMopidyArtist();
 			}
 		}]);
 	
@@ -21739,7 +21702,10 @@
 	 **/
 	
 	var mapStateToProps = function mapStateToProps(state, ownProps) {
-		return state;
+		return {
+			mopidy_connected: state.mopidy.connected,
+			artist: state.ui.artist
+		};
 	};
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
@@ -21831,7 +21797,7 @@
 			value: function componentWillReceiveProps(nextProps) {
 				if (nextProps.params.uri != this.props.params.uri) {
 					this.loadPlaylist(nextProps);
-				} else if (!this.props.mopidy.connected && nextProps.mopidy.connected) {
+				} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 					if (helpers.uriSource(this.props.params.uri) == 'm3u') {
 						this.loadPlaylist(nextProps);
 					}
@@ -21845,30 +21811,23 @@
 				var source = helpers.uriSource(props.params.uri);
 				if (source == 'spotify') {
 					this.props.spotifyActions.getPlaylist(props.params.uri);
-				} else if (source == 'm3u' && props.mopidy.connected) {
+				} else if (source == 'm3u' && props.mopidy_connected) {
 					this.props.mopidyActions.getPlaylist(props.params.uri);
 				}
 			}
 		}, {
 			key: 'loadMore',
 			value: function loadMore() {
-				if (!this.props.spotify.playlist || !this.props.spotify.playlist.tracks.next) return;
-				this.props.spotifyActions.getURL(this.props.spotify.playlist.tracks.next, 'SPOTIFY_PLAYLIST_LOADED_MORE');
+				if (!this.props.playlist.tracks_more) return;
+				this.props.spotifyActions.getURL(this.props.playlist.tracks_more, 'SPOTIFY_PLAYLIST_LOADED_MORE');
 			}
 		}, {
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
 	
-				var source = helpers.uriSource(this.props.params.uri);
-				var source_name = source;
-				if (source == 'spotify') {
-					var playlist = this.props.spotify.playlist;
-				} else if (source == 'm3u') {
-					var playlist = this.props.mopidy.playlist;
-					source_name = 'local';
-				}
-				if (!playlist) return null;
+				if (!this.props.playlist) return null;
+				var scheme = helpers.uriSource(this.props.params.uri);
 	
 				return _react2.default.createElement(
 					'div',
@@ -21876,32 +21835,36 @@
 					_react2.default.createElement(
 						'div',
 						{ className: 'intro' },
-						playlist.images ? _react2.default.createElement(_Thumbnail2.default, { size: 'large', images: playlist.images }) : null,
+						_react2.default.createElement(_Thumbnail2.default, { size: 'large', images: this.props.playlist.images }),
 						_react2.default.createElement(
 							'ul',
 							{ className: 'details' },
 							_react2.default.createElement(
 								'li',
 								null,
-								playlist.tracks.total,
+								this.props.playlist.tracks_total,
 								' tracks, ',
-								_react2.default.createElement(_Dater2.default, { type: 'total-time', data: playlist.tracks.items })
+								_react2.default.createElement(_Dater2.default, { type: 'total-time', data: this.props.playlist.tracks })
 							),
-							playlist.last_modified ? _react2.default.createElement(
+							this.props.playlist.last_modified ? _react2.default.createElement(
 								'li',
 								null,
 								'Updated ',
-								_react2.default.createElement(_Dater2.default, { type: 'ago', data: playlist.last_modified }),
+								_react2.default.createElement(_Dater2.default, { type: 'ago', data: this.props.playlist.last_modified }),
 								' ago'
 							) : null,
-							_react2.default.createElement(
+							scheme == 'spotify' ? _react2.default.createElement(
 								'li',
 								null,
-								_react2.default.createElement(_reactFontawesome2.default, { name: helpers.sourceIcon(this.props.params.uri) }),
-								' ',
-								source_name,
-								' playlist'
-							)
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'spotify' }),
+								' Spotify playlist'
+							) : null,
+							scheme == 'm3u' ? _react2.default.createElement(
+								'li',
+								null,
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'folder' }),
+								' Local playlist'
+							) : null
 						)
 					),
 					_react2.default.createElement(
@@ -21913,13 +21876,13 @@
 							_react2.default.createElement(
 								'h1',
 								null,
-								playlist.name
+								this.props.playlist.name
 							)
 						),
 						_react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: playlist.tracks.items }),
+							_react2.default.createElement(_TrackList2.default, { tracks: this.props.playlist.tracks }),
 							_react2.default.createElement(_LazyLoadListener2.default, { loadMore: function loadMore() {
 									return _this2.loadMore();
 								} })
@@ -21939,7 +21902,10 @@
 	 **/
 	
 	var mapStateToProps = function mapStateToProps(state, ownProps) {
-		return state;
+		return {
+			playlist: state.ui.playlist,
+			mopidy_connected: state.mopidy.connected
+		};
 	};
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
