@@ -96,15 +96,6 @@ export default function reducer(mopidy = {}, action){
                 albums: action.data
             });
 
-        case 'MOPIDY_SEARCH':
-            var results = []
-            for( var i = 0; i < action.data.length; i++ ){
-                if( action.data[i].tracks ) results = [...results, ...action.data[i].tracks]
-            }
-            return Object.assign({}, mopidy, {
-                search_results_tracks: results
-            });
-
         default:
             return mopidy
     }

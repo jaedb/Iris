@@ -78,6 +78,74 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
+
+        /**
+         * Search results
+         **/ 
+
+        case 'SEARCH_STARTED':
+            return Object.assign({}, ui, { search_results: action.data })
+
+        case 'MOPIDY_SEARCH':
+        
+            // collate all our different sources into one array
+            var tracks = []
+            for( var i = 0; i < action.data.length; i++ ){
+                if( action.data[i].tracks ) tracks = [...tracks, ...action.data[i].tracks]
+            }
+
+            // merge our results with all our other tracks
+            var results = Object.assign({}, ui.search_results, { 
+                tracks: [...ui.search_results.tracks, ...tracks]
+            })
+            return Object.assign({}, ui, { search_results: results })
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED':
+            if( !action.data ) return ui
+
+            return Object.assign({}, ui, { search_results: {
+                artists: [ ...ui.search_results.artists, ...action.data.artists.items ],
+                albums: [ ...ui.search_results.albums, ...action.data.albums.items ],
+                playlists: [ ...ui.search_results.playlists, ...action.data.playlists.items ],
+                tracks: [ ...ui.search_results.tracks, ...action.data.tracks.items ],
+                artists_more: action.data.artists.next,
+                albums_more: action.data.albums.next,
+                playlists_more: action.data.playlists.next,
+                tracks_more: action.data.tracks.next
+            }});
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ARTISTS':
+            var artists = [...ui.search_results.artists, ...action.data.artists.items]
+            var results = Object.assign({}, ui.search_results, { 
+                artists: artists,
+                artists_more: action.data.artists.next
+            })
+            return Object.assign({}, ui, { search_results: results })
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ALBUMS':
+            var albums = [...ui.search_results.albums, ...action.data.albums.items]
+            var results = Object.assign({}, ui.search_results, { 
+                albums: albums,
+                albums_more: action.data.albums.next
+            })
+            return Object.assign({}, ui, { search_results: results })
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_PLAYLISTS':
+            var playlists = [...ui.search_results.playlists, ...action.data.playlists.items]
+            var results = Object.assign({}, ui.search_results, { 
+                playlists: playlists,
+                playlists_more: action.data.playlists.next
+            })
+            return Object.assign({}, ui, { search_results: results })
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
+            var tracks = [...ui.search_results.tracks, ...action.data.tracks.items]
+            var results = Object.assign({}, ui.search_results, { 
+                tracks: tracks,
+                tracks_more: action.data.tracks.next
+            })
+            return Object.assign({}, ui, { search_results: results })
+
         default:
             return ui
     }

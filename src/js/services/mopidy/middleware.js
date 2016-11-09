@@ -79,6 +79,8 @@ const MopidyMiddleware = (function(){
      **/
     const instruct = ( ws, store, call, value = {} ) => {
 
+        if( !store.getState().mopidy.connected ) return false
+
         var callParts = call.split('.');
         var model = callParts[0];
         var method = callParts[1];
