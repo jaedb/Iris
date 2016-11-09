@@ -37,6 +37,7 @@ const MopidyMiddleware = (function(){
 
             case 'event:playbackStateChanged':
                 instruct( ws, store, 'playback.getState' );
+                instruct( ws, store, 'playback.getTimePosition' );
                 break;
 
             case 'event:seeked':

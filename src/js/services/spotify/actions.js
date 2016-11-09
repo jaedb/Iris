@@ -300,25 +300,26 @@ export function getAlbum( uri ){
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
 
+                var album = response
+
                 // now get all the artists for this album (full objects)
-                var artist_uris = [];
-                for( var i = 0; i < response.artists.length; i++ ){
-                    artist_uris.push( response.artists[i].uri )
-                }
-                dispatch(getArtists(artist_uris));
-
-                // inject the parent album object into each track for consistent track objects
-                for( var i = 0; i < response.tracks.items.length; i++ ){
-                    response.tracks.items[i].album = {
-                        name: response.name,
-                        uri: response.uri
-                    }
+                // we do this to get the artist artwork
+                var artist_ids = [];
+                for( var i = 0; i < album.artists.length; i++ ){
+                    artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
                 }
 
-                dispatch({
-                    type: 'SPOTIFY_ALBUM_LOADED',
-                    data: response
-                });
+                sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
+                    .then( response => {
+                        var artists = response.artists
+
+                        // finally dispatch the loaded action
+                        dispatch({
+                            type: 'SPOTIFY_ALBUM_LOADED',
+                            data: Object.assign({}, album, {artists: artists})
+                        });
+                    });
+
             });
     }
 }

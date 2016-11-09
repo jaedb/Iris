@@ -8,6 +8,7 @@ import FontAwesome from 'react-fontawesome'
 import ProgressSlider from './ProgressSlider'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
+import Dater from './Dater'
 
 import * as mopidyActions from '../services/mopidy/actions'
 
@@ -99,9 +100,14 @@ class FullPlayer extends React.Component{
 						{ this.renderRandomButton() }
 						{ this.renderRepeatButton() }
 					</div>
+
 				</div>
 
-				<ProgressSlider />
+				<div className="progress">
+					<ProgressSlider />	
+					<span className="grey-text pull-left">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
+					<span className="pull-right">{ this.props.current_track ? <Dater type="length" data={this.props.current_track.length} /> : '-' }</span>
+				</div>
 
 			</div>
 		);
@@ -119,6 +125,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		current_track: state.ui.current_track,
 		play_state: state.mopidy.play_state,
+		time_position: state.mopidy.time_position,
 		consume: state.mopidy.consume,
 		repeat: state.mopidy.repeat,
 		random: state.mopidy.random
