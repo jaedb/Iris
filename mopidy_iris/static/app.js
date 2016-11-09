@@ -20241,17 +20241,15 @@
 	                    case 'MOPIDY_ALBUM':
 	                        //store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
 	                        instruct(socket, store, 'library.lookup', action.data).then(function (response) {
-	                            var album = response[0].album;
-	                            album.artists = response[0].artists;
-	                            if (!album.images) album.images = [];
-	                            album.tracks = {
-	                                items: response,
-	                                total: response.length
-	                            };
+	                            var album = Object.assign({}, { images: [] }, response[0].album, {
+	                                artists: response[0].artists,
+	                                tracks: response,
+	                                tracks_total: response.length
+	                            });
 	
 	                            var uris = [];
-	                            for (var i = 0; i < album.tracks.items.length; i++) {
-	                                uris.push(album.tracks.items[i].uri);
+	                            for (var i = 0; i < album.tracks.length; i++) {
+	                                uris.push(album.tracks[i].uri);
 	                            }
 	
 	                            // load artwork from LastFM
@@ -20276,12 +20274,12 @@
 	                                        };
 	
 	                                        var track = response[uri][0];
-	                                        var trackReferences = album.tracks.items.filter(getByURI);
+	                                        var trackReferences = album.tracks.filter(getByURI);
 	
 	                                        // there could be multiple instances of this track, so accommodate this
 	                                        for (var j = 0; j < trackReferences.length; j++) {
-	                                            var key = album.tracks.items.indexOf(trackReferences[j]);
-	                                            album.tracks.items[key] = track;
+	                                            var key = album.tracks.indexOf(trackReferences[j]);
+	                                            album.tracks[key] = track;
 	                                        }
 	                                    }
 	                                }
