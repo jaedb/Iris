@@ -62,7 +62,7 @@ class App extends React.Component{
 
 		switch(e.keyCode){			
 			case 32: // spacebar
-				if( this.props.mopidy.state == 'playing' ){
+				if( this.props.play_state == 'playing' ){
 					this.props.mopidyActions.pause();
 				}else{
 					this.props.mopidyActions.play();
@@ -78,8 +78,7 @@ class App extends React.Component{
 		        <main>
 		      		{this.props.children}
 		        </main>
-		        { this.props.ui.context_menu.test }
-		        <ContextMenu state={this.props.ui.context_menu} />
+		        <ContextMenu state={this.props.context_menu} />
 	        </div>
 		);
 	}
@@ -92,7 +91,10 @@ class App extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		play_state: state.mopidy.play_state,
+		context_menu: state.ui.context_menu
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

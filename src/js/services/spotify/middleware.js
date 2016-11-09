@@ -1,4 +1,5 @@
 
+
 var actions = require('./actions.js')
 
 const SpotifyMiddleware = (function(){

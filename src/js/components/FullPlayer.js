@@ -19,7 +19,7 @@ class FullPlayer extends React.Component{
 
 	renderPlayButton(){
 		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
-		if( this.props.mopidy.state == 'playing' ){
+		if( this.props.play_state == 'playing' ){
 			button = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
 		return button;
@@ -27,7 +27,7 @@ class FullPlayer extends React.Component{
 
 	renderConsumeButton(){
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /></a>
-		if( this.props.mopidy.consume ){
+		if( this.props.consume ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /></a>
 		}
 		return button;
@@ -35,7 +35,7 @@ class FullPlayer extends React.Component{
 
 	renderRandomButton(){
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /></a>
-		if( this.props.mopidy.random ){
+		if( this.props.random ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /></a>
 		}
 		return button;
@@ -43,52 +43,42 @@ class FullPlayer extends React.Component{
 
 	renderRepeatButton(){
 		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /></a>
-		if( this.props.mopidy.repeat ){
+		if( this.props.repeat ){
 			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /></a>
 		}
 		return button;
 	}
 
 	renderArtwork(){
-		if( this.props.spotify.track ){
-			return (
-				<Link className="artwork" to={'/album/'+this.props.spotify.track.album.uri}>
-					<Thumbnail size="huge" images={this.props.spotify.track.album.images} />
-				</Link>
-			)
-		}else if( 
-			this.props.mopidy.current_tltrack && 
-			this.props.mopidy.current_tltrack.track && 
-			this.props.mopidy.current_tltrack.track.album && 
-			this.props.mopidy.current_tltrack.track.album.images ){			
-			return (
-				<span className="artwork">
-					<Thumbnail size="huge" images={mopidy_track.track.album.images} />
-				</span>
-			)
+		if( 
+			!this.props.current_track || 
+			!this.props.current_track.album || 
+			!this.props.current_track.album.images ){
+				return (
+					<span className="artwork">
+						<Thumbnail size="huge" images={[]} />
+					</span>
+				)
 		}
 
-		// TODO: get artwork from lastFM
-
-		return <span className="artwork"><Thumbnail size="huge" images={[]} /></span>
+		var link = null
+		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
+		return (
+			<Link className="artwork" to={link}>
+				<Thumbnail size="huge" images={this.props.current_track.album.images} />
+			</Link>
+		)
 	}
 
 	render(){
-		var mopidy_track = false;
-		var images = [];
-		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
-			mopidy_track = this.props.mopidy.current_tltrack;
-		}
-
-
 		return (
 			<div className="player">
 
 				{ this.renderArtwork() }
 
 				<div className="current-track">
-					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
-					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
+					<div className="title">{ this.props.current_track ? this.props.current_track.name : null }</div>
+					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : null }
 				</div>
 
 				<div className="controls cf">
@@ -126,7 +116,13 @@ class FullPlayer extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		current_track: state.ui.current_track,
+		play_state: state.mopidy.play_state,
+		consume: state.mopidy.consume,
+		repeat: state.mopidy.repeat,
+		random: state.mopidy.random
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

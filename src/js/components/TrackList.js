@@ -48,7 +48,7 @@ class TrackList extends React.Component{
 	}
 
 	handleClick( e, index ){
-		if( this.props.ui.context_menu.show ) this.props.uiActions.hideContextMenu();
+		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu();
 
 		var tracks = this.state.tracks;
 
@@ -82,7 +82,7 @@ class TrackList extends React.Component{
 	}
 
 	handleDoubleClick( e, index ){
-		if( this.props.ui.context_menu.show ) this.props.uiActions.hideContextMenu();
+		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu();
 		this.playTracks()
 	}
 
@@ -144,24 +144,6 @@ class TrackList extends React.Component{
 				{
 					this.state.tracks.map(
 						(track, index) => {
-
-							// flatten nested track objects (as in the case of TlTracks)
-							if( typeof(track.track) !== 'undefined' ){
-
-								// see if we're the current tlTrack
-								// TODO: figure out why this isn't fired when the tracklist changes
-								if( self.props.mopidy.current_tltrack && self.props.mopidy.current_tltrack.tlid == track.tlid ){
-									track.playing = true;
-								}else{
-									track.playing = false;
-								}
-
-								for( var property in track.track ){
-									if( track.track.hasOwnProperty(property) ){
-										track[property] = track.track[property]
-									}
-								}
-							}
 							return <Track
 									show_source_icon={ this.props.show_source_icon }
 									key={index+'_'+track.uri} 
@@ -185,7 +167,10 @@ class TrackList extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		current_track: state.ui.current_track,
+		context_menu: state.ui.context_menu
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

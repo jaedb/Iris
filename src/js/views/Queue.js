@@ -21,22 +21,6 @@ class Queue extends React.Component{
 		super(props);
 	}
 
-	renderTrackList(){
-		if( this.props.mopidy && this.props.mopidy.tracks ){
-			return (
-				<TrackList
-					show_source_icon={true}
-					context="queue"
-					tracks={this.props.mopidy.tracks} 
-					removeTracks={ tracks => this.removeTracks( tracks ) }
-					playTracks={ tracks => this.playTracks( tracks ) }
-					playTrack={ track => this.playTrack( track ) }
-					/>
-			);
-		}
-		return null;
-	}
-
 	removeTracks( tracks ){
 		var tlids = [];
 		for( var i = 0; i < tracks.length; i++ ){
@@ -60,7 +44,13 @@ class Queue extends React.Component{
 				<FullPlayer />
 
 				<section className="list-wrapper">
-					{ this.renderTrackList() }
+					<TrackList
+						show_source_icon={true}
+						context="queue"
+						tracks={this.props.current_tracklist} 
+						removeTracks={ tracks => this.removeTracks( tracks ) }
+						playTracks={ tracks => this.playTracks( tracks ) }
+						playTrack={ track => this.playTrack( track ) } />
 				</section>
 				
 			</div>
@@ -76,7 +66,9 @@ class Queue extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		current_tracklist: state.ui.current_tracklist
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

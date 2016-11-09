@@ -235,7 +235,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ALBUM':
-                store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
+                //store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
                         var album = response[0].album;

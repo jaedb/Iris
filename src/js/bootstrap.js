@@ -29,7 +29,8 @@ var initialState = {
 		host: window.location.hostname,
 		port: 6680,
 		volume: 0,
-		progress: 0
+		progress: 0,
+		play_state: false
 	},
 	pusher: {
 		connected: false,
@@ -54,7 +55,9 @@ var initialState = {
 	ui: {
 		context_menu: {
 			show: false
-		}
+		},
+		current_tracklist: [],
+		current_tltrack: false
 	}
 };
 

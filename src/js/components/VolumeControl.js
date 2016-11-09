@@ -30,7 +30,7 @@ class VolumeControl extends React.Component{
 				<div className="slider-wrapper">
 					<div className="slider vertical" onClick={ (e) => this.handleClick(e) } >
 						<div className="track">
-							<div className="progress" style={{ height: this.props.mopidy.volume+'%' }}></div>
+							<div className="progress" style={{ height: this.props.volume+'%' }}></div>
 						</div>
 					</div>
 				</div>
@@ -40,7 +40,9 @@ class VolumeControl extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		volume: state.mopidy.volume
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

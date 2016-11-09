@@ -19,13 +19,13 @@ class ProgressSlider extends React.Component{
 	componentDidMount(){
 		var interval_counter = 0
 		setInterval(() => {
-			if( this.props.mopidy.state == 'playing' ){
+			if( this.props.play_state == 'playing' ){
 
 				// every 10 seconds get real position from Mopidy
 				if( interval_counter % 10 == 0 ){
 					this.updateProgress()
 				}else{
-					var time_position = this.props.mopidy.time_position
+					var time_position = this.props.time_position
 
 					// only add 600ms every 1000ms as Mopidy's time tracker is a bit shit
 					// TODO: Why does this kill UI?
@@ -38,7 +38,7 @@ class ProgressSlider extends React.Component{
 	}
 
 	updateProgress(){
-		if( this.props.mopidy.connected && this.props.mopidy.state == 'playing' ){
+		if( this.props.connected && this.props.play_state == 'playing' ){
 			this.props.mopidyActions.getTimePosition()
 		}
 	}
@@ -51,8 +51,8 @@ class ProgressSlider extends React.Component{
 		var sliderWidth = slider.getBoundingClientRect().width;
 		var percent = ( sliderX / sliderWidth ).toFixed(2);
 		
-		if( this.props.mopidy.connected && typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
-			var destination_time = this.props.mopidy.current_tltrack.track.length * percent
+		if( this.props.connected && this.props.current_tltrack ){
+			var destination_time = this.props.current_track.length * percent
 			this.props.mopidyActions.seek( destination_time )
 			this.setState({ animating: false })
 		}
@@ -60,8 +60,8 @@ class ProgressSlider extends React.Component{
 
 	render(){
 		var percent = 0
-		if( this.props.mopidy.connected && typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ){
-			percent = this.props.mopidy.time_position / this.props.mopidy.current_tltrack.track.length
+		if( this.props.connected && this.props.current_track ){
+			percent = this.props.time_position / this.props.current_track.length
 			percent = percent * 100;
 			if( percent > 100 ) percent = 100
 		}
@@ -83,7 +83,12 @@ class ProgressSlider extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		current_track: state.ui.current_track,
+		connected: state.mopidy.connected,
+		time_position: state.mopidy.time_position,
+		play_state: state.mopidy.play_state
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {
