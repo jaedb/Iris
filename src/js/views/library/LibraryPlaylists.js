@@ -16,12 +16,6 @@ class LibraryPlaylists extends React.Component{
 		super(props);
 	}
 
-	// on render
-	componentDidMount(){
-		if( this.props.mopidy_connected ) this.props.mopidyActions.getPlaylists();
-		if( this.props.spotify_authorized ) this.props.spotifyActions.getAllLibraryPlaylists();
-	}
-
 	render(){
 		if( !this.props.playlists ) return null
 		var columns = [
@@ -52,18 +46,8 @@ class LibraryPlaylists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		playlists: state.ui.playlists,
-		playlists_more: state.ui.playlists_more,
-		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorized
+		playlists: state.ui.playlists
 	}
 }
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryPlaylists)
+export default connect(mapStateToProps)(LibraryPlaylists)

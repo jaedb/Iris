@@ -26,12 +26,33 @@ class App extends React.Component{
 	}
 
 	componentWillMount(){
+		window.addEventListener("keyup", this.handleKeyUp, false);
+		window.addEventListener("keydown", this.handleKeyDown, false);
+	}
+
+	componentDidMount(){
 		this.props.pusherActions.connect();
 		this.props.mopidyActions.connect();
 		this.props.spotifyActions.connect();
+		this.props.spotifyActions.getAllLibraryPlaylists();
+	}
 
-		window.addEventListener("keyup", this.handleKeyUp, false);
-		window.addEventListener("keydown", this.handleKeyDown, false);
+	componentWillReceiveProps(nextProps){
+
+		// mopidy comes online
+		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
+			this.props.mopidyActions.getPlaylists();
+		}
+
+		// spotify authorized
+		if( !this.props.spotify_authorized && nextProps.spotify_authorized ){
+			this.props.spotifyActions.getAllLibraryPlaylists();
+		}
+
+		// spotify un-authorized
+		if( this.props.spotify_authorized && !nextProps.spotify_authorized ){
+			// TODO: flush out playlists and then re-fetch mopidy
+		}
 	}
 
 	componentWillUnmount(){
@@ -92,6 +113,8 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		mopidy_connected: state.mopidy.connected,
+		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,
 		context_menu: state.ui.context_menu
 	}
