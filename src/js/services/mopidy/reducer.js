@@ -34,7 +34,7 @@ export default function reducer(mopidy = {}, action){
          **/
         case 'MOPIDY_STATE':
             return Object.assign({}, mopidy, {
-                state: action.data 
+                play_state: action.data 
             });
 
         case 'MOPIDY_CONSUME':
@@ -67,30 +67,6 @@ export default function reducer(mopidy = {}, action){
          * Asset-oriented actions
          **/
 
-        case 'MOPIDY_TLTRACKS':
-            return Object.assign({}, mopidy, {
-                tracks: action.data 
-            });
-
-        case 'MOPIDY_CURRENTTLTRACK':
-            if( !action.data ) return mopidy;
-            
-            var tracks = [];
-            Object.assign(tracks, mopidy.tracks);
-
-            for( var i = 0; i < tracks.length; i++ ){
-                Object.assign(tracks[i].track, { playing: ( tracks[i].tlid == action.data.tlid ) });
-            }
-
-            return Object.assign({}, mopidy, {
-                current_tltrack: action.data,
-                tracks: tracks
-            });
-
-        case 'MOPIDY_PLAYLISTS_LOADED':
-            if( !action.data ) return mopidy;
-            return Object.assign({}, mopidy, { playlists: action.data });
-
         case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
                 directory: action.data   
@@ -101,16 +77,6 @@ export default function reducer(mopidy = {}, action){
                 playlist: action.data
             });
 
-        case 'MOPIDY_ALBUM_LOADED':
-            return Object.assign({}, mopidy, {
-                album: action.data
-            });
-
-        case 'MOPIDY_ARTIST_LOADED':
-            return Object.assign({}, mopidy, {
-                artist: action.data
-            });
-
         case 'MOPIDY_ARTISTS_LOADED':
             return Object.assign({}, mopidy, {
                 artists: action.data
@@ -119,15 +85,6 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_ALBUMS_LOADED':
             return Object.assign({}, mopidy, {
                 albums: action.data
-            });
-
-        case 'MOPIDY_SEARCH':
-            var results = []
-            for( var i = 0; i < action.data.length; i++ ){
-                if( action.data[i].tracks ) results = [...results, ...action.data[i].tracks]
-            }
-            return Object.assign({}, mopidy, {
-                search_results_tracks: results
             });
 
         default:

@@ -4048,14 +4048,14 @@ main header h1 {
 
 .queue-view .player .artwork,
 .queue-view .player .controls,
-.queue-view .player .slider {
+.queue-view .player .progress {
   display: block;
   max-width: 400px;
   margin: 0 auto;
 }
 
 .queue-view .player .controls {
-  padding: 20px 0;
+  padding: 20px 0 10px;
 }
 
 .queue-view .player .controls a {
@@ -4069,6 +4069,10 @@ main header h1 {
 .queue-view .player .current-track {
   padding: 20px 0 0 0;
   font-weight: 700;
+}
+
+.queue-view .player .slider {
+  margin-top: 0;
 }
 
 .queue-view .player .slider .track {

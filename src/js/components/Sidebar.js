@@ -18,11 +18,23 @@ class Sidebar extends React.Component{
 		super(props);
 	}
 
+	renderDropzones(){
+		if( !this.props.dragger || !this.props.dragger.dragging ) return null
+
+		return (
+			<div className="dropzones">
+				<div className="zone">
+					<div className="title">Zone</div>
+				</div>
+			</div>
+		)
+	}
+
 	render(){
 		return (
 			<aside>
 				
-				{ this.props.spotify && this.props.spotify.track ? <Thumbnail size="large" images={this.props.spotify.track.album.images} /> : null }
+				{ this.props.current_track && this.props.current_track.album.images ? <Thumbnail size="large" images={this.props.current_track.album.images} /> : null }
 
 	        	<SearchForm context="sidebar" />
 
@@ -61,15 +73,15 @@ class Sidebar extends React.Component{
 							<Icon name="playlist" className="white" />
 							Playlists
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/artists">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/artists">
 							<Icon name="mic" className="white" />
 							Artists
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/albums">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/albums">
 							<Icon name="cd" className="white" />
 							Albums
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify.authorized} to="/library/tracks">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/tracks">
 							<Icon name="music" className="white" />
 							Tracks
 						</Link>
@@ -83,11 +95,13 @@ class Sidebar extends React.Component{
 						<Link activeClassName="active" to="/settings">
 							<Icon name="cog" className="white" />
 							Settings
-							{ !this.props.mopidy.connected || !this.props.spotify.connected || !this.props.pusher.connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
+							{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 						</Link>
 					</section>
 
 		        </nav>
+
+		       	{ this.renderDropzones() }
 
 		        <MiniPlayer />
 
@@ -104,7 +118,14 @@ class Sidebar extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		pusher_connected: state.pusher.connected,
+		spotify_connected: state.spotify.connected,
+		spotify_authorized: state.spotify.authorized,
+		current_track: state.ui.current_track,
+		dragger: state.ui.dragger
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

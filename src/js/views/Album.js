@@ -14,7 +14,6 @@ import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 
 import * as mopidyActions from '../services/mopidy/actions'
-import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class Album extends React.Component{
@@ -28,9 +27,13 @@ class Album extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
+
+		// if our URI has changed, fetch new album
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadAlbum( nextProps )
-		}else if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+
+		// if mopidy has just connected AND we're a local album, go get
+		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
 				this.loadAlbum( nextProps )
 			}
@@ -38,70 +41,46 @@ class Album extends React.Component{
 	}
 
 	loadAlbum( props = this.props ){
-		var source = helpers.uriSource( props.params.uri );
+		switch( helpers.uriSource( props.params.uri ) ){
 
-		if( source == 'spotify' ){
-			this.props.spotifyActions.getAlbum( props.params.uri );
+			case 'spotify':
+				this.props.spotifyActions.getAlbum( props.params.uri );
+				break;
 
-		}else if( source == 'local' && props.mopidy.connected ){
-			this.props.mopidyActions.getAlbum( props.params.uri );
+			case 'local':
+				if( props.mopidy_connected ) this.props.mopidyActions.getAlbum( props.params.uri );
+				break;
 		}
 	}
 
 	loadMore(){
-		if( !this.props.spotify.album || !this.props.spotify.album.tracks.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.album.tracks.next, 'SPOTIFY_ALBUM_LOADED_MORE' );
-	}
-
-	album(){
-		var album = {
-			name: false,
-			tracks: {
-				items: []
-			},
-			artists: [],
-			images: []
-		}
-		
-		switch( helpers.uriSource( this.props.params.uri ) ){
-
-			case 'spotify':
-				Object.assign(album, this.props.spotify.album)
-				album.artists = this.props.spotify.artists
-				break
-
-			case 'local':
-				Object.assign(album, this.props.mopidy.album)
-				if( this.props.lastfm.album.image ) album.images = this.props.lastfm.album.image
-				break
-		}
-
-		return album
+		if( !this.props.album.tracks_more ) return
+		this.props.spotifyActions.getURL( this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
 	}
 
 	render(){
-		var album = this.album()
+		if( !this.props.album ) return null
 
 		return (
 			<div className="view album-view">
 				<div className="intro">
-					<Thumbnail size="large" images={ album.images } />
-					<ArtistGrid artists={ album.artists } />
+					<Thumbnail size="large" images={ this.props.album.images } />
+					<ArtistGrid artists={ this.props.album.artists } />
 					<ul className="details">
-						<li>{ album.tracks.total } tracks, <Dater type="total-time" data={album.tracks.items} /></li>
-						{ album.release_date ? <li>Released <Dater type="date" data={ album.release_date } /></li> : null }
+						<li>{ this.props.album.tracks_total } tracks, <Dater type="total-time" data={this.props.album.tracks} /></li>
+						{ this.props.album.release_date ? <li>Released <Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist</li>	
 					</ul>
 				</div>
 				<div className="main">
 
 					<div className="title">
-						<h1>{ album.name }</h1>
-						<h3><ArtistSentence artists={ album.artists } /></h3>
+						<h1>{ this.props.album.name }</h1>
+						<h3><ArtistSentence artists={ this.props.album.artists } /></h3>
 					</div>
 
 					<section className="list-wrapper">
-						<TrackList tracks={ album.tracks.items } />
+						{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
@@ -119,13 +98,15 @@ class Album extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		album: state.ui.album,
+		mopidy_connected: state.mopidy.connected
+	};
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

@@ -27,46 +27,34 @@ class Search extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps){
-		if( this.props.params.query != newProps.params.query ||
-			!this.props.mopidy.connected && newProps.mopidy.connected ){
-				this.performSearch( newProps )
+
+		// new query
+		if( this.props.params.query != newProps.params.query ){
+			this.performSearch( newProps )
+		}
+
+		// mopidy comes online
+		if( !this.props.mopidy_connected && newProps.mopidy_connected ){
+			this.props.mopidyActions.getSearchResults( newProps.params.query, newProps.uri_schemes )
 		}
 	}
 
 	performSearch( props = this.props ){
+		this.props.uiActions.searchStarted()
 		this.props.spotifyActions.getSearchResults( props.params.query )
-		if( props.mopidy.connected ){
-			this.props.mopidyActions.getSearchResults( props.params.query, props.mopidy.uri_schemes )
-		}
+		this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
 	}
 
 	loadMore(type){
-		if( !this.props.spotify['search_results_'+type] || 
-			!this.props.spotify['search_results_'+type].next ){
+		if( !this.props.search_results[type] || 
+			!this.props.search_results[type+'_more'] ){
 			return
 		}
 
 		this.props.spotifyActions.getURL( 
-			this.props.spotify['search_results_'+type].next, 
+			this.props.search_results[type+'_more'], 
 			'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+ type.toUpperCase()
 		);
-	}
-
-	compiledResults(type){
-		var results = [];
-
-		// merge our mopidy results in
-		if( this.props.mopidy['search_results_'+type] ){
-			results = [...results, ...this.props.mopidy['search_results_'+type]]
-		}
-
-		// merge our spotify results in
-		if( this.props.spotify['search_results_'+type] && 
-			this.props.spotify['search_results_'+type].items ){
-			results = [...results, ...this.props.spotify['search_results_'+type].items]
-		}
-
-		return results;
 	}
 
 	renderResults(){
@@ -76,7 +64,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<ArtistGrid artists={ this.compiledResults('artists') } />
+							<ArtistGrid artists={ this.props.search_results.artists } />
 							<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
@@ -87,7 +75,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<AlbumGrid albums={ this.compiledResults('albums') } />
+							<AlbumGrid albums={ this.props.search_results.albums } />
 							<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
@@ -98,7 +86,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<PlaylistGrid playlists={ this.compiledResults('playlists') } />
+							<PlaylistGrid playlists={ this.props.search_results.playlists } />
 							<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
@@ -109,7 +97,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
+							<TrackList show_source_icon={true} tracks={ this.props.search_results.tracks } />
 							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -123,26 +111,26 @@ class Search extends React.Component{
 							<section>
 								<div className="inner">
 									<h4><Link to={'/search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
-									<ArtistGrid className="mini" artists={ this.compiledResults('artists').splice(0,6) } />
+									<ArtistGrid className="mini" artists={ this.props.search_results.artists.slice(0,6) } />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={'/search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
-									<AlbumGrid className="mini" albums={ this.compiledResults('albums').splice(0,6) } />
+									<AlbumGrid className="mini" albums={ this.props.search_results.albums.slice(0,6) } />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={'/search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
-									<PlaylistGrid className="mini" playlists={ this.compiledResults('playlists').splice(0,6) } />
+									<PlaylistGrid className="mini" playlists={ this.props.search_results.playlists.slice(0,6) } />
 								</div>
 							</section>
 						</div>
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={ this.compiledResults('tracks') } />
+							<TrackList show_source_icon={true} tracks={ this.props.search_results.tracks } />
 							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
@@ -162,7 +150,11 @@ class Search extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		uri_schemes: state.mopidy.uri_schemes,
+		search_results: state.ui.search_results
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

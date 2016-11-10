@@ -10,6 +10,7 @@
 		"babel-loader": "6.2.5",
 		"babel-preset-es2015": "*",
 		"babel-preset-react": "*",
+		"babel-preset-stage-2": "*",
 		"sass-loader": "*",
 		"style-loader": "*",
 		"css-loader": "*",

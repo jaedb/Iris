@@ -231,9 +231,6 @@ export function getArtist( uri ){
 
         var artist = {};
 
-        // while we're fiddling about, go get the albums
-        dispatch(getArtistAlbums(uri));
-
         // get both the artist and the top tracks
         $.when(
 
@@ -250,6 +247,11 @@ export function getArtist( uri ){
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
                     Object.assign(artist, { related_artists: response.artists });
+                }),
+
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
+                .then( response => {
+                    Object.assign(artist, { albums: response.items, albums_more: response.next });
                 })
 
         ).then( () => {
@@ -284,18 +286,6 @@ export function getArtists( uris ){
 	}
 }
 
-export function getArtistAlbums( uri ){
-    return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
-            .then( response => {
-                dispatch({
-                	type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                	data: response
-                });
-            });
-	}
-}
-
 /**
  * Single album
  *
@@ -310,25 +300,26 @@ export function getAlbum( uri ){
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
 
+                var album = response
+
                 // now get all the artists for this album (full objects)
-                var artist_uris = [];
-                for( var i = 0; i < response.artists.length; i++ ){
-                    artist_uris.push( response.artists[i].uri )
-                }
-                dispatch(getArtists(artist_uris));
-
-                // inject the parent album object into each track for consistent track objects
-                for( var i = 0; i < response.tracks.items.length; i++ ){
-                    response.tracks.items[i].album = {
-                        name: response.name,
-                        uri: response.uri
-                    }
+                // we do this to get the artist artwork
+                var artist_ids = [];
+                for( var i = 0; i < album.artists.length; i++ ){
+                    artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
                 }
 
-                dispatch({
-                    type: 'SPOTIFY_ALBUM_LOADED',
-                    data: response
-                });
+                sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
+                    .then( response => {
+                        var artists = response.artists
+
+                        // finally dispatch the loaded action
+                        dispatch({
+                            type: 'SPOTIFY_ALBUM_LOADED',
+                            data: Object.assign({}, album, {artists: artists})
+                        });
+                    });
+
             });
     }
 }
@@ -354,18 +345,29 @@ export function getPlaylist( uri ){
 	}
 }
 
+function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
+    if( lastResponse.next ){
+        sendRequest( dispatch, getState, lastResponse.next )
+            .then( response => {
+                playlists = [...playlists, ...response.items]
+                loadNextPlaylistsBatch( dispatch, getState, playlists, response )
+            });
+    }else{
+        dispatch({
+            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
+            data: playlists
+        });
+    }
+}
 
-export function getLibraryPlaylists(){
+export function getAllLibraryPlaylists(){
     return (dispatch, getState) => {
 
         dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'me/playlists' )
+        sendRequest( dispatch, getState, 'me/playlists?limit=50' )
             .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-                    data: response
-                });
+                loadNextPlaylistsBatch( dispatch, getState, response.items, response )
             });
     }
 }

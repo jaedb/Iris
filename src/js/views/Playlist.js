@@ -26,7 +26,7 @@ class Playlist extends React.Component{
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadPlaylist( nextProps )
-		}else if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			if( helpers.uriSource( this.props.params.uri ) == 'm3u' ){
 				this.loadPlaylist( nextProps )
 			}
@@ -37,45 +37,39 @@ class Playlist extends React.Component{
 		var source = helpers.uriSource( props.params.uri );
 		if( source == 'spotify' ){
 			this.props.spotifyActions.getPlaylist( props.params.uri );
-		}else if( source == 'm3u' && props.mopidy.connected ){
+		}else if( source == 'm3u' && props.mopidy_connected ){
 			this.props.mopidyActions.getPlaylist( props.params.uri );
 		}
 	}
 
 	loadMore(){
-		if( !this.props.spotify.playlist || !this.props.spotify.playlist.tracks.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.playlist.tracks.next, 'SPOTIFY_PLAYLIST_LOADED_MORE' );
+		if( !this.props.playlist.tracks_more ) return
+		this.props.spotifyActions.getURL( this.props.playlist.tracks_more, 'SPOTIFY_PLAYLIST_LOADED_MORE' );
 	}
 
 	render(){
-		var source = helpers.uriSource( this.props.params.uri );
-		var source_name = source
-		if( source == 'spotify' ){
-			var playlist = this.props.spotify.playlist
-		}else if( source == 'm3u' ){
-			var playlist = this.props.mopidy.playlist
-			source_name = 'local'
-		}
-		if( !playlist ) return null;
+		if( !this.props.playlist ) return null;
+		var scheme = helpers.uriSource( this.props.params.uri );
 
 		return (
 			<div className="view playlist-view">
 				<div className="intro">
-					{ playlist.images ? <Thumbnail size="large" images={ playlist.images } /> : null }
+					<Thumbnail size="large" images={ this.props.playlist.images } />
 					<ul className="details">
-						<li>{ playlist.tracks.total } tracks, <Dater type="total-time" data={playlist.tracks.items} /></li>
-						{ playlist.last_modified ? <li>Updated <Dater type="ago" data={playlist.last_modified} /> ago</li> : null }
-						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {source_name} playlist</li>
+						<li>{ this.props.playlist.tracks_total } tracks, <Dater type="total-time" data={this.props.playlist.tracks} /></li>
+						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }
+						{ scheme == 'spotify' ? <li><FontAwesome name="spotify" /> Spotify playlist</li> : null }
+						{ scheme == 'm3u' ? <li><FontAwesome name="folder" /> Local playlist</li> : null }
 					</ul>
 				</div>
 				<div className="main">
 
 					<div className="title">
-						<h1>{ playlist.name }</h1>
+						<h1>{ this.props.playlist.name }</h1>
 					</div>
 
 					<section className="list-wrapper">
-						<TrackList tracks={ playlist.tracks.items } />
+						<TrackList tracks={ this.props.playlist.tracks } />
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
@@ -93,7 +87,10 @@ class Playlist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		playlist: state.ui.playlist,
+		mopidy_connected: state.mopidy.connected
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

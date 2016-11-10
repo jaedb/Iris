@@ -16,61 +16,22 @@ class LibraryPlaylists extends React.Component{
 		super(props);
 	}
 
-	// on render
-	componentDidMount(){
-		if( this.props.mopidy.connected ){
-			this.props.mopidyActions.getPlaylists();
-		}
-		if( this.props.spotify.authorized ){
-		this.props.spotifyActions.getLibraryPlaylists();
-		}
-	}
-
-	componentWillReceiveProps( nextProps ){
-		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
-			this.props.mopidyActions.getPlaylists();
-		}
-		if( !this.props.spotify.authorized && nextProps.spotify.authorized ){
-			this.props.spotifyActions.getLibraryPlaylists();
-		}
-	}
-
-	compiledPlaylistSources(){
-		var playlists = [];
-
-		if( this.props.mopidy.playlists ){
-			playlists = [...playlists, ...this.props.mopidy.playlists]
-		}
-
-		if( this.props.spotify.library_playlists ){
-			playlists = [...playlists, ...this.props.spotify.library_playlists.items]
-		}
-
-		return playlists;
-	}
-
-	renderPlaylists(){
-		var playlists = this.compiledPlaylistSources()
-		if( !playlists ) return null
-
+	render(){
+		if( !this.props.playlists ) return null
 		var columns = [
 			{ name: 'name', width: '50'},
 			{ name: 'uri', width: '25'}
 		]
 
-		return <List columns={columns} rows={playlists} link_prefix="/playlist/" />
-	}
-
-	render(){
 		return (
 			<div className="view library-playlists-view">
-				<Header
-					icon="playlist"
-					title="My playlists"
-					/>
+
+				<Header icon="playlist" title="My playlists" />
+
 				<section className="list-wrapper">
-					{ this.renderPlaylists() }
+					<List columns={columns} rows={this.props.playlists} link_prefix="/playlist/" />
 				</section>
+
 			</div>
 		)
 	}
@@ -84,14 +45,9 @@ class LibraryPlaylists extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
-}
-
-const mapDispatchToProps = (dispatch) => {
 	return {
-		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		playlists: state.ui.playlists
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryPlaylists)
+export default connect(mapStateToProps)(LibraryPlaylists)

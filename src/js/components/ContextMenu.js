@@ -14,13 +14,10 @@ class ContextMenu extends React.Component{
 		super(props);
 	}
 
-	handleClick(e){
-	}
-
 	renderItems(){
 		var items = [];
 
-		switch( this.props.state.context ){
+		switch( this.props.context_menu.context ){
 
 			case 'queue':
 				items = [
@@ -57,56 +54,61 @@ class ContextMenu extends React.Component{
 	}
 
 	playQueueItem(){
-		var selectedTracks = this.props.state.data.selected_tracks;
+		var selectedTracks = this.props.context_menu.data.selected_tracks;
 		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );
 		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromQueue(){
-		var selectedTracks = this.props.state.data.selected_tracks;
-		var selectedTracksTlids = [];
-		for( var i = 0; i < selectedTracks.length; i++ ){
-			selectedTracksTlids.push( selectedTracks[i].tlid );
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_tlids = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_tlids.push( selected_tracks[i].tlid );
 		}
-		this.props.mopidyActions.removeTracks( selectedTracksTlids );
+		this.props.mopidyActions.removeTracks( selected_tracks_tlids );
 		this.props.uiActions.hideContextMenu();
 	}
 
 	playItems(){
-		var selectedTracks = this.props.state.data.selected_tracks;
-		var selectedTracksUris = [];
-		for( var i = 0; i < selectedTracks.length; i++ ){
-			selectedTracksUris.push( selectedTracks[i].uri );
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
 		}
-		this.props.mopidyActions.playTracks(selectedTracksUris);
+		this.props.mopidyActions.playTracks(selected_tracks_uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	playItemsNext(){
-		var selectedTracks = this.props.state.data.selected_tracks;
-		var selectedTracksUris = [];
-		for( var i = 0; i < selectedTracks.length; i++ ){
-			selectedTracksUris.push( selectedTracks[i].uri );
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
 		}
 
-		var current_tltrack = this.props.mopidy.current_tltrack;
-		function isCurrentTlid( tltrack ){
-			return ( tltrack.tlid == current_tltrack.tlid );
+		var current_track = this.props.current_track
+		var current_track_index = -1
+		for( var i = 0; i < this.props.current_tracklist.length; i++ ){
+			if( this.props.current_tracklist[i].tlid == this.props.current_track.tlid ){
+				current_track_index = i
+				break
+			}
 		}
-		var currentTrack = this.props.mopidy.tracks.find( isCurrentTlid );
-		var currentTrackIndex = this.props.mopidy.tracks.indexOf( currentTrack );
 
-		this.props.mopidyActions.enqueueTracks(selectedTracksUris, currentTrackIndex+1);
+		var at_position = null
+		if( current_track_index > -1 ) at_position = current_track_index + 1
+
+		this.props.mopidyActions.enqueueTracks(selected_tracks_uris, at_position);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	addToQueue(){
-		var selectedTracks = this.props.state.data.selected_tracks;
-		var selectedTracksUris = [];
-		for( var i = 0; i < selectedTracks.length; i++ ){
-			selectedTracksUris.push( selectedTracks[i].uri );
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
 		}
-		this.props.mopidyActions.enqueueTracks(selectedTracksUris);
+		this.props.mopidyActions.enqueueTracks(selected_tracks_uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -116,11 +118,11 @@ class ContextMenu extends React.Component{
 	}
 
 	render(){
-		if( !this.props.state.show ) return null;
+		if( !this.props.context_menu.show ) return null;
 
 		var style = {
-			left: this.props.state.position_x,
-			top: this.props.state.position_y,
+			left: this.props.context_menu.position_x,
+			top: this.props.context_menu.position_y,
 		}
 
 		return (
@@ -132,7 +134,11 @@ class ContextMenu extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		context_menu: state.ui.context_menu,
+		current_track: state.ui.current_track,
+		current_tracklist: state.ui.current_tracklist
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

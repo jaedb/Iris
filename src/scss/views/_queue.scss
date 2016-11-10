@@ -12,14 +12,14 @@
 
 		.artwork,
 		.controls,
-		.slider {
+		.progress {
 			display: block;
 			max-width: 400px;
 			margin: 0 auto;
 		}
 
 		.controls {
-			padding: 20px 0;
+			padding: 20px 0 10px;
 			a {
 				font-size: 18px;
 			}
@@ -35,6 +35,7 @@
 		}
 
 		.slider {
+			margin-top: 0;
 			.track {
 				background: rgba(0,0,0,0.2);
 			}

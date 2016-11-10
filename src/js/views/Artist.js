@@ -30,7 +30,7 @@ class Artist extends React.Component{
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadArtist( nextProps )
-		}else if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
 				this.loadArtist( nextProps )
 			}
@@ -41,92 +41,57 @@ class Artist extends React.Component{
 		var source = helpers.uriSource( props.params.uri );
 		if( source == 'spotify' ){
 			this.props.spotifyActions.getArtist( props.params.uri );
-		}else if( source == 'local' && props.mopidy.connected ){
+		}else if( source == 'local' && props.mopidy_connected ){
 			this.props.mopidyActions.getArtist( props.params.uri );
 		}
 	}
 
 	loadMore(){
-		if( !this.props.spotify.artist_albums || !this.props.spotify.artist_albums.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.artist_albums.next, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
+		if( !this.props.artist.albums_more ) return
+		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
 	}
 
-	renderSpotifyArtist(){
-		if( !this.props.spotify.artist ) return null
-		var artist = this.props.spotify.artist
-		var albums = this.props.spotify.artist_albums
+	render(){
+		if( !this.props.artist ) return null
+		var scheme = helpers.uriSource( this.props.params.uri );
 
 		return (
 			<div className="view artist-view">
-				<Parallax images={artist.images} />
+				<Parallax images={this.props.artist.images} />
 
 				<div className="intro">
-					<Thumbnail size="huge" images={ artist.images } />
-					<h1>{ artist.name }</h1>
+					<Thumbnail size="huge" images={ this.props.artist.images } />
+					<h1>{ this.props.artist.name }</h1>
 					<ul className="details">
-						<li>{ artist.followers.total.toLocaleString() } followers</li>
-						{ artist.popularity ? <li>{ artist.popularity }% popularity</li> : null }
-						<li><FontAwesome name='spotify' /> Spotify artist</li>
+						{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
+						{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
+						<li>{ this.props.artist.albums.length.toLocaleString() } albums</li>
+						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
+						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
 					</ul>
 				</div>
 
 				<div className="col w70">
 					<h4 className="left-padding">Top tracks</h4>
-					{ artist.tracks ? <TrackList tracks={ artist.tracks } /> : null }
+					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
 				</div>
 
 				<div className="col w5"></div>
 
 				<div className="col w25">
 					<h4>Related artists</h4>
-					{ artist.related_artists ? <ArtistList artists={ artist.related_artists.slice(0,6) } /> : null }
+					{ this.props.artist.related_artists ? <ArtistList artists={ this.props.artist.related_artists.slice(0,6) } /> : null }
 				</div>
 
 				<div className="cf"></div>
 
 				<h4 className="left-padding">Albums</h4>
 				<section className="grid-wrapper no-top-padding">
-					{ albums ? <AlbumGrid albums={ albums.items } /> : null }
+					{ this.props.artist.albums ? <AlbumGrid albums={ this.props.artist.albums } /> : null }
 					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
 		);
-	}
-
-	renderMopidyArtist(){
-		if( !this.props.mopidy.artist ) return null
-		var artist = this.props.mopidy.artist
-		
-		if( this.props.lastfm.artist.image && this.props.lastfm.artist.name == artist.name ) artist.images = this.props.lastfm.artist.image
-
-		return (
-			<div className="view artist-view">
-				<Parallax images={ artist.images } />
-
-				<div className="intro">
-					<Thumbnail size="huge" images={ artist.images } />
-					<h1>{ artist.name }</h1>
-					<ul className="details">
-						<li>{ artist.albums.length.toLocaleString() } albums</li>
-						<li><FontAwesome name='folder' /> Local artist</li>
-					</ul>
-				</div>
-
-				<h4 className="left-padding">Top tracks</h4>
-				{ artist.tracks ? <TrackList tracks={ artist.tracks } /> : null }
-
-				<h4 className="left-padding">Albums</h4>
-				<section className="grid-wrapper no-top-padding">
-					{ artist.albums ? <AlbumGrid albums={ artist.albums } /> : null }
-				</section>
-			</div>
-		);
-	}
-
-	render(){
-		var source = helpers.uriSource( this.props.params.uri );
-		if( source == 'spotify' ) return this.renderSpotifyArtist()
-		if( source == 'local' ) return this.renderMopidyArtist()
 	}
 }
 
@@ -138,7 +103,10 @@ class Artist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		artist: state.ui.artist
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

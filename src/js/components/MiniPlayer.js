@@ -20,22 +20,19 @@ class MiniPlayer extends React.Component{
 
 	renderPlayButton(){
 		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
-		if( this.props.mopidy.state == 'playing' ){
+		if( this.props.play_state == 'playing' ){
 			button = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
 		return button;
 	}
 
 	render(){
-		var mopidy_track = false;
-		if( typeof(this.props.mopidy.current_tltrack) !== 'undefined' && typeof(this.props.mopidy.current_tltrack.track) !== 'undefined' ) mopidy_track = this.props.mopidy.current_tltrack;
-
 		return (
 			<div className="player">
 
 				<div className="current-track">
-					<div className="title">{ mopidy_track ? mopidy_track.track.name : null }</div>
-					{ mopidy_track ? <ArtistSentence artists={ mopidy_track.track.artists } /> : null }
+					<div className="title">{ this.props.current_track ? this.props.current_track.name : null }</div>
+					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : null }
 				</div>
 
 				<div className="controls">
@@ -59,7 +56,10 @@ class MiniPlayer extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		current_track: state.ui.current_track,
+		play_state: state.mopidy.play_state
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

@@ -87,10 +87,7 @@ class Settings extends React.Component{
 	render(){
 		return (
 			<div className="view settings-view">
-				<Header
-					icon="cog"
-					title="Settings"
-					/>
+				<Header icon="cog" title="Settings" />
 
 				<section>
 
