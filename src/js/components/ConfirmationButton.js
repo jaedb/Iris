@@ -55,6 +55,8 @@ export default class ConfirmationButton extends React.Component{
 			if( this.state.timing_out ) className += ' timing-out';
 		}
 
+		if( this.props.className ) className += ' '+this.props.className
+
 		return (
 			<button
 				className={className}

@@ -28,7 +28,9 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         data: data
                     }).then( 
-                        response => resolve(response),
+                        response => {
+                            resolve(response)
+                        },
                         (xhr, status, error) => {
                             console.error( endpoint+' failed', xhr.responseText)
                             reject(error)
@@ -332,18 +334,39 @@ export function getAlbum( uri ){
 export function getPlaylist( uri ){
     return (dispatch, getState) => {
 
-		// flush out the previous store value
+        // flush out the previous store value
         dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+        var playlist = {};
+
+        $.when(
+
+             sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
             .then( response => {
-                dispatch({
-                	type: 'SPOTIFY_PLAYLIST_LOADED',
-                	data: response
-                });
+                Object.assign( playlist, response );
+            }),
+
+            // TODO: Check if we're authenticated before sending this request, otherwise we get a 403
+            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers/contains?ids='+getState().spotify.me.id )
+            .then( response => {
+                var is_following = 0
+                if( response.length > 0 ) is_following = response[0]
+                Object.assign(playlist, { following: response[0] } );
+            })
+
+        ).then( () => {
+            dispatch({
+                type: 'SPOTIFY_PLAYLIST_LOADED',
+                data: playlist
             });
-	}
+        });
+    }
 }
+
+
+/**
+ * All of my playlists
+ **/
 
 function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
     if( lastResponse.next ){
@@ -541,3 +564,27 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
             });
 	}
 }
+
+
+
+/**
+ * Following toggles
+ **/
+
+export function toggleFollowingPlaylist( uri, method ){
+    if( method == 'PUT' ) var new_state = 1
+    if( method == 'DELETE' ) var new_state = 0
+
+    return (dispatch, getState) => {
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers', method )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_PLAYLIST_FOLLOWING',
+                    data: new_state
+                });
+            });
+    }
+}
+
+
+

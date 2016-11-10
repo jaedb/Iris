@@ -13,6 +13,15 @@ input[type="date"] {
 	font-size: 14px;
 }
 
+.button-wrapper {	
+	padding: 10px 0;
+	margin-top: -1px;
+
+	&.large {
+		padding: 16px 0;
+	}
+}
+
 .button,
 button,
 input[type="button"],
@@ -28,6 +37,10 @@ input[type="submit"] {
 		background: darken( $light_grey, 6%);
 	}
 
+	&.large {
+		padding: 16px 24px;
+	}
+
 	&.primary {
 		background: $turquoise;
 		color: #FFFFFF;
@@ -41,6 +54,14 @@ input[type="submit"] {
 		color: #FFFFFF;
 		&:hover {
 			background: lighten( #000000, 20% );
+		}
+	}
+
+	&.tertiary {
+		background: $mid_grey;
+		color: #FFFFFF;
+		&:hover {
+			background: darken( $mid_grey, 6% );
 		}
 	}
 

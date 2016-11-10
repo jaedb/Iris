@@ -174,6 +174,10 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { playlist: playlist });
 
+        case 'SPOTIFY_PLAYLIST_FOLLOWING':
+            var playlist = Object.assign({}, ui.playlist, { following: action.data })
+            return Object.assign({}, ui, { playlist: playlist });
+
 
         /**
          * Library Playlists
