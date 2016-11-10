@@ -23,6 +23,40 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { context_menu: { show: false } });
 
 
+
+        /**
+         * Dragging
+         **/
+
+        case 'DRAG_START':
+            return Object.assign({}, ui, { 
+                dragger: { 
+                    dragging: true,
+                    context: action.context, 
+                    victims: action.victims,
+                    position_x: action.position_x,
+                    position_y: action.position_y
+                }
+            });
+
+        case 'DRAG_MOVE':
+            var dragger = Object.assign({}, ui.dragger, {              
+                    position_x: action.position_x,
+                    position_y: action.position_y
+                })
+            return Object.assign({}, ui, { dragger: dragger });
+
+        case 'DRAG_END':
+            return Object.assign({}, ui, { 
+                dragger: { 
+                    dragging: false,
+                    context: false, 
+                    victims: false
+                }
+            });
+
+
+
         /**
          * Albums
          **/

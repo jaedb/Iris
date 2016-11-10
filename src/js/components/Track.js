@@ -23,6 +23,13 @@ export default class Track extends React.Component{
 		return this.props.handleDoubleClick(e);
 	}
 
+	handleDragStart(e){
+		// if we're not selected, perform click behavior [first] << this is assumed
+		if( !this.props.track.selected ) this.handleClick(e)
+
+		this.props.handleDragStart(e)
+	}
+
 	handleContextMenu(e){
 		e.preventDefault();
 
@@ -44,9 +51,11 @@ export default class Track extends React.Component{
 		return (
 			<div
 				className={className}
-				onDoubleClick={ (e) => this.handleDoubleClick(e) }
-				onClick={ (e) => this.handleClick(e) }
-				onContextMenu={ (e) => this.handleContextMenu(e) }>
+				draggable='true'
+				onDragStart={ e => this.handleDragStart(e) }
+				onClick={ e => this.handleClick(e) }
+				onDoubleClick={ e => this.handleDoubleClick(e) }
+				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
 						{ track.name ? track.name : '-' }

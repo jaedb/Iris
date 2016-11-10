@@ -39,4 +39,26 @@ export function lazyLoading( start ){
     }
 }
 
+export function dragStart( e, context, victims ){
+    return {
+        type: 'DRAG_START',
+        context: context,
+        victims: victims,
+        position_x: e.clientX,
+        position_y: e.clientY
+    }
+}
+
+export function dragMove( e ){
+    return {
+        type: 'DRAG_MOVE',
+        position_x: e.clientX,
+        position_y: e.clientY,
+    }
+}
+
+export function dragEnd(){
+    return { type: 'DRAG_END' }
+}
+
 

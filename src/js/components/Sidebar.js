@@ -18,6 +18,18 @@ class Sidebar extends React.Component{
 		super(props);
 	}
 
+	renderDropzones(){
+		if( !this.props.dragger || !this.props.dragger.dragging ) return null
+
+		return (
+			<div className="dropzones">
+				<div className="zone">
+					<div className="title">Zone</div>
+				</div>
+			</div>
+		)
+	}
+
 	render(){
 		return (
 			<aside>
@@ -89,6 +101,8 @@ class Sidebar extends React.Component{
 
 		        </nav>
 
+		       	{ this.renderDropzones() }
+
 		        <MiniPlayer />
 
 			</aside>
@@ -109,7 +123,8 @@ const mapStateToProps = (state, ownProps) => {
 		pusher_connected: state.pusher.connected,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorized,
-		current_track: state.ui.current_track
+		current_track: state.ui.current_track,
+		dragger: state.ui.dragger
 	}
 }
 

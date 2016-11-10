@@ -14,9 +14,6 @@ class ContextMenu extends React.Component{
 		super(props);
 	}
 
-	handleClick(e){
-	}
-
 	renderItems(){
 		var items = [];
 

@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 
 import Sidebar from '../components/Sidebar'
 import ContextMenu from '../components/ContextMenu'
+import Dragger from '../components/Dragger'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -93,13 +94,17 @@ class App extends React.Component{
 	}
 
 	render(){
+		var className = '';
+		if( this.props.dragger && this.props.dragger.dragging ) className += ' dragging'
+
 		return (
-			<div>
+			<div className={className}>
 		        <Sidebar />
 		        <main>
 		      		{this.props.children}
 		        </main>
 		        <ContextMenu state={this.props.context_menu} />
+		        <Dragger />
 	        </div>
 		);
 	}
@@ -116,6 +121,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,
+		dragger: state.ui.dragger,
 		context_menu: state.ui.context_menu
 	}
 }

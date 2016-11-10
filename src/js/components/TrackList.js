@@ -2,10 +2,11 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as uiActions from '../services/ui/actions'
 
 import Track from './Track'
+
+import * as mopidyActions from '../services/mopidy/actions'
+import * as uiActions from '../services/ui/actions'
 
 class TrackList extends React.Component{
 
@@ -81,12 +82,16 @@ class TrackList extends React.Component{
 		this.setState({ tracks: tracks, lastSelectedTrack: index });
 	}
 
-	handleDoubleClick( e, index ){
+	handleDoubleClick(e, index){
 		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu();
 		this.playTracks()
 	}
 
-	handleContextMenu( e, index ){
+	handleDragStart(e, index){
+		this.props.uiActions.dragStart( e, 'tltracks', this.selectedTracks() )
+	}
+
+	handleContextMenu(e, index){
 		var data = {
 			selected_tracks: this.selectedTracks()
 		}
@@ -148,9 +153,10 @@ class TrackList extends React.Component{
 									show_source_icon={ this.props.show_source_icon }
 									key={index+'_'+track.uri} 
 									track={track} 
-									handleDoubleClick={(e) => self.handleDoubleClick(e, index)}
-									handleClick={(e) => self.handleClick(e, index)}
-									handleContextMenu={(e) => self.handleContextMenu(e, index)} />
+									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
+									handleClick={ e => self.handleClick(e, index)}
+									handleDragStart={ e => self.handleDragStart(e, index)}
+									handleContextMenu={ e => self.handleContextMenu(e, index)} />
 						}
 					)
 				}
