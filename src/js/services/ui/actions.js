@@ -65,4 +65,11 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
+export function removeTracksFromPlaylist( track_indexes ){
+    return { 
+        type: 'REMOVE_TRACKS_FROM_PLAYLIST',
+        track_indexes: track_indexes
+    }
+}
+
 

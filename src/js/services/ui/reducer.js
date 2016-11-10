@@ -178,6 +178,14 @@ export default function reducer(ui = {}, action){
             var playlist = Object.assign({}, ui.playlist, { following: action.data })
             return Object.assign({}, ui, { playlist: playlist });
 
+        case 'SPOTIFY_PLAYLIST_TRACKS_REMOVED':
+            var tracks = Object.assign([], ui.playlist.tracks)
+            for( var i = 0; i < action.positions.length; i++ ){
+                tracks.splice( action.positions[i], 1 )
+            }
+            var playlist = Object.assign({}, ui.playlist, action.snapshot_id, { tracks: tracks })
+            return Object.assign({}, ui, { playlist: playlist });
+
 
         /**
          * Library Playlists

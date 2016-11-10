@@ -29,6 +29,8 @@ class ContextMenu extends React.Component{
 			case 'editable-playlist':
 				items = [
 					{ handleClick: 'playItems', label: 'Play' },
+					{ handleClick: 'playItemsNext', label: 'Play next' },
+					{ handleClick: 'addToQueue', label: 'Add to queue' },
 					{ handleClick: 'removeFromPlaylist', label: 'Remove' }
 				];
 				break;
@@ -113,7 +115,7 @@ class ContextMenu extends React.Component{
 	}
 
 	removeFromPlaylist(){
-		console.log('removeFromPlaylist')
+		this.props.uiActions.removeTracksFromPlaylist( this.props.context_menu.data.selected_tracks_indexes )
 		this.props.uiActions.hideContextMenu();
 	}
 

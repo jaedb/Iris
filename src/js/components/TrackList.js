@@ -92,8 +92,10 @@ class TrackList extends React.Component{
 	}
 
 	handleContextMenu(e, index){
+		var selected_tracks = this.selectedTracks()
 		var data = {
-			selected_tracks: this.selectedTracks()
+			selected_tracks: selected_tracks,
+			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
 		}
 		this.props.uiActions.showContextMenu( e, this.props.context, data )
 	}
@@ -103,6 +105,14 @@ class TrackList extends React.Component{
 			return ( typeof(track.selected) !== 'undefined' && track.selected );
 		}
 		return this.state.tracks.filter(isSelected)
+	}
+
+	tracksIndexes(tracks){
+		var indexes = []
+		for( var i = 0; i < tracks.length; i++ ){
+			indexes.push( this.props.tracks.indexOf(tracks[i]))
+		}
+		return indexes
 	}
 
 	playTracks(){
@@ -123,12 +133,12 @@ class TrackList extends React.Component{
 	}
 
 	removeTracks(){
-
-		var tracks = this.selectedTracks();
 		
-		// if we've got a specific action, run it
+		// if this tracklist handles removal, handle it
 		if( typeof(this.props.removeTracks) !== 'undefined' ){
-			return this.props.removeTracks( tracks );
+			var tracks = this.selectedTracks();
+			var tracks_indexes = this.tracksIndexes(tracks);
+			return this.props.removeTracks( tracks_indexes );
 		}
 
 		// by default, do nothing

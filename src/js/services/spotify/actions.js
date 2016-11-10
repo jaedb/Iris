@@ -26,7 +26,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         headers: {
                             Authorization: 'Bearer '+ response
                         },
-                        data: data
+                        data: JSON.stringify(data)
                     }).then( 
                         response => {
                             resolve(response)
@@ -326,75 +326,6 @@ export function getAlbum( uri ){
     }
 }
 
-/**
- * Single playlist
- *
- * @oaram uri string
- **/
-export function getPlaylist( uri ){
-    return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
-
-        var playlist = {};
-
-        $.when(
-
-             sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
-            .then( response => {
-                Object.assign( playlist, response );
-            }),
-
-            // TODO: Check if we're authenticated before sending this request, otherwise we get a 403
-            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers/contains?ids='+getState().spotify.me.id )
-            .then( response => {
-                var is_following = 0
-                if( response.length > 0 ) is_following = response[0]
-                Object.assign(playlist, { following: response[0] } );
-            })
-
-        ).then( () => {
-            dispatch({
-                type: 'SPOTIFY_PLAYLIST_LOADED',
-                data: playlist
-            });
-        });
-    }
-}
-
-
-/**
- * All of my playlists
- **/
-
-function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
-    if( lastResponse.next ){
-        sendRequest( dispatch, getState, lastResponse.next )
-            .then( response => {
-                playlists = [...playlists, ...response.items]
-                loadNextPlaylistsBatch( dispatch, getState, playlists, response )
-            });
-    }else{
-        dispatch({
-            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-            data: playlists
-        });
-    }
-}
-
-export function getAllLibraryPlaylists(){
-    return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
-
-        sendRequest( dispatch, getState, 'me/playlists?limit=50' )
-            .then( response => {
-                loadNextPlaylistsBatch( dispatch, getState, response.items, response )
-            });
-    }
-}
-
 
 export function getLibraryArtists(){
 	return (dispatch, getState) => {
@@ -567,9 +498,69 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
 
 
 
+
 /**
- * Following toggles
+ * Playlists
  **/
+
+export function getPlaylist( uri ){
+    return (dispatch, getState) => {
+
+        // flush out the previous store value
+        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
+
+        var playlist = {};
+
+        $.when(
+
+             sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+            .then( response => {
+                Object.assign( playlist, response );
+            }),
+
+            // TODO: Check if we're authenticated before sending this request, otherwise we get a 403
+            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers/contains?ids='+getState().spotify.me.id )
+            .then( response => {
+                var is_following = 0
+                if( response.length > 0 ) is_following = response[0]
+                Object.assign(playlist, { following: response[0] } );
+            })
+
+        ).then( () => {
+            dispatch({
+                type: 'SPOTIFY_PLAYLIST_LOADED',
+                data: playlist
+            });
+        });
+    }
+}
+
+function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
+    if( lastResponse.next ){
+        sendRequest( dispatch, getState, lastResponse.next )
+            .then( response => {
+                playlists = [...playlists, ...response.items]
+                loadNextPlaylistsBatch( dispatch, getState, playlists, response )
+            });
+    }else{
+        dispatch({
+            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
+            data: playlists
+        });
+    }
+}
+
+export function getAllLibraryPlaylists(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
+
+        sendRequest( dispatch, getState, 'me/playlists?limit=50' )
+            .then( response => {
+                loadNextPlaylistsBatch( dispatch, getState, response.items, response )
+            });
+    }
+}
 
 export function toggleFollowingPlaylist( uri, method ){
     if( method == 'PUT' ) var new_state = 1
@@ -586,5 +577,16 @@ export function toggleFollowingPlaylist( uri, method ){
     }
 }
 
-
+export function deleteTracksFromPlaylist( uri, snapshot_id, positions ){
+    return (dispatch, getState) => {
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: positions } )
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_PLAYLIST_TRACKS_REMOVED',
+                    positions: positions,
+                    snapshot_id: response.snapshot_id
+                });
+            });
+    }
+}
 

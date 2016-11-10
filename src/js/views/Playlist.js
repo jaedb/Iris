@@ -11,8 +11,9 @@ import Dater from '../components/Dater'
 import ConfirmationButton from '../components/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 
-import * as spotifyActions from '../services/spotify/actions'
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as spotifyActions from '../services/spotify/actions'
 
 class Playlist extends React.Component{
 
@@ -35,11 +36,16 @@ class Playlist extends React.Component{
 	}
 
 	loadPlaylist( props = this.props ){
-		var source = helpers.uriSource( props.params.uri );
-		if( source == 'spotify' ){
-			this.props.spotifyActions.getPlaylist( props.params.uri );
-		}else if( source == 'm3u' && props.mopidy_connected ){
-			this.props.mopidyActions.getPlaylist( props.params.uri );
+		switch( helpers.uriSource( props.params.uri ) ){
+
+			case 'spotify':
+				this.props.spotifyActions.getPlaylist( props.params.uri );
+				break
+
+			case 'm3u':
+				if( props.mopidy_connected ) this.props.mopidyActions.getPlaylist( props.params.uri );
+				break
+
 		}
 	}
 
@@ -62,6 +68,10 @@ class Playlist extends React.Component{
 
 	delete(){
 		alert('Delete me')
+	}
+
+	removeTracks( track_indexes ){
+		this.props.uiActions.removeTracksFromPlaylist( track_indexes )
 	}
 
 	renderFollowOrDeleteButton(){
@@ -117,7 +127,7 @@ class Playlist extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList tracks={ this.props.playlist.tracks } /> : null }
+						{ this.props.playlist.tracks ? <TrackList context="editable-playlist" tracks={ this.props.playlist.tracks } removeTracks={ track_indexes => this.removeTracks(track_indexes) } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
@@ -145,6 +155,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
