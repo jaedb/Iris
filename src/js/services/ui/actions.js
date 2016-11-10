@@ -57,6 +57,10 @@ export function dragMove( e ){
     }
 }
 
+export function dragCancel(){
+    return { type: 'DRAG_CANCEL' }
+}
+
 export function dragEnd(){
     return { type: 'DRAG_END' }
 }

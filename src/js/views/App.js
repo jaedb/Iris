@@ -63,7 +63,7 @@ class App extends React.Component{
 
 	shouldTriggerShortcut(e){
 		var ignoreNodes = ['INPUT', 'TEXTAREA'];
-		var keyCodes = [32];
+		var keyCodes = [32,27];
 
 		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
 			return false;
@@ -82,12 +82,19 @@ class App extends React.Component{
 	handleKeyUp(e){
 		if( !this.shouldTriggerShortcut(e) ) return;
 
-		switch(e.keyCode){			
+		switch(e.keyCode){	
+
 			case 32: // spacebar
 				if( this.props.play_state == 'playing' ){
 					this.props.mopidyActions.pause();
 				}else{
 					this.props.mopidyActions.play();
+				}
+				break;	
+
+			case 27: // esc
+				if( this.props.dragger.dragging ){
+					this.props.uiActions.dragCancel();
 				}
 				break;
 		}

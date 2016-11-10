@@ -55,6 +55,15 @@ export default function reducer(ui = {}, action){
                 }
             });
 
+        case 'DRAG_CANCEL':
+            return Object.assign({}, ui, { 
+                dragger: { 
+                    dragging: false,
+                    context: false, 
+                    victims: false
+                }
+            });
+
 
 
         /**

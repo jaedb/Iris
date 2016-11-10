@@ -1,4 +1,10 @@
 
+.dragging * {
+	cursor: grabbing !important;
+	cursor: -moz-grabbing !important;
+	cursor: -webkit-grabbing !important;
+}
+
 .dragger {
 	position: fixed;
 	left: 0;
@@ -19,12 +25,23 @@
 	z-index: 9998;
 	background: rgba(25, 25, 25, 0.9);
 
-	.zone {
+	.dropzone {
+		@include animate();
 		margin: 15px;
-		padding: 50px 20px;
-		background: $turquoise;
+		padding: 40px 20px;
+		background: $dark_grey;
 		color: #FFFFFF;
-		font-size: 16px;
+		font-size: 18px;
 		text-align: center;
+
+		.icon {
+			display: block;
+			margin: 0 auto 10px;
+			width: 32px;
+		}
+
+		&:hover {
+			background: $turquoise;
+		}
 	}
 }

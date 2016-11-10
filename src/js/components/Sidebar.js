@@ -8,6 +8,7 @@ import MiniPlayer from './MiniPlayer'
 import Icon from './Icon'
 import Thumbnail from './Thumbnail'
 import SearchForm from './SearchForm'
+import Dropzones from './Dropzones'
 
 import FontAwesome from 'react-fontawesome'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -16,18 +17,6 @@ class Sidebar extends React.Component{
 
 	constructor(props) {
 		super(props);
-	}
-
-	renderDropzones(){
-		if( !this.props.dragger || !this.props.dragger.dragging ) return null
-
-		return (
-			<div className="dropzones">
-				<div className="zone">
-					<div className="title">Zone</div>
-				</div>
-			</div>
-		)
 	}
 
 	render(){
@@ -101,8 +90,7 @@ class Sidebar extends React.Component{
 
 		        </nav>
 
-		       	{ this.renderDropzones() }
-
+		       	<Dropzones />
 		        <MiniPlayer />
 
 			</aside>
