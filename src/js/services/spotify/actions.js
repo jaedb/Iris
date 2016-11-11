@@ -543,6 +543,17 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
                 loadNextPlaylistsBatch( dispatch, getState, playlists, response )
             });
     }else{
+
+        // check our editability of each playlist
+        // used to define what we can add tracks to
+        if( getState().spotify.authorized ){
+            for( var i = 0; i < playlists.length; i++ ){
+                if( playlists[i].owner.id == getState().spotify.me.id ){
+                    playlists[i] = Object.assign({}, playlists[i], { can_edit: true })
+                }
+            }
+        }
+
         dispatch({
             type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
             data: playlists

@@ -3,14 +3,15 @@
 	position: fixed;
 	left: 0;
 	top: 0;
-	z-index: 9999;
+	z-index: 98;
 	background: $dark_grey;
 	color: #FFFFFF;
 
-	a {
+	.menu-item {
 		display: block;
 		padding: 8px 12px;
 		width: 120px;
+		box-sizing: border-box;
 
 		&:not(:first-child){
 			border-top: 1px solid lighten($dark_grey, 8%);
@@ -19,6 +20,24 @@
 		&:hover {
 			cursor: pointer;
 			background: lighten($dark_grey, 5%);
+
+			.submenu {
+				display: block;
+			}
+		}
+
+		.submenu {
+			display: none;
+			position: absolute;
+			left: 120px;
+			top: 0;
+			max-height: 400px;
+			overflow-y: scroll;			
+			background: lighten($dark_grey, 5%);
+
+			.menu-item:hover {
+				background: lighten($dark_grey, 10%);
+			}
 		}
 	}
 }

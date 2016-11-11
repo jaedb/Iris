@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Sidebar from '../components/Sidebar'
 import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
+import Modal from '../components/Modal'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -112,6 +113,7 @@ class App extends React.Component{
 		        </main>
 		        <ContextMenu state={this.props.context_menu} />
 		        <Dragger />
+		        <Modal />
 	        </div>
 		);
 	}

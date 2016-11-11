@@ -191,6 +191,9 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_PLAYLISTS':
                 instruct( socket, store, 'playlists.asList' )
                     .then( response => {
+                        for( var i = 0; i < response.length; i++ ){
+                            if( response[i].uri.startsWith('m3u:')) response[i] = Object.assign({}, response[i], { can_edit: true })
+                        }
                         store.dispatch({ type: 'MOPIDY_PLAYLISTS_LOADED', data: response });
                     })
                 break;

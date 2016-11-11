@@ -35,6 +35,10 @@ const UIMiddleware = (function(){
                         break
                 }
 
+            case 'ADD_TRACKS_TO_PLAYLIST':
+                console.log(action)
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

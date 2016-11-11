@@ -1,0 +1,63 @@
+
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 99;
+	background: rgba(10, 10, 10, 0.95);
+	overflow-y: scroll;
+
+	.close-modal {
+		@include animate();
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		opacity: 0.5;
+		cursor: pointer;
+		padding: 20px;
+
+		img {
+			width: 30px;
+		}
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	.content {
+		padding: 100px;
+		margin: 0 auto;
+		width: 70%;
+		color: #FFFFFF;
+
+		.playlists {
+			@include clearfix();
+
+			.playlist {
+				float: left;
+				box-sizing: border-box;
+				display: block;
+				width: 49%;
+				padding: 16px 20px;
+				border-bottom: 1px solid $mid_grey;
+
+				&:nth-child(1),
+				&:nth-child(2){
+					border-top: 1px solid $mid_grey;
+				}
+
+				&:nth-child(2n+1){
+					float: right;
+				}
+
+				&:hover {
+					cursor: pointer;
+					background: rgba(255,255,255,0.1);
+				}
+			}
+		}
+	}
+}

@@ -2,6 +2,8 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 
+import FontAwesome from 'react-fontawesome'
+
 export default class List extends React.Component{
 
 	constructor(props) {
@@ -22,6 +24,12 @@ export default class List extends React.Component{
 		)
 	}
 
+	renderValue( value ){
+		if( typeof(value) === 'undefined' ) return <span>-</span>
+		if( value === true ) return <FontAwesome name="check" />
+		return <span>{value}</span>
+	}
+
 	render(){
 		if( !this.props.rows ) return null
 
@@ -36,7 +44,7 @@ export default class List extends React.Component{
 									this.props.columns.map( (col, col_index) => {
 										return (
 											<div className={'col w'+col.width} key={col_index}>
-												{ row[col.name] ? row[col.name] : <span>-</span> }
+												{ this.renderValue(row[col.name]) }
 											</div>
 										)
 									})

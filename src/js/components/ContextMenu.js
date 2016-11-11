@@ -14,6 +14,33 @@ class ContextMenu extends React.Component{
 		super(props);
 	}
 
+	renderPlaylistSubmenu(){
+		var playlists = []
+		for( var i = 0; i < this.props.playlists.length; i++ ){
+			if( this.props.playlists[i].can_edit ) playlists.push( this.props.playlists[i] )
+		}
+
+		return (			
+			<div className="submenu">
+				{
+					playlists.map( playlist => {
+						return (
+							<a 
+								className="menu-item" 
+								key={playlist.uri} 
+								onClick={ () => {
+									this.props.uiActions.addTracksToPlaylist( playlist.uri, this.props.context_menu.data.selected_tracks )
+									this.props.uiActions.hideContextMenu() }
+							}>
+								{ playlist.name }
+							</a>
+						)
+					})
+				}
+			</div>
+		)
+	}
+
 	renderItems(){
 		var items = [];
 
@@ -22,6 +49,7 @@ class ContextMenu extends React.Component{
 			case 'queue':
 				items = [
 					{ handleClick: 'playQueueItem', label: 'Play' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
 					{ handleClick: 'removeFromQueue', label: 'Remove' }
 				];
 				break;
@@ -31,6 +59,7 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playItems', label: 'Play' },
 					{ handleClick: 'playItemsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
 					{ handleClick: 'removeFromPlaylist', label: 'Remove' }
 				];
 				break;
@@ -39,7 +68,8 @@ class ContextMenu extends React.Component{
 				items = [
 					{ handleClick: 'playItems', label: 'Play' },
 					{ handleClick: 'playItemsNext', label: 'Play next' },
-					{ handleClick: 'addToQueue', label: 'Add to queue' }
+					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true }
 				];
 				break;
 		}
@@ -48,7 +78,16 @@ class ContextMenu extends React.Component{
 			<div>
 				{
 					items.map((item, index) => {
-						return <a key={item.handleClick} onClick={ (e) => this[item.handleClick](e) }>{ item.label }</a>
+						if( item.playlists ){
+							return (
+								<span key={item.handleClick} className="menu-item has-submenu">
+									{ item.label }
+									{ this.renderPlaylistSubmenu() }
+								</span>
+							)
+						}else{
+							return <a className="menu-item" key={item.handleClick} onClick={ (e) => this[item.handleClick](e) }>{ item.label }</a>
+						}
 					})
 				}
 			</div>
@@ -114,6 +153,11 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
+	addToPlaylist(){
+		this.props.uiActions.openModal( 'AddToPlaylistModal', { track_indexes: this.props.context_menu.data.selected_tracks_indexes })
+		this.props.uiActions.hideContextMenu();
+	}
+
 	removeFromPlaylist(){
 		this.props.uiActions.removeTracksFromPlaylist( this.props.context_menu.data.selected_tracks_indexes )
 		this.props.uiActions.hideContextMenu();
@@ -139,7 +183,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		context_menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
-		current_tracklist: state.ui.current_tracklist
+		current_tracklist: state.ui.current_tracklist,
+		playlists: state.ui.playlists
 	}
 }
 

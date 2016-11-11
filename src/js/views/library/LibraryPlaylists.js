@@ -19,8 +19,9 @@ class LibraryPlaylists extends React.Component{
 	render(){
 		if( !this.props.playlists ) return null
 		var columns = [
-			{ name: 'name', width: '50'},
-			{ name: 'uri', width: '25'}
+			{ name: 'name', width: '40'},
+			{ name: 'can_edit', width: '15'},
+			{ name: 'uri', width: '45'}
 		]
 
 		return (

@@ -72,4 +72,25 @@ export function removeTracksFromPlaylist( track_indexes ){
     }
 }
 
+export function addTracksToPlaylist( playlist_uri, tracks ){
+    return { 
+        type: 'ADD_TRACKS_TO_PLAYLIST',
+        playlist_uri: playlist_uri,
+        tracks: tracks
+    }
+}
+
+export function openModal( name, data ){
+    return { 
+        type: 'OPEN_MODAL',
+        modal: {
+            name: name,
+            data: data
+        }
+    }
+}
+
+export function closeModal(){
+    return { type: 'CLOSE_MODAL' }
+}
 

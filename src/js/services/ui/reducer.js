@@ -189,6 +189,9 @@ export default function reducer(ui = {}, action){
 
         /**
          * Library Playlists
+         *
+         * TODO: Map sources and merge any replicated URIS
+         *
          **/
 
         case 'MOPIDY_PLAYLISTS_LOADED':
@@ -311,6 +314,18 @@ export default function reducer(ui = {}, action){
                 tracks_more: action.data.tracks.next
             })
             return Object.assign({}, ui, { search_results: results })
+
+
+        /**
+         * Modals
+         **/
+
+        case 'OPEN_MODAL':
+            return Object.assign({}, ui, { modal: action.modal })
+
+        case 'CLOSE_MODAL':
+            return Object.assign({}, ui, { modal: false })
+
 
         default:
             return ui
