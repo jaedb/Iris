@@ -65,7 +65,7 @@ class Artist extends React.Component{
 					<ul className="details">
 						{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
 						{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
-						<li>{ this.props.artist.albums.length.toLocaleString() } albums</li>
+						{ scheme == 'local' ? <li>{ this.props.artist.albums.length.toLocaleString() } albums</li> : null }
 						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
 						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
 					</ul>

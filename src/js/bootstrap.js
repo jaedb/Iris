@@ -8,6 +8,7 @@ import lastfm from './services/lastfm/reducer'
 import spotify from './services/spotify/reducer'
 
 import thunk from 'redux-thunk'
+import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
@@ -91,7 +92,7 @@ console.log('Bootstrapping', initialState)
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware( thunk, localstorageMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
+	applyMiddleware( thunk, localstorageMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
 );
 
 export default store;
