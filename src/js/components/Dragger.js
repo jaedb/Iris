@@ -13,6 +13,11 @@ class Dragger extends React.Component{
 		super(props);
 		this.handleMouseMove = this.handleMouseMove.bind(this)
 		this.handleMouseUp = this.handleMouseUp.bind(this)
+
+		this.state = {
+			position_x: 0,
+			position_y: 0
+		}
 	}
 
 	componentDidMount(){
@@ -25,9 +30,19 @@ class Dragger extends React.Component{
 		window.removeEventListener("mouseup", this.handleMouseUp, false);
 	}
 
+	componentWillReceiveProps( nextProps ){
+		if( this.props.dragger && this.props.dragger.dragging ){
+			this.setState( nextProps.dragger )
+		}
+	}
+
 	handleMouseMove(e){
 		if( !this.props.dragger || !this.props.dragger.dragging ) return null;
-		this.props.uiActions.dragMove( e )
+		
+		this.setState({
+			position_x: e.clientX,
+			position_y: e.clientY
+		})
 	}
 
 	handleMouseUp(e){
@@ -39,8 +54,8 @@ class Dragger extends React.Component{
 		if( !this.props.dragger || !this.props.dragger.dragging ) return null;
 
 		var style = {
-			left: this.props.dragger.position_x,
-			top: this.props.dragger.position_y,
+			left: this.state.position_x,
+			top: this.state.position_y,
 		}
 
 		return (
