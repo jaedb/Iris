@@ -26,6 +26,12 @@
 			}
 		}
 
+		.fa {
+			font-size: 10px;
+			float: right;
+			padding-top: 4px;
+		}
+
 		.submenu {
 			display: none;
 			position: absolute;
@@ -35,8 +41,11 @@
 			overflow-y: scroll;			
 			background: lighten($dark_grey, 5%);
 
-			.menu-item:hover {
-				background: lighten($dark_grey, 10%);
+			.menu-item {
+				width: 150px;
+				&:hover {
+					background: lighten($dark_grey, 10%);
+				}
 			}
 		}
 	}

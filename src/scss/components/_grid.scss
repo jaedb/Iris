@@ -14,6 +14,7 @@
 		display: inline-block;
 		vertical-align: top;
 		border-bottom: 0;
+		position: relative;
 
 		.thumbnail {
 			@include animate();
@@ -29,6 +30,11 @@
 			@include one_line_text;
 			padding-top: 2px;
 			color: $secondary_grey;
+		}
+
+		.fa {
+			font-size: 10px;
+			padding-left: 4px;
 		}
 
 		&:hover{

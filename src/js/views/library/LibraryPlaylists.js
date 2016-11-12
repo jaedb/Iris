@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import List from '../../components/List'
+import PlaylistGrid from '../../components/PlaylistGrid'
 import Header from '../../components/Header'
 
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -19,9 +19,10 @@ class LibraryPlaylists extends React.Component{
 	render(){
 		if( !this.props.playlists ) return null
 		var columns = [
-			{ name: 'name', width: '40'},
+			{ name: 'name', width: '30'},
+			{ name: 'tracks.total', width: '15'},
 			{ name: 'can_edit', width: '15'},
-			{ name: 'uri', width: '45'}
+			{ name: 'uri', width: '40'}
 		]
 
 		return (
@@ -29,8 +30,8 @@ class LibraryPlaylists extends React.Component{
 
 				<Header icon="playlist" title="My playlists" />
 
-				<section className="list-wrapper">
-					<List columns={columns} rows={this.props.playlists} link_prefix="/playlist/" />
+				<section className="grid-wrapper">
+					<PlaylistGrid playlists={this.props.playlists} />
 				</section>
 
 			</div>

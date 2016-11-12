@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
 import TrackList from './TrackList'
 import * as uiActions from '../services/ui/actions'
@@ -82,6 +83,7 @@ class ContextMenu extends React.Component{
 							return (
 								<span key={item.handleClick} className="menu-item has-submenu">
 									{ item.label }
+									<FontAwesome name="caret-right" />
 									{ this.renderPlaylistSubmenu() }
 								</span>
 							)

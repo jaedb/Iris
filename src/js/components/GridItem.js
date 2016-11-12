@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { Link, browserHistory } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
 import ArtistSentence from './ArtistSentence'
@@ -37,8 +38,9 @@ export default class GridItem extends React.Component{
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
 					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-					{ item.type == 'playlist' ? item.tracks.total+' tracks' : null }
+					{ item.type == 'playlist' && item.tracks ? item.tracks.total+' tracks' : null }
 					{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
+					{ item.type == 'playlist' && item.can_edit ? <FontAwesome name="edit" /> : null }
 				</div>
 			</div>
 		);
