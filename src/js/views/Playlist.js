@@ -71,7 +71,7 @@ class Playlist extends React.Component{
 	}
 
 	removeTracks( track_indexes ){
-		this.props.uiActions.removeTracksFromPlaylist( track_indexes )
+		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, track_indexes )
 	}
 
 	renderFollowOrDeleteButton(){

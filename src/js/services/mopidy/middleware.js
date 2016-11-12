@@ -248,6 +248,28 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
+
+                // reverse order our indexes (otherwise removing from top will affect the keys following)           
+                function descending(a,b){
+                    return b-a;
+                }
+                var indexes = Object.assign([], action.tracks_indexes)
+                indexes.sort(descending);
+                
+                instruct( socket, store, 'playlists.lookup', { uri: action.playlist_uri })
+                    .then( response => {
+                        var playlist = Object.assign({}, response)
+                        for( var i = 0; i < indexes.length; i++ ){
+                            playlist.tracks.splice(indexes[i], 1);
+                        }
+                        instruct( socket, store, 'playlists.save', { playlist: playlist } )
+                            .then( response => {
+                                store.dispatch({ type: 'PLAYLIST_TRACKS_REMOVED', tracks_indexes: action.tracks_indexes });
+                            })
+                    });
+                break
+
             case 'MOPIDY_ALBUM':
                 //store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
                 instruct( socket, store, 'library.lookup', action.data )

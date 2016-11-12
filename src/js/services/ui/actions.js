@@ -1,4 +1,5 @@
 
+import * as helpers from '../../helpers'
 
 export function showContextMenu( e, context = false, data ){
     return {
@@ -65,18 +66,52 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function removeTracksFromPlaylist( track_indexes ){
-    return { 
-        type: 'REMOVE_TRACKS_FROM_PLAYLIST',
-        track_indexes: track_indexes
+export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
+    switch( helpers.uriSource( playlist_uri ) ){
+
+        case 'spotify':
+            return { 
+                type: 'SPOTIFY_REMOVE_PLAYLIST_TRACKS',
+                playlist_uri: playlist_uri,
+                tracks_indexes: tracks_indexes
+            }
+
+        case 'm3u':
+            return { 
+                type: 'MOPIDY_REMOVE_PLAYLIST_TRACKS',
+                playlist_uri: playlist_uri,
+                tracks_indexes: tracks_indexes
+            }
+
+        defaut:
+            return ui
     }
 }
 
 export function addTracksToPlaylist( playlist_uri, tracks ){
-    return { 
-        type: 'ADD_TRACKS_TO_PLAYLIST',
-        playlist_uri: playlist_uri,
-        tracks: tracks
+
+    var tracks_uris = []
+    for( var i = 0; i < tracks.length; i++ ){
+        tracks_uris.push( tracks[i].uri )
+    }
+
+    switch( helpers.uriSource( playlist_uri ) ){
+
+        case 'spotify':
+            return { 
+                type: 'SPOTIFY_ADD_PLAYLIST_TRACKS',
+                playlist_uri: playlist_uri,
+                tracks_uris: tracks_uris
+            }
+            break;
+
+        case 'm3u':
+            return { 
+                type: 'MOPIDY_ADD_TRACKS_TO_PLAYLIST',
+                playlist_uri: playlist_uri,
+                tracks_uris: tracks_uris
+            }
+            break;
     }
 }
 

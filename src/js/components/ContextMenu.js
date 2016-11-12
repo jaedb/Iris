@@ -161,7 +161,7 @@ class ContextMenu extends React.Component{
 	}
 
 	removeFromPlaylist(){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.context_menu.data.selected_tracks_indexes )
+		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.selected_tracks_indexes )
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -186,6 +186,7 @@ const mapStateToProps = (state, ownProps) => {
 		context_menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
 		current_tracklist: state.ui.current_tracklist,
+		playlist: state.ui.playlist,
 		playlists: state.ui.playlists
 	}
 }

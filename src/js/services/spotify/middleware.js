@@ -15,6 +15,21 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_CONNECT':
                 store.dispatch( actions.getMe() )
 
+
+            case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
+                var playlist = state.ui.playlist
+
+                if( !store.getState().spotify.authorized ){
+                    alert('Must be logged in to Spotify to do this')
+                    return
+                }
+                if( !store.getState().spotify.me || store.getState().spotify.me.id != playlist.owner.id ){
+                    alert('You can only modify tracks you own')
+                    return
+                }
+                store.dispatch( actions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
+                break
+
             // when our mopidy server current track changes
             case 'MOPIDY_CURRENTTLTRACK':
 

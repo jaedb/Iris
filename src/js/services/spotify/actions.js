@@ -588,13 +588,13 @@ export function toggleFollowingPlaylist( uri, method ){
     }
 }
 
-export function deleteTracksFromPlaylist( uri, snapshot_id, positions ){
+export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: positions } )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes } )
             .then( response => {
                 dispatch({
-                    type: 'SPOTIFY_PLAYLIST_TRACKS_REMOVED',
-                    positions: positions,
+                    type: 'PLAYLIST_TRACKS_REMOVED',
+                    tracks_indexes: tracks_indexes,
                     snapshot_id: response.snapshot_id
                 });
             });
