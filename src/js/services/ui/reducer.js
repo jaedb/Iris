@@ -67,6 +67,55 @@ export default function reducer(ui = {}, action){
 
 
         /**
+         * Current track and tracklist
+         **/
+
+        case 'MOPIDY_TLTRACKS':
+            if( !action.data ) return ui
+
+            var tracklist = []
+            for( var i = 0; i < action.data.length; i++ ){
+                var track = Object.assign(
+                    {}, 
+                    action.data[i].track, 
+                    { 
+                        tlid: action.data[i].tlid,
+                        playing: ( ui.current_track && action.data[i].tlid == ui.current_track.tlid )
+                    })
+                tracklist.push( track )
+            }
+
+            return Object.assign({}, ui, { current_tracklist: tracklist });
+
+        case 'SPOTIFY_TRACK_LOADED':
+            if( !action.data ) return ui
+                
+            var current_track = Object.assign({}, ui.current_track, action.data)
+            return Object.assign({}, ui, { current_track: current_track });
+
+        case 'MOPIDY_CURRENTTLTRACK':
+            if( !action.data ) return ui
+
+            var current_tracklist = []
+            Object.assign(current_tracklist, ui.current_tracklist)
+
+            for( var i = 0; i < current_tracklist.length; i++ ){
+                Object.assign(
+                    current_tracklist[i], 
+                    { playing: ( current_tracklist[i].tlid == action.data.tlid ) }
+                )
+            }
+
+            var current_track = action.data.track
+            Object.assign(current_track, { tlid: action.data.tlid })
+
+            return Object.assign({}, ui, {
+                current_track: current_track
+            });
+
+
+
+        /**
          * Albums
          **/
 
@@ -204,47 +253,6 @@ export default function reducer(ui = {}, action){
             if( !action.data ) return ui
             return Object.assign({}, ui, { 
                 playlists: [...ui.playlists, ...action.data]
-            });
-
-
-
-        /**
-         * Current track and tracklist
-         **/
-
-        case 'MOPIDY_TLTRACKS':
-            if( !action.data ) return ui
-
-            var tracklist = []
-            for( var i = 0; i < action.data.length; i++ ){
-                tracklist.push( Object.assign({}, action.data[i].track, { tlid: action.data[i].tlid }) )
-            }
-            return Object.assign({}, ui, { current_tracklist: tracklist });
-
-        case 'SPOTIFY_TRACK_LOADED':
-            if( !action.data ) return ui
-                
-            var current_track = Object.assign({}, ui.current_track, action.data)
-            return Object.assign({}, ui, { current_track: current_track });
-
-        case 'MOPIDY_CURRENTTLTRACK':
-            if( !action.data ) return ui
-
-            var current_tracklist = []
-            Object.assign(current_tracklist, ui.current_tracklist)
-
-            for( var i = 0; i < current_tracklist.length; i++ ){
-                Object.assign(
-                    current_tracklist[i], 
-                    { playing: ( current_tracklist[i].tlid == action.data.tlid ) }
-                )
-            }
-
-            var current_track = action.data.track
-            Object.assign(current_track, { tlid: action.data.tlid })
-
-            return Object.assign({}, ui, {
-                current_track: current_track
             });
 
 
