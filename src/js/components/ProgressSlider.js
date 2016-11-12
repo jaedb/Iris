@@ -51,7 +51,7 @@ class ProgressSlider extends React.Component{
 		var sliderWidth = slider.getBoundingClientRect().width;
 		var percent = ( sliderX / sliderWidth ).toFixed(2);
 		
-		if( this.props.connected && this.props.current_tltrack ){
+		if( this.props.connected && this.props.current_track ){
 			var destination_time = this.props.current_track.length * percent
 			this.props.mopidyActions.seek( destination_time )
 			this.setState({ animating: false })
