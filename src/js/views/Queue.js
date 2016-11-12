@@ -21,10 +21,10 @@ class Queue extends React.Component{
 		super(props);
 	}
 
-	removeTracks( tracks ){
+	removeTracks( tracks_indexes ){
 		var tlids = [];
-		for( var i = 0; i < tracks.length; i++ ){
-			tlids.push( tracks[i].tlid )
+		for( var i = 0; i < tracks_indexes.length; i++ ){
+			tlids.push( this.props.current_tracklist[tracks_indexes[i]].tlid )
 		}
 		this.props.mopidyActions.removeTracks( tlids )
 	}
