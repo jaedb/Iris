@@ -155,3 +155,28 @@ export let uriType = function( uri ){
 
     return null;
 }
+
+/**
+ * Merge duplicated items in an array
+ *
+ * @param list Array the unclean array
+ * @param key string = the unique key (uri, tlid, etc)
+ **/
+export let mergeDuplicates = function(list, key){
+	var clean_list = [];
+	var keyed_list  = {};
+
+	for( var i in list ){
+		var item = list[i]
+		if( item[key] in keyed_list ){
+			item = Object.assign({}, keyed_list[item[key]], item)
+		}
+		keyed_list[item[key]] = item;
+	}
+
+	for( i in keyed_list ){
+		clean_list.push(keyed_list[i]);
+	}
+
+	return clean_list;
+}

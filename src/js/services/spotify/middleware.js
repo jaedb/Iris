@@ -24,10 +24,20 @@ const SpotifyMiddleware = (function(){
                     return
                 }
                 if( !store.getState().spotify.me || store.getState().spotify.me.id != playlist.owner.id ){
-                    alert('You can only modify tracks you own')
+                    alert('You can only modify playlists you own')
                     return
                 }
                 store.dispatch( actions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
+                break
+
+
+            case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
+
+                if( !store.getState().spotify.authorized ){
+                    alert('Must be logged in to Spotify to do this')
+                    return
+                }
+                store.dispatch( actions.addTracksToPlaylist( action.playlist_uri, action.tracks_uris ))
                 break
 
             // when our mopidy server current track changes

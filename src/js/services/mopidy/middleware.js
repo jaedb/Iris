@@ -248,6 +248,28 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_ADD_PLAYLIST_TRACKS':
+                
+                instruct( socket, store, 'playlists.lookup', { uri: action.playlist_uri })
+                    .then( response => {
+                        var tracks = [];             
+                        for( var i = 0; i < action.tracks_uris.length; i++ ){
+                            tracks.push({
+                                __model__: "Track",
+                                uri: action.tracks_uris[i]
+                            });
+                        }
+
+                        var playlist = Object.assign({}, response)
+                        playlist.tracks = [...playlist.tracks, ...tracks]
+
+                        instruct( socket, store, 'playlists.save', { playlist: playlist } )
+                            .then( response => {
+                                store.dispatch({ type: 'PLAYLIST_TRACKS_ADDED', tracks_uris: action.tracks_uris });
+                            })
+                    });
+                break
+
             case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
 
                 // reverse order our indexes (otherwise removing from top will affect the keys following)           

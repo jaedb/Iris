@@ -1,4 +1,6 @@
 
+import * as helpers from '../../helpers'
+
 export default function reducer(ui = {}, action){
     switch (action.type) {
 
@@ -246,15 +248,12 @@ export default function reducer(ui = {}, action){
          **/
 
         case 'MOPIDY_PLAYLISTS_LOADED':
-            if( !action.data ) return ui
-            return Object.assign({}, ui, { 
-                playlists: [...ui.playlists, ...action.data],
-            });
-
         case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
             if( !action.data ) return ui
+            var playlists = [...ui.playlists, ...action.data]
+            playlists = helpers.mergeDuplicates(playlists, 'uri')
             return Object.assign({}, ui, { 
-                playlists: [...ui.playlists, ...action.data]
+                playlists: playlists
             });
 
 

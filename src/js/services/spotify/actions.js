@@ -588,6 +588,19 @@ export function toggleFollowingPlaylist( uri, method ){
     }
 }
 
+export function addTracksToPlaylist( playlist_uri, tracks_uris ){
+    return (dispatch, getState) => {
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',playlist_uri) + '/playlists/'+ helpers.getFromUri('playlistid',playlist_uri) + '/tracks', 'POST', { uris: tracks_uris } )
+            .then( response => {
+                dispatch({
+                    type: 'PLAYLIST_TRACKS_ADDED',
+                    tracks_uris: tracks_uris,
+                    snapshot_id: response.snapshot_id
+                });
+            });
+    }
+}
+
 export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
     return (dispatch, getState) => {
         sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes } )

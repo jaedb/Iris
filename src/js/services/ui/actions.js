@@ -107,7 +107,7 @@ export function addTracksToPlaylist( playlist_uri, tracks ){
 
         case 'm3u':
             return { 
-                type: 'MOPIDY_ADD_TRACKS_TO_PLAYLIST',
+                type: 'MOPIDY_ADD_PLAYLIST_TRACKS',
                 playlist_uri: playlist_uri,
                 tracks_uris: tracks_uris
             }

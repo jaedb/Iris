@@ -13,6 +13,90 @@ class ContextMenu extends React.Component{
 
 	constructor(props) {
 		super(props);
+		this.handleScroll = this.handleScroll.bind(this);
+	}
+
+	componentDidMount(){		
+		window.addEventListener("scroll", this.handleScroll, false);
+	}
+
+	componentWillUnmount(){		
+		window.removeEventListener("scroll", this.handleScroll, false);
+	}
+
+	handleScroll(){
+		if( this.props.context_menu.show ){
+			this.props.uiActions.hideContextMenu();
+		}
+	}
+
+	playQueueItem(){
+		var selectedTracks = this.props.context_menu.data.selected_tracks;
+		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );
+		this.props.uiActions.hideContextMenu();
+	}
+
+	removeFromQueue(){
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_tlids = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_tlids.push( selected_tracks[i].tlid );
+		}
+		this.props.mopidyActions.removeTracks( selected_tracks_tlids );
+		this.props.uiActions.hideContextMenu();
+	}
+
+	playItems(){
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
+		}
+		this.props.mopidyActions.playTracks(selected_tracks_uris);
+		this.props.uiActions.hideContextMenu();
+	}
+
+	playItemsNext(){
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
+		}
+
+		var current_track = this.props.current_track
+		var current_track_index = -1
+		for( var i = 0; i < this.props.current_tracklist.length; i++ ){
+			if( this.props.current_tracklist[i].tlid == this.props.current_track.tlid ){
+				current_track_index = i
+				break
+			}
+		}
+
+		var at_position = null
+		if( current_track_index > -1 ) at_position = current_track_index + 1
+
+		this.props.mopidyActions.enqueueTracks(selected_tracks_uris, at_position);
+		this.props.uiActions.hideContextMenu();
+	}
+
+	addToQueue(){
+		var selected_tracks = this.props.context_menu.data.selected_tracks;
+		var selected_tracks_uris = [];
+		for( var i = 0; i < selected_tracks.length; i++ ){
+			selected_tracks_uris.push( selected_tracks[i].uri );
+		}
+		this.props.mopidyActions.enqueueTracks(selected_tracks_uris);
+		this.props.uiActions.hideContextMenu();
+	}
+
+	addToPlaylist(){
+		this.props.uiActions.openModal( 'AddToPlaylistModal', { track_indexes: this.props.context_menu.data.selected_tracks_indexes })
+		this.props.uiActions.hideContextMenu();
+	}
+
+	removeFromPlaylist(){
+		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.selected_tracks_indexes )
+		this.props.uiActions.hideContextMenu();
 	}
 
 	renderPlaylistSubmenu(){
@@ -94,75 +178,6 @@ class ContextMenu extends React.Component{
 				}
 			</div>
 		);
-	}
-
-	playQueueItem(){
-		var selectedTracks = this.props.context_menu.data.selected_tracks;
-		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );
-		this.props.uiActions.hideContextMenu();
-	}
-
-	removeFromQueue(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_tlids = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_tlids.push( selected_tracks[i].tlid );
-		}
-		this.props.mopidyActions.removeTracks( selected_tracks_tlids );
-		this.props.uiActions.hideContextMenu();
-	}
-
-	playItems(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
-		this.props.mopidyActions.playTracks(selected_tracks_uris);
-		this.props.uiActions.hideContextMenu();
-	}
-
-	playItemsNext(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
-
-		var current_track = this.props.current_track
-		var current_track_index = -1
-		for( var i = 0; i < this.props.current_tracklist.length; i++ ){
-			if( this.props.current_tracklist[i].tlid == this.props.current_track.tlid ){
-				current_track_index = i
-				break
-			}
-		}
-
-		var at_position = null
-		if( current_track_index > -1 ) at_position = current_track_index + 1
-
-		this.props.mopidyActions.enqueueTracks(selected_tracks_uris, at_position);
-		this.props.uiActions.hideContextMenu();
-	}
-
-	addToQueue(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
-		this.props.mopidyActions.enqueueTracks(selected_tracks_uris);
-		this.props.uiActions.hideContextMenu();
-	}
-
-	addToPlaylist(){
-		this.props.uiActions.openModal( 'AddToPlaylistModal', { track_indexes: this.props.context_menu.data.selected_tracks_indexes })
-		this.props.uiActions.hideContextMenu();
-	}
-
-	removeFromPlaylist(){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.selected_tracks_indexes )
-		this.props.uiActions.hideContextMenu();
 	}
 
 	render(){

@@ -80,12 +80,12 @@ class Playlist extends React.Component{
 		switch( helpers.uriSource( this.props.params.uri ) ){
 
 			case 'm3u':
-				return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Confirm" onConfirm={ e => this.delete() } />
+				return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
 				break
 
 			case 'spotify':			
 				if( this.props.playlist.owner && this.props.playlist.owner.id == this.props.spotify_userid ){
-					return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+					return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
 				}else if( this.props.playlist.following ){
 					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
 				}else{
