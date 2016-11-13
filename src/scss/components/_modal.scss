@@ -33,6 +33,22 @@
 		width: 70%;
 		color: #FFFFFF;
 
+		h1 {
+			font-size: 30px;
+			font-weight: 300;
+			padding-bottom: 30px;
+		}
+
+		form {
+			.field {
+				padding-bottom: 20px;
+			}
+
+			button[type="submit"]{
+				margin-top: 50px;
+			}
+		}
+
 		.playlists {
 			@include clearfix();
 

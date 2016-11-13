@@ -88,6 +88,15 @@ input[type="submit"] {
 		}
 	}
 
+	&.centered {
+		display: block;
+		min-width: 200px;
+		margin: 0 auto;
+		text-align: center;
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+
 	&[disabled],
 	&[disabled="disabled"] {
 		background: $light_grey !important;
@@ -117,7 +126,7 @@ input[type="submit"] {
 		float: left;
 		
 		input {
-			width: 60%;
+			width: 100%;
 		}
 
 		.text {
@@ -132,7 +141,7 @@ input[type="submit"] {
 		input{
 			display: none;
 		}
-		
+
 		.input {
 			padding-top: 4px;
 		}

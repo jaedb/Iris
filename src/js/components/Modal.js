@@ -114,7 +114,7 @@ class Modal extends React.Component{
 							</label>
 						</div>
 					</div>
-					<button type="submit" className="primary">Save</button>
+					<button type="submit" className="primary centered">Save</button>
 				</form>
 			</div>
 		)
