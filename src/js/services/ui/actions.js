@@ -66,6 +66,26 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
+export function createPlaylist( scheme, name, is_private = false ){
+    switch( scheme ){
+
+        case 'spotify':
+            return { 
+                type: 'SPOTIFY_CREATE_PLAYLIST',
+                name: name,
+                is_private: is_private
+            }
+
+        case 'm3u':
+            return { 
+                type: 'MOPIDY_CREATE_PLAYLIST',
+                scheme: scheme,
+                name: name
+            }
+    }
+    return false
+}
+
 export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
     switch( helpers.uriSource( playlist_uri ) ){
 
@@ -82,9 +102,6 @@ export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
                 playlist_uri: playlist_uri,
                 tracks_indexes: tracks_indexes
             }
-
-        defaut:
-            return ui
     }
 }
 
@@ -103,7 +120,6 @@ export function addTracksToPlaylist( playlist_uri, tracks ){
                 playlist_uri: playlist_uri,
                 tracks_uris: tracks_uris
             }
-            break;
 
         case 'm3u':
             return { 
@@ -111,7 +127,6 @@ export function addTracksToPlaylist( playlist_uri, tracks ){
                 playlist_uri: playlist_uri,
                 tracks_uris: tracks_uris
             }
-            break;
     }
 }
 

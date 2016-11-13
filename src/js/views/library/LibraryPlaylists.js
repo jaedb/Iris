@@ -3,10 +3,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import Header from '../../components/Header'
 
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -30,6 +32,11 @@ class LibraryPlaylists extends React.Component{
 
 				<Header icon="playlist" title="My playlists" />
 
+				<button onClick={ () => this.props.uiActions.openModal('create_playlist',false) }>
+					<FontAwesome name="plus" />&nbsp;
+					New playlist
+				</button>
+
 				<section className="grid-wrapper">
 					<PlaylistGrid playlists={this.props.playlists} />
 				</section>
@@ -52,4 +59,12 @@ const mapStateToProps = (state, ownProps) => {
 	}
 }
 
-export default connect(mapStateToProps)(LibraryPlaylists)
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryPlaylists)

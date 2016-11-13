@@ -67,7 +67,7 @@ class Playlist extends React.Component{
 	}
 
 	delete(){
-		alert('Delete me')
+		this.props.mopidyActions.deletePlaylist( this.props.params.uri )
 	}
 
 	removeTracks( track_indexes ){
@@ -75,15 +75,14 @@ class Playlist extends React.Component{
 	}
 
 	renderFollowOrDeleteButton(){
-		if( !this.props.spotify_authorized ) return null
-
 		switch( helpers.uriSource( this.props.params.uri ) ){
 
 			case 'm3u':
 				return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
 				break
 
-			case 'spotify':			
+			case 'spotify':
+				if( !this.props.spotify_authorized ) return null
 				if( this.props.playlist.owner && this.props.playlist.owner.id == this.props.spotify_userid ){
 					return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
 				}else if( this.props.playlist.following ){

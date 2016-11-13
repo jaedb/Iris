@@ -16,6 +16,17 @@ const SpotifyMiddleware = (function(){
                 store.dispatch( actions.getMe() )
 
 
+            case 'SPOTIFY_CREATE_PLAYLIST':
+                var playlist = state.ui.playlist
+
+                if( !store.getState().spotify.authorized ){
+                    alert('Must be logged in to Spotify to do this')
+                    return
+                }
+                store.dispatch( actions.createPlaylist( action.name, action.is_private ))
+                break
+
+
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = state.ui.playlist
 

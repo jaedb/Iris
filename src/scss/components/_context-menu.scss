@@ -12,6 +12,7 @@
 		padding: 8px 12px;
 		width: 120px;
 		box-sizing: border-box;
+		position: relative;
 
 		&:not(:first-child){
 			border-top: 1px solid lighten($dark_grey, 8%);
@@ -37,7 +38,7 @@
 			position: absolute;
 			left: 120px;
 			top: 0;
-			max-height: 400px;
+			max-height: 200px;
 			overflow-y: scroll;			
 			background: lighten($dark_grey, 5%);
 

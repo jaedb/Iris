@@ -93,43 +93,43 @@ class Settings extends React.Component{
 
 					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.setMopidyConfig(e)}>
-						<label>
-							<div className="label">Status</div>
+						<div className="field">
+							<div className="name">Status</div>
 							<div className="input">
 								{ this.renderConnectionStatus('mopidy') }
 							</div>
-						</label>
-						<label>
-							<div className="label">Host</div>
+						</div>
+						<div className="field">
+							<div className="name">Host</div>
 							<div className="input">
 								<input 
 									type="text"
 									onChange={ e => this.setState({ mopidy_host: e.target.value })} 
 									value={ this.state.mopidy_host } />
 							</div>
-						</label>
-						<label>
-							<div className="label">Port</div>
+						</div>
+						<div className="field">
+							<div className="name">Port</div>
 							<div className="input">
 								<input 
 									type="text"
 									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
 									value={ this.state.mopidy_port } />
 							</div>
-						</label>
+						</div>
 						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 					<h4 className="underline">Pusher</h4>
 					<form>
-						<label>
-							<div className="label">Status</div>
+						<div className="field">
+							<div className="name">Status</div>
 							<div className="input">
 								{ this.renderConnectionStatus('pusher') }
 							</div>
-						</label>
-						<label>
-							<div className="label">Username</div>
+						</div>
+						<div className="field">
+							<div className="name">Username</div>
 							<div className="input">
 								<input 
 									type="text"
@@ -137,9 +137,9 @@ class Settings extends React.Component{
 									onBlur={ e => this.props.pusherActions.changeUsername( this.state.pusher_username ) } 
 									value={ this.state.pusher_username } />
 							</div>
-						</label>
-						<label>
-							<div className="label">Port</div>
+						</div>
+						<div className="field">
+							<div className="name">Port</div>
 							<div className="input">
 								<input 
 									type="text"
@@ -147,19 +147,19 @@ class Settings extends React.Component{
 									onBlur={ e => this.props.pusherActions.setPort({ port: this.state.pusher_port }) } 
 									value={ this.state.pusher_port } />
 							</div>
-						</label>
+						</div>
 					</form>
 
 					<h4 className="underline">Spotify</h4>
 					<form onSubmit={(e) => this.setSpotifyConfig(e)}>
-						<label>
-							<div className="label">Status</div>
+						<div className="field">
+							<div className="name">Status</div>
 							<div className="input">
 								{ this.renderConnectionStatus('spotify') }
 							</div>
-						</label>
-						<label>
-							<div className="label">Country</div>
+						</div>
+						<div className="field">
+							<div className="name">Country</div>
 							<div className="input">
 								<input 
 									type="text"
@@ -167,9 +167,9 @@ class Settings extends React.Component{
 									onBlur={ e => this.setSpotifyConfig(e) } 
 									value={ this.state.spotify_country } />
 							</div>
-						</label>
-						<label>
-							<div className="label">Locale</div>
+						</div>
+						<div className="field">
+							<div className="name">Locale</div>
 							<div className="input">
 								<input 
 									type="text"
@@ -177,39 +177,39 @@ class Settings extends React.Component{
 									onBlur={ e => this.setSpotifyConfig(e) } 
 									value={ this.state.spotify_locale } />
 							</div>
-						</label>
+						</div>
 					</form>
 
 			        <SpotifyAuthenticationFrame />
 
 					<h4 className="underline">Advanced</h4>
 
-					<label>
-						<div className="label">Connections</div>
+					<div className="field">
+						<div className="name">Connections</div>
 						<div className="input">
 							<span className="text">
 			        			<PusherConnectionList />
 			        		</span>
 			        	</div>
-			        </label>
+			        </div>
 					
-					<label>
-						<div className="label">Backends</div>
+					<div className="field">
+						<div className="name">Backends</div>
 						<div className="input">
 							<span className="text">
 				        		<URISchemesList />
 			        		</span>
 			        	</div>
-			        </label>
+			        </div>
 					
-					<label>
-						<div className="label">Version</div>
+					<div className="field">
+						<div className="name">Version</div>
 						<div className="input">
 							<span className="text">
 				        		<VersionManager />
 			        		</span>
 			        	</div>
-			        </label>
+			        </div>
 
 			        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 

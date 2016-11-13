@@ -125,6 +125,13 @@ export function setTimePosition( time_position ){
  * Asset-oriented actions
  **/
 
+export function deletePlaylist( uri ){
+	return { 
+		type: 'MOPIDY_DELETE_PLAYLIST',
+		uri: uri
+	}
+}
+
 export function getPlaylists(){
 	return { type: 'MOPIDY_PLAYLISTS' }
 }

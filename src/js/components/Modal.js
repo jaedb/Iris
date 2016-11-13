@@ -12,6 +12,15 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Modal extends React.Component{
 
+	constructor(props){
+		super(props)
+		this.state = {
+			playlist_name: '',
+			playlist_scheme: 'spotify',
+			playlist_private: true
+		}
+	}
+
 	playlistSelected( playlist_uri ){
 		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.modal.data.track_indexes )
 		this.props.uiActions.closeModal()
@@ -49,6 +58,68 @@ class Modal extends React.Component{
 		)
 	}
 
+	createPlaylist(e){		
+		e.preventDefault();
+		this.props.uiActions.createPlaylist( this.state.playlist_scheme, this.state.playlist_name, this.state.playlist_public );
+		return false;
+	}
+
+	renderCreatePlaylist(){
+		return (
+			<div>
+				<h1>Create playlist</h1>
+				<form onSubmit={(e) => this.createPlaylist(e)}>
+					<div className="field">
+						<div className="name">Name</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={ e => this.setState({ playlist_name: e.target.value })} 
+								value={ this.state.playlist_name } />
+						</div>
+					</div>
+					<div className="field radio white">
+						<div className="name">Provider</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="playlist_scheme"
+									value="spotify"
+									checked={ this.state.playlist_scheme == 'spotify' }
+									onChange={ e => this.setState({ playlist_scheme: e.target.value })} />
+								<span className="label">Spotify</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="playlist_scheme"
+									value="m3u"
+									checked={ this.state.playlist_scheme == 'm3u' }
+									onChange={ e => this.setState({ playlist_scheme: e.target.value })} />
+								<span className="label">Local</span>
+							</label>
+						</div>
+					</div>
+					<div className="field checkbox white">
+						<div className="name">Options</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="playlist_private"
+									value={ this.state.playlist_private }
+									onChange={ e => this.setState({ playlist_private: !this.state.playlist_private })} />
+								<span className="label">Private</span>
+							</label>
+						</div>
+					</div>
+					<button type="submit" className="primary">Save</button>
+				</form>
+			</div>
+		)
+	}
+
 	render(){
 		if( !this.props.modal ) return null;
 
@@ -59,9 +130,8 @@ class Modal extends React.Component{
 				</div>
 				<div className="content">
 
-					<h1>{ this.props.modal.name }</h1>
-
-					{ this.renderEditablePlaylists() }
+					{ this.props.modal.name == 'add_to_playlist' ? this.renderEditablePlaylists() : null }
+					{ this.props.modal.name == 'create_playlist' ? this.renderCreatePlaylist() : null }
 
 				</div>
 			</div>

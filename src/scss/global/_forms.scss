@@ -96,16 +96,20 @@ input[type="submit"] {
 	}
 }
 
-label {
+.field {
 	display: block;
 	padding-bottom: 8px;
 	@include clearfix;
 
-	.label {
+	.name {
 		display: block;
 		padding-top: 10px;
 		width: 15%;
 		float: left;
+	}
+
+	label {
+		display: inline-block;
 	}
 
 	.input {
@@ -121,5 +125,88 @@ label {
 			padding: 10px 14px;
 		}
 	}
-}
 
+	&.radio,
+	&.checkbox {
+
+		input{
+			display: none;
+		}
+		
+		.input {
+			padding-top: 4px;
+		}
+
+		.label {
+			display: inline-block;
+			float: none;
+			width: auto;
+			padding: 5px 30px 5px 30px;
+			position: relative;
+			cursor: pointer;
+		}
+	}
+
+	&.radio {
+
+		input + .label:before {
+			content: ' ';
+			display: inline-block;
+			width: 16px;
+			height: 16px;
+		    border-radius: 50%;
+			border: 1px solid #000000;
+			position: absolute;
+			top: 4px;
+			left: 0;
+		}
+
+		input:checked + .label:before {
+		    background: #000000;
+		    box-shadow: inset 0px 0px 0px 4px #f5f5f5;
+		}
+
+		&.white {
+			input + .label:before {
+				border-color: #FFFFFF;
+			}
+
+			input:checked + .label:before {
+			    background: #FFFFFF;
+			    box-shadow: inset 0px 0px 0px 4px #222222;
+			}
+		}
+	}
+
+	&.checkbox {
+
+		input + .label:before {
+			font-family: FontAwesome;
+			font-size: 10px;
+			content: ' ';
+			color: #000000;
+			display: inline-block;
+			width: 13px;
+			height: 13px;
+			padding: 3px 0 0 3px;
+			border: 1px solid #000000;
+			position: absolute;
+			top: 5px;
+			left: 0;
+		}
+
+		input:checked + .label:before {
+			content: '\f00c';
+		}
+
+		&.white {
+			input + .label:before {
+				border-color: #FFFFFF;
+			}
+
+			input:checked + .label:before {
+			    color: #FFFFFF;
+			}
+		}
+	}
+}

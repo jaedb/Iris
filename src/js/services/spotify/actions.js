@@ -503,6 +503,16 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
  * Playlists
  **/
 
+export function createPlaylist( name, is_private ){
+    return (dispatch, getState) => {
+
+        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', { name: name, public: !is_private } )
+        .then( response => {
+            dispatch( getAllLibraryPlaylists() );
+        })
+    }
+}
+
 export function getPlaylist( uri ){
     return (dispatch, getState) => {
 

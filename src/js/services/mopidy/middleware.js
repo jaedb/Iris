@@ -85,18 +85,30 @@ const MopidyMiddleware = (function(){
         var callParts = call.split('.');
         var model = callParts[0];
         var method = callParts[1];
-        if( method ){
-            var mopidyObject = ws[model][method]
-            var property = method;
-        }else{
-            var mopidyObject = ws[model]
-            var property = model;
-        }
-
-        property = property.replace('get','');
-        property = property.replace('set','');
 
         return new Promise( (resolve, reject) => {
+
+            if( model in ws ){
+                if( method in ws[model] ){
+                    var mopidyObject = ws[model][method]
+                    var property = method;       
+                }else{                
+                    var mopidyObject = ws[model]
+                    var property = model;   
+                }
+            }else{
+                var error = {
+                    message: 'Call to an invalid object. Check your are calling a valid Mopidy endpoint.',
+                    call: call,
+                    value: value
+                }
+                console.error(error)
+                reject(error)
+            }
+
+            property = property.replace('get','');
+            property = property.replace('set','');
+
             mopidyObject( value )
                 .then(
                     response => {
@@ -219,32 +231,39 @@ const MopidyMiddleware = (function(){
                             uris.push( playlist.tracks[i].uri );
                         }
 
-                        instruct( socket, store, 'library.lookup', { uris: uris } )
-                            .then( response => {
+                        // no tracks
+                        if( uris.length <= 0 ){
+                            store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
 
-                                for(var uri in response){
-                                    if (response.hasOwnProperty(uri)) {
+                        // tracks? let's flesh them out with full track objects, rather than just reference objects
+                        }else{
+                            instruct( socket, store, 'library.lookup', { uris: uris } )
+                                .then( response => {
 
-                                        var track = response[uri][0];
-                                        if( track ){
-                                            
-                                            // find the track reference, and drop in the full track data
-                                            function getByURI( trackReference ){
-                                                return track.uri == trackReference.uri
-                                            }
-                                            var trackReferences = playlist.tracks.filter(getByURI);
-                                            
-                                            // there could be multiple instances of this track, so accommodate this
-                                            for( var j = 0; j < trackReferences.length; j++){
-                                                var key = playlist.tracks.indexOf( trackReferences[j] );
-                                                playlist.tracks[ key ] = track;
+                                    for(var uri in response){
+                                        if (response.hasOwnProperty(uri)) {
+
+                                            var track = response[uri][0];
+                                            if( track ){
+                                                
+                                                // find the track reference, and drop in the full track data
+                                                function getByURI( trackReference ){
+                                                    return track.uri == trackReference.uri
+                                                }
+                                                var trackReferences = playlist.tracks.filter(getByURI);
+                                                
+                                                // there could be multiple instances of this track, so accommodate this
+                                                for( var j = 0; j < trackReferences.length; j++){
+                                                    var key = playlist.tracks.indexOf( trackReferences[j] );
+                                                    playlist.tracks[ key ] = track;
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
-                            })
+                                    store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
+                                })
+                        }
                     })
                 break;
 
@@ -290,6 +309,24 @@ const MopidyMiddleware = (function(){
                                 store.dispatch({ type: 'PLAYLIST_TRACKS_REMOVED', tracks_indexes: action.tracks_indexes });
                             })
                     });
+                break
+
+            case 'MOPIDY_CREATE_PLAYLIST':
+                instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+                    .then( response => {
+
+                        // re-load our global playlists
+                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
+                    });           
+                break
+
+            case 'MOPIDY_DELETE_PLAYLIST':
+                instruct( socket, store, 'playlists.delete', { uri: action.uri })
+                    .then( response => {
+
+                        // re-load our global playlists
+                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
+                    });           
                 break
 
             case 'MOPIDY_ALBUM':

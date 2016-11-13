@@ -62,15 +62,15 @@ class Sidebar extends React.Component{
 							<Icon name="playlist" className="white" />
 							Playlists
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/artists">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/artists" : null}>
 							<Icon name="mic" className="white" />
 							Artists
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/albums">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/albums" : null}>
 							<Icon name="cd" className="white" />
 							Albums
 						</Link>
-						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to="/library/tracks">
+						<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/tracks" : null}>
 							<Icon name="music" className="white" />
 							Tracks
 						</Link>
