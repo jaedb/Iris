@@ -39,48 +39,48 @@ main {
 	section.list-wrapper {
 		padding: 20px 0;
 	}
-
-	h1 {
-		font-weight: 500;
-		font-size: 40px;
-	}
-
-	h2 {
-		font-weight: 500;
-		font-size: 30px;
-	}
-
-	h3 {
-		font-weight: 100;
-		font-style: italic;
-		font-size: 20px;
-	}
-
-	h4 {
-		font-size: 14px;
-		margin-bottom: 14px;
-		text-transform: uppercase;
-
-		&.underline {
-			padding-bottom: 4px;
-			border-bottom: 1px solid #000000;
-		}
-
-		&:not(:first-child){
-			padding-top: 40px;
-		}
-	}
-
-	.no-top-padding {		padding-top: 0 !important; }
-	.no-bottom-padding {	padding-bottom: 0 !important; }
-	.no-right-padding {		padding-right: 0 !important; }
-	.no-left-padding {		padding-left: 0 !important; }
-
-	.top-padding {			padding-top: 20px; }
-	.bottom-padding {		padding-bottom: 20px; }
-	.right-padding {		padding-right: 40px; }
-	.left-padding {			padding-left: 40px; }
 }
+
+h1 {
+	font-weight: 500;
+	font-size: 40px;
+}
+
+h2 {
+	font-weight: 500;
+	font-size: 30px;
+}
+
+h3 {
+	font-weight: 100;
+	font-style: italic;
+	font-size: 20px;
+}
+
+h4 {
+	font-size: 14px;
+	margin-bottom: 14px;
+	text-transform: uppercase;
+
+	&.underline {
+		padding-bottom: 4px;
+		border-bottom: 1px solid #000000;
+	}
+
+	&:not(:first-child){
+		padding-top: 40px;
+	}
+}
+
+.no-top-padding {		padding-top: 0 !important; }
+.no-bottom-padding {	padding-bottom: 0 !important; }
+.no-right-padding {		padding-right: 0 !important; }
+.no-left-padding {		padding-left: 0 !important; }
+
+.top-padding {			padding-top: 20px; }
+.bottom-padding {		padding-bottom: 20px; }
+.right-padding {		padding-right: 40px; }
+.left-padding {			padding-left: 40px; }
 
 .col {
 	min-height: 1px;

@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import Sidebar from '../components/Sidebar'
 import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
-import Modal from '../components/Modal'
+import Modal from '../components/Modal/Modal'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'

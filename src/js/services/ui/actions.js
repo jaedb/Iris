@@ -66,14 +66,35 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function createPlaylist( scheme, name, is_private = false ){
+export function savePlaylist( uri, name, is_public = false ){
+    switch( helpers.uriSource( uri ) ){
+
+        case 'spotify':
+            return { 
+                type: 'SPOTIFY_SAVE_PLAYLIST',
+                uri: uri,
+                name: name,
+                is_public: is_public
+            }
+
+        case 'm3u':
+            return { 
+                type: 'MOPIDY_SAVE_PLAYLIST',
+                uri: uri,
+                name: name
+            }
+    }
+    return false
+}
+
+export function createPlaylist( scheme, name, is_public = false ){
     switch( scheme ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_CREATE_PLAYLIST',
                 name: name,
-                is_private: is_private
+                is_public: is_public
             }
 
         case 'm3u':

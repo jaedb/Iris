@@ -180,6 +180,10 @@ export default function reducer(ui = {}, action){
          * Playlists
          **/
 
+        case 'PLAYLIST_UPDATED':
+            var playlist = Object.assign({}, ui.playlist, action.playlist)
+            return Object.assign({}, ui, { playlist: playlist })
+
         case 'MOPIDY_PLAYLIST_LOADED':
             if( !action.data ) return Object.assign({}, ui, { playlist: false })
             return Object.assign({}, ui, { playlist: action.data })

@@ -280,7 +280,11 @@ const MopidyMiddleware = (function(){
                         }
 
                         var playlist = Object.assign({}, response)
-                        playlist.tracks = [...playlist.tracks, ...tracks]
+                        if( playlist.tracks ){
+                            playlist.tracks = [...playlist.tracks, ...tracks]
+                        }else{
+                            playlist.tracks = tracks
+                        }
 
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
@@ -318,6 +322,21 @@ const MopidyMiddleware = (function(){
                         // re-load our global playlists
                         store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
                     });           
+                break
+
+            case 'MOPIDY_SAVE_PLAYLIST':                
+                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                    .then( response => {
+                        var playlist = Object.assign({}, response, { name: action.name })
+                        instruct( socket, store, 'playlists.save', { playlist: playlist } )
+                            .then( response => {
+
+                                // TODO: changing the name changes the URI, so essentially invalidates our url...
+                                // need to figure out how to handle this
+
+                                store.dispatch({ type: 'PLAYLIST_UPDATED', playlist: playlist });
+                            })
+                    });
                 break
 
             case 'MOPIDY_DELETE_PLAYLIST':

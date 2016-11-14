@@ -99,7 +99,7 @@ input[type="submit"] {
 
 	&[disabled],
 	&[disabled="disabled"] {
-		background: $light_grey !important;
+		background: rgba(200,200,200,0.4) !important;
 		color: $mid_grey !important;
 		cursor: not-allowed !important;
 	}

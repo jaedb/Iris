@@ -503,12 +503,28 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
  * Playlists
  **/
 
-export function createPlaylist( name, is_private ){
+export function createPlaylist( name, is_public ){
     return (dispatch, getState) => {
 
-        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', { name: name, public: !is_private } )
+        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', { name: name, public: is_public } )
         .then( response => {
             dispatch( getAllLibraryPlaylists() );
+        })
+    }
+}
+
+export function savePlaylist( uri, name, is_public ){
+    return (dispatch, getState) => {
+
+        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', { name: name, public: is_public } )
+        .then( response => {
+            dispatch({
+                type: 'PLAYLIST_UPDATED',
+                playlist: {
+                    name: name,
+                    public: is_public
+                }
+            });
         })
     }
 }

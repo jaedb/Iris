@@ -27,15 +27,17 @@ class LibraryPlaylists extends React.Component{
 			{ name: 'uri', width: '40'}
 		]
 
+		var actions = (
+			<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
+				<FontAwesome name="plus" />&nbsp;
+				New
+			</button>
+		)
+
 		return (
 			<div className="view library-playlists-view">
 
-				<Header icon="playlist" title="My playlists" />
-
-				<button onClick={ () => this.props.uiActions.openModal('create_playlist',false) }>
-					<FontAwesome name="plus" />&nbsp;
-					New playlist
-				</button>
+				<Header icon="playlist" title="My playlists" actions={actions} />
 
 				<section className="grid-wrapper">
 					<PlaylistGrid playlists={this.props.playlists} />

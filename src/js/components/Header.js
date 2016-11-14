@@ -13,6 +13,7 @@ export default class Header extends React.Component{
 			<header>
 				<Icon name={ this.props.icon } />
 				<h1>{ this.props.title }</h1>
+				{ this.props.actions ? <div className="actions">{ this.props.actions }</div> : null }
 			</header>
 		);
 	}

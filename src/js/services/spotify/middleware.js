@@ -51,6 +51,16 @@ const SpotifyMiddleware = (function(){
                 store.dispatch( actions.addTracksToPlaylist( action.playlist_uri, action.tracks_uris ))
                 break
 
+
+            case 'SPOTIFY_SAVE_PLAYLIST':
+
+                if( !store.getState().spotify.authorized ){
+                    alert('Must be logged in to Spotify to do this')
+                    return
+                }
+                store.dispatch( actions.savePlaylist( action.uri, action.name, action.is_public ))
+                break
+
             // when our mopidy server current track changes
             case 'MOPIDY_CURRENTTLTRACK':
 

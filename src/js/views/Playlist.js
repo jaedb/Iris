@@ -74,23 +74,30 @@ class Playlist extends React.Component{
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, track_indexes )
 	}
 
-	renderFollowOrDeleteButton(){
+	renderEditButtons(){
 		switch( helpers.uriSource( this.props.params.uri ) ){
 
 			case 'm3u':
-				return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
-				break
+				return (
+					<span>
+						<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
+						<ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+					</span>
+				)
 
 			case 'spotify':
 				if( !this.props.spotify_authorized ) return null
 				if( this.props.playlist.owner && this.props.playlist.owner.id == this.props.spotify_userid ){
-					return <ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+					return (
+						<span>
+							<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
+							<ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+						</span>
+					)
 				}else if( this.props.playlist.following ){
 					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
-				}else{
-					return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
 				}
-				break
+				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
 
 		}
 	}
@@ -107,7 +114,7 @@ class Playlist extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ this.renderFollowOrDeleteButton() }
+						{ this.renderEditButtons() }
 					</div>
 
 					<ul className="details">
