@@ -63,10 +63,12 @@ class Playlist extends React.Component{
 		this.props.spotifyActions.toggleFollowingPlaylist( this.props.params.uri, 'PUT' )
 	}
 
+	// TODO: Once unfollowing occurs, remove playlist from global playlists list
 	unfollow(){
 		this.props.spotifyActions.toggleFollowingPlaylist( this.props.params.uri, 'DELETE' )
 	}
 
+	// TODO: Once deletion occurs, remove playlist from global playlists list
 	delete(){
 		this.props.mopidyActions.deletePlaylist( this.props.params.uri )
 	}
@@ -121,7 +123,7 @@ class Playlist extends React.Component{
 					<ul className="details">
 						<li>{ this.props.playlist.tracks_total } tracks, <Dater type="total-time" data={this.props.playlist.tracks} /></li>
 						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }
-						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total} followers</li> : null }
+						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ scheme == 'spotify' ? <li>By <Link to={'/user/'+this.props.playlist.owner.id}>{this.props.playlist.owner.id}</Link> &nbsp;{ !this.props.playlist.public ? <FontAwesome name="lock" /> : null }</li> : null }
 						{ scheme == 'spotify' ? <li><FontAwesome name="spotify" /> Spotify playlist</li> : null }
 						{ scheme == 'm3u' ? <li><FontAwesome name="folder" /> Local playlist</li> : null }
