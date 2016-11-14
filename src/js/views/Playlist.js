@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 import * as helpers from '../helpers'
 
@@ -120,6 +121,8 @@ class Playlist extends React.Component{
 					<ul className="details">
 						<li>{ this.props.playlist.tracks_total } tracks, <Dater type="total-time" data={this.props.playlist.tracks} /></li>
 						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }
+						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total} followers</li> : null }
+						{ scheme == 'spotify' ? <li>By <Link to={'/user/'+this.props.playlist.owner.id}>{this.props.playlist.owner.id}</Link> &nbsp;{ !this.props.playlist.public ? <FontAwesome name="lock" /> : null }</li> : null }
 						{ scheme == 'spotify' ? <li><FontAwesome name="spotify" /> Spotify playlist</li> : null }
 						{ scheme == 'm3u' ? <li><FontAwesome name="folder" /> Local playlist</li> : null }
 					</ul>

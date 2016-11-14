@@ -23,7 +23,7 @@
 		width: 35%;
 		background: $faint_grey;
 
-		.thumbnail {
+		> .thumbnail {
 			float: none;
 			margin: 0 auto;
 			max-width: none;
@@ -69,6 +69,10 @@
 					}
 				}
 			}
+		}
+
+		.owner {
+			padding: 30px;
 		}
 	}
 }

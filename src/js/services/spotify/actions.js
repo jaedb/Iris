@@ -539,7 +539,8 @@ export function getPlaylist( uri ){
 
         $.when(
 
-             sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+            // get the main playlist object
+            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
             .then( response => {
                 Object.assign( playlist, response );
             }),

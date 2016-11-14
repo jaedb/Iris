@@ -94,8 +94,11 @@ class App extends React.Component{
 				break;	
 
 			case 27: // esc
-				if( this.props.dragger.dragging ){
+				if( this.props.dragger && this.props.dragger.dragging ){
 					this.props.uiActions.dragCancel();
+				}
+				if( this.props.modal ){
+					this.props.uiActions.closeModal();
 				}
 				break;
 		}
@@ -131,6 +134,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,
 		dragger: state.ui.dragger,
+		modal: state.ui.modal,
 		context_menu: state.ui.context_menu
 	}
 }
