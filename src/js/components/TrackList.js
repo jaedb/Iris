@@ -14,7 +14,7 @@ class TrackList extends React.Component{
 		super(props);
 
 		this.state = {
-			tracks: this.props.tracks,
+			tracks: this.keyifyTracks(this.props.tracks),
 			lastSelectedTrack: false
 		}
 
@@ -27,6 +27,10 @@ class TrackList extends React.Component{
 
 	componentWillUnmount(){
 		window.removeEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	componentWillReceiveProps( nextProps ){
+		this.setState({ tracks: this.keyifyTracks(nextProps.tracks) });
 	}
 
 	handleKeyUp(e){
@@ -44,51 +48,48 @@ class TrackList extends React.Component{
 		}
 	}
 
-	componentWillReceiveProps( nextProps ){
-		this.setState({ tracks: nextProps.tracks });
-	}
-
 	handleClick( e, index ){
-		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu();
+		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
 
-		var tracks = this.state.tracks;
+		var tracks = this.state.tracks
 
 		if( e.ctrlKey ){
 
-			tracks[index].selected = !tracks[index].selected;
+			tracks[index].selected = !tracks[index].selected
 
 		}else if( e.shiftKey ){
 
 			if( this.state.lastSelectedTrack < index ){
-				var start = this.state.lastSelectedTrack;
-				var end = index;
+				var start = this.state.lastSelectedTrack
+				var end = index
 			}else{
-				var start = index;
-				var end = this.state.lastSelectedTrack;
+				var start = index
+				var end = this.state.lastSelectedTrack
 			}
 
 			for( var i = start; i <= end; i++ ){
-				tracks[i].selected = true;
+				tracks[i].selected = true
 			}
 
 		}else{
 
 			for( var i = 0; i < tracks.length; i++ ){
-				tracks[i].selected = false;
+				tracks[i].selected = false
 			}
-			tracks[index].selected = !tracks[index].selected;
+
+			tracks[index].selected = !tracks[index].selected
 		}
 
-		this.setState({ tracks: tracks, lastSelectedTrack: index });
+		this.setState({ tracks: tracks, lastSelectedTrack: index })
 	}
 
 	handleDoubleClick(e, index){
-		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu();
+		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
 		this.playTracks()
 	}
 
 	handleDragStart(e, index){
-		this.props.uiActions.dragStart( e, 'tltracks', this.selectedTracks() )
+		this.props.uiActions.dragStart( e, this.props.context, this.selectedTracks() )
 	}
 
 	handleContextMenu(e, index){
@@ -98,6 +99,13 @@ class TrackList extends React.Component{
 			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
 		}
 		this.props.uiActions.showContextMenu( e, this.props.context, data )
+	}
+
+	keyifyTracks( tracks ){
+		for( var i = 0; i < tracks.length; i++ ){
+			tracks[i] = Object.assign({}, tracks[i], { key: i+'_'+tracks[i].uri })
+		}
+		return tracks
 	}
 
 	selectedTracks(){
@@ -161,7 +169,7 @@ class TrackList extends React.Component{
 						(track, index) => {
 							return <Track
 									show_source_icon={ this.props.show_source_icon }
-									key={index+'_'+track.uri} 
+									key={track.key} 
 									track={track} 
 									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
 									handleClick={ e => self.handleClick(e, index)}
