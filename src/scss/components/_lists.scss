@@ -60,6 +60,11 @@
 		&.playing {
 			font-weight: 600;
 		}
+
+		:root .dragging &:hover {
+			border-top: 3px solid $blue;
+			margin-top: -3px;
+		}
 	}
 
 

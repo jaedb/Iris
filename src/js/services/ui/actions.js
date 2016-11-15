@@ -40,30 +40,43 @@ export function lazyLoading( start ){
     }
 }
 
-export function dragStart( e, context, victims ){
+export function dragStart( e, context, victims, victims_indexes = false ){
     return {
         type: 'DRAG_START',
         context: context,
         victims: victims,
-        position_x: e.clientX,
-        position_y: e.clientY
+        victims_indexes: victims_indexes,
+        start_x: e.clientX,
+        start_y: e.clientY
     }
 }
 
-export function dragMove( e ){
-    return {
-        type: 'DRAG_MOVE',
-        position_x: e.clientX,
-        position_y: e.clientY,
-    }
-}
-
-export function dragCancel(){
-    return { type: 'DRAG_CANCEL' }
+export function dragActive(){
+    return { type: 'DRAG_ACTIVE' }
 }
 
 export function dragEnd(){
     return { type: 'DRAG_END' }
+}
+
+export function reorderTracks( context, indexes, destination_index ){
+    console.log('uiActions.reorderTracks', context, indexes, destination_index)
+    switch( context ){
+
+        case 'queue':
+            return { 
+                type: 'MOPIDY_REORDER_TRACKLIST',
+                indexes: indexes,
+                destination_index: destination_index
+            }
+
+        case 'editable-playlist':
+            return { 
+                type: 'SPOTIFY_REORDER_TRACKLIST',
+                indexes: indexes,
+                destination_index: destination_index
+            }
+    }
 }
 
 export function savePlaylist( uri, name, is_public = false ){

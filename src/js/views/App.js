@@ -106,7 +106,7 @@ class App extends React.Component{
 
 	render(){
 		var className = '';
-		if( this.props.dragger && this.props.dragger.dragging ) className += ' dragging'
+		if( this.props.dragger && this.props.dragger.active ) className += ' dragging'
 
 		return (
 			<div className={className}>

@@ -34,36 +34,22 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { 
                 dragger: { 
                     dragging: true,
+                    active: false,
                     context: action.context, 
                     victims: action.victims,
-                    position_x: action.position_x,
-                    position_y: action.position_y
+                    victims_indexes: action.victims_indexes,
+                    start_x: action.start_x,
+                    start_y: action.start_y
                 }
             });
 
-        case 'DRAG_MOVE':
-            var dragger = Object.assign({}, ui.dragger, {              
-                    position_x: action.position_x,
-                    position_y: action.position_y
-                })
+        case 'DRAG_ACTIVE':
+            var dragger = Object.assign({}, ui.dragger, { active: true })
             return Object.assign({}, ui, { dragger: dragger });
 
         case 'DRAG_END':
             return Object.assign({}, ui, { 
-                dragger: { 
-                    dragging: false,
-                    context: false, 
-                    victims: false
-                }
-            });
-
-        case 'DRAG_CANCEL':
-            return Object.assign({}, ui, { 
-                dragger: { 
-                    dragging: false,
-                    context: false, 
-                    victims: false
-                }
+                dragger: false
             });
 
 

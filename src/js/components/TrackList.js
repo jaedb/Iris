@@ -88,8 +88,16 @@ class TrackList extends React.Component{
 		this.playTracks()
 	}
 
-	handleDragStart(e, index){
-		this.props.uiActions.dragStart( e, this.props.context, this.selectedTracks() )
+	handleMouseDown(e, index){
+		var selected_tracks = this.selectedTracks()
+		this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
+	}
+
+	handleMouseUp(e, index){
+		if( this.props.dragger && this.props.dragger.active ){
+			var indexes = this.props.dragger.victims_indexes
+			this.props.uiActions.reorderTracks(this.props.context, indexes, index)
+		}
 	}
 
 	handleContextMenu(e, index){
@@ -173,7 +181,8 @@ class TrackList extends React.Component{
 									track={track} 
 									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
 									handleClick={ e => self.handleClick(e, index)}
-									handleDragStart={ e => self.handleDragStart(e, index)}
+									handleMouseUp={ e => self.handleMouseUp(e, index)}
+									handleMouseDown={ e => self.handleMouseDown(e, index)}
 									handleContextMenu={ e => self.handleContextMenu(e, index)} />
 						}
 					)
@@ -192,6 +201,7 @@ class TrackList extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		dragger: state.ui.dragger,
 		current_track: state.ui.current_track,
 		context_menu: state.ui.context_menu
 	}

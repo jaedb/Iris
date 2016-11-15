@@ -23,11 +23,14 @@ export default class Track extends React.Component{
 		return this.props.handleDoubleClick(e);
 	}
 
-	handleDragStart(e){
+	handleMouseDown(e){
 		// if we're not selected, perform click behavior [first] << this is assumed
 		if( !this.props.track.selected ) this.handleClick(e)
+		this.props.handleMouseDown(e)
+	}
 
-		this.props.handleDragStart(e)
+	handleMouseUp(e){
+		this.props.handleMouseUp(e)
 	}
 
 	handleContextMenu(e){
@@ -51,8 +54,8 @@ export default class Track extends React.Component{
 		return (
 			<div
 				className={className}
-				draggable='true'
-				onDragStart={ e => this.handleDragStart(e) }
+				onMouseDown={ e => this.handleMouseDown(e) }
+				onMouseUp={ e => this.handleMouseUp(e) }
 				onClick={ e => this.handleClick(e) }
 				onDoubleClick={ e => this.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>

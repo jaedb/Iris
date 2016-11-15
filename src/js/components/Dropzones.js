@@ -36,7 +36,7 @@ class Dropzones extends React.Component{
 	}
 
 	handleMouseMove(e){
-		if( !this.props.dragger || !this.props.dragger.dragging ) return null;
+		if( !this.props.dragger || !this.props.dragger.active ) return null;
 		this.props.uiActions.dragMove( e )
 	}
 
@@ -58,7 +58,7 @@ class Dropzones extends React.Component{
 	}
 
 	render(){
-		if( !this.props.dragger || !this.props.dragger.dragging ) return null
+		if( !this.props.dragger || !this.props.dragger.active ) return null
 
 		return (
 			<div className="dropzones">
