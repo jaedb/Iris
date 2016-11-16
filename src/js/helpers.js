@@ -180,3 +180,34 @@ export let mergeDuplicates = function(list, key){
 
 	return clean_list;
 }
+
+/**
+ * Convert a list of indexes to a useable range
+ * We ignore stragglers, and only attend to the first 'bunch' of consecutive indexes
+ * 
+ * @param indexes array of int
+ **/
+export let createRange = function (indexes){
+
+	// sort our indexes smallest to largest
+	function sortAsc(a,b){
+        return a - b
+    }
+    indexes.sort(sortAsc);
+
+    // iterate indexes to build the first 'bunch'
+    var first_bunch = []
+    var previous_index = false
+    for( var i = 0; i < indexes.length; i++ ){
+        if( !previous_index || previous_index == indexes[i]-1 ){
+            first_bunch.push(indexes[i])
+            previous_index = indexes[i]
+        }
+        // TODO: break when we find an integer step for better performance
+    }
+
+    return {
+    	start: first_bunch[0],
+    	length: first_bunch.length
+    }
+}

@@ -59,16 +59,17 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function reorderPlaylistTracks( uri, indexes, to_index, snapshot_id = false ){
+export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id = false ){
+    var range = helpers.createRange( indexes );
     switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
-            // TODO: handle bunched selected tracks (ie non-continuious indexes)
             return { 
                 type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
                 uri: uri,
-                indexes: indexes,
-                to_index: to_index,
+                range_start: range.start,
+                range_length: range.length,
+                insert_before: insert_before,
                 snapshot_id: snapshot_id
             }
 
@@ -76,8 +77,9 @@ export function reorderPlaylistTracks( uri, indexes, to_index, snapshot_id = fal
             return { 
                 type: 'MOPIDY_REORDER_PLAYLIST_TRACKS',
                 uri: uri,
-                indexes: indexes,
-                to_index: to_index
+                range_start: range.start,
+                range_length: range.length,
+                insert_before: insert_before
             }
     }
 }

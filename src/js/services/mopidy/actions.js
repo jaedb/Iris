@@ -1,7 +1,5 @@
 
-/**
- * Actions and Action Creators
- **/
+import * as helpers from '../../helpers'
 
 export function setConfig( config ){
 	return {
@@ -66,6 +64,16 @@ export function removeTracks( tlids ){
 		type: 'MOPIDY_INSTRUCT',
 		call: 'tracklist.remove',
 		value: { tlid: tlids }
+	}
+}
+
+export function reorderTracklist( indexes, insert_before ){
+	var range = helpers.createRange( indexes );
+	return { 
+		type: 'MOPIDY_REORDER_TRACKLIST',
+		range_start: range.start,
+		range_length: range.length,
+		insert_before: insert_before
 	}
 }
 

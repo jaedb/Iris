@@ -233,13 +233,26 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_TRACKS_LOADED':
             var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks })
             return Object.assign({}, ui, { playlist: playlist });
-/*
+
         case 'PLAYLIST_TRACKS_REORDERED':
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
-            var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks, snapshot_id: snapshot_id })
+            var tracks = Object.assign([], ui.playlist.tracks)
+
+            // handle insert_before offset if we're moving BENEATH where we're slicing tracks
+            var insert_before = action.insert_before
+            if( insert_before > action.range_start ) insert_before = insert_before - action.range_length
+
+            // cut our moved tracks into a new array
+            var tracks_to_move = tracks.splice(action.range_start, action.range_length)
+            tracks_to_move.reverse()
+
+            for( i = 0; i < tracks_to_move.length; i++ ){
+                tracks.splice(insert_before, 0, tracks_to_move[i])
+            }
+
+            var playlist = Object.assign({}, ui.playlist, { snapshot_id: snapshot_id, tracks: tracks })
             return Object.assign({}, ui, { playlist: playlist });
-*/
 
         /**
          * Library Playlists

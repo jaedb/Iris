@@ -641,17 +641,15 @@ export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
     }
 }
 
-export function reorderPlaylistTracks( uri, indexes, to_index, snapshot_id ){
-    var range_start = indexes[0]
-    var range_length = indexes.length
+export function reorderPlaylistTracks( uri, range_start, range_length, insert_before, snapshot_id ){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: to_index, snapshot_id: snapshot_id } )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id } )
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REORDERED',
                     range_start: range_start,
                     range_length: range_length,
-                    to_index: to_index,
+                    insert_before: insert_before,
                     snapshot_id: response.snapshot_id
                 });
             });

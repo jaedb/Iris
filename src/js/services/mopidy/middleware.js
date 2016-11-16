@@ -1,7 +1,7 @@
 
 import Mopidy from 'mopidy'
+import * as helpers from '../../helpers'
 
-var helpers = require('../../helpers.js')
 var mopidyActions = require('./actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 
@@ -200,6 +200,15 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_REORDER_TRACKLIST':
+
+                // add our first track
+                instruct( socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before } )
+                    .then( response => {
+                        console.log(response)
+                    })
+                break;
+
             case 'MOPIDY_PLAYLISTS':
                 instruct( socket, store, 'playlists.asList' )
                     .then( response => {
@@ -348,26 +357,24 @@ const MopidyMiddleware = (function(){
                         var tracks_to_move = []
 
                         // calculate destination index: if dragging down, accommodate the offset created by the tracks we're moving
-                        var to_index = action.to_index
-                        var indexes = action.indexes
-                        var range_start = indexes[0]
-                        var range_length = indexes.length
-                        if( to_index > range_start ) to_index = to_index - range_length
+                        var range_start = action.range_start
+                        var range_length = action.range_length
+                        var insert_before = action.insert_before
+                        if( insert_before > range_start ) insert_before = insert_before - range_length
 
                         // collate our tracks to be moved
-                        for( var i = 0; i < indexes.length; i++ ){
+                        for( var i = 0; i < range_length; i++ ){
 
                             // add to FRONT: we work backwards to avoid screwing up our indexes
-                            tracks_to_move.unshift( tracks[indexes[i]] )
+                            tracks_to_move.unshift( tracks[range_start + i] )
                         }
 
                         // remove tracks from their old location
-                        // BIG ASSUMPTION: this is one continuious set of indexes, ie not 1,2,5,6,9
                         tracks.splice( range_start, range_length )
 
                         // now plug them back in, in their new location
                         for( var i = 0; i < tracks_to_move.length; i++ ){
-                            tracks.splice( to_index, 0, tracks_to_move[i] )
+                            tracks.splice( insert_before, 0, tracks_to_move[i] )
                         }
 
                         // update playlist

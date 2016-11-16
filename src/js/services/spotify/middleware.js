@@ -58,7 +58,7 @@ const SpotifyMiddleware = (function(){
                     alert('Must be logged in to Spotify to do this')
                     return
                 }
-                store.dispatch( actions.reorderPlaylistTracks( action.uri, action.indexes, action.to_index ))
+                store.dispatch( actions.reorderPlaylistTracks( action.uri, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break
 
 
