@@ -225,47 +225,47 @@ const MopidyMiddleware = (function(){
                                 tracks_total: ( response.tracks ? response.tracks.length : 0 )
                             }
                         )
-                        
-                        var uris = [];
-                        for( var i = 0; i < playlist.tracks.length; i++ ){
-                            uris.push( playlist.tracks[i].uri );
-                        }
 
-                        // no tracks
-                        if( uris.length <= 0 ){
-                            store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
+                        // tracks? get the full track objects
+                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_FETCH_PLAYLIST_TRACKS', tracks: playlist.tracks })
 
-                        // tracks? let's flesh them out with full track objects, rather than just reference objects
-                        }else{
-                            instruct( socket, store, 'library.lookup', { uris: uris } )
-                                .then( response => {
-
-                                    for(var uri in response){
-                                        if (response.hasOwnProperty(uri)) {
-
-                                            var track = response[uri][0];
-                                            if( track ){
-                                                
-                                                // find the track reference, and drop in the full track data
-                                                function getByURI( trackReference ){
-                                                    return track.uri == trackReference.uri
-                                                }
-                                                var trackReferences = playlist.tracks.filter(getByURI);
-                                                
-                                                // there could be multiple instances of this track, so accommodate this
-                                                for( var j = 0; j < trackReferences.length; j++){
-                                                    var key = playlist.tracks.indexOf( trackReferences[j] );
-                                                    playlist.tracks[ key ] = track;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist });
-                                })
-                        }
+                        store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist })
                     })
                 break;
+
+            case 'MOPIDY_FETCH_PLAYLIST_TRACKS':
+                var tracks = Object.assign([], action.tracks)
+                var uris = [];
+                for( var i = 0; i < tracks.length; i++ ){
+                    uris.push( tracks[i].uri );
+                }
+
+                instruct( socket, store, 'library.lookup', { uris: uris } )
+                    .then( response => {
+                        for(var uri in response){
+                            if (response.hasOwnProperty(uri)) {
+
+                                var track = response[uri][0]
+                                if( track ){
+                                    
+                                    // find the track reference, and drop in the full track data
+                                    function getByURI( trackReference ){
+                                        return track.uri == trackReference.uri
+                                    }
+                                    var trackReferences = tracks.filter(getByURI);
+                                    
+                                    // there could be multiple instances of this track, so accommodate this
+                                    for( var j = 0; j < trackReferences.length; j++){
+                                        var key = tracks.indexOf( trackReferences[j] );
+                                        tracks[ key ] = track;
+                                    }
+                                }
+                            }
+                        }
+
+                        store.dispatch({ type: 'PLAYLIST_TRACKS_LOADED', tracks: tracks })
+                    })
+                break
 
             case 'MOPIDY_ADD_PLAYLIST_TRACKS':
                 
@@ -335,6 +335,48 @@ const MopidyMiddleware = (function(){
                                 // need to figure out how to handle this
 
                                 store.dispatch({ type: 'PLAYLIST_UPDATED', playlist: playlist });
+                            })
+                    });
+                break
+
+            case 'MOPIDY_REORDER_PLAYLIST_TRACKS':                
+                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                    .then( response => {
+
+                        var playlist = Object.assign({}, response)
+                        var tracks = Object.assign([], playlist.tracks)
+                        var tracks_to_move = []
+
+                        // calculate destination index: if dragging down, accommodate the offset created by the tracks we're moving
+                        var to_index = action.to_index
+                        var indexes = action.indexes
+                        var range_start = indexes[0]
+                        var range_length = indexes.length
+                        if( to_index > range_start ) to_index = to_index - range_length
+
+                        // collate our tracks to be moved
+                        for( var i = 0; i < indexes.length; i++ ){
+
+                            // add to FRONT: we work backwards to avoid screwing up our indexes
+                            tracks_to_move.unshift( tracks[indexes[i]] )
+                        }
+
+                        // remove tracks from their old location
+                        // BIG ASSUMPTION: this is one continuious set of indexes, ie not 1,2,5,6,9
+                        tracks.splice( range_start, range_length )
+
+                        // now plug them back in, in their new location
+                        for( var i = 0; i < tracks_to_move.length; i++ ){
+                            tracks.splice( to_index, 0, tracks_to_move[i] )
+                        }
+
+                        // update playlist
+                        playlist = Object.assign({}, playlist, { tracks: tracks })
+                        instruct( socket, store, 'playlists.save', { playlist: playlist } )
+                            .then( response => {
+
+                                // and now re-render our full track references
+                                store.dispatch({ type: 'MOPIDY_FETCH_PLAYLIST_TRACKS', tracks: playlist.tracks })
                             })
                     });
                 break

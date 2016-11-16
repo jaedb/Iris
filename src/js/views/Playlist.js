@@ -73,8 +73,12 @@ class Playlist extends React.Component{
 		this.props.mopidyActions.deletePlaylist( this.props.params.uri )
 	}
 
-	removeTracks( track_indexes ){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, track_indexes )
+	reorderTracks( indexes, index ){
+		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index )
+	}
+
+	removeTracks( tracks_indexes ){
+		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 
 	renderEditButtons(){
@@ -138,7 +142,7 @@ class Playlist extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList context="editable-playlist" tracks={ this.props.playlist.tracks } removeTracks={ track_indexes => this.removeTracks(track_indexes) } /> : null }
+						{ this.props.playlist.tracks ? <TrackList context="editable-playlist" tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					

@@ -61,7 +61,7 @@ export default class Track extends React.Component{
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
-						{ track.name ? track.name : '-' }
+						{ track.name ? track.name : track.uri }
 					</span>
 					<span className="col artists">
 						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }

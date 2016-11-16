@@ -59,22 +59,23 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function reorderTracks( context, indexes, destination_index ){
-    console.log('uiActions.reorderTracks', context, indexes, destination_index)
-    switch( context ){
+export function reorderPlaylistTracks( uri, indexes, to_index ){
+    switch( helpers.uriSource( uri ) ){
 
-        case 'queue':
+        case 'spotify':
             return { 
-                type: 'MOPIDY_REORDER_TRACKLIST',
+                type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
+                uri: uri,
                 indexes: indexes,
-                destination_index: destination_index
+                to_index: to_index
             }
 
-        case 'editable-playlist':
+        case 'm3u':
             return { 
-                type: 'SPOTIFY_REORDER_TRACKLIST',
+                type: 'MOPIDY_REORDER_PLAYLIST_TRACKS',
+                uri: uri,
                 indexes: indexes,
-                destination_index: destination_index
+                to_index: to_index
             }
     }
 }

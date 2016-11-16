@@ -95,8 +95,12 @@ class TrackList extends React.Component{
 
 	handleMouseUp(e, index){
 		if( this.props.dragger && this.props.dragger.active ){
-			var indexes = this.props.dragger.victims_indexes
-			this.props.uiActions.reorderTracks(this.props.context, indexes, index)
+		
+			// if this tracklist handles sorting, handle it
+			if( typeof(this.props.reorderTracks) !== 'undefined' ){
+				var indexes = this.props.dragger.victims_indexes
+				return this.props.reorderTracks( indexes, index );
+			}
 		}
 	}
 
