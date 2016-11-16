@@ -59,15 +59,17 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function reorderPlaylistTracks( uri, indexes, to_index ){
+export function reorderPlaylistTracks( uri, indexes, to_index, snapshot_id = false ){
     switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
+            // TODO: handle bunched selected tracks (ie non-continuious indexes)
             return { 
                 type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
                 uri: uri,
                 indexes: indexes,
-                to_index: to_index
+                to_index: to_index,
+                snapshot_id: snapshot_id
             }
 
         case 'm3u':

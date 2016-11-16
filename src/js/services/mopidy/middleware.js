@@ -210,6 +210,15 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_CREATE_PLAYLIST':
+                instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+                    .then( response => {
+
+                        // re-load our global playlists
+                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
+                    });           
+                break
+
             case 'MOPIDY_PLAYLIST':
                 store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
                 instruct( socket, store, 'playlists.lookup', action.data )
@@ -227,13 +236,13 @@ const MopidyMiddleware = (function(){
                         )
 
                         // tracks? get the full track objects
-                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_FETCH_PLAYLIST_TRACKS', tracks: playlist.tracks })
+                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_PLAYLIST_TRACKS', tracks: playlist.tracks })
 
                         store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist })
                     })
                 break;
 
-            case 'MOPIDY_FETCH_PLAYLIST_TRACKS':
+            case 'MOPIDY_PLAYLIST_TRACKS':
                 var tracks = Object.assign([], action.tracks)
                 var uris = [];
                 for( var i = 0; i < tracks.length; i++ ){
@@ -315,15 +324,6 @@ const MopidyMiddleware = (function(){
                     });
                 break
 
-            case 'MOPIDY_CREATE_PLAYLIST':
-                instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
-                    .then( response => {
-
-                        // re-load our global playlists
-                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
-                    });           
-                break
-
             case 'MOPIDY_SAVE_PLAYLIST':                
                 instruct( socket, store, 'playlists.lookup', { uri: action.uri })
                     .then( response => {
@@ -376,7 +376,7 @@ const MopidyMiddleware = (function(){
                             .then( response => {
 
                                 // and now re-render our full track references
-                                store.dispatch({ type: 'MOPIDY_FETCH_PLAYLIST_TRACKS', tracks: playlist.tracks })
+                                store.dispatch({ type: 'MOPIDY_PLAYLIST_TRACKS', tracks: playlist.tracks })
                             })
                     });
                 break

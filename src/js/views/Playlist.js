@@ -74,7 +74,7 @@ class Playlist extends React.Component{
 	}
 
 	reorderTracks( indexes, index ){
-		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index )
+		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
 	}
 
 	removeTracks( tracks_indexes ){

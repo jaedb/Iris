@@ -233,13 +233,13 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_TRACKS_LOADED':
             var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks })
             return Object.assign({}, ui, { playlist: playlist });
-
+/*
         case 'PLAYLIST_TRACKS_REORDERED':
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
             var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks, snapshot_id: snapshot_id })
             return Object.assign({}, ui, { playlist: playlist });
-
+*/
 
         /**
          * Library Playlists

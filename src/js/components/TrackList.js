@@ -48,9 +48,55 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleClick( e, index ){
+	handleDoubleClick(e, index){
+		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
+		this.playTracks()
+	}
+
+	handleMouseDown(e, index){
 		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
 
+		if( !this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey ) this.toggleTrackSelections(e, index)
+
+		var selected_tracks = this.selectedTracks()
+		this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
+	}
+
+	handleMouseUp(e, index){
+
+		// right-clicking on an un-highlighted track
+		if( !this.state.tracks[index].selected && this.isRightClick(e) ){
+			this.toggleTrackSelections(e, index)
+
+		// selected track, regular click
+		}else if( this.state.tracks[index].selected && !this.isRightClick(e) ){
+			this.toggleTrackSelections(e, index)
+
+		// ctrl key
+		}else if( e.ctrlKey ){
+			this.toggleTrackSelections(e, index)
+		}
+
+		if( this.props.dragger && this.props.dragger.active ){
+		
+			// if this tracklist handles sorting, handle it
+			if( typeof(this.props.reorderTracks) !== 'undefined' ){
+				var indexes = this.props.dragger.victims_indexes
+				return this.props.reorderTracks( indexes, index );
+			}
+		}
+	}
+
+	handleContextMenu(e, index){
+		var selected_tracks = this.selectedTracks()
+		var data = {
+			selected_tracks: selected_tracks,
+			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
+		}
+		this.props.uiActions.showContextMenu( e, this.props.context, data )
+	}
+
+	toggleTrackSelections(e, index){
 		var tracks = this.state.tracks
 
 		if( e.ctrlKey ){
@@ -83,34 +129,12 @@ class TrackList extends React.Component{
 		this.setState({ tracks: tracks, lastSelectedTrack: index })
 	}
 
-	handleDoubleClick(e, index){
-		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
-		this.playTracks()
-	}
-
-	handleMouseDown(e, index){
-		var selected_tracks = this.selectedTracks()
-		this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
-	}
-
-	handleMouseUp(e, index){
-		if( this.props.dragger && this.props.dragger.active ){
-		
-			// if this tracklist handles sorting, handle it
-			if( typeof(this.props.reorderTracks) !== 'undefined' ){
-				var indexes = this.props.dragger.victims_indexes
-				return this.props.reorderTracks( indexes, index );
-			}
-		}
-	}
-
-	handleContextMenu(e, index){
-		var selected_tracks = this.selectedTracks()
-		var data = {
-			selected_tracks: selected_tracks,
-			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
-		}
-		this.props.uiActions.showContextMenu( e, this.props.context, data )
+	isRightClick(e){
+		if( 'which' in e ) 
+			return e.which == 3
+		if( 'button' in e ) 
+			return e.button == 2
+		return false
 	}
 
 	keyifyTracks( tracks ){

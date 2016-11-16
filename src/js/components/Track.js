@@ -12,21 +12,15 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
-	handleClick(e){
-		var target = $(e.target);
-		if( !target.is('a') && target.closest('a').length <= 0 ){
-			this.props.handleClick(e);
-		}
-	}
-
 	handleDoubleClick(e){
 		return this.props.handleDoubleClick(e);
 	}
 
 	handleMouseDown(e){
-		// if we're not selected, perform click behavior [first] << this is assumed
-		if( !this.props.track.selected ) this.handleClick(e)
-		this.props.handleMouseDown(e)
+		var target = $(e.target);
+		if( !target.is('a') && target.closest('a').length <= 0 ){
+			this.props.handleMouseDown(e);
+		}
 	}
 
 	handleMouseUp(e){
@@ -35,11 +29,6 @@ export default class Track extends React.Component{
 
 	handleContextMenu(e){
 		e.preventDefault();
-
-		// trigger a regular click event
-		if( !this.props.track.selected ) this.handleClick(e);
-
-		// notify our tracklist
 		this.props.handleContextMenu(e);
 	}
 
@@ -56,12 +45,11 @@ export default class Track extends React.Component{
 				className={className}
 				onMouseDown={ e => this.handleMouseDown(e) }
 				onMouseUp={ e => this.handleMouseUp(e) }
-				onClick={ e => this.handleClick(e) }
 				onDoubleClick={ e => this.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">
-						{ track.name ? track.name : track.uri }
+						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 					</span>
 					<span className="col artists">
 						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }

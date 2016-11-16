@@ -52,6 +52,16 @@ const SpotifyMiddleware = (function(){
                 break
 
 
+            case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
+
+                if( !store.getState().spotify.authorized ){
+                    alert('Must be logged in to Spotify to do this')
+                    return
+                }
+                store.dispatch( actions.reorderPlaylistTracks( action.uri, action.indexes, action.to_index ))
+                break
+
+
             case 'SPOTIFY_SAVE_PLAYLIST':
 
                 if( !store.getState().spotify.authorized ){
