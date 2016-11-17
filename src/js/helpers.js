@@ -156,6 +156,22 @@ export let uriType = function( uri ){
     return null;
 }
 
+
+/**
+ * Digest an array of objects, and pull into simple array of uris
+ * 
+ * @param items Array
+ * @return Array
+ **/
+export let asURIs = function(items){
+	var uris = []
+	for( var i = 0; i < items.length; i++ ){
+		uris.push( items[i].uri )
+	}
+	return uris
+}
+
+
 /**
  * Merge duplicated items in an array
  *

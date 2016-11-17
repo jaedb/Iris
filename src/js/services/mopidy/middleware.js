@@ -180,17 +180,18 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break;
 
-            case 'MOPIDY_PLAY_TRACKS':
+            case 'MOPIDY_PLAY_URIS':
 
                 // add our first track
                 instruct( socket, store, 'tracklist.add', { uri: action.uris[0], at_position: 0 } )
                     .then( response => {
 
-                        // play it
-                        store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );
-
-                        // TODO: perhaps force update of currentTlTrack before we proceed?
-                        // this will make the UI feel snappier...
+                        if( !response || response.length <= 0 ){
+                            console.error('Could not add URI to tracklist', action.uris[0])
+                        }else{
+                            // play it
+                            store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );                            
+                        }
 
                         // add the rest of our uris (if any)
                         action.uris.shift();

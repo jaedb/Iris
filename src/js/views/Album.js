@@ -58,6 +58,33 @@ class Album extends React.Component{
 		this.props.spotifyActions.getURL( this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
 	}
 
+	play(){
+		var tracks_uris = helpers.asURIs( this.props.album.tracks )
+		this.props.mopidyActions.playURIs( tracks_uris )
+	}
+
+	follow(){
+		this.props.spotifyActions.toggleFollowingAlbum( this.props.params.uri, 'PUT' )
+	}
+
+	// TODO: Once unfollowing occurs, remove playlist from global playlists list
+	unfollow(){
+		this.props.spotifyActions.toggleFollowingAlbum( this.props.params.uri, 'DELETE' )
+	}
+
+	renderExtraButtons(){
+		switch( helpers.uriSource( this.props.params.uri ) ){
+
+			case 'spotify':
+				if( !this.props.spotify_authorized ) return null
+				if( this.props.playlist.following ){
+					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
+				}
+				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
+
+		}
+	}
+
 	render(){
 		if( !this.props.album ) return null
 
@@ -66,6 +93,12 @@ class Album extends React.Component{
 				<div className="intro">
 					<Thumbnail size="large" images={ this.props.album.images } />
 					<ArtistGrid artists={ this.props.album.artists } />
+
+					<div className="actions">
+						<button className="large primary" onClick={ e => this.play() }>Play</button>
+						{ this.renderExtraButtons() }
+					</div>
+
 					<ul className="details">
 						<li>{ this.props.album.tracks_total } tracks, <Dater type="total-time" data={this.props.album.tracks} /></li>
 						{ this.props.album.release_date ? <li>Released <Dater type="date" data={ this.props.album.release_date } /></li> : null }

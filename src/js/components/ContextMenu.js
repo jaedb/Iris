@@ -52,7 +52,7 @@ class ContextMenu extends React.Component{
 		for( var i = 0; i < selected_tracks.length; i++ ){
 			selected_tracks_uris.push( selected_tracks[i].uri );
 		}
-		this.props.mopidyActions.playTracks(selected_tracks_uris);
+		this.props.mopidyActions.playURIs(selected_tracks_uris);
 		this.props.uiActions.hideContextMenu();
 	}
 

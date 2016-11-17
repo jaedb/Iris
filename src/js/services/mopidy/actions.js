@@ -41,9 +41,9 @@ export function changeTrack( tlid ){
 	}
 }
 
-export function playTracks( uris ){
+export function playURIs( uris ){
 	return {
-		type: 'MOPIDY_PLAY_TRACKS',
+		type: 'MOPIDY_PLAY_URIS',
 		uris: uris
 	}
 }

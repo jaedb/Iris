@@ -56,7 +56,7 @@ class Playlist extends React.Component{
 	}
 
 	play(){
-		this.props.mopidyActions.playTracks([this.props.params.uri])
+		this.props.mopidyActions.playURIs([this.props.params.uri])
 	}
 
 	follow(){
@@ -81,7 +81,7 @@ class Playlist extends React.Component{
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 
-	renderEditButtons(){
+	renderExtraButtons(){
 		switch( helpers.uriSource( this.props.params.uri ) ){
 
 			case 'm3u':
@@ -121,7 +121,7 @@ class Playlist extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ this.renderEditButtons() }
+						{ this.renderExtraButtons() }
 					</div>
 
 					<ul className="details">

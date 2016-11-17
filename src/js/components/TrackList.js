@@ -165,7 +165,7 @@ class TrackList extends React.Component{
 
 		// if we've got a specific action, run it
 		if( typeof(this.props.playTracks) !== 'undefined' ){
-			return this.props.playTracks( tracks );
+			return this.props.playURIs( tracks );
 		}
 
 		// default to playing a bunch of uris
@@ -173,7 +173,7 @@ class TrackList extends React.Component{
 		for( var i = 0; i < tracks.length; i++ ){
 			uris.push( tracks[i].uri )
 		}
-		return this.props.mopidyActions.playTracks( uris )
+		return this.props.mopidyActions.playURIs( uris )
 	}
 
 	removeTracks(){
