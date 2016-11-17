@@ -134,6 +134,10 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { album: album });
 
+        case 'SPOTIFY_ALBUM_FOLLOWING':
+            var album = Object.assign({}, ui.album, { following: action.data })
+            return Object.assign({}, ui, { album: album });
+
 
 
         /**
@@ -159,6 +163,10 @@ export default function reducer(ui = {}, action){
                 albums: [ ...ui.artist.albums, ...action.data.items ],
                 albums_more: action.data.next
             })
+            return Object.assign({}, ui, { artist: artist });
+
+        case 'SPOTIFY_ARTIST_FOLLOWING':
+            var artist = Object.assign({}, ui.artist, { following: action.data })
             return Object.assign({}, ui, { artist: artist });
 
 

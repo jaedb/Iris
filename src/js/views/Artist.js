@@ -51,6 +51,29 @@ class Artist extends React.Component{
 		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
 	}
 
+	play(){
+		alert('Yet to be implemented')
+	}
+
+	follow(){
+		this.props.spotifyActions.toggleArtistInLibrary( this.props.params.uri, 'PUT' )
+	}
+
+	unfollow(){
+		this.props.spotifyActions.toggleArtistInLibrary( this.props.params.uri, 'DELETE' )
+	}
+
+	renderExtraButtons(){
+		switch( helpers.uriSource( this.props.params.uri ) ){
+			case 'spotify':
+				if( !this.props.spotify_authorized ) return null
+				if( this.props.artist.following ){
+					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
+				}
+				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
+		}
+	}
+
 	render(){
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
@@ -60,8 +83,16 @@ class Artist extends React.Component{
 				<Parallax images={this.props.artist.images} />
 
 				<div className="intro">
+
 					<Thumbnail size="huge" images={ this.props.artist.images } />
+
 					<h1>{ this.props.artist.name }</h1>
+
+					<div className="actions">
+						<button className="large primary" onClick={ e => this.play() }>Start radio</button>
+						{ this.renderExtraButtons() }
+					</div>
+
 					<ul className="details">
 						{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
 						{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
@@ -69,6 +100,7 @@ class Artist extends React.Component{
 						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
 						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
 					</ul>
+
 				</div>
 
 				<div className="col w70">
@@ -104,8 +136,9 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		mopidy_connected: state.mopidy.connected,
-		artist: state.ui.artist
+		artist: state.ui.artist,
+		spotify_authorized: state.spotify.authorized,
+		mopidy_connected: state.mopidy.connected
 	}
 }
 

@@ -64,24 +64,22 @@ class Album extends React.Component{
 	}
 
 	follow(){
-		this.props.spotifyActions.toggleFollowingAlbum( this.props.params.uri, 'PUT' )
+		this.props.spotifyActions.toggleAlbumInLibrary( this.props.params.uri, 'PUT' )
 	}
 
 	// TODO: Once unfollowing occurs, remove playlist from global playlists list
 	unfollow(){
-		this.props.spotifyActions.toggleFollowingAlbum( this.props.params.uri, 'DELETE' )
+		this.props.spotifyActions.toggleAlbumInLibrary( this.props.params.uri, 'DELETE' )
 	}
 
 	renderExtraButtons(){
 		switch( helpers.uriSource( this.props.params.uri ) ){
-
 			case 'spotify':
 				if( !this.props.spotify_authorized ) return null
-				if( this.props.playlist.following ){
-					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
+				if( this.props.album.following ){
+					return <button className="large tertiary" onClick={ e => this.unfollow() }>Remove from library</button>
 				}
-				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
-
+				return <button className="large tertiary" onClick={ e => this.follow() }>Add to library</button>
 		}
 	}
 
@@ -133,6 +131,7 @@ class Album extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		album: state.ui.album,
+		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	};
 }
