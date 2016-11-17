@@ -144,7 +144,7 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ pusher_port: e.target.value })} 
-									onBlur={ e => this.props.pusherActions.setPort({ port: this.state.pusher_port }) } 
+									onBlur={ e => this.props.pusherActions.setPort( this.state.pusher_port ) } 
 									value={ this.state.pusher_port } />
 							</div>
 						</div>

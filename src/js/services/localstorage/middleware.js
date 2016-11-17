@@ -39,10 +39,9 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'PUSHER_CHANGE_USERNAME':
-                var pusher = JSON.parse( localStorage.getItem('pusher') );
-                if( !pusher ) pusher = {};
-                Object.assign( pusher,{ username: action.data.connection.username });
-                localStorage.setItem('pusher', JSON.stringify(pusher));
+                var stored_pusher = JSON.parse( localStorage.getItem('pusher') )
+                var pusher = Object.assign({}, stored_pusher, { username: action.data.connection.username })
+                localStorage.setItem('pusher', JSON.stringify(pusher))
                 break;
 
             case 'MOPIDY_SET_CONFIG':
