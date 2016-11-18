@@ -75,11 +75,28 @@ class Playlist extends React.Component{
 	}
 
 	reorderTracks( indexes, index ){
-		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
+		if( this.isEditable() ){
+			this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
+		}else{
+			alert('Cannot edit a playlist you don\'t own')
+		}
 	}
 
 	removeTracks( tracks_indexes ){
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
+	}
+
+	isEditable(){
+		if( helpers.uriSource( this.props.params.uri ) == 'spotify' ){
+			if( !this.props.spotify_authorized ) return false
+
+			return ( this.props.playlist && 
+				this.props.playlist.owner && 
+				this.props.playlist.owner.id == this.props.spotify_userid 
+			)
+		}else{
+			return true
+		}
 	}
 
 	renderExtraButtons(){
@@ -94,8 +111,7 @@ class Playlist extends React.Component{
 				)
 
 			case 'spotify':
-				if( !this.props.spotify_authorized ) return null
-				if( this.props.playlist.owner && this.props.playlist.owner.id == this.props.spotify_userid ){
+				if( this.isEditable() ){
 					return (
 						<span>
 							<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
@@ -141,7 +157,7 @@ class Playlist extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList context="editable-playlist" tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+						{ this.props.playlist.tracks ? <TrackList context={ this.isEditable() ? 'editable-playlist' : 'playlist'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
