@@ -357,6 +357,53 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
 	}
 }
 
+export function following(uri, method = 'GET'){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'FOLLOWING_LOADING' });
+
+        if( method == 'PUT' ) var is_following = true
+        if( method == 'DELETE' ) var is_following = false
+
+        var asset_name = helpers.uriType(uri);
+        var endpoint, data
+        switch( asset_name ){
+            case 'album':
+                if( method == 'GET'){
+                    endpoint = 'me/albums/contains/?ids='+ helpers.getFromUri('albumid', uri)
+                }else{               
+                    endpoint = 'me/albums/?ids='+ helpers.getFromUri('albumid', uri) 
+                }
+                break
+            case 'artist':
+                if( method == 'GET' ){
+                    endpoint = 'me/following/contains?type=artist&ids='+ helpers.getFromUri('artistid', uri)   
+                }else{
+                    endpoint = 'me/following?type=artist&ids='+ helpers.getFromUri('artistid', uri)
+                    data = {}                
+                }
+                break
+            case 'playlist':
+                if( method == 'GET' ){
+                    endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers/contains?ids='+ getState().spotify.me.id
+                }else{
+                    endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers'        
+                }
+                break
+        }
+
+        sendRequest( dispatch, getState, endpoint, method, data )
+            .then( response => {
+                if( response ) is_following = response
+                if( typeof(is_following) === 'object' ) is_following = is_following[0]
+                dispatch({
+                    type: asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    is_following: is_following
+                });
+            });
+    }
+}
+
 
 /**
  * =============================================================== ARTIST(S) ============
@@ -397,13 +444,6 @@ export function getArtist( uri ){
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
                 .then( response => {
                     Object.assign(artist, { albums: response.items, albums_more: response.next });
-                }),
-
-            sendRequest( dispatch, getState, 'me/following/contains?type=artist&ids='+ helpers.getFromUri('artistid', uri) )
-                .then( response => {
-                    var is_following = 0
-                    if( response.length > 0 ) is_following = response[0]
-                    Object.assign(artist, { following: response[0] } );
                 })
 
         ).then( () => {
@@ -454,22 +494,6 @@ export function getLibraryArtists(){
     }
 }
 
-export function toggleArtistInLibrary( uri, method ){
-    if( method == 'PUT' ) var new_state = 1
-    if( method == 'DELETE' ) var new_state = 0
-
-    return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'me/following?type=artist&ids='+ helpers.getFromUri('artistid',uri), method, {} )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_ARTIST_FOLLOWING',
-                    uri: uri,
-                    data: new_state
-                });
-            });
-    }
-}
-
 
 
 /**
@@ -488,46 +512,30 @@ export function getAlbum( uri ){
         // flush out the previous store value
         dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
 
-        var album = {}
+        // get the album
+        sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
+            .then( response => {
 
-        $.when(
+                var album = response
 
-            // get the album
-            sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
-                .then( response => {
+                // now get all the artists for this album (full objects)
+                // we do this to get the artist artwork
+                var artist_ids = [];
+                for( var i = 0; i < album.artists.length; i++ ){
+                    artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
+                }
 
-                    Object.assign(album, response)
-
-                    // now get all the artists for this album (full objects)
-                    // we do this to get the artist artwork
-                    var artist_ids = [];
-                    for( var i = 0; i < album.artists.length; i++ ){
-                        artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
-                    }
-
-                    // get all album artists
-                    sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
-                        .then( response => {
-                            var artists = response.artists
-                            Object.assign(album, {artists: artists})
+                // get all album artists
+                sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
+                    .then( response => {
+                        Object.assign(album, { artists: response.artists })
+                        dispatch({
+                            type: 'SPOTIFY_ALBUM_LOADED',
+                            data: album
                         });
+                    });
 
-                }),
-
-            // TODO: Check if we're authenticated before sending this request, otherwise we get a 403
-            sendRequest( dispatch, getState, 'me/albums/contains?ids='+ helpers.getFromUri('albumid', uri) )
-                .then( response => {
-                    var is_following = 0
-                    if( response.length > 0 ) is_following = response[0]
-                    Object.assign(album, { following: response[0] } );
-                })
-
-        ).then( () => {
-            dispatch({
-                type: 'SPOTIFY_ALBUM_LOADED',
-                data: album
-            });
-        });
+            })
     }
 }
 
@@ -603,30 +611,14 @@ export function getPlaylist( uri ){
         // flush out the previous store value
         dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
 
-        var playlist = {};
-
-        $.when(
-
-            // get the main playlist object
-            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
-            .then( response => {
-                Object.assign( playlist, response );
-            }),
-
-            // TODO: Check if we're authenticated before sending this request, otherwise we get a 403
-            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers/contains?ids='+getState().spotify.me.id )
-            .then( response => {
-                var is_following = 0
-                if( response.length > 0 ) is_following = response[0]
-                Object.assign(playlist, { following: response[0] } );
-            })
-
-        ).then( () => {
+        // get the main playlist object
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+        .then( response => {
             dispatch({
                 type: 'SPOTIFY_PLAYLIST_LOADED',
-                data: playlist
-            });
-        });
+                data: response
+            })
+        })
     }
 }
 

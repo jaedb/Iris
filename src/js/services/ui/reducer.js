@@ -101,6 +101,10 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
+        case 'FOLLOWING_LOADING':
+            return Object.assign({}, ui, { following_loading: true })
+
+
 
 
         /**
@@ -134,9 +138,9 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { album: album });
 
-        case 'SPOTIFY_ALBUM_FOLLOWING':
-            var album = Object.assign({}, ui.album, { following: action.data })
-            return Object.assign({}, ui, { album: album });
+        case 'ALBUM_FOLLOWING_LOADED':
+            var album = Object.assign({}, ui.album, { following: action.is_following })
+            return Object.assign({}, ui, { album: album, following_loading: false });
 
 
 
@@ -165,9 +169,9 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { artist: artist });
 
-        case 'SPOTIFY_ARTIST_FOLLOWING':
-            var artist = Object.assign({}, ui.artist, { following: action.data })
-            return Object.assign({}, ui, { artist: artist });
+        case 'ARTIST_FOLLOWING_LOADED':
+            var artist = Object.assign({}, ui.artist, { following: action.is_following })
+            return Object.assign({}, ui, { artist: artist, following_loading: false });
 
 
         /**
@@ -223,10 +227,6 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { playlist: playlist });
 
-        case 'SPOTIFY_PLAYLIST_FOLLOWING':
-            var playlist = Object.assign({}, ui.playlist, { following: action.data })
-            return Object.assign({}, ui, { playlist: playlist });
-
         case 'PLAYLIST_TRACKS_REMOVED':
             var tracks = Object.assign([], ui.playlist.tracks)
             var indexes = action.tracks_indexes.reverse()
@@ -261,6 +261,10 @@ export default function reducer(ui = {}, action){
 
             var playlist = Object.assign({}, ui.playlist, { snapshot_id: snapshot_id, tracks: tracks })
             return Object.assign({}, ui, { playlist: playlist });
+
+        case 'PLAYLIST_FOLLOWING_LOADED':
+            var playlist = Object.assign({}, ui.playlist, { following: action.is_following })
+            return Object.assign({}, ui, { playlist: playlist, following_loading: false });
 
         /**
          * Library Playlists

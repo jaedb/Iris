@@ -15,6 +15,7 @@ const localstorageMiddleware = (function(){
         var actions_to_log = null
         //actions_to_log = 'SPOTIFY'
         //actions_to_log = 'MOPIDY'
+        actions_to_log = 'ALBUM_'
         if( action.type.startsWith(actions_to_log) ) console.log(action)
 
         switch( action.type ){

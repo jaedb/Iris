@@ -10,6 +10,7 @@ import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
 import ArtistSentence from '../components/ArtistSentence'
 import ArtistGrid from '../components/ArtistGrid'
+import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 
@@ -63,26 +64,6 @@ class Album extends React.Component{
 		this.props.mopidyActions.playURIs( tracks_uris )
 	}
 
-	follow(){
-		this.props.spotifyActions.toggleAlbumInLibrary( this.props.params.uri, 'PUT' )
-	}
-
-	// TODO: Once unfollowing occurs, remove playlist from global playlists list
-	unfollow(){
-		this.props.spotifyActions.toggleAlbumInLibrary( this.props.params.uri, 'DELETE' )
-	}
-
-	renderExtraButtons(){
-		switch( helpers.uriSource( this.props.params.uri ) ){
-			case 'spotify':
-				if( !this.props.spotify_authorized ) return null
-				if( this.props.album.following ){
-					return <button className="large tertiary" onClick={ e => this.unfollow() }>Remove from library</button>
-				}
-				return <button className="large tertiary" onClick={ e => this.follow() }>Add to library</button>
-		}
-	}
-
 	render(){
 		if( !this.props.album ) return null
 
@@ -94,7 +75,7 @@ class Album extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ this.renderExtraButtons() }
+						<FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" />
 					</div>
 
 					<ul className="details">

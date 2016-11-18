@@ -4,14 +4,15 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
-import * as helpers from '../helpers'
 
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
 import Dater from '../components/Dater'
 import ConfirmationButton from '../components/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
+import FollowButton from '../components/FollowButton'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -101,10 +102,8 @@ class Playlist extends React.Component{
 							<ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
 						</span>
 					)
-				}else if( this.props.playlist.following ){
-					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
 				}
-				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
+				return <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" />
 
 		}
 	}

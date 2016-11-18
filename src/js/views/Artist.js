@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
-let helpers = require('../helpers.js')
 
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
@@ -12,7 +11,9 @@ import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
 import ArtistList from '../components/ArtistList'
+import FollowButton from '../components/FollowButton'
 
+import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -55,25 +56,6 @@ class Artist extends React.Component{
 		alert('Yet to be implemented')
 	}
 
-	follow(){
-		this.props.spotifyActions.toggleArtistInLibrary( this.props.params.uri, 'PUT' )
-	}
-
-	unfollow(){
-		this.props.spotifyActions.toggleArtistInLibrary( this.props.params.uri, 'DELETE' )
-	}
-
-	renderExtraButtons(){
-		switch( helpers.uriSource( this.props.params.uri ) ){
-			case 'spotify':
-				if( !this.props.spotify_authorized ) return null
-				if( this.props.artist.following ){
-					return <button className="large tertiary" onClick={ e => this.unfollow() }>Unfollow</button>
-				}
-				return <button className="large tertiary" onClick={ e => this.follow() }>Follow</button>
-		}
-	}
-
 	render(){
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
@@ -90,7 +72,7 @@ class Artist extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-						{ this.renderExtraButtons() }
+						<FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" />
 					</div>
 
 					<ul className="details">
