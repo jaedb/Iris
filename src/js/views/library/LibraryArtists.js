@@ -23,19 +23,16 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.spotify.library_artists || !this.props.spotify.library_artists.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.library_artists.next, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
+		if( !this.props.spotify.library_artists_more ) return
+		this.props.spotifyActions.getURL( this.props.spotify.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
 	}
 
 	render(){
 		return (
 			<div className="view library-artists-view">
-				<Header
-					icon="mic"
-					title="My artists"
-					/>
+				<Header icon="mic" title="My artists" />
 				<section className="grid-wrapper">
-					{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists.items} /> : null }
+					{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists} /> : null }
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>

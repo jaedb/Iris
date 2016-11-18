@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 
 import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -21,13 +22,19 @@ class LibraryTracks extends React.Component{
 		this.props.spotifyActions.getLibraryTracks();
 	}
 
+	loadMore(){
+		if( !this.props.spotify.library_tracks_more ) return
+		this.props.spotifyActions.getURL( this.props.spotify.library_tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE' );
+	}
+
 	render(){
 		return (
 			<div className="view library-tracks-view">
 				<Header icon="music" title="My tracks" />
 				<section className="list-wrapper">
-					{ this.props.spotify.library_tracks ? <TrackList tracks={this.props.spotify.library_tracks.items} /> : null }
+					{ this.props.spotify.library_tracks ? <TrackList tracks={this.props.spotify.library_tracks} /> : null }
 				</section>
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

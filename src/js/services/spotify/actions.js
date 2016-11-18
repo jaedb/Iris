@@ -480,7 +480,7 @@ export function getArtists( uris ){
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_ARTISTS_LOADED',
-                    data: response.artists
+                    data: response
                 });
             });
     }
@@ -496,7 +496,7 @@ export function getLibraryArtists(){
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-                    data: response.artists
+                    data: response
                 });
             });
     }
