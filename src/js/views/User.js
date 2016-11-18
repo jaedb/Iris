@@ -33,7 +33,7 @@ class User extends React.Component{
 
 	loadMore(){
 		if( !this.props.user.playlists_more ) return
-		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED_MORE' );
+		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED_MORE' )
 	}
 
 	renderMeFlag(){
@@ -61,7 +61,7 @@ class User extends React.Component{
 					</div>
 
 					<ul className="details">
-						<li>{ this.props.user.playlists_total } playlists</li>
+						<li>{ this.props.user.playlists_total.toLocaleString() } playlists</li>
 						<li>{ this.props.user.followers.total.toLocaleString() } followers</li>
 					</ul>
 				</div>

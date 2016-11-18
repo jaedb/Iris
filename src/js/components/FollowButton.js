@@ -15,7 +15,9 @@ class FollowButton extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.following(this.props.uri)
+		if( this.props.spotify_authorized && this.props.uri ){
+			this.props.spotifyActions.following(this.props.uri)			
+		}
 	}
 
 	remove(){

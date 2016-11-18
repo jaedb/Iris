@@ -9,16 +9,6 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CONNECTED':
             return Object.assign({}, spotify, { connected: true, connecting: false });
 
-        case 'SPOTIFY_AUTHORIZATION_GRANTED':
-            return Object.assign({}, spotify, { 
-                authorizing: false, 
-                authorized: true,
-                authorization: action.data,
-                access_token: action.data.access_token,
-                refresh_token: action.data.refresh_token,
-                token_expiry: action.data.token_expiry
-            });
-
         case 'PUSHER_SPOTIFY_TOKEN':
             if( spotify.authorized ) return spotify;
             return Object.assign({}, spotify, { 
@@ -29,12 +19,24 @@ export default function reducer(spotify = {}, action){
                 token_expiry: action.data.token_expiry
             });
 
+        case 'SPOTIFY_AUTHORIZATION_GRANTED':
+            return Object.assign({}, spotify, { 
+                authorizing: false, 
+                authorized: true,
+                authorization: action.data,
+                access_token: action.data.access_token,
+                refresh_token: action.data.refresh_token,
+                token_expiry: action.data.token_expiry
+            });
+
         case 'SPOTIFY_AUTHORIZATION_REVOKED':
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorization: false,
                 authorized: false,
                 access_token: false,
+                refresh_token: false,
+                token_expiry: 0,
                 me: false
             });
 

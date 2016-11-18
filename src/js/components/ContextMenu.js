@@ -99,6 +99,16 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
+	copyURIs(){
+		var uris = '';
+		for( var i = 0; i < this.props.context_menu.data.selected_tracks.length; i++ ){
+			if( i > 0 ) uris += ','
+			uris += this.props.context_menu.data.selected_tracks[i].uri
+		}
+		console.log('Yet to be implemented', uris)
+		this.props.uiActions.hideContextMenu()
+	}
+
 	renderPlaylistSubmenu(){
 		var playlists = []
 		for( var i = 0; i < this.props.playlists.length; i++ ){
@@ -135,6 +145,7 @@ class ContextMenu extends React.Component{
 				items = [
 					{ handleClick: 'playQueueItem', label: 'Play' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' },
 					{ handleClick: 'removeFromQueue', label: 'Remove' }
 				];
 				break;
@@ -145,6 +156,7 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playItemsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' },
 					{ handleClick: 'removeFromPlaylist', label: 'Remove' }
 				];
 				break;
@@ -154,7 +166,8 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playItems', label: 'Play' },
 					{ handleClick: 'playItemsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true }
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' }
 				];
 				break;
 		}

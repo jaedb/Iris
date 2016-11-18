@@ -12,11 +12,7 @@ const localstorageMiddleware = (function(){
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store
-        var actions_to_log = null
-        //actions_to_log = 'SPOTIFY'
-        //actions_to_log = 'MOPIDY'
-        actions_to_log = 'ALBUM_'
-        if( action.type.startsWith(actions_to_log) ) console.log(action)
+        console.log(action)
 
         switch( action.type ){
 
