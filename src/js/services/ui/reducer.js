@@ -175,6 +175,26 @@ export default function reducer(ui = {}, action){
 
 
         /**
+         * User
+         **/
+
+        case 'SPOTIFY_USER_LOADED':
+            if( !action.data ) return Object.assign({}, ui, { user: false })
+            return Object.assign({}, ui, { user: action.data })
+
+        case 'SPOTIFY_USER_PLAYLISTS_LOADED_MORE':
+            var user = Object.assign({}, ui.user, {
+                playlists: [ ...ui.user.playlists, ...action.data.items ],
+                playlists_more: action.data.next
+            })
+            return Object.assign({}, ui, { user: user });
+
+        case 'USER_FOLLOWING_LOADED':
+            var user = Object.assign({}, ui.user, { following: action.is_following })
+            return Object.assign({}, ui, { user: user, following_loading: false });
+
+
+        /**
          * Playlists
          **/
 

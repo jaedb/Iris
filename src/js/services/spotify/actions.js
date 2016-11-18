@@ -383,6 +383,14 @@ export function following(uri, method = 'GET'){
                     data = {}                
                 }
                 break
+            case 'user':
+                if( method == 'GET' ){
+                    endpoint = 'me/following/contains?type=user&ids='+ helpers.getFromUri('userid', uri)   
+                }else{
+                    endpoint = 'me/following?type=user&ids='+ helpers.getFromUri('userid', uri)
+                    data = {}                
+                }
+                break
             case 'playlist':
                 if( method == 'GET' ){
                     endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers/contains?ids='+ getState().spotify.me.id
@@ -493,6 +501,43 @@ export function getLibraryArtists(){
             });
     }
 }
+
+
+
+/**
+ * =============================================================== USER(S) ==============
+ * ======================================================================================
+ **/
+
+export function getUser( uri ){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_USER_LOADED', data: false });
+
+        var user = {};
+
+        // get both the artist and the top tracks
+        $.when(
+
+            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) )
+                .then( response => {
+                    Object.assign(user, response);
+                }),
+
+            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid', uri) +'/playlists?limit=50' )
+                .then( response => {
+                    Object.assign(user, { playlists: response.items, playlists_more: response.next, playlists_total: response.total });
+                })
+
+        ).then( () => {
+            dispatch({
+                type: 'SPOTIFY_USER_LOADED',
+                data: user
+            });
+        });
+    }
+}
+
 
 
 
@@ -716,4 +761,3 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
             });
     }
 }
-

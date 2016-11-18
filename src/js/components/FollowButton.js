@@ -42,6 +42,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		spotify_authorized: state.spotify.authorized,
 		artist: state.ui.artist,
+		user: state.ui.user,
 		album: state.ui.album,
 		playlist: state.ui.playlist
 	}

@@ -16,6 +16,7 @@ import App from './views/App'
 import Album from './views/Album'
 import Artist from './views/Artist'
 import Playlist from './views/Playlist'
+import User from './views/User'
 import Queue from './views/Queue'
 import Settings from './views/Settings'
 import Search from './views/Search'
@@ -49,6 +50,7 @@ ReactDOM.render(
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />
+				<Route path="user/:uri" component={User} />
 	
 				<Route path="discover" component={Discover} />
 				<Route path="discover/featured" component={DiscoverFeatured} />

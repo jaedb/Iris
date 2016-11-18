@@ -144,3 +144,17 @@ footer {
 		padding-bottom: 4px;
 	}
 }
+
+.flag {
+	font-size: 12px;
+	display: inline-block;
+	padding: 2px 4px;
+	border-radius: 2px;
+	background: $light_grey;
+	color: $dark_grey;
+
+	&.blue {
+		background: $blue;
+		color: #FFFFFF;
+	}
+}
