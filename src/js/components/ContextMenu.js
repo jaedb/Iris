@@ -89,11 +89,6 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
-	addToPlaylist(){
-		this.props.uiActions.openModal( 'AddToPlaylistModal', { track_indexes: this.props.context_menu.data.selected_tracks_indexes })
-		this.props.uiActions.hideContextMenu();
-	}
-
 	removeFromPlaylist(){
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.selected_tracks_indexes )
 		this.props.uiActions.hideContextMenu();

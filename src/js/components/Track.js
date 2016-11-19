@@ -1,10 +1,11 @@
 
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
-import AlbumLink from './AlbumLink'
 import Dater from './Dater'
-var helpers = require('../helpers.js')
+
+import * as helpers from '../helpers'
 
 export default class Track extends React.Component{
 
@@ -55,7 +56,7 @@ export default class Track extends React.Component{
 						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
 					</span>
 					<span className="col album">
-						{ track.album ? <AlbumLink album={track.album} /> : '-' }
+						{ track.album ? <Link to={'/album/'+track.album.uri}>{track.album.name}</Link> : '-' }
 					</span>
 					<span className="col duration">
 						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }

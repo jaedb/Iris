@@ -23,8 +23,8 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.spotify.library_artists_more ) return
-		this.props.spotifyActions.getURL( this.props.spotify.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
+		if( !this.props.artists_more ) return
+		this.props.spotifyActions.getURL( this.props.artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
 	}
 
 	render(){
@@ -32,7 +32,7 @@ class LibraryArtists extends React.Component{
 			<div className="view library-artists-view">
 				<Header icon="mic" title="My artists" />
 				<section className="grid-wrapper">
-					{ this.props.spotify.library_artists ? <ArtistGrid artists={this.props.spotify.library_artists} /> : null }
+					{ this.props.artists ? <ArtistGrid artists={this.props.artists} /> : null }
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
@@ -48,7 +48,10 @@ class LibraryArtists extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		artists: state.spotify.library_artists,
+		artists_more: state.spotify.library_artists_more
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

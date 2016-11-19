@@ -29,7 +29,7 @@ class Modal extends React.Component{
 				</div>
 				<div className="content">
 
-					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} context_menu={this.props.context_menu.data} /> : null }
+					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} /> : null }
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 

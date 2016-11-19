@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
 
+import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class Discover extends React.Component{
@@ -13,28 +14,13 @@ class Discover extends React.Component{
 		super(props);
 	}
 
-	// on render
-	componentDidMount(){
-		this.props.spotifyActions.getPlaylist( this.props.params.uri );
-	}
-
-	// when props changed
-	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.uri != this.props.params.uri ){
-			this.props.spotifyActions.getPlaylist( nextProps.params.uri );
-		}
-	}
-
 	render(){
-		if( this.props.spotify.playlist ){
-			return (
-				<div className="view discover-view">
-					<Header icon="compass" title="Discover" />
-					<h1>To come</h1>
-				</div>
-			);
-		}
-		return null;
+		return (
+			<div className="view discover-view">
+				<Header icon="compass" title="Discover" />
+				<h1>To come</h1>
+			</div>
+		)
 	}
 }
 
@@ -46,7 +32,9 @@ class Discover extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

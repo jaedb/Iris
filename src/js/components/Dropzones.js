@@ -49,11 +49,13 @@ class Dropzones extends React.Component{
 		}
 
 		switch( target.action ){
-
 			case 'enqueue':
 				this.props.mopidyActions.enqueueTracks( uris )
 				break
 
+			case 'add_to_playlist':
+				this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: uris } )
+				break
 		}
 	}
 

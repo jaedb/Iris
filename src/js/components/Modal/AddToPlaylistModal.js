@@ -3,14 +3,14 @@ import React, { PropTypes } from 'react'
 import Icon from '../Icon'
 import * as helpers from '../../helpers'
 
-class AddToPlaylistModal extends React.Component{
+export default class AddToPlaylistModal extends React.Component{
 
 	constructor(props){
 		super(props)
 	}
 
 	playlistSelected( playlist_uri ){
-		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.data.track_indexes )
+		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.tracks_uris )
 		this.props.uiActions.closeModal()
 	}
 

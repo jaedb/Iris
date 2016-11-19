@@ -144,13 +144,7 @@ export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
     }
 }
 
-export function addTracksToPlaylist( playlist_uri, tracks ){
-
-    var tracks_uris = []
-    for( var i = 0; i < tracks.length; i++ ){
-        tracks_uris.push( tracks[i].uri )
-    }
-
+export function addTracksToPlaylist( playlist_uri, tracks_uris ){
     switch( helpers.uriSource( playlist_uri ) ){
 
         case 'spotify':

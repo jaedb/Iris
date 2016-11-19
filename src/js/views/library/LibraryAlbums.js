@@ -22,8 +22,8 @@ class LibraryAlbums extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.spotify.library_albums_more ) return
-		this.props.spotifyActions.getURL( this.props.spotify.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE' );
+		if( !this.props.albums_more ) return
+		this.props.spotifyActions.getURL( this.props.albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE' );
 	}
 
 	render(){
@@ -34,7 +34,7 @@ class LibraryAlbums extends React.Component{
 					title="My albums"
 					/>
 				<section className="grid-wrapper">
-					{ this.props.spotify.library_albums ? <AlbumGrid albums={this.props.spotify.library_albums} /> : null }
+					{ this.props.albums ? <AlbumGrid albums={this.props.albums} /> : null }
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
@@ -50,7 +50,10 @@ class LibraryAlbums extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		albums: state.spotify.library_albums,
+		albums_more: state.spotify.library_albums_more,
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

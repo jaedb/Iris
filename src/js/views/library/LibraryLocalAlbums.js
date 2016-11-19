@@ -21,25 +21,25 @@ class LibraryLocalAlbums extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			this.loadAlbums(nextProps);
 		}
 	}
 
 	loadAlbums(props = this.props){
-		if( props.mopidy.connected ){
+		if( props.mopidy_connected ){
 			this.props.mopidyActions.getAlbums();
 		}
 	}
 
 	render(){
-		if( !this.props.mopidy.albums ) return null
+		if( !this.props.albums ) return null
 
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" />
 				<div>
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.albums} link_prefix="/album/" />
+					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.albums} link_prefix="/album/" />
 				</div>
 			</div>
 		);
@@ -54,7 +54,10 @@ class LibraryLocalAlbums extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		albums: state.mopidy.albums
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

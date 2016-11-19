@@ -72,7 +72,7 @@ class Artist extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-						<FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" />
+						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" /> : null }						
 					</div>
 
 					<ul className="details">

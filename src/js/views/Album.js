@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
-let helpers = require('../helpers.js')
 
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
@@ -14,6 +13,7 @@ import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 
+import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -75,7 +75,7 @@ class Album extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" />
+						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" /> : null }
 					</div>
 
 					<ul className="details">

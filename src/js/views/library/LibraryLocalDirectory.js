@@ -24,7 +24,7 @@ class LibraryLocalDirectory extends React.Component{
 	componentWillReceiveProps( nextProps ){
 
 		// mopidy goes online
-		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			this.loadDirectory( nextProps );
 		}
 
@@ -35,19 +35,19 @@ class LibraryLocalDirectory extends React.Component{
 	}
 
 	loadDirectory( props = this.props ){
-		if( props.mopidy.connected ){
+		if( props.mopidy_connected ){
 			this.props.mopidyActions.getDirectory( props.params.uri );
 		}
 	}
 
 	render(){
-		if( !this.props.mopidy.directory ) return null
+		if( !this.props.directory ) return null
 
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local files" />
 				<section className="list-wrapper">
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.directory} link_prefix="/library/local/directory/" />
+					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.directory} link_prefix="/library/local/directory/" />
 				</section>
 			</div>
 		);
@@ -62,7 +62,10 @@ class LibraryLocalDirectory extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		directory: state.mopidy.directory
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

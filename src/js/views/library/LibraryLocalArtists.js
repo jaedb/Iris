@@ -21,25 +21,25 @@ class LibraryLocalArtists extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( !this.props.mopidy.connected && nextProps.mopidy.connected ){
+		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			this.loadArtists(nextProps);
 		}
 	}
 
 	loadArtists(props = this.props){
-		if( props.mopidy.connected ){
+		if( props.mopidy_connected ){
 			this.props.mopidyActions.getArtists();
 		}
 	}
 
 	render(){
-		if( !this.props.mopidy.artists ) return null
+		if( !this.props.artists ) return null
 
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local artists" />
 				<section className="list-wrapper">
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.mopidy.artists} link_prefix="/artist/" />
+					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.artists} link_prefix="/artist/" />
 				</section>
 			</div>
 		);
@@ -54,7 +54,10 @@ class LibraryLocalArtists extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		mopidy_connected: state.mopidy.connected,
+		artists: state.mopidy.artists
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

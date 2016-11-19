@@ -8,7 +8,6 @@ import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
-import AlbumLink from '../components/AlbumLink'
 import Header from '../components/Header'
 
 import * as uiActions from '../services/ui/actions'
