@@ -87,8 +87,21 @@ export default class Dater extends React.Component{
 			case 'ago':
 				var date = new Date(this.props.data)
 				var diff = new Date() - date
-				// todo: calculate nice diff
-				return diff
+				
+				var seconds = Math.floor(diff / 1000)
+				var minutes = Math.floor(diff / (1000 * 60))
+				var hours = Math.floor(diff / (1000 * 60 * 60))
+				var days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+				if (seconds < 60){
+				    return seconds + " seconds";
+				}else if (minutes < 60){
+				    return minutes + " minutes";
+				}else if (hours < 24){
+				    return hours + " hours";
+				}else{
+				    return days + " days"
+				}
 				break
 
 			default:

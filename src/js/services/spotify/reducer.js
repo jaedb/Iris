@@ -119,7 +119,7 @@ export default function reducer(spotify = {}, action){
                 )
             }
             return Object.assign({}, spotify, { 
-                library_tracks: tracks, 
+                library_tracks: [...spotify.library_tracks, ...tracks], 
                 library_tracks_more: action.data.next 
             });
 

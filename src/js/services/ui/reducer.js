@@ -7,6 +7,14 @@ export default function reducer(ui = {}, action){
         case 'LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
 
+
+        /**
+         * View views
+         **/
+        case 'SET_VIEW':
+            return Object.assign({}, ui, action.view)
+
+
         /**
          * Context menu
          **/
@@ -285,6 +293,7 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_FOLLOWING_LOADED':
             var playlist = Object.assign({}, ui.playlist, { following: action.is_following })
             return Object.assign({}, ui, { playlist: playlist, following_loading: false });
+
 
         /**
          * Library Playlists

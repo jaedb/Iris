@@ -1,0 +1,51 @@
+
+.dropdown-field {
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+	position: relative;
+
+	.label {
+		padding: 18px 10px;		
+		cursor: pointer;
+	}
+
+	&.expanded {
+		.label {
+			background: $dark_grey;
+			color: #FFFFFF;
+		}
+		.options {
+			display: block;
+		}
+	}
+
+	.options {
+		color: #FFFFFF;
+		position: absolute;
+		top: 54px;
+		right: 0px;
+		z-index: 97;
+		background: $dark_grey;
+		display: none;
+
+		.option {
+			position: relative;
+			padding: 10px 16px 10px 34px;
+			border-top: 1px solid lighten($dark_grey, 10%);
+			cursor: pointer;
+
+			.fa {
+				position: absolute;
+				top: 13px;
+				left: 12px;
+				font-size: 12px;
+			}
+
+			&:hover {
+				background: lighten($dark_grey, 10%);
+			}
+		}
+	}
+}
+

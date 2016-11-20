@@ -33,8 +33,8 @@ class LibraryTracks extends React.Component{
 				<Header icon="music" title="My tracks" />
 				<section className="list-wrapper">
 					{ this.props.tracks ? <TrackList tracks={this.props.tracks} /> : null }
+					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</section>
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

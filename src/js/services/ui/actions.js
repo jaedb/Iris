@@ -59,6 +59,13 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
+export function setView( view ){
+    return {
+        type: 'SET_VIEW',
+        view: view
+    }
+}
+
 export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id = false ){
     var range = helpers.createRange( indexes );
     switch( helpers.uriSource( uri ) ){
