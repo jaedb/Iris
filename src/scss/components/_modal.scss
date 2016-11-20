@@ -74,8 +74,15 @@
 				box-sizing: border-box;
 				display: block;
 				width: 49%;
-				padding: 16px 20px;
+				padding: 16px 20px 16px 30px;
 				border-bottom: 1px solid $mid_grey;
+				position: relative;
+
+				.source {
+					position: absolute;
+					top: 18px;
+					left: 10px;
+				}
 
 				&:nth-child(1),
 				&:nth-child(2){
