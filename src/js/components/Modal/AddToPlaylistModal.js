@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react'
+import FontAwesome from 'react-fontawesome'
 import Icon from '../Icon'
 import * as helpers from '../../helpers'
 
@@ -22,16 +23,22 @@ export default class AddToPlaylistModal extends React.Component{
 		}
 
 		return (
-			<div className="playlists">
-				{
-					playlists.map( playlist => {
-						return (
-							<div className="playlist" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
-								{ playlist.name }
-							</div>
-						)
-					})
-				}
+			<div>
+				<h4>Add to playlist</h4>
+				<div className="playlists">
+					{
+						playlists.map( playlist => {
+							return (
+								<div className="playlist" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
+									<FontAwesome className="source" name={helpers.sourceIcon(playlist.uri)} />
+									&nbsp;
+									<span className="name">{ playlist.name }</span>
+									{ playlist.tracks ? <span className="grey-text">&nbsp;{ playlist.tracks.total } tracks</span> : null }
+								</div>
+							)
+						})
+					}
+				</div>
 			</div>
 		)
 	}

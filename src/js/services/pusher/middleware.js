@@ -11,8 +11,9 @@ const PusherMiddleware = (function(){
     const handleMessage = (ws, store, message) => {
         switch( message.action ){
             default:
-                var name = message.action.toUpperCase();
-                name = name.replace('GET_','');
+                var name = 'unspecified'
+                if( message.action ) name = message.action
+                name = name.replace('GET_','').toUpperCase()
                 store.dispatch({ type: 'PUSHER_'+name, data: message.data })
         }
     }
