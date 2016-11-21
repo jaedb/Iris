@@ -6,7 +6,7 @@ import Thumbnail from './Thumbnail'
 export default class ArtistList extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	render(){

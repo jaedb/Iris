@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
@@ -11,6 +11,14 @@ export default class List extends React.Component{
 
 	constructor(props) {
 		super(props);
+	}
+
+	handleClick(e, uri){
+
+		// make sure we haven't clicked a nested link (ie Artist name)
+		if( e.target.tagName.toLowerCase() !== 'a' ){
+			browserHistory.push( this.props.link_prefix + encodeURIComponent(uri) );
+		}		
 	}
 
 	renderHeader(){
@@ -54,7 +62,7 @@ export default class List extends React.Component{
 				{
 					this.props.rows.map( (row, row_index) => {
 						return (
-							<Link to={ this.props.link_prefix + encodeURIComponent(row.uri)} className="list-item cf" key={row_index}>
+							<div onClick={ e => this.handleClick(e, row.uri)} className="list-item cf" key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
 										return (
@@ -65,7 +73,7 @@ export default class List extends React.Component{
 									})
 								}
 								{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(row.uri)} /> : null }
-							</Link>
+							</div>
 						)
 					})
 				}
