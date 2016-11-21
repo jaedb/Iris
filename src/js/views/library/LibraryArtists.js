@@ -37,16 +37,18 @@ class LibraryArtists extends React.Component{
 			var columns = [
 				{
 					width: 30,
+					label: 'Name',
 					name: 'name'
 				},
 				{
 					width: 10,
+					label: 'Followers',
 					name: 'followers.total'
 				}
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.artists} columns={columns} link_prefix="/artist/" />
+					<List rows={this.props.artists} columns={columns} link_prefix="/artist/" show_source_icon={true} />
 				</section>
 			)
 		}else{

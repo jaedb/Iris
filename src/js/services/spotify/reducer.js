@@ -79,14 +79,34 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
             if( !action.data ) return Object.assign({}, spotify)
+            var albums = []
+            for( var i = 0; i < action.data.items.length; i++ ){
+                albums.push( Object.assign(
+                    {},
+                    action.data.items[i].album,
+                    {
+                        added_at: action.data.items[i].added_at
+                    }
+                ))
+            }
             return Object.assign({}, spotify, { 
-                library_albums: action.data.items, 
+                library_albums: albums, 
                 library_albums_more: action.data.next 
             });
 
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE':
+            var albums = []
+            for( var i = 0; i < action.data.items.length; i++ ){
+                albums.push( Object.assign(
+                    {},
+                    action.data.items[i].album,
+                    {
+                        added_at: action.data.items[i].added_at
+                    }
+                ))
+            }
             return Object.assign({}, spotify, {
-                library_albums: [...spotify.library_albums, ...action.data.items ],
+                library_albums: [...spotify.library_albums, ...albums ],
                 library_albums_more: action.data.next
             });
 

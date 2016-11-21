@@ -87,6 +87,12 @@ if( localStorage.getItem('spotify') ){
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
+// if we've got a stored version of spotify state, load and merge
+if( localStorage.getItem('ui') ){
+	var storedUi = JSON.parse( localStorage.getItem('ui') );
+	initialState.ui = Object.assign(initialState.ui, storedUi );
+}
+
 console.log('Bootstrapping', initialState)
 
 let store = createStore(

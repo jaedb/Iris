@@ -1,8 +1,11 @@
 
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
-
 import FontAwesome from 'react-fontawesome'
+
+import ArtistSentence from './ArtistSentence'
+
+import * as helpers from '../helpers'
 
 export default class List extends React.Component{
 
@@ -17,16 +20,28 @@ export default class List extends React.Component{
 			<div className="list-item header cf">
 				{
 					this.props.columns.map( (col, col_index) => {
-						return <div className={'col w'+col.width} key={col_index}>{ col.name }</div>
+						return <div className={'col w'+col.width} key={col_index}>{ col.label ? col.label : col.name }</div>
 					})
 				}
 			</div>
 		)
 	}
 
-	renderValue( value ){
-		if( typeof(value) === 'undefined' ) return <span>-</span>
+	renderValue( row, key ){
+		var key = key.split('.')
+		var value = row
+
+		for( var i = 0; i < key.length; i++ ){
+			if( typeof(value[key[i]]) !== 'undefined' ){
+				value = value[key[i]]
+			}else{
+				return <span>-</span>
+			}
+		}
+
+		if( key[0] === 'artists' ) return <ArtistSentence artists={value} />
 		if( value === true ) return <FontAwesome name="check" />
+		if( typeof(value) === 'number' ) return <span>{value.toLocaleString()}</span>
 		return <span>{value}</span>
 	}
 
@@ -44,11 +59,12 @@ export default class List extends React.Component{
 									this.props.columns.map( (col, col_index) => {
 										return (
 											<div className={'col w'+col.width} key={col_index}>
-												{ this.renderValue(row[col.name]) }
+												{ this.renderValue(row, col.name) }
 											</div>
 										)
 									})
 								}
+								{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(row.uri)} /> : null }
 							</Link>
 						)
 					})

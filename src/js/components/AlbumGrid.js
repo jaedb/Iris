@@ -17,14 +17,6 @@ export default class AlbumGrid extends React.Component{
 					{
 						this.props.albums.map(
 							(album, index) => {
-
-								// handle nested album objects (as in Album Library)
-								if( album.album ){
-									var flatAlbum = album.album;
-									flatAlbum.added_at = album.added_at;
-									album = flatAlbum;
-								}
-
 								return <GridItem item={album} key={index} link={'/album/'+album.uri} />
 							}
 						)
