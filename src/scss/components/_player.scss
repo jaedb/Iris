@@ -47,9 +47,61 @@
 	.slider.horizontal {
 		margin-bottom: 0;
 
-		&.animating {
-			.progress{
-				/* @include animate(10s); */
+		.progress{
+			@include animate(1s);
+		}
+	}
+
+	aside & {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 2;
+		padding: 14px;
+		color: #FFFFFF;
+
+		.artist-sentence {
+			.artist:hover {
+				border-color: #FFFFFF !important;
+			}
+		}
+
+		@include responsive( $bp_medium, $bp_shallow ){
+			position: fixed;
+			background: $dark_grey;
+
+			.controls {
+				position: absolute;
+				top: 10px;
+				left: 10px;
+
+				a {
+					padding: 13px;
+				}
+
+				.volume-control {
+					display: none;
+				}
+			}
+
+			.slider.progress {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				margin: 0;
+				height: 2px;
+
+				.track {
+					top: 0px;
+					background: transparent;
+				}
+			}
+
+			.current-track {
+				font-size: 12px;
+				padding-bottom: 0;
 			}
 		}
 	}

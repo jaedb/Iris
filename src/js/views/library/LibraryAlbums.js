@@ -17,7 +17,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 class LibraryAlbums extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	componentDidMount(){

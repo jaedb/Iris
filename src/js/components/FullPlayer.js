@@ -78,8 +78,8 @@ class FullPlayer extends React.Component{
 				{ this.renderArtwork() }
 
 				<div className="current-track">
-					<div className="title">{ this.props.current_track ? this.props.current_track.name : null }</div>
-					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : null }
+					<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
+					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 				</div>
 
 				<div className="controls cf">

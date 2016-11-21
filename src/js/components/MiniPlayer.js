@@ -31,8 +31,8 @@ class MiniPlayer extends React.Component{
 			<div className="player">
 
 				<div className="current-track">
-					<div className="title">{ this.props.current_track ? this.props.current_track.name : null }</div>
-					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : null }
+					<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
+					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 				</div>
 
 				<div className="controls">
@@ -41,8 +41,10 @@ class MiniPlayer extends React.Component{
 						<FontAwesome name="step-forward" />
 					</a>&nbsp;
 					<VolumeControl />
-					<ProgressSlider />
 				</div>
+
+				<ProgressSlider />
+				
 			</div>
 		);
 	}

@@ -17,7 +17,11 @@ main,
 footer {
 	margin-left: 200px;
 
-	@include responsive( 800px ){
+	@include responsive( null, $bp_shallow ){
+		padding-bottom: 60px;
+	}
+
+	@include responsive( $bp_medium ){
 		margin-left: 0;
 
 		.sidebar-open & {

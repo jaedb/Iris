@@ -67,7 +67,7 @@ class ProgressSlider extends React.Component{
 		}
 
 		return (
-			<div className='slider horizontal' onClick={ (e) => this.handleClick(e) } >
+			<div className='progress slider horizontal' onClick={ (e) => this.handleClick(e) } >
 				<div className="track">
 					<div className="progress" style={{ width: (percent)+'%' }}></div>
 				</div>

@@ -1,21 +1,38 @@
 
 aside{
-	
 	position: fixed;
 	top: 0;
 	left: 0;
 	bottom: 0;
+	z-index: 95;
 	background: #111111;
 	width: 200px;
 	overflow: hidden;
 	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
 
-	@include responsive( 800px ){
+	.liner {
+		overflow-y: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		box-sizing: border-box;
+		z-index: 2;
+	}
+
+	@include responsive( $bp_medium ){
 		width: 50%;
 		left: -50%;
 
 		.sidebar-open & {
 			left: 0px;
+		}
+	}
+
+	@include responsive( null, $bp_shallow ){
+		.liner {
+			bottom: 60px;
 		}
 	}
 	
@@ -86,21 +103,5 @@ aside{
 			}
 		}
 
-	}
-
-	.player {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 2;
-		padding: 14px;
-		color: #FFFFFF;
-
-		.artist-sentence {
-			.artist:hover {
-				border-color: #FFFFFF !important;
-			}
-		}
 	}
 }

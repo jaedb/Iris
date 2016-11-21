@@ -9,6 +9,11 @@ $red: #cf2d2d;
 $green: #47af2a;
 $blue: #32b5f2;
 
+$bp_wide: 1000px;
+$bp_medium: 800px;
+$bp_narrow: 350px;
+$bp_shallow: 700px;
+
 @mixin one_line_text {
 	white-space: nowrap;
 	overflow: hidden;
@@ -46,9 +51,19 @@ $blue: #32b5f2;
 	filter: blur( $size );
 }
 
-@mixin responsive( $width ){
-	@media (max-width: $width){ 
-		@content;
+@mixin responsive( $width: null, $height: null ){
+	@if $width && $height {
+		@media( max-width: $width ), ( max-height: $height ){ 
+			@content;
+		}
+	}@else if $width {
+		@media( max-width: $width ){ 
+			@content;
+		}
+	}@else if $height {
+		@media( max-height: $height ){ 
+			@content;
+		}
 	}
 }
 

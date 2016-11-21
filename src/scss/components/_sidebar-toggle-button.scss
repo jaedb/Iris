@@ -9,6 +9,11 @@
 	color: #FFFFFF;
 	font-size: 18px;
 	cursor: pointer;
+	display: none;
+
+	@include responsive( $bp_medium ){
+		display: block;
+	}
 
 	&.open {
 		.open {
