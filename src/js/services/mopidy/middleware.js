@@ -217,6 +217,9 @@ const MopidyMiddleware = (function(){
                             if( response[i].uri.startsWith('m3u:')) response[i] = Object.assign({}, response[i], { can_edit: true })
                         }
                         store.dispatch({ type: 'MOPIDY_PLAYLISTS_LOADED', data: response });
+
+                        // TODO: dispatch an action to fetch extra data for each playlist
+                        // this will then trigger an PLAYLIST_REFRESHED action to update a specific store item
                     })
                 break;
 

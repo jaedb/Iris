@@ -16,6 +16,15 @@ body {
 main,
 footer {
 	margin-left: 200px;
+
+	@include responsive( 800px ){
+		margin-left: 0;
+
+		.sidebar-open & {
+			margin-left: 50%;
+			margin-right: -50%;
+		}
+	}
 }
 
 main {

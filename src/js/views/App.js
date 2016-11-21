@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from '../components/Sidebar'
+import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
@@ -107,11 +108,13 @@ class App extends React.Component{
 	render(){
 		var className = '';
 		if( this.props.dragger && this.props.dragger.active ) className += ' dragging'
+		if( this.props.sidebar_open ) className += ' sidebar-open'
 
 		return (
 			<div className={className}>
 		        <Sidebar />
 		        <main>
+		        	<SidebarToggleButton />
 		      		{this.props.children}
 		        </main>
 		        <ContextMenu state={this.props.context_menu} />
@@ -133,6 +136,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,
+		sidebar_open: state.ui.sidebar_open,
 		dragger: state.ui.dragger,
 		modal: state.ui.modal,
 		context_menu: state.ui.context_menu

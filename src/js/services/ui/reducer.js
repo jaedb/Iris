@@ -9,10 +9,14 @@ export default function reducer(ui = {}, action){
 
 
         /**
-         * View views
+         * UI views and view modes
          **/
+
         case 'SET_VIEW':
             return Object.assign({}, ui, action.view)
+
+        case 'TOGGLE_SIDEBAR':
+            return Object.assign({}, ui, { sidebar_open : !ui.sidebar_open })
 
 
         /**

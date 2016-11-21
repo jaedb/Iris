@@ -16,7 +16,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 class Sidebar extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	render(){

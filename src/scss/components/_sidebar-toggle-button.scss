@@ -1,0 +1,24 @@
+
+
+.sidebar-toggle {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 20px;
+	z-index: 98;
+	color: #FFFFFF;
+	font-size: 18px;
+	cursor: pointer;
+
+	&.open {
+		.open {
+			display: none;
+		}
+	}
+
+	&:not(.open) {
+		.close {
+			display: none;
+		}
+	}
+}

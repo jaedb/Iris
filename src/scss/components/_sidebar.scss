@@ -9,6 +9,15 @@ aside{
 	width: 200px;
 	overflow: hidden;
 	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
+
+	@include responsive( 800px ){
+		width: 50%;
+		left: -50%;
+
+		.sidebar-open & {
+			left: 0px;
+		}
+	}
 	
 	.thumbnail {
 		position: absolute;

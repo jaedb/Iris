@@ -40,6 +40,12 @@ export function lazyLoading( start ){
     }
 }
 
+export function toggleSidebar(){
+    return {
+        type: 'TOGGLE_SIDEBAR'
+    }
+}
+
 export function dragStart( e, context, victims, victims_indexes = false ){
     return {
         type: 'DRAG_START',
