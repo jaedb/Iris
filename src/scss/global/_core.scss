@@ -2,7 +2,7 @@
 
 body,
 html {
-	background: #F5F5F5;
+	background: $off_white;
 	color: #000000;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
@@ -17,11 +17,11 @@ main,
 footer {
 	margin-left: 200px;
 
-	@include responsive( null, $bp_shallow ){
+	@include responsive( null, null, $bp_shallow ){
 		padding-bottom: 60px;
 	}
 
-	@include responsive( null, null, $bp_medium ){
+	@include responsive( $bp_medium ){
 		margin-left: 0;
 
 		.sidebar-open & {

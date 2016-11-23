@@ -47,11 +47,11 @@
 						margin-right: 20px;
 						font-size: 18px;
 						font-weight: 400;
-						border-bottom: 3px solid transparent;
+						border-bottom: 4px solid transparent;
 						cursor: pointer;
 
 						&.active {
-							border-color: #FFFFFF;
+							border-color: $off_white;
 						}
 
 						&:not(.active):hover {
@@ -76,5 +76,61 @@
 
 	.artist-list {
 		padding-top: 15px;
+	}
+
+	@include responsive( $bp_medium ){
+		.intro {
+
+			padding: 50px 30px 0 30px;
+			margin: 0 0 100px 0;
+
+			.parallax {
+				height: 100%;
+				canvas {
+					@include blur();
+					margin: -20px;
+				}
+			}
+
+			.thumbnail {
+				position: relative;
+				width: 180px;
+				margin: 0 auto 10px;
+				left: auto;
+				bottom: auto;
+			}
+
+			.heading-wrapper {
+				height: auto;
+
+				.heading,
+				.sub-views {
+					position: relative;
+					bottom: auto;
+					left: auto;
+				}
+			}
+
+			.details-wrapper {
+				padding: 0;
+				position: absolute;
+				bottom: -90px;
+				left: 30px;
+				width: 100%;
+				z-index: 2;
+			}
+		}
+
+		.body {
+			&.overview {
+				.col.w70 {
+					width: 100%;
+				}
+				.col.w5,
+				.related-artists {
+					display: none;
+				}
+			}
+		}
 	}
 }

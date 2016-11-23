@@ -1,5 +1,6 @@
 
 $turquoise: #08d58f;
+$off_white: #F5F5F5;
 $faint_grey: #EEEEEE;
 $light_grey: #DDDDDD;
 $mid_grey: #AAAAAA;
@@ -51,7 +52,7 @@ $bp_shallow: 650px;
 	filter: blur( $size );
 }
 
-@mixin responsive( $min_width: null, $max_height: null, $max_width: null ){
+@mixin responsive( $max_width: null, $min_width: null, $max_height: null, $min_height: null ){
 	@if $max_width and $max_height {
 		@media( max-width: $max_width ), ( max-height: $max_height ){ 
 			@content;

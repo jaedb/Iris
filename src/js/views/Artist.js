@@ -13,6 +13,7 @@ import Parallax from '../components/Parallax'
 import ArtistList from '../components/ArtistList'
 import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
+import SidebarToggleButton from '../components/SidebarToggleButton'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -81,7 +82,7 @@ class Artist extends React.Component{
 
 		if( this.state.sub_view == 'related_artists' ){
 			return (
-				<div>
+				<div className="body related-artists">
 					<h4 className="left-padding">Related artists</h4>
 					<section className="grid-wrapper no-top-padding">
 						{ this.props.artist.related_artists ? <ArtistGrid artists={ this.props.artist.related_artists } /> : null }
@@ -90,7 +91,7 @@ class Artist extends React.Component{
 			)
 		}else if( this.state.sub_view == 'biography' ){
 			return (
-				<div>
+				<div className="body biography">
 					<h4 className="left-padding">Biography</h4>
 					<section className="text-wrapper no-top-padding">
 						<p>Biography here</p>
@@ -101,7 +102,7 @@ class Artist extends React.Component{
 
 		// default body
 		return (
-			<div>
+			<div className="body overview">
 				<div className="col w70">
 					<h4 className="left-padding">Top tracks</h4>
 					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
@@ -109,7 +110,7 @@ class Artist extends React.Component{
 
 				<div className="col w5"></div>
 
-				<div className="col w25">
+				<div className="col w25 related-artists">
 					<h4>Related artists</h4>
 					{ this.props.artist.related_artists ? <ArtistList artists={ this.props.artist.related_artists.slice(0,6) } /> : null }
 				</div>
@@ -134,6 +135,8 @@ class Artist extends React.Component{
 
 		return (
 			<div className="view artist-view">
+
+				<SidebarToggleButton />
 
 				<div className="intro">
 

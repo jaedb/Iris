@@ -12,6 +12,7 @@ import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
+import SidebarToggleButton from '../components/SidebarToggleButton'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -69,6 +70,7 @@ class Album extends React.Component{
 
 		return (
 			<div className="view album-view">
+		        <SidebarToggleButton />
 				<div className="intro">
 					<Thumbnail size="large" images={ this.props.album.images } />
 					<ArtistGrid artists={ this.props.album.artists } />

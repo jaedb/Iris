@@ -173,7 +173,7 @@ class TrackList extends React.Component{
 		for( var i = 0; i < tracks.length; i++ ){
 			uris.push( tracks[i].uri )
 		}
-		return this.props.mopidyActions.playTracks( uris )
+		return this.props.mopidyActions.playURIs( uris )
 	}
 
 	removeTracks(){

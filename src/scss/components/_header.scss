@@ -16,6 +16,12 @@ main {
 			height: 16px;
 		}
 
+		@include responsive( $bp_medium ){
+			.icon {
+				visibility: hidden;
+			}
+		}
+
 		.actions {
 			position: absolute;
 			top: 0;

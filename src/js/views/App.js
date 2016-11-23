@@ -114,7 +114,6 @@ class App extends React.Component{
 			<div className={className}>
 		        <Sidebar />
 		        <main>
-		        	<SidebarToggleButton />
 		      		{this.props.children}
 		        </main>
 		        <ContextMenu state={this.props.context_menu} />

@@ -11,6 +11,7 @@ import Dater from '../components/Dater'
 import ConfirmationButton from '../components/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import FollowButton from '../components/FollowButton'
+import SidebarToggleButton from '../components/SidebarToggleButton'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -130,6 +131,9 @@ class Playlist extends React.Component{
 
 		return (
 			<div className="view playlist-view">
+			
+				<SidebarToggleButton />
+
 				<div className="intro">
 
 					<Thumbnail size="large" images={ this.props.playlist.images } />

@@ -21,7 +21,7 @@ aside{
 		z-index: 2;
 	}
 
-	@include responsive( null, null, $bp_medium ){
+	@include responsive( $bp_medium ){
 		width: 50%;
 		left: -50%;
 
@@ -30,7 +30,7 @@ aside{
 		}
 	}
 
-	@include responsive( null, $bp_shallow ){
+	@include responsive( null, null, $bp_shallow ){
 		.liner {
 			bottom: 60px;
 		}
