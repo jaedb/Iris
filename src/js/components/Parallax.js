@@ -45,15 +45,17 @@ export default class Parallax extends React.Component{
     }
 
 	componentWillReceiveProps( nextProps ){
-		var url = helpers.sizedImages( nextProps.images ).huge;
-		this.setState({ url: url, image: false, loaded: false })
-		this.loadImage( url )
-			.then(
-				response => {
-					this.setState({ url: url, image: response, loaded: true })
-					this.updateCanvas( response )
-				}
-			)
+		if( nextProps.images.length != this.props.images.length ){
+			var url = helpers.sizedImages( nextProps.images ).huge;
+			this.setState({ url: url, image: false, loaded: false })
+			this.loadImage( url )
+				.then(
+					response => {
+						this.setState({ url: url, image: response, loaded: true })
+						this.updateCanvas( response )
+					}
+				)
+		}
 	}
 
     handleResize(e){

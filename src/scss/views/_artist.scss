@@ -2,25 +2,76 @@
 .artist-view {
 	.intro {
 		position: relative;
-		margin: -100px 0 20px 0;
 		@include clearfix;
+		margin-bottom: 40px;
+
+		.parallax {
+			position: absolute;
+			z-index: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
 
 		.thumbnail {
-			max-width: 200px;
-			margin: 0 20px 0 40px;
-			float: left;
+			position: absolute;
+			z-index: 2;
+			max-width: 240px;
+			bottom: 0;
+			left: 40px;
 		}
 
-		h1 {
-			color: #FFFFFF;
-			padding-top: 30px;
-			padding-bottom: 45px;
+		.heading-wrapper {
+			height: 50vh;
+			position: relative;
+			z-index: 2;
+
+			.heading {
+				position: absolute;
+				bottom: 0;
+				left: 305px;
+
+				h1 {
+					color: #FFFFFF;
+					padding-top: 30px;
+					padding-bottom: 10px;
+				}
+
+				.sub-views {
+					color: #FFFFFF;
+					font-size: 16px;
+					font-weight: 400;
+
+					.option {
+						display: inline-block;
+						padding: 8px 0;
+						margin-right: 20px;
+						border-bottom: 3px solid transparent;
+						cursor: pointer;
+
+						&.active {
+							border-color: #FFFFFF;
+						}
+
+						&:not(.active):hover {
+							border-color: rgba(255,255,255,0.2);
+						}
+					}
+				}
+			}
 		}
 
-		.actions {
-			float: left;
-			margin-right: 20px;
+		.details-wrapper {
+			padding-left: 305px;
+			padding-top: 20px;
+
+			.actions {
+				float: left;
+				margin-right: 20px;
+			}
 		}
+
 	}
 
 	.artist-list {

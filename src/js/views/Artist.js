@@ -11,6 +11,7 @@ import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
 import ArtistList from '../components/ArtistList'
+import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
 
 import * as helpers from '../helpers'
@@ -21,7 +22,11 @@ import * as spotifyActions from '../services/spotify/actions'
 class Artist extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this.state = {
+			sub_view: 'overview'
+		}
 	}
 
 	componentDidMount(){
@@ -56,35 +61,38 @@ class Artist extends React.Component{
 		alert('Yet to be implemented')
 	}
 
-	render(){
-		if( !this.props.artist ) return null
-		var scheme = helpers.uriSource( this.props.params.uri );
-
+	renderSubViewMenu(){		
 		return (
-			<div className="view artist-view">
-				<Parallax images={this.props.artist.images} />
+			<div className="sub-views">
+				<span className={'option '+( this.state.sub_view == 'overview' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'overview' })}>
+					Overview
+				</span>
+				<span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>
+					Related artists
+				</span>
+				<span className={'option '+( this.state.sub_view == 'biography' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'biography' })}>
+					Biography
+				</span>
+			</div>
+		)
+	}
 
-				<div className="intro">
+	renderBody(){
 
-					<Thumbnail size="huge" images={ this.props.artist.images } />
-
-					<h1>{ this.props.artist.name }</h1>
-
-					<div className="actions">
-						<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" /> : null }						
-					</div>
-
-					<ul className="details">
-						{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
-						{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
-						{ scheme == 'local' ? <li>{ this.props.artist.albums.length.toLocaleString() } albums</li> : null }
-						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
-						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
-					</ul>
-
+		if( this.state.sub_view == 'related_artists' ){
+			return (
+				<div>
+					<h4 className="left-padding">Related artists</h4>
+					<section className="grid-wrapper no-top-padding">
+						{ this.props.artist.related_artists ? <ArtistGrid artists={ this.props.artist.related_artists } /> : null }
+					</section>
 				</div>
+			)
+		}
 
+		// default body
+		return (
+			<div>
 				<div className="col w70">
 					<h4 className="left-padding">Top tracks</h4>
 					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
@@ -104,6 +112,49 @@ class Artist extends React.Component{
 					{ this.props.artist.albums ? <AlbumGrid albums={ this.props.artist.albums } /> : null }
 					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</section>
+			</div>
+		)
+	}
+
+	render(){
+		if( !this.props.artist ) return null
+		var scheme = helpers.uriSource( this.props.params.uri );
+
+		return (
+			<div className="view artist-view">
+
+				<div className="intro">
+
+					<Thumbnail size="huge" images={ this.props.artist.images } />
+					<Parallax images={this.props.artist.images} />
+
+					<div className="heading-wrapper">
+						<div className="heading">
+							<h1>{ this.props.artist.name }</h1>
+							{ this.renderSubViewMenu() }
+						</div>
+					</div>
+
+					<div className="details-wrapper">
+
+						<div className="actions">
+							<button className="large primary" onClick={ e => this.play() }>Start radio</button>
+							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" /> : null }						
+						</div>
+
+						<ul className="details">
+							{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
+							{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
+							{ scheme == 'local' ? <li>{ this.props.artist.albums.length.toLocaleString() } albums</li> : null }
+							{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
+							{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
+						</ul>
+
+					</div>
+				</div>
+
+				{ this.renderBody() }
+
 			</div>
 		);
 	}
