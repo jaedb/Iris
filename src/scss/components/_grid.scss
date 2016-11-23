@@ -1,16 +1,22 @@
 
-@mixin grid_item( $cols ){
-	width: ( 0% + (( 100 / $cols ) - 4 ));
-	&:nth-child(#{$cols}) {
+@mixin grid_item( $cols, $gap: 2% ){
+	width: ( 0% + ( 100 / $cols ) - ( $gap * 2 ) + ( ( $gap * 2 ) / $cols ) );
+	box-sizing: border-box;
+	margin: 0 $gap 3%;
+
+	&:nth-child(#{$cols}n-#{$cols}) {
+		margin-right: 0;
 		@include clearfix;
+	}
+
+	&:nth-child(#{$cols}n-#{$cols - 1}) {
+		margin-left: 0;
 	}
 }
 
 .grid {
 
 	.grid-item {
-		@include grid_item( 5 )
-		margin: 0 2% 3%;
 		display: inline-block;
 		vertical-align: top;
 		border-bottom: 0;
@@ -76,7 +82,7 @@
 		}
 	}
 
-	@include responsive( 1200px ){
+	@include responsive( 1200px, null, 2399px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
@@ -89,7 +95,7 @@
 		}
 	}
 
-	@include responsive( 850px ){
+	@include responsive( 850px, null, 1199px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
@@ -102,7 +108,7 @@
 		}
 	}
 
-	@include responsive( 650px ){
+	@include responsive( null, null, 849px ){
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 3 )

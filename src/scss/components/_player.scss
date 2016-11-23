@@ -67,7 +67,7 @@
 			}
 		}
 
-		@include responsive( $bp_medium, $bp_shallow ){
+		@include responsive( null, $bp_shallow, $bp_medium ){
 			position: fixed;
 			background: $dark_grey;
 

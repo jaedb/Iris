@@ -12,7 +12,7 @@ $blue: #32b5f2;
 $bp_wide: 1000px;
 $bp_medium: 800px;
 $bp_narrow: 350px;
-$bp_shallow: 700px;
+$bp_shallow: 650px;
 
 @mixin one_line_text {
 	white-space: nowrap;
@@ -51,17 +51,25 @@ $bp_shallow: 700px;
 	filter: blur( $size );
 }
 
-@mixin responsive( $width: null, $height: null ){
-	@if $width && $height {
-		@media( max-width: $width ), ( max-height: $height ){ 
+@mixin responsive( $min_width: null, $max_height: null, $max_width: null ){
+	@if $max_width and $max_height {
+		@media( max-width: $max_width ), ( max-height: $max_height ){ 
 			@content;
 		}
-	}@else if $width {
-		@media( max-width: $width ){ 
+	}@else if $max_width and $min_width {
+		@media( max-width: $max_width ) and ( min-width: $min_width ){ 
 			@content;
 		}
-	}@else if $height {
-		@media( max-height: $height ){ 
+	}@else if $max_width {
+		@media( max-width: $max_width ){ 
+			@content;
+		}
+	}@else if $max_height {
+		@media( max-height: $max_height ){ 
+			@content;
+		}
+	}@else if $min_width {
+		@media( min-width: $min_width ){ 
 			@content;
 		}
 	}

@@ -21,7 +21,7 @@ aside{
 		z-index: 2;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive( null, null, $bp_medium ){
 		width: 50%;
 		left: -50%;
 

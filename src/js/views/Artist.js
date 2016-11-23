@@ -88,6 +88,15 @@ class Artist extends React.Component{
 					</section>
 				</div>
 			)
+		}else if( this.state.sub_view == 'biography' ){
+			return (
+				<div>
+					<h4 className="left-padding">Biography</h4>
+					<section className="text-wrapper no-top-padding">
+						<p>Biography here</p>
+					</section>
+				</div>
+			)
 		}
 
 		// default body

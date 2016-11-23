@@ -21,7 +21,7 @@ footer {
 		padding-bottom: 60px;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive( null, null, $bp_medium ){
 		margin-left: 0;
 
 		.sidebar-open & {
@@ -46,7 +46,7 @@ main {
 	}
 
 	section.grid-wrapper {
-		padding: 40px 20px;
+		padding: 40px;
 	}
 
 	section.list-wrapper {
