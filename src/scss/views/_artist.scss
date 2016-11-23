@@ -30,7 +30,7 @@
 			.heading {
 				position: absolute;
 				bottom: 0;
-				left: 305px;
+				left: 320px;
 
 				h1 {
 					color: #FFFFFF;
@@ -40,13 +40,13 @@
 
 				.sub-views {
 					color: #FFFFFF;
-					font-size: 16px;
-					font-weight: 400;
 
 					.option {
 						display: inline-block;
 						padding: 8px 0;
 						margin-right: 20px;
+						font-size: 18px;
+						font-weight: 400;
 						border-bottom: 3px solid transparent;
 						cursor: pointer;
 
@@ -63,8 +63,8 @@
 		}
 
 		.details-wrapper {
-			padding-left: 305px;
-			padding-top: 20px;
+			padding-left: 320px;
+			padding-top: 35px;
 
 			.actions {
 				float: left;

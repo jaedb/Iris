@@ -120,13 +120,16 @@ class Artist extends React.Component{
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
 
+		var images = []
+		if( this.props.artist.images ) images = this.props.artist.images
+
 		return (
 			<div className="view artist-view">
 
 				<div className="intro">
 
-					<Thumbnail size="huge" images={ this.props.artist.images } />
-					<Parallax images={this.props.artist.images} />
+					<Thumbnail size="huge" images={ images } />
+					<Parallax images={ images } />
 
 					<div className="heading-wrapper">
 						<div className="heading">
