@@ -157,7 +157,8 @@ export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
     }
 }
 
-export function addTracksToPlaylist( playlist_uri, tracks_uris ){
+export function addTracksToPlaylist( playlist_uri, tracks ){
+    var tracks_uris = helpers.asURIs(tracks)
     switch( helpers.uriSource( playlist_uri ) ){
 
         case 'spotify':

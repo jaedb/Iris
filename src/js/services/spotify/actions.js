@@ -492,7 +492,7 @@ export function getLibraryArtists(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'me/following?type=artist' )
+        sendRequest( dispatch, getState, 'me/following?type=artist&limit=50' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
@@ -589,7 +589,7 @@ export function getLibraryAlbums(){
 
         dispatch({ type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'me/albums' )
+        sendRequest( dispatch, getState, 'me/albums?limit=40' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
