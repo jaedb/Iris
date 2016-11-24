@@ -44,6 +44,14 @@ class Artist extends React.Component{
 		}
 	}
 
+	componentWillUpdate( nextProps, nextState ){
+		if( nextState.sub_view != this.state.sub_view && nextState.sub_view == 'biography' ){
+			if( this.props.artist && !this.props.artist.bio ){
+				this.props.lastfmActions.getArtist( this.props.artist.name.replace('&','and') )
+			}
+		}
+	}
+
 	loadArtist( props = this.props ){
 		var source = helpers.uriSource( props.params.uri );
 		if( source == 'spotify' ){
@@ -94,7 +102,9 @@ class Artist extends React.Component{
 				<div className="body biography">
 					<h4 className="left-padding">Biography</h4>
 					<section className="text-wrapper no-top-padding">
-						<p>Biography here</p>
+						{ this.props.artist.bio ? <div><p>{this.props.artist.bio.content}</p><br />
+						<div className="grey-text">Published: { this.props.artist.bio.published }</div>
+						<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
 					</section>
 				</div>
 			)

@@ -111,7 +111,7 @@ export let getFromUri = function( element, uri ){
 
     if( element == 'mbid'){
         var index = exploded.indexOf('mbid')
-        return exploded[index+1]
+        if( index > -1 ) return exploded[index+1]
     }
 
     if( exploded[0] == 'spotify' ){

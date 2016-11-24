@@ -45,7 +45,14 @@ main {
 		}
 	}
 
-	section.grid-wrapper {
+	p {
+		font-size: 18px;
+		line-height: 1.5em;
+		white-space: pre-wrap;
+	}
+
+	section.grid-wrapper,
+	section.text-wrapper {
 		padding: 40px;
 	}
 

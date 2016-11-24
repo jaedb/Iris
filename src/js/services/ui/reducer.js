@@ -167,7 +167,11 @@ export default function reducer(ui = {}, action){
         case 'LASTFM_ARTIST_LOADED':
             if( !action.data.image ) return ui
 
-            var artist = Object.assign({}, ui.artist, { images: action.data.image, bio: action.data.bio })
+            // if we already have images, don't overwrite them
+            var images = ui.artist.images
+            if( images.length <= 0 ) images = action.data.image
+            
+            var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio }, )
             return Object.assign({}, ui, { artist: artist });
 
         case 'SPOTIFY_ARTIST_LOADED':
