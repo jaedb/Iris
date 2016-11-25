@@ -178,9 +178,13 @@ class Settings extends React.Component{
 									value={ this.state.spotify_locale } />
 							</div>
 						</div>
+						<div className="field">
+							<div className="name">Authentication</div>
+							<div className="input">
+								<SpotifyAuthenticationFrame />
+							</div>
+						</div>
 					</form>
-
-			        <SpotifyAuthenticationFrame />
 
 					<h4 className="underline">Advanced</h4>
 

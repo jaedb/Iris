@@ -3,4 +3,19 @@
 	section {
 		padding: 40px;
 	}
+
+	.me {
+		display: block;
+		float: left;
+
+		.thumbnail {
+			float: left;
+			margin-right: 10px;
+			max-width: 40px;
+		}
+
+		.user-name {
+			padding: 2px 14px;
+		}
+	}
 }

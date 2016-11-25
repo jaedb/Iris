@@ -143,9 +143,10 @@ h4 {
 }
 
 .one-liner { @include one_line_text; }
-.grey-text { color: $mid_grey; }
-.red-text { color: $red; }
-.green-text { color: $green; }
+.grey-text { color: $mid_grey !important; }
+.red-text { color: $red !important; }
+.green-text { color: $green !important; }
+.dark-text { color: $dark_grey !important; }
 
 footer {
 	display: block;

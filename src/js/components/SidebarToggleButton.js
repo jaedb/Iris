@@ -20,6 +20,7 @@ class SidebarToggleButton extends React.Component{
 
 		var classname = 'sidebar-toggle'
 		if( this.props.open ) classname += ' open'
+		if( this.props.className ) classname += ' '+this.props.className
 
 		return (
 			<div className={classname} onClick={ () => this.handleClick() }>

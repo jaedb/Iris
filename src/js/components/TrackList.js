@@ -193,13 +193,13 @@ class TrackList extends React.Component{
 
 		let self = this;
 		return (
-			<ul>
-				<li className="list-item header track">
+			<div className="track-list">
+				<div className="list-item header track">
 					<span className="col name">Name</span>
 					<span className="col artists">Artists</span>
 					<span className="col album">Album</span>
 					<span className="col duration">Length</span>
-				</li>
+				</div>
 				{
 					this.state.tracks.map(
 						(track, index) => {
@@ -215,7 +215,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-			</ul>
+			</div>
 		);
 	}
 }

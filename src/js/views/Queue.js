@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
+import SidebarToggleButton from '../components/SidebarToggleButton'
 import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
 import Header from '../components/Header'
@@ -43,6 +44,8 @@ class Queue extends React.Component{
 	render(){
 		return (
 			<div className="view queue-view">
+			
+				<SidebarToggleButton className="dark-text" />
 
 				<FullPlayer />
 

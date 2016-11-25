@@ -65,6 +65,21 @@
 			border-top: 3px solid $blue;
 			margin-top: -3px;
 		}
+
+
+		@include responsive( 849px ){
+			.col {
+				&.name { width: 50%; }
+				&.artists { width: 50%; }
+				&.album { width: 50%; padding-left: 50%; color: $mid_grey; }
+				&.duration { display: none; }
+			}
+
+			&.header { 
+				display: none; 
+			}
+		}
+
 	}
 
 

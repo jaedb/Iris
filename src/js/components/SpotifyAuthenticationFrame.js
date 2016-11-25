@@ -60,16 +60,14 @@ class SpotifyAuthenticationFrame extends React.Component{
 	}
 
 	renderMe(){
-		if( !this.props.spotify.me ) return null;
+		if( !this.props.authorized || !this.props.me ) return null;
 
 		return (
-			<div className="artist-list">
-				<div className="artist">
-					<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
-					<div className="name">
-						Logged in as {this.props.spotify.me.display_name ? this.props.spotify.me.display_name : null }
-						&nbsp;(<Link to={'/user/'+this.props.spotify.me.uri}>{ this.props.spotify.me.id }</Link>)
-					</div>
+			<div className="me">
+				<Thumbnail circle={true} size="small" images={this.props.me.images} />
+				<div className="user-name">
+					Logged in as {this.props.me.display_name ? this.props.me.display_name : null }
+					&nbsp;(<Link to={'/user/'+this.props.me.uri}>{ this.props.me.id }</Link>)
 				</div>
 			</div>
 		)
@@ -84,12 +82,9 @@ class SpotifyAuthenticationFrame extends React.Component{
 					Authorizing...
 				</button>
 			);
-		}else if( this.props.spotify.authorized ){
+		}else if( this.props.authorized ){
 			return (
-				<div>
-					{ this.renderMe() }
-					<button onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
-				</div>
+				<button onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
 			);
 		}else{
 			return (
@@ -99,9 +94,9 @@ class SpotifyAuthenticationFrame extends React.Component{
 	}
 
 	renderRefreshButton(){
-		if( !this.props.spotify.authorized ) return null;
+		if( !this.props.authorized ) return null;
 
-		if( this.props.spotify.refreshing_token ){
+		if( this.props.refreshing_token ){
 			return (
 				<button disabled>
 					<FontAwesome name="circle-o-notch" spin />
@@ -119,7 +114,9 @@ class SpotifyAuthenticationFrame extends React.Component{
 	render(){
 		return (
 			<div>
+				{ this.renderMe() }
 				{ this.renderAuthorizeButton() }
+				&nbsp;&nbsp;
 				{ this.renderRefreshButton() }
 				<iframe src={this.state.frameUrl} style={{ display: 'none' }}></iframe>
 			</div>
@@ -128,7 +125,12 @@ class SpotifyAuthenticationFrame extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		authorized: state.spotify.authorized,
+		authorizing: state.spotify.authorizing,
+		refreshing_token: state.spotify.refreshing_token,
+		me: state.spotify.me
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {
