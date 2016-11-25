@@ -13,7 +13,7 @@ export default class ArtistSentence extends React.Component{
 		if( !this.props.artists ) return <span>-</span>
 
 		return (
-			<span className="artist-sentence">
+			<span className={ this.props.className ? this.props.className+" artist-sentence" : "artist-sentence" }>
 				{
 					this.props.artists.map( (artist, index) => {
 						var separator = null;

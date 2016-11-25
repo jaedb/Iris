@@ -67,6 +67,14 @@
 				color: #FFFFFF;
 			}
 		}
+
+		@include responsive( null, $bp_wide ){
+			.grid-item {
+				.name {
+					font-size: 16px;
+				}
+			}
+		}
 	}
 
 	@include responsive( null, 2400px ){

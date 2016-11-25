@@ -1,0 +1,25 @@
+
+.library-albums-view {
+	.albums-detail-subview > .album {
+		position: relative;
+		padding-bottom: 40px;
+		min-height: 220px;
+
+		.thumbnail {
+			max-width: 220px;
+			position: absolute;
+		}
+
+		.detail {
+			padding-left: 220px;
+
+			h3 {
+				padding: 0 0 0 40px;
+			}
+
+			h4{
+				padding: 0 0 10px 40px;
+			}
+		}
+	}
+}

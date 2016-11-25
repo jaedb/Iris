@@ -15,14 +15,14 @@ export let sizedImages = function( images ){
 
 		// spotify-styled images
 		if( typeof(images[i].height) !== 'undefined' ){
-			if( images[i].height > 800 ){
-				sizes.huge = images[i].url;
-			}else if( images[i].height > 600 ){
-				sizes.large = images[i].url;
-			}else if( images[i].height > 280 ){
-				sizes.medium = images[i].url;
-			}else{
+			if( images[i].height < 400 ){
 				sizes.small = images[i].url;
+			}else if( images[i].height < 800 ){
+				sizes.medium = images[i].url;
+			}else if( images[i].height < 1000 ){
+				sizes.large = images[i].url;
+			}else{
+				sizes.huge = images[i].url;
 			}
 
 		// lastfm-styled images
@@ -49,7 +49,11 @@ export let sizedImages = function( images ){
 		}
 	}
 
-	if( !sizes.medium )	sizes.medium = sizes.small;
+	if( !sizes.medium ){
+		if( sizes.large ) sizes.medium = sizes.large
+		else if( sizes.huge ) sizes.medium = sizes.huge
+		else sizes.medium = sizes.small
+	}
 	if( !sizes.large ) sizes.large = sizes.medium;
 	if( !sizes.huge ) sizes.huge = sizes.large;
 	

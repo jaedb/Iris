@@ -7,6 +7,9 @@ import { Link } from 'react-router'
 import AlbumGrid from '../../components/AlbumGrid'
 import List from '../../components/List'
 import Header from '../../components/Header'
+import Thumbnail from '../../components/Thumbnail'
+import TrackList from '../../components/TrackList'
+import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/DropdownField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
@@ -68,8 +71,21 @@ class LibraryAlbums extends React.Component{
 			)
 		}else{
 			return (
-				<section className="grid-wrapper">
-					{ this.props.albums ? <AlbumGrid albums={this.props.albums} /> : null }
+				<section className="grid-wrapper albums-detail-subview">
+					{
+						this.props.albums.map( album => {
+							return (
+								<div className="album" key={album.uri}>
+									<Thumbnail size="medium" images={album.images} />
+									<div className="detail">
+										<h3>{ album.name }</h3>
+										<h4><ArtistSentence className="grey-text" artists={album.artists} /></h4>
+										<TrackList tracks={album.tracks.items} />
+									</div>
+								</div>
+							)
+						})
+					}
 				</section>			
 			)
 		}
