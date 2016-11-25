@@ -69,6 +69,7 @@ export function removeTracks( tlids ){
 
 export function reorderTracklist( indexes, insert_before ){
 	var range = helpers.createRange( indexes );
+	if( insert_before > range.start ) insert_before = insert_before - range.length
 	return { 
 		type: 'MOPIDY_REORDER_TRACKLIST',
 		range_start: range.start,

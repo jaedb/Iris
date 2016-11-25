@@ -206,7 +206,7 @@ const MopidyMiddleware = (function(){
                 // add our first track
                 instruct( socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before } )
                     .then( response => {
-                        console.log(response)
+                        // TODO: when complete, send event to confirm success/failure
                     })
                 break;
 
