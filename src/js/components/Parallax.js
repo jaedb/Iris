@@ -7,6 +7,7 @@ export default class Parallax extends React.Component{
 		super(props);
 
 		this._loading = false
+		this._loaded = false
 
 		this.state = {
 			scrollTop: 0,
@@ -47,6 +48,7 @@ export default class Parallax extends React.Component{
 					response => {
 						if( this._mounted ){
 							this._loading = false
+							this._loaded = true
 							this.setState({ url: nextProps.image, image: response, loading: false })
 							this.updateCanvas( response )
 						}
@@ -56,15 +58,19 @@ export default class Parallax extends React.Component{
 	}
 
     handleResize(e){
-    	this.updateCanvas( this.state.image );
+    	if( this._loaded ){
+	    	this.updateCanvas( this.state.image );
+	    }
     }
 
     handleScroll(e){
     	// this DOES work, but is in no way high-performing and only on Firefox
-		this.setState(
-			{ scrollTop: e.pageY }, 
-			this.updateCanvas( this.state.image ) 
-		)
+    	if( this._loaded ){
+			this.setState(
+				{ scrollTop: window.scrollY }, 
+				this.updateCanvas( this.state.image ) 
+			)
+	    }
     }
 
 	loadImage( url ){
