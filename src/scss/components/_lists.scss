@@ -64,10 +64,13 @@
 		:root .dragging &:hover {
 			border-top: 3px solid $blue;
 			margin-top: -3px;
+			background: transparent;
 		}
 
 
-		@include responsive( 849px ){
+		@include responsive( $bp_medium ){
+			padding: 7px 10px 7px 30px;
+
 			.col {
 				&.name { width: 50%; }
 				&.artists { width: 50%; }
@@ -77,6 +80,11 @@
 
 			&.header { 
 				display: none; 
+			}
+
+			.select-state {
+				top: 11px;
+				left: 10px;
 			}
 		}
 

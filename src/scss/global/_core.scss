@@ -59,6 +59,18 @@ main {
 	section.list-wrapper {
 		padding: 20px 0;
 	}
+
+	@include responsive( $bp_medium ){
+
+		section.grid-wrapper,
+		section.text-wrapper {
+			padding: 20px;
+		}
+
+		section.list-wrapper {
+			padding: 10px 0;
+		}
+	}
 }
 
 h1 {
@@ -178,4 +190,12 @@ footer {
 		background: $blue;
 		color: #FFFFFF;
 	}
+}
+
+
+@include responsive( $bp_medium ){
+	
+	.right-padding {		padding-right: 20px; }
+	.left-padding {			padding-left: 20px; }
+
 }

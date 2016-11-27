@@ -22,8 +22,8 @@ aside{
 	}
 
 	@include responsive( $bp_medium ){
-		width: 50%;
-		left: -50%;
+		width: 50vw;
+		left: -50vw;
 
 		.sidebar-open & {
 			left: 0px;

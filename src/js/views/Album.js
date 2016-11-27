@@ -81,7 +81,10 @@ class Album extends React.Component{
 					</div>
 
 					<ul className="details">
-						<li>{ this.props.album.tracks_total } tracks, <Dater type="total-time" data={this.props.album.tracks} /></li>
+						<li>
+							{ this.props.album.tracks_total } tracks, 
+							{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : null }
+						</li>
 						{ this.props.album.release_date ? <li>Released <Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist</li>	
 					</ul>

@@ -144,7 +144,10 @@ class Playlist extends React.Component{
 					</div>
 
 					<ul className="details">
-						<li>{ this.props.playlist.tracks_total } tracks, <Dater type="total-time" data={this.props.playlist.tracks} /></li>
+						<li>
+							{ this.props.playlist.tracks_total } tracks, 
+							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : null }
+						</li>
 						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ scheme == 'spotify' && this.props.playlist.owner ? <li>By <Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link> &nbsp;{ !this.props.playlist.public ? <FontAwesome name="lock" /> : null }</li> : null }

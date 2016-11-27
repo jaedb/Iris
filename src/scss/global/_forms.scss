@@ -219,3 +219,24 @@ input[type="submit"] {
 		}
 	}
 }
+
+@include responsive( $bp_medium ){
+	.field {
+
+		.name {
+			float: none;
+			width: auto;
+			padding: 0 0 4px 0;
+		}
+
+		.input {
+			float: none;
+			width: auto;
+
+			.text {
+				padding: 0;
+			}
+		}
+
+	}
+}

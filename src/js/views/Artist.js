@@ -168,9 +168,11 @@ class Artist extends React.Component{
 						</div>
 
 						<ul className="details">
-							{ this.props.artist.followers ? <li>{ this.props.artist.followers.total.toLocaleString() } followers</li> : null }
-							{ this.props.artist.popularity ? <li>{ this.props.artist.popularity }% popularity</li> : null }
-							{ scheme == 'local' ? <li>{ this.props.artist.albums.length.toLocaleString() } albums</li> : null }
+							<li>
+								{ this.props.artist.followers ? <span>{ this.props.artist.followers.total.toLocaleString() } followers,&nbsp;</span> : null }
+								{ this.props.artist.popularity ? <span>{ this.props.artist.popularity }% popularity</span> : null }
+								{ scheme == 'local' ? <span>{ this.props.artist.listeners.toLocaleString() } listeners</span> : null }
+							</li>
 							{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
 							{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
 						</ul>

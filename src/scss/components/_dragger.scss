@@ -3,6 +3,11 @@
 	cursor: grabbing !important;
 	cursor: -moz-grabbing !important;
 	cursor: -webkit-grabbing !important;
+	-webkit-touch-callout: none;
+	  -webkit-user-select: none;
+	     -moz-user-select: none;
+	      -ms-user-select: none;
+	          user-select: none;
 }
 
 .dragger {
@@ -40,7 +45,7 @@
 			width: 32px;
 		}
 
-		&:hover {
+		&.hover {
 			background: $turquoise;
 		}
 	}

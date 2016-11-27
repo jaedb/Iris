@@ -46,6 +46,15 @@ class Dragger extends React.Component{
 				position_y: e.clientY
 			})
 
+			var dropzones = document.getElementsByClassName('dropzone')
+			for( var i = 0; i < dropzones.length; i++ ){
+				dropzones[i].classList.remove('hover')
+			}
+
+			if( e.target.classList.contains('dropzone') && !e.target.classList.contains('hover') ){
+				e.target.className += ' hover'
+			}
+
 			// if not already, activate
 			if( !this.props.dragger.active ) this.props.uiActions.dragActive()
 		}

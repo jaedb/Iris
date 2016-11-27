@@ -171,7 +171,7 @@ export default function reducer(ui = {}, action){
             var images = ui.artist.images
             if( images.length <= 0 ) images = action.data.image
             
-            var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio }, )
+            var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio, listeners: parseInt(action.data.stats.listeners), on_tour: action.data.ontour }, )
             return Object.assign({}, ui, { artist: artist });
 
         case 'SPOTIFY_ARTIST_LOADED':

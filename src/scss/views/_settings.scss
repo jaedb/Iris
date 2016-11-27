@@ -18,4 +18,10 @@
 			padding: 2px 14px;
 		}
 	}
+
+	@include responsive( $bp_medium ){
+		section {
+			padding: 20px;
+		}
+	}
 }
