@@ -140,8 +140,8 @@ class Artist extends React.Component{
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
 
-		var images = []
-		if( this.props.artist.images ) images = this.props.artist.images
+		var image = false
+		if( this.props.artist.images ) image = helpers.sizedImages( this.props.artist.images ).huge
 
 		return (
 			<div className="view artist-view">
@@ -150,8 +150,8 @@ class Artist extends React.Component{
 
 				<div className="intro">
 
-					<Thumbnail size="huge" images={ images } />
-					<Parallax images={ images } />
+					<Thumbnail image={ image } />
+					<Parallax image={ image } />
 
 					<div className="heading-wrapper">
 						<div className="heading">

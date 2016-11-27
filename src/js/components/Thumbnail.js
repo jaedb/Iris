@@ -8,10 +8,7 @@ export default class Thumbnail extends React.Component{
 		super(props);
 
 		this.state = {
-			small: false,
-			medium: false,
-			large: false,
-			huge: false
+			url: require('../../assets/no-image.svg')
 		}
 	}
 
@@ -20,29 +17,27 @@ export default class Thumbnail extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		this.mapImageSizes( nextProps.images );
+		this.mapImageSizes( nextProps );
 	}
 
-	mapImageSizes( images = this.props.images ){
-		var state = this.state;
+	mapImageSizes( props = this.props ){		
 
-		if( images.length <= 0 ){
-			state = {
-				small: require('../../assets/no-image.svg'),
-				medium: require('../../assets/no-image.svg'),
-				large: require('../../assets/no-image.svg'),
-				huge: require('../../assets/no-image.svg')
-			}
-		}else{
-			state = helpers.sizedImages( images );
+		// single image
+		if( this.props.image ){
+			this.setState({ url: this.props.image })
+
+		// multiple images
+		}else if( this.props.images && this.props.images.length > 0 ){
+			var images = helpers.sizedImages( this.props.images )
+			var size = 'medium'
+			if( this.props.size ) size = this.props.size
+			this.setState({ url: images[size] })
 		}
-
-		this.setState( state );
 	}
 
 	render(){
 		var style = {
-			backgroundImage: 'url("'+this.state[this.props.size]+'")'
+			backgroundImage: 'url("'+this.state.url+'")'
 		}
 		var className = 'thumbnail '+this.props.size;
 		if( this.props.circle ) className += ' circle';

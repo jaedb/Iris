@@ -1,11 +1,12 @@
 
 import React, { PropTypes } from 'react'
-import * as helpers from '../helpers'
 
 export default class Parallax extends React.Component{
 
 	constructor(props) {
 		super(props);
+
+		this._loading = false
 
 		this.state = {
 			scrollTop: 0,
@@ -16,7 +17,7 @@ export default class Parallax extends React.Component{
 				height: 0
 			},
 			image: {},
-			loaded: false,
+			loading: false,
 			url: false
 		}
 
@@ -26,33 +27,29 @@ export default class Parallax extends React.Component{
 	}
 
 	componentDidMount(){
-		var url = helpers.sizedImages( this.props.images ).huge;
-		this.loadImage( url )
-			.then(
-				response => {
-					this.setState({ url: url, image: response, loaded: true })
-					this.updateCanvas( response )
-				}
-			)
-
+        this._mounted = true
         window.addEventListener("resize", this.handleResize);
         window.addEventListener("scroll", this.handleScroll);
 	}
 
     componentWillUnmount(){
+        this._mounted = false
         window.removeEventListener("resize", this.handleResize);
         window.removeEventListener("scroll", this.handleScroll);
     }
 
 	componentWillReceiveProps( nextProps ){
-		if( nextProps.images.length != this.props.images.length ){
-			var url = helpers.sizedImages( nextProps.images ).huge;
-			this.setState({ url: url, image: false, loaded: false })
-			this.loadImage( url )
+		if( ( !this.props.url || nextProps.image != this.props.url ) && !this._loading ){
+			this._loading = true
+			this.setState({ url: nextProps.image, image: false, loading: true })
+			this.loadImage( nextProps.image )
 				.then(
 					response => {
-						this.setState({ url: url, image: response, loaded: true })
-						this.updateCanvas( response )
+						if( this._mounted ){
+							this._loading = false
+							this.setState({ url: nextProps.image, image: response, loading: false })
+							this.updateCanvas( response )
+						}
 					}
 				)
 		}
@@ -70,7 +67,7 @@ export default class Parallax extends React.Component{
 		)
     }
 
-	loadImage( url ){		
+	loadImage( url ){
 		return new Promise( (resolve, reject) => {
 
 			var imageObject = new Image();
@@ -175,7 +172,7 @@ export default class Parallax extends React.Component{
 			<div className="parallax">
 				<canvas 
 					id="parallax-canvas" 
-					className={ this.state.loaded ? 'loaded' : null } 
+					className={ !this.state.loading ? 'loaded' : null } 
 					width={this.state.canvas.width} 
 					height={this.state.canvas.height}>
 				</canvas>
