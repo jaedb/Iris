@@ -16,7 +16,9 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, action.view)
 
         case 'TOGGLE_SIDEBAR':
-            return Object.assign({}, ui, { sidebar_open : !ui.sidebar_open })
+            var new_state = !ui.sidebar_open
+            if( typeof(action.new_state) !== 'undefined' ) new_state = action.new_state
+            return Object.assign({}, ui, { sidebar_open : new_state })
 
 
         /**

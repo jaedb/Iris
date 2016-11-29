@@ -40,10 +40,10 @@ export function lazyLoading( start ){
     }
 }
 
-export function toggleSidebar(){
-    return {
-        type: 'TOGGLE_SIDEBAR'
-    }
+export function toggleSidebar( new_state = 'toggle' ){
+    var action = { type: 'TOGGLE_SIDEBAR' }
+    if( new_state != 'toggle' ) action.new_state = new_state
+    return action
 }
 
 export function dragStart( e, context, victims, victims_indexes = false ){

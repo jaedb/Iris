@@ -48,7 +48,8 @@ export default function reducer(spotify = {}, action){
                 refreshing_token: false,
                 authorization: action.data,
                 access_token: action.data.access_token,
-                token_expiry: action.data.token_expiry
+                token_expiry: action.data.token_expiry,
+                provider: action.provider
             });
 
         case 'SPOTIFY_DISCONNECTED':

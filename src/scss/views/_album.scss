@@ -1,7 +1,7 @@
 
 .album-view {
 	.main {
-		padding-left: 35%;
+		padding-left: 300px;
 
 		.title {
 			padding: 30px 40px;
@@ -20,7 +20,7 @@
 		top: 0;
 		left: 0;
 		bottom: 0;
-		width: 35%;
+		width: 300px;
 		background: $faint_grey;
 
 		.thumbnail {
@@ -78,6 +78,10 @@
 
 		.main {
 			padding-left: 0;
+
+			.title {
+				padding: 20px;
+			}
 		}
 
 		.intro {
@@ -86,6 +90,15 @@
 
 			.artist-grid {
 				display: none;
+			}
+
+			.details {
+				padding: 20px;
+
+				li {
+					display: inline-block;
+					padding-right: 15px;
+				}
 			}
 		}
 	}

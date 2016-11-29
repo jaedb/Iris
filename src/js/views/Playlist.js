@@ -145,7 +145,7 @@ class Playlist extends React.Component{
 
 					<ul className="details">
 						<li>
-							{ this.props.playlist.tracks_total } tracks, 
+							{ this.props.playlist.tracks_total } tracks,&nbsp;
 							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : null }
 						</li>
 						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }

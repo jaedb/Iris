@@ -21,12 +21,6 @@ class Dropzones extends React.Component{
 				action: 'enqueue'
 			},
 			{
-				title: 'Add to library',
-				icon: 'music',
-				action: 'add_to_library',
-				accepts: ['track','album','playlist','artist']
-			},
-			{
 				title: 'Add to playlist',
 				icon: 'playlist',
 				action: 'add_to_playlist',

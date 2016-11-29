@@ -85,6 +85,7 @@ function refreshToken( dispatch, getState ){
                         response.source = 'spotify';
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
+                            provider: 'spotify-http-api',
                             data: response
                         });
                         resolve(response);
@@ -109,6 +110,7 @@ function refreshToken( dispatch, getState ){
                         response.source = 'mopidy';
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
+                            provider: 'mopidy-spotify',
                             data: response
                         });
                         resolve(response);
