@@ -1,15 +1,17 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
-
 import FontAwesome from 'react-fontawesome'
+
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
+import Thumbnail from '../components/Thumbnail'
 
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -80,6 +82,28 @@ class Settings extends React.Component{
 					&nbsp;
 					Not connected
 				</span>
+			)
+		}
+	}
+
+	renderSpotifyUser(){
+		if( this.props.spotify.me && this.props.spotify.authorized ){
+			return (
+				<Link className="user" to={'/user/'+this.props.spotify.me.uri}>
+					<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
+					<span className="user-name">
+						{ this.props.spotify.me.display_name ? this.props.spotify.me.display_name : this.props.spotify.me.id }
+					</span>
+				</Link>
+			)
+		}else{
+			return (
+				<Link className="user">
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						Default user <span className="grey-text">(As defined in mopidy.config)</span>
+					</span>
+				</Link>
 			)
 		}
 	}
@@ -178,6 +202,14 @@ class Settings extends React.Component{
 									value={ this.state.spotify_locale } />
 							</div>
 						</div>
+						<div className="field current-user">
+							<div className="name">Current user</div>
+							<div className="input">
+								<div className="text">
+									{ this.renderSpotifyUser() }
+								</div>
+							</div>
+						</div>
 						<div className="field">
 							<div className="name">Authentication</div>
 							<div className="input">
@@ -188,7 +220,7 @@ class Settings extends React.Component{
 
 					<h4 className="underline">Advanced</h4>
 
-					<div className="field">
+					<div className="field pusher-connections">
 						<div className="name">Connections</div>
 						<div className="input">
 							<span className="text">

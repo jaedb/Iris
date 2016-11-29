@@ -13,7 +13,7 @@ const PusherMiddleware = (function(){
             default:
                 var name = 'unspecified'
                 if( message.action ) name = message.action
-                name = name.replace('GET_','').toUpperCase()
+                name = name.replace('get_','').toUpperCase()
                 store.dispatch({ type: 'PUSHER_'+name, data: message.data })
         }
     }
@@ -23,6 +23,12 @@ const PusherMiddleware = (function(){
         data.message_id = helpers.generateGuid();
         socket.send( JSON.stringify(data) );
     }
+
+    const broadcast = (data) => {
+        data.type = 'broadcast';
+        socket.send( JSON.stringify(data) );
+    }
+
 
     /**
      * Middleware
@@ -82,6 +88,38 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_INSTRUCT':
                 makeRequest({ action: action.action, data: action.data });
+                break;
+
+            case 'PUSHER_SEND_BROADCAST':
+                broadcast({ action: action.action, data: action.data });
+                break;
+
+            case 'PUSHER_NOTIFICATION':
+            case 'PUSHER_BROADCAST':
+
+                var notification = window.Notification || window.mozNotification || window.webkitNotification;
+                if ('undefined' === typeof notification) return false;
+                if ('undefined' !== typeof notification) notification.requestPermission(function(permission){});
+
+                // handle nested data objects
+                var data = {}
+                if( typeof(action.data) ) data = action.data
+                if( typeof(data.data) ) data = Object.assign({}, data, data.data)
+
+                // construct our browser notification
+                var title = '';
+                var options = {
+                    body: '',
+                    dir: 'auto',
+                    lang: 'EN',
+                    tag: 'iris'
+                };
+                if( data.title ) title = data.title;
+                if( data.body ) options.body = data.body;
+                if( data.icon ) options.icon = data.icon;
+
+                // make it so
+                var notification = new notification( title, options );
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware

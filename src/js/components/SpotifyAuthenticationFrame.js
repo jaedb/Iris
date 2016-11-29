@@ -59,20 +59,6 @@ class SpotifyAuthenticationFrame extends React.Component{
 		})
 	}
 
-	renderMe(){
-		if( !this.props.authorized || !this.props.me ) return null;
-
-		return (
-			<div className="me">
-				<Thumbnail circle={true} size="small" images={this.props.me.images} />
-				<div className="user-name">
-					Logged in as {this.props.me.display_name ? this.props.me.display_name : null }
-					&nbsp;(<Link to={'/user/'+this.props.me.uri}>{ this.props.me.id }</Link>)
-				</div>
-			</div>
-		)
-	}
-
 	renderAuthorizeButton(){
 		if( this.state.authorizing ){
 			return (
@@ -114,7 +100,6 @@ class SpotifyAuthenticationFrame extends React.Component{
 	render(){
 		return (
 			<div>
-				{ this.renderMe() }
 				{ this.renderAuthorizeButton() }
 				&nbsp;&nbsp;
 				{ this.renderRefreshButton() }
@@ -128,8 +113,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		authorized: state.spotify.authorized,
 		authorizing: state.spotify.authorizing,
-		refreshing_token: state.spotify.refreshing_token,
-		me: state.spotify.me
+		refreshing_token: state.spotify.refreshing_token
 	}
 }
 

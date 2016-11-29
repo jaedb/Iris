@@ -4,18 +4,41 @@
 		padding: 40px;
 	}
 
-	.me {
-		display: block;
-		float: left;
+	.field.current-user {
+		.text {
+			padding: 14px 14px 14px 0px;
 
-		.thumbnail {
-			float: left;
-			margin-right: 10px;
-			max-width: 40px;
+			.user {
+				border: 0;
+				position: relative;
+
+				.thumbnail {
+					@include animate();
+					position: absolute;
+					display: block;
+					top: -14px;
+					left: 0;
+					max-width: 40px;
+					border: 2px solid transparent;
+				}
+
+				.user-name {
+					padding: 2px 14px 2px 55px;
+				}
+
+				&[href]:hover {
+					.thumbnail {
+						cursor: pointer;
+						border-color: $turquoise;
+					}
+				}
+			}
 		}
+	}
 
-		.user-name {
-			padding: 2px 14px;
+	.field.pusher-connections {
+		.connection.me {
+			font-weight: bold;
 		}
 	}
 

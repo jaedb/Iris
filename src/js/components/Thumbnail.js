@@ -20,10 +20,14 @@ export default class Thumbnail extends React.Component{
 		this.mapImageSizes( nextProps );
 	}
 
-	mapImageSizes( props = this.props ){		
+	mapImageSizes( props = this.props ){
+
+		// no images
+		if( !this.props.image && !this.props.images ){
+			this.setState({ url: require('../../assets/no-image.svg') })
 
 		// single image
-		if( this.props.image ){
+		}else if( this.props.image ){
 			this.setState({ url: this.props.image })
 
 		// multiple images
@@ -36,9 +40,7 @@ export default class Thumbnail extends React.Component{
 	}
 
 	render(){
-		var style = {
-			backgroundImage: 'url("'+this.state.url+'")'
-		}
+		var style = { backgroundImage: 'url("'+this.state.url+'")' }
 		var className = 'thumbnail '+this.props.size;
 		if( this.props.circle ) className += ' circle';
 		

@@ -80,6 +80,19 @@ export let getCurrentPusherConnection = function( connections, connectionid ){
 }
 
 
+/**
+ * Get a track's icon
+ * @param track object
+ * @return string
+ **/
+export let getTrackIcon = function( track = false ){
+	if( !track ) return false
+	if( !track.album ) return false
+	if( !track.album.images ) return false
+	return sizedImages( track.album.images ).small
+}
+
+
 
 
 /**

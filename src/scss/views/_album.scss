@@ -73,4 +73,20 @@
 			}
 		}
 	}
+
+	@include responsive( $bp_medium ){
+
+		.main {
+			padding-left: 0;
+		}
+
+		.intro {
+			position: static;
+			width: auto;
+
+			.artist-grid {
+				display: none;
+			}
+		}
+	}
 }

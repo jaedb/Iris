@@ -162,6 +162,47 @@ const MopidyMiddleware = (function(){
                 break;
 
             // send an instruction to the websocket
+            case 'MOPIDY_NEXT':
+                var icon = false
+                if( store.getState().ui.current_track ){
+                    icon = helpers.getTrackIcon( store.getState().ui.current_track )
+                }
+                store.dispatch({ 
+                    type: 'PUSHER_SEND_BROADCAST',
+                    action: 'broadcast',
+                    ignore_self: true,
+                    data: {
+                        type: 'notification',
+                        data: {
+                            title: 'Track skipped',
+                            body: store.getState().pusher.username +' skipped this track',
+                            icon: icon
+                        }
+                    } 
+                })
+                break;
+
+            case 'MOPIDY_STOP':
+                var icon = false
+                if( store.getState().ui.current_track ){
+                    icon = helpers.getTrackIcon( store.getState().ui.current_track )
+                }
+                store.dispatch({ 
+                    type: 'PUSHER_SEND_BROADCAST',
+                    action: 'broadcast',
+                    ignore_self: true,
+                    data: {
+                        type: 'notification',
+                        data: {
+                            title: 'Playback stopped',
+                            body: store.getState().pusher.username +' stopped playback',
+                            icon: icon
+                        }
+                    } 
+                })
+                break;
+
+            // send an instruction to the websocket
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
                 var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']

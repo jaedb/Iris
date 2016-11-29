@@ -31,6 +31,22 @@ export default class Parallax extends React.Component{
         this._mounted = true
         window.addEventListener("resize", this.handleResize);
         window.addEventListener("scroll", this.handleScroll);
+
+        if( this.props.image ){
+			this._loading = true
+			this.setState({ url: this.props.image, image: false, loading: true })
+			this.loadImage( this.props.image )
+				.then(
+					response => {
+						if( this._mounted ){
+							this._loading = false
+							this._loaded = true
+							this.setState({ url: this.props.image, image: response, loading: false })
+							this.updateCanvas( response )
+						}
+					}
+				)
+		}
 	}
 
     componentWillUnmount(){

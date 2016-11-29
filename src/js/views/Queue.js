@@ -45,7 +45,7 @@ class Queue extends React.Component{
 		return (
 			<div className="view queue-view">
 			
-				<SidebarToggleButton className="dark-text" />
+				<Header icon="play" title="Now playing" />
 
 				<FullPlayer />
 
