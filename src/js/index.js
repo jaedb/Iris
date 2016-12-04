@@ -19,6 +19,7 @@ import Playlist from './views/Playlist'
 import User from './views/User'
 import Queue from './views/Queue'
 import Settings from './views/Settings'
+import Debug from './views/Debug'
 import Search from './views/Search'
 
 import Discover from './views/discover/Discover'
@@ -44,6 +45,7 @@ ReactDOM.render(
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
 				<Route path="settings" component={Settings} />
+				<Route path="debug" component={Debug} />
 				
 				<Route path="search/:query" component={Search} />
 				<Route path="search/:query/:type" component={Search} />

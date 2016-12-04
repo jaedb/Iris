@@ -1,33 +1,17 @@
-Spotmop
+Iris
 =======
 
-Mopidy web-based frontend that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
+Iris (previously known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
 
 ![badge](https://img.shields.io/pypi/v/mopidy-spotmop.svg?style=flat)
 ![badge](https://img.shields.io/pypi/dm/mopidy-spotmop.svg)
 [![badge](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=NZD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
-
-Requirements
---------
-
-* Mopidy
-* Mopidy-Spotify
-* Spotify Premium account
-* Mopidy-Local-Sqlite (recommended, not required)
-
-Installation
---------
-
-1. Install using pip: `sudo pip install Mopidy-Spotmop`
-2. Restart Mopidy server
-3. Navigate to Mopidy interface (ie http://localhost:6680/spotmop)
-
 Features
 --------
 
 * Full web-based interface controls for Mopidy
-* Uses Spotify API to deliver high-quality audio and music information
+* Integrated with Spotify and LastFM APIs for high-quality artwork and extra info
 * Improved support for local libraries using SQLite extension
 * Browse and manage your playlists, along with top tracks, new releases and genre browser
 * Spotmop can be run completely independently of your Mopidy machine (ie on a remote server), just set your URL in the settings tab
@@ -49,11 +33,27 @@ Screenshots
 ![Dragging tracks](https://raw.githubusercontent.com/jaedb/spotmop/master/Screenshots/desktop-dragging.jpg)
 
 
-To-do
+Requirements
+--------
+
+* Mopidy
+* Mopidy-Spotify
+* Spotify Premium account
+* Mopidy-Local-Sqlite (recommended, not required)
+
+Installation
+--------
+
+1. Install using pip: `sudo pip install Mopidy-Spotmop`
+2. Restart Mopidy server
+3. Navigate to Mopidy interface (ie http://localhost:6680/spotmop)
+
+Development
 -----
 
-* Increase stability of Mopidy server (perhaps limitation of Rpi?)
-* Improve websockets integration to attach users to tracks and changes within tracklist
+1. Clone this repository into a your Apache2 web directory (ie `/var/www/html/`)
+2. Install in develop mode `python setup.py install develop`
+3. Restart mopidy
 
 Support
 -------

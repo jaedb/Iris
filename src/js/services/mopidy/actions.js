@@ -28,6 +28,14 @@ export function instruct( call, value ){
 	}
 }
 
+export function debug( call, value ){
+	return {
+		type: 'MOPIDY_DEBUG',
+		call: call,
+		value: value
+	}
+}
+
 
 /**
  * Playback-oriented actions

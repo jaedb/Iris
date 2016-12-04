@@ -16,13 +16,21 @@ export default class ArtistList extends React.Component{
 			<div className="artist-list">
 				{
 					this.props.artists.map( (artist, index) => {
-						var link = '/artist/' + artist.uri;
-						return (
-							<Link to={ link } key={artist.uri} className="artist">
-								<Thumbnail circle={true} size="small" images={artist.images} />
-								<span className="name">{ artist.name }</span>
-							</Link>
-						);
+						if( artist.uri ){
+							return (
+								<Link to={ '/artist/' + artist.uri } key={artist.uri} className="artist">
+									<Thumbnail circle={true} size="small" images={artist.images} />
+									<span className="name">{ artist.name }</span>
+								</Link>
+							)
+						}else{
+							return (
+								<span key={artist.uri} className="artist">
+									<Thumbnail circle={true} size="small" images={artist.images} />
+									<span className="name">{ artist.name }</span>
+								</span>
+							)
+						}
 					})
 				}
 			</div>

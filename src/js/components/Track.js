@@ -41,6 +41,15 @@ export default class Track extends React.Component{
 		if( typeof(track.selected) !== 'undefined' && track.selected ) className += ' selected';
 		if( track.playing ) className += ' playing';
 
+		var album = '-'
+		if( track.album ){
+			if( track.album.uri ){
+				album = <Link to={'/album/'+track.album.uri}>{track.album.name}</Link>
+			} else {
+				album = <span>{track.album.name}</span>
+			}
+		}
+
 		return (
 			<div
 				className={className}
@@ -56,7 +65,7 @@ export default class Track extends React.Component{
 						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
 					</span>
 					<span className="col album">
-						{ track.album ? <Link to={'/album/'+track.album.uri}>{track.album.name}</Link> : '-' }
+						{album}
 					</span>
 					<span className="col duration">
 						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }

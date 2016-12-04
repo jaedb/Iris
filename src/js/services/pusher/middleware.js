@@ -87,7 +87,35 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                makeRequest({ action: action.action, data: action.data });
+                switch( action.action ){
+                    case 'query':
+                        makeRequest( action.data )
+                        break
+                    case 'broadcast':
+                        broadcast( action.data )
+                        break
+                }
+                break;
+
+            case 'PUSHER_DEBUG':
+                switch( action.call ){
+                    case 'query':
+                        makeRequest( action.data )
+                            // THIS DOES NOT RETURN A PROMISE SO CAN'T DETECT RELATED RESPONSES
+                            /*.then( response => {
+                                store.dispatch({ type: 'DEBUG', response: response })
+                            })*/
+                        break
+                    case 'broadcast':
+                        broadcast( action.data )
+                            /*.then( response => {
+                                store.dispatch({ type: 'DEBUG', response: response })
+                            })*/
+                        break
+                    default:
+                        store.dispatch({ type: 'DEBUG', response: '{ "error": "Invalid call" }' })
+                        break
+                }
                 break;
 
             case 'PUSHER_SEND_BROADCAST':

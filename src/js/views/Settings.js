@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import { browserHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -247,7 +247,17 @@ class Settings extends React.Component{
 			        	</div>
 			        </div>
 
-			        <ConfirmationButton content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+					
+					<div className="field">
+						<div className="name"></div>
+						<div className="input">
+					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+					        &nbsp;&nbsp;
+					        <button className="primary" onClick={ () => browserHistory.push('debug') }>
+					        	<FontAwesome name="flask" />&nbsp;Debugger
+					        </button>
+			        	</div>
+			        </div>
 
 		        </section>
 			</div>

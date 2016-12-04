@@ -50,3 +50,11 @@ export function instruct( action, data = null ){
 		data: data
 	}
 }
+
+export function debug( call, data = null ){
+	return {
+		type: 'PUSHER_DEBUG',
+		call: call,
+		data: data
+	}
+}

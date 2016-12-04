@@ -125,13 +125,15 @@ input[type="submit"] {
 		width: 85%;
 		float: left;
 		
-		input {
+		input,
+		select,
+		textarea {
 			width: 100%;
 		}
 
 		.text {
 			display: block;
-			padding: 10px 14px;
+			padding: 10px 14px 10px 0;
 		}
 	}
 

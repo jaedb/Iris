@@ -162,6 +162,14 @@ const MopidyMiddleware = (function(){
                 break;
 
             // send an instruction to the websocket
+            case 'MOPIDY_DEBUG':
+                instruct( socket, store, action.call, action.value )
+                    .then( response => {
+                        store.dispatch({ type: 'DEBUG', response: response })
+                    })
+                break;
+
+            // send an instruction to the websocket
             case 'MOPIDY_NEXT':
                 var icon = false
                 if( store.getState().ui.current_track ){
