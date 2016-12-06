@@ -392,11 +392,7 @@ const MopidyMiddleware = (function(){
                         var playlist = Object.assign({}, response, { name: action.name })
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
-
-                                // TODO: changing the name changes the URI, so essentially invalidates our url...
-                                // need to figure out how to handle this
-
-                                store.dispatch({ type: 'PLAYLIST_UPDATED', playlist: playlist });
+                                store.dispatch({ type: 'PLAYLIST_UPDATED', playlist: playlist })
                             })
                     });
                 break

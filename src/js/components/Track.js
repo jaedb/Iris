@@ -13,19 +13,11 @@ export default class Track extends React.Component{
 		super(props);
 	}
 
-	handleDoubleClick(e){
-		return this.props.handleDoubleClick(e);
-	}
-
 	handleMouseDown(e){
 		var target = $(e.target);
 		if( !target.is('a') && target.closest('a').length <= 0 ){
 			this.props.handleMouseDown(e);
 		}
-	}
-
-	handleMouseUp(e){
-		this.props.handleMouseUp(e)
 	}
 
 	handleContextMenu(e){
@@ -53,9 +45,11 @@ export default class Track extends React.Component{
 		return (
 			<div
 				className={className}
+				onTouchStart={ e => this.props.handleTouchStart(e) }
+				onTouchEnd={ e => this.props.handleTouchEnd(e) }
 				onMouseDown={ e => this.handleMouseDown(e) }
-				onMouseUp={ e => this.handleMouseUp(e) }
-				onDoubleClick={ e => this.handleDoubleClick(e) }
+				onMouseUp={ e => this.props.handleMouseUp(e) }
+				onDoubleClick={ e => this.props.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					<span className="col name">

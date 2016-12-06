@@ -13,6 +13,9 @@ class TrackList extends React.Component{
 	constructor(props) {
 		super(props);
 
+		this._touch_x = null
+		this._touch_y = null
+
 		this.state = {
 			tracks: this.keyifyTracks(this.props.tracks),
 			lastSelectedTrack: false
@@ -48,12 +51,27 @@ class TrackList extends React.Component{
 		}
 	}
 
+	handleTouchStart(e, index){		
+		alert( 'touchStart '+ this._touch_x +'  '+ e.page )
+		this._touch_x = e.pageX
+		this._touch_y = e.pageY
+		e.preventDefault()
+	}
+
+	handleTouchEnd(e, index){
+		var tracks = this.state.tracks
+		tracks[index].selected = !tracks[index].selected
+		this.setState({ tracks: tracks, lastSelectedTrack: index })
+		e.preventDefault()
+	}
+
 	handleDoubleClick(e, index){
 		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
 		this.playTracks()
 	}
 
 	handleMouseDown(e, index){
+
 		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
 
 		if( !this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey ) this.toggleTrackSelections(e, index)
@@ -208,9 +226,10 @@ class TrackList extends React.Component{
 									key={track.key} 
 									track={track} 
 									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
-									handleClick={ e => self.handleClick(e, index)}
 									handleMouseUp={ e => self.handleMouseUp(e, index)}
 									handleMouseDown={ e => self.handleMouseDown(e, index)}
+									handleTouchStart={ e => self.handleTouchStart(e, index)}
+									handleTouchEnd={ e => self.handleTouchEnd(e, index)}
 									handleContextMenu={ e => self.handleContextMenu(e, index)} />
 						}
 					)

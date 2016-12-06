@@ -58,21 +58,21 @@ class Playlist extends React.Component{
 	}
 
 	play(){
-		this.props.mopidyActions.playURIs([this.props.params.uri])
+		this.props.mopidyActions.playURIs([this.props.playlist.uri])
 	}
 
 	follow(){
-		this.props.spotifyActions.toggleFollowingPlaylist( this.props.params.uri, 'PUT' )
+		this.props.spotifyActions.toggleFollowingPlaylist( this.props.playlist.uri, 'PUT' )
 	}
 
 	// TODO: Once unfollowing occurs, remove playlist from global playlists list
 	unfollow(){
-		this.props.spotifyActions.toggleFollowingPlaylist( this.props.params.uri, 'DELETE' )
+		this.props.spotifyActions.toggleFollowingPlaylist( this.props.playlist.uri, 'DELETE' )
 	}
 
 	// TODO: Once deletion occurs, remove playlist from global playlists list
 	delete(){
-		this.props.mopidyActions.deletePlaylist( this.props.params.uri )
+		this.props.mopidyActions.deletePlaylist( this.props.playlist.uri )
 	}
 
 	reorderTracks( indexes, index ){
@@ -88,7 +88,7 @@ class Playlist extends React.Component{
 	}
 
 	isEditable(){
-		if( helpers.uriSource( this.props.params.uri ) == 'spotify' ){
+		if( helpers.uriSource( this.props.playlist.uri ) == 'spotify' ){
 			if( !this.props.spotify_authorized ) return false
 
 			return ( this.props.playlist && 
@@ -101,7 +101,7 @@ class Playlist extends React.Component{
 	}
 
 	renderExtraButtons(){
-		switch( helpers.uriSource( this.props.params.uri ) ){
+		switch( helpers.uriSource( this.props.playlist.uri ) ){
 
 			case 'm3u':
 				return (
@@ -120,14 +120,14 @@ class Playlist extends React.Component{
 						</span>
 					)
 				}
-				return <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" />
+				return <FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" />
 
 		}
 	}
 
 	render(){
 		if( !this.props.playlist || !this.props.playlist.name ) return null;
-		var scheme = helpers.uriSource( this.props.params.uri );
+		var scheme = helpers.uriSource( this.props.playlist.uri );
 
 		return (
 			<div className="view playlist-view">

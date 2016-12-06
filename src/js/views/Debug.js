@@ -55,6 +55,7 @@ class Debug extends React.Component{
 		e.preventDefault()
 		console.info('Pusher Debugger', this.state.pusher_call, JSON.parse(this.state.pusher_data) )
 		this.props.pusherActions.debug( this.state.pusher_call, JSON.parse(this.state.pusher_data) )
+		this.props.uiActions.debugResponse({ status: 1, message: 'Sent', call: this.state.pusher_call, data: this.state.pusher_data })
 	}
 
 	render(){

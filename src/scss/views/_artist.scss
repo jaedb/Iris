@@ -91,7 +91,7 @@
 			.parallax {
 				height: 100%;
 				canvas {
-					@include blur( 30px );
+					@include blur( 10px );
 				}
 			}
 

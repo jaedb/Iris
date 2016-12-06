@@ -33,6 +33,13 @@ export function searchStarted(){
 	}
 }
 
+export function debugResponse( response ){
+    return {
+        type: 'DEBUG',
+        response: response
+    }
+}
+
 export function lazyLoading( start ){
     return {
         type: 'LAZY_LOADING',
