@@ -13,6 +13,7 @@ class TrackList extends React.Component{
 	constructor(props) {
 		super(props);
 
+		this._touch_threshold = 10
 		this._touch_x = null
 		this._touch_y = null
 
@@ -51,17 +52,23 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleTouchStart(e, index){		
-		alert( 'touchStart '+ this._touch_x +'  '+ e.page )
-		this._touch_x = e.pageX
-		this._touch_y = e.pageY
-		e.preventDefault()
+	handleTouchStart(e, index){
+		this._touch_x = Math.round(e.changedTouches[0].pageX)
+		this._touch_y = Math.round(e.changedTouches[0].pageY)
 	}
 
 	handleTouchEnd(e, index){
-		var tracks = this.state.tracks
-		tracks[index].selected = !tracks[index].selected
-		this.setState({ tracks: tracks, lastSelectedTrack: index })
+		var pageX = Math.round(e.changedTouches[0].pageX)
+		var pageY = Math.round(e.changedTouches[0].pageY)
+		if( this._touch_x < ( pageX + this._touch_threshold ) &&
+			this._touch_x > ( pageX - this._touch_threshold ) &&
+			this._touch_y < ( pageY + this._touch_threshold ) &&
+			this._touch_y > ( pageY - this._touch_threshold ) ){
+				var tracks = this.state.tracks
+				tracks[index].selected = !tracks[index].selected
+				this.setState({ tracks: tracks, lastSelectedTrack: index })
+		}
+
 		e.preventDefault()
 	}
 
