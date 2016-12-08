@@ -53,7 +53,7 @@
 	}
 
 	&.mini-player {
-		position: absolute;
+		position: fixed;
 		bottom: 0;
 		left: 0;
 		width: 200px;
@@ -69,7 +69,6 @@
 		}
 
 		@include responsive( $bp_medium, null, $bp_shallow ){
-			position: fixed;
 			right: 0;
 			width: auto;
 			background: $dark_grey;
