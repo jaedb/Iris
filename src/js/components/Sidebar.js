@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import MiniPlayer from './MiniPlayer'
 import Icon from './Icon'
 import Thumbnail from './Thumbnail'
 import SearchForm from './SearchForm'
@@ -95,7 +94,6 @@ class Sidebar extends React.Component{
 			    </div>
 
 		       	<Dropzones />
-		        <MiniPlayer />
 
 			</aside>
 		);

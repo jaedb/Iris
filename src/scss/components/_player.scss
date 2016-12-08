@@ -52,12 +52,13 @@
 		}
 	}
 
-	aside & {
+	&.mini-player {
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		right: 0;
-		z-index: 2;
+		width: 200px;
+		box-sizing: border-box;
+		z-index: 97;
 		padding: 14px;
 		color: #FFFFFF;
 
@@ -67,9 +68,12 @@
 			}
 		}
 
-		@include responsive( null, $bp_medium, $bp_shallow ){
+		@include responsive( $bp_medium, null, $bp_shallow ){
 			position: fixed;
+			right: 0;
+			width: auto;
 			background: $dark_grey;
+			z-index: 99;
 
 			.controls {
 				position: absolute;

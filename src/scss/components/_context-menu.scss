@@ -50,4 +50,24 @@
 			}
 		}
 	}
+
+	@include responsive( $bp_medium ){
+		bottom: 0 !important;
+		left: 0 !important;
+		right: 0 !important;
+		top: auto !important;
+		background: $blue;
+
+		.menu-item {
+			display: inline-block;
+			width: auto;
+			height: auto;
+			border: 0 !important;
+
+			.fa,
+			.submenu {
+				display: none !important;
+			}
+		}
+	}
 }

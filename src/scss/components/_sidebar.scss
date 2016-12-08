@@ -104,4 +104,7 @@ aside{
 		}
 
 	}
+
+	@include responsive( $bp_medium ){
+	}
 }

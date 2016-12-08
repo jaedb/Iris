@@ -60,13 +60,31 @@ class TrackList extends React.Component{
 	handleTouchEnd(e, index){
 		var pageX = Math.round(e.changedTouches[0].pageX)
 		var pageY = Math.round(e.changedTouches[0].pageY)
+
+		// make sure our touch was within the threshold of the touch start
+		// this helps us differentiate between taps and drags but doesn't consider
+		// multi-finger touches
 		if( this._touch_x < ( pageX + this._touch_threshold ) &&
 			this._touch_x > ( pageX - this._touch_threshold ) &&
 			this._touch_y < ( pageY + this._touch_threshold ) &&
 			this._touch_y > ( pageY - this._touch_threshold ) ){
+
+				// toggle selection
 				var tracks = this.state.tracks
 				tracks[index].selected = !tracks[index].selected
 				this.setState({ tracks: tracks, lastSelectedTrack: index })
+
+				// update our context menu to hide/show
+				var selected_tracks = this.selectedTracks()
+				if( selected_tracks.length > 0 ){
+					var data = {
+						selected_tracks: selected_tracks,
+						selected_tracks_indexes: this.tracksIndexes( selected_tracks )
+					}
+					this.props.uiActions.showContextMenu( e, this.props.context, data )
+				}else{
+					this.props.uiActions.hideContextMenu()
+				}
 		}
 
 		e.preventDefault()

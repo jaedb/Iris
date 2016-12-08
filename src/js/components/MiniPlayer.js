@@ -28,7 +28,7 @@ class MiniPlayer extends React.Component{
 
 	render(){
 		return (
-			<div className="player">
+			<div className="player mini-player">
 
 				<div className="current-track">
 					<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
