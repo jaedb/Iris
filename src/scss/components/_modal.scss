@@ -100,4 +100,21 @@
 			}
 		}
 	}
+
+	@include responsive( $bp_medium ){
+
+		.content {
+
+			padding: 50px;
+			width: 80%;
+
+			.playlists {
+				.playlist {
+					float: none !important;
+					width: auto;
+				}
+			}
+
+		}
+	}
 }

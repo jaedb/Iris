@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import TrackList from './TrackList'
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -13,9 +14,9 @@ class ContextMenu extends React.Component{
 
 	constructor(props) {
 		super(props);
-		this.handleScroll = this.handleScroll.bind(this);
+		//this.handleScroll = this.handleScroll.bind(this);
 	}
-
+/*
 	componentDidMount(){		
 		window.addEventListener("scroll", this.handleScroll, false);
 	}
@@ -28,7 +29,7 @@ class ContextMenu extends React.Component{
 		if( this.props.context_menu.show ){
 			this.props.uiActions.hideContextMenu();
 		}
-	}
+	}*/
 
 	playQueueItem(){
 		var selectedTracks = this.props.context_menu.data.selected_tracks;
@@ -47,21 +48,13 @@ class ContextMenu extends React.Component{
 	}
 
 	playItems(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
+		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
 		this.props.mopidyActions.playURIs(selected_tracks_uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	playItemsNext(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
+		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
 
 		var current_track = this.props.current_track
 		var current_track_index = -1
@@ -79,13 +72,21 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
+	addToPlaylist(){
+		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
+		this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: selected_tracks_uris } )
+		this.props.uiActions.hideContextMenu();
+	}
+
 	addToQueue(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_uris = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_uris.push( selected_tracks[i].uri );
-		}
+		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
 		this.props.mopidyActions.enqueueTracks(selected_tracks_uris);
+		this.props.uiActions.hideContextMenu();
+	}
+
+	addTracksToPlaylist( playlist_uri ){
+		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
+		this.props.uiActions.addTracksToPlaylist( playlist_uri, selected_tracks_uris )
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -115,15 +116,11 @@ class ContextMenu extends React.Component{
 				{
 					playlists.map( playlist => {
 						return (
-							<a 
-								className="menu-item" 
-								key={playlist.uri} 
-								onClick={ () => {
-									this.props.uiActions.addTracksToPlaylist( playlist.uri, this.props.context_menu.data.selected_tracks )
-									this.props.uiActions.hideContextMenu() }
-							}>
-								{ playlist.name }
-							</a>
+							<span className="menu-item-wrapper" key={playlist.uri} >
+								<a className="menu-item" onClick={ () => this.addTracksToPlaylist(playlist.uri) }>
+									<span className="label">{ playlist.name }</span>
+								</a>
+							</span>
 						)
 					})
 				}
@@ -138,31 +135,31 @@ class ContextMenu extends React.Component{
 
 			case 'queue':
 				items = [
-					{ handleClick: 'playQueueItem', label: 'Play' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
-					{ handleClick: 'copyURIs', label: 'Copy URIs' },
-					{ handleClick: 'removeFromQueue', label: 'Remove' }
+					{ handleClick: 'playQueueItem', label: 'Play', icon: 'play' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
+					{ handleClick: 'removeFromQueue', label: 'Remove', icon: 'trash' }
 				];
 				break;
 
 			case 'editable-playlist':
 				items = [
-					{ handleClick: 'playItems', label: 'Play' },
-					{ handleClick: 'playItemsNext', label: 'Play next' },
-					{ handleClick: 'addToQueue', label: 'Add to queue' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
-					{ handleClick: 'copyURIs', label: 'Copy URIs' },
-					{ handleClick: 'removeFromPlaylist', label: 'Remove' }
+					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
+					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
+					{ handleClick: 'removeFromPlaylist', label: 'Remove', icon: 'trash' }
 				];
 				break;
 
 			default:
 				items = [
-					{ handleClick: 'playItems', label: 'Play' },
-					{ handleClick: 'playItemsNext', label: 'Play next' },
-					{ handleClick: 'addToQueue', label: 'Add to queue' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', playlists: true },
-					{ handleClick: 'copyURIs', label: 'Copy URIs' }
+					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
+					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
+					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
 				];
 				break;
 		}
@@ -173,14 +170,24 @@ class ContextMenu extends React.Component{
 					items.map((item, index) => {
 						if( item.playlists ){
 							return (
-								<span key={item.handleClick} className="menu-item has-submenu">
-									{ item.label }
-									<FontAwesome name="caret-right" />
+								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
+									<a className="menu-item" onClick={ (e) => this[item.handleClick](e) }>
+										<FontAwesome className="icon" fixedWidth name={item.icon} />
+										<span className="label">{ item.label }</span>
+										<FontAwesome className="submenu-icon" name="caret-right" />
+									</a>
 									{ this.renderPlaylistSubmenu() }
 								</span>
 							)
 						}else{
-							return <a className="menu-item" key={item.handleClick} onClick={ (e) => this[item.handleClick](e) }>{ item.label }</a>
+							return (
+								<span className="menu-item-wrapper" key={item.handleClick}>
+									<a className="menu-item" onClick={ (e) => this[item.handleClick](e) }>
+										<FontAwesome className="icon" fixedWidth name={item.icon} />
+										<span className="label">{ item.label }</span>
+									</a>
+								</span>
+							)
 						}
 					})
 				}

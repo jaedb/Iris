@@ -117,6 +117,8 @@ class App extends React.Component{
 		var className = '';
 		if( this.props.dragger && this.props.dragger.active ) className += ' dragging'
 		if( this.props.sidebar_open ) className += ' sidebar-open'
+		if( this.props.modal ) className += ' modal-open'
+		if( 'ontouchstart' in document.documentElement ) className += ' has-touch-events'
 
 		return (
 			<div className={className}>
