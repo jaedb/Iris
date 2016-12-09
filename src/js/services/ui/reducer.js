@@ -10,13 +10,8 @@ export default function reducer(ui = {}, action){
         case 'DEBUG':
             return Object.assign({}, ui, { debug_response: action.response })
 
-
-        /**
-         * UI views and view modes
-         **/
-
-        case 'SET_VIEW':
-            return Object.assign({}, ui, action.view)
+        case 'UI_SET':
+            return Object.assign({}, ui, action.data)
 
         case 'TOGGLE_SIDEBAR':
             var new_state = !ui.sidebar_open

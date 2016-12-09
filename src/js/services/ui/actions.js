@@ -72,10 +72,10 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function setView( view ){
+export function set( data ){
     return {
-        type: 'SET_VIEW',
-        view: view
+        type: 'UI_SET',
+        data: data
     }
 }
 

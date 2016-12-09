@@ -244,3 +244,37 @@ export let createRange = function (indexes){
     	length: first_bunch.length
     }
 }
+
+
+
+/**
+ * Sort an array of objects
+ * @param array = array to sort
+ * @param property = string to sort by
+ * @param reverse = boolean
+ * @return array
+ **/
+export let sortItems = function (array, property, reverse = false){
+	function compare(a,b) {
+
+		switch( typeof(a[property]) ){
+
+			case 'boolean':
+				return a[property]
+				break
+
+			default:
+
+				// both objects must have this property
+				if( typeof(a[property]) === 'undefined' || typeof(b[property]) === 'undefined' ) return 0
+
+				if(a[property] > b[property]) return 1
+				if(a[property] < b[property]) return -1
+				return 0
+		}
+	}
+
+	var sorted = array.sort(compare)
+	if( reverse ) sorted.reverse()
+	return sorted
+}

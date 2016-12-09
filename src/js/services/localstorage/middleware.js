@@ -12,7 +12,7 @@ const localstorageMiddleware = (function(){
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store
-        console.log(action)
+        //console.log(action)
 
         switch( action.type ){
 
@@ -116,10 +116,10 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
-            case 'SET_VIEW':
+            case 'UI_SET':
                 var ui = JSON.parse( localStorage.getItem('ui') );
                 if( !ui ) ui = {};
-                Object.assign( ui, action.view );
+                Object.assign( ui, action.data );
                 localStorage.setItem('ui', JSON.stringify(ui));
                 break;
         }

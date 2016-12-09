@@ -10,6 +10,7 @@ import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
 import Header from '../../components/Header'
 
+import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -22,6 +23,11 @@ class LibraryPlaylists extends React.Component{
 
 	renderView(){
 		if( !this.props.playlists ) return null
+
+		var playlists = this.props.playlists
+		if( this.props.sort ){
+			playlists = helpers.sortItems(playlists, this.props.sort)
+		}
 
 		if( this.props.view == 'list' ){
 			var columns = [
@@ -48,7 +54,7 @@ class LibraryPlaylists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.playlists} columns={columns} link_prefix="/playlist/" show_source_icon={true} />
+					<List rows={playlists} columns={columns} link_prefix="/playlist/" show_source_icon={true} />
 				</section>
 			)
 		}else{
@@ -73,9 +79,25 @@ class LibraryPlaylists extends React.Component{
 			}
 		]
 
+		var sort_options = [
+			{
+				value: 'name',
+				label: 'Name'
+			},
+			{
+				value: 'can_edit',
+				label: 'Editable'
+			},
+			{
+				value: 'tracks.total',
+				label: 'Tracks'
+			}
+		]
+
 		var actions = (
 			<div>
-				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.setView({ library_playlists_view: value }) } />
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.props.uiActions.set({ library_playlists_sort: value }) } />
+				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_playlists_view: value }) } />
 				<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
 					<FontAwesome name="plus" />&nbsp;
 					New
@@ -102,6 +124,7 @@ class LibraryPlaylists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_playlists_view,
+		sort: state.ui.library_playlists_sort,
 		playlists: state.ui.playlists
 	}
 }

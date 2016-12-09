@@ -74,7 +74,7 @@ class LibraryArtists extends React.Component{
 		]
 
 		var actions = (
-			<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.setView({ library_artists_view: value }) } />
+			<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
 		)
 
 		return (
