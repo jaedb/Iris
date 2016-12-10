@@ -21,12 +21,23 @@ class LibraryPlaylists extends React.Component{
 		super(props);
 	}
 
+	setSort(value){
+		var reverse = false
+		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			library_playlists_sort_reverse: reverse,
+			library_playlists_sort: value
+		}
+		this.props.uiActions.set(data)
+	}
+
 	renderView(){
 		if( !this.props.playlists ) return null
 
 		var playlists = this.props.playlists
 		if( this.props.sort ){
-			playlists = helpers.sortItems(playlists, this.props.sort)
+			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
 		}
 
 		if( this.props.view == 'list' ){
@@ -96,7 +107,7 @@ class LibraryPlaylists extends React.Component{
 
 		var actions = (
 			<div>
-				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.props.uiActions.set({ library_playlists_sort: value }) } />
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.setSort(value) } />
 				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_playlists_view: value }) } />
 				<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
 					<FontAwesome name="plus" />&nbsp;
@@ -125,6 +136,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_playlists_view,
 		sort: state.ui.library_playlists_sort,
+		sort_reverse: state.ui.library_playlists_sort_reverse,
 		playlists: state.ui.playlists
 	}
 }

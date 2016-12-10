@@ -20,6 +20,13 @@ export default class Track extends React.Component{
 		}
 	}
 
+	handleTouchEnd(e){
+		var target = $(e.target);
+		if( !target.is('a') && target.closest('a').length <= 0 ){
+			this.props.handleTouchEnd(e);
+		}
+	}
+
 	handleContextMenu(e){
 		e.preventDefault();
 		this.props.handleContextMenu(e);
@@ -46,7 +53,7 @@ export default class Track extends React.Component{
 			<div
 				className={className}
 				onTouchStart={ e => this.props.handleTouchStart(e) }
-				onTouchEnd={ e => this.props.handleTouchEnd(e) }
+				onTouchEnd={ e => this.handleTouchEnd(e) }
 				onMouseDown={ e => this.handleMouseDown(e) }
 				onMouseUp={ e => this.props.handleMouseUp(e) }
 				onDoubleClick={ e => this.props.handleDoubleClick(e) }

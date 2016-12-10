@@ -56,7 +56,7 @@ export default class Parallax extends React.Component{
     }
 
 	componentWillReceiveProps( nextProps ){
-		if( ( !this.props.url || nextProps.image != this.props.url ) && !this._loading ){
+		if( ( !this.state.url || nextProps.image != this.state.url ) && !this._loading ){
 			this._loading = true
 			this.setState({ url: nextProps.image, image: false, loading: true })
 			this.loadImage( nextProps.image )

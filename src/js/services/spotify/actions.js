@@ -52,7 +52,7 @@ function getToken( dispatch, getState ){
 
         // token is okay for now, so just resolve with the current token
         if( new Date().getTime() < getState().spotify.token_expiry ){
-            resolve(getState().spotify.access_token);
+            resolve(getState().spotify.access_token)
             return
         }
 
@@ -81,16 +81,17 @@ function refreshToken( dispatch, getState ){
                 })
                 .then(
                     response => {
-                        response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
-                        response.source = 'spotify';
+                        response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 )
+                        response.source = 'spotify'
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
                             provider: 'spotify-http-api',
                             data: response
-                        });
-                        resolve(response);
+                        })
+                        resolve(response)
                     },
                     error => {
+                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                         console.error('Could not refresh token', error)
                         reject(error)
                     }
@@ -116,6 +117,7 @@ function refreshToken( dispatch, getState ){
                         resolve(response);
                     },
                     error => {
+                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                         console.error('Could not refresh token', error)
                         reject(error)
                     }
