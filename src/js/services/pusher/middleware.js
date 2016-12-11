@@ -9,6 +9,7 @@ const PusherMiddleware = (function(){
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
+        console.log(message)
         switch( message.action ){
             default:
                 var name = 'unspecified'
@@ -87,7 +88,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                switch( action.action ){
+                switch( action.message_type ){
                     case 'query':
                         makeRequest( action.data )
                         break
@@ -149,6 +150,15 @@ const PusherMiddleware = (function(){
                 // make it so
                 var notification = new notification( title, options );
                 break;
+
+            case 'PUSHER_SEND_AUTHORIZATION':
+                if( window.confirm('Spotify authorization received. Do you want to import?') ){
+                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: action.data })
+                    window.location.reload(true)
+                }else{
+                    console.log('Authorization ignored')
+                }
+                break
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

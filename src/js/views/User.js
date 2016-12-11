@@ -8,6 +8,7 @@ import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
 import FollowButton from '../components/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
+import Header from '../components/Header'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -51,6 +52,9 @@ class User extends React.Component{
 
 		return (
 			<div className="view user-view">
+			
+				<Header icon="play" title="User" />
+
 				<div className="intro">
 					<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
 

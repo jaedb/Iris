@@ -12,7 +12,7 @@ const localstorageMiddleware = (function(){
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store
-        //console.log(action)
+        console.log(action)
 
         switch( action.type ){
 
@@ -70,6 +70,7 @@ const localstorageMiddleware = (function(){
                 Object.assign(
                     spotify,{
                         authorized: true, 
+                        authorization: action.data,
                         access_token: action.data.access_token, 
                         refresh_token: action.data.refresh_token, 
                         token_expiry: action.data.token_expiry

@@ -66,17 +66,21 @@
 			}
 		}
 
-		.playlists {
+		.list {
 			@include clearfix();
 
-			.playlist {
+			.list-item {
 				float: left;
 				box-sizing: border-box;
 				display: block;
 				width: 49%;
-				padding: 16px 20px 16px 30px;
+				padding: 16px 18px;
 				border-bottom: 1px solid $mid_grey;
 				position: relative;
+
+				&.playlist {
+					padding-left: 30px;
+				}
 
 				.source {
 					position: absolute;
@@ -108,8 +112,8 @@
 			padding: 50px;
 			width: 80%;
 
-			.playlists {
-				.playlist {
+			.list {
+				.list-item {
 					float: none !important;
 					width: auto;
 				}

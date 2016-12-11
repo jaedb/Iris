@@ -13,6 +13,7 @@ import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
 
+import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -106,6 +107,18 @@ class Settings extends React.Component{
 				</Link>
 			)
 		}
+	}
+
+	renderSendAuthorizationButton(){
+		if( !this.props.spotify.authorized ) return null
+
+		return (
+			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
+				<FontAwesome name="share-square-o" />
+				&nbsp;
+				Share authentication
+			</button>
+		)
 	}
 
 	render(){
@@ -214,6 +227,8 @@ class Settings extends React.Component{
 							<div className="name">Authentication</div>
 							<div className="input">
 								<SpotifyAuthenticationFrame />
+								&nbsp;
+								{ this.renderSendAuthorizationButton() }
 							</div>
 						</div>
 					</form>
@@ -278,6 +293,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
