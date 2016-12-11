@@ -43,10 +43,10 @@ export function getConnectionList(){
 	}
 }
 
-export function instruct( action, data = null ){
+export function instruct( message_type, data = null ){
 	return {
 		type: 'PUSHER_INSTRUCT',
-		action: action,
+		message_type: message_type,
 		data: data
 	}
 }

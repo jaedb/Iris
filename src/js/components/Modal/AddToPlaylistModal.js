@@ -25,11 +25,11 @@ export default class AddToPlaylistModal extends React.Component{
 		return (
 			<div>
 				<h4>Add to playlist</h4>
-				<div className="playlists">
+				<div className="list playlists">
 					{
 						playlists.map( playlist => {
 							return (
-								<div className="playlist" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
+								<div className="list-item playlist" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
 									<FontAwesome className="source" name={helpers.sourceIcon(playlist.uri)} />
 									&nbsp;
 									<span className="name">{ playlist.name }</span>

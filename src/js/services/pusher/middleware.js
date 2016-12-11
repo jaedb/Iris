@@ -87,7 +87,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                switch( action.action ){
+                switch( action.message_type ){
                     case 'query':
                         makeRequest( action.data )
                         break
@@ -149,6 +149,20 @@ const PusherMiddleware = (function(){
                 // make it so
                 var notification = new notification( title, options );
                 break;
+
+            case 'PUSHER_SEND_AUTHORIZATION':
+                if( window.confirm('Spotify authorization for user '+action.data.me.id+' received. Do you want to import?') ){
+
+                    // remove any existing authentication
+                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_REVOKED' })
+
+                    // import our new authentication
+                    store.dispatch({ type: 'SPOTIFY_ME_LOADED', data: action.data.me })
+                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: action.data.authorization })
+                }else{
+                    console.log('Authorization ignored')
+                }
+                break
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

@@ -13,6 +13,7 @@ import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
 
+import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -108,6 +109,18 @@ class Settings extends React.Component{
 		}
 	}
 
+	renderSendAuthorizationButton(){
+		if( !this.props.spotify.authorized ) return null
+
+		return (
+			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
+				<FontAwesome name="share-square-o" />
+				&nbsp;
+				Share authentication
+			</button>
+		)
+	}
+
 	render(){
 		return (
 			<div className="view settings-view">
@@ -175,13 +188,13 @@ class Settings extends React.Component{
 					</form>
 
 					<h4 className="underline">Spotify</h4>
-					<form onSubmit={(e) => this.setSpotifyConfig(e)}>
-						<div className="field">
-							<div className="name">Status</div>
-							<div className="input">
-								{ this.renderConnectionStatus('spotify') }
-							</div>
+					<div className="field">
+						<div className="name">Status</div>
+						<div className="input">
+							{ this.renderConnectionStatus('spotify') }
 						</div>
+					</div>
+					<form>
 						<div className="field">
 							<div className="name">Country</div>
 							<div className="input">
@@ -202,21 +215,23 @@ class Settings extends React.Component{
 									value={ this.state.spotify_locale } />
 							</div>
 						</div>
-						<div className="field current-user">
-							<div className="name">Current user</div>
-							<div className="input">
-								<div className="text">
-									{ this.renderSpotifyUser() }
-								</div>
-							</div>
-						</div>
-						<div className="field">
-							<div className="name">Authentication</div>
-							<div className="input">
-								<SpotifyAuthenticationFrame />
-							</div>
-						</div>
 					</form>
+					<div className="field current-user">
+						<div className="name">Current user</div>
+						<div className="input">
+							<div className="text">
+								{ this.renderSpotifyUser() }
+							</div>
+						</div>
+					</div>
+					<div className="field">
+						<div className="name">Authentication</div>
+						<div className="input">
+							<SpotifyAuthenticationFrame />
+							&nbsp;&nbsp;
+							{ this.renderSendAuthorizationButton() }
+						</div>
+					</div>
 
 					<h4 className="underline">Advanced</h4>
 
@@ -278,6 +293,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

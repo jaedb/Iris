@@ -6,41 +6,61 @@ export default class Thumbnail extends React.Component{
 
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			url: require('../../assets/no-image.svg')
-		}
 	}
 
-	componentDidMount(){
-		this.mapImageSizes();
-	}
+	// TODO: ascertain whether this is improving or hindering performance
+	// The UI appears to work perfectly fine without this
+	shouldComponentUpdate(nextProps, nextState){
 
-	componentWillReceiveProps( nextProps ){
-		this.mapImageSizes( nextProps );
+		// no images at all, and we already know it
+		if( 
+			typeof(nextProps.image) == 'undefined' && 
+			typeof(this.props.image) == 'undefined' &&
+			typeof(nextProps.images) == 'undefined' && 
+			typeof(this.props.images) == 'undefined'
+			) return false
+
+		// image changed
+		if( !this.props.image && nextProps.image ) return true
+		if( this.props.image && nextProps.image ) return true
+		if( this.props.image != nextProps.image ) return true
+
+		// images array changed
+		if( typeof(this.props.images) === 'undefined' && nextProps.images ) return true
+		if( this.props.images && typeof(nextProps.images) === 'undefined' ) return true
+		if( this.props.images.length != nextProps.images.length ) return true
+
+		// image item changed	
+		var size = 'medium'
+		var images = helpers.sizedImages( nextProps.images )
+		if( this.props.size ) size = this.props.size
+		if( this.props.images[size] != images[size] ) return true
+
+		return false
 	}
 
 	mapImageSizes( props = this.props ){
 
 		// no images
 		if( !this.props.image && !this.props.images ){
-			this.setState({ url: require('../../assets/no-image.svg') })
+			return require('../../assets/no-image.svg')
 
 		// single image
 		}else if( this.props.image ){
-			this.setState({ url: this.props.image })
+			return this.props.image
 
 		// multiple images
 		}else if( this.props.images && this.props.images.length > 0 ){
 			var images = helpers.sizedImages( this.props.images )
 			var size = 'medium'
 			if( this.props.size ) size = this.props.size
-			this.setState({ url: images[size] })
+			return images[size]
 		}
 	}
 
 	render(){
-		var style = { backgroundImage: 'url("'+this.state.url+'")' }
+		var image = this.mapImageSizes()
+		var style = { backgroundImage: 'url("'+image+'")' }
 		var className = 'thumbnail '+this.props.size;
 		if( this.props.circle ) className += ' circle';
 		

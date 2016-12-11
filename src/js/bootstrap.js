@@ -50,8 +50,7 @@ var initialState = {
 	spotify: {
 		connected: false,
 		country: 'NZ',
-		locale: 'en_NZ',
-		me: false
+		locale: 'en_NZ'
 	},
 	ui: {
 		context_menu: {
