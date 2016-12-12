@@ -64,7 +64,8 @@ var initialState = {
 			playlists: [],
 			tracks: []
 		},
-		playlists: []
+		playlists: [],
+		notifications: []
 	}
 };
 

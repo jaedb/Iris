@@ -1,0 +1,55 @@
+
+
+.notifications {
+	position: fixed;
+	top: 15px;
+	left: 0;
+	right: 0;
+	text-align: center;
+
+	.notification {
+		display: inline-block;
+		position: relative;
+		background: $dark_grey;
+		padding: 8px 28px 8px 14px;
+		margin: 0 0.5px;
+		color: #FFFFFF;
+
+		&:first-child {
+			border-top-left-radius: 50px;
+			border-bottom-left-radius: 50px;
+		}
+
+		&:last-child {
+			border-top-right-radius: 50px;
+			border-bottom-right-radius: 50px;
+		}
+
+		.close-button {
+			position: absolute;
+			top: 7px;
+			right: 8px;
+			font-size: 10px;
+			padding: 4px;
+			cursor: pointer;
+			opacity: 0.5;
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+
+		&.good {
+			background: $green;
+		}
+
+		&.info {
+			background: $yellow;
+			color: #000000;
+		}
+
+		&.bad {
+			background: $red;
+		}
+	}
+}

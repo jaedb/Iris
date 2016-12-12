@@ -11,6 +11,7 @@ import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
+import Notifications from '../components/Notifications'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -130,6 +131,7 @@ class App extends React.Component{
 		        <ContextMenu state={this.props.context_menu} />
 		        <Dragger />
 		        <Modal />
+		        <Notifications />
 	        </div>
 		);
 	}

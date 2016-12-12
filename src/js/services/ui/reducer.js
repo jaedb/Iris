@@ -396,6 +396,26 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { modal: false })
 
 
+        /**
+         * Notifications
+         **/
+
+        case 'CREATE_NOTIFICATION':
+            var notifications = [...ui.notifications, action.notification]
+            return Object.assign({}, ui, { notifications: notifications })
+
+        case 'REMOVE_NOTIFICATION':
+            var notifications = Object.assign([], ui.notifications)
+
+            function getByID( notification ){
+                return notification.id === action.id
+            }
+            var index = notifications.findIndex(getByID)
+            if( index > -1 ) notifications.splice(index, 1)
+
+            return Object.assign({}, ui, { notifications: notifications })
+
+
         default:
             return ui
     }

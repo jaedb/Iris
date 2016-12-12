@@ -183,6 +183,13 @@ export function addTracksToPlaylist( playlist_uri, tracks_uris ){
     }
 }
 
+
+/**
+ * Modal
+ *
+ * Immersive full-screen dialog
+ **/
+
 export function openModal( name, data ){
     return { 
         type: 'OPEN_MODAL',
@@ -196,4 +203,31 @@ export function openModal( name, data ){
 export function closeModal(){
     return { type: 'CLOSE_MODAL' }
 }
+
+
+/**
+ * Notifications
+ *
+ * Subtle info/tooltip messages
+ **/
+
+export function createNotification( content, type = 'default' ){
+    return { 
+        type: 'CREATE_NOTIFICATION',
+        notification: {
+            id: helpers.generateGuid(),
+            type: type,
+            content: content
+        }
+    }
+}
+
+export function removeNotification( id ){
+    return { 
+        type: 'REMOVE_NOTIFICATION',
+        id: id
+    }
+}
+
+
 
