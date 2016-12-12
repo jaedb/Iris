@@ -76,6 +76,7 @@
 				width: 49%;
 				padding: 16px 18px;
 				border-bottom: 1px solid $mid_grey;
+				border-top: 0;
 				position: relative;
 
 				&.playlist {
@@ -93,8 +94,8 @@
 					border-top: 1px solid $mid_grey;
 				}
 
-				&:nth-child(2n+1){
-					float: right;
+				&:nth-child(2n){
+					margin-left: 2%;
 				}
 
 				&:hover {
@@ -112,7 +113,6 @@
 	@include responsive( $bp_medium ){
 
 		.content {
-
 			padding: 50px;
 			width: 80%;
 
@@ -120,6 +120,12 @@
 				.list-item {
 					float: none !important;
 					width: auto;
+					margin-left: 0 !important;
+					border-top: 0;
+
+					&:nth-child(1){
+						border-top: 1px solid $mid_grey;
+					}
 				}
 			}
 
