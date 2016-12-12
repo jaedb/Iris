@@ -33,7 +33,7 @@ class SendAuthorizationModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4 className="no-padding">Share Spotify authentication</h4>
+				<h4 className="no-bottom-padding">Share Spotify authentication</h4>
 				<h3 className="grey-text">Send your authentication tokens to another client. When the recipient client imports this, their Iris will have full access to your Spotify account.</h3>
 				<div className="list pusher-connection-list">
 					{

@@ -70,11 +70,11 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else if( this.props.authorized ){
 			return (
-				<button onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
+				<button className="destructive" onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
 			);
 		}else{
 			return (
-				<button onClick={() => this.startAuthorization()}>Log in</button>
+				<button className="primary" onClick={() => this.startAuthorization()}>Log in</button>
 			);
 		}
 	}
