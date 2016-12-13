@@ -21,6 +21,11 @@ class Dropzones extends React.Component{
 				action: 'enqueue'
 			},
 			{
+				title: 'Play next',
+				icon: 'play',
+				action: 'enqueue_next'
+			},
+			{
 				title: 'Add to playlist',
 				icon: 'playlist',
 				action: 'add_to_playlist',
@@ -45,6 +50,10 @@ class Dropzones extends React.Component{
 		switch( target.action ){
 			case 'enqueue':
 				this.props.mopidyActions.enqueueTracks( uris )
+				break
+
+			case 'enqueue_next':
+				this.props.mopidyActions.enqueueTracksNext( uris )
 				break
 
 			case 'add_to_playlist':

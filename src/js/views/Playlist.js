@@ -79,7 +79,7 @@ class Playlist extends React.Component{
 		if( this.isEditable() ){
 			this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
 		}else{
-			alert('Cannot edit a playlist you don\'t own')
+			this.props.uiActions.createNotification( "You can't edit a playlist you don't own!", 'bad' )
 		}
 	}
 

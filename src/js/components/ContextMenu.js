@@ -55,20 +55,7 @@ class ContextMenu extends React.Component{
 
 	playItemsNext(){
 		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-
-		var current_track = this.props.current_track
-		var current_track_index = -1
-		for( var i = 0; i < this.props.current_tracklist.length; i++ ){
-			if( this.props.current_tracklist[i].tlid == this.props.current_track.tlid ){
-				current_track_index = i
-				break
-			}
-		}
-
-		var at_position = null
-		if( current_track_index > -1 ) at_position = current_track_index + 1
-
-		this.props.mopidyActions.enqueueTracks(selected_tracks_uris, at_position);
+		this.props.mopidyActions.enqueueTracksNext(selected_tracks_uris);
 		this.props.uiActions.hideContextMenu();
 	}
 

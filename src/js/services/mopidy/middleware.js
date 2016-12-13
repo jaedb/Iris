@@ -229,6 +229,24 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break;
 
+            case 'MOPIDY_ENQUEUE_TRACKS_NEXT':
+
+                var current_track = store.getState().ui.current_track
+                var current_tracklist = store.getState().ui.current_tracklist
+                var current_track_index = -1
+                for( var i = 0; i < current_tracklist.length; i++ ){
+                    if( current_tracklist[i].tlid == current_track.tlid ){
+                        current_track_index = i
+                        break
+                    }
+                }
+
+                var at_position = null
+                if( current_track_index > -1 ) at_position = current_track_index + 1
+
+                instruct( socket, store, 'tracklist.add', { uris: action.uris, at_position: at_position } )
+                break
+
             case 'MOPIDY_PLAY_URIS':
 
                 // add our first track

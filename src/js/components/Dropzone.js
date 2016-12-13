@@ -11,17 +11,11 @@ export default class Dropzone extends React.Component{
 		super(props);
 	}
 
-	handleMouseUp(e){
-		// TODO: sanity check if this is a valid dropzone
-
-		return this.props.handleMouseUp(e)
-	}
-
 	render(){
 		if( !this.props.data ) return null
 
 		return (
-			<div className="dropzone" onMouseUp={ e => this.handleMouseUp(e) }>
+			<div className="dropzone" onMouseUp={ e => this.props.handleMouseUp(e) }>
 				<Icon className="white" name={ this.props.data.icon } />
 				<span className="title">{ this.props.data.title }</span>
 			</div>
