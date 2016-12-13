@@ -71,7 +71,7 @@ class LibraryPlaylists extends React.Component{
 		}else{
 			return (
 				<section className="grid-wrapper">
-					<PlaylistGrid playlists={this.props.playlists} />
+					<PlaylistGrid playlists={playlists} />
 				</section>				
 			)
 		}
