@@ -260,9 +260,10 @@ export let sortItems = function (array, property, reverse = false){
 
 		var a_value = a
 		var a_property_split = property.split('.')
-		for( var i = 0; i < a_property_split.length; i++ ){
-			if( typeof(a_value[a_property_split[i]]) === 'undefined' ){
+		for (var i = 0; i < a_property_split.length; i++) {
+			if (typeof(a_value[a_property_split[i]]) === 'undefined') {
 				a_value = false
+				break
 			}else{
 				a_value = a_value[a_property_split[i]]
 			}
@@ -271,25 +272,28 @@ export let sortItems = function (array, property, reverse = false){
 		var b_value = b
 		var b_property_split = property.split('.')
 		for( var i = 0; i < b_property_split.length; i++ ){
-			if( typeof(b_value[b_property_split[i]]) === 'undefined' ){
+			if (typeof(b_value[b_property_split[i]]) === 'undefined') {
 				b_value = false
-			}else{
+				break
+			} else {
 				b_value = b_value[b_property_split[i]]
 			}
 		}
 
 		if( typeof(a_value) === 'boolean'){
-			if( a_value && !b_value ) return -1
-			if( !a_value && b_value ) return 1
+			if (a_value && !b_value) return -1
+			if (!a_value && b_value) return 1
 			return 0
 
 		}else if( typeof(a_value) === 'string'){
-			if(a_value.toLowerCase() > b_value.toLowerCase()) return 1
-			return -1
+			if ( !a_value || !b_value ) return 0
+			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1
+			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1
+			return 0
 
 		}else{
-			if( parseInt(a_value) > parseInt(b_value) ) return 1
-			if( parseInt(a_value) < parseInt(b_value) ) return -1
+			if (parseInt(a_value) > parseInt(b_value)) return 1
+			if (parseInt(a_value) < parseInt(b_value)) return -1
 			return 0
 		}
 	}

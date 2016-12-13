@@ -50,7 +50,7 @@ class LibraryPlaylists extends React.Component{
 				{
 					width: 30,
 					label: 'Owner',
-					name: 'owner.id'
+					name: 'owner'
 				},
 				{
 					width: 10,
@@ -98,6 +98,10 @@ class LibraryPlaylists extends React.Component{
 			{
 				value: 'can_edit',
 				label: 'Editable'
+			},
+			{
+				value: 'owner.id',
+				label: 'Owner'
 			},
 			{
 				value: 'tracks.total',

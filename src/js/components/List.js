@@ -35,8 +35,8 @@ export default class List extends React.Component{
 		)
 	}
 
-	renderValue( row, key ){
-		var key = key.split('.')
+	renderValue( row, key_string ){
+		var key = key_string.split('.')
 		var value = row
 
 		for( var i = 0; i < key.length; i++ ){
@@ -47,6 +47,7 @@ export default class List extends React.Component{
 			}
 		}
 
+		if( key_string === 'owner' ) return <Link to={ '/user/'+ value.uri }>{value.id}</Link>
 		if( key[0] === 'artists' ) return <ArtistSentence artists={value} />
 		if( value === true ) return <FontAwesome name="check" />
 		if( typeof(value) === 'number' ) return <span>{value.toLocaleString()}</span>
