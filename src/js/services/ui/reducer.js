@@ -312,6 +312,7 @@ export default function reducer(ui = {}, action){
             if( !action.data ) return ui
             var playlists = [...ui.playlists, ...action.data]
             playlists = helpers.mergeDuplicates(playlists, 'uri')
+            helpers.sortItems(playlists, 'name')
             return Object.assign({}, ui, { 
                 playlists: playlists
             });

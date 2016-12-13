@@ -35,7 +35,7 @@ class LibraryPlaylists extends React.Component{
 	renderView(){
 		if( !this.props.playlists ) return null
 
-		var playlists = this.props.playlists
+		var playlists = Object.assign([], this.props.playlists)
 		if( this.props.sort ){
 			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
 		}
