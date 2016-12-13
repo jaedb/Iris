@@ -51,7 +51,7 @@
 			overflow-y: scroll;			
 			background: lighten($dark_grey, 5%);
 
-			.menu-item-wrapper {
+			.menu-item {
 				width: 150px;
 				&:hover {
 					background: lighten($dark_grey, 10%);
