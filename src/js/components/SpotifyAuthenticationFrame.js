@@ -7,7 +7,8 @@ import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import Thumbnail from './Thumbnail'
 
-import * as actions from '../services/spotify/actions'
+import * as uiActions from '../services/ui/actions'
+import * as spotifyActions from '../services/spotify/actions'
 
 class SpotifyAuthenticationFrame extends React.Component{
 
@@ -39,8 +40,8 @@ class SpotifyAuthenticationFrame extends React.Component{
 				if( !/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin) ) return false;
 				
 				var data = JSON.parse(event.data);
-				self.props.actions.authorizationGranted( data );
-				self.props.actions.getMe();
+				self.props.spotifyActions.authorizationGranted( data );
+				self.props.spotifyActions.getMe();
 
 				// and turn off our authorizing switch
 				self.setState({
@@ -57,6 +58,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
+		this.props.uiActions.createNotification('No popup? Your browse may have blocked it...')
 	}
 
 	renderAuthorizeButton(){
@@ -70,7 +72,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else if( this.props.authorized ){
 			return (
-				<button className="destructive" onClick={() => this.props.actions.authorizationRevoked()}>Log out</button>
+				<button className="destructive" onClick={() => this.props.spotifyActions.authorizationRevoked()}>Log out</button>
 			);
 		}else{
 			return (
@@ -92,7 +94,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			);
 		}else{
 			return (
-				<button onClick={() => this.props.actions.refreshingToken()}>Refresh token</button>
+				<button onClick={() => this.props.spotifyActions.refreshingToken()}>Refresh token</button>
 			);
 		}
 	}
@@ -119,7 +121,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		actions: bindActionCreators(actions, dispatch)
+		uiActions: bindActionCreators(uiActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }
 

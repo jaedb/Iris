@@ -28,7 +28,7 @@
 	}
 
 	.content {
-		padding: 100px;
+		padding: 100px 25%;
 		margin: 0 auto;
 		width: 50%;
 		color: #FFFFFF;
@@ -113,7 +113,7 @@
 	@include responsive( $bp_medium ){
 
 		.content {
-			padding: 50px;
+			padding: 50px 10%;
 			width: 80%;
 
 			.list {

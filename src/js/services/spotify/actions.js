@@ -160,10 +160,6 @@ export function connect(){
  * Handle authorization process
  **/
 
-export function startAuthorization(){
-    return { type: 'SPOTIFY_START_AUTHORIZATION' }
-}
-
 export function authorizationGranted( data ){
     data.token_expiry = new Date().getTime() + data.expires_in;
     return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
