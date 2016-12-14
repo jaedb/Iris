@@ -1,12 +1,13 @@
 
 import * as helpers from '../../helpers'
 
-export function showContextMenu( e, context = false, data ){
+export function showContextMenu( e, data, context = false, trigger = 'click' ){
     return {
         type: 'SHOW_CONTEXT_MENU',
         position_x: e.clientX,
         position_y: e.clientY,
         context: context,
+        trigger: trigger,
         data: data
     }
 }

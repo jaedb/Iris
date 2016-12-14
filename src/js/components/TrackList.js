@@ -81,7 +81,7 @@ class TrackList extends React.Component{
 						selected_tracks: selected_tracks,
 						selected_tracks_indexes: this.tracksIndexes( selected_tracks )
 					}
-					this.props.uiActions.showContextMenu( e, this.props.context, data )
+					this.props.uiActions.showContextMenu( e, data, this.props.context, 'touch' )
 				}else{
 					this.props.uiActions.hideContextMenu()
 				}
@@ -136,7 +136,7 @@ class TrackList extends React.Component{
 			selected_tracks: selected_tracks,
 			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
 		}
-		this.props.uiActions.showContextMenu( e, this.props.context, data )
+		this.props.uiActions.showContextMenu( e, data, this.props.context, 'click' )
 	}
 
 	toggleTrackSelections(e, index){

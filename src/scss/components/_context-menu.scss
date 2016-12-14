@@ -60,7 +60,8 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	&.touch{
+		
 		bottom: 0 !important;
 		left: 0 !important;
 		right: 0 !important;

@@ -14,22 +14,31 @@ class ContextMenu extends React.Component{
 
 	constructor(props) {
 		super(props);
-		//this.handleScroll = this.handleScroll.bind(this);
+		this.handleScroll = this.handleScroll.bind(this)
+		this.handleClick = this.handleClick.bind(this)
 	}
-/*
+
 	componentDidMount(){		
-		window.addEventListener("scroll", this.handleScroll, false);
+		window.addEventListener("scroll", this.handleScroll, false)
+		window.addEventListener("click", this.handleClick, false)
 	}
 
 	componentWillUnmount(){		
-		window.removeEventListener("scroll", this.handleScroll, false);
+		window.removeEventListener("scroll", this.handleScroll, false)
+		window.removeEventListener("click", this.handleClick, false)
 	}
 
 	handleScroll(){
-		if( this.props.context_menu.show ){
+		if( this.props.context_menu.show && this.props.context_menu.trigger == 'click' ){
 			this.props.uiActions.hideContextMenu();
 		}
-	}*/
+	}
+
+	handleClick(){
+		if( this.props.context_menu.show && this.props.context_menu.trigger == 'click' ){
+			this.props.uiActions.hideContextMenu();
+		}
+	}
 
 	playQueueItem(){
 		var selectedTracks = this.props.context_menu.data.selected_tracks;
@@ -191,7 +200,7 @@ class ContextMenu extends React.Component{
 		}
 
 		return (
-			<div className="context-menu" style={style}>
+			<div className={ this.props.context_menu.trigger+" context-menu"} style={style}>
 				{ this.renderItems() }
 			</div>
 		);

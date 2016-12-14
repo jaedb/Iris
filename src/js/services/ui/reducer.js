@@ -29,6 +29,7 @@ export default function reducer(ui = {}, action){
             		position_x: action.position_x,
             		position_y: action.position_y,
             		context: action.context, 
+                    trigger: action.trigger,
             		data: action.data
             	}
             });
