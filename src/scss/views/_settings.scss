@@ -54,4 +54,10 @@
 	section {
 		padding: 40px;
 	}
+
+	@include responsive( $bp_medium ){
+		section {
+			padding: 20px;
+		}
+	}
 }

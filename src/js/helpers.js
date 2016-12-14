@@ -311,3 +311,31 @@ export let sortItems = function (array, property, reverse = false){
 export let isNumeric = function (data) {
 	return !isNaN(parseFloat(data)) && isFinite(data)
 }
+
+
+/**
+ * Set window title
+ * @param track
+ **/
+export let setWindowTitle = function (track = false, play_state = false){
+
+    var title = 'No track playing'
+    
+    if (track) {
+        var icon = '\u25A0 '
+        var artistString = ''
+        
+        if (track.artists) {
+            for( var i = 0; i < track.artists.length; i++) {
+                if (artistString != '') artistString += ', '
+                artistString += track.artists[i].name
+            }
+        }
+
+        if (play_state && play_state == 'playing') icon = '\u25B6 '
+
+        title = icon +' '+ track.name +' - '+ artistString
+    }
+    
+    document.title = title
+}

@@ -23,7 +23,6 @@ const UIMiddleware = (function(){
                     3000
                 )
 
-                // we don't want to stop things happening as usual
                 next(action)
                 break
 
@@ -31,7 +30,17 @@ const UIMiddleware = (function(){
 
                 store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))
 
-                // we don't want to stop things happening as usual
+                next(action)
+                break
+
+
+            case 'MOPIDY_STATE':
+                helpers.setWindowTitle(store.getState().ui.current_track, action.data)
+                next(action)
+                break
+
+            case 'MOPIDY_CURRENTTLTRACK':
+                if( action.data && action.data.track ) helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state)
                 next(action)
                 break
 
