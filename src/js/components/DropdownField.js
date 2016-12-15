@@ -12,6 +12,22 @@ export default class DropdownField extends React.Component{
 		this.state = {
 			expanded: false
 		}
+		this.handleClick = this.handleClick.bind(this)
+	}
+
+	componentDidMount(){		
+		window.addEventListener("click", this.handleClick, false)
+	}
+
+	componentWillUnmount(){		
+		window.removeEventListener("click", this.handleClick, false)
+	}
+
+	handleClick(e){
+		// TODO: remove dependency on jQuery and explore the performance of this functionality
+		if( $(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ','_').toLowerCase() && this.state.expanded ){
+			this.setState({ expanded: false })
+		}
 	}
 
 	handleChange(value){
@@ -29,8 +45,11 @@ export default class DropdownField extends React.Component{
 		var classname = 'dropdown-field'
 		if( this.state.expanded ) classname += ' expanded'
 
+		var current_value = this.props.options[0].value
+		if( this.props.value ) current_value = this.props.value
+
 		return (
-			<div className={classname}>
+			<div className={classname} data-key={this.props.name.replace(' ','_').toLowerCase()}>
 				<div className="label" onClick={ () => this.handleToggle() }>
 					<FontAwesome name={this.props.icon} />
 					<span className="text">&nbsp; { this.props.name }</span>
@@ -40,7 +59,7 @@ export default class DropdownField extends React.Component{
 						this.props.options.map( option => {
 							return (
 								<div className="option" key={ option.value } onClick={ e => this.handleChange(option.value) }>
-									{ option.value == this.props.value ? <FontAwesome name="check" /> : null }
+									{ option.value == current_value ? <FontAwesome name="check" /> : null }
 									{ option.label }
 								</div>
 							)
