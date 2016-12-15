@@ -22,7 +22,7 @@ export default class List extends React.Component{
 	}
 
 	renderHeader(){
-		if( !this.props.columns ) return null
+		if (!this.props.columns || this.props.noheader) return null
 
 		return (
 			<div className="list-item header cf">
@@ -39,31 +39,35 @@ export default class List extends React.Component{
 		var key = key_string.split('.')
 		var value = row
 
-		for( var i = 0; i < key.length; i++ ){
-			if( typeof(value[key[i]]) !== 'undefined' ){
-				value = value[key[i]]
-			}else{
+		for (var i = 0; i < key.length; i++) {
+			if (typeof(value[key[i]]) === 'undefined' || value[key[i]].trim() == '') {
 				return <span>-</span>
+			} else {
+				value = value[key[i]]
 			}
 		}
 
-		if( key_string === 'owner' ) return <Link to={ '/user/'+ value.uri }>{value.id}</Link>
-		if( key[0] === 'artists' ) return <ArtistSentence artists={value} />
-		if( value === true ) return <FontAwesome name="check" />
-		if( typeof(value) === 'number' ) return <span>{value.toLocaleString()}</span>
+		if (key_string === 'owner') return <Link to={ '/user/'+ value.uri }>{value.id}</Link>
+		if (key[0] === 'artists') return <ArtistSentence artists={value} />
+		if (value === true) return <FontAwesome name="check" />
+		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>
 		return <span>{value}</span>
 	}
 
 	render(){
-		if( !this.props.rows ) return null
+		if (!this.props.rows) return null
 
 		return (
 			<div className="list">
 				{ this.renderHeader() }
 				{
 					this.props.rows.map( (row, row_index) => {
+
+						var className = 'list-item'
+						if( row.type ) className += ' '+row.type
+
 						return (
-							<div onClick={ e => this.handleClick(e, row.uri)} className="list-item cf" key={row_index}>
+							<div onClick={ e => this.handleClick(e, row.uri)} className={className} key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
 										return (

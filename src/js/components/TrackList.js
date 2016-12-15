@@ -231,18 +231,26 @@ class TrackList extends React.Component{
 		// by default, do nothing
 	}
 
+	renderHeader(){
+		if( this.props.noheader ) return null
+			
+		return (
+			<div className="list-item header track">
+				<span className="col name">Name</span>
+				<span className="col artists">Artists</span>
+				<span className="col album">Album</span>
+				<span className="col duration">Length</span>
+			</div>
+		)
+	}
+
 	render(){
 		if( !this.state.tracks ) return null
 
 		let self = this;
 		return (
 			<div className="track-list">
-				<div className="list-item header track">
-					<span className="col name">Name</span>
-					<span className="col artists">Artists</span>
-					<span className="col album">Album</span>
-					<span className="col duration">Length</span>
-				</div>
+				{ this.renderHeader() }
 				{
 					this.state.tracks.map(
 						(track, index) => {

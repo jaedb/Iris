@@ -3,9 +3,11 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
 import Header from '../../components/Header'
 import List from '../../components/List'
+import TrackList from '../../components/TrackList'
 
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -40,26 +42,51 @@ class LibraryLocalDirectory extends React.Component{
 		}
 	}
 
+	arrange_directory( directory ){
+		var folders = []
+		var tracks = []
+
+		for (var i = 0; i < directory.length; i++) {
+			if (directory[i].type && directory[i].type == 'track') {
+				tracks.push( directory[i] )
+			} else {
+				folders.push( directory[i] )
+			}
+		}
+
+		return {
+			folders: folders,
+			tracks: tracks
+		}
+	}
+
 	render(){
 		if( !this.props.directory ) return null
 
+		var items = this.arrange_directory( this.props.directory )
+
+		var actions = null
+		if (this.props.params.uri != 'local:directory' ){
+			actions = (
+				<button onClick={ () => window.history.back() }>
+					<FontAwesome name="reply" />&nbsp;
+					Back
+				</button>
+			)
+		}
+
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title="Local files" />
+				<Header icon="music" title="Local files" actions={actions} />
 				<section className="list-wrapper">
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.directory} link_prefix="/library/local/directory/" />
+
+					<List columns={[{ name: 'name', width: '100'}]} rows={items.folders} link_prefix="/library/local/directory/" />
+					<TrackList tracks={items.tracks} noheader />
 				</section>
 			</div>
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {
