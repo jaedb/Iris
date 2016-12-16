@@ -2,6 +2,7 @@
 /mopidy_iris/static/
 /Mopidy_Iris.egg-info/
 public_html
+/dist/
 /.sass-cache/
 *.orig
 Thumbs.db

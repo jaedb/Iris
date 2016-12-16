@@ -1,2 +1,2 @@
-include mopidy_spotmop/ext.conf
-recursive-include mopidy_spotmop/static *
+include mopidy_iris/ext.conf
+recursive-include mopidy_iris/static *

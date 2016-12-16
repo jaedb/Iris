@@ -11,11 +11,11 @@ def get_version(filename):
 setup(
     name='Mopidy-Iris',
     version=get_version('mopidy_iris/__init__.py'),
-    url='https://github.com/jaedb/spotmop',
+    url='https://github.com/jaedb/iris',
     license='Apache License, Version 2.0',
     author='James Barnsley',
     author_email='james@barnsley.nz',
-    description='A fully-functional Mopidy Web-Client encompassing Spotify and many other backends',
+    description='A fully-functional Mopidy web client encompassing Spotify and many other backends',
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
