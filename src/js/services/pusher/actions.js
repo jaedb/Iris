@@ -10,14 +10,6 @@ export function setPort( port ){
 	}
 }
 
-export function changeUsername( username ){
-	return {
-		type: 'PUSHER_INSTRUCT',
-		action: 'change_username',
-		data: username
-	}
-}
-
 export function connect(){
 	return {
 		type: 'PUSHER_CONNECT'

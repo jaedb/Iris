@@ -166,7 +166,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
             elif messageJson['action'] == 'change_username':
                 
                 # username is the only value we allow clients to change
-                connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['data']
+                connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['username']
                 
                 # respond to request
                 send_message(
