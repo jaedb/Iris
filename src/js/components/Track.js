@@ -59,6 +59,7 @@ export default class Track extends React.Component{
 				onDoubleClick={ e => this.props.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
+					{ this.props.track.playing ? <FontAwesome name="play" className="play-state" fixedWidth /> : null }
 					<span className="col name">
 						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 					</span>

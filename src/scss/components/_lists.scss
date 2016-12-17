@@ -57,8 +57,29 @@
 			font-size: 10px;
 		}
 
+		.play-state {
+			display: none;
+			position: absolute;
+			top: 13px;
+			left: 15px;
+			font-size: 10px;
+		}
+
 		&.playing {
 			font-weight: 600;
+			.play-state {
+				display: block;
+				opacity: 1;
+			}
+		}
+
+		&.playing.selected {
+			.select-state {
+				left: 23px;
+			}
+			.play-state {
+				left: 10px;
+			}
 		}
 
 		:root .dragging &:hover {

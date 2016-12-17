@@ -170,19 +170,21 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     ##
     def get_version( self ):
         
-        url = 'https://pypi.python.org/pypi/Mopidy-Spotmop/json'
+        url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
         req = urllib2.Request(url)
         
         try:
             response = urllib2.urlopen(req, timeout=30).read()
             response = json.loads(response)
             latest_version = response['info']['version']
+            
+            # compare our versions, and convert result to boolean
+            upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
+            upgrade_available = ( upgrade_available == 1 )
+
         except urllib2.HTTPError as e:
-            latest_version = False
-        
-        # compare our versions, and convert result to boolean
-        upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
-        upgrade_available = ( upgrade_available == 1 )
+            latest_version = '0.0.0'
+            upgrade_available = False
         
         # prepare our response
         data = {
