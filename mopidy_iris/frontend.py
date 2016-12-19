@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import logging, json, pykka, pylast, pusher, urllib, urllib2, os, sys, mopidy_spotmop, subprocess
+import logging, json, pykka, pylast, pusher, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -11,7 +11,6 @@ from spotipy import Spotify
 
 # import logger
 logger = logging.getLogger(__name__)
-
     
 ###
 # Spotmop supporting frontend
@@ -25,7 +24,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         super(IrisFrontend, self).__init__()
         self.config = config
         self.core = core
-        self.version = mopidy_spotmop.__version__
+        self.version = mopidy_iris.__version__
         self.is_root = ( os.geteuid() == 0 )
         self.spotify_token = False
         self.radio = {
@@ -179,6 +178,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             latest_version = response['info']['version']
             
             # compare our versions, and convert result to boolean
+            logger.info(self.version)
             upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
             upgrade_available = ( upgrade_available == 1 )
 
