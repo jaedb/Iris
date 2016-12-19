@@ -1,5 +1,6 @@
 
-var actions = require('./actions.js')
+var pusherActions = require('./actions.js')
+var uiActions = require('../ui/actions.js')
 var helpers = require('../../helpers.js')
 
 const PusherMiddleware = (function(){ 

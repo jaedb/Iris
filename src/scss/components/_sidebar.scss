@@ -4,9 +4,9 @@ aside{
 	top: 0;
 	left: 0;
 	bottom: 0;
-	z-index: 95;
+	z-index: 96;
 	background: #111111;
-	width: 200px;
+	width: 220px;
 	overflow: hidden;
 	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
 
@@ -22,11 +22,21 @@ aside{
 	}
 
 	@include responsive( $bp_medium ){
-		width: 50vw;
-		left: -50vw;
+		width: 220px;
+		left: -220px;
+		position: fixed;
+		z-index: 98;
 
 		.sidebar-open & {
 			left: 0px;
+		}
+
+		.liner {
+			bottom: 0 !important;
+		}
+
+		.thumbnail {
+			display: none;
 		}
 	}
 

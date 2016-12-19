@@ -44,6 +44,12 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'PUSHER_VERSION':
+                if( action.data.version.upgrade_available )
+                store.dispatch( uiActions.createNotification( 'Version '+action.data.version.latest+' is available. See settings to upgrade.' ) )
+                next( action )
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action)

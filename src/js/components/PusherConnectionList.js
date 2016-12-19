@@ -27,8 +27,8 @@ class PusherConnectionList extends React.Component{
 	}
 
 	render(){
-		if( !this.props.connected ) return null;
-		if( typeof(this.props.connections) == 'undefined' || this.props.connections.length <= 0 ) return null;
+		if( !this.props.connected ) return <div className="pusher-connection-list grey-text">Not connected</div>
+		if( typeof(this.props.connections) == 'undefined' || this.props.connections.length <= 0 ) return <div className="pusher-connection-list grey-text">No connections</div>;
 
 		return (
 			<div className="pusher-connection-list">

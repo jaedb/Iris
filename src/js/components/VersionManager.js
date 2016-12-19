@@ -26,7 +26,7 @@ class VersionManager extends React.Component{
 		}
 
 		if( !this.props.pusher.version.is_root ){
-			return <button className="secondary" disabled>Cannot upgrade</button>
+			return <button className="secondary" disabled>Not running as root</button>
 		}
 
 		if( this.props.pusher.version.upgrade_available ){
@@ -39,8 +39,8 @@ class VersionManager extends React.Component{
 	render(){
 		return (
 			<div className="version-manager">
-				<span>{ this.props.pusher.version.current } installed</span>
 				{ this.renderUpgradeButton() }
+				<div className="description">{ this.props.pusher.version.current } currently installed</div>
 			</div>
 		);
 	}

@@ -256,9 +256,7 @@ class Settings extends React.Component{
 					<div className="field">
 						<div className="name">Version</div>
 						<div className="input">
-							<span className="text">
-				        		<VersionManager />
-			        		</span>
+				        	<VersionManager />
 			        	</div>
 			        </div>
 

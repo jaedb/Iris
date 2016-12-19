@@ -31,10 +31,10 @@ class Debug extends React.Component{
 	}
 
 	componentDidMount(){
-		if( this.props.pusher.connectionid ){
+		if( this.props.connectionid ){
 			var data = {
 				action: "notification",
-				recipients: [this.props.pusher.connectionid],
+				recipients: [this.props.connectionid],
 				data: {
 					title: "Title",
 					body: "Test notification",
@@ -49,7 +49,6 @@ class Debug extends React.Component{
 		e.preventDefault()
 		console.info('Mopidy Debugger', this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
 		this.props.mopidyActions.debug( this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
-		this.props.uiActions.createNotification( 'Mopidy instruction sent' )
 	}
 
 	callPusher(e){
@@ -57,13 +56,52 @@ class Debug extends React.Component{
 		console.info('Pusher Debugger', this.state.pusher_call, JSON.parse(this.state.pusher_data) )
 		this.props.pusherActions.debug( this.state.pusher_call, JSON.parse(this.state.pusher_data) )
 		this.props.uiActions.debugResponse({ status: 1, message: 'Sent', call: this.state.pusher_call, data: this.state.pusher_data })
-		this.props.uiActions.createNotification( 'Pusher instruction sent' )
 	}
 
 	render(){
 		return (
 			<div className="view debugger-view">
 				<Header icon="cog" title="Debugger" />
+
+				<section>
+
+					<h4 className="underline">User interface</h4>
+					<form>
+						<div className="field radio">
+							<div className="name">Touch/click behavior</div>
+							<div className="input">
+								<label>
+									<input 
+										type="radio"
+										name="touch_mode"
+										value="default"
+										checked={ !this.props.trigger_override }
+										onChange={ e => this.props.uiActions.set({ trigger_override: null })} />
+									<span className="label">Default</span>
+								</label>
+								<label>
+									<input 
+										type="radio"
+										name="touch_mode"
+										value="click"
+										checked={ this.props.trigger_override == 'click' }
+										onChange={ e => this.props.uiActions.set({ trigger_override: e.target.value })} />
+									<span className="label">Click</span>
+								</label>
+								<label>
+									<input 
+										type="radio"
+										name="touch_mode"
+										value="touch"
+										checked={ this.props.trigger_override == 'touch' }
+										onChange={ e => this.props.uiActions.set({ trigger_override: e.target.value })} />
+									<span className="label">Touch</span>
+								</label>
+							</div>
+						</div>
+					</form>
+
+		        </section>
 
 				<section>
 
@@ -132,7 +170,7 @@ class Debug extends React.Component{
 		        <section>
 					<h4 className="underline">Response</h4>
 					<pre>
-						{ this.props.ui.debug_response ? JSON.stringify(this.props.ui.debug_response, null, 2) : null }
+						{ this.props.debug_response ? JSON.stringify(this.props.debug_response, null, 2) : null }
 					</pre>
 		        </section>
 			</div>
@@ -148,7 +186,11 @@ class Debug extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		connectionid: state.pusher.connectionid,
+		trigger_override: state.ui.trigger_override,
+		debug_response: state.ui.debug_response
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

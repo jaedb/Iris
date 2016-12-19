@@ -4,6 +4,7 @@ import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
 var lastfmActions = require('../lastfm/actions.js')
+var pusherActions = require('../pusher/actions.js')
 
 const MopidyMiddleware = (function(){ 
 

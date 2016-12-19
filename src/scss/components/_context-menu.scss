@@ -11,25 +11,12 @@
 		display: block;
 		position: relative;
 
-		&:hover {
-			.menu-item {
-				background: lighten($dark_grey, 5%);
-			}
-			.submenu {
-				display: block;
-			}
-		}
-
 		.menu-item {
 			cursor: pointer;
 			display: block;
 			padding: 8px 12px;
 			width: 120px;
 			box-sizing: border-box;	
-		}
-
-		&:not(:first-child) .menu-item {
-			border-top: 1px solid lighten($dark_grey, 8%);
 		}
 
 		.icon {
@@ -58,6 +45,24 @@
 				}
 			}
 		}
+
+		&.cancel {
+			float: right;
+			opacity: 0.5;
+		}
+
+		&:not(:first-child) .menu-item {
+			border-top: 1px solid lighten($dark_grey, 8%);
+		}
+
+		&:hover {
+			.menu-item {
+				background: lighten($dark_grey, 5%);
+			}
+			.submenu {
+				display: block;
+			}
+		}
 	}
 
 	&.touch{
@@ -74,8 +79,8 @@
 			.menu-item {
 				display: inline-block;
 				text-align: center;
-				width: 60px;
-				height: 60px;
+				width: 56px;
+				height: 56px;
 				border: 0 !important;
 				vertical-align: top;
 

@@ -101,6 +101,10 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu()
 	}
 
+	closeAndDeselectTracks(){
+		this.props.uiActions.hideContextMenu();
+	}
+
 	renderPlaylistSubmenu(){
 		var playlists = []
 		for( var i = 0; i < this.props.playlists.length; i++ ){
@@ -124,8 +128,8 @@ class ContextMenu extends React.Component{
 		)
 	}
 
-	renderItems(){
-		var items = [];
+	renderItems(trigger){
+		var items = []
 
 		switch( this.props.context_menu.context ){
 
@@ -135,8 +139,8 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
 					{ handleClick: 'removeFromQueue', label: 'Remove', icon: 'trash' }
-				];
-				break;
+				]
+				break
 
 			case 'editable-playlist':
 				items = [
@@ -146,8 +150,8 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
 					{ handleClick: 'removeFromPlaylist', label: 'Remove', icon: 'trash' }
-				];
-				break;
+				]
+				break
 
 			default:
 				items = [
@@ -156,9 +160,18 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
-				];
-				break;
+				]
+				break
 		}
+
+		var closeItem = (
+			<span className="menu-item-wrapper cancel">
+				<a className="menu-item" onClick={ (e) => this.closeAndDeselectTracks(e) }>
+					<FontAwesome className="icon" fixedWidth name='close' />
+					<span className="label">Cancel</span>
+				</a>
+			</span>
+		)
 
 		return (
 			<div>
@@ -187,8 +200,9 @@ class ContextMenu extends React.Component{
 						}
 					})
 				}
+				{ trigger == 'touch' ? closeItem : null }
 			</div>
-		);
+		)
 	}
 
 	render(){
@@ -199,9 +213,18 @@ class ContextMenu extends React.Component{
 			top: this.props.context_menu.position_y,
 		}
 
+		var className = 'context-menu'
+		var trigger = 'click'
+		if (this.props.trigger_override) {
+			className += ' '+this.props.trigger_override
+			trigger = this.props.trigger_override
+		} else {
+			className += ' '+this.props.context_menu.trigger
+		}
+
 		return (
-			<div className={ this.props.context_menu.trigger+" context-menu"} style={style}>
-				{ this.renderItems() }
+			<div className={className} style={style}>
+				{ this.renderItems(trigger) }
 			</div>
 		);
 	}
@@ -209,6 +232,7 @@ class ContextMenu extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		trigger_override: state.ui.trigger_override,
 		context_menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
 		current_tracklist: state.ui.current_tracklist,
