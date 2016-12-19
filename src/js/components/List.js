@@ -40,7 +40,9 @@ export default class List extends React.Component{
 		var value = row
 
 		for (var i = 0; i < key.length; i++) {
-			if (typeof(value[key[i]]) === 'undefined' || value[key[i]].trim() == '') {
+			if (typeof(value[key[i]]) === 'undefined') {
+				return <span>-</span>
+			} else if ( typeof(value[key[i]]) === 'string' && value[key[i]].replace(' ','') == '') {
 				return <span>-</span>
 			} else {
 				value = value[key[i]]

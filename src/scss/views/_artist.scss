@@ -90,8 +90,10 @@
 
 			.parallax {
 				height: 100%;
+				background: $darkest_grey;
 				canvas {
-					@include blur( 10px );
+					opacity: 0.2;
+					@include blur( 5px );
 				}
 			}
 

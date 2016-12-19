@@ -215,9 +215,9 @@ class ContextMenu extends React.Component{
 
 		var className = 'context-menu'
 		var trigger = 'click'
-		if (this.props.trigger_override) {
-			className += ' '+this.props.trigger_override
-			trigger = this.props.trigger_override
+		if (this.props.emulate_touch) {
+			className += ' touch'
+			trigger = 'touch'
 		} else {
 			className += ' '+this.props.context_menu.trigger
 		}
@@ -232,7 +232,7 @@ class ContextMenu extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		trigger_override: state.ui.trigger_override,
+		emulate_touch: state.ui.emulate_touch,
 		context_menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
 		current_tracklist: state.ui.current_tracklist,

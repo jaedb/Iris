@@ -67,35 +67,16 @@ class Debug extends React.Component{
 
 					<h4 className="underline">User interface</h4>
 					<form>
-						<div className="field radio">
-							<div className="name">Touch/click behavior</div>
+						<div className="field checkbox">
+							<div className="name">Emulation</div>
 							<div className="input">
 								<label>
 									<input 
-										type="radio"
-										name="touch_mode"
-										value="default"
-										checked={ !this.props.trigger_override }
-										onChange={ e => this.props.uiActions.set({ trigger_override: null })} />
-									<span className="label">Default</span>
-								</label>
-								<label>
-									<input 
-										type="radio"
-										name="touch_mode"
-										value="click"
-										checked={ this.props.trigger_override == 'click' }
-										onChange={ e => this.props.uiActions.set({ trigger_override: e.target.value })} />
-									<span className="label">Click</span>
-								</label>
-								<label>
-									<input 
-										type="radio"
-										name="touch_mode"
-										value="touch"
-										checked={ this.props.trigger_override == 'touch' }
-										onChange={ e => this.props.uiActions.set({ trigger_override: e.target.value })} />
-									<span className="label">Touch</span>
+										type="checkbox"
+										name="emulate_touch"
+										checked={ this.props.emulate_touch }
+										onChange={ e => this.props.uiActions.set({ emulate_touch: !this.props.emulate_touch })} />
+									<span className="label">Mouse events as touch</span>
 								</label>
 							</div>
 						</div>
@@ -188,7 +169,7 @@ class Debug extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		connectionid: state.pusher.connectionid,
-		trigger_override: state.ui.trigger_override,
+		emulate_touch: state.ui.emulate_touch,
 		debug_response: state.ui.debug_response
 	}
 }

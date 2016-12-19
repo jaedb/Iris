@@ -153,8 +153,13 @@ class Settings extends React.Component{
 									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
 									value={ this.state.mopidy_port } />
 							</div>
+						</div>					
+						<div className="field">
+							<div className="name"></div>
+							<div className="input">
+								<button type="submit" className="secondary">Apply</button>
+							</div>
 						</div>
-						<button type="submit" className="secondary">Apply</button>
 					</form>
 
 					<h4 className="underline">Pusher</h4>
