@@ -41,4 +41,12 @@
 			}
 		}
 	}
+
+	.radio {
+		margin: 20px auto 0;
+		padding: 10px 12px;
+		max-width: 400px;
+		background: $faint_grey;
+		box-sizing: border-box;
+	}
 }

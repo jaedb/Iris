@@ -2,8 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-
 import FontAwesome from 'react-fontawesome'
+
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import SidebarToggleButton from '../components/SidebarToggleButton'
@@ -45,10 +45,15 @@ class Queue extends React.Component{
 	renderRadio(){
 		if (!this.props.radio || !this.props.radio.enabled) return null
 
+		var seed_sentence = 'nothing'
+		if (this.props.radio.seed_artists.length > 0) seed_sentence = this.props.radio.seed_artists.length+' artists'
+		if (this.props.radio.seed_genres.length > 0) seed_sentence =this.props.radio.seed_artists.length+' genres'
+		if (this.props.radio.seed_tracks.length > 0) seed_sentence =this.props.radio.seed_artists.length+' tracks'
+
 		return (
 			<div className="radio">
-				Playing radio
-				<a onClick={ e => this.props.pusherActions.stopRadio() }>Stop radio</a>
+				Playing radio based on {seed_sentence}
+				<a className="text-button destructive pull-right" onClick={ e => this.props.pusherActions.stopRadio() }><FontAwesome name="close" />&nbsp; Stop radio</a>
 			</div>
 		)
 	}

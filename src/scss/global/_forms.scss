@@ -22,6 +22,14 @@ input[type="date"] {
 	}
 }
 
+.text-button {
+	cursor: pointer;
+
+	&.destructive {		
+		color: $red;
+	}
+}
+
 .button,
 button,
 input[type="button"],

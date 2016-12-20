@@ -128,13 +128,11 @@ class ContextMenu extends React.Component{
 		)
 	}
 
-	renderItems(trigger){
-		var items = []
-
-		switch( this.props.context_menu.context ){
+	getItems(trigger){
+		switch (this.props.context_menu.context) {
 
 			case 'queue':
-				items = [
+				var items = [
 					{ handleClick: 'playQueueItem', label: 'Play', icon: 'play' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
@@ -143,7 +141,7 @@ class ContextMenu extends React.Component{
 				break
 
 			case 'editable-playlist':
-				items = [
+				var items = [
 					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
 					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
@@ -154,7 +152,7 @@ class ContextMenu extends React.Component{
 				break
 
 			default:
-				items = [
+				var items = [
 					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
 					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
@@ -163,6 +161,12 @@ class ContextMenu extends React.Component{
 				]
 				break
 		}
+
+		return items
+	}
+
+	renderItems(trigger){
+		var items = this.getItems(trigger)
 
 		var closeItem = (
 			<span className="menu-item-wrapper cancel">
@@ -222,8 +226,18 @@ class ContextMenu extends React.Component{
 			className += ' '+this.props.context_menu.trigger
 		}
 
+		var items = this.getItems(trigger)
+		var height = 0
+		if (items) height = items.length * 34
+
+		console.log(style.top, height)
+
 		if (this.props.context_menu.position_x > (window.innerWidth - 154)) className += ' right-align'
 		if (this.props.context_menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
+		if (this.props.context_menu.position_y > (window.innerHeight - height)){
+			style.top = style.top - height
+			className += ' bottom-align-submenu'
+		}
 
 		return (
 			<div className={className} style={style}>

@@ -16,6 +16,11 @@
 		right: 140px !important;
 	}
 
+	&.bottom-align-submenu .submenu {
+		top: auto !important;
+		bottom: 0 !important;
+	}
+
 	.menu-item-wrapper {
 		display: block;
 		position: relative;

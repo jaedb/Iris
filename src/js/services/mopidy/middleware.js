@@ -211,7 +211,6 @@ const MopidyMiddleware = (function(){
                 })
                 break;
 
-            // send an instruction to the websocket
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
                 var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
@@ -250,12 +249,17 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_URIS':
 
+                // stop the radio
+                if (store.getState().ui.radio && store.getState().ui.radio.enabled){
+                    store.dispatch( pusherActions.stopRadio() )
+                }
+
                 // add our first track
                 instruct( socket, store, 'tracklist.add', { uri: action.uris[0], at_position: 0 } )
                     .then( response => {
 
                         if( !response || response.length <= 0 ){
-                            console.error('Could not add URI to tracklist', action.uris[0])
+                            store.dispatch( uiActions.createNotification('Could not add URI(s) to tracklist', 'error') )
                         }else{
                             // play it
                             store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );                            

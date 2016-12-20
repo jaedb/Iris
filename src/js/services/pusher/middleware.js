@@ -190,6 +190,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_STOP_RADIO':
+                store.dispatch( uiActions.createNotification('Stopping radio') )
                 var data = {
                     action: 'stop_radio',
                     seed_artists: [],
