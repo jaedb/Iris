@@ -7,6 +7,15 @@
 	background: $dark_grey;
 	color: #FFFFFF;
 
+	&.right-align {
+		margin-left: -140px;
+	}
+
+	&.right-align-submenu .submenu {
+		left: auto !important;
+		right: 140px !important;
+	}
+
 	.menu-item-wrapper {
 		display: block;
 		position: relative;
@@ -15,7 +24,7 @@
 			cursor: pointer;
 			display: block;
 			padding: 8px 12px;
-			width: 120px;
+			width: 140px;
 			box-sizing: border-box;	
 		}
 
@@ -32,14 +41,14 @@
 		.submenu {
 			display: none;
 			position: absolute;
-			left: 120px;
+			left: 140px;
 			top: 0;
 			max-height: 200px;
 			overflow-y: scroll;			
 			background: lighten($dark_grey, 5%);
 
 			.menu-item {
-				width: 150px;
+				width: 140px;
 				&:hover {
 					background: lighten($dark_grey, 10%);
 				}

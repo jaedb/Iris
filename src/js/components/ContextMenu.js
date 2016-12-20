@@ -222,6 +222,9 @@ class ContextMenu extends React.Component{
 			className += ' '+this.props.context_menu.trigger
 		}
 
+		if (this.props.context_menu.position_x > (window.innerWidth - 154)) className += ' right-align'
+		if (this.props.context_menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
+
 		return (
 			<div className={className} style={style}>
 				{ this.renderItems(trigger) }
