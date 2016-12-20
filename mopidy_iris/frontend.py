@@ -51,6 +51,33 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         
         # get a fresh spotify authentication token and store for future use
         # self.refresh_spotify_token()
+
+
+    ##
+    # Get a new spotify authentication token for server-side use
+    #
+    # Uses the Client Credentials Flow, so is invisible to the user. We need this token for
+    # any backend spotify requests (we don't tap in to Mopidy-Spotify, yet). Also used for
+    # passing token to frontend for javascript requests without use of the Authorization Code Flow.
+    ##
+    def refresh_spotify_token( self ):
+    
+        url = 'https://accounts.spotify.com/api/token'
+        authorization = 'YTg3ZmI0ZGJlZDMwNDc1YjhjZWMzODUyM2RmZjUzZTI6ZDdjODlkMDc1M2VmNDA2OGJiYTE2NzhjNmNmMjZlZDY='
+
+        headers = {'Authorization' : 'Basic ' + authorization}
+        data = {'grant_type': 'client_credentials'}
+        data_encoded = urllib.urlencode( data )
+        req = urllib2.Request(url, data_encoded, headers)
+
+        try:
+            response = urllib2.urlopen(req, timeout=30).read()
+            response_dict = json.loads(response)
+            self.spotify_token = response_dict
+            return response_dict
+        except urllib2.HTTPError as e:
+            return e
+
     
     ##
     # Listen for core events, and update our frontend as required

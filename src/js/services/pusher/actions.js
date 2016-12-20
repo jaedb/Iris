@@ -43,6 +43,19 @@ export function instruct( message_type, data = null ){
 	}
 }
 
+export function startRadio( uris ){
+	return {
+		type: 'PUSHER_START_RADIO',
+		uris: uris
+	}
+}
+
+export function stopRadio( uris ){
+	return {
+		type: 'PUSHER_STOP_RADIO'
+	}
+}
+
 export function debug( call, data = null ){
 	return {
 		type: 'PUSHER_DEBUG',

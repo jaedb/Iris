@@ -63,6 +63,7 @@ const PusherMiddleware = (function(){
                 socket.onopen = () => {
                     store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
                     store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
+                    makeRequest({ action: 'get_radio' });
                 };
 
                 socket.onmessage = (message) => {
@@ -149,7 +150,7 @@ const PusherMiddleware = (function(){
 
                 // make it so
                 var notification = new notification( title, options );
-                break;
+                break
 
             case 'PUSHER_SEND_AUTHORIZATION':
                 if( window.confirm('Spotify authorization for user '+action.data.me.id+' received. Do you want to import?') ){
@@ -163,6 +164,29 @@ const PusherMiddleware = (function(){
                 }else{
                     console.log('Authorization ignored')
                 }
+                break
+
+            case 'PUSHER_START_RADIO':
+
+                var data = {
+                    action: 'start_radio',
+                    seed_artists: [],
+                    seed_genres: [],
+                    seed_tracks: []
+                }
+                
+                for( var i = 0; i < action.uris.length; i++){
+                    switch( helpers.uriType( action.uris[i] ) ){
+                        case 'artist':
+                            data.seed_artists.push( action.uris[i] );
+                            break;
+                        case 'track':
+                            data.seed_tracks.push( action.uris[i] );
+                            break;
+                    }
+                }
+                
+                makeRequest( data )
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

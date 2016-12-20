@@ -16,7 +16,9 @@ import FollowButton from '../components/FollowButton'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as pusherActions from '../services/pusher/actions'
 import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -67,7 +69,9 @@ class Artist extends React.Component{
 	}
 
 	play(){
-		alert('Yet to be implemented')
+		if (!this.props.artist.uri) return
+		this.props.uiActions.createNotification('Starting radio...')
+		this.props.pusherActions.startRadio([this.props.artist.uri])
 	}
 
 	renderSubViewMenu(){		
@@ -204,7 +208,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

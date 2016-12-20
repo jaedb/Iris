@@ -41,6 +41,17 @@ class Queue extends React.Component{
 		this.props.mopidyActions.reorderTracklist( indexes, index )
 	}
 
+	renderRadio(){
+		if (!this.props.radio) return null
+
+		return (
+			<div className="radio">
+				Playing radio
+				<button onClick={ e => this.props.pusherActions.instruct('stop_radio') }>Stop radio</button>
+			</div>
+		)
+	}
+
 	render(){
 		return (
 			<div className="view queue-view">
@@ -48,6 +59,8 @@ class Queue extends React.Component{
 				<Header icon="play" title="Now playing" />
 
 				<FullPlayer />
+
+				{ this.renderRadio() }
 
 				<section className="list-wrapper">
 					<TrackList
@@ -74,6 +87,7 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		radio: state.ui.radio,
 		current_tracklist: state.ui.current_tracklist
 	}
 }

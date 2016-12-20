@@ -117,6 +117,10 @@ export default function reducer(ui = {}, action){
         case 'FOLLOWING_LOADING':
             return Object.assign({}, ui, { following_loading: true })
 
+        case 'PUSHER_RADIO':
+        case 'PUSHER_START_RADIO':
+            return Object.assign({}, ui, { radio: action.data })
+
 
 
 
