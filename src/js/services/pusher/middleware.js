@@ -189,6 +189,16 @@ const PusherMiddleware = (function(){
                 makeRequest( data )
                 break
 
+            case 'PUSHER_STOP_RADIO':
+                var data = {
+                    action: 'stop_radio',
+                    seed_artists: [],
+                    seed_genres: [],
+                    seed_tracks: []
+                }
+                makeRequest( data )
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

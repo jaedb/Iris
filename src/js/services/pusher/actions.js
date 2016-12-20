@@ -50,7 +50,7 @@ export function startRadio( uris ){
 	}
 }
 
-export function stopRadio( uris ){
+export function stopRadio(){
 	return {
 		type: 'PUSHER_STOP_RADIO'
 	}

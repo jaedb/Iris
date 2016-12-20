@@ -194,7 +194,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 send_message( 
                     self.connectionid, 
                     'response', 
-                    'radio_started',
+                    'radio',
                     messageJson['message_id'], 
                     { 'radio': radio }
                 )
@@ -205,7 +205,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 send_message( 
                     self.connectionid, 
                     'response', 
-                    messageJson['action'], 
+                    'radio', 
                     messageJson['message_id'], 
                     { 'radio': self.frontend.radio }
                 )
@@ -215,7 +215,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 send_message( 
                     self.connectionid, 
                     'response', 
-                    messageJson['action'], 
+                    'radio',
                     messageJson['message_id'],
                     { 'radio': self.frontend.radio }
                 )

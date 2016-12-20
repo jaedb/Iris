@@ -119,7 +119,7 @@ export default function reducer(ui = {}, action){
 
         case 'PUSHER_RADIO':
         case 'PUSHER_START_RADIO':
-            return Object.assign({}, ui, { radio: action.data })
+            return Object.assign({}, ui, { radio: action.data.radio })
 
 
 

@@ -98,7 +98,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 self.load_more_tracks()
                 
         except RuntimeError:
-            logger.warning('RadioHandler: Could not fetch tracklist length')
+            logger.warning('IrisFrontend: Could not fetch tracklist length')
             pass
 
 
@@ -156,7 +156,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.play()
         
         # notify clients
-        pusher.broadcast( 'radio_started', { 'radio': self.radio })
+        pusher.broadcast( 'radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -178,7 +178,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.stop()
 
         # notify clients
-        pusher.broadcast( 'radio_stopped', { 'radio': self.radio })
+        pusher.broadcast( 'radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio

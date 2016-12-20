@@ -12,6 +12,7 @@ import ArtistSentence from '../components/ArtistSentence'
 import Header from '../components/Header'
 
 import * as uiActions from '../services/ui/actions'
+import * as pusherActions from '../services/pusher/actions'
 import * as spotifyActions from '../services/spotify/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
@@ -42,12 +43,12 @@ class Queue extends React.Component{
 	}
 
 	renderRadio(){
-		if (!this.props.radio) return null
+		if (!this.props.radio || !this.props.radio.enabled) return null
 
 		return (
 			<div className="radio">
 				Playing radio
-				<button onClick={ e => this.props.pusherActions.instruct('stop_radio') }>Stop radio</button>
+				<a onClick={ e => this.props.pusherActions.stopRadio() }>Stop radio</a>
 			</div>
 		)
 	}
@@ -95,6 +96,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
