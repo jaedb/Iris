@@ -218,12 +218,12 @@ class ContextMenu extends React.Component{
 		}
 
 		var className = 'context-menu'
-		var trigger = 'click'
 		if (this.props.emulate_touch) {
 			className += ' touch'
-			trigger = 'touch'
+			var trigger = 'touch'
 		} else {
 			className += ' '+this.props.context_menu.trigger
+			var trigger = this.props.context_menu.trigger
 		}
 
 		var items = this.getItems(trigger)

@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { browserHistory, Link } from 'react-router'
+import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -271,7 +271,7 @@ class Settings extends React.Component{
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 					        &nbsp;&nbsp;
-					        <button className="primary" onClick={ () => browserHistory.push(global.baseURL+'debug') }>
+					        <button className="primary" onClick={ () => hashHistory.push(global.baseURL+'debug') }>
 					        	<FontAwesome name="flask" />&nbsp;Debugger
 					        </button>
 			        	</div>
