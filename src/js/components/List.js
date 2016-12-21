@@ -4,6 +4,7 @@ import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
+import Dater from './Dater'
 
 import * as helpers from '../helpers'
 
@@ -49,6 +50,7 @@ export default class List extends React.Component{
 			}
 		}
 
+		if (key_string === 'added_at') return <span><Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <Link to={global.baseURL+'user/'+ value.uri}>{value.id}</Link>
 		if (key[0] === 'artists') return <ArtistSentence artists={value} />
 		if (value === true) return <FontAwesome name="check" />
