@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link, browserHistory } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -20,7 +20,7 @@ class SearchForm extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
-		browserHistory.push(global.baseURL+'search/'+this.state.query);
+		hashHistory.push(global.baseURL+'search/'+this.state.query);
 		return false
 	}
 
