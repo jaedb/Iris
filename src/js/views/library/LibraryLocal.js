@@ -19,17 +19,17 @@ export default class LibraryLocal extends React.Component{
 			{
 				name: 'Artists',
 				link: global.baseURL+'library/local/artists',
-				icons: ['/assets/backgrounds/category-artists.jpg']
+				icons: ['assets/backgrounds/category-artists.jpg']
 			},
 			{
 				name: 'Albums',
 				link: global.baseURL+'library/local/albums',
-				icons: ['/assets/backgrounds/category-albums.jpg']
+				icons: ['assets/backgrounds/category-albums.jpg']
 			},
 			{
 				name: 'Folders',
 				link: global.baseURL+'library/local/directory/local:directory',
-				icons: ['/assets/backgrounds/category-folders.jpg']
+				icons: ['assets/backgrounds/category-folders.jpg']
 			}
 		]
 

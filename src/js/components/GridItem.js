@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { Link, browserHistory } from 'react-router'
+import { Router, Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
@@ -14,7 +14,7 @@ export default class GridItem extends React.Component{
 
 	handleClick(e){
 		if( e.target.tagName.toLowerCase() !== 'a' ){
-			browserHistory.push( this.props.link );
+			hashHistory.push(this.props.link)
 		}
 	}
 

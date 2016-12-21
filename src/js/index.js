@@ -6,7 +6,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
+import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router'
 
 import store from './bootstrap.js'
 
@@ -37,11 +37,11 @@ import LibraryLocalArtists from './views/library/LibraryLocalArtists'
 import LibraryLocalAlbums from './views/library/LibraryLocalAlbums'
 import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
 
-global.baseURL = '/iris/'
+global.baseURL = '/'
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={browserHistory}>
+		<Router history={hashHistory}>
 			<Route path={global.baseURL} component={App}>
 
      			<IndexRoute component={Queue} />

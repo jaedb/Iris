@@ -35,8 +35,8 @@
 		"react-fontawesome": "*"
 	},
 	"scripts": {
-		"dev": "./build.sh & NODE_ENV=development webpack & sass src/scss/app.scss public_html/app.css",
-		"prod": "NODE_ENV=production webpack"
+		"dev": "./build.sh & NODE_ENV=development webpack",
+		"prod": "./build.sh & NODE_ENV=production webpack"
 	},
 	"author": "James Barnsley",
 	"license": "ISC"

@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { Link, browserHistory } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
@@ -17,7 +17,7 @@ export default class List extends React.Component{
 
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if( e.target.tagName.toLowerCase() !== 'a' ){
-			browserHistory.push( this.props.link_prefix + encodeURIComponent(uri) );
+			hashHistory.push( this.props.link_prefix + encodeURIComponent(uri) );
 		}		
 	}
 
