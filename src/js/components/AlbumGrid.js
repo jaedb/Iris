@@ -17,7 +17,7 @@ export default class AlbumGrid extends React.Component{
 					{
 						this.props.albums.map(
 							(album, index) => {
-								return <GridItem item={album} key={index} link={'/album/'+album.uri} />
+								return <GridItem item={album} key={index} link={global.baseURL+'album/'+album.uri} />
 							}
 						)
 					}

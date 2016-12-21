@@ -18,17 +18,17 @@ export default class LibraryLocal extends React.Component{
 		var grid_items = [
 			{
 				name: 'Artists',
-				link: '/library/local/artists',
+				link: global.baseURL+'library/local/artists',
 				icons: ['/assets/backgrounds/category-artists.jpg']
 			},
 			{
 				name: 'Albums',
-				link: '/library/local/albums',
+				link: global.baseURL+'library/local/albums',
 				icons: ['/assets/backgrounds/category-albums.jpg']
 			},
 			{
 				name: 'Folders',
-				link: '/library/local/directory/local:directory',
+				link: global.baseURL+'library/local/directory/local:directory',
 				icons: ['/assets/backgrounds/category-folders.jpg']
 			}
 		]

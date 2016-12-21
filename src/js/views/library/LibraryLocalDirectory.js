@@ -80,7 +80,7 @@ class LibraryLocalDirectory extends React.Component{
 				<Header icon="music" title="Local files" actions={actions} />
 				<section className="list-wrapper">
 
-					<List columns={[{ name: 'name', width: '100'}]} rows={items.folders} link_prefix="/library/local/directory/" />
+					<List columns={[{ name: 'name', width: '100'}]} rows={items.folders} link_prefix={global.baseURL+"library/local/directory/"} />
 					<TrackList tracks={items.tracks} noheader />
 				</section>
 			</div>

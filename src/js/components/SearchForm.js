@@ -20,7 +20,7 @@ class SearchForm extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
-		browserHistory.push('/search/'+this.state.query);
+		browserHistory.push(global.baseURL+'search/'+this.state.query);
 		return false
 	}
 

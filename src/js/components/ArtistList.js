@@ -18,7 +18,7 @@ export default class ArtistList extends React.Component{
 					this.props.artists.map( (artist, index) => {
 						if( artist.uri ){
 							return (
-								<Link to={ '/artist/' + artist.uri } key={artist.uri} className="artist">
+								<Link to={global.baseURL+'artist/'+ artist.uri} key={artist.uri} className="artist">
 									<Thumbnail circle={true} size="small" images={artist.images} />
 									<span className="name">{ artist.name }</span>
 								</Link>

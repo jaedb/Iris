@@ -18,7 +18,7 @@ export default class PlaylistGrid extends React.Component{
 				{
 					this.props.playlists.map(
 						(playlist, index) => {
-							return <GridItem item={playlist} key={index} link={'/playlist/'+playlist.uri} />
+							return <GridItem item={playlist} key={index} link={global.baseURL+'playlist/'+playlist.uri} />
 						}
 					)
 				}

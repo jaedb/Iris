@@ -58,7 +58,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
-		this.props.uiActions.createNotification('No popup? Your browse may have blocked it...')
+		this.props.uiActions.createNotification('No popup? Your browser may have blocked it...')
 	}
 
 	renderAuthorizeButton(){

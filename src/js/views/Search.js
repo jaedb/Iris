@@ -110,26 +110,26 @@ class Search extends React.Component{
 						<div className="search-result-sections cf">
 							<section>
 								<div className="inner">
-									<h4><Link to={'/search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
+									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
 									<ArtistGrid className="mini" artists={ this.props.search_results.artists.slice(0,6) } />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={'/search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
+									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
 									<AlbumGrid className="mini" albums={ this.props.search_results.albums.slice(0,6) } />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={'/search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
+									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
 									<PlaylistGrid className="mini" playlists={ this.props.search_results.playlists.slice(0,6) } />
 								</div>
 							</section>
 						</div>
 
 						<section className="list-wrapper">
-							<h4 className="left-padding"><Link to={'/search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
+							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList show_source_icon={true} tracks={ this.props.search_results.tracks } />
 							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>

@@ -24,7 +24,7 @@ export default class ArtistSentence extends React.Component{
 						}
 						if( !artist.name ) artist.name = '-'
 						if( artist.uri ){
-							var content = <Link className="artist" to={'/artist/'+artist.uri}>{ artist.name }</Link>
+							var content = <Link className="artist" to={global.baseURL+'artist/'+artist.uri}>{ artist.name }</Link>
 						}else{
 							var content = <span>{ artist.name }</span>
 						}

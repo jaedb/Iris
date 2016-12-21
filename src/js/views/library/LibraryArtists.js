@@ -48,7 +48,7 @@ class LibraryArtists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.artists} columns={columns} link_prefix="/artist/" show_source_icon={true} />
+					<List rows={this.props.artists} columns={columns} link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
 				</section>
 			)
 		}else{

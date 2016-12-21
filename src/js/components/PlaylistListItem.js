@@ -15,7 +15,7 @@ export default class PlaylistListItem extends React.Component{
 	renderOwner(){
 		if( !this.props.item.owner ) return null;
 		return (			
-			<Link to={ '/user/'+this.props.item.owner.id }>
+			<Link to={global.baseURL+'user/'+this.props.item.owner.id}>
 				{ this.props.item.owner.id }
 			</Link>
 		);
@@ -25,7 +25,7 @@ export default class PlaylistListItem extends React.Component{
 		if( !this.props.item ) return null
 
 		return (
-			<ListItem extraClasses="playlist" link={ '/playlist/'+this.props.item.uri }>
+			<ListItem extraClasses="playlist" link={global.baseURL+'playlist/'+this.props.item.uri}>
 				<span className="col name">
 					{this.props.item.name}
 				</span>

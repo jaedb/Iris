@@ -18,7 +18,7 @@ export default class CategoryGrid extends React.Component{
 				{
 					this.props.categories.map(
 						(category, index) => {
-							return <GridItem item={category} key={index} link={'/discover/categories/'+category.id} />
+							return <GridItem item={category} key={index} link={global.baseURL+'discover/categories/'+category.id} />
 						}
 					)
 				}

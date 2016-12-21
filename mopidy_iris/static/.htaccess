@@ -6,6 +6,10 @@ RewriteBase /
 # TODO: Look to move this into the Thumbnail component 
 RewriteRule ^images/(.*)$ http://%{HTTP_HOST}:6680/images/$1 [NC,L]
 
+# Rewrite /iris subfolder
+RewriteRule ^iris/(.*)$ /$1 [NC,L]
+
+# All nont-file requests go to React
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]

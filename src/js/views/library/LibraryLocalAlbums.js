@@ -39,7 +39,7 @@ class LibraryLocalAlbums extends React.Component{
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" />
 				<div>
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.albums} link_prefix="/album/" />
+					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.albums} link_prefix={global.baseURL+"album/"} />
 				</div>
 			</div>
 		);

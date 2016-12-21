@@ -31,7 +31,7 @@ class Sidebar extends React.Component{
 		        	<nav>
 
 		        		<section>
-							<Link activeClassName="active" to="/queue">
+							<Link activeClassName="active" to={global.baseURL+"queue"}>
 								<Icon name="play" className="white" />
 								Now playing
 							</Link>
@@ -39,19 +39,19 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>Discover</title>
-							<Link activeClassName="active" to="/discover">
+							<Link activeClassName="active" to={global.baseURL+"discover"}>
 								<Icon name="compass" className="white" />
 								Discover
 							</Link>
-							<Link activeClassName="active" to="/discover/categories">
+							<Link activeClassName="active" to={global.baseURL+"discover/categories"}>
 								<Icon name="grid" className="white" />
 								Genre / Mood
 							</Link>
-							<Link activeClassName="active" to="/discover/featured">
+							<Link activeClassName="active" to={global.baseURL+"discover/featured"}>
 								<Icon name="star" className="white" />
 								Featured playlists
 							</Link>
-							<Link activeClassName="active" to="/discover/new-releases">
+							<Link activeClassName="active" to={global.baseURL+"discover/new-releases"}>
 								<Icon name="leaf" className="white" />
 								New releases
 							</Link>
@@ -59,30 +59,30 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>My Music</title>
-							<Link activeClassName="active" to="/library/playlists">
+							<Link activeClassName="active" to={global.baseURL+"library/playlists"}>
 								<Icon name="playlist" className="white" />
 								Playlists
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/artists" : null}>
+							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
 								<Icon name="mic" className="white" />
 								Artists
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/albums" : null}>
+							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
 								<Icon name="cd" className="white" />
 								Albums
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? "/library/tracks" : null}>
+							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
 								<Icon name="music" className="white" />
 								Tracks
 							</Link>
-							<Link activeClassName="active" to="/library/local">
+							<Link activeClassName="active" to={global.baseURL+"library/local"}>
 								<Icon name="folder" className="white" />
 								Local
 							</Link>
 						</section>
 
 						<section>
-							<Link activeClassName="active" to="/settings">
+							<Link activeClassName="active" to={global.baseURL+"settings"}>
 								<Icon name="cog" className="white" />
 								Settings
 								{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }

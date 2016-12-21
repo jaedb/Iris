@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteBase /
+RewriteBase /iris/
 
 # Handle Mopidy-Images requests
 # TODO: Look to move this into the Thumbnail component 

@@ -60,7 +60,7 @@ class LibraryAlbums extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.albums} columns={columns} link_prefix="/album/" />
+					<List rows={this.props.albums} columns={columns} link_prefix={global.baseURL+"album/"} />
 				</section>
 			)
 		}else if( this.props.view == 'thumbnails' ){

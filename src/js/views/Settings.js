@@ -90,7 +90,7 @@ class Settings extends React.Component{
 	renderSpotifyUser(){
 		if( this.props.spotify.me && this.props.spotify.authorized ){
 			return (
-				<Link className="user" to={'/user/'+this.props.spotify.me.uri}>
+				<Link className="user" to={global.baseURL+'user/'+this.props.spotify.me.uri}>
 					<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
 					<span className="user-name">
 						{ this.props.spotify.me.display_name ? this.props.spotify.me.display_name : this.props.spotify.me.id }
@@ -271,7 +271,7 @@ class Settings extends React.Component{
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 					        &nbsp;&nbsp;
-					        <button className="primary" onClick={ () => browserHistory.push('debug') }>
+					        <button className="primary" onClick={ () => browserHistory.push(global.baseURL+'debug') }>
 					        	<FontAwesome name="flask" />&nbsp;Debugger
 					        </button>
 			        	</div>

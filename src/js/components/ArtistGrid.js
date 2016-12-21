@@ -17,7 +17,7 @@ export default class ArtistGrid extends React.Component{
 					{
 						this.props.artists.map(
 							(artist, index) => {
-								return <GridItem item={artist} key={index} link={'/artist/'+artist.uri} />
+								return <GridItem item={artist} key={index} link={global.baseURL+'artist/'+artist.uri} />
 							}
 						)
 					}

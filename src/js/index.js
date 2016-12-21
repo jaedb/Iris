@@ -37,10 +37,12 @@ import LibraryLocalArtists from './views/library/LibraryLocalArtists'
 import LibraryLocalAlbums from './views/library/LibraryLocalAlbums'
 import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
 
+global.baseURL = '/iris/'
+
 ReactDOM.render(
 	<Provider store={store}>
 		<Router history={browserHistory}>
-			<Route path="/" component={App}>
+			<Route path={global.baseURL} component={App}>
 
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />

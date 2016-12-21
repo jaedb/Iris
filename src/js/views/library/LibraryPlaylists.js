@@ -65,7 +65,7 @@ class LibraryPlaylists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={playlists} columns={columns} link_prefix="/playlist/" show_source_icon={true} />
+					<List rows={playlists} columns={columns} link_prefix={global.baseURL+"playlist/"} show_source_icon={true} />
 				</section>
 			)
 		}else{

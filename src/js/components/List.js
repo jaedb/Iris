@@ -49,7 +49,7 @@ export default class List extends React.Component{
 			}
 		}
 
-		if (key_string === 'owner') return <Link to={ '/user/'+ value.uri }>{value.id}</Link>
+		if (key_string === 'owner') return <Link to={global.baseURL+'user/'+ value.uri}>{value.id}</Link>
 		if (key[0] === 'artists') return <ArtistSentence artists={value} />
 		if (value === true) return <FontAwesome name="check" />
 		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>

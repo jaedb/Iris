@@ -43,7 +43,7 @@ export default class Track extends React.Component{
 		var album = '-'
 		if( track.album ){
 			if( track.album.uri ){
-				album = <Link to={'/album/'+track.album.uri}>{track.album.name}</Link>
+				album = <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link>
 			} else {
 				album = <span>{track.album.name}</span>
 			}
