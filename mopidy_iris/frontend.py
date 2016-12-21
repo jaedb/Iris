@@ -205,7 +205,6 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             latest_version = response['info']['version']
             
             # compare our versions, and convert result to boolean
-            logger.info(self.version)
             upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
             upgrade_available = ( upgrade_available == 1 )
 
