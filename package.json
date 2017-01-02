@@ -1,8 +1,13 @@
 {
-	"name": "iris",
-	"version": "1.0.0",
+	"name": "mopidy-iris",
+	"version": "2.10.12",
 	"description": "Mopidy HTTP interface",
 	"repository": "https://github.com/jaedb/iris",
+	"author": "James Barnsley <james@barnsley.nz>",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/jaedb/Iris/issues"
+	},
 	"main": "app.js",
 	"dependencies": {
 		"babel": "^5.8.29",
@@ -30,14 +35,12 @@
 		"node-sass": "*",
 		"extract-text-webpack-plugin": "*",
 		"jquery": "3.1.1",
-    	"mopidy": "^0.5.0",
+    		"mopidy": "^0.5.0",
 		"expose-loader": "*",
 		"react-fontawesome": "*"
 	},
 	"scripts": {
 		"dev": "./build.sh & NODE_ENV=development webpack",
 		"prod": "./build.sh & NODE_ENV=production webpack"
-	},
-	"author": "James Barnsley",
-	"license": "ISC"
+	}
 }
