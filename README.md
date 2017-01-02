@@ -1,7 +1,7 @@
 Iris
 =======
 
-Iris (previously known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
+Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
 
 ![badge](https://img.shields.io/pypi/v/mopidy-iris.svg?style=flat)
 ![badge](https://img.shields.io/pypi/dm/mopidy-iris.svg)
@@ -14,8 +14,7 @@ Features
 * Integrated with Spotify and LastFM APIs for high-quality artwork and extra info
 * Improved support for local libraries using SQLite extension
 * Browse and manage your playlists, along with top tracks, new releases and genre browser
-* Spotmop can be run completely independently of your Mopidy machine (ie on a remote server), just set your URL in the settings tab
-* Push notifications between users (requires port 6681, but this can be customised to suit your environment)
+* Push notifications between clients (requires port 6681, but this can be customised to suit your environment)
 
 Screenshots
 -----------
@@ -52,12 +51,14 @@ Development
 -----
 
 1. Clone this repository into a your Apache2 web directory (eg `/var/www/html/`)
-2. Install in develop mode `python setup.py install develop`
-3. Restart mopidy
+2. Install all development requirements `npm install`
+3. Run build `npm run prod` (once production build has been run once, you can use `npm run dev` for faster dev builds) 
+4. Install Python module in develop mode `python setup.py install develop`
+5. Restart mopidy `pkill mopidy && mopidy &`
 
 Support
 -------
 
-* [Changelog](https://github.com/jaedb/iris/releases)
+* [Releases and changelog](https://github.com/jaedb/iris/releases)
 * [Issues and requests](https://github.com/jaedb/iris/issues)
 
