@@ -16,7 +16,6 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_CONNECT':
                 store.dispatch( spotifyActions.getMe() )
                 break
-                
 
             case 'SPOTIFY_CREATE_PLAYLIST':
                 var playlist = state.ui.playlist
@@ -27,7 +26,6 @@ const SpotifyMiddleware = (function(){
                 }
                 store.dispatch( spotifyActions.createPlaylist( action.name, action.is_private ))
                 break
-
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = state.ui.playlist

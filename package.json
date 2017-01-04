@@ -35,9 +35,10 @@
 		"node-sass": "*",
 		"extract-text-webpack-plugin": "*",
 		"jquery": "3.1.1",
-    		"mopidy": "^0.5.0",
+    	"mopidy": "^0.5.0",
 		"expose-loader": "*",
-		"react-fontawesome": "*"
+		"react-fontawesome": "*",
+		"react-ga": "2.1.2"
 	},
 	"scripts": {
 		"dev": "./build.sh & NODE_ENV=development webpack",

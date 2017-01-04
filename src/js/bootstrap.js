@@ -36,7 +36,7 @@ var initialState = {
 	pusher: {
 		connected: false,
 		port: 6681,
-		username: '',
+		username: 'Anonymous',
 		connections: [],
 		version: {
 			current: '0.0.0'

@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
+import ReactGA from 'react-ga'
 
 import FontAwesome from 'react-fontawesome'
 import Thumbnail from './Thumbnail'

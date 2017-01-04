@@ -38,6 +38,10 @@ class SendAuthorizationModal extends React.Component{
 				<div className="list pusher-connection-list">
 					{
 						this.props.connections.map( (connection, index) => {
+							
+							// don't list OUR connection
+							if (connection.connectionid == this.props.connectionid) return null
+
 							return (
 								<div className='list-item connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
 									{ connection.username }
@@ -57,6 +61,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		me: state.spotify.me,
 		authorization: state.spotify.authorization,
+		connectionid: state.pusher.connectionid,
 		connections: state.pusher.connections
 	}
 }

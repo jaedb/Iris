@@ -51,14 +51,6 @@ class Settings extends React.Component{
 		return false;
 	}
 
-	componentWillReceiveProps(newProps){
-		if( this.state.pusher_username != newProps.pusher.username ){
-			this.setState({
-				pusher_username: newProps.pusher.username
-			})
-		}
-	}
-
 	renderConnectionStatus(service){
 		if( this.props[service].connected ){
 			return (

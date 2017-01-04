@@ -42,7 +42,7 @@ class ContextMenu extends React.Component{
 
 	playQueueItem(){
 		var selectedTracks = this.props.context_menu.data.selected_tracks;
-		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );
+		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );		
 		this.props.uiActions.hideContextMenu();
 	}
 

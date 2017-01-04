@@ -7,9 +7,9 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router'
+import ReactGA from 'react-ga'
 
 import store from './bootstrap.js'
-
 require('../scss/app.scss');
 
 import App from './views/App'
@@ -37,11 +37,18 @@ import LibraryLocalArtists from './views/library/LibraryLocalArtists'
 import LibraryLocalAlbums from './views/library/LibraryLocalAlbums'
 import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
 
+// setup our analytics tracking
+ReactGA.initialize('UA-64701652-3');
+function logPageView() {
+	ReactGA.set({ page: window.location.hash })
+	ReactGA.pageview(window.location.hash)
+}
+
 global.baseURL = '/'
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={hashHistory}>
+		<Router history={hashHistory} onUpdate={logPageView}>
 			<Route path={global.baseURL} component={App}>
 
      			<IndexRoute component={Queue} />

@@ -18,9 +18,10 @@ export function hideContextMenu(){
     }
 }
 
-export function searchStarted(){
+export function searchStarted( query ){
 	return {
 		type: 'SEARCH_STARTED',
+        query: query,
         data: {
             artists: [],
             albums: [],

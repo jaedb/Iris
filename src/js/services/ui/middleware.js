@@ -1,4 +1,5 @@
 
+import ReactGA from 'react-ga'
 
 var uiActions = require('./actions.js')
 var spotifyActions = require('../spotify/actions.js')
@@ -12,6 +13,122 @@ const UIMiddleware = (function(){
     return store => next => action => {
 
         switch(action.type){
+
+            case 'MOPIDY_CONNECTED':
+                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname })
+                next(action)
+                break
+
+            case 'PUSHER_CONNECTED':
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.connection.username })
+                next(action)
+                break
+
+            case 'SPOTIFY_CONNECTED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Connected', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_GRANTED':
+                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' })
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_REVOKED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_ME_LOADED':
+                ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id })
+                next(action)
+                break
+
+            case 'MOPIDY_ALBUM_LOADED':
+            case 'SPOTIFY_ALBUM_LOADED':
+                if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.data.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_ARTIST_LOADED':
+            case 'SPOTIFY_ARTIST_LOADED':
+                if (action.data) ReactGA.event({ category: 'Artist', action: 'Load', label: action.data.uri })
+                next(action)
+                break
+
+            case 'SPOTIFY_USER_LOADED':
+                if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_DIRECTORY':
+                if (action.data) ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_PLAYLIST_LOADED':
+            case 'SPOTIFY_PLAYLIST_LOADED':
+                if (action.data) ReactGA.event({ category: 'Playlist', action: 'Load', label: action.data.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_SAVE_PLAYLIST':
+            case 'SPOTIFY_SAVE_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Save', label: action.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_CREATE_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Create', label: 'Mopidy,'+action.name })
+                next(action)
+                break
+
+            case 'SPOTIFY_CREATE_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Create', label: 'Spotify,'+action.name })
+                next(action)
+                break
+
+            case 'MOPIDY_REORDER_PLAYLIST_TRACKS':
+            case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
+                ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.uri })
+                next(action)
+                break
+
+            case 'MOPIDY_ADD_PLAYLIST_TRACKS':
+            case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
+                ReactGA.event({ category: 'Playlist', action: 'Add tracks', label: action.playlist_uri })
+                next(action)
+                break
+
+            case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
+            case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
+                ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri })
+                next(action)
+                break
+
+            case 'SEARCH_STARTED':
+                ReactGA.event({ category: 'Search', action: 'Started', label: action.query })
+                next(action)
+                break
+
+            case 'PUSHER_START_RADIO':
+                ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() })
+                next(action)
+                break
+
+            case 'PUSHER_STOP_RADIO':
+                ReactGA.event({ category: 'Pusher', action: 'Stop radio' })
+                next(action)
+                break
+
+            case 'PUSHER_UPGRADING':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: action.data })
+                next(action)
+                break
 
             case 'CREATE_NOTIFICATION':
 

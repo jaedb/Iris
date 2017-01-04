@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
+import ReactGA from 'react-ga'
 
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
@@ -58,28 +59,34 @@ class Playlist extends React.Component{
 	}
 
 	play(){
+        ReactGA.event({ category: 'Playlist', action: 'Play', label: this.props.playlist.uri })
 		this.props.mopidyActions.playURIs([this.props.playlist.uri])
 	}
 
 	follow(){
+        ReactGA.event({ category: 'Playlist', action: 'Follow', label: this.props.playlist.uri })
 		this.props.spotifyActions.toggleFollowingPlaylist( this.props.playlist.uri, 'PUT' )
 	}
 
 	// TODO: Once unfollowing occurs, remove playlist from global playlists list
 	unfollow(){
+        ReactGA.event({ category: 'Playlist', action: 'Unfollow', label: this.props.playlist.uri })
 		this.props.spotifyActions.toggleFollowingPlaylist( this.props.playlist.uri, 'DELETE' )
 	}
 
 	// TODO: Once deletion occurs, remove playlist from global playlists list
 	delete(){
+        ReactGA.event({ category: 'Playlist', action: 'Delete', label: this.props.playlist.uri })
 		this.props.mopidyActions.deletePlaylist( this.props.playlist.uri )
 	}
 
 	reorderTracks( indexes, index ){
+        ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: this.props.playlist.uri })
 		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
 	}
 
 	removeTracks( tracks_indexes ){
+        ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: this.props.playlist.uri })
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 

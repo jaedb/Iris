@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
+import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -40,7 +41,7 @@ class Search extends React.Component{
 	}
 
 	performSearch( props = this.props ){
-		this.props.uiActions.searchStarted()
+		this.props.uiActions.searchStarted( props.params.query )
 		this.props.spotifyActions.getSearchResults( props.params.query )
 		this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
 	}
