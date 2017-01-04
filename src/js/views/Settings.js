@@ -289,7 +289,7 @@ class Settings extends React.Component{
 					        	<FontAwesome name="github" />&nbsp;GitHub
 					        </a>
 					        &nbsp;&nbsp;
-					        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" style={{display: 'inline-block', verticalAlign: 'middle'}}><img alt="Creative Commons License" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
+					        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" style={{display: 'inline-block', verticalAlign: 'middle'}}><img alt="Creative Commons License" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
 						</div>
 			        </div>
 

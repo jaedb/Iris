@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux'
-import { browserHistory, Link } from 'react-router'
+import { hashHistory, Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from '../components/Sidebar'
@@ -42,7 +42,7 @@ class App extends React.Component{
 		if( this.props.spotify_authorized ) this.props.spotifyActions.getAllLibraryPlaylists();
 
 		// when we navigate to a new route
-		browserHistory.listen( location => {
+		hashHistory.listen( location => {
 
 			// hide our sidebar
 			this.props.uiActions.toggleSidebar( false )
