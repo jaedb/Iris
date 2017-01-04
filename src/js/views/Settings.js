@@ -269,7 +269,32 @@ class Settings extends React.Component{
 			        	</div>
 			        </div>
 
+					<h4 className="underline">About</h4>
+
+					<div className="field">
+						<div>
+							<em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em> is an open-source project by <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
+								<br />
+								<br />
+								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements.
+								<br />
+						</div>
+						<br /><br />
+						<div>
+					        <a className="button" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=NZD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
+					        	<FontAwesome name="paypal" />&nbsp;Donate
+					        </a>
+					        &nbsp;&nbsp;
+					        <a className="button" href="https://github.com/jaedb/Iris" target="_blank">
+					        	<FontAwesome name="github" />&nbsp;GitHub
+					        </a>
+					        &nbsp;&nbsp;
+					        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" style={{display: 'inline-block', verticalAlign: 'middle'}}><img alt="Creative Commons License" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
+						</div>
+			        </div>
+
 		        </section>
+
 			</div>
 		);
 	}
