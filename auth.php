@@ -80,7 +80,7 @@ function getAuthorizationCode( $url ){
 		
 			// open an authentication request window (to spotify)
 			var popup = window.open("<?php echo $popup ?>","popup","height=680,width=400");
-			
+
 			// listen for incoming messages from the popup
 			window.addEventListener('message', function(event){
 				
@@ -93,12 +93,17 @@ function getAuthorizationCode( $url ){
 			}, false);
 
 			var timer = setInterval(checkPopup, 1000);
-			function checkPopup(){
-			    if( popup.closed ){
-					window.parent.postMessage( 'closed', '*' );
-					clearInterval(timer);
-			    }
-			}
+            function checkPopup(){
+                if( typeof(popup) !== 'undefined' && popup ){
+	                if( popup.closed ){
+	                    window.parent.postMessage( 'closed', '*' );
+	                    clearInterval(timer);
+	                }
+                }else{
+                    window.parent.postMessage( 'blocked', '*' );
+                    clearInterval(timer);
+                }
+            }
 
 		</script>
 	<?php

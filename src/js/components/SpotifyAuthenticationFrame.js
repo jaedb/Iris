@@ -29,12 +29,14 @@ class SpotifyAuthenticationFrame extends React.Component{
 		// listen for incoming messages from the authorization iframe
 		// this is triggered when authentication is granted from the popup
 		window.addEventListener('message', function(event){
-
+			
 			if(event.data == 'closed'){
 				self.setState({
 					frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
 					authorizing: false
 				})	
+			}else if(event.data == 'blocked'){
+				self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.','bad')
 			}else{
 				
 				// only allow incoming data from our authorized authenticator proxy
@@ -59,7 +61,6 @@ class SpotifyAuthenticationFrame extends React.Component{
 			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
-		this.props.uiActions.createNotification('No popup? Your browser may have blocked it...')
 	}
 
 	renderAuthorizeButton(){
