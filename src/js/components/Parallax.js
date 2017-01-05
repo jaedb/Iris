@@ -84,7 +84,7 @@ export default class Parallax extends React.Component{
     	if( this._loaded ){
 			this.setState(
 				{ scrollTop: window.scrollY }, 
-				this.updateCanvas( this.state.image ) 
+				this.updateCanvas( this.state.image )
 			)
 	    }
     }
@@ -150,43 +150,10 @@ export default class Parallax extends React.Component{
 		image.y = ( ( this.state.canvas.height / 2 ) - ( image.height / 2 ) ) + ( ( percent / 100 ) * 100);
 
 		// actually draw the image on the canvas
-		context.drawImage(image.object, image.x, image.y, image.width, image.height);
+		context.drawImage(image.object, image.x, image.y, image.width, image.height)
 
 		// now update our component
 		self.setState({ image: image });
-		
-		// poll for scroll changes
-		/*
-		var animateInterval = $interval(
-			function(){	
-				window.requestAnimationFrame(function( event ){
-					
-					var bannerPanel = $(document).find('.intro');
-					
-					// if we've scrolled or resized
-					if(
-						state.scrollTop != $(document).scrollTop() ||
-						state.windowWidth != $(window).width() || 
-						state.windowHeight != $(window).height() ){
-							
-							// update our state
-							state.scrollTop = $(document).scrollTop();
-							state.windowWidth = $(window).width();
-							state.windowHeight = $(window).height();
-							
-							var bannerHeight = bannerPanel.outerHeight();
-
-							// and if we're within the bounds of our document
-							// this helps prevent us animating when the objects in question are off-screen
-							if( state.scrollTop < bannerHeight ){								
-								positionArtistBackground( image );
-							}
-						}
-				});
-			},
-			10
-		);*/
-
 	}
 
 	render(){

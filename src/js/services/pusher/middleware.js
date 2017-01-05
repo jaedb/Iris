@@ -168,6 +168,20 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_START_RADIO':
 
+                store.dispatch({ 
+                    type: 'PUSHER_SEND_BROADCAST',
+                    action: 'broadcast',
+                    ignore_self: true,
+                    data: {
+                        type: 'notification',
+                        data: {
+                            title: 'Radio started',
+                            body: ' started radio mode',
+                            icon: ''
+                        }
+                    } 
+                })
+
                 var data = {
                     action: 'start_radio',
                     seed_artists: [],
@@ -190,6 +204,21 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_STOP_RADIO':
+
+                store.dispatch({ 
+                    type: 'PUSHER_SEND_BROADCAST',
+                    action: 'broadcast',
+                    ignore_self: true,
+                    data: {
+                        type: 'notification',
+                        data: {
+                            title: 'Radio stopped',
+                            body: ' stopped radio mode',
+                            icon: ''
+                        }
+                    } 
+                })
+
                 store.dispatch( uiActions.createNotification('Stopping radio') )
                 var data = {
                     action: 'stop_radio',
