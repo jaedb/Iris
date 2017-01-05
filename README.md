@@ -3,6 +3,7 @@ Iris
 
 Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
 
+[![npm](https://img.shields.io/npm/v/mopidy-iris.svg?style=flat-square)]()
 ![badge](https://img.shields.io/pypi/v/mopidy-iris.svg?style=flat-square)
 ![badge](https://img.shields.io/pypi/dm/mopidy-iris.svg?style=flat-square)
 [![badge](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=NZD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
