@@ -176,7 +176,7 @@ const PusherMiddleware = (function(){
                         type: 'notification',
                         data: {
                             title: 'Radio started',
-                            body: ' started radio mode',
+                            body: store.getState().pusher.username +' started radio mode',
                             icon: ''
                         }
                     } 
@@ -213,7 +213,7 @@ const PusherMiddleware = (function(){
                         type: 'notification',
                         data: {
                             title: 'Radio stopped',
-                            body: ' stopped radio mode',
+                            body: store.getState().pusher.username +' stopped radio mode',
                             icon: ''
                         }
                     } 
