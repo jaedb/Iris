@@ -80,8 +80,8 @@ class LibraryAlbums extends React.Component{
 									<div className="detail">
 										<h3>{ album.name }</h3>
 										<h4><ArtistSentence className="grey-text" artists={album.artists} /></h4>
-										<TrackList tracks={album.tracks.items} />
 									</div>
+									<TrackList tracks={album.tracks.items} />
 								</div>
 							)
 						})

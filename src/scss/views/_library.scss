@@ -21,5 +21,55 @@
 				padding: 0 0 10px 40px;
 			}
 		}
+
+		.track-list {			
+			padding-left: 220px;
+		}
+	}
+
+	@include responsive( $bp_wide ){
+
+		.albums-detail-subview > .album {
+			.thumbnail {
+				max-width: 160px;
+			}
+
+			.detail,
+			.track-list {
+				padding-left: 160px;
+			}
+		}
+	}
+
+	@include responsive( 600px ){
+		
+		.albums-detail-subview {
+			padding: 20px 0;
+		}
+		
+		.albums-detail-subview > .album {
+			.thumbnail {
+				max-width: 60px;
+				margin-left: 20px;
+			}
+
+			.detail {
+				padding-left: 80px;
+				min-height: 70px;
+
+				h3 {
+					padding-left: 10px;
+					padding-top: 8px;
+				}
+
+				h4 {
+					padding-left: 10px;
+				}
+			}
+
+			.track-list {
+				padding-left: 0px;
+			}
+		}
 	}
 }

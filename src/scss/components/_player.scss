@@ -72,14 +72,15 @@
 			right: 0;
 			width: auto;
 			background: $dark_grey;
+			padding: 10px;
 
 			.controls {
 				position: absolute;
-				top: 10px;
-				left: 10px;
+				top: 5px;
+				left: 5px;
 
 				a {
-					padding: 13px;
+					padding: 12px;
 				}
 
 				.volume-control {
@@ -103,7 +104,8 @@
 
 			.current-track {
 				font-size: 12px;
-				padding-bottom: 0;
+				padding: 0 20px 0 70px;
+				line-height: 14px;
 			}
 		}
 	}

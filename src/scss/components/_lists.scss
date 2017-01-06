@@ -90,7 +90,7 @@
 
 
 		@include responsive( $bp_medium ){
-			padding: 7px 10px 7px 30px;
+			padding: 7px 10px 7px 20px;
 
 			.col {
 				&.name { width: 50%; }
@@ -105,7 +105,16 @@
 
 			.select-state {
 				top: 11px;
-				left: 10px;
+				left: 5px !important;
+			}
+			.play-state {
+				left: 5px;
+			}
+
+			&.playing.selected {
+				.play-state {
+					display: none;
+				}
 			}
 		}
 
