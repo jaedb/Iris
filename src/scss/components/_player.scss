@@ -75,16 +75,35 @@
 			padding: 10px;
 
 			.controls {
-				position: absolute;
-				top: 5px;
-				left: 5px;
+				height: 0px;
 
-				a {
+				.play {
+					position: absolute;
+					top: 5px;
+					left: 5px;
+					padding: 12px;
+				}
+
+				.next {
+					position: absolute;
+					top: 5px;
+					left: 48px;
 					padding: 12px;
 				}
 
 				.volume-control {
-					display: none;
+					position: absolute;
+					top: 5px;
+					right: 5px;
+
+					a {
+						padding: 12px;
+					}
+
+					.slider-wrapper {
+						bottom: 2px;
+						left: 0;
+					}
 				}
 			}
 
@@ -104,7 +123,7 @@
 
 			.current-track {
 				font-size: 12px;
-				padding: 0 20px 0 70px;
+				padding: 0 40px 0 70px;
 				line-height: 14px;
 			}
 		}

@@ -19,9 +19,9 @@ class MiniPlayer extends React.Component{
 	}
 
 	renderPlayButton(){
-		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
+		var button = <a className="play" onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
 		if( this.props.play_state == 'playing' ){
-			button = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
+			button = <a className="play" onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
 		return button;
 	}
@@ -37,7 +37,7 @@ class MiniPlayer extends React.Component{
 
 				<div className="controls">
 					{ this.renderPlayButton() }
-					<a onClick={() => this.props.mopidyActions.next()}>
+					<a className="next" onClick={() => this.props.mopidyActions.next()}>
 						<FontAwesome name="step-forward" />
 					</a>&nbsp;
 					<VolumeControl />
