@@ -74,11 +74,8 @@
 		}
 
 		&.playing.selected {
-			.select-state {
-				left: 23px;
-			}
 			.play-state {
-				left: 10px;
+				display: none;
 			}
 		}
 
@@ -103,18 +100,10 @@
 				display: none; 
 			}
 
-			.select-state {
-				top: 11px;
-				left: 5px !important;
-			}
+			.select-state,
 			.play-state {
+				top: 11px;
 				left: 5px;
-			}
-
-			&.playing.selected {
-				.play-state {
-					display: none;
-				}
 			}
 		}
 
