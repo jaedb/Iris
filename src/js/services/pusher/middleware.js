@@ -22,8 +22,6 @@ const PusherMiddleware = (function(){
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
 
-        console.log('handle', message)
-
         switch (message.action){
             case 'response':
                 if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
