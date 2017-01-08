@@ -1,5 +1,5 @@
 
-
+var helpers = require('./../../helpers.js')
 var spotifyActions = require('./actions.js')
 var uiActions = require('../ui/actions.js')
 
@@ -81,6 +81,19 @@ const SpotifyMiddleware = (function(){
                 if( action.data && action.data.track.uri.substring(0,14) == 'spotify:track:' ){
                     store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
                 }
+                break
+
+            // when our mopidy server current track changes
+            case 'PUSHER_RADIO':
+
+                // proceed as usual so we don't inhibit default functionality
+                next(action)
+
+                // only resolve if radio is enabled
+                if( action.data.radio.enabled ){
+                    store.dispatch( spotifyActions.resolveRadioSeeds( action.data.radio ) )
+                }
+                break
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

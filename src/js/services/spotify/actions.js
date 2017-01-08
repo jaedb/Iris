@@ -412,6 +412,45 @@ export function following(uri, method = 'GET'){
     }
 }
 
+/**
+ * Resolve radio seeds into full objects
+ *
+ * @param radio object
+ **/
+export function resolveRadioSeeds( radio ){
+    return (dispatch, getState) => {
+
+        // flush out the previous store value
+        dispatch({ type: 'PUSHER_RADIO_SEEDS_RESOLVING' });
+
+        var resolved_seeds = {
+            seed_artists: [],
+            seed_tracks: [],
+            seed_genres: []
+        }
+
+        var artist_ids = '';
+        for (var i = 0; i < radio.seed_artists.length; i++){
+            if (i > 0) artist_ids += ','
+            artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i])
+        }
+
+        $.when(
+            sendRequest( dispatch, getState, 'artists/'+ artist_ids )
+                .then( response => {
+                    if (!(response instanceof Array)) response = [response]
+                    Object.assign(resolved_seeds.seed_artists, response);
+                })
+
+        ).then( () => {
+            dispatch({
+                type: 'PUSHER_RADIO_SEEDS_RESOLVED',
+                data: resolved_seeds
+            });
+        });
+    }
+}
+
 
 /**
  * =============================================================== ARTIST(S) ============

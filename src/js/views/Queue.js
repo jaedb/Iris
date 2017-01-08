@@ -46,7 +46,13 @@ class Queue extends React.Component{
 		if (!this.props.radio || !this.props.radio.enabled) return null
 
 		var seed_sentence = 'nothing'
-		if (this.props.radio.seed_artists.length > 0) seed_sentence = this.props.radio.seed_artists.length+' artists'
+		if (this.props.radio.seed_artists.length > 0){
+			if (this.props.radio.seeds_resolved){
+				seed_sentence = <ArtistSentence artists={this.props.radio.seed_artists} />
+			}else{
+				seed_sentence = this.props.radio.seed_artists.length +' artists'
+			}
+		}
 		if (this.props.radio.seed_genres.length > 0) seed_sentence =this.props.radio.seed_artists.length+' genres'
 		if (this.props.radio.seed_tracks.length > 0) seed_sentence =this.props.radio.seed_artists.length+' tracks'
 

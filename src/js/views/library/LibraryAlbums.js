@@ -76,9 +76,13 @@ class LibraryAlbums extends React.Component{
 						this.props.albums.map( album => {
 							return (
 								<div className="album" key={album.uri}>
-									<Thumbnail size="medium" images={album.images} />
+									<Link to={global.baseURL+'album/'+album.uri}>
+										<Thumbnail size="medium" images={album.images} />
+									</Link>
 									<div className="detail">
-										<h3>{ album.name }</h3>
+										<Link to={global.baseURL+'album/'+album.uri}>
+											<h3>{ album.name }</h3>
+										</Link>
 										<h4><ArtistSentence className="grey-text" artists={album.artists} /></h4>
 									</div>
 									<TrackList tracks={album.tracks.items} />
