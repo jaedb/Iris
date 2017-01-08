@@ -25,7 +25,6 @@ class Debug extends React.Component{
 		this.state = {
 			mopidy_call: 'playlists.asList',
 			mopidy_data: '{}',
-			pusher_call: 'broadcast',
 			pusher_data: '{}'
 		}
 	}
@@ -33,9 +32,9 @@ class Debug extends React.Component{
 	componentDidMount(){
 		if( this.props.connectionid ){
 			var data = {
-				action: "notification",
-				recipients: [this.props.connectionid],
+				action: "broadcast",
 				data: {
+					type: 'browser_notification',
 					title: "Title",
 					body: "Test notification",
 					icon: "http://lorempixel.com/100/100/nature/"
@@ -47,15 +46,12 @@ class Debug extends React.Component{
 
 	callMopidy(e){
 		e.preventDefault()
-		console.info('Mopidy Debugger', this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
 		this.props.mopidyActions.debug( this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
 	}
 
 	callPusher(e){
 		e.preventDefault()
-		console.info('Pusher Debugger', this.state.pusher_call, JSON.parse(this.state.pusher_data) )
-		this.props.pusherActions.debug( this.state.pusher_call, JSON.parse(this.state.pusher_data) )
-		this.props.uiActions.debugResponse({ status: 1, message: 'Sent', call: this.state.pusher_call, data: this.state.pusher_data })
+		this.props.pusherActions.debug( JSON.parse(this.state.pusher_data) )
 	}
 
 	render(){
@@ -81,10 +77,6 @@ class Debug extends React.Component{
 							</div>
 						</div>
 					</form>
-
-		        </section>
-
-				<section>
 
 					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.callMopidy(e)}>
@@ -114,21 +106,8 @@ class Debug extends React.Component{
 						</div>
 					</form>
 
-		        </section>
-
-				<section>
-
 					<h4 className="underline">Pusher</h4>
 					<form onSubmit={(e) => this.callPusher(e)}>
-						<div className="field">
-							<div className="name">Call</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={ e => this.setState({ pusher_call: e.target.value })} 
-									value={ this.state.pusher_call } />
-							</div>
-						</div>
 						<div className="field">
 							<div className="name">Data</div>
 							<div className="input">
@@ -146,13 +125,11 @@ class Debug extends React.Component{
 						</div>
 					</form>
 
-		        </section>
-
-		        <section>
 					<h4 className="underline">Response</h4>
 					<pre>
 						{ this.props.debug_response ? JSON.stringify(this.props.debug_response, null, 2) : null }
 					</pre>
+					
 		        </section>
 			</div>
 		);

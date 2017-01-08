@@ -14,20 +14,17 @@ frontend = {}
 # Send a message to an individual connection
 #
 # @param recipient_connection_ids = array
-# @param type = string (type of event, ie connection_opened)
 # @param action = string (action method of this message)
-# @param message_id = string (used for callbacks)
+# @param request_id = string (used for callbacks)
 # @param data = array (any data required to include in our message)
 ##
-def send_message( recipient_connection_id, type, action, message_id, data ):          
+def send_message( recipient_connection_id, action, request_id, data ):          
     message = {
-        'type': type,
         'action': action,
-        'message_id': message_id,
+        'request_id': request_id,
         'data': data
     }
     connections[recipient_connection_id]['connection'].write_message( json_encode(message) )
-        
         
 ##
 # Broadcast a message to all recipients
@@ -143,173 +140,158 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         }
         
         logger.debug('Pusher message received: '+message)
-        
-        # query-based message that is expecting a response
-        if messageJson['type'] == 'query':
-            
-            # fetch our pusher connections
-            if messageJson['action'] == 'get_connections':
-            
-                connectionsDetailsList = []
-                for connection in connections.itervalues():
-                    connectionsDetailsList.append(connection['client'])
-                    
-                send_message(
-                    self.connectionid, 
-                    'response', 
-                    messageJson['action'], 
-                    messageJson['message_id'], 
-                    { 'connections': connectionsDetailsList }
-                )
-            
-            # change connection's client username
-            elif messageJson['action'] == 'change_username':
-                
-                # username is the only value we allow clients to change
-                connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['username']
-                
-                # respond to request
-                send_message(
-                    self.connectionid, 
-                    'response', 
-                    messageJson['action'], 
-                    messageJson['message_id'],
-                    { 'connection': connections[messageJson['origin']['connectionid']]['client'] }
-                )
-                
-                # notify all clients of this change
-                broadcast( 'connection_updated', { 'connections': connections[messageJson['origin']['connectionid']]['client'] })
-        
-            # start radio
-            elif messageJson['action'] == 'start_radio':
-            
-                # pull out just the radio data (we don't want all the message_id guff)
-                radio = {
-                    'enabled': 1,
-                    'seed_artists': messageJson['seed_artists'],
-                    'seed_genres': messageJson['seed_genres'],
-                    'seed_tracks': messageJson['seed_tracks']
+    
+        # broadcast message to other connections (except for self)
+        if messageJson['action'] == 'broadcast':
+
+            # respond to request with status update
+            send_message(
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'status': 'Ok' }
+            )
+
+            for connection in connections.itervalues():
+                if connection['client']['connectionid'] != self.connectionid:
+                    connection['connection'].write_message(messageJson)
+    
+        # send authroization details
+        elif messageJson['action'] == 'send_authorization':
+
+            # make sure we actually have a connection matching the provided connectionid
+            if messageJson['recipient_connectionid'] in connections:
+
+                # send payload to recipient
+                authorization_message = {
+                    'type': 'broadcast',
+                    'action': 'received_authorization',
+                    'authorization': messageJson['authorization'],
+                    'me': messageJson['me'],
+                    'origin': messageJson['origin']
                 }
-                radio = self.frontend.start_radio( radio )
-                send_message( 
-                    self.connectionid, 
-                    'response', 
-                    'radio',
-                    messageJson['message_id'], 
-                    { 'radio': radio }
-                )
-        
-            # stop radio
-            elif messageJson['action'] == 'stop_radio':
-                radio = self.frontend.stop_radio()
-                send_message( 
-                    self.connectionid, 
-                    'response', 
-                    'radio', 
-                    messageJson['message_id'], 
-                    { 'radio': self.frontend.radio }
-                )
-            
-            # fetch our current radio state
-            elif messageJson['action'] == 'get_radio':
-                send_message( 
-                    self.connectionid, 
-                    'response', 
-                    'radio',
-                    messageJson['message_id'],
-                    { 'radio': self.frontend.radio }
-                )
+                connections[messageJson['recipient_connectionid']]['connection'].write_message(authorization_message)
 
-            # MOVED TO HTTP ENDPOINT FOR SIMPLICITY IN REACT+REDUX
-
-            # # get our spotify authentication token
-            # elif messageJson['action'] == 'get_spotify_token':
-            #     send_message(
-            #         self.connectionid,
-            #         'response',
-            #         messageJson['action'],
-            #         messageJson['message_id'],
-            #         { 'token': self.frontend.spotify_token } 
-            #     )
-        
-            # # refresh our spotify authentication token
-            # elif messageJson['action'] == 'refresh_spotify_token':
-            #     token = self.frontend.refresh_spotify_token()
-            #     send_message( 
-            #         self.connectionid, 
-            #         'response', 
-            #         messageJson['action'], 
-            #         messageJson['message_id'], 
-            #         { 'token': token } 
-            #     )
-        
-            # get system version and check for upgrade
-            elif messageJson['action'] == 'get_version':
-                version = self.frontend.get_version()
-                send_message( 
+                # respond to request with status update
+                send_message(
                     self.connectionid, 
                     'response', 
-                    messageJson['action'], 
-                    messageJson['message_id'], 
-                    { 'version': version } 
+                    messageJson['request_id'], 
+                    { 'status': 'Ok' }
                 )
-        
-            # get system version and check for upgrade
-            elif messageJson['action'] == 'perform_upgrade':
-                version = self.frontend.get_version()
-                version['upgrade_successful'] = self.frontend.perform_upgrade()
-                send_message( 
-                    self.connectionid, 
-                    'response', 
-                    messageJson['action'], 
-                    messageJson['message_id'], 
-                    { 'version': version } 
-                )
-                
-                # notify all clients of this change
-                broadcast( 'upgraded', { 'version': version })
-        
-            # restart mopidy
-            elif messageJson['action'] == 'restart':
-                self.frontend.restart()
-                
-            
-            # not an action we recognise!
             else:
-                send_message( 
+                # respond to request with status update
+                send_message(
                     self.connectionid, 
                     'response', 
-                    messageJson['action'], 
-                    messageJson['message_id'], 
-                    { 'error': 'Unhandled action' } 
+                    messageJson['request_id'], 
+                    { 'error': 'Could not send to that connection, does not exist' }
                 )
+
+        # fetch our pusher connections
+        elif messageJson['action'] == 'get_connections':
         
-        # point-and-shoot one-way broadcast
-        elif messageJson['type'] == 'broadcast':
-
-            # recipients array has items, so only send to specific clients
-            if messageJson.has_key('recipients'):  
-                for connectionid in messageJson['recipients']:
-                    connectionid = connectionid.encode("utf-8")
-                    
-                    # make sure we actually have a connection matching the provided connectionid
-                    if connectionid in connections:
-                        connections[connectionid]['connection'].write_message(messageJson)
-                    else:
-                        logger.warn('Pusher: Tried to broadcast to connectionid '+connectionid+' but it doesn\'t exist!');
-
-            # empty, so send to all clients
-            else:    
-                for connection in connections.itervalues():
+            connectionsDetailsList = []
+            for connection in connections.itervalues():
+                connectionsDetailsList.append(connection['client'])
                 
-                    # if we've set ignore_self, then don't send message to originating connection
-                    if messageJson.has_key('ignore_self'):
-                        if connection['client']['connectionid'] != messageJson['origin']['connectionid']:
-                            connection['connection'].write_message(messageJson)
-                            
-                    # send it to everyone
-                    else:
-                        connection['connection'].write_message(messageJson)
+            send_message(
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'connections': connectionsDetailsList }
+            )
+        
+        # change connection's client username
+        elif messageJson['action'] == 'set_username':
+            
+            # username is the only value we allow clients to change
+            connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['username']
+            
+            # respond to request
+            send_message(
+                self.connectionid, 
+                'response',
+                messageJson['request_id'],
+                { 'username': messageJson['username'] }
+            )
+            
+            # notify all clients of this change
+            broadcast( 'connection_updated', { 'connections': connections[messageJson['origin']['connectionid']]['client'] })
+    
+        # start radio
+        elif messageJson['action'] == 'start_radio':
+        
+            # pull out just the radio data (we don't want all the request_id guff)
+            radio = {
+                'enabled': 1,
+                'seed_artists': messageJson['seed_artists'],
+                'seed_genres': messageJson['seed_genres'],
+                'seed_tracks': messageJson['seed_tracks']
+            }
+            radio = self.frontend.start_radio( radio )
+            send_message( 
+                self.connectionid, 
+                'response',
+                messageJson['request_id'], 
+                { 'radio': radio }
+            )
+    
+        # stop radio
+        elif messageJson['action'] == 'stop_radio':
+            radio = self.frontend.stop_radio()
+            send_message( 
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'radio': self.frontend.radio }
+            )
+        
+        # fetch our current radio state
+        elif messageJson['action'] == 'get_radio':
+            send_message( 
+                self.connectionid, 
+                'response',
+                messageJson['request_id'],
+                { 'radio': self.frontend.radio }
+            )
+    
+        # get system version and check for upgrade
+        elif messageJson['action'] == 'get_version':
+            version = self.frontend.get_version()
+            send_message( 
+                self.connectionid, 
+                'response',
+                messageJson['request_id'], 
+                { 'version': version } 
+            )
+    
+        # get system version and check for upgrade
+        elif messageJson['action'] == 'perform_upgrade':
+            version = self.frontend.get_version()
+            version['upgrade_successful'] = self.frontend.perform_upgrade()
+            send_message( 
+                self.connectionid, 
+                'response',
+                messageJson['request_id'], 
+                { 'version': version } 
+            )
+            
+            # notify all clients of this change
+            broadcast( 'upgraded', { 'version': version })
+    
+        # restart mopidy
+        elif messageJson['action'] == 'restart':
+            self.frontend.restart()            
+        
+        # not an action we recognise!
+        else:
+            send_message( 
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'error': 'Unhandled action' } 
+            )
                         
         logger.debug( 'Pusher: Message received from '+ self.connectionid )
   

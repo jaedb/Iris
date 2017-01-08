@@ -16,13 +16,13 @@ class PusherConnectionList extends React.Component{
 
 	componentDidMount(){
 		if( this.props.connected ){
-			this.props.pusherActions.getConnectionList();
+			this.props.pusherActions.getConnections();
 		}
 	}
 
 	componentWillReceiveProps(newProps){
 		if( !this.props.connected && newProps.connected ){
-			this.props.pusherActions.getConnectionList();
+			this.props.pusherActions.getConnections();
 		}
 	}
 

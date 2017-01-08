@@ -7,27 +7,53 @@ const PusherMiddleware = (function(){
 
     // container for the actual Mopidy socket
     var socket = null;
+    var deferredRequests = [];
+
+    const resolveRequest = (requestId, message ) => {
+        var response = JSON.parse( message );
+        deferredRequests[request_id].resolve( response );
+        delete deferredRequests[request_id];
+    }
+
+    const rejectRequest = (requestId, message) => {
+        deferredRequests[requestId].reject( message );
+    }
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
-        switch( message.action ){
-            default:
-                var name = 'unspecified'
-                if( message.action ) name = message.action
-                name = name.replace('get_','').toUpperCase()
-                store.dispatch({ type: 'PUSHER_'+name, data: message.data })
+
+        console.log('handle', message)
+
+        switch (message.action){
+            case 'response':
+                if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
+                    deferredRequests[ message.request_id ].resolve( message )
+                } else {
+                    console.error('Pusher: Response with no matching request', message);
+                }
+                break
+
+            case 'broadcast':
+                var type = 'UNRECOGNISED_BROADCAST'
+                if( message.data.type ) type = message.data.type.toUpperCase()
+                store.dispatch({ type: type, data: message.data })
+                break
         }
     }
 
-    const makeRequest = (data) => {
-        data.type = 'query';
-        data.message_id = helpers.generateGuid();
-        socket.send( JSON.stringify(data) );
-    }
+    const request = (data) => {
+        return new Promise( (resolve, reject) => {
 
-    const broadcast = (data) => {
-        data.type = 'broadcast';
-        socket.send( JSON.stringify(data) );
+            // send the payload
+            data.request_id = helpers.generateGuid()
+            socket.send( JSON.stringify(data) )
+            
+            // add query to our deferred responses
+            deferredRequests[ data.request_id ] = {
+                resolve: resolve,
+                reject: reject
+            }
+        })
     }
 
 
@@ -41,6 +67,15 @@ const PusherMiddleware = (function(){
     return store => next => action => {
 
         switch(action.type) {
+
+            case 'PUSHER_INSTRUCT':
+                request( action.data )
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+                        }
+                    )
+                break
 
             case 'PUSHER_CONNECT':
 
@@ -63,7 +98,12 @@ const PusherMiddleware = (function(){
                 socket.onopen = () => {
                     store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
                     store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
-                    makeRequest({ action: 'get_radio' });
+                    request({ action: 'get_radio' })
+                        .then(
+                            response => {
+                                store.dispatch({ type: 'PUSHER_RADIO', data: response.data })
+                            }
+                        )
                 };
 
                 socket.onmessage = (message) => {
@@ -74,83 +114,68 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
-                makeRequest({ action: 'get_version' });
+                request({ action: 'get_version' })
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'PUSHER_VERSION', data: response.data })
+                        }
+                    )
                 return next(action);
                 break;
 
             case 'PUSHER_UPGRADING':
-                makeRequest({ action: 'perform_upgrade' });
+                request({ action: 'perform_upgrade' })
+                    .then(
+                        response => {                            
+                            store.dispatch({ type: 'PUSHER_UPGRADE', data: response.data })
+                        }
+                    )
                 return next(action);
                 break;
 
+            case 'PUSHER_SET_USERNAME':
+                request({ action: 'set_username', username: action.username })
+                    .then(
+                        response => {                            
+                            store.dispatch({ type: 'PUSHER_USERNAME', data: { username: response.data.username }})
+                        }
+                    )
+                return next(action);
+                break;
+
+            case 'PUSHER_GET_CONNECTIONS':
             case 'PUSHER_CLIENT_CONNECTED':
-                makeRequest({ action: 'get_connections' });
+                request({ action: 'get_connections' })
+                    .then(
+                        response => {                            
+                            store.dispatch({ type: 'PUSHER_CONNECTIONS', data: response.data })
+                        }
+                    )
                 return next(action);
-                break;
-
-            case 'PUSHER_INSTRUCT':
-                switch( action.message_type ){
-                    case 'query':
-                        makeRequest( action.data )
-                        break
-                    case 'broadcast':
-                        broadcast( action.data )
-                        break
-                }
-                break;
+                break
 
             case 'PUSHER_DEBUG':
-                switch( action.call ){
-                    case 'query':
-                        makeRequest( action.data )
-                            // THIS DOES NOT RETURN A PROMISE SO CAN'T DETECT RELATED RESPONSES
-                            /*.then( response => {
-                                store.dispatch({ type: 'DEBUG', response: response })
-                            })*/
-                        break
-                    case 'broadcast':
-                        broadcast( action.data )
-                            /*.then( response => {
-                                store.dispatch({ type: 'DEBUG', response: response })
-                            })*/
-                        break
-                    default:
-                        store.dispatch({ type: 'DEBUG', response: '{ "error": "Invalid call" }' })
-                        break
-                }
+                request( action.data )
+                    .then(
+                        response => {                            
+                            store.dispatch({ type: 'DEBUG', response: response.data })
+                        }
+                    )
                 break;
 
-            case 'PUSHER_SEND_BROADCAST':
-                broadcast({ action: action.action, data: action.data });
+            case 'PUSHER_SEND_AUTHORIZATION':
+                request({
+                    action: 'send_authorization',
+                    recipient_connectionid: action.recipient_connectionid,
+                    authorization: action.authorization,
+                    me: action.me
+                })
+                .then(
+                    response => {                   
+                        uiActions.createNotification('Authorization sent')
+                    }
+                )
                 break;
-
-            case 'PUSHER_NOTIFICATION':
-            case 'PUSHER_BROADCAST':
-
-                var notification = window.Notification || window.mozNotification || window.webkitNotification;
-                if ('undefined' === typeof notification) return false;
-                if ('undefined' !== typeof notification) notification.requestPermission(function(permission){});
-
-                // handle nested data objects
-                var data = {}
-                if( typeof(action.data) ) data = action.data
-                if( typeof(data.data) ) data = Object.assign({}, data, data.data)
-
-                // construct our browser notification
-                var title = '';
-                var options = {
-                    body: '',
-                    dir: 'auto',
-                    lang: 'EN',
-                    tag: 'iris'
-                };
-                if( data.title ) title = data.title;
-                if( data.body ) options.body = data.body;
-                if( data.icon ) options.icon = data.icon;
-
-                // make it so
-                var notification = new notification( title, options );
-                break
 
             case 'PUSHER_SEND_AUTHORIZATION':
                 if( window.confirm('Spotify authorization for user '+action.data.me.id+' received. Do you want to import?') ){
@@ -168,19 +193,20 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_START_RADIO':
 
-                store.dispatch({ 
-                    type: 'PUSHER_SEND_BROADCAST',
+                request({
                     action: 'broadcast',
-                    ignore_self: true,
                     data: {
-                        type: 'notification',
-                        data: {
-                            title: 'Radio started',
-                            body: store.getState().pusher.username +' started radio mode',
-                            icon: ''
-                        }
-                    } 
+                        type: 'browser_notification',
+                        title: 'Radio started',
+                        body: store.getState().pusher.username +' started radio mode',
+                        icon: ''
+                    }
                 })
+                .then(
+                    response => {                   
+                        uiActions.createNotification('Starting radio...')
+                    }
+                )
 
                 var data = {
                     action: 'start_radio',
@@ -200,24 +226,25 @@ const PusherMiddleware = (function(){
                     }
                 }
                 
-                makeRequest( data )
+                request( data )
                 break
 
             case 'PUSHER_STOP_RADIO':
 
-                store.dispatch({ 
-                    type: 'PUSHER_SEND_BROADCAST',
+                request({
                     action: 'broadcast',
-                    ignore_self: true,
                     data: {
-                        type: 'notification',
-                        data: {
-                            title: 'Radio stopped',
-                            body: store.getState().pusher.username +' stopped radio mode',
-                            icon: ''
-                        }
-                    } 
+                        type: 'browser_notification',
+                        title: 'Radio stopped',
+                        body: store.getState().pusher.username +' stopped radio mode',
+                        icon: ''
+                    }
                 })
+                .then(
+                    response => {                   
+                        uiActions.createNotification('Stopping radio')
+                    }
+                )
 
                 store.dispatch( uiActions.createNotification('Stopping radio') )
                 var data = {
@@ -226,7 +253,7 @@ const PusherMiddleware = (function(){
                     seed_genres: [],
                     seed_tracks: []
                 }
-                makeRequest( data )
+                request( data )
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

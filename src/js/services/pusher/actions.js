@@ -10,6 +10,13 @@ export function setPort( port ){
 	}
 }
 
+export function setUsername( username ){
+	return {
+		type: 'PUSHER_SET_USERNAME',
+		username: username
+	}
+}
+
 export function connect(){
 	return {
 		type: 'PUSHER_CONNECT'
@@ -28,18 +35,25 @@ export function performUpgrade(){
 	}
 }
 
-export function getConnectionList(){
+export function getConnections(){
 	return {
-		type: 'PUSHER_INSTRUCT',
-		action: 'get_connections'
+		type: 'PUSHER_GET_CONNECTIONS'
 	}
 }
 
-export function instruct( message_type, data = null ){
+export function instruct( data = null ){
 	return {
 		type: 'PUSHER_INSTRUCT',
-		message_type: message_type,
 		data: data
+	}
+}
+
+export function sendAuthorization( recipient_connectionid, authorization, me ){
+	return {
+		type: 'PUSHER_SEND_AUTHORIZATION',
+		recipient_connectionid: recipient_connectionid,
+		authorization: authorization,
+		me: me
 	}
 }
 
@@ -56,10 +70,9 @@ export function stopRadio(){
 	}
 }
 
-export function debug( call, data = null ){
+export function debug( data = null ){
 	return {
 		type: 'PUSHER_DEBUG',
-		call: call,
 		data: data
 	}
 }

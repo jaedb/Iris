@@ -429,19 +429,44 @@ export function resolveRadioSeeds( radio ){
             seed_genres: []
         }
 
-        var artist_ids = '';
-        for (var i = 0; i < radio.seed_artists.length; i++){
-            if (i > 0) artist_ids += ','
-            artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i])
-        }
+        var requests = []
 
-        $.when(
-            sendRequest( dispatch, getState, 'artists/'+ artist_ids )
+        if (radio.seed_artists.length > 0){
+            var artist_ids = '';
+            for (var i = 0; i < radio.seed_artists.length; i++){
+                if (i > 0) artist_ids += ','
+                artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i])
+            }
+
+            // add to our list of async requests
+            requests.push(
+                sendRequest( dispatch, getState, 'artists/'+ artist_ids )
                 .then( response => {
                     if (!(response instanceof Array)) response = [response]
                     Object.assign(resolved_seeds.seed_artists, response);
                 })
+            )
+        }
 
+        if (radio.seed_tracks.length > 0){
+            var track_ids = '';
+            for (var i = 0; i < radio.seed_tracks.length; i++){
+                if (i > 0) track_ids += ','
+                track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i])
+            }
+            
+            // add to our list of async requests
+            requests.push(
+                sendRequest( dispatch, getState, 'tracks/'+ track_ids )
+                .then( response => {
+                    if (!(response instanceof Array)) response = [response]
+                    Object.assign(resolved_seeds.seed_tracks, response);
+                })
+            )
+        }
+
+        $.when.apply(
+            $, requests
         ).then( () => {
             dispatch({
                 type: 'PUSHER_RADIO_SEEDS_RESOLVED',

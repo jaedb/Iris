@@ -168,7 +168,7 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ pusher_username: e.target.value }) } 
-									onBlur={ e => this.props.pusherActions.instruct( 'query', { action: 'change_username', username: this.state.pusher_username }) } 
+									onBlur={ e => this.props.pusherActions.setUsername(this.state.pusher_username) } 
 									value={ this.state.pusher_username } />
 							</div>
 						</div>
@@ -178,7 +178,7 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ pusher_port: e.target.value })} 
-									onBlur={ e => this.props.pusherActions.setPort( this.state.pusher_port ) } 
+									onBlur={ e => this.props.pusherActions.setPort(this.state.pusher_port) } 
 									value={ this.state.pusher_port } />
 							</div>
 						</div>

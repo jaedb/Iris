@@ -130,6 +130,37 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'RESTART':
+                location.reload()
+                break
+
+            case 'BROWSER_NOTIFICATION':
+
+                var notification = window.Notification || window.mozNotification || window.webkitNotification;
+                if ('undefined' === typeof notification) return false;
+                if ('undefined' !== typeof notification) notification.requestPermission(function(permission){});
+
+                // handle nested data objects
+                var data = {}
+                if( typeof(action.data) ) data = action.data
+                if( typeof(data.data) ) data = Object.assign({}, data, data.data)
+
+                // construct our browser notification
+                var title = '';
+                var options = {
+                    body: '',
+                    dir: 'auto',
+                    lang: 'EN',
+                    tag: 'iris'
+                };
+                if( data.title ) title = data.title;
+                if( data.body ) options.body = data.body;
+                if( data.icon ) options.icon = data.icon;
+
+                // make it so
+                var notification = new notification( title, options );
+                break
+
             case 'CREATE_NOTIFICATION':
 
                 // start a timeout to remove this notification

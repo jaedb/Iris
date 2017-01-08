@@ -17,15 +17,7 @@ class SendAuthorizationModal extends React.Component{
 
 	handleClick(e, connectionid){		
 		e.preventDefault()
-		var data = {
-			recipients: [connectionid],
-			action: 'send_authorization',
-			data: {
-				authorization: this.props.authorization,
-				me: this.props.me
-			}
-		}
-		this.props.pusherActions.instruct( 'broadcast', data )
+		this.props.pusherActions.sendAuthorization( connectionid, this.props.authorization, this.props.me )
 		this.props.uiActions.closeModal()
 		return false;
 	}

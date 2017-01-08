@@ -12,7 +12,7 @@ const localstorageMiddleware = (function(){
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store
-        //console.log(action)
+        console.log(action)
 
         switch( action.type ){
 
@@ -35,9 +35,9 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('pusher', JSON.stringify(pusher));
                 break;
 
-            case 'PUSHER_CHANGE_USERNAME':
+            case 'PUSHER_USERNAME':
                 var stored_pusher = JSON.parse( localStorage.getItem('pusher') )
-                var pusher = Object.assign({}, stored_pusher, { username: action.data.connection.username })
+                var pusher = Object.assign({}, stored_pusher, { username: action.data.username })
                 localStorage.setItem('pusher', JSON.stringify(pusher))
                 break;
 

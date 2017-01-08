@@ -61,6 +61,9 @@ class Artist extends React.Component{
 		}else if( source == 'local' && props.mopidy_connected ){
 			this.props.mopidyActions.getArtist( props.params.uri );
 		}
+		
+		// go back to overview
+		this.setState({ sub_view: 'overview' })
 	}
 
 	loadMore(){
