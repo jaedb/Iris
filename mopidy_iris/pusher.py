@@ -32,11 +32,11 @@ def send_message( recipient_connection_id, action, request_id, data ):
 # @param action = string
 # @param data = array (the body of our message to send)
 ##
-def broadcast( action, data ):    
+def broadcast( type, data ):    
     for connection in connections.itervalues():
         message = {
-            'type': 'broadcast',
-            'action': action,
+            'action': 'broadcast',
+            'type': type,
             'data': data
         }
         connection['connection'].write_message( json_encode(message) )

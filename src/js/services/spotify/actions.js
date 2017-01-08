@@ -421,7 +421,7 @@ export function resolveRadioSeeds( radio ){
     return (dispatch, getState) => {
 
         // flush out the previous store value
-        dispatch({ type: 'PUSHER_RADIO_SEEDS_RESOLVING' });
+        dispatch({ type: 'RADIO_SEEDS_RESOLVING' });
 
         var resolved_seeds = {
             seed_artists: [],
@@ -469,7 +469,7 @@ export function resolveRadioSeeds( radio ){
             $, requests
         ).then( () => {
             dispatch({
-                type: 'PUSHER_RADIO_SEEDS_RESOLVED',
+                type: 'RADIO_SEEDS_RESOLVED',
                 data: resolved_seeds
             });
         });

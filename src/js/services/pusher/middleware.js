@@ -33,9 +33,14 @@ const PusherMiddleware = (function(){
                 }
                 break
 
-            case 'broadcast':
-                var type = 'UNRECOGNISED_BROADCAST'
-                if( message.data.type ) type = message.data.type.toUpperCase()
+            case 'broadcast':                
+                if (message.type ){
+                    var type = message.type.toUpperCase()
+                } else if (message.data.type ){
+                    var type = message.data.type.toUpperCase()
+                } else {
+                    var type = 'UNRECOGNISED_BROADCAST'
+                }
                 store.dispatch({ type: type, data: message.data })
                 break
         }
@@ -101,7 +106,7 @@ const PusherMiddleware = (function(){
                     request({ action: 'get_radio' })
                         .then(
                             response => {
-                                store.dispatch({ type: 'PUSHER_RADIO', data: response.data })
+                                store.dispatch({ type: 'RADIO', data: response.data })
                             }
                         )
                 };
@@ -191,7 +196,7 @@ const PusherMiddleware = (function(){
                 }
                 break
 
-            case 'PUSHER_START_RADIO':
+            case 'START_RADIO':
 
                 request({
                     action: 'broadcast',
@@ -229,7 +234,7 @@ const PusherMiddleware = (function(){
                 request( data )
                 break
 
-            case 'PUSHER_STOP_RADIO':
+            case 'STOP_RADIO':
 
                 request({
                     action: 'broadcast',

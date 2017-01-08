@@ -117,11 +117,11 @@ export default function reducer(ui = {}, action){
         case 'FOLLOWING_LOADING':
             return Object.assign({}, ui, { following_loading: true })
 
-        case 'PUSHER_RADIO':
-        case 'PUSHER_START_RADIO':
+        case 'RADIO':
+        case 'START_RADIO':
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
 
-        case 'PUSHER_RADIO_SEEDS_RESOLVED':
+        case 'RADIO_SEEDS_RESOLVED':
             var radio = Object.assign({}, ui.radio, action.data, { seeds_resolved: true })
             return Object.assign({}, ui, { radio: radio })
 

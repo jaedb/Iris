@@ -84,7 +84,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             // when our mopidy server current track changes
-            case 'PUSHER_RADIO':
+            case 'RADIO':
 
                 // proceed as usual so we don't inhibit default functionality
                 next(action)

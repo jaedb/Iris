@@ -139,8 +139,6 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     ##
     def start_radio( self, new_state ):
         
-        # TODO: validate payload has the required seed values
-        
         # set our new radio state
         self.radio = new_state
         self.radio['enabled'] = 1;

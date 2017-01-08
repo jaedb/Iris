@@ -59,14 +59,14 @@ export function sendAuthorization( recipient_connectionid, authorization, me ){
 
 export function startRadio( uris ){
 	return {
-		type: 'PUSHER_START_RADIO',
+		type: 'START_RADIO',
 		uris: uris
 	}
 }
 
 export function stopRadio(){
 	return {
-		type: 'PUSHER_STOP_RADIO'
+		type: 'STOP_RADIO'
 	}
 }
 
