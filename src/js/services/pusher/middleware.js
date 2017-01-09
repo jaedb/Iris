@@ -120,17 +120,17 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_version' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'PUSHER_VERSION', data: response.data })
+                            store.dispatch({ type: 'VERSION', data: response.data })
                         }
                     )
                 return next(action);
                 break;
 
-            case 'PUSHER_UPGRADING':
+            case 'UPGRADING':
                 request({ action: 'perform_upgrade' })
                     .then(
                         response => {                            
-                            store.dispatch({ type: 'PUSHER_UPGRADE', data: response.data })
+                            store.dispatch({ type: 'UPGRADE', data: response.data })
                         }
                     )
                 return next(action);
@@ -139,19 +139,19 @@ const PusherMiddleware = (function(){
             case 'PUSHER_SET_USERNAME':
                 request({ action: 'set_username', username: action.username })
                     .then(
-                        response => {                            
+                        response => {
                             store.dispatch({ type: 'PUSHER_USERNAME', data: { username: response.data.username }})
                         }
                     )
                 return next(action);
                 break;
 
-            case 'PUSHER_GET_CONNECTIONS':
-            case 'PUSHER_CLIENT_CONNECTED':
+            case 'GET_CONNECTIONS':
+            case 'NEW_CONNECTION':
                 request({ action: 'get_connections' })
                     .then(
                         response => {                            
-                            store.dispatch({ type: 'PUSHER_CONNECTIONS', data: response.data })
+                            store.dispatch({ type: 'CONNECTIONS', data: response.data })
                         }
                     )
                 return next(action);

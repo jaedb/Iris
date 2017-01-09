@@ -112,7 +112,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         logger.info( 'Pusher connection established: '+ connectionid +' ('+ clientid +'/'+ username +')' )
 
         # broadcast to all connections that a new user has connected
-        broadcast( 'client_connected', client )
+        broadcast( 'new_connection', client )
   
     def select_subprotocol(self, subprotocols):
         # select one of our subprotocol elements and return it. This confirms the connection has been accepted.
@@ -217,7 +217,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
             )
             
             # notify all clients of this change
-            broadcast( 'connection_updated', { 'connections': connections[messageJson['origin']['connectionid']]['client'] })
+            broadcast( 'connection_updated', { 'connection': connections[messageJson['origin']['connectionid']]['client'] })
     
         # start radio
         elif messageJson['action'] == 'start_radio':
