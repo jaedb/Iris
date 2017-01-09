@@ -269,7 +269,7 @@ export function getCategories(){
 
         dispatch({ type: 'SPOTIFY_CATEGORIES_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'browse/categories?limit=50' )
+        sendRequest( dispatch, getState, 'browse/categories?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_CATEGORIES_LOADED',
@@ -299,7 +299,7 @@ export function getCategoryPlaylists( id ){
 
         dispatch({ type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50' )
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
