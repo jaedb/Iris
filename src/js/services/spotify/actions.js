@@ -254,7 +254,7 @@ export function getFeaturedPlaylists(){
 
         var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
 
-        sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50' )
+        sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
@@ -284,7 +284,7 @@ export function getCategory( id ){
 
         dispatch({ type: 'SPOTIFY_CATEGORY_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'browse/categories/'+id )
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_CATEGORY_LOADED',

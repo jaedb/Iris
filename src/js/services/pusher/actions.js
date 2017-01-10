@@ -29,15 +29,15 @@ export function disconnect(){
 	}
 }
 
-export function performUpgrade(){
+export function startUpgrade(){
 	return {
-		type: 'PUSHER_UPGRADING'
+		type: 'START_UPGRADE'
 	}
 }
 
 export function getConnections(){
 	return {
-		type: 'PUSHER_GET_CONNECTIONS'
+		type: 'GET_CONNECTIONS'
 	}
 }
 

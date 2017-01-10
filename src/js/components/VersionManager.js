@@ -30,7 +30,7 @@ class VersionManager extends React.Component{
 		}
 
 		if( this.props.pusher.version.upgrade_available ){
-			return <button className="secondary" onClick={() => this.props.pusherActions.performUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
+			return <button className="secondary" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
 		}
 
 		return <button className="secondary" disabled>Already up to date</button>

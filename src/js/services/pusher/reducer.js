@@ -43,7 +43,7 @@ export default function reducer(pusher = {}, action){
                 upgrading: false
             });
 
-        case 'UPGRADING':
+        case 'START_UPGRADE':
             return Object.assign({}, pusher, { upgrading: true });
 
         default:

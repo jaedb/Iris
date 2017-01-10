@@ -126,11 +126,16 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
-            case 'UPGRADING':
+            case 'START_UPGRADE':
                 request({ action: 'perform_upgrade' })
                     .then(
-                        response => {                            
-                            store.dispatch({ type: 'UPGRADE', data: response.data })
+                        response => {
+                            if (response.data.version.upgrade_successful){
+                                uiActions.createNotification('Upgrade complete')
+                            }else{
+                                uiActions.createNotification('Upgrade failed, manual upgrade required')
+                            }
+                            store.dispatch({ type: 'VERSION', data: response.data })
                         }
                     )
                 return next(action);
