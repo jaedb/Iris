@@ -22,6 +22,8 @@ const PusherMiddleware = (function(){
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
 
+        //console.log('handleMessage', message)
+
         switch (message.action){
             case 'response':
                 if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
@@ -127,13 +129,13 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'START_UPGRADE':
-                request({ action: 'perform_upgrade' })
+                request({ action: 'upgrade' })
                     .then(
                         response => {
-                            if (response.data.version.upgrade_successful){
-                                uiActions.createNotification('Upgrade complete')
+                            if (response.data.upgrade_successful){
+                                store.dispatch( uiActions.createNotification('Upgrade complete') )
                             }else{
-                                uiActions.createNotification('Upgrade failed, manual upgrade required')
+                                store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                             }
                             store.dispatch({ type: 'VERSION', data: response.data })
                         }
@@ -180,7 +182,7 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {                   
-                        uiActions.createNotification('Authorization sent')
+                        store.dispatch( uiActions.createNotification('Authorization sent') )
                     }
                 )
                 break;
