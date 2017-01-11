@@ -178,6 +178,10 @@ export default function reducer(spotify = {}, action){
                 items: [ ...spotify.new_releases.items, ...action.data.albums.items ]
             }})
 
+        case 'SPOTIFY_DISCOVER_LOADED':
+            if( !action.data ) return Object.assign({}, spotify, { discover: [] })
+            return Object.assign({}, spotify, { discover: [...spotify.discover, ...[action.data]] })
+
         default:
             return spotify
     }
