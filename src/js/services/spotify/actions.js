@@ -16,18 +16,24 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
         getToken( dispatch, getState )
             .then( response => {
 
+                // prepend the API baseurl, unless the endpoint already has it (ie pagination requests)
                 var url = 'https://api.spotify.com/v1/'+endpoint
                 if( endpoint.startsWith('https://api.spotify.com/') ) url = endpoint;
 
-                $.ajax({
-                        method: method,
-                        cache: true,
-                        url: url,
-                        headers: {
-                            Authorization: 'Bearer '+ response
-                        },
-                        data: JSON.stringify(data)
-                    }).then( 
+                // create our ajax request config
+                var config = {
+                    method: method,
+                    url: url,
+                    cached: true,
+                    headers: {
+                        Authorization: 'Bearer '+ response
+                    }
+                }
+
+                // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
+                if (data) config.data = JSON.stringify(data)
+
+                $.ajax(config).then( 
                         response => {
                             resolve(response)
                         },
@@ -475,6 +481,57 @@ export function resolveRadioSeeds( radio ){
         });
     }
 }
+
+
+/**
+ * =============================================================== DISCOVER =============
+ * ======================================================================================
+ **/
+
+
+/**
+ * Get our recommendations
+ * This is based off our 'favorites' and then we use those as seeds
+ *
+ * @param uri string
+ **/
+export function getDiscover(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_DISCOVER_LOADED', data: false })
+
+        // get favorite tracks
+        sendRequest( dispatch, getState, 'me/top/tracks?limit=50&time_range=long_term' )
+            .then( response => {
+
+                var favorite_tracks_uris = helpers.asURIs(response.items)
+                favorite_tracks_uris = favorite_tracks_uris.sort(() => .5 - Math.random())
+                favorite_tracks_uris = favorite_tracks_uris.slice(0,10)
+
+                for (var i = 0; i < favorite_tracks_uris.length; i++){
+
+                    var seed_id = helpers.getFromUri('trackid',favorite_tracks_uris[i] )
+
+                    $.when(
+
+                        sendRequest( dispatch, getState, 'recommendations?seed_tracks='+seed_id ),
+                        sendRequest( dispatch, getState, 'tracks/'+seed_id )
+
+                    ).then( ( tracks_response, seed_response ) => {
+                        dispatch({
+                            type: 'SPOTIFY_DISCOVER_LOADED',
+                            data: {
+                                tracks: tracks_response.tracks,
+                                seed: seed_response
+                            }
+                        });
+                    });
+                }
+            })
+    }
+}
+
+
 
 
 /**
