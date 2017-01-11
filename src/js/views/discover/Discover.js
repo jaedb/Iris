@@ -28,12 +28,8 @@ class Discover extends React.Component{
 				{
 					this.props.discover.map(
 						(discover, index) => {
-							return (
-								<div className="grid-slider-wrapper" key={index}>
-									<h4>Because you listened to <ArtistSentence artists={discover.seed.artists} /></h4>
-									<GridSlider tracks={discover.tracks} />
-								</div>
-							)
+							var title = <h4>Because you listened to <ArtistSentence artists={discover.seed.artists} /></h4>
+							return <GridSlider title={title} tracks={discover.tracks} key={index} />
 						}
 					)
 				}

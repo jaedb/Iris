@@ -1,12 +1,37 @@
 
 .grid-slider-wrapper {
 	padding-bottom: 10px;
+	position: relative;
+
+	.controls {
+		position: absolute;
+		top: -5px;
+		right: 0;
+
+		.fa {
+			display: inline-block;
+			padding: 8px;
+			margin-left: 2px;
+			cursor: pointer;
+			opacity: 0.5;
+			@include animate();
+
+			&[disabled] {
+				opacity: 0.2;
+				cursor: not-allowed;
+			}
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
 
 	.grid-slider {
 		position: relative;
 		overflow-x: hidden;
 		overflow-y: hidden;
-		height: 22vw;
+		height: 17vw;
 
 		.has-touch-events & {
 			overflow-x: scroll;
@@ -18,6 +43,7 @@
 			left: 0;
 			width: 400%;
 			box-sizing: border-box;
+			@include animate();
 
 			.grid-item {
 				width: 4%;
@@ -28,7 +54,7 @@
 
 	@include responsive( $bp_medium ){
 		.grid-slider {
-			height: 21vw;
+			height: 23vw;
 		}
 	}
 
