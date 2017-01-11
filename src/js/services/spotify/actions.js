@@ -506,7 +506,7 @@ export function getDiscover(){
 
                 var favorite_tracks_uris = helpers.asURIs(response.items)
                 favorite_tracks_uris = favorite_tracks_uris.sort(() => .5 - Math.random())
-                favorite_tracks_uris = favorite_tracks_uris.slice(0,10)
+                favorite_tracks_uris = favorite_tracks_uris.slice(0,3)
 
                 for (var i = 0; i < favorite_tracks_uris.length; i++){
 

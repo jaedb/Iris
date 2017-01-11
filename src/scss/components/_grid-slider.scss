@@ -1,12 +1,16 @@
 
 .grid-slider-wrapper {
-	padding-bottom: 40px;
+	padding-bottom: 10px;
 
 	.grid-slider {
 		position: relative;
-		overflow-x: scroll;
+		overflow-x: hidden;
 		overflow-y: hidden;
-		height: 220px;
+		height: 22vw;
+
+		.has-touch-events & {
+			overflow-x: scroll;
+		}
 
 		.liner {
 			position: absolute;
@@ -20,5 +24,21 @@
 				margin: 0 0.5% !important;
 			}
 		}
-	}	
+	}
+
+	@include responsive( $bp_medium ){
+		.grid-slider {
+			height: 21vw;
+		}
+	}
+
+	@include responsive( 500px ){
+		.grid-slider {
+			height: 40vw;
+
+			.liner {
+				width: 666.6667%;
+			}
+		}
+	}
 }
