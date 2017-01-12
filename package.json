@@ -1,6 +1,6 @@
 {
 	"name": "mopidy-iris",
-	"version": "2.10.12",
+	"version": "2.10.17",
 	"description": "Mopidy HTTP interface",
 	"repository": "https://github.com/jaedb/iris",
 	"author": "James Barnsley <james@barnsley.nz>",
@@ -41,7 +41,7 @@
 		"react-ga": "2.1.2"
 	},
 	"scripts": {
-		"dev": "./build.sh & NODE_ENV=development webpack",
-		"prod": "./build.sh & NODE_ENV=production webpack"
+		"dev": "NODE_ENV=development webpack && ./build.sh",
+		"prod": "NODE_ENV=production webpack && ./build.sh"
 	}
 }
