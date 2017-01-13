@@ -253,17 +253,20 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REMOVED':
-            var tracks = Object.assign([], ui.playlist.tracks)
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri])
+            var tracks = Object.assign([], playlist.tracks)
             var indexes = action.tracks_indexes.reverse()
             for( var i = 0; i < indexes.length; i++ ){
                 tracks.splice( indexes[i], 1 )
             }
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
-            var playlist = Object.assign({}, ui.playlist, { tracks: tracks, snapshot_id: snapshot_id })
-            return Object.assign({}, ui, { playlist: playlist });
+            Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
-        case 'PLAYLIST_TRACKS_RESOLVED':
+        case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], ui.playlists)
             var playlist = Object.assign({}, playlists[action.uri], { tracks: action.tracks })
 
@@ -271,9 +274,9 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REORDERED':
-            var snapshot_id = null
-            if( action.snapshot_id ) snapshot_id = action.snapshot_id
-            var tracks = Object.assign([], ui.playlist.tracks)
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri])
+            var tracks = Object.assign([], playlist.tracks)
 
             // handle insert_before offset if we're moving BENEATH where we're slicing tracks
             var insert_before = action.insert_before
@@ -287,8 +290,11 @@ export default function reducer(ui = {}, action){
                 tracks.splice(insert_before, 0, tracks_to_move[i])
             }
 
-            var playlist = Object.assign({}, ui.playlist, { snapshot_id: snapshot_id, tracks: tracks })
-            return Object.assign({}, ui, { playlist: playlist });
+            var snapshot_id = null
+            if( action.snapshot_id ) snapshot_id = action.snapshot_id
+            Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_FOLLOWING_LOADED':
             var playlists = Object.assign([], ui.playlists)

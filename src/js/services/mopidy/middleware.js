@@ -367,13 +367,13 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        store.dispatch({ type: 'PLAYLIST_TRACKS_RESOLVED', tracks: tracks, uri: action.uri })
+                        store.dispatch({ type: 'PLAYLIST_TRACKS', tracks: tracks, uri: action.uri })
                     })
                 break
 
             case 'MOPIDY_ADD_PLAYLIST_TRACKS':
                 
-                instruct( socket, store, 'playlists.lookup', { uri: action.playlist_uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
                     .then( response => {
                         var tracks = [];             
                         for( var i = 0; i < action.tracks_uris.length; i++ ){
@@ -392,7 +392,7 @@ const MopidyMiddleware = (function(){
 
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
-                                store.dispatch({ type: 'PLAYLIST_TRACKS_ADDED', tracks_uris: action.tracks_uris });
+                                store.dispatch({ type: 'PLAYLIST_TRACKS_ADDED', uri: action.uri, tracks_uris: action.tracks_uris });
                             })
                     });
                 break
@@ -406,7 +406,7 @@ const MopidyMiddleware = (function(){
                 var indexes = Object.assign([], action.tracks_indexes)
                 indexes.sort(descending);
                 
-                instruct( socket, store, 'playlists.lookup', { uri: action.playlist_uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
                     .then( response => {
                         var playlist = Object.assign({}, response)
                         for( var i = 0; i < indexes.length; i++ ){
@@ -414,7 +414,7 @@ const MopidyMiddleware = (function(){
                         }
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
-                                store.dispatch({ type: 'PLAYLIST_TRACKS_REMOVED', tracks_indexes: action.tracks_indexes });
+                                store.dispatch({ type: 'PLAYLIST_TRACKS_REMOVED', uri: action.uri, tracks_indexes: action.tracks_indexes });
                             })
                     });
                 break
@@ -425,7 +425,7 @@ const MopidyMiddleware = (function(){
                         var playlist = Object.assign({}, response, { name: action.name })
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
-                                store.dispatch({ type: 'PLAYLIST_UPDATED', playlist: playlist })
+                                store.dispatch({ type: 'PLAYLIST_UPDATED', uri: action.uri, playlist: playlist })
                             })
                     });
                 break
@@ -464,8 +464,7 @@ const MopidyMiddleware = (function(){
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
 
-                                // and now re-render our full track references
-                                store.dispatch({ type: 'MOPIDY_PLAYLIST_TRACKS', tracks: playlist.tracks })
+                                store.dispatch({ type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', tracks: playlist.tracks, uri: playlist.uri })
                             })
                     });
                 break

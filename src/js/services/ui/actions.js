@@ -147,39 +147,39 @@ export function createPlaylist( scheme, name, is_public = false ){
     return false
 }
 
-export function removeTracksFromPlaylist( playlist_uri, tracks_indexes ){
-    switch( helpers.uriSource( playlist_uri ) ){
+export function removeTracksFromPlaylist( uri, tracks_indexes ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_REMOVE_PLAYLIST_TRACKS',
-                playlist_uri: playlist_uri,
+                uri: uri,
                 tracks_indexes: tracks_indexes
             }
 
         case 'm3u':
             return { 
                 type: 'MOPIDY_REMOVE_PLAYLIST_TRACKS',
-                playlist_uri: playlist_uri,
+                uri: uri,
                 tracks_indexes: tracks_indexes
             }
     }
 }
 
-export function addTracksToPlaylist( playlist_uri, tracks_uris ){
-    switch( helpers.uriSource( playlist_uri ) ){
+export function addTracksToPlaylist( uri, tracks_uris ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_ADD_PLAYLIST_TRACKS',
-                playlist_uri: playlist_uri,
+                uri: uri,
                 tracks_uris: tracks_uris
             }
 
         case 'm3u':
             return { 
                 type: 'MOPIDY_ADD_PLAYLIST_TRACKS',
-                playlist_uri: playlist_uri,
+                uri: uri,
                 tracks_uris: tracks_uris
             }
     }

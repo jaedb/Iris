@@ -345,8 +345,6 @@ export function getCategory( id ){
                 }
             )
 
-            console.log(category)
-
             dispatch({
                 type: 'SPOTIFY_CATEGORY_LOADED',
                 data: category
@@ -857,6 +855,9 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
                 }
             )
 
+            // remove our tracklist. It'll overwrite any full records otherwise
+            delete playlist.tracks
+
             dispatch({
                 type: 'PLAYLIST_LOADED',
                 playlist: playlist
@@ -898,12 +899,13 @@ export function toggleFollowingPlaylist( uri, method ){
     }
 }
 
-export function addTracksToPlaylist( playlist_uri, tracks_uris ){
+export function addTracksToPlaylist( uri, tracks_uris ){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',playlist_uri) + '/playlists/'+ helpers.getFromUri('playlistid',playlist_uri) + '/tracks', 'POST', { uris: tracks_uris } )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'POST', { uris: tracks_uris } )
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_ADDED',
+                    uri: uri,
                     tracks_uris: tracks_uris,
                     snapshot_id: response.snapshot_id
                 });
@@ -917,6 +919,7 @@ export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REMOVED',
+                    uri: uri,
                     tracks_indexes: tracks_indexes,
                     snapshot_id: response.snapshot_id
                 });
@@ -930,6 +933,7 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REORDERED',
+                    uri: uri,
                     range_start: range_start,
                     range_length: range_length,
                     insert_before: insert_before,

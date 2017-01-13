@@ -18,8 +18,6 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                var playlist = state.ui.playlist
-
                 if( !store.getState().spotify.authorized ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
@@ -28,7 +26,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = state.ui.playlist
+                var playlist = state.ui.playlists[action.uri]
 
                 if( !store.getState().spotify.authorized ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
