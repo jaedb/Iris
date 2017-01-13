@@ -173,7 +173,7 @@ class Playlist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		playlist: state.ui.playlists[ownProps.params.uri],
+		playlist: state.ui.playlists[helpers.indexFriendlyUri(ownProps.params.uri)],
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		spotify_userid: state.spotify.me.id

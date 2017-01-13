@@ -114,9 +114,6 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
-        case 'FOLLOWING_LOADING':
-            return Object.assign({}, ui, { following_loading: true })
-
         case 'RADIO':
         case 'START_RADIO':
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
@@ -223,17 +220,25 @@ export default function reducer(ui = {}, action){
          * Playlists
          **/
 
+        case 'PLAYLIST_LOADED':
         case 'PLAYLIST_UPDATED':
-            var playlist = Object.assign({}, ui.playlist, action.playlist)
-            return Object.assign({}, ui, { playlist: playlist })
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, action.playlist)
+
+            // if we already have one in our list, fetch it and update it
+            if (playlists[action.playlist.uri]){
+                playlist = Object.assign({}, playlists[action.playlist.uri], action.playlist)
+            }
+
+            playlists[action.playlist.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'MOPIDY_PLAYLIST_LOADED':
             if( !action.data ) return Object.assign({}, ui, { playlist: false })
             return Object.assign({}, ui, { playlist: action.data })
 
         case 'PLAYLIST_LOADED_MORE_TRACKS':
-
-            var playlists = ui.playlists
+            var playlists = Object.assign([], ui.playlists)
             var playlist = Object.assign(
                 {}, 
                 playlists[action.uri],
@@ -258,9 +263,12 @@ export default function reducer(ui = {}, action){
             var playlist = Object.assign({}, ui.playlist, { tracks: tracks, snapshot_id: snapshot_id })
             return Object.assign({}, ui, { playlist: playlist });
 
-        case 'PLAYLIST_TRACKS_LOADED':
-            var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks })
-            return Object.assign({}, ui, { playlist: playlist });
+        case 'PLAYLIST_TRACKS_RESOLVED':
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri], { tracks: action.tracks })
+
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REORDERED':
             var snapshot_id = null
@@ -283,25 +291,10 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { playlist: playlist });
 
         case 'PLAYLIST_FOLLOWING_LOADED':
-            var playlist = Object.assign({}, ui.playlist, { following: action.is_following })
-            return Object.assign({}, ui, { playlist: playlist, following_loading: false });
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri], { following: action.is_following })
 
-
-        /**
-         * Library Playlists
-         **/
-
-        case 'PLAYLIST_LOADED':
-        case 'PLAYLIST_UPDATED':
-            var playlists = ui.playlists
-            var playlist = Object.assign({}, action.playlist)
-
-            // if we already have one in our list, fetch it and update it
-            if (playlists[action.playlist.uri]){
-                playlist = Object.assign({}, playlists[action.playlist.uri], action.playlist)
-            }
-
-            playlists[action.playlist.uri] = playlist
+            playlists[action.uri] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'LIBRARY_PLAYLISTS_LOADED':

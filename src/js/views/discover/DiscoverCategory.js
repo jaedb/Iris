@@ -26,18 +26,26 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.spotify.new_releases || !this.props.spotify.new_releases.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
+		if( !this.props.playlists_next || !this.props.playlists_next ) return
+		this.props.spotifyActions.getURL( this.props.playlists_next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
 	}
 
 	render(){
-		if( !this.props.spotify.category ) return null;
+		if (!this.props.category) return null
+
+		var playlists = []
+		for (var i = 0; i < this.props.category.playlists.length; i++){
+			var uri = this.props.category.playlists[i]
+			if (this.props.playlists.hasOwnProperty(uri)){
+				playlists.push(this.props.playlists[uri])
+			}
+		}
 
 		return (
 			<div className="view discover-categories-view">
-				<Header icon="grid" title={this.props.spotify.category.name} />
+				<Header icon="grid" title={this.props.category.name} />
 				<section className="grid-wrapper">
-					{ this.props.spotify.category.playlists ? <PlaylistGrid playlists={this.props.spotify.category.playlists} /> : null }
+					<PlaylistGrid playlists={playlists} />
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
@@ -53,7 +61,10 @@ class DiscoverCategory extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		playlists: state.ui.playlists,
+		category: state.spotify.category
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

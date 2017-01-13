@@ -67,7 +67,7 @@ class LibraryPlaylists extends React.Component{
 				{
 					width: 10,
 					label: 'Tracks',
-					name: 'tracks.total'
+					name: 'tracks_total'
 				}
 			]
 			return (

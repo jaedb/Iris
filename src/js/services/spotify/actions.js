@@ -263,9 +263,19 @@ export function getFeaturedPlaylists(){
         sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
             .then( response => {
                 for (var i = 0; i < response.playlists.items.length; i++){
+
+                    var playlist = response.playlists.items[i]
+                    Object.assign(
+                        playlist,
+                        {
+                            can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
+                            tracks_total: playlist.tracks.total
+                        }
+                    )
+
                     dispatch({
                         type: 'PLAYLIST_LOADED',
-                        playlist: response.playlists.items[i]
+                        playlist: playlist
                     });                    
                 }
                 dispatch({
@@ -306,18 +316,22 @@ export function getCategory( id ){
 
         ).then( ( category_response, playlists_response ) => {
 
-            var playlists = []
             for (var i = 0; i < playlists_response.playlists.items.length; i++){
-                playlists.push(
-                    Object.assign(
-                        {},
-                        playlists_response.playlists.items[i],
-                        {
-                            tracks: false,
-                            tracks_total: playlists_response.playlists.items[i].tracks.total
-                        }
-                    )
+
+                var playlist = Object.assign(
+                    {},
+                    playlists_response.playlists.items[i],
+                    {
+                        tracks: null,
+                        tracks_more: null,
+                        tracks_total: playlists_response.playlists.items[i].tracks.total
+                    }
                 )
+
+                dispatch({
+                    type: 'PLAYLIST_LOADED',
+                    playlist: playlist
+                });
             }
 
             var category = Object.assign(
@@ -325,9 +339,13 @@ export function getCategory( id ){
                 category_response,
                 {
                     items: false,
-                    playlists: playlists
+                    playlists: helpers.asURIs(playlists_response.playlists.items),
+                    playlists_more: playlists_response.playlists.next,
+                    playlists_total: playlists_response.playlists.total
                 }
             )
+
+            console.log(category)
 
             dispatch({
                 type: 'SPOTIFY_CATEGORY_LOADED',
@@ -358,8 +376,8 @@ export function getURL( url, action_name, uri = false ){
             .then( response => {
                 dispatch({
                     type: action_name,
-                    data: response,
-                    uri: uri
+                    uri: uri,
+                    data: response
                 });
             });
     }
@@ -829,27 +847,20 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
             });
     }else{
 
-        // check our editability of each playlist
-        // used to define what we can add tracks to
-        if( getState().spotify.authorized ){
-            for( var i = 0; i < playlists.length; i++ ){
+        for( var i = 0; i < playlists.length; i++ ){
+            var playlist = Object.assign(
+                {},
+                playlists[i],
+                {
+                    can_edit: (getState().spotify.authorized && getState().spotify.me && playlists[i].owner.id == getState().spotify.me.id),
+                    tracks_total: playlists[i].tracks.total
+                }
+            )
 
-                var playlist = Object.assign(
-                    {},
-                    playlists[i],
-                    {
-                        can_edit: (getState().spotify.me && playlists[i].owner.id == getState().spotify.me.id),
-                        tracks: helpers.flattenTracks(playlists[i].tracks.items),
-                        tracks_more: response.tracks.next,
-                        tracks_total: response.tracks.total
-                    }
-                )
-
-                dispatch({
-                    type: 'PLAYLIST_LOADED',
-                    playlist: playlist
-                });
-            }
+            dispatch({
+                type: 'PLAYLIST_LOADED',
+                playlist: playlist
+            });
         }
 
         dispatch({

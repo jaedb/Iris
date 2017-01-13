@@ -24,6 +24,32 @@ export default class GridItem extends React.Component{
 		return <Thumbnail size="medium" images={[]} />
 	}
 
+	renderSecondary(item){
+		var output = ''
+
+		switch (item.type){
+
+			case 'playlist':
+				return (
+					<span>
+						{ item.tracks_total ? item.tracks_total+' tracks' : null }
+						{ item.can_edit ? <FontAwesome name="edit" /> : null }
+					</span>
+				)
+				break
+
+			default:
+				return (
+					<span>
+						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
+						{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
+					</span>
+				)
+		}
+
+		return output
+	}
+
 	render(){
 		if( !this.props.item ) return null
 
@@ -37,10 +63,7 @@ export default class GridItem extends React.Component{
 				{ this.renderThumbnail() }
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
-					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-					{ item.type == 'playlist' && item.tracks_total ? item.tracks_total+' tracks' : null }
-					{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
-					{ item.type == 'playlist' && item.can_edit ? <FontAwesome name="edit" /> : null }
+					{ this.renderSecondary(item) }
 				</div>
 			</div>
 		);

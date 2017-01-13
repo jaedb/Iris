@@ -156,9 +156,7 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_CATEGORY_LOADED':
             return Object.assign({}, spotify, { category: action.data })
 
-        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
-            return Object.assign({}, spotify, { category_playlists: action.data })
-
+        // TODO: update this
         case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
             return Object.assign({}, spotify, { category_playlists: {
                 href: action.data.href,

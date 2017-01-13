@@ -197,6 +197,18 @@ export let uriType = function( uri ){
 
 
 /**
+ * Convert a raw URI into a object index-friendly format. Primarily used for loading local playlists
+ * @param $uri = string
+ * @return string
+ **/
+export let indexFriendlyUri = function (uri){
+	var output = encodeURI(uri)
+	output = output.replace("'",'%27')
+	return output
+}
+
+
+/**
  * Digest an array of objects, and pull into simple array of uris
  * 
  * @param items Array

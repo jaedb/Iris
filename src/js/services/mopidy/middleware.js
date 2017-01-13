@@ -304,14 +304,11 @@ const MopidyMiddleware = (function(){
                                     var playlist = Object.assign(
                                         {},
                                         {
-                                            images: []
-                                        },
-                                        {
-                                            can_edit: (response.uri.startsWith('m3u:'))
-                                        },
-                                        response,
-                                        {
-                                            tracks: ( response.tracks ? response.tracks : [] ),
+                                            type: 'playlist',
+                                            name: response.name,
+                                            uri: response.uri,
+                                            last_modified: response.last_modified,
+                                            can_edit: (response.uri.startsWith('m3u:')),
                                             tracks_total: ( response.tracks ? response.tracks.length : 0 )
                                         }
                                     )
@@ -328,18 +325,16 @@ const MopidyMiddleware = (function(){
                     .then( response => {
                         var playlist = Object.assign(
                             {},
-                            {
-                                images: []
-                            },
                             response,
                             {
-                                tracks: ( response.tracks ? response.tracks : [] ),
-                                tracks_total: ( response.tracks ? response.tracks.length : 0 )
+                                type: 'playlist',
+                                tracks: ( response.tracks ? response.tracks : null ),
+                                tracks_total: ( response.tracks ? response.tracks.length : null )
                             }
                         )
 
                         // tracks? get the full track objects
-                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', tracks: playlist.tracks })
+                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', tracks: playlist.tracks, uri: response.uri })
 
                         store.dispatch({ type: 'PLAYLIST_LOADED', playlist: playlist })
                     })
@@ -372,7 +367,7 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        store.dispatch({ type: 'PLAYLIST_TRACKS_LOADED', playlist_uri: action.playlist_uri, tracks: tracks })
+                        store.dispatch({ type: 'PLAYLIST_TRACKS_RESOLVED', tracks: tracks, uri: action.uri })
                     })
                 break
 
