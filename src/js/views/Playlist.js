@@ -55,7 +55,7 @@ class Playlist extends React.Component{
 
 	loadMore(){
 		if( !this.props.playlist.tracks_more ) return
-		this.props.spotifyActions.getURL( this.props.playlist.tracks_more, 'SPOTIFY_PLAYLIST_LOADED_MORE' );
+		this.props.spotifyActions.getURL( this.props.playlist.tracks_more, 'PLAYLIST_LOADED_MORE_TRACKS', this.props.playlist.uri );
 	}
 
 	play(){
@@ -90,19 +90,6 @@ class Playlist extends React.Component{
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 
-	isEditable(){
-		if( helpers.uriSource( this.props.playlist.uri ) == 'spotify' ){
-			if( !this.props.spotify_authorized ) return false
-
-			return ( this.props.playlist && 
-				this.props.playlist.owner && 
-				this.props.playlist.owner.id == this.props.spotify_userid 
-			)
-		}else{
-			return true
-		}
-	}
-
 	renderExtraButtons(){
 		switch( helpers.uriSource( this.props.playlist.uri ) ){
 
@@ -115,7 +102,7 @@ class Playlist extends React.Component{
 				)
 
 			case 'spotify':
-				if( this.isEditable() ){
+				if( this.props.playlist.can_edit ){
 					return (
 						<span>
 							<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
@@ -167,7 +154,7 @@ class Playlist extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList context={ this.isEditable() ? 'editable-playlist' : 'playlist'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+						{ this.props.playlist.tracks ? <TrackList context={ this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
@@ -186,7 +173,7 @@ class Playlist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		playlist: state.ui.playlist,
+		playlist: state.ui.playlists[ownProps.params.uri],
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		spotify_userid: state.spotify.me.id

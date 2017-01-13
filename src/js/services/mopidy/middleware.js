@@ -282,29 +282,47 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
-            case 'MOPIDY_PLAYLISTS':
+
+            /**
+             * =============================================================== PLAYLIST(S) ==========
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
                 instruct( socket, store, 'playlists.asList' )
                     .then( response => {
-                        for( var i = 0; i < response.length; i++ ){
-                            if( response[i].uri.startsWith('m3u:')) response[i] = Object.assign({}, response[i], { can_edit: true })
-                        }
-                        store.dispatch({ type: 'MOPIDY_PLAYLISTS_LOADED', data: response });
 
-                        // TODO: dispatch an action to fetch extra data for each playlist
-                        // this will then trigger an PLAYLIST_REFRESHED action to update a specific store item
+                        // drop in our URI list
+                        var playlist_uris = helpers.asURIs(response)
+
+                        store.dispatch({ type: 'LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris });
+
+                        // get the full playlist objects
+                        for (var i = 0; i < response.length; i++ ){
+                            instruct( socket, store, 'playlists.lookup', { uri: response[i].uri })
+                                .then( response => {
+                                    var playlist = Object.assign(
+                                        {},
+                                        {
+                                            images: []
+                                        },
+                                        {
+                                            can_edit: (response.uri.startsWith('m3u:'))
+                                        },
+                                        response,
+                                        {
+                                            tracks: ( response.tracks ? response.tracks : [] ),
+                                            tracks_total: ( response.tracks ? response.tracks.length : 0 )
+                                        }
+                                    )
+
+                                    store.dispatch({ type: 'PLAYLIST_LOADED', playlist: playlist })
+                                })
+                        }
                     })
                 break;
 
-            case 'MOPIDY_CREATE_PLAYLIST':
-                instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
-                    .then( response => {
-
-                        // re-load our global playlists
-                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
-                    });           
-                break
-
-            case 'MOPIDY_PLAYLIST':
+            case 'MOPIDY_GET_PLAYLIST':
                 store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
                 instruct( socket, store, 'playlists.lookup', action.data )
                     .then( response => {
@@ -321,18 +339,15 @@ const MopidyMiddleware = (function(){
                         )
 
                         // tracks? get the full track objects
-                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_PLAYLIST_TRACKS', tracks: playlist.tracks })
+                        if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', tracks: playlist.tracks })
 
-                        store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: playlist })
+                        store.dispatch({ type: 'PLAYLIST_LOADED', playlist: playlist })
                     })
                 break;
 
-            case 'MOPIDY_PLAYLIST_TRACKS':
+            case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
                 var tracks = Object.assign([], action.tracks)
-                var uris = [];
-                for( var i = 0; i < tracks.length; i++ ){
-                    uris.push( tracks[i].uri );
-                }
+                var uris = helpers.asURIs(tracks)
 
                 instruct( socket, store, 'library.lookup', { uris: uris } )
                     .then( response => {
@@ -357,7 +372,7 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        store.dispatch({ type: 'PLAYLIST_TRACKS_LOADED', tracks: tracks })
+                        store.dispatch({ type: 'PLAYLIST_TRACKS_LOADED', playlist_uri: action.playlist_uri, tracks: tracks })
                     })
                 break
 
@@ -460,14 +475,37 @@ const MopidyMiddleware = (function(){
                     });
                 break
 
+            case 'MOPIDY_CREATE_PLAYLIST':
+                instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+                    .then( response => {
+
+                        // re-load our global playlists
+                        //store.dispatch({ type: 'MOPIDY_GET_PLAYLISTS' });
+                    });
+                break
+
             case 'MOPIDY_DELETE_PLAYLIST':
                 instruct( socket, store, 'playlists.delete', { uri: action.uri })
                     .then( response => {
 
                         // re-load our global playlists
-                        store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
+                        // store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
                     });           
                 break
+                
+
+            /**
+             * =============================================================== ALBUM(S) =============
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_ALBUMS':
+                store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: false });
+                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                    .then( response => {                     
+                        store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: response });
+                    })
+                break;
 
             case 'MOPIDY_ALBUM':
                 //store.dispatch({ type: 'MOPIDY_ALBUM_LOADED', data: false });
@@ -526,6 +564,20 @@ const MopidyMiddleware = (function(){
                             })
                     })
                 break;
+                
+
+            /**
+             * =============================================================== ARTIST(S) ============
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_ARTISTS':
+                store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: false });
+                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                    .then( response => {                    
+                        store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: response });
+                    })
+                break;
 
             case 'MOPIDY_ARTIST':
                 store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: false });
@@ -560,28 +612,18 @@ const MopidyMiddleware = (function(){
                         store.dispatch({ type: 'MOPIDY_ARTIST_LOADED', data: artist });
                     })
                 break;
+                
+
+            /**
+             * =============================================================== LOCAL ================
+             * ======================================================================================
+             **/
 
             case 'MOPIDY_DIRECTORY':
                 store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false });
                 instruct( socket, store, 'library.browse', action.data )
                     .then( response => {                    
                         store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: response });
-                    })
-                break;
-
-            case 'MOPIDY_ARTISTS':
-                store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: false });
-                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
-                    .then( response => {                    
-                        store.dispatch({ type: 'MOPIDY_ARTISTS_LOADED', data: response });
-                    })
-                break;
-
-            case 'MOPIDY_ALBUMS':
-                store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: false });
-                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
-                    .then( response => {                     
-                        store.dispatch({ type: 'MOPIDY_ALBUMS_LOADED', data: response });
                     })
                 break;
 

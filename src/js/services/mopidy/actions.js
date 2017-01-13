@@ -157,47 +157,47 @@ export function deletePlaylist( uri ){
 	}
 }
 
-export function getPlaylists(){
-	return { type: 'MOPIDY_PLAYLISTS' }
+export function getLibraryPlaylists(){
+	return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' }
 }
 
 export function getPlaylist( uri ){
 	return { 
-		type: 'MOPIDY_PLAYLIST', 
+		type: 'MOPIDY_GET_PLAYLIST', 
 		data: { uri: uri } 
 	}
 }
 
 export function getDirectory( uri ){
 	return { 
-		type: 'MOPIDY_DIRECTORY', 
+		type: 'MOPIDY_GET_DIRECTORY', 
 		data: { uri: uri } 
 	}
 }
 
 export function getAlbum( uri ){
 	return { 
-		type: 'MOPIDY_ALBUM', 
+		type: 'MOPIDY_GET_ALBUM', 
 		data: { uri: uri } 
 	}
 }
 
 export function getArtist( uri ){
 	return { 
-		type: 'MOPIDY_ARTIST', 
+		type: 'MOPIDY_GET_ARTIST', 
 		data: { uri: uri } 
 	}
 }
 
 export function getArtists(){
 	return { 
-		type: 'MOPIDY_ARTISTS'
+		type: 'MOPIDY_GET_ARTISTS'
 	}
 }
 
 export function getAlbums(){
 	return { 
-		type: 'MOPIDY_ALBUMS'
+		type: 'MOPIDY_GET_ALBUMS'
 	}
 }
 

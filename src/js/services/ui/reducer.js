@@ -231,46 +231,21 @@ export default function reducer(ui = {}, action){
             if( !action.data ) return Object.assign({}, ui, { playlist: false })
             return Object.assign({}, ui, { playlist: action.data })
 
-        case 'SPOTIFY_PLAYLIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { playlist: false })
+        case 'PLAYLIST_LOADED_MORE_TRACKS':
 
-            var tracks = []
-            for( var i = 0; i < action.data.tracks.items.length; i++ ){
-                tracks.push( Object.assign(
-                    {},
-                    action.data.tracks.items[i].track,
-                    {
-                        added_by: action.data.tracks.items[i].added_by,
-                        added_at: action.data.tracks.items[i].added_at
-                    }
-                ))
-            }
+            var playlists = ui.playlists
+            var playlist = Object.assign(
+                {}, 
+                playlists[action.uri],
+                {
+                    tracks: [...playlists[action.uri].tracks, ...helpers.flattenTracks(action.data.items)],
+                    tracks_more: action.data.next,
+                    tracks_total: action.data.total
+                }
+            )
 
-            var playlist = Object.assign({}, action.data, {
-                tracks: tracks,
-                tracks_more: action.data.tracks.next,
-                tracks_total: action.data.tracks.total
-            })
-            return Object.assign({}, ui, { playlist: playlist });
-
-        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
-            var tracks = []
-            for( var i = 0; i < action.data.items.length; i++ ){
-                tracks.push( Object.assign(
-                    {},
-                    action.data.items[i].track,
-                    {
-                        added_by: action.data.items[i].added_by,
-                        added_at: action.data.items[i].added_at
-                    }
-                ))
-            }
-
-            var playlist = Object.assign({}, ui.playlist, {
-                tracks: [...ui.playlist.tracks, ...tracks],
-                tracks_more: action.data.next
-            })
-            return Object.assign({}, ui, { playlist: playlist });
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REMOVED':
             var tracks = Object.assign([], ui.playlist.tracks)
@@ -316,14 +291,25 @@ export default function reducer(ui = {}, action){
          * Library Playlists
          **/
 
-        case 'MOPIDY_PLAYLISTS_LOADED':
-        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
-            if( !action.data ) return ui
-            var playlists = [...ui.playlists, ...action.data]
-            playlists = helpers.mergeDuplicates(playlists, 'uri')
-            helpers.sortItems(playlists, 'name')
+        case 'PLAYLIST_LOADED':
+        case 'PLAYLIST_UPDATED':
+            var playlists = ui.playlists
+            var playlist = Object.assign({}, action.playlist)
+
+            // if we already have one in our list, fetch it and update it
+            if (playlists[action.playlist.uri]){
+                playlist = Object.assign({}, playlists[action.playlist.uri], action.playlist)
+            }
+
+            playlists[action.playlist.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
+
+        case 'LIBRARY_PLAYLISTS_LOADED':
+            var library_playlists = []
+            if (ui.library_playlists) library_playlists = ui.library_playlists
+
             return Object.assign({}, ui, { 
-                playlists: playlists
+                library_playlists: [...library_playlists, ...action.uris]
             });
 
 

@@ -262,9 +262,18 @@ export function getFeaturedPlaylists(){
 
         sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
             .then( response => {
+                for (var i = 0; i < response.playlists.items.length; i++){
+                    dispatch({
+                        type: 'PLAYLIST_LOADED',
+                        playlist: response.playlists.items[i]
+                    });                    
+                }
                 dispatch({
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
-                    data: response
+                    data: {
+                        message: response.message,
+                        playlists: helpers.asURIs(response.playlists.items)
+                    }
                 });
             });
     }
@@ -290,28 +299,41 @@ export function getCategory( id ){
 
         dispatch({ type: 'SPOTIFY_CATEGORY_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_CATEGORY_LOADED',
-                    data: response
-                });
+        $.when(
+
+            sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale ),
+            sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+
+        ).then( ( category_response, playlists_response ) => {
+
+            var playlists = []
+            for (var i = 0; i < playlists_response.playlists.items.length; i++){
+                playlists.push(
+                    Object.assign(
+                        {},
+                        playlists_response.playlists.items[i],
+                        {
+                            tracks: false,
+                            tracks_total: playlists_response.playlists.items[i].tracks.total
+                        }
+                    )
+                )
+            }
+
+            var category = Object.assign(
+                {},
+                category_response,
+                {
+                    items: false,
+                    playlists: playlists
+                }
+            )
+
+            dispatch({
+                type: 'SPOTIFY_CATEGORY_LOADED',
+                data: category
             });
-    }
-}
-
-export function getCategoryPlaylists( id ){
-    return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', data: false });
-
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-                    data: response.playlists
-                });
-            });
+        });
     }
 }
 
@@ -330,13 +352,14 @@ export function getNewReleases(){
     }
 }
 
-export function getURL( url, action_name ){
+export function getURL( url, action_name, uri = false ){
     return (dispatch, getState) => {
         sendRequest( dispatch, getState, url )
             .then( response => {
                 dispatch({
                     type: action_name,
-                    data: response
+                    data: response,
+                    uri: uri
                 });
             });
     }
@@ -774,15 +797,24 @@ export function savePlaylist( uri, name, is_public ){
 export function getPlaylist( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
-
         // get the main playlist object
         sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
         .then( response => {
+
+            var playlist = Object.assign(
+                {},
+                response,
+                {
+                    can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
+                    tracks: helpers.flattenTracks(response.tracks.items),
+                    tracks_more: response.tracks.next,
+                    tracks_total: response.tracks.total
+                }
+            )
+
             dispatch({
-                type: 'SPOTIFY_PLAYLIST_LOADED',
-                data: response
+                type: 'PLAYLIST_LOADED',
+                playlist: playlist
             })
         })
     }
@@ -801,15 +833,28 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
         // used to define what we can add tracks to
         if( getState().spotify.authorized ){
             for( var i = 0; i < playlists.length; i++ ){
-                if( playlists[i].owner.id == getState().spotify.me.id ){
-                    playlists[i] = Object.assign({}, playlists[i], { can_edit: true })
-                }
+
+                var playlist = Object.assign(
+                    {},
+                    playlists[i],
+                    {
+                        can_edit: (getState().spotify.me && playlists[i].owner.id == getState().spotify.me.id),
+                        tracks: helpers.flattenTracks(playlists[i].tracks.items),
+                        tracks_more: response.tracks.next,
+                        tracks_total: response.tracks.total
+                    }
+                )
+
+                dispatch({
+                    type: 'PLAYLIST_LOADED',
+                    playlist: playlist
+                });
             }
         }
 
         dispatch({
-            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-            data: playlists
+            type: 'LIBRARY_PLAYLISTS_LOADED',
+            uris: helpers.asURIs(playlists)
         });
     }
 }

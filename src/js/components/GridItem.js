@@ -38,7 +38,7 @@ export default class GridItem extends React.Component{
 				<div className="name">{ item.name }</div>
 				<div className="secondary">
 					{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-					{ item.type == 'playlist' && item.tracks ? item.tracks.total+' tracks' : null }
+					{ item.type == 'playlist' && item.tracks_total ? item.tracks_total+' tracks' : null }
 					{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
 					{ item.type == 'playlist' && item.can_edit ? <FontAwesome name="edit" /> : null }
 				</div>

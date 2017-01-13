@@ -17,13 +17,11 @@ class DiscoverCategory extends React.Component{
 
 	componentDidMount(){
 		this.props.spotifyActions.getCategory( this.props.params.id );
-		this.props.spotifyActions.getCategoryPlaylists( this.props.params.id );
 	}
 
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.id != this.props.params.id ){
 			this.props.spotifyActions.getCategory( nextProps.params.id );
-			this.props.spotifyActions.getCategoryPlaylists( nextProps.params.id );
 		}
 	}
 
@@ -39,7 +37,7 @@ class DiscoverCategory extends React.Component{
 			<div className="view discover-categories-view">
 				<Header icon="grid" title={this.props.spotify.category.name} />
 				<section className="grid-wrapper">
-					{ this.props.spotify.category_playlists ? <PlaylistGrid playlists={this.props.spotify.category_playlists.items} /> : null }
+					{ this.props.spotify.category.playlists ? <PlaylistGrid playlists={this.props.spotify.category.playlists} /> : null }
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>

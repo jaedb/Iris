@@ -93,6 +93,28 @@ export let getTrackIcon = function( track = false ){
 }
 
 
+/**
+ * Get a track's icon
+ * @param track object
+ * @return string
+ **/
+export let flattenTracks = function( tracks ){
+    var flattened = []
+    for( var i = 0; i < tracks.length; i++ ){
+        flattened.push( Object.assign(
+            {},
+            tracks[i].track,
+            {
+                added_by: tracks[i].added_by,
+                added_at: tracks[i].added_at
+            }
+        ))
+    }
+
+    return flattened
+}
+
+
 
 
 /**
