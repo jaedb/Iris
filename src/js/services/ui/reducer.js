@@ -129,6 +129,18 @@ export default function reducer(ui = {}, action){
          * Albums
          **/
 
+        case 'ALBUM_LOADED':
+            var albums = Object.assign([], ui.albums)
+            var album = Object.assign({}, action.album)
+
+            // if we already have one in our list, fetch it and update it
+            if (albums[action.album.uri]){
+                album = Object.assign({}, albums[action.album.uri], action.album)
+            }
+
+            albums[action.album.uri] = album
+            return Object.assign({}, ui, { albums: albums });
+
         case 'MOPIDY_ALBUM_LOADED':
             if( !action.data ) return Object.assign({}, ui, { album: false })
             return Object.assign({}, ui, { album: action.data });
@@ -166,9 +178,17 @@ export default function reducer(ui = {}, action){
          * Artists
          **/
 
-        case 'MOPIDY_ARTIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { artist: false })
-            return Object.assign({}, ui, { artist: action.data })
+        case 'ARTIST_LOADED':
+            var artists = Object.assign([], ui.artists)
+            var artist = Object.assign({}, action.artist)
+
+            // if we already have one in our list, fetch it and update it
+            if (artists[action.artist.uri]){
+                artist = Object.assign({}, artists[action.artist.uri], action.artist)
+            }
+
+            artists[action.artist.uri] = artist
+            return Object.assign({}, ui, { artists: artists });
 
         case 'LASTFM_ARTIST_LOADED':
             if( !action.data.image ) return ui

@@ -586,9 +586,6 @@ export function getDiscover(){
 export function getArtist( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false });
-
         var artist = {};
 
         // get both the artist and the top tracks
@@ -606,18 +603,30 @@ export function getArtist( uri ){
 
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
-                    Object.assign(artist, { related_artists: response.artists });
+                    for (var i = 0; i < response.artists.length; i++){
+                        dispatch({
+                            type: 'ARTIST_LOADED',
+                            artist: response.artists[i]
+                        }); 
+                    }
+                    Object.assign(artist, { related_artists: helpers.asURIs(response.artists) });
                 }),
 
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
                 .then( response => {
-                    Object.assign(artist, { albums: response.items, albums_more: response.next });
+                    for (var i = 0; i < response.items.length; i++){
+                        dispatch({
+                            type: 'ALBUM_LOADED',
+                            album: response.items[i]
+                        }); 
+                    }
+                    Object.assign(artist, { albums: helpers.asURIs(response.items), albums_more: response.next });
                 })
 
         ).then( () => {
             dispatch({
-                type: 'SPOTIFY_ARTIST_LOADED',
-                data: artist
+                type: 'ARTIST_LOADED',
+                artist: artist
             });
         });
     }
@@ -625,9 +634,6 @@ export function getArtist( uri ){
 
 export function getArtists( uris ){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ARTISTS_LOADED', data: false });
 
         // now get all the artists for this album (full objects)
         var ids = '';
@@ -638,10 +644,21 @@ export function getArtists( uris ){
 
         sendRequest( dispatch, getState, 'artists/?ids='+ids )
             .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_ARTISTS_LOADED',
-                    data: response
-                });
+                for (var i = i; i < response.length; i++){
+                    var artist = response
+                    for (var i = 0; i < artist.albums.length; i++){
+                        dispatch({
+                            type: 'ALBUM_LOADED',
+                            album: artist.albums[i]
+                        }); 
+                    }
+                    artist.albums = helpers.asURIs(artist.albums)
+                    artist.albums_more = artist.albums.next
+                    dispatch({
+                        type: 'ARTIST_LOADED',
+                        artist: artist
+                    });                    
+                }
             });
     }
 }
@@ -654,9 +671,25 @@ export function getLibraryArtists(){
 
         sendRequest( dispatch, getState, 'me/following?type=artist&limit=50' )
             .then( response => {
+                for (var i = 0; i < response.length; i++){
+                    var artist = response[i]
+                    for (var i = 0; i < artist.albums.length; i++){
+                        dispatch({
+                            type: 'ALBUM_LOADED',
+                            album: artist.albums[i]
+                        }); 
+                    }
+                    artist.albums = helpers.asURIs(artist.albums)
+                    artist.albums_more = artist.albums.next
+                    dispatch({
+                        type: 'ARTIST_LOADED',
+                        artist: artist
+                    });                    
+                }
+
                 dispatch({
-                    type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-                    data: response
+                    type: 'LIBRARY_ARTISTS_LOADED',
+                    uris: helpers.asURIs(response)
                 });
             });
     }
@@ -714,30 +747,42 @@ export function getUser( uri ){
 export function getAlbum( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
-
         // get the album
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
 
-                var album = response
+                var album = Object.assign(
+                    {},
+                    response,
+                    {
+                        artists: helpers.asURIs(response.artists),
+                        tracks: response.tracks.items,
+                        tracks_more: response.tracks.next,
+                        tracks_total: response.tracks.total
+                    }
+                )
+
+                dispatch({
+                    type: 'ALBUM_LOADED',
+                    album: album
+                });
 
                 // now get all the artists for this album (full objects)
                 // we do this to get the artist artwork
                 var artist_ids = [];
-                for( var i = 0; i < album.artists.length; i++ ){
-                    artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
+                for( var i = 0; i < response.artists.length; i++ ){
+                    artist_ids.push( helpers.getFromUri( 'artistid', response.artists[i].uri ) )
                 }
 
-                // get all album artists
+                // get all album artists as full objects
                 sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
                     .then( response => {
-                        Object.assign(album, { artists: response.artists })
-                        dispatch({
-                            type: 'SPOTIFY_ALBUM_LOADED',
-                            data: album
-                        });
+                        for (var i = 0; i < response.artists.length; i++){
+                            dispatch({
+                                type: 'ARTIST_LOADED',
+                                artist: response.artists[i]
+                            }); 
+                        }
                     });
 
             })

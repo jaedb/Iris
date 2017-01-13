@@ -95,12 +95,32 @@ class Artist extends React.Component{
 
 	renderBody(){
 
+		var related_artists = []
+		if (this.props.artist.related_artists){
+			for (var i = 0; i < this.props.artist.related_artists.length; i++){
+				var uri = this.props.artist.related_artists[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					related_artists.push(this.props.artists[uri])
+				}
+			}
+		}
+
+		var albums = []
+		if (this.props.artist.albums){
+			for (var i = 0; i < this.props.artist.albums.length; i++){
+				var uri = this.props.artist.albums[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
+
 		if( this.state.sub_view == 'related_artists' ){
 			return (
 				<div className="body related-artists">
 					<h4 className="left-padding">Related artists</h4>
 					<section className="grid-wrapper no-top-padding">
-						{ this.props.artist.related_artists ? <ArtistGrid artists={ this.props.artist.related_artists } /> : null }
+						<ArtistGrid artists={related_artists} />
 					</section>
 				</div>
 			)
@@ -129,14 +149,14 @@ class Artist extends React.Component{
 
 				<div className="col w25 related-artists">
 					<h4>Related artists</h4>
-					{ this.props.artist.related_artists ? <ArtistList artists={ this.props.artist.related_artists.slice(0,6) } /> : null }
+					<ArtistList artists={related_artists.slice(0,6)} />
 				</div>
 
 				<div className="cf"></div>
 
 				<h4 className="left-padding">Albums</h4>
 				<section className="grid-wrapper no-top-padding">
-					{ this.props.artist.albums ? <AlbumGrid albums={ this.props.artist.albums } /> : null }
+					<AlbumGrid albums={albums} />
 					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
@@ -203,7 +223,9 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		artist: state.ui.artist,
+		artists: state.ui.artists,
+		artist: state.ui.artists[ownProps.params.uri],
+		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	}

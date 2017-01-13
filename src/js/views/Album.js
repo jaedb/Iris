@@ -68,12 +68,22 @@ class Album extends React.Component{
 	render(){
 		if( !this.props.album ) return null
 
+		var artists = []
+		if (this.props.album.artists){
+			for (var i = 0; i < this.props.album.artists.length; i++){
+				var uri = this.props.album.artists[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view album-view">
 		        <SidebarToggleButton />
 				<div className="intro">
 					<Thumbnail size="large" images={ this.props.album.images } />
-					<ArtistGrid artists={ this.props.album.artists } />
+					<ArtistGrid artists={artists} />
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
@@ -93,7 +103,7 @@ class Album extends React.Component{
 
 					<div className="title">
 						<h1>{ this.props.album.name }</h1>
-						<h3><ArtistSentence artists={ this.props.album.artists } /></h3>
+						<h3><ArtistSentence artists={artists} /></h3>
 					</div>
 
 					<section className="list-wrapper">
@@ -116,7 +126,9 @@ class Album extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		album: state.ui.album,
+		artists: state.ui.artists,
+		album: state.ui.albums[ownProps.params.uri],
+		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	};
