@@ -223,8 +223,8 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
 		artists: state.ui.artists,
-		artist: state.ui.artists[ownProps.params.uri],
 		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected

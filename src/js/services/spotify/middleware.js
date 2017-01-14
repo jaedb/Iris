@@ -93,6 +93,51 @@ const SpotifyMiddleware = (function(){
                 }
                 break
 
+            case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
+                store.dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: action.data.artists.items
+                });
+                store.dispatch({
+                    type: 'LIBRARY_ARTISTS_LOADED',
+                    uris: helpers.asURIs(action.data.artists.items),
+                    more: action.data.artists.next,
+                    total: action.data.artists.total
+                });
+                break
+
+            case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
+
+                var albums = []
+
+                for (var i = 0; i < action.data.items.length; i++){
+                    albums.push(
+                        Object.assign(
+                            {},
+                            action.data.items[i].album,
+                            {
+                                added_at: action.data.items[i].added_at,
+                                tracks: action.data.items[i].album.tracks.items,
+                                tracks_next: action.data.items[i].album.tracks.tracks_next,
+                                tracks_total: action.data.items[i].album.tracks.tracks_total
+                            }
+                        )
+                    )
+                }
+
+                store.dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: albums
+                });
+
+                store.dispatch({
+                    type: 'LIBRARY_ALBUMS_LOADED',
+                    uris: helpers.asURIs(albums),
+                    more: action.data.next,
+                    total: action.data.total
+                });
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

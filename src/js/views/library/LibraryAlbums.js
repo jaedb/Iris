@@ -24,16 +24,16 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryAlbums();
+		if (!this.props.library_albums) this.props.spotifyActions.getLibraryAlbums();
 	}
 
 	loadMore(){
-		if( !this.props.albums_more ) return
-		this.props.spotifyActions.getURL( this.props.albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE' );
+		if( !this.props.library_albums_more ) return
+		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
 	}
 
-	renderView(){
-		if( !this.props.albums ) return null
+	renderView(albums){
+		if (!albums || albums.length <= 0) return null
 
 		if( this.props.view == 'list' ){
 			var columns = [
@@ -60,20 +60,20 @@ class LibraryAlbums extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.albums} columns={columns} link_prefix={global.baseURL+"album/"} />
+					<List rows={albums} columns={columns} link_prefix={global.baseURL+"album/"} />
 				</section>
 			)
 		}else if( this.props.view == 'thumbnails' ){
 			return (
 				<section className="grid-wrapper">
-					{ this.props.albums ? <AlbumGrid albums={this.props.albums} /> : null }
+					<AlbumGrid albums={albums} />
 				</section>			
 			)
 		}else{
 			return (
 				<section className="grid-wrapper albums-detail-subview">
 					{
-						this.props.albums.map( album => {
+						albums.map( album => {
 							return (
 								<div className="album" key={album.uri}>
 									<Link to={global.baseURL+'album/'+album.uri}>
@@ -96,6 +96,16 @@ class LibraryAlbums extends React.Component{
 	}
 
 	render(){
+		var albums = []
+
+		if (this.props.library_albums && this.props.albums){
+			for (var i = 0; i < this.props.library_albums.length; i++){
+				var uri = this.props.library_albums[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
 
 		var view_options = [
 			{
@@ -119,7 +129,7 @@ class LibraryAlbums extends React.Component{
 		return (
 			<div className="view library-albums-view">
 				<Header icon="cd" title="My albums" actions={actions} />
-				{ this.renderView() }
+				{ this.renderView(albums) }
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
@@ -136,8 +146,9 @@ class LibraryAlbums extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_albums_view,
-		albums: state.spotify.library_albums,
-		albums_more: state.spotify.library_albums_more,
+		albums: state.ui.albums,
+		library_albums: state.ui.library_albums,
+		library_albums_more: state.ui.library_albums_more,
 	}
 }
 

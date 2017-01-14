@@ -16,6 +16,7 @@ export default class ArtistSentence extends React.Component{
 			<span className={ this.props.className ? this.props.className+" artist-sentence" : "artist-sentence" }>
 				{
 					this.props.artists.map( (artist, index) => {
+						if (!artist) return <span>-</span>
 						var separator = null;
 						if( index == this.props.artists.length - 2 ){
 							separator = ' and ';

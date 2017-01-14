@@ -666,31 +666,12 @@ export function getArtists( uris ){
 
 export function getLibraryArtists(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'me/following?type=artist&limit=50' )
             .then( response => {
-                for (var i = 0; i < response.length; i++){
-                    var artist = response[i]
-                    for (var i = 0; i < artist.albums.length; i++){
-                        dispatch({
-                            type: 'ALBUM_LOADED',
-                            album: artist.albums[i]
-                        }); 
-                    }
-                    artist.albums = helpers.asURIs(artist.albums)
-                    artist.albums_more = artist.albums.next
-                    dispatch({
-                        type: 'ARTIST_LOADED',
-                        artist: artist
-                    });                    
-                }
-
                 dispatch({
-                    type: 'LIBRARY_ARTISTS_LOADED',
-                    uris: helpers.asURIs(response)
-                });
+                    type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
+                    data: response
+                })
             });
     }
 }
@@ -777,12 +758,10 @@ export function getAlbum( uri ){
                 // get all album artists as full objects
                 sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
                     .then( response => {
-                        for (var i = 0; i < response.artists.length; i++){
-                            dispatch({
-                                type: 'ARTIST_LOADED',
-                                artist: response.artists[i]
-                            }); 
-                        }
+                        dispatch({
+                            type: 'ARTISTS_LOADED',
+                            artists: response.artists
+                        });
                     });
 
             })
@@ -792,14 +771,14 @@ export function getAlbum( uri ){
 export function getLibraryAlbums(){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED', data: false });
+        dispatch({ type: 'LIBRARY_ALBUMS_LOADED', uris: false });
 
         sendRequest( dispatch, getState, 'me/albums?limit=40' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
                     data: response
-                });
+                })
             });
     }
 }

@@ -20,19 +20,16 @@ class LibraryArtists extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryArtists();
+		if (!this.props.library_artists) this.props.spotifyActions.getLibraryArtists();
 	}
 
 	loadMore(){
-		if( !this.props.artists_more ) return
-		this.props.spotifyActions.getURL( this.props.artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED_MORE' );
+		if( !this.props.library_artists_more ) return
+		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
-	renderView(){
-		if( !this.props.artists ) return null
-
+	renderView(artists){
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
@@ -48,19 +45,29 @@ class LibraryArtists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={this.props.artists} columns={columns} link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
+					<List rows={artists} columns={columns} link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
 				</section>
 			)
 		}else{
 			return (
 				<section className="grid-wrapper">
-					<ArtistGrid artists={this.props.artists} />
+					<ArtistGrid artists={artists} />
 				</section>				
 			)
 		}
 	}
 
 	render(){
+
+		var artists = []
+		if (this.props.library_artists && this.props.artists){
+			for (var i = 0; i < this.props.library_artists.length; i++){
+				var uri = this.props.library_artists[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
+				}
+			}
+		}
 
 		var view_options = [
 			{
@@ -80,7 +87,7 @@ class LibraryArtists extends React.Component{
 		return (
 			<div className="view library-artists-view">
 				<Header icon="mic" title="My artists" actions={actions} />				
-				{ this.renderView() }
+				{ this.renderView(artists) }
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		);
@@ -96,9 +103,10 @@ class LibraryArtists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		view: state.ui.library_artists_view,
-		artists: state.spotify.library_artists,
-		artists_more: state.spotify.library_artists_more
+		artists: state.ui.artists,
+		library_artists: state.ui.library_artists,
+		library_artists_more: state.ui.library_artists_more,
+		view: state.ui.library_artists_view
 	}
 }
 

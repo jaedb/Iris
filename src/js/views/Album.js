@@ -43,6 +43,9 @@ class Album extends React.Component{
 	}
 
 	loadAlbum( props = this.props ){
+		// if we've already loaded the full version of this album, halt!
+		if (this.props.album && this.props.album.tracks) return false
+
 		switch( helpers.uriSource( props.params.uri ) ){
 
 			case 'spotify':

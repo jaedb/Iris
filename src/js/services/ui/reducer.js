@@ -129,6 +129,19 @@ export default function reducer(ui = {}, action){
          * Albums
          **/
 
+        case 'ALBUMS_LOADED':
+            var albums = Object.assign([], ui.albums)
+
+            for (var i = 0; i < action.albums.length; i++){
+                var album = action.albums[i]
+                if (typeof(albums[album.uri]) !== 'undefined'){
+                    artist = Object.assign({}, albums[album.uri], album)
+                }
+                albums[album.uri] = album
+            }
+
+            return Object.assign({}, ui, { albums: albums });
+
         case 'ALBUM_LOADED':
             var albums = Object.assign([], ui.albums)
             var album = Object.assign({}, action.album)
@@ -172,11 +185,42 @@ export default function reducer(ui = {}, action){
             var album = Object.assign({}, ui.album, { following: action.is_following })
             return Object.assign({}, ui, { album: album, following_loading: false });
 
+        case 'LIBRARY_ALBUMS_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    library_albums: null,
+                    library_albums_more: null,
+                    library_albums_total: null
+                });
+            }
+
+            var library_albums = []
+            if (ui.library_albums) library_albums = Object.assign([], ui.library_albums)
+
+            return Object.assign({}, ui, { 
+                library_albums: [...library_albums, ...action.uris],
+                library_albums_more: action.more,
+                library_albums_total: action.total
+            });
+
 
 
         /**
          * Artists
          **/
+
+        case 'ARTISTS_LOADED':
+            var artists = Object.assign([], ui.artists)
+
+            for (var i = 0; i < action.artists.length; i++){
+                var artist = action.artists[i]
+                if (typeof(artists[artist.uri]) !== 'undefined'){
+                    artist = Object.assign({}, artists[artist.uri], artist)
+                }
+                artists[artist.uri] = artist
+            }
+
+            return Object.assign({}, ui, { artists: artists });
 
         case 'ARTIST_LOADED':
             var artists = Object.assign([], ui.artists)
@@ -214,6 +258,24 @@ export default function reducer(ui = {}, action){
         case 'ARTIST_FOLLOWING_LOADED':
             var artist = Object.assign({}, ui.artist, { following: action.is_following })
             return Object.assign({}, ui, { artist: artist, following_loading: false });
+
+        case 'LIBRARY_ARTISTS_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    library_artists: null,
+                    library_artists_more: null,
+                    library_artists_total: null
+                });
+            }
+
+            var library_artists = []
+            if (ui.library_artists) library_artists = Object.assign([], ui.library_artists)
+
+            return Object.assign({}, ui, { 
+                library_artists: [...library_artists, ...action.uris],
+                library_artists_more: action.more,
+                library_artists_total: action.total
+            });
 
 
         /**
