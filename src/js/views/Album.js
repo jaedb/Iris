@@ -25,7 +25,7 @@ class Album extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadAlbum();
+		this.loadAlbum() 
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -43,13 +43,14 @@ class Album extends React.Component{
 	}
 
 	loadAlbum( props = this.props ){
-		// if we've already loaded the full version of this album, halt!
-		if (this.props.album && this.props.album.tracks) return false
-
 		switch( helpers.uriSource( props.params.uri ) ){
 
 			case 'spotify':
-				this.props.spotifyActions.getAlbum( props.params.uri );
+				if (props.album && props.album.tracks && props.album.artists_uris){
+					console.info('Loading album from index')
+				}else{
+					this.props.spotifyActions.getAlbum( props.params.uri );
+				}
 				break;
 
 			case 'local':
@@ -72,9 +73,9 @@ class Album extends React.Component{
 		if( !this.props.album ) return null
 
 		var artists = []
-		if (this.props.album.artists){
-			for (var i = 0; i < this.props.album.artists.length; i++){
-				var uri = this.props.album.artists[i]
+		if (this.props.album.artists_uris && this.props.artists){
+			for (var i = 0; i < this.props.album.artists_uris.length; i++){
+				var uri = this.props.album.artists_uris[i]
 				if (this.props.artists.hasOwnProperty(uri)){
 					artists.push(this.props.artists[uri])
 				}
@@ -90,7 +91,7 @@ class Album extends React.Component{
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" /> : null }
+						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
 					</div>
 
 					<ul className="details">
@@ -130,7 +131,7 @@ class Album extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		artists: state.ui.artists,
-		album: state.ui.albums[ownProps.params.uri],
+		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
 		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected

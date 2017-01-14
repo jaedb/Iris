@@ -110,7 +110,7 @@ class Playlist extends React.Component{
 						</span>
 					)
 				}
-				return <FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" />
+				return <FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
 
 		}
 	}

@@ -355,14 +355,11 @@ export function getCategory( id ){
 
 export function getNewReleases(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_NEW_RELEASES_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().spotify.country+'&limit=50' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_NEW_RELEASES_LOADED',
-                    data: response.albums
+                    data: response
                 });
             });
     }
@@ -404,8 +401,6 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
 
 export function following(uri, method = 'GET'){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'FOLLOWING_LOADING' });
 
         if( method == 'PUT' ) var is_following = true
         if( method == 'DELETE' ) var is_following = false
@@ -450,7 +445,8 @@ export function following(uri, method = 'GET'){
                 if( response ) is_following = response
                 if( typeof(is_following) === 'object' ) is_following = is_following[0]
                 dispatch({
-                    type: asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    type: 'SPOTIFY_'+asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    uri: uri,
                     is_following: is_following
                 });
             });
@@ -603,31 +599,29 @@ export function getArtist( uri ){
 
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
-                    for (var i = 0; i < response.artists.length; i++){
-                        dispatch({
-                            type: 'ARTIST_LOADED',
-                            artist: response.artists[i]
-                        }); 
-                    }
-                    Object.assign(artist, { related_artists: helpers.asURIs(response.artists) });
-                }),
-
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
-                .then( response => {
-                    for (var i = 0; i < response.items.length; i++){
-                        dispatch({
-                            type: 'ALBUM_LOADED',
-                            album: response.items[i]
-                        }); 
-                    }
-                    Object.assign(artist, { albums: helpers.asURIs(response.items), albums_more: response.next });
+                    dispatch({
+                        type: 'ARTISTS_LOADED',
+                        artists: response.artists
+                    }); 
+                    Object.assign(artist, { related_artists_uris: helpers.asURIs(response.artists) });
                 })
 
         ).then( () => {
             dispatch({
                 type: 'ARTIST_LOADED',
+                uri: artist.uri,
                 artist: artist
             });
+
+            // now go get our artist albums
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
+                .then( response => {
+                    dispatch({
+                        type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
+                        data: response,
+                        uri: uri
+                    });
+                })
         });
     }
 }
@@ -732,19 +726,34 @@ export function getAlbum( uri ){
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
 
+                // dispatch our loaded artists (simple objects)
+                dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: response.artists
+                });
+
                 var album = Object.assign(
                     {},
                     response,
                     {
-                        artists: helpers.asURIs(response.artists),
+                        artists_uris: helpers.asURIs(response.artists),
                         tracks: response.tracks.items,
                         tracks_more: response.tracks.next,
                         tracks_total: response.tracks.total
                     }
                 )
 
+                // add our album to all the tracks
+                for (var i = 0; i < album.tracks.length; i++){
+                    album.tracks[i].album = {
+                        name: album.name,
+                        uri: album.uri
+                    }
+                }
+
                 dispatch({
                     type: 'ALBUM_LOADED',
+                    uri: album.uri,
                     album: album
                 });
 
@@ -854,6 +863,7 @@ export function getPlaylist( uri ){
 
             dispatch({
                 type: 'PLAYLIST_LOADED',
+                uri: playlist.uri,
                 playlist: playlist
             })
         })
@@ -868,38 +878,15 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
                 loadNextPlaylistsBatch( dispatch, getState, playlists, response )
             });
     }else{
-
-        for( var i = 0; i < playlists.length; i++ ){
-            var playlist = Object.assign(
-                {},
-                playlists[i],
-                {
-                    can_edit: (getState().spotify.authorized && getState().spotify.me && playlists[i].owner.id == getState().spotify.me.id),
-                    tracks_total: playlists[i].tracks.total
-                }
-            )
-
-            // remove our tracklist. It'll overwrite any full records otherwise
-            delete playlist.tracks
-
-            dispatch({
-                type: 'PLAYLIST_LOADED',
-                playlist: playlist
-            });
-        }
-
         dispatch({
-            type: 'LIBRARY_PLAYLISTS_LOADED',
-            uris: helpers.asURIs(playlists)
+            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
+            playlists: playlists
         });
     }
 }
 
 export function getAllLibraryPlaylists(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'me/playlists?limit=50' )
             .then( response => {
                 loadNextPlaylistsBatch( dispatch, getState, response.items, response )

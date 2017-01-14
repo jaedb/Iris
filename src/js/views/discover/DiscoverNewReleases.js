@@ -17,20 +17,31 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getNewReleases();
+		if (!this.props.new_releases) this.props.spotifyActions.getNewReleases();
 	}
 
 	loadMore(){
-		if( !this.props.spotify.new_releases || !this.props.spotify.new_releases.next ) return
-		this.props.spotifyActions.getURL( this.props.spotify.new_releases.next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
+		if (!this.props.new_releases_more) return
+		this.props.spotifyActions.getURL(this.props.new_releases_more, 'SPOTIFY_NEW_RELEASES_LOADED');
 	}
 
 	render(){
+
+		var albums = []
+		if (this.props.new_releases){
+			for (var i = 0; i < this.props.new_releases.length; i++){
+				var uri = this.props.new_releases[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view discover-new-releases-view">
 				<Header icon="leaf" title="New Releases" />
 				<section className="grid-wrapper">
-					{ this.props.spotify.new_releases ? <AlbumGrid albums={this.props.spotify.new_releases.items} /> : null }
+					<AlbumGrid albums={albums} />
 				</section>
 				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
@@ -46,7 +57,12 @@ class DiscoverNewReleases extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		albums: state.ui.albums,
+		new_releases: state.ui.new_releases,
+		new_releases_more: state.ui.new_releases_more,
+		new_releases_total: state.ui.new_releases_total
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

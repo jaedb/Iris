@@ -93,6 +93,92 @@ const SpotifyMiddleware = (function(){
                 }
                 break
 
+            case 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED':
+                store.dispatch({
+                    type: 'PLAYLIST_LOADED',
+                    uri: action.uri,
+                    playlist: {
+                        is_following: action.is_following
+                    }
+                });
+                break
+
+            case 'SPOTIFY_ALBUM_FOLLOWING_LOADED':
+                store.dispatch({
+                    type: 'ALBUM_LOADED',
+                    uri: action.uri,
+                    album: {
+                        is_following: action.is_following
+                    }
+                });
+                break
+
+            case 'SPOTIFY_ARTIST_FOLLOWING_LOADED':
+                store.dispatch({
+                    type: 'ARTIST_LOADED',
+                    uri: action.uri,
+                    artist: {
+                        is_following: action.is_following
+                    }
+                });
+                break
+
+            case 'SPOTIFY_NEW_RELEASES_LOADED':
+                store.dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: action.data.albums.items
+                });
+                store.dispatch({
+                    type: 'NEW_RELEASES_LOADED',
+                    uris: helpers.asURIs(action.data.albums.items),
+                    more: action.data.albums.next,
+                    total: action.data.albums.total
+                });
+                break
+
+            case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
+                store.dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: action.data.items
+                });
+                store.dispatch({
+                    type: 'ARTIST_ALBUMS_LOADED',
+                    uri: action.uri,
+                    uris: helpers.asURIs(action.data.items),
+                    more: action.data.next,
+                    total: action.data.total
+                });
+                break
+
+            case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
+                var playlists = []
+                for( var i = 0; i < action.playlists.length; i++ ){
+                    var playlist = Object.assign(
+                        {},
+                        action.playlists[i],
+                        {
+                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.playlists[i].owner.id == store.getState().spotify.me.id),
+                            tracks_total: action.playlists[i].tracks.total
+                        }
+                    )
+
+                    // remove our tracklist. It'll overwrite any full records otherwise
+                    delete playlist.tracks
+
+                    playlists.push(playlist)
+                }
+
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
+
+                store.dispatch({
+                    type: 'LIBRARY_PLAYLISTS_LOADED',
+                    uris: helpers.asURIs(playlists)
+                });
+                break
+
             case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
                 store.dispatch({
                     type: 'ARTISTS_LOADED',
@@ -107,9 +193,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
-
                 var albums = []
-
                 for (var i = 0; i < action.data.items.length; i++){
                     albums.push(
                         Object.assign(

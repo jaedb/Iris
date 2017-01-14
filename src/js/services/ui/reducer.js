@@ -144,46 +144,15 @@ export default function reducer(ui = {}, action){
 
         case 'ALBUM_LOADED':
             var albums = Object.assign([], ui.albums)
-            var album = Object.assign({}, action.album)
 
-            // if we already have one in our list, fetch it and update it
-            if (albums[action.album.uri]){
-                album = Object.assign({}, albums[action.album.uri], action.album)
+            if (albums[action.uri]){
+                var album = Object.assign({}, albums[action.uri], action.album)
+            }else{
+                var album = Object.assign({}, action.album)
             }
 
-            albums[action.album.uri] = album
+            albums[action.uri] = album
             return Object.assign({}, ui, { albums: albums });
-
-        case 'MOPIDY_ALBUM_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { album: false })
-            return Object.assign({}, ui, { album: action.data });
-
-        case 'LASTFM_ALBUM_LOADED':
-            if( !action.data.image ) return ui
-
-            var album = Object.assign({}, ui.album, { images: action.data.image })
-            return Object.assign({}, ui, { album: album });
-
-        case 'SPOTIFY_ALBUM_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { album: false })
-
-            var album = Object.assign({}, { images: [] }, action.data, {
-                tracks: action.data.tracks.items,
-                tracks_total: action.data.tracks.total,
-                tracks_more: action.data.tracks.next
-            })
-            return Object.assign({}, ui, { album: album })
-
-        case 'SPOTIFY_ALBUM_LOADED_MORE':
-            var album = Object.assign({}, ui.album, {
-                tracks: [ ...ui.album.tracks, ...action.data.items ],
-                tracks_more: action.data.next
-            })
-            return Object.assign({}, ui, { album: album });
-
-        case 'ALBUM_FOLLOWING_LOADED':
-            var album = Object.assign({}, ui.album, { following: action.is_following })
-            return Object.assign({}, ui, { album: album, following_loading: false });
 
         case 'LIBRARY_ALBUMS_LOADED':
             if (!action.uris){
@@ -201,6 +170,24 @@ export default function reducer(ui = {}, action){
                 library_albums: [...library_albums, ...action.uris],
                 library_albums_more: action.more,
                 library_albums_total: action.total
+            });
+
+        case 'NEW_RELEASES_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    new_releases: null,
+                    new_releases_more: null,
+                    new_releases_total: null
+                });
+            }
+
+            var new_releases = []
+            if (ui.new_releases) new_releases = Object.assign([], ui.new_releases)
+
+            return Object.assign({}, ui, { 
+                new_releases: [...new_releases, ...action.uris],
+                new_releases_more: action.more,
+                new_releases_total: action.total
             });
 
 
@@ -224,16 +211,34 @@ export default function reducer(ui = {}, action){
 
         case 'ARTIST_LOADED':
             var artists = Object.assign([], ui.artists)
-            var artist = Object.assign({}, action.artist)
 
-            // if we already have one in our list, fetch it and update it
-            if (artists[action.artist.uri]){
-                artist = Object.assign({}, artists[action.artist.uri], action.artist)
+            if (artists[action.uri]){
+                var artist = Object.assign({}, artists[action.uri], action.artist)
+            }else{
+                var artist = Object.assign({}, action.artist)
             }
 
-            artists[action.artist.uri] = artist
+            artists[action.uri] = artist
             return Object.assign({}, ui, { artists: artists });
 
+        case 'ARTIST_ALBUMS_LOADED':
+            var artists = Object.assign([], ui.artists)
+            var albums_uris = []
+            if (artists[action.uri].albums_uris) albums_uris = artists[action.uri].albums_uris
+
+            var artist = Object.assign(
+                {}, 
+                artists[action.uri],
+                {
+                    albums_uris: [...albums_uris, ...action.uris],
+                    albums_more: action.more,
+                    albums_total: action.total
+                }
+            )
+            artists[action.uri] = artist
+            return Object.assign({}, ui, { artists: artists });
+
+/*
         case 'LASTFM_ARTIST_LOADED':
             if( !action.data.image ) return ui
 
@@ -243,21 +248,7 @@ export default function reducer(ui = {}, action){
             
             var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio, listeners: parseInt(action.data.stats.listeners), on_tour: action.data.ontour }, )
             return Object.assign({}, ui, { artist: artist });
-
-        case 'SPOTIFY_ARTIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { artist: false })
-            return Object.assign({}, ui, { artist: action.data })
-
-        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
-            var artist = Object.assign({}, ui.artist, {
-                albums: [ ...ui.artist.albums, ...action.data.items ],
-                albums_more: action.data.next
-            })
-            return Object.assign({}, ui, { artist: artist });
-
-        case 'ARTIST_FOLLOWING_LOADED':
-            var artist = Object.assign({}, ui.artist, { following: action.is_following })
-            return Object.assign({}, ui, { artist: artist, following_loading: false });
+            */
 
         case 'LIBRARY_ARTISTS_LOADED':
             if (!action.uris){
@@ -305,14 +296,27 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_LOADED':
         case 'PLAYLIST_UPDATED':
             var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, action.playlist)
 
-            // if we already have one in our list, fetch it and update it
-            if (playlists[action.playlist.uri]){
-                playlist = Object.assign({}, playlists[action.playlist.uri], action.playlist)
+            if (playlists[action.uri]){
+                var playlist = Object.assign({}, playlists[action.uri], action.playlist)
+            }else{
+                var playlist = Object.assign({}, action.playlist)
             }
 
-            playlists[action.playlist.uri] = playlist
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
+
+        case 'PLAYLISTS_LOADED':
+            var playlists = Object.assign([], ui.playlists)
+
+            for (var i = 0; i < action.playlists.length; i++){
+                var playlist = action.playlists[i]
+                if (typeof(playlists[playlist.uri]) !== 'undefined'){
+                    artist = Object.assign({}, playlists[playlist.uri], playlist)
+                }
+                playlists[playlist.uri] = playlist
+            }
+
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'MOPIDY_PLAYLIST_LOADED':

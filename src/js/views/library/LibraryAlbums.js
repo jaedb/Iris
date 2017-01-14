@@ -85,7 +85,7 @@ class LibraryAlbums extends React.Component{
 										</Link>
 										<h4><ArtistSentence className="grey-text" artists={album.artists} /></h4>
 									</div>
-									<TrackList tracks={album.tracks.items} />
+									<TrackList tracks={album.tracks} />
 								</div>
 							)
 						})

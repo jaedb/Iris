@@ -313,7 +313,11 @@ const MopidyMiddleware = (function(){
                                         }
                                     )
 
-                                    store.dispatch({ type: 'PLAYLIST_LOADED', playlist: playlist })
+                                    store.dispatch({ 
+                                        type: 'PLAYLIST_LOADED', 
+                                        uri: playlist.uri,
+                                        playlist: playlist 
+                                    })
                                 })
                         }
                     })
@@ -336,7 +340,11 @@ const MopidyMiddleware = (function(){
                         // tracks? get the full track objects
                         if( playlist.tracks.length > 0 ) store.dispatch({ type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', tracks: playlist.tracks, uri: response.uri })
 
-                        store.dispatch({ type: 'PLAYLIST_LOADED', playlist: playlist })
+                        store.dispatch({ 
+                            type: 'PLAYLIST_LOADED',
+                            uri: playlist.uri,
+                            playlist: playlist
+                        })
                     })
                 break;
 
@@ -367,7 +375,11 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        store.dispatch({ type: 'PLAYLIST_TRACKS', tracks: tracks, uri: action.uri })
+                        store.dispatch({ 
+                            type: 'PLAYLIST_TRACKS', 
+                            tracks: tracks, 
+                            uri: action.uri 
+                        })
                     })
                 break
 
@@ -425,7 +437,11 @@ const MopidyMiddleware = (function(){
                         var playlist = Object.assign({}, response, { name: action.name })
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
-                                store.dispatch({ type: 'PLAYLIST_UPDATED', uri: action.uri, playlist: playlist })
+                                store.dispatch({ 
+                                    type: 'PLAYLIST_UPDATED', 
+                                    uri: action.uri, 
+                                    playlist: playlist
+                                })
                             })
                     });
                 break

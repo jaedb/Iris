@@ -55,11 +55,19 @@ class Artist extends React.Component{
 	}
 
 	loadArtist( props = this.props ){
-		var source = helpers.uriSource( props.params.uri );
-		if( source == 'spotify' ){
-			this.props.spotifyActions.getArtist( props.params.uri );
-		}else if( source == 'local' && props.mopidy_connected ){
-			this.props.mopidyActions.getArtist( props.params.uri );
+		switch( helpers.uriSource( props.params.uri ) ){
+
+			case 'spotify':
+				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
+					console.info('Loading spotify artist from index')
+				}else{
+					this.props.spotifyActions.getArtist( props.params.uri );
+				}
+				break
+
+			case 'local':
+				this.props.mopidyActions.getArtist( props.params.uri );
+				break
 		}
 		
 		// go back to overview
@@ -68,7 +76,7 @@ class Artist extends React.Component{
 
 	loadMore(){
 		if( !this.props.artist.albums_more ) return
-		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
+		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
 	play(){
@@ -96,9 +104,9 @@ class Artist extends React.Component{
 	renderBody(){
 
 		var related_artists = []
-		if (this.props.artist.related_artists){
-			for (var i = 0; i < this.props.artist.related_artists.length; i++){
-				var uri = this.props.artist.related_artists[i]
+		if (this.props.artist.related_artists_uris){
+			for (var i = 0; i < this.props.artist.related_artists_uris.length; i++){
+				var uri = this.props.artist.related_artists_uris[i]
 				if (this.props.artists.hasOwnProperty(uri)){
 					related_artists.push(this.props.artists[uri])
 				}
@@ -106,9 +114,9 @@ class Artist extends React.Component{
 		}
 
 		var albums = []
-		if (this.props.artist.albums){
-			for (var i = 0; i < this.props.artist.albums.length; i++){
-				var uri = this.props.artist.albums[i]
+		if (this.props.artist.albums_uris){
+			for (var i = 0; i < this.props.artist.albums_uris.length; i++){
+				var uri = this.props.artist.albums_uris[i]
 				if (this.props.albums.hasOwnProperty(uri)){
 					albums.push(this.props.albums[uri])
 				}
@@ -191,7 +199,7 @@ class Artist extends React.Component{
 
 						<div className="actions">
 							<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" /> : null }						
+							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null }						
 						</div>
 
 						<ul className="details">
