@@ -114,9 +114,6 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
-        case 'FOLLOWING_LOADING':
-            return Object.assign({}, ui, { following_loading: true })
-
         case 'RADIO':
         case 'START_RADIO':
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
@@ -132,36 +129,71 @@ export default function reducer(ui = {}, action){
          * Albums
          **/
 
-        case 'MOPIDY_ALBUM_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { album: false })
-            return Object.assign({}, ui, { album: action.data });
+        case 'ALBUM_LOADED':
+            var albums = Object.assign([], ui.albums)
 
-        case 'LASTFM_ALBUM_LOADED':
-            if( !action.data.image ) return ui
+            if (albums[action.uri]){
+                var album = Object.assign({}, albums[action.uri], action.album)
+            }else{
+                var album = Object.assign({}, action.album)
+            }
 
-            var album = Object.assign({}, ui.album, { images: action.data.image })
-            return Object.assign({}, ui, { album: album });
+            albums[action.uri] = album
+            return Object.assign({}, ui, { albums: albums });
 
-        case 'SPOTIFY_ALBUM_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { album: false })
+        case 'ALBUMS_LOADED':
+            console.log(action)
+            var albums = Object.assign([], ui.albums)
 
-            var album = Object.assign({}, { images: [] }, action.data, {
-                tracks: action.data.tracks.items,
-                tracks_total: action.data.tracks.total,
-                tracks_more: action.data.tracks.next
-            })
-            return Object.assign({}, ui, { album: album })
+            for (var i = 0; i < action.albums.length; i++){
+                var album = action.albums[i]
+                if (typeof(albums[album.uri]) !== 'undefined'){
+                    artist = Object.assign({}, albums[album.uri], album)
+                }
+                albums[album.uri] = album
+            }
 
-        case 'SPOTIFY_ALBUM_LOADED_MORE':
-            var album = Object.assign({}, ui.album, {
-                tracks: [ ...ui.album.tracks, ...action.data.items ],
-                tracks_more: action.data.next
-            })
-            return Object.assign({}, ui, { album: album });
+            return Object.assign({}, ui, { albums: albums });
 
-        case 'ALBUM_FOLLOWING_LOADED':
-            var album = Object.assign({}, ui.album, { following: action.is_following })
-            return Object.assign({}, ui, { album: album, following_loading: false });
+        case 'LIBRARY_ALBUMS_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    library_albums: null,
+                    library_albums_more: null,
+                    library_albums_total: null
+                });
+            }
+
+            var library_albums = []
+            if (ui.library_albums) library_albums = Object.assign([], ui.library_albums)
+
+            return Object.assign({}, ui, { 
+                library_albums: [...library_albums, ...action.uris],
+                library_albums_more: action.more,
+                library_albums_total: action.total
+            });
+
+        case 'LOCAL_ALBUMS_LOADED':
+            if (!action.uris) return Object.assign({}, ui, { local_albums: null });
+            return Object.assign({}, ui, { local_albums: action.uris });
+
+        case 'NEW_RELEASES_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    new_releases: null,
+                    new_releases_more: null,
+                    new_releases_total: null
+                });
+            }
+
+            var new_releases = []
+            if (ui.new_releases) new_releases = Object.assign([], ui.new_releases)
+
+            return Object.assign({}, ui, { 
+                new_releases: [...new_releases, ...action.uris],
+                new_releases_more: action.more,
+                new_releases_total: action.total
+            });
 
 
 
@@ -169,34 +201,73 @@ export default function reducer(ui = {}, action){
          * Artists
          **/
 
-        case 'MOPIDY_ARTIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { artist: false })
-            return Object.assign({}, ui, { artist: action.data })
+        case 'ARTIST_LOADED':
+            console.log(action)
+            var artists = Object.assign([], ui.artists)
 
-        case 'LASTFM_ARTIST_LOADED':
-            if( !action.data.image ) return ui
+            if (artists[action.uri]){
+                // if we've already got images, delete our new ones
+                // this is to prevent LastFM overwriting Spotify images
+                if (artists[action.uri].images) delete action.artist.images
+                var artist = Object.assign({}, artists[action.uri], action.artist)
+            }else{
+                var artist = Object.assign({}, action.artist)
+            }
 
-            // if we already have images, don't overwrite them
-            var images = ui.artist.images
-            if( images.length <= 0 ) images = action.data.image
-            
-            var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio, listeners: parseInt(action.data.stats.listeners), on_tour: action.data.ontour }, )
-            return Object.assign({}, ui, { artist: artist });
+            artists[action.uri] = artist
+            return Object.assign({}, ui, { artists: artists });
 
-        case 'SPOTIFY_ARTIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { artist: false })
-            return Object.assign({}, ui, { artist: action.data })
+        case 'ARTISTS_LOADED':
+            var artists = Object.assign([], ui.artists)
 
-        case 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE':
-            var artist = Object.assign({}, ui.artist, {
-                albums: [ ...ui.artist.albums, ...action.data.items ],
-                albums_more: action.data.next
-            })
-            return Object.assign({}, ui, { artist: artist });
+            for (var i = 0; i < action.artists.length; i++){
+                var artist = action.artists[i]
+                if (typeof(artists[artist.uri]) !== 'undefined'){
+                    artist = Object.assign({}, artists[artist.uri], artist)
+                }
+                artists[artist.uri] = artist
+            }
 
-        case 'ARTIST_FOLLOWING_LOADED':
-            var artist = Object.assign({}, ui.artist, { following: action.is_following })
-            return Object.assign({}, ui, { artist: artist, following_loading: false });
+            return Object.assign({}, ui, { artists: artists });
+
+        case 'ARTIST_ALBUMS_LOADED':
+            var artists = Object.assign([], ui.artists)
+            var albums_uris = []
+            if (artists[action.uri].albums_uris) albums_uris = artists[action.uri].albums_uris
+
+            var artist = Object.assign(
+                {}, 
+                artists[action.uri],
+                {
+                    albums_uris: [...albums_uris, ...action.uris],
+                    albums_more: action.more,
+                    albums_total: action.total
+                }
+            )
+            artists[action.uri] = artist
+            return Object.assign({}, ui, { artists: artists });
+
+        case 'LIBRARY_ARTISTS_LOADED':
+            if (!action.uris){
+                return Object.assign({}, ui, { 
+                    library_artists: null,
+                    library_artists_more: null,
+                    library_artists_total: null
+                });
+            }
+
+            var library_artists = []
+            if (ui.library_artists) library_artists = Object.assign([], ui.library_artists)
+
+            return Object.assign({}, ui, { 
+                library_artists: [...library_artists, ...action.uris],
+                library_artists_more: action.more,
+                library_artists_total: action.total
+            });
+
+        case 'LOCAL_ARTISTS_LOADED':
+            if (!action.uris) return Object.assign({}, ui, { local_artists: null });
+            return Object.assign({}, ui, { local_artists: action.uris });
 
 
         /**
@@ -223,74 +294,76 @@ export default function reducer(ui = {}, action){
          * Playlists
          **/
 
+        case 'PLAYLIST_LOADED':
         case 'PLAYLIST_UPDATED':
-            var playlist = Object.assign({}, ui.playlist, action.playlist)
-            return Object.assign({}, ui, { playlist: playlist })
+            var playlists = Object.assign([], ui.playlists)
+
+            if (playlists[action.uri]){
+                var playlist = Object.assign({}, playlists[action.uri], action.playlist)
+            }else{
+                var playlist = Object.assign({}, action.playlist)
+            }
+
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
+
+        case 'PLAYLISTS_LOADED':
+            var playlists = Object.assign([], ui.playlists)
+
+            for (var i = 0; i < action.playlists.length; i++){
+                var playlist = action.playlists[i]
+                if (typeof(playlists[playlist.uri]) !== 'undefined'){
+                    artist = Object.assign({}, playlists[playlist.uri], playlist)
+                }
+                playlists[playlist.uri] = playlist
+            }
+
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'MOPIDY_PLAYLIST_LOADED':
             if( !action.data ) return Object.assign({}, ui, { playlist: false })
             return Object.assign({}, ui, { playlist: action.data })
 
-        case 'SPOTIFY_PLAYLIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { playlist: false })
+        case 'PLAYLIST_LOADED_MORE_TRACKS':
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign(
+                {}, 
+                playlists[action.uri],
+                {
+                    tracks: [...playlists[action.uri].tracks, ...helpers.flattenTracks(action.data.items)],
+                    tracks_more: action.data.next,
+                    tracks_total: action.data.total
+                }
+            )
 
-            var tracks = []
-            for( var i = 0; i < action.data.tracks.items.length; i++ ){
-                tracks.push( Object.assign(
-                    {},
-                    action.data.tracks.items[i].track,
-                    {
-                        added_by: action.data.tracks.items[i].added_by,
-                        added_at: action.data.tracks.items[i].added_at
-                    }
-                ))
-            }
-
-            var playlist = Object.assign({}, action.data, {
-                tracks: tracks,
-                tracks_more: action.data.tracks.next,
-                tracks_total: action.data.tracks.total
-            })
-            return Object.assign({}, ui, { playlist: playlist });
-
-        case 'SPOTIFY_PLAYLIST_LOADED_MORE':
-            var tracks = []
-            for( var i = 0; i < action.data.items.length; i++ ){
-                tracks.push( Object.assign(
-                    {},
-                    action.data.items[i].track,
-                    {
-                        added_by: action.data.items[i].added_by,
-                        added_at: action.data.items[i].added_at
-                    }
-                ))
-            }
-
-            var playlist = Object.assign({}, ui.playlist, {
-                tracks: [...ui.playlist.tracks, ...tracks],
-                tracks_more: action.data.next
-            })
-            return Object.assign({}, ui, { playlist: playlist });
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REMOVED':
-            var tracks = Object.assign([], ui.playlist.tracks)
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri])
+            var tracks = Object.assign([], playlist.tracks)
             var indexes = action.tracks_indexes.reverse()
             for( var i = 0; i < indexes.length; i++ ){
                 tracks.splice( indexes[i], 1 )
             }
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
-            var playlist = Object.assign({}, ui.playlist, { tracks: tracks, snapshot_id: snapshot_id })
-            return Object.assign({}, ui, { playlist: playlist });
+            Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
-        case 'PLAYLIST_TRACKS_LOADED':
-            var playlist = Object.assign({}, ui.playlist, { tracks: action.tracks })
-            return Object.assign({}, ui, { playlist: playlist });
+        case 'PLAYLIST_TRACKS':
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri], { tracks: action.tracks })
+
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REORDERED':
-            var snapshot_id = null
-            if( action.snapshot_id ) snapshot_id = action.snapshot_id
-            var tracks = Object.assign([], ui.playlist.tracks)
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri])
+            var tracks = Object.assign([], playlist.tracks)
 
             // handle insert_before offset if we're moving BENEATH where we're slicing tracks
             var insert_before = action.insert_before
@@ -304,26 +377,25 @@ export default function reducer(ui = {}, action){
                 tracks.splice(insert_before, 0, tracks_to_move[i])
             }
 
-            var playlist = Object.assign({}, ui.playlist, { snapshot_id: snapshot_id, tracks: tracks })
-            return Object.assign({}, ui, { playlist: playlist });
+            var snapshot_id = null
+            if( action.snapshot_id ) snapshot_id = action.snapshot_id
+            Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_FOLLOWING_LOADED':
-            var playlist = Object.assign({}, ui.playlist, { following: action.is_following })
-            return Object.assign({}, ui, { playlist: playlist, following_loading: false });
+            var playlists = Object.assign([], ui.playlists)
+            var playlist = Object.assign({}, playlists[action.uri], { following: action.is_following })
 
+            playlists[action.uri] = playlist
+            return Object.assign({}, ui, { playlists: playlists });
 
-        /**
-         * Library Playlists
-         **/
+        case 'LIBRARY_PLAYLISTS_LOADED':
+            var library_playlists = []
+            if (ui.library_playlists) library_playlists = ui.library_playlists
 
-        case 'MOPIDY_PLAYLISTS_LOADED':
-        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
-            if( !action.data ) return ui
-            var playlists = [...ui.playlists, ...action.data]
-            playlists = helpers.mergeDuplicates(playlists, 'uri')
-            helpers.sortItems(playlists, 'name')
             return Object.assign({}, ui, { 
-                playlists: playlists
+                library_playlists: [...library_playlists, ...action.uris]
             });
 
 

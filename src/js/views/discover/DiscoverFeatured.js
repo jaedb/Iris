@@ -20,11 +20,22 @@ class DiscoverFeatured extends React.Component{
 	}
 
 	render(){
+
+		var playlists = []
+		if (this.props.featured_playlists){
+			for (var i = 0; i < this.props.featured_playlists.playlists.length; i++){
+				var uri = this.props.featured_playlists.playlists[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view discover-featured-view">
 				<Header icon="star" title="Featured playlists" />
 				<section className="grid-wrapper">
-					{ this.props.spotify.featured_playlists ? <PlaylistGrid playlists={this.props.spotify.featured_playlists.playlists.items} /> : null }
+					{ playlists ? <PlaylistGrid playlists={playlists} /> : null }
 				</section>
 			</div>
 		);
@@ -39,7 +50,10 @@ class DiscoverFeatured extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		featured_playlists: state.spotify.featured_playlists,
+		playlists: state.ui.playlists
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

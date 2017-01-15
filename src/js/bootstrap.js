@@ -65,6 +65,7 @@ var initialState = {
 			playlists: [],
 			tracks: []
 		},
+		library_playlists: [],
 		playlists: [],
 		notifications: []
 	}

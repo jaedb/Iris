@@ -27,11 +27,8 @@ const sendRequest = ( dispatch, getState, params ) => {
     })
 }
 
-export function getArtist( artist, mbid = false ){
+export function getArtist( uri, artist, mbid = false ){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'LASTFM_ARTIST_LOADED', data: false });
-
         if( mbid ){
             var params = 'method=artist.getInfo&mbid='+mbid
         }else{
@@ -43,8 +40,12 @@ export function getArtist( artist, mbid = false ){
                 response => {
                     if( response.artist ){
                         dispatch({
-                            type: 'LASTFM_ARTIST_LOADED',
-                            data: response.artist
+                            type: 'ARTIST_LOADED',
+                            uri: uri,
+                            artist: {
+                                images: response.artist.image,
+                                bio: response.artist.bio
+                            }
                         });
                     }
                 }

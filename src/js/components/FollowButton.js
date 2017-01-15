@@ -30,9 +30,8 @@ class FollowButton extends React.Component{
 
 	render(){
 		if( !this.props.spotify_authorized || !this.props.uri ) return false
-		var item = this.props[helpers.uriType( this.props.uri )]
 
-		if( item.following === true ){
+		if( this.props.is_following === true ){
 			return <button className="tertiary large" onClick={ () => this.remove() }>{ this.props.removeText }</button>
 		}else{
 			return <button className="tertiary large" onClick={ () => this.add() }>{ this.props.addText }</button>
@@ -42,11 +41,7 @@ class FollowButton extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		spotify_authorized: state.spotify.authorized,
-		artist: state.ui.artist,
-		user: state.ui.user,
-		album: state.ui.album,
-		playlist: state.ui.playlist
+		spotify_authorized: state.spotify.authorized
 	}
 }
 

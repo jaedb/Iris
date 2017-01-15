@@ -53,7 +53,7 @@ class App extends React.Component{
 
 		// mopidy comes online
 		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			this.props.mopidyActions.getPlaylists();
+			this.props.mopidyActions.getLibraryPlaylists();
 		}
 
 		// spotify authorized

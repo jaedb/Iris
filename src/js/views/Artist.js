@@ -49,17 +49,31 @@ class Artist extends React.Component{
 	componentWillUpdate( nextProps, nextState ){
 		if( nextState.sub_view != this.state.sub_view && nextState.sub_view == 'biography' ){
 			if( this.props.artist && !this.props.artist.bio ){
-				this.props.lastfmActions.getArtist( this.props.artist.name.replace('&','and') )
+				this.props.lastfmActions.getArtist( this.props.params.uri, this.props.artist.name.replace('&','and') )
 			}
 		}
 	}
 
 	loadArtist( props = this.props ){
-		var source = helpers.uriSource( props.params.uri );
-		if( source == 'spotify' ){
-			this.props.spotifyActions.getArtist( props.params.uri );
-		}else if( source == 'local' && props.mopidy_connected ){
-			this.props.mopidyActions.getArtist( props.params.uri );
+		switch( helpers.uriSource( props.params.uri ) ){
+
+			case 'spotify':
+				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
+					console.info('Loading spotify artist from index')
+				}else{
+					this.props.spotifyActions.getArtist( props.params.uri );
+				}
+				break
+
+			case 'local':
+				if (props.mopidy_connected){
+					if (props.artist && props.artist.images){
+						console.info('Loading local artist from index')
+					} else {
+						this.props.mopidyActions.getArtist( props.params.uri );
+					}
+				}
+				break
 		}
 		
 		// go back to overview
@@ -68,7 +82,7 @@ class Artist extends React.Component{
 
 	loadMore(){
 		if( !this.props.artist.albums_more ) return
-		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED_MORE' );
+		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
 	play(){
@@ -83,9 +97,7 @@ class Artist extends React.Component{
 				<span className={'option '+( this.state.sub_view == 'overview' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'overview' })}>
 					Overview
 				</span>
-				<span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>
-					Related artists
-				</span>
+				{this.props.artist.related_artists_uris ? <span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>Related artists</span> : null}
 				<span className={'option '+( this.state.sub_view == 'biography' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'biography' })}>
 					Biography
 				</span>
@@ -94,13 +106,32 @@ class Artist extends React.Component{
 	}
 
 	renderBody(){
+		var related_artists = []
+		if (this.props.artist.related_artists_uris){
+			for (var i = 0; i < this.props.artist.related_artists_uris.length; i++){
+				var uri = this.props.artist.related_artists_uris[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					related_artists.push(this.props.artists[uri])
+				}
+			}
+		}
+
+		var albums = []
+		if (this.props.artist.albums_uris){
+			for (var i = 0; i < this.props.artist.albums_uris.length; i++){
+				var uri = this.props.artist.albums_uris[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
 
 		if( this.state.sub_view == 'related_artists' ){
 			return (
 				<div className="body related-artists">
 					<h4 className="left-padding">Related artists</h4>
 					<section className="grid-wrapper no-top-padding">
-						{ this.props.artist.related_artists ? <ArtistGrid artists={ this.props.artist.related_artists } /> : null }
+						<ArtistGrid artists={related_artists} />
 					</section>
 				</div>
 			)
@@ -117,26 +148,22 @@ class Artist extends React.Component{
 			)
 		}
 
-		// default body
 		return (
 			<div className="body overview">
-				<div className="col w70">
+				<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
 					<h4 className="left-padding">Top tracks</h4>
 					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
 				</div>
 
 				<div className="col w5"></div>
 
-				<div className="col w25 related-artists">
-					<h4>Related artists</h4>
-					{ this.props.artist.related_artists ? <ArtistList artists={ this.props.artist.related_artists.slice(0,6) } /> : null }
-				</div>
+				{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><ArtistList artists={related_artists.slice(0,6)} /></div> : null}
 
 				<div className="cf"></div>
 
 				<h4 className="left-padding">Albums</h4>
 				<section className="grid-wrapper no-top-padding">
-					{ this.props.artist.albums ? <AlbumGrid albums={ this.props.artist.albums } /> : null }
+					<AlbumGrid albums={albums} />
 					<LazyLoadListener loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
@@ -147,7 +174,7 @@ class Artist extends React.Component{
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
 
-		var image = false
+		var image = null
 		if( this.props.artist.images ) image = helpers.sizedImages( this.props.artist.images ).huge
 
 		return (
@@ -171,7 +198,7 @@ class Artist extends React.Component{
 
 						<div className="actions">
 							<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" /> : null }						
+							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null }						
 						</div>
 
 						<ul className="details">
@@ -203,7 +230,9 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		artist: state.ui.artist,
+		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
+		artists: state.ui.artists,
+		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	}

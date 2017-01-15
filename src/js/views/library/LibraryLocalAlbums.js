@@ -15,7 +15,6 @@ class LibraryLocalAlbums extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.loadAlbums()
 	}
@@ -33,13 +32,21 @@ class LibraryLocalAlbums extends React.Component{
 	}
 
 	render(){
-		if( !this.props.albums ) return null
+		var albums = []
+		if (this.props.albums && this.props.local_albums){
+			for (var i = 0; i < this.props.local_albums.length; i++){
+				var uri = this.props.local_albums[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
 
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" />
 				<div>
-					<List columns={[{ name: 'name', width: '100'}]} rows={this.props.albums} link_prefix={global.baseURL+"album/"} />
+					<List columns={[{ name: 'name', width: '100'}]} rows={albums} link_prefix={global.baseURL+"album/"} />
 				</div>
 			</div>
 		);
@@ -56,7 +63,8 @@ class LibraryLocalAlbums extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		albums: state.mopidy.albums
+		local_albums: state.ui.local_albums,
+		albums: state.ui.albums
 	}
 }
 

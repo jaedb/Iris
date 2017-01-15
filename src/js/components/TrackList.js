@@ -245,7 +245,7 @@ class TrackList extends React.Component{
 	}
 
 	render(){
-		if( !this.state.tracks ) return null
+		if( !this.state.tracks || Object.prototype.toString.call(this.state.tracks) !== '[object Array]' ) return null
 
 		let self = this;
 		return (

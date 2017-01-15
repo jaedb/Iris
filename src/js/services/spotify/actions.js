@@ -262,9 +262,29 @@ export function getFeaturedPlaylists(){
 
         sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
             .then( response => {
+
+                var playlists = []
+                for (var i = 0; i < response.playlists.items.length; i++){
+                    playlists.push(Object.assign(
+                        {},
+                        response.playlists.items[i],
+                        {
+                            can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
+                            tracks_total: response.playlists.items[i].tracks.total
+                        }
+                    ))
+                }
+
+                dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });  
                 dispatch({
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
-                    data: response
+                    data: {
+                        message: response.message,
+                        playlists: helpers.asURIs(response.playlists.items)
+                    }
                 });
             });
     }
@@ -290,52 +310,69 @@ export function getCategory( id ){
 
         dispatch({ type: 'SPOTIFY_CATEGORY_LOADED', data: false });
 
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+        $.when(
+
+            sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale ),
+            sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+
+        ).then( ( category_response, playlists_response ) => {
+
+            for (var i = 0; i < playlists_response.playlists.items.length; i++){
+
+                var playlist = Object.assign(
+                    {},
+                    playlists_response.playlists.items[i],
+                    {
+                        tracks: null,
+                        tracks_more: null,
+                        tracks_total: playlists_response.playlists.items[i].tracks.total
+                    }
+                )
+
+                dispatch({
+                    type: 'PLAYLIST_LOADED',
+                    playlist: playlist
+                });
+            }
+
+            var category = Object.assign(
+                {},
+                category_response,
+                {
+                    items: false,
+                    playlists: helpers.asURIs(playlists_response.playlists.items),
+                    playlists_more: playlists_response.playlists.next,
+                    playlists_total: playlists_response.playlists.total
+                }
+            )
+
+            dispatch({
+                type: 'SPOTIFY_CATEGORY_LOADED',
+                data: category
+            });
+        });
+    }
+}
+
+export function getNewReleases(){
+    return (dispatch, getState) => {
+        sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().spotify.country+'&limit=50' )
             .then( response => {
                 dispatch({
-                    type: 'SPOTIFY_CATEGORY_LOADED',
+                    type: 'SPOTIFY_NEW_RELEASES_LOADED',
                     data: response
                 });
             });
     }
 }
 
-export function getCategoryPlaylists( id ){
-    return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', data: false });
-
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-                    data: response.playlists
-                });
-            });
-    }
-}
-
-export function getNewReleases(){
-    return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_NEW_RELEASES_LOADED', data: false });
-
-        sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().spotify.country+'&limit=50' )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_NEW_RELEASES_LOADED',
-                    data: response.albums
-                });
-            });
-    }
-}
-
-export function getURL( url, action_name ){
+export function getURL( url, action_name, uri = false ){
     return (dispatch, getState) => {
         sendRequest( dispatch, getState, url )
             .then( response => {
                 dispatch({
                     type: action_name,
+                    uri: uri,
                     data: response
                 });
             });
@@ -365,8 +402,6 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
 
 export function following(uri, method = 'GET'){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'FOLLOWING_LOADING' });
 
         if( method == 'PUT' ) var is_following = true
         if( method == 'DELETE' ) var is_following = false
@@ -411,7 +446,8 @@ export function following(uri, method = 'GET'){
                 if( response ) is_following = response
                 if( typeof(is_following) === 'object' ) is_following = is_following[0]
                 dispatch({
-                    type: asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    type: 'SPOTIFY_'+asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    uri: uri,
                     is_following: is_following
                 });
             });
@@ -547,9 +583,6 @@ export function getDiscover(){
 export function getArtist( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ARTIST_LOADED', data: false });
-
         var artist = {};
 
         // get both the artist and the top tracks
@@ -567,28 +600,35 @@ export function getArtist( uri ){
 
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
-                    Object.assign(artist, { related_artists: response.artists });
-                }),
-
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
-                .then( response => {
-                    Object.assign(artist, { albums: response.items, albums_more: response.next });
+                    dispatch({
+                        type: 'ARTISTS_LOADED',
+                        artists: response.artists
+                    }); 
+                    Object.assign(artist, { related_artists_uris: helpers.asURIs(response.artists) });
                 })
 
         ).then( () => {
             dispatch({
-                type: 'SPOTIFY_ARTIST_LOADED',
-                data: artist
+                type: 'ARTIST_LOADED',
+                uri: artist.uri,
+                artist: artist
             });
+
+            // now go get our artist albums
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
+                .then( response => {
+                    dispatch({
+                        type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
+                        data: response,
+                        uri: uri
+                    });
+                })
         });
     }
 }
 
 export function getArtists( uris ){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ARTISTS_LOADED', data: false });
 
         // now get all the artists for this album (full objects)
         var ids = '';
@@ -599,10 +639,21 @@ export function getArtists( uris ){
 
         sendRequest( dispatch, getState, 'artists/?ids='+ids )
             .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_ARTISTS_LOADED',
-                    data: response
-                });
+                for (var i = i; i < response.length; i++){
+                    var artist = response
+                    for (var i = 0; i < artist.albums.length; i++){
+                        dispatch({
+                            type: 'ALBUM_LOADED',
+                            album: artist.albums[i]
+                        }); 
+                    }
+                    artist.albums = helpers.asURIs(artist.albums)
+                    artist.albums_more = artist.albums.next
+                    dispatch({
+                        type: 'ARTIST_LOADED',
+                        artist: artist
+                    });                    
+                }
             });
     }
 }
@@ -610,15 +661,12 @@ export function getArtists( uris ){
 
 export function getLibraryArtists(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'me/following?type=artist&limit=50' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
                     data: response
-                });
+                })
             });
     }
 }
@@ -675,29 +723,54 @@ export function getUser( uri ){
 export function getAlbum( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ALBUM_LOADED', data: false });
-
         // get the album
         sendRequest( dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
             .then( response => {
 
-                var album = response
+                // dispatch our loaded artists (simple objects)
+                dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: response.artists
+                });
+
+                var album = Object.assign(
+                    {},
+                    response,
+                    {
+                        artists_uris: helpers.asURIs(response.artists),
+                        tracks: response.tracks.items,
+                        tracks_more: response.tracks.next,
+                        tracks_total: response.tracks.total
+                    }
+                )
+
+                // add our album to all the tracks
+                for (var i = 0; i < album.tracks.length; i++){
+                    album.tracks[i].album = {
+                        name: album.name,
+                        uri: album.uri
+                    }
+                }
+
+                dispatch({
+                    type: 'ALBUM_LOADED',
+                    uri: album.uri,
+                    album: album
+                });
 
                 // now get all the artists for this album (full objects)
                 // we do this to get the artist artwork
                 var artist_ids = [];
-                for( var i = 0; i < album.artists.length; i++ ){
-                    artist_ids.push( helpers.getFromUri( 'artistid', album.artists[i].uri ) )
+                for( var i = 0; i < response.artists.length; i++ ){
+                    artist_ids.push( helpers.getFromUri( 'artistid', response.artists[i].uri ) )
                 }
 
-                // get all album artists
+                // get all album artists as full objects
                 sendRequest( dispatch, getState, 'artists/?ids='+artist_ids )
                     .then( response => {
-                        Object.assign(album, { artists: response.artists })
                         dispatch({
-                            type: 'SPOTIFY_ALBUM_LOADED',
-                            data: album
+                            type: 'ARTISTS_LOADED',
+                            artists: response.artists
                         });
                     });
 
@@ -708,14 +781,14 @@ export function getAlbum( uri ){
 export function getLibraryAlbums(){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED', data: false });
+        dispatch({ type: 'LIBRARY_ALBUMS_LOADED', uris: false });
 
         sendRequest( dispatch, getState, 'me/albums?limit=40' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
                     data: response
-                });
+                })
             });
     }
 }
@@ -774,15 +847,25 @@ export function savePlaylist( uri, name, is_public ){
 export function getPlaylist( uri ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_PLAYLIST_LOADED', data: false });
-
         // get the main playlist object
         sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
         .then( response => {
+
+            var playlist = Object.assign(
+                {},
+                response,
+                {
+                    can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
+                    tracks: helpers.flattenTracks(response.tracks.items),
+                    tracks_more: response.tracks.next,
+                    tracks_total: response.tracks.total
+                }
+            )
+
             dispatch({
-                type: 'SPOTIFY_PLAYLIST_LOADED',
-                data: response
+                type: 'PLAYLIST_LOADED',
+                uri: playlist.uri,
+                playlist: playlist
             })
         })
     }
@@ -796,29 +879,15 @@ function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
                 loadNextPlaylistsBatch( dispatch, getState, playlists, response )
             });
     }else{
-
-        // check our editability of each playlist
-        // used to define what we can add tracks to
-        if( getState().spotify.authorized ){
-            for( var i = 0; i < playlists.length; i++ ){
-                if( playlists[i].owner.id == getState().spotify.me.id ){
-                    playlists[i] = Object.assign({}, playlists[i], { can_edit: true })
-                }
-            }
-        }
-
         dispatch({
             type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-            data: playlists
+            playlists: playlists
         });
     }
 }
 
 export function getAllLibraryPlaylists(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'me/playlists?limit=50' )
             .then( response => {
                 loadNextPlaylistsBatch( dispatch, getState, response.items, response )
@@ -842,12 +911,13 @@ export function toggleFollowingPlaylist( uri, method ){
     }
 }
 
-export function addTracksToPlaylist( playlist_uri, tracks_uris ){
+export function addTracksToPlaylist( uri, tracks_uris ){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',playlist_uri) + '/playlists/'+ helpers.getFromUri('playlistid',playlist_uri) + '/tracks', 'POST', { uris: tracks_uris } )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'POST', { uris: tracks_uris } )
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_ADDED',
+                    uri: uri,
                     tracks_uris: tracks_uris,
                     snapshot_id: response.snapshot_id
                 });
@@ -861,6 +931,7 @@ export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REMOVED',
+                    uri: uri,
                     tracks_indexes: tracks_indexes,
                     snapshot_id: response.snapshot_id
                 });
@@ -874,6 +945,7 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REORDERED',
+                    uri: uri,
                     range_start: range_start,
                     range_length: range_length,
                     insert_before: insert_before,

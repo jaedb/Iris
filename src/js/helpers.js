@@ -93,6 +93,28 @@ export let getTrackIcon = function( track = false ){
 }
 
 
+/**
+ * Get a track's icon
+ * @param track object
+ * @return string
+ **/
+export let flattenTracks = function( tracks ){
+    var flattened = []
+    for( var i = 0; i < tracks.length; i++ ){
+        flattened.push( Object.assign(
+            {},
+            tracks[i].track,
+            {
+                added_by: tracks[i].added_by,
+                added_at: tracks[i].added_at
+            }
+        ))
+    }
+
+    return flattened
+}
+
+
 
 
 /**
@@ -171,6 +193,18 @@ export let uriType = function( uri ){
     }
 
     return null;
+}
+
+
+/**
+ * Convert a raw URI into a object index-friendly format. Primarily used for loading local playlists
+ * @param $uri = string
+ * @return string
+ **/
+export let indexFriendlyUri = function (uri){
+	var output = encodeURI(uri)
+	output = output.replace("'",'%27')
+	return output
 }
 
 

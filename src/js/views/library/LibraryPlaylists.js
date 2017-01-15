@@ -33,9 +33,16 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	renderView(){
-		if( !this.props.playlists ) return null
+		if( !this.props.library_playlists || !this.props.playlists ) return null
 
-		var playlists = Object.assign([], this.props.playlists)
+		var playlists = []
+		for (var i = 0; i < this.props.library_playlists.length; i++){
+			var uri = this.props.library_playlists[i]
+			if (this.props.playlists.hasOwnProperty(uri)){
+				playlists.push(this.props.playlists[uri])
+			}
+		}
+
 		if( this.props.sort ){
 			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
 		}
@@ -60,7 +67,7 @@ class LibraryPlaylists extends React.Component{
 				{
 					width: 10,
 					label: 'Tracks',
-					name: 'tracks.total'
+					name: 'tracks_total'
 				}
 			]
 			return (
@@ -141,6 +148,7 @@ const mapStateToProps = (state, ownProps) => {
 		view: state.ui.library_playlists_view,
 		sort: state.ui.library_playlists_sort,
 		sort_reverse: state.ui.library_playlists_sort_reverse,
+		library_playlists: state.ui.library_playlists,
 		playlists: state.ui.playlists
 	}
 }

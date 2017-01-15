@@ -18,7 +18,7 @@ export default class List extends React.Component{
 
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if( e.target.tagName.toLowerCase() !== 'a' ){
-			hashHistory.push( this.props.link_prefix + encodeURIComponent(uri) );
+			hashHistory.push( this.props.link_prefix + uri );
 		}		
 	}
 

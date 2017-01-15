@@ -25,7 +25,7 @@ class Album extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadAlbum();
+		this.loadAlbum() 
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -46,11 +46,21 @@ class Album extends React.Component{
 		switch( helpers.uriSource( props.params.uri ) ){
 
 			case 'spotify':
-				this.props.spotifyActions.getAlbum( props.params.uri );
+				if (props.album && props.album.tracks && props.album.artists_uris){
+					console.info('Loading album from index')
+				}else{
+					this.props.spotifyActions.getAlbum( props.params.uri );
+				}
 				break;
 
 			case 'local':
-				if( props.mopidy_connected ) this.props.mopidyActions.getAlbum( props.params.uri );
+				if (props.mopidy_connected){
+					if (props.album && props.album.tracks){
+						console.info('Loading album from index')
+					} else {
+						this.props.mopidyActions.getAlbum( props.params.uri );
+					}
+				}
 				break;
 		}
 	}
@@ -68,16 +78,26 @@ class Album extends React.Component{
 	render(){
 		if( !this.props.album ) return null
 
+		var artists = []
+		if (this.props.album.artists_uris && this.props.artists){
+			for (var i = 0; i < this.props.album.artists_uris.length; i++){
+				var uri = this.props.album.artists_uris[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view album-view">
 		        <SidebarToggleButton />
 				<div className="intro">
 					<Thumbnail size="large" images={ this.props.album.images } />
-					<ArtistGrid artists={ this.props.album.artists } />
+					<ArtistGrid artists={artists} />
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" /> : null }
+						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
 					</div>
 
 					<ul className="details">
@@ -93,7 +113,7 @@ class Album extends React.Component{
 
 					<div className="title">
 						<h1>{ this.props.album.name }</h1>
-						<h3><ArtistSentence artists={ this.props.album.artists } /></h3>
+						<h3><ArtistSentence artists={artists} /></h3>
 					</div>
 
 					<section className="list-wrapper">
@@ -116,7 +136,9 @@ class Album extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		album: state.ui.album,
+		artists: state.ui.artists,
+		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
+		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	};
