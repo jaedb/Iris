@@ -175,13 +175,6 @@ export function getDirectory( uri ){
 	}
 }
 
-export function getAlbum( uri ){
-	return { 
-		type: 'MOPIDY_GET_ALBUM', 
-		data: { uri: uri } 
-	}
-}
-
 export function getArtist( uri ){
 	return { 
 		type: 'MOPIDY_GET_ARTIST', 
@@ -192,6 +185,13 @@ export function getArtist( uri ){
 export function getArtists(){
 	return { 
 		type: 'MOPIDY_GET_ARTISTS'
+	}
+}
+
+export function getAlbum( uri ){
+	return { 
+		type: 'MOPIDY_GET_ALBUM', 
+		data: { uri: uri } 
 	}
 }
 

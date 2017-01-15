@@ -172,6 +172,10 @@ export default function reducer(ui = {}, action){
                 library_albums_total: action.total
             });
 
+        case 'LOCAL_ALBUMS_LOADED':
+            if (!action.uris) return Object.assign({}, ui, { local_albums: null });
+            return Object.assign({}, ui, { local_albums: action.uris });
+
         case 'NEW_RELEASES_LOADED':
             if (!action.uris){
                 return Object.assign({}, ui, { 
@@ -267,6 +271,10 @@ export default function reducer(ui = {}, action){
                 library_artists_more: action.more,
                 library_artists_total: action.total
             });
+
+        case 'LOCAL_ARTISTS_LOADED':
+            if (!action.uris) return Object.assign({}, ui, { local_artists: null });
+            return Object.assign({}, ui, { local_artists: action.uris });
 
 
         /**

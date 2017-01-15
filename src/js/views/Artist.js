@@ -49,7 +49,7 @@ class Artist extends React.Component{
 	componentWillUpdate( nextProps, nextState ){
 		if( nextState.sub_view != this.state.sub_view && nextState.sub_view == 'biography' ){
 			if( this.props.artist && !this.props.artist.bio ){
-				this.props.lastfmActions.getArtist( this.props.artist.name.replace('&','and') )
+				this.props.lastfmActions.getArtist( this.props.params.uri, this.props.artist.name.replace('&','and') )
 			}
 		}
 	}
@@ -66,7 +66,13 @@ class Artist extends React.Component{
 				break
 
 			case 'local':
-				this.props.mopidyActions.getArtist( props.params.uri );
+				if (props.mopidy_connected){
+					if (props.artist && props.artist.images){
+						console.info('Loading local artist from index')
+					} else {
+						this.props.mopidyActions.getArtist( props.params.uri );
+					}
+				}
 				break
 		}
 		
@@ -91,9 +97,7 @@ class Artist extends React.Component{
 				<span className={'option '+( this.state.sub_view == 'overview' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'overview' })}>
 					Overview
 				</span>
-				<span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>
-					Related artists
-				</span>
+				{this.props.artist.related_artists_uris ? <span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>Related artists</span> : null}
 				<span className={'option '+( this.state.sub_view == 'biography' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'biography' })}>
 					Biography
 				</span>
@@ -102,7 +106,6 @@ class Artist extends React.Component{
 	}
 
 	renderBody(){
-
 		var related_artists = []
 		if (this.props.artist.related_artists_uris){
 			for (var i = 0; i < this.props.artist.related_artists_uris.length; i++){
@@ -145,20 +148,16 @@ class Artist extends React.Component{
 			)
 		}
 
-		// default body
 		return (
 			<div className="body overview">
-				<div className="col w70">
+				<div className={this.props.artist.related_artists ? "col w70" : "col w100"}>
 					<h4 className="left-padding">Top tracks</h4>
 					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
 				</div>
 
 				<div className="col w5"></div>
 
-				<div className="col w25 related-artists">
-					<h4>Related artists</h4>
-					<ArtistList artists={related_artists.slice(0,6)} />
-				</div>
+				{this.props.artist.related_artists ? <div className="col w25 related-artists"><h4>Related artists</h4><ArtistList artists={related_artists.slice(0,6)} /></div> : null}
 
 				<div className="cf"></div>
 
@@ -175,7 +174,7 @@ class Artist extends React.Component{
 		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
 
-		var image = false
+		var image = null
 		if( this.props.artist.images ) image = helpers.sizedImages( this.props.artist.images ).huge
 
 		return (

@@ -13,12 +13,7 @@ export default class Thumbnail extends React.Component{
 	shouldComponentUpdate(nextProps, nextState){
 
 		// no images at all, and we already know it
-		if( 
-			typeof(nextProps.image) == 'undefined' && 
-			typeof(this.props.image) == 'undefined' &&
-			typeof(nextProps.images) == 'undefined' && 
-			typeof(this.props.images) == 'undefined'
-			) return false
+		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
 
 		// image changed
 		if( !this.props.image && nextProps.image ) return true

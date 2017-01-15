@@ -54,7 +54,13 @@ class Album extends React.Component{
 				break;
 
 			case 'local':
-				if( props.mopidy_connected ) this.props.mopidyActions.getAlbum( props.params.uri );
+				if (props.mopidy_connected){
+					if (props.album && props.album.tracks){
+						console.info('Loading album from index')
+					} else {
+						this.props.mopidyActions.getAlbum( props.params.uri );
+					}
+				}
 				break;
 		}
 	}
