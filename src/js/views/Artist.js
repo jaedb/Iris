@@ -150,14 +150,14 @@ class Artist extends React.Component{
 
 		return (
 			<div className="body overview">
-				<div className={this.props.artist.related_artists ? "col w70" : "col w100"}>
+				<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
 					<h4 className="left-padding">Top tracks</h4>
 					{ this.props.artist.tracks ? <TrackList tracks={ this.props.artist.tracks } /> : null }
 				</div>
 
 				<div className="col w5"></div>
 
-				{this.props.artist.related_artists ? <div className="col w25 related-artists"><h4>Related artists</h4><ArtistList artists={related_artists.slice(0,6)} /></div> : null}
+				{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><ArtistList artists={related_artists.slice(0,6)} /></div> : null}
 
 				<div className="cf"></div>
 

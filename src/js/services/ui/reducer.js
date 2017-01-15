@@ -129,19 +129,6 @@ export default function reducer(ui = {}, action){
          * Albums
          **/
 
-        case 'ALBUMS_LOADED':
-            var albums = Object.assign([], ui.albums)
-
-            for (var i = 0; i < action.albums.length; i++){
-                var album = action.albums[i]
-                if (typeof(albums[album.uri]) !== 'undefined'){
-                    artist = Object.assign({}, albums[album.uri], album)
-                }
-                albums[album.uri] = album
-            }
-
-            return Object.assign({}, ui, { albums: albums });
-
         case 'ALBUM_LOADED':
             var albums = Object.assign([], ui.albums)
 
@@ -152,6 +139,20 @@ export default function reducer(ui = {}, action){
             }
 
             albums[action.uri] = album
+            return Object.assign({}, ui, { albums: albums });
+
+        case 'ALBUMS_LOADED':
+            console.log(action)
+            var albums = Object.assign([], ui.albums)
+
+            for (var i = 0; i < action.albums.length; i++){
+                var album = action.albums[i]
+                if (typeof(albums[album.uri]) !== 'undefined'){
+                    artist = Object.assign({}, albums[album.uri], album)
+                }
+                albums[album.uri] = album
+            }
+
             return Object.assign({}, ui, { albums: albums });
 
         case 'LIBRARY_ALBUMS_LOADED':
@@ -200,6 +201,22 @@ export default function reducer(ui = {}, action){
          * Artists
          **/
 
+        case 'ARTIST_LOADED':
+            console.log(action)
+            var artists = Object.assign([], ui.artists)
+
+            if (artists[action.uri]){
+                // if we've already got images, delete our new ones
+                // this is to prevent LastFM overwriting Spotify images
+                if (artists[action.uri].images) delete action.artist.images
+                var artist = Object.assign({}, artists[action.uri], action.artist)
+            }else{
+                var artist = Object.assign({}, action.artist)
+            }
+
+            artists[action.uri] = artist
+            return Object.assign({}, ui, { artists: artists });
+
         case 'ARTISTS_LOADED':
             var artists = Object.assign([], ui.artists)
 
@@ -211,18 +228,6 @@ export default function reducer(ui = {}, action){
                 artists[artist.uri] = artist
             }
 
-            return Object.assign({}, ui, { artists: artists });
-
-        case 'ARTIST_LOADED':
-            var artists = Object.assign([], ui.artists)
-
-            if (artists[action.uri]){
-                var artist = Object.assign({}, artists[action.uri], action.artist)
-            }else{
-                var artist = Object.assign({}, action.artist)
-            }
-
-            artists[action.uri] = artist
             return Object.assign({}, ui, { artists: artists });
 
         case 'ARTIST_ALBUMS_LOADED':
@@ -241,18 +246,6 @@ export default function reducer(ui = {}, action){
             )
             artists[action.uri] = artist
             return Object.assign({}, ui, { artists: artists });
-
-/*
-        case 'LASTFM_ARTIST_LOADED':
-            if( !action.data.image ) return ui
-
-            // if we already have images, don't overwrite them
-            var images = ui.artist.images
-            if( images.length <= 0 ) images = action.data.image
-            
-            var artist = Object.assign({}, ui.artist, { images: images, bio: action.data.bio, listeners: parseInt(action.data.stats.listeners), on_tour: action.data.ontour }, )
-            return Object.assign({}, ui, { artist: artist });
-            */
 
         case 'LIBRARY_ARTISTS_LOADED':
             if (!action.uris){

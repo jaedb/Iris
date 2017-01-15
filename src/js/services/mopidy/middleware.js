@@ -607,49 +607,51 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_ARTIST':
                 instruct( socket, store, 'library.lookup', action.data )
-                    .then( response => {                        
+                    .then( response => {
+                                          
                         var albums = []
                         for( var i = 0; i < response.length; i++ ){
                             var album = response[i].album;
-
-                            function getByURI( albumToCheck ){
-                                return album.uri == albumToCheck.uri
-                            }
-                            var existingAlbum = albums.find(getByURI);
-                            if( !existingAlbum ){
-                                albums.push(album)
+                            if (album){
+                                function getByURI( albumToCheck ){
+                                    return album.uri == albumToCheck.uri
+                                }
+                                var existingAlbum = albums.find(getByURI);
+                                if( !existingAlbum ){
+                                    albums.push(album)
+                                }                                
                             }
                         }
-                        
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: albums
-                        })
+                        if (albums){
+                            store.dispatch({
+                                type: 'ALBUMS_LOADED',
+                                albums: albums
+                            })
+                        }
 
                         var artist = Object.assign(
                             {},
                             response[0].artists[0],
                             {
-                                images: [],
                                 albums_uris: helpers.asURIs(albums),
                                 tracks: response.slice(0,10)
                             }
                         )
-
-                        // load artwork from LastFM
-                        if( artist.images.length <= 0 ){
-                            if( artist.musicbrainz_id ){
-                                store.dispatch( lastfmActions.getArtist( artist.uri, false, artist.musicbrainz_id ) )
-                            }else{
-                                store.dispatch( lastfmActions.getArtist( artist.uri, artist.name.replace('&','and') ) )
-                            }
-                        }
                         
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
                             uri: artist.uri,
                             artist: artist 
                         });
+
+                        // load artwork from LastFM
+                        if( !artist.images || artist.images.length <= 0 ){
+                            if( artist.musicbrainz_id ){
+                                store.dispatch( lastfmActions.getArtist( artist.uri, false, artist.musicbrainz_id ) )
+                            }else{
+                                store.dispatch( lastfmActions.getArtist( artist.uri, artist.name.replace('&','and') ) )
+                            }
+                        }
                     })
                 break;
                 
