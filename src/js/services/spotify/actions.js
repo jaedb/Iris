@@ -262,22 +262,23 @@ export function getFeaturedPlaylists(){
 
         sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
             .then( response => {
+
+                var playlists = []
                 for (var i = 0; i < response.playlists.items.length; i++){
-
-                    var playlist = response.playlists.items[i]
-                    Object.assign(
-                        playlist,
+                    playlists.push(Object.assign(
+                        {},
+                        response.playlists.items[i],
                         {
-                            can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
-                            tracks_total: playlist.tracks.total
+                            can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
+                            tracks_total: response.playlists.items[i].tracks.total
                         }
-                    )
-
-                    dispatch({
-                        type: 'PLAYLIST_LOADED',
-                        playlist: playlist
-                    });                    
+                    ))
                 }
+
+                dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });  
                 dispatch({
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                     data: {
