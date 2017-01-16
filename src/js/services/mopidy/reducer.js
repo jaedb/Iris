@@ -72,21 +72,6 @@ export default function reducer(mopidy = {}, action){
                 directory: action.data   
             });
 
-        case 'MOPIDY_PLAYLIST_LOADED':
-            return Object.assign({}, mopidy, {
-                playlist: action.data
-            });
-
-        case 'MOPIDY_ARTISTS_LOADED':
-            return Object.assign({}, mopidy, {
-                artists: action.data
-            });
-
-        case 'MOPIDY_ALBUMS_LOADED':
-            return Object.assign({}, mopidy, {
-                albums: action.data
-            });
-
         default:
             return mopidy
     }

@@ -38,7 +38,7 @@ class LibraryLocalDirectory extends React.Component{
 
 	loadDirectory( props = this.props ){
 		if( props.mopidy_connected ){
-			this.props.mopidyActions.getDirectory( props.params.uri );
+			this.props.mopidyActions.getDirectory( props.params.uri.replace('|','?') );
 		}
 	}
 
@@ -50,7 +50,13 @@ class LibraryLocalDirectory extends React.Component{
 			if (directory[i].type && directory[i].type == 'track') {
 				tracks.push( directory[i] )
 			} else {
-				folders.push( directory[i] )
+				folders.push(Object.assign(
+					{},
+					directory[i],
+					{
+						uri: directory[i].uri.replace('?','|')
+					}
+				))
 			}
 		}
 

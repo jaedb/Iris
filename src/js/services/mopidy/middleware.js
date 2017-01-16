@@ -661,7 +661,7 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
-            case 'MOPIDY_DIRECTORY':
+            case 'MOPIDY_GET_DIRECTORY':
                 store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false });
                 instruct( socket, store, 'library.browse', action.data )
                     .then( response => {                    
