@@ -211,11 +211,15 @@ export function getSearchResults(query, backends = null, fields = ['any']){
 	for( var i = 0; i < fields.length; i++ ){
 		queryObj[fields[i]] = [query];
 	}
-
+	return {
+		type: 'NOTHING'
+	}
+	/*
 	return {
 		type: 'MOPIDY_INSTRUCT',
 		call: 'library.search',
 		value: { query: queryObj, uris: backends }
 	}
+	*/
 }
  

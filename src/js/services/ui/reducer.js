@@ -142,7 +142,6 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { albums: albums });
 
         case 'ALBUMS_LOADED':
-            console.log(action)
             var albums = Object.assign([], ui.albums)
 
             for (var i = 0; i < action.albums.length; i++){
@@ -202,7 +201,6 @@ export default function reducer(ui = {}, action){
          **/
 
         case 'ARTIST_LOADED':
-            console.log(action)
             var artists = Object.assign([], ui.artists)
 
             if (artists[action.uri]){
@@ -391,11 +389,16 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'LIBRARY_PLAYLISTS_LOADED':
-            var library_playlists = []
-            if (ui.library_playlists) library_playlists = ui.library_playlists
+            if (ui.library_playlists){
+                var library_playlists = [...ui.library_playlists, ...action.uris]
+            }else{
+                var library_playlists = action.uris
+            }
+
+            library_playlists = helpers.removeDuplicates(library_playlists)
 
             return Object.assign({}, ui, { 
-                library_playlists: [...library_playlists, ...action.uris]
+                library_playlists: library_playlists
             });
 
 
@@ -420,26 +423,49 @@ export default function reducer(ui = {}, action){
             })
             return Object.assign({}, ui, { search_results: results })
 
-        case 'SPOTIFY_SEARCH_RESULTS_LOADED':
-            if( !action.data ) return ui
+        case 'SEARCH_RESULTS_LOADED':
+            if (action.reset) return ui
 
-            return Object.assign({}, ui, { search_results: {
-                artists: [ ...ui.search_results.artists, ...action.data.artists.items ],
-                albums: [ ...ui.search_results.albums, ...action.data.albums.items ],
-                playlists: [ ...ui.search_results.playlists, ...action.data.playlists.items ],
-                tracks: [ ...ui.search_results.tracks, ...action.data.tracks.items ],
-                artists_more: action.data.artists.next,
-                albums_more: action.data.albums.next,
-                playlists_more: action.data.playlists.next,
-                tracks_more: action.data.tracks.next
-            }});
+            if (ui.search_results.artists_uris){
+                var artists_uris = [...ui.search_results.artists_uris, ...action.artists_uris]
+            }else{
+                var artists_uris = action.artists_uris
+            }
+
+            if (ui.search_results.albums_uris){
+                var albums_uris = [...ui.search_results.albums_uris, ...action.albums_uris]
+            }else{
+                var albums_uris = action.albums_uris
+            }
+
+            if (ui.search_results.playlists_uris){
+                var playlists_uris = [...ui.search_results.playlists_uris, ...action.playlists_uris]
+            }else{
+                var playlists_uris = action.playlists_uris
+            }
+
+            return Object.assign({}, ui, {
+                search_results: {
+                    artists_more: (action.artists_more ? action.artists_more : null),
+                    artists_uris: artists_uris,
+                    albums_more: (action.albums_more ? action.albums_more : null),
+                    albums_uris: albums_uris,
+                    playlists_more: (action.playlists_more ? action.playlists_more : null),
+                    playlists_uris: playlists_uris,
+                    tracks: [ ...ui.search_results.tracks, ...action.tracks.items ],
+                    tracks_more: action.tracks.next
+                }
+            });
 
         case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ARTISTS':
-            var artists = [...ui.search_results.artists, ...action.data.artists.items]
-            var results = Object.assign({}, ui.search_results, { 
-                artists: artists,
-                artists_more: action.data.artists.next
-            })
+            var results = Object.assign(
+                {}, 
+                ui.search_results, 
+                { 
+                    artists_uris: [...ui.search_results.artists_uris, ...action.data.artists_uris],
+                    artists_more: action.data.artists.next
+                }
+            )
             return Object.assign({}, ui, { search_results: results })
 
         case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ALBUMS':

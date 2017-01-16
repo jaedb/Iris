@@ -248,6 +248,25 @@ export let mergeDuplicates = function(list, key){
 	return clean_list;
 }
 
+
+/**
+ * Remove duplicate items in a simple array
+ *
+ * @param list Array the unclean array
+ **/
+export let removeDuplicates = function(array){
+	var unique = [];
+
+	for( var i in array ){
+		if (unique.indexOf(array[i]) <= -1 ){
+			unique.push(array[i])
+		}
+	}
+
+	return unique;
+}
+
+
 /**
  * Convert a list of indexes to a useable range
  * We ignore stragglers, and only attend to the first 'bunch' of consecutive indexes

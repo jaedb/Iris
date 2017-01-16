@@ -12,7 +12,9 @@ const localstorageMiddleware = (function(){
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store
-        //console.log(action)
+
+        // if debug enabled
+        if (store.getState().ui.log_actions) console.log(action)
 
         switch( action.type ){
 

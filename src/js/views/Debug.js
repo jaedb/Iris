@@ -76,6 +76,19 @@ class Debug extends React.Component{
 								</label>
 							</div>
 						</div>
+						<div className="field checkbox">
+							<div className="name">Debug data</div>
+							<div className="input">
+								<label>
+									<input 
+										type="checkbox"
+										name="emulate_touch"
+										checked={ this.props.log_actions }
+										onChange={ e => this.props.uiActions.set({ log_actions: !this.props.log_actions })} />
+									<span className="label">Log actions in developer console</span>
+								</label>
+							</div>
+						</div>
 					</form>
 
 					<h4 className="underline">Mopidy</h4>
@@ -147,6 +160,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		connectionid: state.pusher.connectionid,
 		emulate_touch: state.ui.emulate_touch,
+		log_actions: state.ui.log_actions,
 		debug_response: state.ui.debug_response
 	}
 }

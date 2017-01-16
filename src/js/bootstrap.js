@@ -59,14 +59,6 @@ var initialState = {
 		},
 		current_tracklist: [],
 		current_tltrack: false,
-		search_results: {
-			artists: [],
-			albums: [],
-			playlists: [],
-			tracks: []
-		},
-		library_playlists: [],
-		playlists: [],
 		notifications: []
 	}
 };

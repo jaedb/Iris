@@ -59,13 +59,44 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
+
+		var artists = []
+		if (this.props.artists_uris){
+			for (var i = 0; i < this.props.artists_uris.length; i++){
+				var uri = this.props.artists_uris[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
+				}
+			}
+		}
+
+		var albums = []
+		if (this.props.albums_uris){
+			for (var i = 0; i < this.props.albums_uris.length; i++){
+				var uri = this.props.albums_uris[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
+
+		var playlists = []
+		if (this.props.playlists_uris){
+			for (var i = 0; i < this.props.playlists_uris.length; i++){
+				var uri = this.props.playlists_uris[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
+		}
+
 		switch( this.props.params.type ){
 
 			case 'artists':
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<ArtistGrid artists={ this.props.search_results.artists } />
+							<ArtistGrid artists={artists} />
 							<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
@@ -76,7 +107,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<AlbumGrid albums={ this.props.search_results.albums } />
+							<AlbumGrid albums={albums} />
 							<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
@@ -87,7 +118,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<PlaylistGrid playlists={ this.props.search_results.playlists } />
+							<PlaylistGrid playlists={playlists} />
 							<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
@@ -98,7 +129,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList show_source_icon={true} tracks={ this.props.search_results.tracks } />
+							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
 							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -112,26 +143,26 @@ class Search extends React.Component{
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
-									<ArtistGrid className="mini" artists={ this.props.search_results.artists.slice(0,6) } />
+									<ArtistGrid className="mini" artists={artists.slice(0,6)} />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
-									<AlbumGrid className="mini" albums={ this.props.search_results.albums.slice(0,6) } />
+									<AlbumGrid className="mini" albums={albums.slice(0,6)} />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
-									<PlaylistGrid className="mini" playlists={ this.props.search_results.playlists.slice(0,6) } />
+									<PlaylistGrid className="mini" playlists={playlists.slice(0,6)} />
 								</div>
 							</section>
 						</div>
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={ this.props.search_results.tracks } />
+							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
 							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
@@ -154,7 +185,16 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		uri_schemes: state.mopidy.uri_schemes,
-		search_results: state.ui.search_results
+		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
+		artists: state.ui.artists,
+		artists_uris: (state.ui.search_results ? state.ui.search_results.artists_uris : []),
+		artists_more: (state.ui.search_results ? state.ui.search_results.artists_more : null),
+		albums: state.ui.albums,
+		albums_uris: (state.ui.search_results ? state.ui.search_results.albums_uris : []),
+		albums_more: (state.ui.search_results ? state.ui.search_results.albums_more : null),
+		playlists: state.ui.playlists,
+		playlists_uris: (state.ui.search_results ? state.ui.search_results.playlists_uris : []),
+		playlists_more: (state.ui.search_results ? state.ui.search_results.playlists_more : null)
 	}
 }
 
