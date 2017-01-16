@@ -22,7 +22,7 @@ class Sidebar extends React.Component{
 		return (
 			<aside>
 					
-				{ this.props.current_track && this.props.current_track.album.images ? <Thumbnail size="large" images={this.props.current_track.album.images} /> : null }
+				{ this.props.current_track && this.props.current_track.album && this.props.current_track.album.images ? <Thumbnail size="large" images={this.props.current_track.album.images} /> : null }
 
 				<div className="liner">
 
