@@ -18,9 +18,11 @@ export default class AddToPlaylistModal extends React.Component{
 	render(){
 		if( !this.props.playlists ) return <div className="empty">No editable playlists</div>
 		var playlists = []
-		for( var i = 0; i < this.props.playlists.length; i++ ){
-			if( this.props.playlists[i].can_edit ) playlists.push( this.props.playlists[i] )
+		for (var uri in this.props.playlists){
+			if( this.props.playlists[uri].can_edit ) playlists.push( this.props.playlists[uri] )
 		}
+
+		playlists = helpers.sortItems(playlists, 'name')
 
 		return (
 			<div>

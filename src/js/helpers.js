@@ -351,7 +351,7 @@ export let sortItems = function (array, property, reverse = false){
 		}
 	}
 
-	var sorted = array.sort(compare)
+	var sorted = Object.assign([], array.sort(compare))
 	if( reverse ) sorted.reverse()
 	return sorted
 }

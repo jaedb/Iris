@@ -107,9 +107,11 @@ class ContextMenu extends React.Component{
 
 	renderPlaylistSubmenu(){
 		var playlists = []
-		for( var i = 0; i < this.props.playlists.length; i++ ){
-			if( this.props.playlists[i].can_edit ) playlists.push( this.props.playlists[i] )
+		for (var uri in this.props.playlists){
+			if (this.props.playlists[uri].can_edit) playlists.push( this.props.playlists[uri])
 		}
+
+		playlists = helpers.sortItems(playlists, 'name')
 
 		return (			
 			<div className="submenu">
