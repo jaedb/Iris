@@ -10,7 +10,7 @@
 
 	display: block;
 	position: relative;
-	padding: 9px 10px 9px 40px;
+	padding: 9px 10px 9px 20px;
 	border-top: 1px solid $faint_grey;
 	border-bottom: 1px solid $faint_grey;
 	margin-bottom: -1px;
@@ -43,6 +43,7 @@
 
 
 	&.track {
+		padding-left: 40px;
 
 		.col {
 			&.name { width: 40%; }
