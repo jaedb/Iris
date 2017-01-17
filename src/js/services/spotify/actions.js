@@ -648,7 +648,7 @@ export function getArtist( uri ){
             });
 
             // now go get our artist albums
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums' )
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().spotify.country )
                 .then( response => {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
