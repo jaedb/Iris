@@ -404,45 +404,42 @@ export default function reducer(ui = {}, action){
 
         /**
          * Search results
-         **/ 
-
-        case 'SEARCH_STARTED':
-            return Object.assign({}, ui, { search_results: action.data })
-
-        case 'MOPIDY_SEARCH':
-
-            // collate all our different sources into one array
-            var tracks = []
-            for( var i = 0; i < action.data.length; i++ ){
-                if( action.data[i].tracks ) tracks = [...tracks, ...action.data[i].tracks]
-            }
-
-            // merge our results with all our other tracks
-            var results = Object.assign({}, ui.search_results, { 
-                tracks: [...ui.search_results.tracks, ...tracks]
-            })
-            return Object.assign({}, ui, { search_results: results })
+         **/
 
         case 'SEARCH_RESULTS_LOADED':
-            if (action.reset) return ui
+            console.log(action)
 
-            if (ui.search_results.artists_uris){
-                var artists_uris = [...ui.search_results.artists_uris, ...action.artists_uris]
+            // artists
+            if (ui.search_results && ui.search_results.artists_uris){
+                var artists_uris = ui.search_results.artists_uris
             }else{
-                var artists_uris = action.artists_uris
+                var artists_uris = []
             }
+            if (action.artists_uris) artists_uris = [...artists_uris, ...action.artists_uris]
 
-            if (ui.search_results.albums_uris){
-                var albums_uris = [...ui.search_results.albums_uris, ...action.albums_uris]
+            // albums
+            if (ui.search_results && ui.search_results.albums_uris){
+                var albums_uris = ui.search_results.albums_uris
             }else{
-                var albums_uris = action.albums_uris
+                var albums_uris = []
             }
+            if (action.albums_uris) albums_uris = [...albums_uris, ...action.albums_uris]
 
-            if (ui.search_results.playlists_uris){
-                var playlists_uris = [...ui.search_results.playlists_uris, ...action.playlists_uris]
+            // playlists
+            if (ui.search_results && ui.search_results.playlists_uris){
+                var playlists_uris = ui.search_results.playlists_uris
             }else{
-                var playlists_uris = action.playlists_uris
+                var playlists_uris = []
             }
+            if (action.playlists_uris) playlists_uris = [...playlists_uris, ...action.playlists_uris]
+
+            // tracks
+            if (ui.search_results && ui.search_results.tracks){
+                var tracks = ui.search_results.tracks
+            }else{
+                var tracks = []
+            }
+            if (action.tracks) tracks = [...tracks, ...action.tracks]
 
             return Object.assign({}, ui, {
                 search_results: {
@@ -452,8 +449,8 @@ export default function reducer(ui = {}, action){
                     albums_uris: albums_uris,
                     playlists_more: (action.playlists_more ? action.playlists_more : null),
                     playlists_uris: playlists_uris,
-                    tracks: [ ...ui.search_results.tracks, ...action.tracks.items ],
-                    tracks_more: action.tracks.next
+                    tracks: tracks,
+                    tracks_more: (action.tracks_more ? action.tracks.tracks_more : null)
                 }
             });
 

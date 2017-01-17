@@ -41,9 +41,9 @@ class Search extends React.Component{
 	}
 
 	performSearch( props = this.props ){
-		this.props.uiActions.searchStarted( props.params.query )
+		this.props.uiActions.startSearch(props.params.query)
 		this.props.spotifyActions.getSearchResults( props.params.query )
-		this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
+		if( props.mopidy_connected ) this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
 	}
 
 	loadMore(type){

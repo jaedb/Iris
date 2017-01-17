@@ -282,6 +282,25 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_GET_SEARCH_RESULTS':
+                var queryObject = {};
+                for( var i = 0; i < action.fields.length; i++ ){
+                    queryObject[action.fields[i]] = [action.query];
+                }
+
+                instruct( socket, store, 'library.search', {query: queryObject, uris: action.uris})
+                    .then( response => {     
+
+                        // collate all our different sources into one array
+                        var tracks = []
+                        for( var i = 0; i < response.length; i++ ){
+                            if( response[i].tracks ) tracks = [...tracks, ...response[i].tracks]
+                        }
+
+                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
+                    })
+                break;
+
 
             /**
              * =============================================================== PLAYLIST(S) ==========
