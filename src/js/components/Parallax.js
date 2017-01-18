@@ -122,7 +122,9 @@ export default class Parallax extends React.Component{
 		this.renderCanvas( image );
 	}
 
-	renderCanvas( image ){
+	renderCanvas( image = false ){
+
+		if (!image) return null
 
 		let self = this;
 		var canvasDOM = document.getElementById('parallax-canvas');
