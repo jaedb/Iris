@@ -26,18 +26,21 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.playlists_next || !this.props.playlists_next ) return
-		this.props.spotifyActions.getURL( this.props.playlists_next, 'SPOTIFY_NEW_RELEASES_LOADED_MORE' );
+		if (this.props.category.playlists_more){
+			this.props.spotifyActions.getURL( this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
+		}
 	}
 
 	render(){
 		if (!this.props.category) return null
 
 		var playlists = []
-		for (var i = 0; i < this.props.category.playlists.length; i++){
-			var uri = this.props.category.playlists[i]
-			if (this.props.playlists.hasOwnProperty(uri)){
-				playlists.push(this.props.playlists[uri])
+		if (this.props.category.playlists_uris){
+			for (var i = 0; i < this.props.category.playlists_uris.length; i++){
+				var key = this.props.category.playlists_uris[i]
+				if (this.props.playlists.hasOwnProperty(key)){
+					playlists.push(this.props.playlists[key])
+				}
 			}
 		}
 
@@ -63,7 +66,7 @@ class DiscoverCategory extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		playlists: state.ui.playlists,
-		category: state.spotify.category
+		category: (state.ui.categories && typeof(state.ui.categories['category:'+ownProps.params.id]) !== 'undefined' ? state.ui.categories['category:'+ownProps.params.id] : false )
 	}
 }
 

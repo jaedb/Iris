@@ -96,7 +96,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED':
                 store.dispatch({
                     type: 'PLAYLIST_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     playlist: {
                         is_following: action.is_following
                     }
@@ -106,7 +106,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_ALBUM_FOLLOWING_LOADED':
                 store.dispatch({
                     type: 'ALBUM_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     album: {
                         is_following: action.is_following
                     }
@@ -116,7 +116,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_ARTIST_FOLLOWING_LOADED':
                 store.dispatch({
                     type: 'ARTIST_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     artist: {
                         is_following: action.is_following
                     }
@@ -126,7 +126,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_USER_FOLLOWING_LOADED':
                 store.dispatch({
                     type: 'USER_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     user: {
                         is_following: action.is_following
                     }
@@ -153,7 +153,7 @@ const SpotifyMiddleware = (function(){
                 });
                 store.dispatch({
                     type: 'ARTIST_ALBUMS_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     uris: helpers.asURIs(action.data.items),
                     more: action.data.next,
                     total: action.data.total
@@ -185,10 +185,42 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'USER_PLAYLISTS_LOADED',
-                    uri: action.uri,
+                    key: action.key,
                     uris: helpers.asURIs(playlists),
                     more: action.data.next,
                     total: action.data.total
+                });
+                break
+
+            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+                var playlists = []
+                for( var i = 0; i < action.data.playlists.items.length; i++ ){
+                    var playlist = Object.assign(
+                        {},
+                        action.data.playlists.items[i],
+                        {
+                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.data.playlists.items[i].owner.id == store.getState().spotify.me.id),
+                            tracks_total: action.data.playlists.items[i].tracks.total
+                        }
+                    )
+
+                    // remove our tracklist. It'll overwrite any full records otherwise
+                    delete playlist.tracks
+
+                    playlists.push(playlist)
+                }
+
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
+
+                store.dispatch({
+                    type: 'CATEGORY_PLAYLISTS_LOADED',
+                    key: action.key,
+                    uris: helpers.asURIs(playlists),
+                    more: action.data.playlists.next,
+                    total: action.data.playlists.total
                 });
                 break
 

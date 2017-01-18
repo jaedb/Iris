@@ -150,21 +150,6 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { featured_playlists: action.data })
 
-        case 'SPOTIFY_CATEGORIES_LOADED':
-            return Object.assign({}, spotify, { categories: action.data })
-
-        case 'SPOTIFY_CATEGORY_LOADED':
-            return Object.assign({}, spotify, { category: action.data })
-
-        // TODO: update this
-        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
-            return Object.assign({}, spotify, { category_playlists: {
-                href: action.data.href,
-                next: action.data.next,
-                previous: action.data.previous,
-                items: [ ...spotify.category_playlists.items, ...action.data.items ]
-            }})
-
         case 'SPOTIFY_NEW_RELEASES_LOADED':
             return Object.assign({}, spotify, { new_releases: action.data });
 

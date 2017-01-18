@@ -126,19 +126,70 @@ export default function reducer(ui = {}, action){
 
 
         /**
+         * Categories
+         **/
+
+        case 'CATEGORY_LOADED':
+            var categories = Object.assign([], ui.categories)
+
+            if (categories[action.key]){
+                var category = Object.assign({}, categories[action.key], action.category)
+            }else{
+                var category = Object.assign({}, action.category)
+            }
+
+            categories[action.key] = category
+            return Object.assign({}, ui, { categories: categories });
+
+        case 'CATEGORIES_LOADED':
+            var categories = Object.assign([], ui.categories)
+
+            for (var i = 0; i < action.categories.length; i++){
+                var key = 'category:'+action.categories[i].id
+                if (categories[key]){
+                    var category = Object.assign({}, categories[key], action.categories[i])
+                }else{
+                    var category = Object.assign({}, action.categories[i])
+                }
+                categories[key] = category
+            }
+
+            return Object.assign({}, ui, { categories: categories });
+
+        case 'CATEGORY_PLAYLISTS_LOADED':
+            var categories = Object.assign([], ui.categories)
+            var playlists_uris = []
+            if (categories[action.key].playlists_uris) playlists_uris = categories[action.key].playlists_uris
+
+            var category = Object.assign(
+                {}, 
+                categories[action.key],
+                {
+                    playlists_uris: [...playlists_uris, ...action.uris],
+                    playlists_more: action.more,
+                    playlists_total: action.total
+                }
+            )
+            categories[action.key] = category
+            return Object.assign({}, ui, { categories: categories });
+
+
+
+
+        /**
          * Albums
          **/
 
         case 'ALBUM_LOADED':
             var albums = Object.assign([], ui.albums)
 
-            if (albums[action.uri]){
-                var album = Object.assign({}, albums[action.uri], action.album)
+            if (albums[action.key]){
+                var album = Object.assign({}, albums[action.key], action.album)
             }else{
                 var album = Object.assign({}, action.album)
             }
 
-            albums[action.uri] = album
+            albums[action.key] = album
             return Object.assign({}, ui, { albums: albums });
 
         case 'ALBUMS_LOADED':
@@ -203,16 +254,16 @@ export default function reducer(ui = {}, action){
         case 'ARTIST_LOADED':
             var artists = Object.assign([], ui.artists)
 
-            if (artists[action.uri]){
+            if (artists[action.key]){
                 // if we've already got images, delete our new ones
                 // this is to prevent LastFM overwriting Spotify images
-                if (artists[action.uri].images) delete action.artist.images
-                var artist = Object.assign({}, artists[action.uri], action.artist)
+                if (artists[action.key].images) delete action.artist.images
+                var artist = Object.assign({}, artists[action.key], action.artist)
             }else{
                 var artist = Object.assign({}, action.artist)
             }
 
-            artists[action.uri] = artist
+            artists[action.key] = artist
             return Object.assign({}, ui, { artists: artists });
 
         case 'ARTISTS_LOADED':
@@ -231,18 +282,18 @@ export default function reducer(ui = {}, action){
         case 'ARTIST_ALBUMS_LOADED':
             var artists = Object.assign([], ui.artists)
             var albums_uris = []
-            if (artists[action.uri].albums_uris) albums_uris = artists[action.uri].albums_uris
+            if (artists[action.key].albums_uris) albums_uris = artists[action.key].albums_uris
 
             var artist = Object.assign(
                 {}, 
-                artists[action.uri],
+                artists[action.key],
                 {
                     albums_uris: [...albums_uris, ...action.uris],
                     albums_more: action.more,
                     albums_total: action.total
                 }
             )
-            artists[action.uri] = artist
+            artists[action.key] = artist
             return Object.assign({}, ui, { artists: artists });
 
         case 'LIBRARY_ARTISTS_LOADED':
@@ -275,30 +326,30 @@ export default function reducer(ui = {}, action){
         case 'USER_LOADED':
             var users = Object.assign([], ui.users)
 
-            if (users[action.uri]){
-                var user = Object.assign({}, users[action.uri], action.user)
+            if (users[action.key]){
+                var user = Object.assign({}, users[action.key], action.user)
             }else{
                 var user = Object.assign({}, action.user)
             }
 
-            users[action.uri] = user
+            users[action.key] = user
             return Object.assign({}, ui, { users: users });
 
         case 'USER_PLAYLISTS_LOADED':
             var users = Object.assign([], ui.users)
             var playlists_uris = []
-            if (users[action.uri].playlists_uris) playlists_uris = users[action.uri].playlists_uris
+            if (users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
 
             var artist = Object.assign(
                 {}, 
-                users[action.uri],
+                users[action.key],
                 {
                     playlists_uris: [...playlists_uris, ...action.uris],
                     playlists_more: action.more,
                     playlists_total: action.total
                 }
             )
-            users[action.uri] = artist
+            users[action.key] = artist
             return Object.assign({}, ui, { users: users });
 
 
@@ -312,13 +363,13 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_UPDATED':
             var playlists = Object.assign([], ui.playlists)
 
-            if (playlists[action.uri]){
-                var playlist = Object.assign({}, playlists[action.uri], action.playlist)
+            if (playlists[action.key]){
+                var playlist = Object.assign({}, playlists[action.key], action.playlist)
             }else{
                 var playlist = Object.assign({}, action.playlist)
             }
 
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLISTS_LOADED':
@@ -342,20 +393,20 @@ export default function reducer(ui = {}, action){
             var playlists = Object.assign([], ui.playlists)
             var playlist = Object.assign(
                 {}, 
-                playlists[action.uri],
+                playlists[action.key],
                 {
-                    tracks: [...playlists[action.uri].tracks, ...helpers.flattenTracks(action.data.items)],
+                    tracks: [...playlists[action.key].tracks, ...helpers.flattenTracks(action.data.items)],
                     tracks_more: action.data.next,
                     tracks_total: action.data.total
                 }
             )
 
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REMOVED':
             var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, playlists[action.uri])
+            var playlist = Object.assign({}, playlists[action.key])
             var tracks = Object.assign([], playlist.tracks)
             var indexes = action.tracks_indexes.reverse()
             for( var i = 0; i < indexes.length; i++ ){
@@ -364,19 +415,19 @@ export default function reducer(ui = {}, action){
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
             Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, playlists[action.uri], { tracks: action.tracks })
+            var playlist = Object.assign({}, playlists[action.key], { tracks: action.tracks })
 
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_TRACKS_REORDERED':
             var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, playlists[action.uri])
+            var playlist = Object.assign({}, playlists[action.key])
             var tracks = Object.assign([], playlist.tracks)
 
             // handle insert_before offset if we're moving BENEATH where we're slicing tracks
@@ -394,14 +445,14 @@ export default function reducer(ui = {}, action){
             var snapshot_id = null
             if( action.snapshot_id ) snapshot_id = action.snapshot_id
             Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLIST_FOLLOWING_LOADED':
             var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, playlists[action.uri], { following: action.is_following })
+            var playlist = Object.assign({}, playlists[action.key], { following: action.is_following })
 
-            playlists[action.uri] = playlist
+            playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'LIBRARY_PLAYLISTS_LOADED':

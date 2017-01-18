@@ -292,14 +292,11 @@ export function getFeaturedPlaylists(){
 
 export function getCategories(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_CATEGORIES_LOADED', data: false });
-
         sendRequest( dispatch, getState, 'browse/categories?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then( response => {
                 dispatch({
-                    type: 'SPOTIFY_CATEGORIES_LOADED',
-                    data: response.categories
+                    type: 'CATEGORIES_LOADED',
+                    categories: response.categories.items
                 });
             });
     }
@@ -308,49 +305,45 @@ export function getCategories(){
 export function getCategory( id ){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_CATEGORY_LOADED', data: false });
+        // get the category
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+            .then( response => {
+                var category = Object.assign({}, response)
+                dispatch({
+                    type: 'CATEGORY_LOADED',
+                    key: 'category:'+id,
+                    category: Object.assign({}, response)
+                });
+            })
 
-        $.when(
+        // and the category's playlists
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+            .then( response => {
 
-            sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale ),
-            sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
-
-        ).then( ( category_response, playlists_response ) => {
-
-            var playlists = []
-            for (var i = 0; i < playlists_response.playlists.items.length; i++){
-                playlists.push(Object.assign(
-                    {},
-                    playlists_response.playlists.items[i],
-                    {
-                        tracks: null,
-                        tracks_more: null,
-                        tracks_total: playlists_response.playlists.items[i].tracks.total
-                    }
-                ))
-            }
-
-            dispatch({
-                type: 'PLAYLISTS_LOADED',
-                playlists: playlists
-            });
-
-            var category = Object.assign(
-                {},
-                category_response,
-                {
-                    items: false,
-                    playlists: helpers.asURIs(playlists_response.playlists.items),
-                    playlists_more: playlists_response.playlists.next,
-                    playlists_total: playlists_response.playlists.total
+                var playlists = []
+                for (var i = 0; i < response.playlists.items.length; i++){
+                    playlists.push(Object.assign(
+                        {},
+                        response.playlists.items[i],
+                        {
+                            tracks: null,
+                            tracks_more: null,
+                            tracks_total: response.playlists.items[i].tracks.total
+                        }
+                    ))
                 }
-            )
 
-            dispatch({
-                type: 'SPOTIFY_CATEGORY_LOADED',
-                data: category
-            });
-        });
+                dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
+
+                dispatch({
+                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                    key: 'category:'+id,
+                    data: response
+                });                
+            })
     }
 }
 
@@ -366,13 +359,13 @@ export function getNewReleases(){
     }
 }
 
-export function getURL( url, action_name, uri = false ){
+export function getURL( url, action_name, key = false ){
     return (dispatch, getState) => {
         sendRequest( dispatch, getState, url )
             .then( response => {
                 dispatch({
                     type: action_name,
-                    uri: uri,
+                    key: key,
                     data: response
                 });
             });
@@ -479,7 +472,7 @@ export function following(uri, method = 'GET'){
                 if( typeof(is_following) === 'object' ) is_following = is_following[0]
                 dispatch({
                     type: 'SPOTIFY_'+asset_name.toUpperCase()+'_FOLLOWING_LOADED',
-                    uri: uri,
+                    key: uri,
                     is_following: is_following
                 });
             });
@@ -642,7 +635,7 @@ export function getArtist( uri ){
         ).then( () => {
             dispatch({
                 type: 'ARTIST_LOADED',
-                uri: artist.uri,
+                key: artist.uri,
                 artist: artist
             });
 
@@ -652,7 +645,7 @@ export function getArtist( uri ){
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
                         data: response,
-                        uri: uri
+                        key: uri
                     });
                 })
         });
@@ -718,7 +711,7 @@ export function getUser( uri ){
             .then( response => {
                 dispatch({
                     type: 'USER_LOADED',
-                    uri: response.uri,
+                    key: response.uri,
                     user: response
                 });
             })
@@ -746,7 +739,7 @@ export function getUser( uri ){
 
                 dispatch({
                     type: 'SPOTIFY_USER_PLAYLISTS_LOADED',
-                    uri: uri,
+                    key: uri,
                     data: response
                 });
             })
@@ -800,7 +793,7 @@ export function getAlbum( uri ){
 
                 dispatch({
                     type: 'ALBUM_LOADED',
-                    uri: album.uri,
+                    key: album.uri,
                     album: album
                 });
 
@@ -848,7 +841,7 @@ export function toggleAlbumInLibrary( uri, method ){
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_ALBUM_FOLLOWING',
-                    uri: uri,
+                    key: uri,
                     data: new_state
                 });
             });
@@ -910,7 +903,7 @@ export function getPlaylist( uri ){
 
             dispatch({
                 type: 'PLAYLIST_LOADED',
-                uri: playlist.uri,
+                key: playlist.uri,
                 playlist: playlist
             })
         })
@@ -950,7 +943,7 @@ export function toggleFollowingPlaylist( uri, method ){
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_PLAYLIST_FOLLOWING',
-                    uri: uri,
+                    key: uri,
                     data: new_state
                 });
             });
@@ -963,7 +956,7 @@ export function addTracksToPlaylist( uri, tracks_uris ){
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_ADDED',
-                    uri: uri,
+                    key: uri,
                     tracks_uris: tracks_uris,
                     snapshot_id: response.snapshot_id
                 });
@@ -977,7 +970,7 @@ export function deleteTracksFromPlaylist( uri, snapshot_id, tracks_indexes ){
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REMOVED',
-                    uri: uri,
+                    key: uri,
                     tracks_indexes: tracks_indexes,
                     snapshot_id: response.snapshot_id
                 });
@@ -991,7 +984,7 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
             .then( response => {
                 dispatch({
                     type: 'PLAYLIST_TRACKS_REORDERED',
-                    uri: uri,
+                    key: uri,
                     range_start: range_start,
                     range_length: range_length,
                     insert_before: insert_before,
