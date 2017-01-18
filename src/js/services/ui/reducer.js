@@ -269,23 +269,39 @@ export default function reducer(ui = {}, action){
 
 
         /**
-         * User
+         * User profiles
          **/
 
-        case 'SPOTIFY_USER_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { user: false })
-            return Object.assign({}, ui, { user: action.data })
+        case 'USER_LOADED':
+            var users = Object.assign([], ui.users)
 
-        case 'SPOTIFY_USER_PLAYLISTS_LOADED_MORE':
-            var user = Object.assign({}, ui.user, {
-                playlists: [ ...ui.user.playlists, ...action.data.items ],
-                playlists_more: action.data.next
-            })
-            return Object.assign({}, ui, { user: user });
+            if (users[action.uri]){
+                var user = Object.assign({}, users[action.uri], action.user)
+            }else{
+                var user = Object.assign({}, action.user)
+            }
 
-        case 'USER_FOLLOWING_LOADED':
-            var user = Object.assign({}, ui.user, { following: action.is_following })
-            return Object.assign({}, ui, { user: user, following_loading: false });
+            users[action.uri] = user
+            return Object.assign({}, ui, { users: users });
+
+        case 'USER_PLAYLISTS_LOADED':
+            var users = Object.assign([], ui.users)
+            var playlists_uris = []
+            if (users[action.uri].playlists_uris) playlists_uris = users[action.uri].playlists_uris
+
+            var artist = Object.assign(
+                {}, 
+                users[action.uri],
+                {
+                    playlists_uris: [...playlists_uris, ...action.uris],
+                    playlists_more: action.more,
+                    playlists_total: action.total
+                }
+            )
+            users[action.uri] = artist
+            return Object.assign({}, ui, { users: users });
+
+
 
 
         /**

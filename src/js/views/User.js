@@ -29,12 +29,12 @@ class User extends React.Component{
 	}
 
 	loadUser( props = this.props ){
-		this.props.spotifyActions.getUser( props.params.uri )
+		if (!props.user) this.props.spotifyActions.getUser( props.params.uri )
 	}
 
 	loadMore(){
 		if( !this.props.user.playlists_more ) return
-		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED_MORE' )
+		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
 	}
 
 	renderMeFlag(){
@@ -49,6 +49,16 @@ class User extends React.Component{
 
 	render(){
 		if( !this.props.user ) return null
+
+		var playlists = []
+		if (this.props.user.playlists_uris){
+			for (var i = 0; i < this.props.user.playlists_uris.length; i++){
+				var uri = this.props.user.playlists_uris[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
+		}
 
 		return (
 			<div className="view user-view">
@@ -65,14 +75,14 @@ class User extends React.Component{
 					</div>
 
 					<ul className="details">
-						<li>{ this.props.user.playlists_total.toLocaleString() } playlists</li>
+						<li>{ this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0 } playlists</li>
 						<li>{ this.props.user.followers.total.toLocaleString() } followers</li>
 					</ul>
 				</div>
 				<div className="main">
 
 					<section className="grid-wrapper">
-						{ this.props.user.playlists ? <PlaylistGrid playlists={ this.props.user.playlists } /> : null }
+						<PlaylistGrid playlists={playlists} />
 						<LazyLoadListener loadMore={ () => this.loadMore() }/>
 					</section>
 					
@@ -86,7 +96,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		spotify_authorized: state.spotify.authorized,
 		me: state.spotify.me,
-		user: state.ui.user
+		playlists: state.ui.playlists,
+		user: (state.ui.users && typeof(state.ui.users[ownProps.params.uri]) !== 'undefined' ? state.ui.users[ownProps.params.uri] : false ),
+		users: state.ui.users
 	};
 }
 

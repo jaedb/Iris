@@ -19,7 +19,6 @@ export function hideContextMenu(){
 }
 
 export function startSearch( query ){
-    console.log('STARTING NOW')
 	return {
 		type: 'SEARCH_STARTED',
         query: query

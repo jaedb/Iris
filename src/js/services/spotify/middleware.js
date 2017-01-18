@@ -123,6 +123,16 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+            case 'SPOTIFY_USER_FOLLOWING_LOADED':
+                store.dispatch({
+                    type: 'USER_LOADED',
+                    uri: action.uri,
+                    user: {
+                        is_following: action.is_following
+                    }
+                });
+                break
+
             case 'SPOTIFY_NEW_RELEASES_LOADED':
                 store.dispatch({
                     type: 'ALBUMS_LOADED',
@@ -145,6 +155,38 @@ const SpotifyMiddleware = (function(){
                     type: 'ARTIST_ALBUMS_LOADED',
                     uri: action.uri,
                     uris: helpers.asURIs(action.data.items),
+                    more: action.data.next,
+                    total: action.data.total
+                });
+                break
+
+            case 'SPOTIFY_USER_PLAYLISTS_LOADED':
+                var playlists = []
+                for( var i = 0; i < action.data.items.length; i++ ){
+                    var playlist = Object.assign(
+                        {},
+                        action.data.items[i],
+                        {
+                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.data.items[i].owner.id == store.getState().spotify.me.id),
+                            tracks_total: action.data.items[i].tracks.total
+                        }
+                    )
+
+                    // remove our tracklist. It'll overwrite any full records otherwise
+                    delete playlist.tracks
+
+                    playlists.push(playlist)
+                }
+
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
+
+                store.dispatch({
+                    type: 'USER_PLAYLISTS_LOADED',
+                    uri: action.uri,
+                    uris: helpers.asURIs(playlists),
                     more: action.data.next,
                     total: action.data.total
                 });

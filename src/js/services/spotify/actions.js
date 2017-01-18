@@ -713,29 +713,43 @@ export function getLibraryArtists(){
 export function getUser( uri ){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_USER_LOADED', data: false });
+        // get the user
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) )
+            .then( response => {
+                dispatch({
+                    type: 'USER_LOADED',
+                    uri: response.uri,
+                    user: response
+                });
+            })
 
-        var user = {};
+        // get the first page of playlists
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid', uri) +'/playlists?limit=40' )
+            .then( response => {
 
-        // get both the artist and the top tracks
-        $.when(
+                var playlists = []
+                for (var i = 0; i < response.items.length; i++){
+                    playlists.push(Object.assign(
+                        {},
+                        response.items[i],
+                        {
+                            can_edit: (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id),
+                            tracks_total: response.items[i].tracks.total
+                        }
+                    ))
+                }
 
-            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) )
-                .then( response => {
-                    Object.assign(user, response);
-                }),
+                dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
 
-            sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid', uri) +'/playlists?limit=50' )
-                .then( response => {
-                    Object.assign(user, { playlists: response.items, playlists_more: response.next, playlists_total: response.total });
-                })
-
-        ).then( () => {
-            dispatch({
-                type: 'SPOTIFY_USER_LOADED',
-                data: user
-            });
-        });
+                dispatch({
+                    type: 'SPOTIFY_USER_PLAYLISTS_LOADED',
+                    uri: uri,
+                    data: response
+                });
+            })
     }
 }
 
