@@ -14,12 +14,12 @@ export let sizedImages = function( images ){
 	for( var i = 0; i < images.length; i++ ){
 
 		// spotify-styled images
-		if( typeof(images[i].height) !== 'undefined' ){
-			if( images[i].height < 400 ){
+		if( typeof(images[i].width) !== 'undefined' ){
+			if( images[i].width < 400 ){
 				sizes.small = images[i].url;
-			}else if( images[i].height < 800 ){
+			}else if( images[i].width < 800 ){
 				sizes.medium = images[i].url;
-			}else if( images[i].height < 1000 ){
+			}else if( images[i].width < 1000 ){
 				sizes.large = images[i].url;
 			}else{
 				sizes.huge = images[i].url;

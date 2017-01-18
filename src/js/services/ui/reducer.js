@@ -297,7 +297,6 @@ export default function reducer(ui = {}, action){
             var playlists = Object.assign([], ui.playlists)
 
             if (playlists[action.uri]){
-                console.log([playlists[action.uri],action.playlist])
                 var playlist = Object.assign({}, playlists[action.uri], action.playlist)
             }else{
                 var playlist = Object.assign({}, action.playlist)
