@@ -382,8 +382,6 @@ export function getURL( url, action_name, uri = false ){
 export function getSearchResults( query, type = 'album,artist,playlist,track', limit = 50, offset = 0 ){
 	return (dispatch, getState) => {
 
-        dispatch({ type: 'SEARCH_RESULTS_LOADED', reset: true });
-
         var url = 'search?q='+query
         url += '&type='+type
         url += '&country='+getState().spotify.country
@@ -427,7 +425,8 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
                     artists_more: response.artists.next,
                     albums_uris: helpers.asURIs(response.albums.items),
                     albums_more: response.albums.next,
-                    tracks: response.tracks
+                    tracks: response.tracks.items,
+                    tracks_more: response.tracks.next
                 });
             });
 	}

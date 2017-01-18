@@ -35,7 +35,7 @@ export default class AddToPlaylistModal extends React.Component{
 									<FontAwesome className="source" name={helpers.sourceIcon(playlist.uri)} />
 									&nbsp;
 									<span className="name">{ playlist.name }</span>
-									{ playlist.tracks ? <span className="grey-text">&nbsp;{ playlist.tracks.total } tracks</span> : null }
+									{ playlist.tracks_total ? <span className="grey-text">&nbsp;{ playlist.tracks_total } tracks</span> : null }
 								</div>
 							)
 						})

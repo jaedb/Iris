@@ -18,20 +18,11 @@ export function hideContextMenu(){
     }
 }
 
-export function searchStarted( query ){
+export function startSearch( query ){
+    console.log('STARTING NOW')
 	return {
 		type: 'SEARCH_STARTED',
-        query: query,
-        data: {
-            artists: [],
-            albums: [],
-            playlists: [],
-            tracks: [],
-            artists_more: false,
-            albums_more: false,
-            playlists_more: false,
-            tracks_more: false
-        }
+        query: query
 	}
 }
 
