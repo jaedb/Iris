@@ -305,6 +305,14 @@ export function getCategories(){
 export function getCategory( id ){
     return (dispatch, getState) => {
 
+        dispatch({
+            type: 'CATEGORY_LOADED',
+            key: 'category:'+id,
+            category: {
+                playlists_uris: null
+            }
+        });
+
         // get the category
         sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then( response => {
