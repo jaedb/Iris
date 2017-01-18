@@ -38,12 +38,12 @@ class LibraryAlbums extends React.Component{
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 35,
+					width: 30,
 					label: 'Name',
 					name: 'name'
 				},
 				{
-					width: 35,
+					width: 30,
 					label: 'Artists',
 					name: 'artists'
 				},
@@ -54,8 +54,13 @@ class LibraryAlbums extends React.Component{
 				},
 				{
 					width: 15,
+					label: 'Released',
+					name: 'release_date'
+				},
+				{
+					width: 10,
 					label: 'Tracks',
-					name: 'tracks.total'
+					name: 'tracks_total'
 				}
 			]
 			return (

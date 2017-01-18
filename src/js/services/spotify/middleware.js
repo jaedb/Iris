@@ -244,8 +244,8 @@ const SpotifyMiddleware = (function(){
                             {
                                 added_at: action.data.items[i].added_at,
                                 tracks: action.data.items[i].album.tracks.items,
-                                tracks_next: action.data.items[i].album.tracks.tracks_next,
-                                tracks_total: action.data.items[i].album.tracks.tracks_total
+                                tracks_more: action.data.items[i].album.tracks.next,
+                                tracks_total: action.data.items[i].album.tracks.total
                             }
                         )
                     )
