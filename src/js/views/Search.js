@@ -47,15 +47,9 @@ class Search extends React.Component{
 	}
 
 	loadMore(type){
-		if( !this.props.search_results[type] || 
-			!this.props.search_results[type+'_more'] ){
-			return
+		if( this.props[type+'_more'] ){
+			this.props.spotifyActions.getURL( this.props[type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 		}
-
-		this.props.spotifyActions.getURL( 
-			this.props.search_results[type+'_more'], 
-			'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+ type.toUpperCase()
-		);
 	}
 
 	renderResults(){
@@ -186,6 +180,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		uri_schemes: state.mopidy.uri_schemes,
 		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
+		tracks_more: (state.ui.search_results && state.ui.search_results.tracks_more ? state.ui.search_results.tracks_more : null),
 		artists: state.ui.artists,
 		artists_uris: (state.ui.search_results ? state.ui.search_results.artists_uris : []),
 		artists_more: (state.ui.search_results ? state.ui.search_results.artists_more : null),

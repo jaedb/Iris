@@ -297,6 +297,7 @@ export default function reducer(ui = {}, action){
             var playlists = Object.assign([], ui.playlists)
 
             if (playlists[action.uri]){
+                console.log([playlists[action.uri],action.playlist])
                 var playlist = Object.assign({}, playlists[action.uri], action.playlist)
             }else{
                 var playlist = Object.assign({}, action.playlist)
@@ -406,8 +407,21 @@ export default function reducer(ui = {}, action){
          * Search results
          **/
 
+        case 'SEARCH_STARTED':
+            return Object.assign({}, ui, {
+                search_results: {
+                    artists_more: null,
+                    artists_uris: [],
+                    albums_more: null,
+                    albums_uris: [],
+                    playlists_more: null,
+                    playlists_uris: [],
+                    tracks: [],
+                    tracks_more: null,
+                }
+            });
+
         case 'SEARCH_RESULTS_LOADED':
-            console.log(action)
 
             // artists
             if (ui.search_results && ui.search_results.artists_uris){
@@ -417,6 +431,12 @@ export default function reducer(ui = {}, action){
             }
             if (action.artists_uris) artists_uris = [...artists_uris, ...action.artists_uris]
 
+            // more tracks
+            if (typeof(action.artists_more) !== 'undefined') var artists_more = action.artists_more
+            else if (ui.search_results && ui.search_results.artists_more) var artists_more = ui.search_results.artists_more
+            else var artists_more = null
+
+
             // albums
             if (ui.search_results && ui.search_results.albums_uris){
                 var albums_uris = ui.search_results.albums_uris
@@ -424,6 +444,12 @@ export default function reducer(ui = {}, action){
                 var albums_uris = []
             }
             if (action.albums_uris) albums_uris = [...albums_uris, ...action.albums_uris]
+
+            // more tracks
+            if (typeof(action.albums_more) !== 'undefined') var albums_more = action.albums_more
+            else if (ui.search_results && ui.search_results.albums_more) var albums_more = ui.search_results.albums_more
+            else var albums_more = null
+
 
             // playlists
             if (ui.search_results && ui.search_results.playlists_uris){
@@ -433,6 +459,12 @@ export default function reducer(ui = {}, action){
             }
             if (action.playlists_uris) playlists_uris = [...playlists_uris, ...action.playlists_uris]
 
+            // more tracks
+            if (typeof(action.playlists_more) !== 'undefined') var playlists_more = action.playlists_more
+            else if (ui.search_results && ui.search_results.playlists_more) var playlists_more = ui.search_results.playlists_more
+            else var playlists_more = null
+
+
             // tracks
             if (ui.search_results && ui.search_results.tracks){
                 var tracks = ui.search_results.tracks
@@ -441,53 +473,23 @@ export default function reducer(ui = {}, action){
             }
             if (action.tracks) tracks = [...tracks, ...action.tracks]
 
+            // more tracks
+            if (typeof(action.tracks_more) !== 'undefined') var tracks_more = action.tracks_more
+            else if (ui.search_results && ui.search_results.tracks_more) var tracks_more = ui.search_results.tracks_more
+            else var tracks_more = null
+
             return Object.assign({}, ui, {
                 search_results: {
-                    artists_more: (action.artists_more ? action.artists_more : null),
+                    artists_more: artists_more,
                     artists_uris: artists_uris,
-                    albums_more: (action.albums_more ? action.albums_more : null),
+                    albums_more: albums_more,
                     albums_uris: albums_uris,
-                    playlists_more: (action.playlists_more ? action.playlists_more : null),
+                    playlists_more: playlists_more,
                     playlists_uris: playlists_uris,
                     tracks: tracks,
-                    tracks_more: (action.tracks_more ? action.tracks.tracks_more : null)
+                    tracks_more: tracks_more
                 }
             });
-
-        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ARTISTS':
-            var results = Object.assign(
-                {}, 
-                ui.search_results, 
-                { 
-                    artists_uris: [...ui.search_results.artists_uris, ...action.data.artists_uris],
-                    artists_more: action.data.artists.next
-                }
-            )
-            return Object.assign({}, ui, { search_results: results })
-
-        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ALBUMS':
-            var albums = [...ui.search_results.albums, ...action.data.albums.items]
-            var results = Object.assign({}, ui.search_results, { 
-                albums: albums,
-                albums_more: action.data.albums.next
-            })
-            return Object.assign({}, ui, { search_results: results })
-
-        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_PLAYLISTS':
-            var playlists = [...ui.search_results.playlists, ...action.data.playlists.items]
-            var results = Object.assign({}, ui.search_results, { 
-                playlists: playlists,
-                playlists_more: action.data.playlists.next
-            })
-            return Object.assign({}, ui, { search_results: results })
-
-        case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
-            var tracks = [...ui.search_results.tracks, ...action.data.tracks.items]
-            var results = Object.assign({}, ui.search_results, { 
-                tracks: tracks,
-                tracks_more: action.data.tracks.next
-            })
-            return Object.assign({}, ui, { search_results: results })
 
 
         /**

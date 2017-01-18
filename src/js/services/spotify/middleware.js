@@ -46,7 +46,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.addTracksToPlaylist( action.playlist_uri, action.tracks_uris ))
+                store.dispatch( spotifyActions.addTracksToPlaylist( action.uri, action.tracks_uris ))
                 break
 
 
@@ -219,6 +219,68 @@ const SpotifyMiddleware = (function(){
                     uris: helpers.asURIs(albums),
                     more: action.data.next,
                     total: action.data.total
+                });
+                break
+
+            case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
+                store.dispatch({
+                    type: 'SEARCH_RESULTS_LOADED',
+                    tracks: action.data.tracks.items,
+                    tracks_more: action.data.tracks.next
+                });
+                break
+
+            case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ARTISTS':
+                
+                store.dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: action.data.artists.items
+                });
+
+                store.dispatch({
+                    type: 'SEARCH_RESULTS_LOADED',
+                    playlists_uris: helpers.asURIs(action.data.playlists.items),
+                    playlists_more: action.data.playlists.next
+                });
+                break
+
+            case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_ALBUMS':
+
+                store.dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: action.data.albums.items
+                });
+
+                store.dispatch({
+                    type: 'SEARCH_RESULTS_LOADED',
+                    albums_uris: helpers.asURIs(action.data.albums.items),
+                    albums_more: action.data.albums.next
+                });
+                break
+
+            case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_PLAYLISTS':
+
+                var playlists = []
+                for (var i = 0; i < action.data.playlists.items.length; i++){
+                    playlists.push(Object.assign(
+                        {},
+                        action.data.playlists.items[i],
+                        {
+                            can_edit: (getState().spotify.me && action.data.playlists.items[i].owner.id == getState().spotify.me.id),
+                            tracks_total: action.data.playlists.items[i].tracks.total
+                        }
+                    ))
+                }
+
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: playlists
+                });
+
+                store.dispatch({
+                    type: 'SEARCH_RESULTS_LOADED',
+                    playlists_uris: helpers.asURIs(action.data.playlists.items),
+                    playlists_more: action.data.playlists.next
                 });
                 break
 

@@ -426,7 +426,7 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
                     albums_uris: helpers.asURIs(response.albums.items),
                     albums_more: response.albums.next,
                     tracks: response.tracks.items,
-                    tracks_more: response.tracks.more
+                    tracks_more: response.tracks.next
                 });
             });
 	}
