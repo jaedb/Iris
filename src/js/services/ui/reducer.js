@@ -378,7 +378,7 @@ export default function reducer(ui = {}, action){
             for (var i = 0; i < action.playlists.length; i++){
                 var playlist = action.playlists[i]
                 if (typeof(playlists[playlist.uri]) !== 'undefined'){
-                    artist = Object.assign({}, playlists[playlist.uri], playlist)
+                    playlist = Object.assign({}, playlists[playlist.uri], playlist)
                 }
                 playlists[playlist.uri] = playlist
             }
