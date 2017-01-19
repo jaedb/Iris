@@ -78,7 +78,7 @@ const UIMiddleware = (function(){
 
             case 'MOPIDY_SAVE_PLAYLIST':
             case 'SPOTIFY_SAVE_PLAYLIST':
-                ReactGA.event({ category: 'Playlist', action: 'Save', label: action.uri })
+                ReactGA.event({ category: 'Playlist', action: 'Save', label: action.key })
                 next(action)
                 break
 
@@ -94,7 +94,7 @@ const UIMiddleware = (function(){
 
             case 'MOPIDY_REORDER_PLAYLIST_TRACKS':
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
-                ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.uri })
+                ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.key })
                 next(action)
                 break
 

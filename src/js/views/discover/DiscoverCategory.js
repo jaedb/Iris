@@ -16,13 +16,17 @@ class DiscoverCategory extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getCategory( this.props.params.id );
+		this.loadCategory()
 	}
 
 	componentWillReceiveProps( nextProps ){
 		if( nextProps.params.id != this.props.params.id ){
-			this.props.spotifyActions.getCategory( nextProps.params.id );
+			this.loadCategory()
 		}
+	}
+
+	loadCategory(){
+		if (!this.props.category || !this.props.category.playlists_uris) this.props.spotifyActions.getCategory( this.props.params.id );
 	}
 
 	loadMore(){

@@ -26,7 +26,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = state.ui.playlists[action.uri]
+                var playlist = state.ui.playlists[action.key]
 
                 if( !store.getState().spotify.authorized ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
@@ -46,7 +46,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.addTracksToPlaylist( action.uri, action.tracks_uris ))
+                store.dispatch( spotifyActions.addTracksToPlaylist( action.key, action.tracks_uris ))
                 break
 
 
@@ -56,7 +56,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.reorderPlaylistTracks( action.uri, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
+                store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break
 
 
@@ -66,7 +66,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.savePlaylist( action.uri, action.name, action.is_public ))
+                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.is_public ))
                 break
 
             // when our mopidy server current track changes

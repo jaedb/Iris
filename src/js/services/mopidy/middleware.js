@@ -408,7 +408,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_ADD_PLAYLIST_TRACKS':
                 
-                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.key })
                     .then( response => {
                         var tracks = [];             
                         for( var i = 0; i < action.tracks_uris.length; i++ ){
@@ -429,7 +429,7 @@ const MopidyMiddleware = (function(){
                             .then( response => {
                                 store.dispatch({ 
                                     type: 'PLAYLIST_TRACKS_ADDED', 
-                                    key: action.uri, 
+                                    key: action.key, 
                                     tracks_uris: action.tracks_uris
                                 });
                             })
@@ -445,7 +445,7 @@ const MopidyMiddleware = (function(){
                 var indexes = Object.assign([], action.tracks_indexes)
                 indexes.sort(descending);
                 
-                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.key })
                     .then( response => {
                         var playlist = Object.assign({}, response)
                         for( var i = 0; i < indexes.length; i++ ){
@@ -455,7 +455,7 @@ const MopidyMiddleware = (function(){
                             .then( response => {
                                 store.dispatch({
                                     type: 'PLAYLIST_TRACKS_REMOVED', 
-                                    key: action.uri, 
+                                    key: action.key, 
                                     tracks_indexes: action.tracks_indexes
                                 });
                             })
@@ -463,14 +463,14 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_SAVE_PLAYLIST':                
-                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.key })
                     .then( response => {
                         var playlist = Object.assign({}, response, { name: action.name })
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
                                 store.dispatch({ 
                                     type: 'PLAYLIST_UPDATED', 
-                                    key: action.uri, 
+                                    key: action.key, 
                                     playlist: playlist
                                 })
                             })
@@ -478,7 +478,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_REORDER_PLAYLIST_TRACKS':                
-                instruct( socket, store, 'playlists.lookup', { uri: action.uri })
+                instruct( socket, store, 'playlists.lookup', { uri: action.key })
                     .then( response => {
 
                         var playlist = Object.assign({}, response)
@@ -530,7 +530,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_DELETE_PLAYLIST':
-                instruct( socket, store, 'playlists.delete', { uri: action.uri })
+                instruct( socket, store, 'playlists.delete', { uri: action.key })
                     .then( response => {
 
                         // re-load our global playlists

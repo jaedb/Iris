@@ -71,14 +71,14 @@ export function set( data ){
     }
 }
 
-export function reorderPlaylistTracks( key, indexes, insert_before, snapshot_id = false ){
+export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id = false ){
     var range = helpers.createRange( indexes );
-    switch( helpers.uriSource( key ) ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 range_start: range.start,
                 range_length: range.length,
                 insert_before: insert_before,
@@ -88,7 +88,7 @@ export function reorderPlaylistTracks( key, indexes, insert_before, snapshot_id 
         case 'm3u':
             return { 
                 type: 'MOPIDY_REORDER_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 range_start: range.start,
                 range_length: range.length,
                 insert_before: insert_before
@@ -96,13 +96,13 @@ export function reorderPlaylistTracks( key, indexes, insert_before, snapshot_id 
     }
 }
 
-export function savePlaylist( key, name, is_public = false ){
-    switch( helpers.uriSource( key ) ){
+export function savePlaylist( uri, name, is_public = false ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_SAVE_PLAYLIST',
-                key: key,
+                key: uri,
                 name: name,
                 is_public: is_public
             }
@@ -110,7 +110,7 @@ export function savePlaylist( key, name, is_public = false ){
         case 'm3u':
             return { 
                 type: 'MOPIDY_SAVE_PLAYLIST',
-                key: key,
+                key: uri,
                 name: name
             }
     }
@@ -137,39 +137,39 @@ export function createPlaylist( scheme, name, is_public = false ){
     return false
 }
 
-export function removeTracksFromPlaylist( key, tracks_indexes ){
-    switch( helpers.uriSource( key ) ){
+export function removeTracksFromPlaylist( uri, tracks_indexes ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_REMOVE_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 tracks_indexes: tracks_indexes
             }
 
         case 'm3u':
             return { 
                 type: 'MOPIDY_REMOVE_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 tracks_indexes: tracks_indexes
             }
     }
 }
 
-export function addTracksToPlaylist( key, tracks_uris ){
-    switch( helpers.uriSource( key ) ){
+export function addTracksToPlaylist( uri, tracks_uris ){
+    switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_ADD_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 tracks_uris: tracks_uris
             }
 
         case 'm3u':
             return { 
                 type: 'MOPIDY_ADD_PLAYLIST_TRACKS',
-                key: key,
+                key: uri,
                 tracks_uris: tracks_uris
             }
     }

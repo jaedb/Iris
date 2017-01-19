@@ -870,7 +870,25 @@ export function createPlaylist( name, is_public ){
 
         sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', { name: name, public: is_public } )
         .then( response => {
-            dispatch( getAllLibraryPlaylists() );
+
+            dispatch({
+                type: 'PLAYLIST_LOADED',
+                key: response.uri,
+                playlist: Object.assign(
+                    {},
+                    response,
+                    {
+                        can_edit: true,
+                        tracks: [],
+                        tracks_more: null,
+                        tracks_total: 0
+                    })
+            });
+
+            dispatch({
+                type: 'LIBRARY_PLAYLISTS_LOADED',
+                uris: [response.uri]
+            });
         })
     }
 }
@@ -950,9 +968,9 @@ export function toggleFollowingPlaylist( uri, method ){
         sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers', method )
             .then( response => {
                 dispatch({
-                    type: 'SPOTIFY_PLAYLIST_FOLLOWING',
+                    type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
                     key: uri,
-                    data: new_state
+                    is_following: new_state
                 });
             });
     }
