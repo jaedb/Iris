@@ -41,7 +41,7 @@ export function getArtist( uri, artist, mbid = false ){
                     if( response.artist ){
                         dispatch({
                             type: 'ARTIST_LOADED',
-                            uri: uri,
+                            key: uri,
                             artist: {
                                 images: response.artist.image,
                                 bio: response.artist.bio

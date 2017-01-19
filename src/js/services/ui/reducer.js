@@ -385,10 +385,6 @@ export default function reducer(ui = {}, action){
 
             return Object.assign({}, ui, { playlists: playlists });
 
-        case 'MOPIDY_PLAYLIST_LOADED':
-            if( !action.data ) return Object.assign({}, ui, { playlist: false })
-            return Object.assign({}, ui, { playlist: action.data })
-
         case 'PLAYLIST_LOADED_MORE_TRACKS':
             var playlists = Object.assign([], ui.playlists)
             var playlist = Object.assign(
