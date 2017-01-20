@@ -56,7 +56,7 @@ export default class Parallax extends React.Component{
     }
 
 	componentWillReceiveProps( nextProps ){
-		if( ( !this.state.url || nextProps.image != this.state.url ) && !this._loading ){
+		if( ( !this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image ){
 			this._loading = true
 			this.setState({ url: nextProps.image, image: false, loading: true })
 			this.loadImage( nextProps.image )
@@ -109,6 +109,7 @@ export default class Parallax extends React.Component{
 	}
 
 	updateCanvas( image ){
+
 		var canvasWidth = $('.parallax').outerWidth();
 		var canvasHeight = $('.parallax').outerHeight();
 		if( this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight ){
