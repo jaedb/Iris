@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome'
 
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
+import Dater from '../components/Dater'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
@@ -42,6 +43,18 @@ class Queue extends React.Component{
 		this.props.mopidyActions.reorderTracklist( indexes, index )
 	}
 
+	renderQueueStats(){
+		var total_time = 0
+
+		return (
+			<div className="queue-stats grey-text">
+				<span>{this.props.current_tracklist.length} tracks</span>
+				&nbsp;&nbsp;|&nbsp;&nbsp;
+				{this.props.current_tracklist.length > 0 ? <Dater type="total-time" data={this.props.current_tracklist} /> : <span>0 mins</span>}
+			</div>
+		)
+	}
+
 	renderRadio(){
 		if (!this.props.radio || !this.props.radio.enabled) return null
 
@@ -65,16 +78,24 @@ class Queue extends React.Component{
 	}
 
 	render(){
+		var actions = (
+			<button onClick={() => this.props.mopidyActions.clearTracklist()}>
+				<FontAwesome name="trash" />&nbsp;
+				Clear
+			</button>
+		)
+
 		return (
 			<div className="view queue-view">
 			
-				<Header icon="play" title="Now playing" />
+				<Header icon="play" title="Now playing" actions={actions} />
 
 				<FullPlayer />
 
 				{ this.renderRadio() }
 
 				<section className="list-wrapper">
+
 					<TrackList
 						show_source_icon={true}
 						context="queue"

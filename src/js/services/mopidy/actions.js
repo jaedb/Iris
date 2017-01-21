@@ -94,6 +94,10 @@ export function reorderTracklist( indexes, insert_before ){
 	}
 }
 
+export function clearTracklist(){
+	return instruct('tracklist.clear');
+}
+
 export function play(){
 	return instruct('playback.play');
 }
