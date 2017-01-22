@@ -13,6 +13,7 @@ import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/DropdownField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
+import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -30,6 +31,17 @@ class LibraryAlbums extends React.Component{
 	loadMore(){
 		if( !this.props.library_albums_more ) return
 		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+	}
+
+	setSort(value){
+		var reverse = false
+		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			library_albums_sort_reverse: reverse,
+			library_albums_sort: value
+		}
+		this.props.uiActions.set(data)
 	}
 
 	renderView(albums){
@@ -110,6 +122,10 @@ class LibraryAlbums extends React.Component{
 					albums.push(this.props.albums[uri])
 				}
 			}
+
+			if( this.props.sort ){
+				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
+			}
 		}
 
 		var view_options = [
@@ -127,8 +143,30 @@ class LibraryAlbums extends React.Component{
 			}
 		]
 
+		var sort_options = [
+			{
+				value: 'name',
+				label: 'Name'
+			},
+			{
+				value: 'added_at',
+				label: 'Added'
+			},
+			{
+				value: 'release_date',
+				label: 'Released'
+			},
+			{
+				value: 'tracks_total',
+				label: 'Tracks'
+			}
+		]
+
 		var actions = (
-			<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_albums_view: value }) } />
+			<span>
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.setSort(value) } />
+				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_albums_view: value }) } />
+			</span>
 		)
 
 		return (
@@ -152,6 +190,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_albums_view,
 		albums: state.ui.albums,
+		sort: state.ui.library_albums_sort,
+		sort_reverse: state.ui.library_albums_sort_reverse,
 		library_albums: state.ui.library_albums,
 		library_albums_more: state.ui.library_albums_more,
 	}
