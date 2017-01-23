@@ -40,13 +40,19 @@ export default class DropdownField extends React.Component{
 	}
 
 	render(){
-		if( !this.props.options ) return null
+		if (!this.props.options) return null
 
 		var classname = 'dropdown-field'
-		if( this.state.expanded ) classname += ' expanded'
+		if (this.state.expanded) classname += ' expanded'
 
 		var current_value = this.props.options[0].value
-		if( this.props.value ) current_value = this.props.value
+		if (this.props.value) current_value = this.props.value
+
+		var icon = <FontAwesome name="check" />
+		if (typeof(this.props.reverse) !== 'undefined'){
+			if (this.props.reverse) icon = <FontAwesome className="reverse" name="caret-up" />
+			else icon = <FontAwesome className="reverse" name="caret-down" />
+		}
 
 		return (
 			<div className={classname} data-key={this.props.name.replace(' ','_').toLowerCase()}>
@@ -59,8 +65,8 @@ export default class DropdownField extends React.Component{
 						this.props.options.map( option => {
 							return (
 								<div className="option" key={ option.value } onClick={ e => this.handleChange(option.value) }>
-									{ option.value == current_value ? <FontAwesome name="check" /> : null }
-									{ option.label }
+									{option.value == current_value ? icon : null}
+									{option.label}
 								</div>
 							)
 						})

@@ -45,14 +45,19 @@ class LibraryArtists extends React.Component{
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 60,
 					label: 'Name',
+					width: 70,
 					name: 'name'
 				},
 				{
-					width: 10,
 					label: 'Followers',
+					width: 15,
 					name: 'followers.total'
+				},
+				{
+					label: 'Popularity',
+					width: 15,
+					name: 'popularity'
 				}
 			]
 			return (
@@ -87,30 +92,34 @@ class LibraryArtists extends React.Component{
 
 		var view_options = [
 			{
-				value: 'thumbnails',
-				label: 'Thumbnails'
+				label: 'Thumbnails',
+				value: 'thumbnails'
 			},
 			{
-				value: 'list',
-				label: 'List'
+				label: 'List',
+				value: 'list'
 			}
 		]
 
 		var sort_options = [
 			{
-				value: 'name',
-				label: 'Name'
+				label: 'Name',
+				value: 'name'
 			},
 			{
-				value: 'followers.total',
-				label: 'Followers'
+				label: 'Followers',
+				value: 'followers.total'
+			},
+			{
+				label: 'Popularity',
+				value: 'popularity'
 			}
 		]
 
 		var actions = (
 			<span>
-				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.setSort(value) } />
-				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={ value => this.setSort(value) } />
+				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
 			</span>
 		)
 
