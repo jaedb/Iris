@@ -10,6 +10,7 @@ import ArtistGrid from '../../components/ArtistGrid'
 import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
 
+import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -29,11 +30,22 @@ class LibraryArtists extends React.Component{
 		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
+	setSort(value){
+		var reverse = false
+		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			library_artists_sort_reverse: reverse,
+			library_artists_sort: value
+		}
+		this.props.uiActions.set(data)
+	}
+
 	renderView(artists){
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 30,
+					width: 60,
 					label: 'Name',
 					name: 'name'
 				},
@@ -67,6 +79,10 @@ class LibraryArtists extends React.Component{
 					artists.push(this.props.artists[uri])
 				}
 			}
+
+			if( this.props.sort ){
+				artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse)
+			}
 		}
 
 		var view_options = [
@@ -80,8 +96,22 @@ class LibraryArtists extends React.Component{
 			}
 		]
 
+		var sort_options = [
+			{
+				value: 'name',
+				label: 'Name'
+			},
+			{
+				value: 'followers.total',
+				label: 'Followers'
+			}
+		]
+
 		var actions = (
-			<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
+			<span>
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={ sort_options } handleChange={ value => this.setSort(value) } />
+				<DropdownField icon="eye" name="View" value={ this.props.view } options={ view_options } handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
+			</span>
 		)
 
 		return (
@@ -104,6 +134,8 @@ class LibraryArtists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		artists: state.ui.artists,
+		sort: state.ui.library_artists_sort,
+		sort_reverse: state.ui.library_artists_sort_reverse,
 		library_artists: state.ui.library_artists,
 		library_artists_more: state.ui.library_artists_more,
 		view: state.ui.library_artists_view
