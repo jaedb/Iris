@@ -134,6 +134,16 @@ const UIMiddleware = (function(){
                 location.reload()
                 break
 
+            case 'OPEN_MODAL':
+                $('body').addClass('modal-open')
+                next(action)
+                break
+
+            case 'CLOSE_MODAL':
+                $('body').removeClass('modal-open')
+                next(action)
+                break
+
             case 'BROWSER_NOTIFICATION':
 
                 var notification = window.Notification || window.mozNotification || window.webkitNotification;

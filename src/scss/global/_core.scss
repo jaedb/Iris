@@ -11,6 +11,10 @@ html {
 body {
 	overflow-y: scroll;
 	overflow-x: hidden;
+
+	&.modal-open {
+		overflow-y: hidden;
+	}
 }
 
 main,
