@@ -50,8 +50,8 @@ export default class DropdownField extends React.Component{
 
 		var icon = <FontAwesome name="check" />
 		if (typeof(this.props.reverse) !== 'undefined'){
-			if (this.props.reverse) icon = <FontAwesome className="reverse" name="caret-up" />
-			else icon = <FontAwesome className="reverse" name="caret-down" />
+			if (this.props.reverse) icon = <FontAwesome className="reverse" name="caret-down" />
+			else icon = <FontAwesome className="reverse" name="caret-up" />
 		}
 
 		return (
