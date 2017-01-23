@@ -92,7 +92,7 @@ class Album extends React.Component{
 			<div className="view album-view">
 		        <SidebarToggleButton />
 				<div className="intro">
-					<Thumbnail size="large" images={ this.props.album.images } />
+					<Thumbnail size="large" canZoom images={ this.props.album.images } />
 					<ArtistGrid artists={artists} />
 
 					<div className="actions">

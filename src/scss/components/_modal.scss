@@ -37,6 +37,13 @@
 			padding-bottom: 40px;
 		}
 
+		.image-zoom-modal {
+			img {
+				max-height: 100%;
+				max-width: 100%;
+			}
+		}
+
 		form {
 			.field {
 				padding-bottom: 20px;

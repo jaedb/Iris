@@ -1,8 +1,13 @@
 
 import React, { PropTypes } from 'react'
-import * as helpers from '../helpers'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
-export default class Thumbnail extends React.Component{
+import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
+
+class Thumbnail extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -53,16 +58,39 @@ export default class Thumbnail extends React.Component{
 		}
 	}
 
+	zoom(e, image){
+		e.preventDefault()
+		this.props.uiActions.openModal('image_zoom', {url: image} )
+	}
+
 	render(){
 		var image = this.mapImageSizes()
 		var style = { backgroundImage: 'url("'+image+'")' }
-		var className = 'thumbnail '+this.props.size;
-		if( this.props.circle ) className += ' circle';
+		var class_name = 'thumbnail '+this.props.size;
+		if( this.props.circle ) class_name += ' circle';
 		
+		var zoom_icon = null
+		if (this.props.canZoom){
+			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search-plus" /></span>
+		}
+
 		return (
-			<div className={className}>
+			<div className={class_name}>
 				<div className="image" style={style}></div>
+				{zoom_icon}
 			</div>
 		);
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Thumbnail)

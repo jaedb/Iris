@@ -184,7 +184,7 @@ class Artist extends React.Component{
 
 				<div className="intro">
 
-					<Thumbnail image={ image } />
+					<Thumbnail canZoom image={ image } />
 					<Parallax image={ image } />
 
 					<div className="heading-wrapper">

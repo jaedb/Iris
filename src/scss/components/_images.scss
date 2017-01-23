@@ -4,6 +4,7 @@
 	width: 100%;
 	max-width: 300px;
 	overflow: hidden;
+	position: relative;
 	
 	.image {
 		width: 100%;
@@ -15,12 +16,32 @@
 		background-size: cover;
 	}
 
+	.zoom {
+		@include animate();
+		display: none;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		z-index: 1;
+		padding: 10px;
+		background: rgba(0,0,0,0.2);
+		font-size: 12px;
+		cursor: pointer;
+		color: #FFFFFF;
+	}
+
 	&.small {
 		max-width: 50px;
 	}
 
 	&.circle {
 		border-radius: 50%;
+	}
+
+	&:hover {
+		.zoom {
+			display: block;
+		}
 	}
 }
 

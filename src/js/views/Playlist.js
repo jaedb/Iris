@@ -126,7 +126,7 @@ class Playlist extends React.Component{
 
 				<div className="intro">
 
-					<Thumbnail size="large" images={ this.props.playlist.images } />
+					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
 
 					<div className="actions">
 						<button className="large primary" onClick={ e => this.play() }>Play</button>

@@ -66,7 +66,7 @@ class FullPlayer extends React.Component{
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className="artwork" to={link}>
-				<Thumbnail size="huge" images={this.props.current_track.album.images} />
+				<Thumbnail size="huge" images={this.props.current_track.album.images} canZoom />
 			</Link>
 		)
 	}

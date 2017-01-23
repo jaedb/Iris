@@ -9,6 +9,7 @@ import AddToPlaylistModal from './AddToPlaylistModal'
 import CreatePlaylistModal from './CreatePlaylistModal'
 import EditPlaylistModal from './EditPlaylistModal'
 import SendAuthorizationModal from './SendAuthorizationModal'
+import ImageZoomModal from './ImageZoomModal'
 
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -25,7 +26,7 @@ class Modal extends React.Component{
 		if( !this.props.modal ) return null;
 
 		return (
-			<div className="modal">
+			<div className={this.props.modal.name+" modal"}>
 				<div className="close-modal" onClick={ () => this.props.uiActions.closeModal() }>
 					<Icon name="close" className="white" />
 				</div>
@@ -35,6 +36,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'send_authorization' ? <SendAuthorizationModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 
 				</div>
 			</div>
