@@ -71,7 +71,7 @@ class Thumbnail extends React.Component{
 		
 		var zoom_icon = null
 		if (this.props.canZoom){
-			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search-plus" /></span>
+			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>
 		}
 
 		return (
