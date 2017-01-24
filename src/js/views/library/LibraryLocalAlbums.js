@@ -3,9 +3,13 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
+import AlbumGrid from '../../components/AlbumGrid'
 import Header from '../../components/Header'
+import DropdownField from '../../components/DropdownField'
 import List from '../../components/List'
 
+import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -20,14 +24,60 @@ class LibraryLocalAlbums extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
+		if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			this.loadAlbums(nextProps);
 		}
 	}
 
 	loadAlbums(props = this.props){
-		if( props.mopidy_connected ){
+		if (props.mopidy_connected && !this.props.local_albums){
 			this.props.mopidyActions.getAlbums();
+		}
+	}
+
+	setSort(value){
+		var reverse = false
+		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			library_local_albums_sort_reverse: reverse,
+			library_local_albums_sort: value
+		}
+		this.props.uiActions.set(data)
+	}
+
+	renderView(albums){
+		if( this.props.view == 'list' ){
+
+			var columns = [
+				{ 
+					label: 'Name', 
+					name: 'name', 
+					width: 40
+				},
+				{ 
+					label: 'Artists', 
+					name: 'artists', 
+					width: 30
+				},
+				{ 
+					label: 'Tracks', 
+					name: 'tracks_total', 
+					width: 15
+				}
+			]
+
+			return (
+				<section className="list-wrapper">
+					<List columns={columns} rows={albums} link_prefix={global.baseURL+"album/"} />
+				</section>
+			)
+		}else{
+			return (
+				<section className="grid-wrapper">
+					<AlbumGrid albums={albums} />
+				</section>
+			)
 		}
 	}
 
@@ -40,16 +90,43 @@ class LibraryLocalAlbums extends React.Component{
 					albums.push(this.props.albums[uri])
 				}
 			}
+
+			if( this.props.sort ){
+				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
+			}
 		}
+
+		var view_options = [
+			{
+				value: 'thumbnails',
+				label: 'Thumbnails'
+			},
+			{
+				value: 'list',
+				label: 'List'
+			}
+		]
+
+		var sort_options = [
+			{
+				value: 'name',
+				label: 'Name'
+			}
+		]
+
+		var actions = (
+			<span>
+				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => this.setSort(val)} />
+				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => this.props.uiActions.set({ library_local_albums_view: val })} />
+			</span>
+		)
 
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title="Local albums" />
-				<div>
-					<List columns={[{ name: 'name', width: '100'}]} rows={albums} link_prefix={global.baseURL+"album/"} />
-				</div>
+				<Header icon="music" title="Local albums" actions={actions} />
+				{this.renderView(albums)}
 			</div>
-		);
+		)
 	}
 }
 
@@ -63,13 +140,17 @@ class LibraryLocalAlbums extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
+		albums: state.ui.albums,
 		local_albums: state.ui.local_albums,
-		albums: state.ui.albums
+		view: state.ui.library_local_albums_view,
+		sort: state.ui.library_local_albums_sort,
+		sort_reverse: state.ui.library_local_albums_sort_reverse
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

@@ -547,14 +547,39 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUMS':
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                     .then( response => {
+
                         store.dispatch({ 
                             type: 'ALBUMS_LOADED', 
                             albums: response 
                         });
+
                         store.dispatch({ 
                             type: 'LOCAL_ALBUMS_LOADED', 
                             uris: helpers.asURIs(response)
                         });
+
+                        // fetch album artwork
+                        instruct( socket, store, 'library.getImages', { uris: helpers.asURIs(response) } )
+                            .then(response => {
+
+                                var albums = []
+
+                                for (var uri in response){
+                                    if (response.hasOwnProperty(uri)){
+                                        albums.push({
+                                            uri: uri,
+                                            images: response[uri]
+                                        })
+                                    }
+                                }
+
+                                console.log(albums)
+
+                                store.dispatch({ 
+                                    type: 'ALBUMS_LOADED',
+                                    albums: albums
+                                });
+                            })
                     })
                 break;
 

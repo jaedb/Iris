@@ -12,9 +12,17 @@ export let sizedImages = function( images ){
 	if( images.length <= 0 ) return sizes;
 
 	for( var i = 0; i < images.length; i++ ){
+		
+		// Mopidy image object
+		if (typeof(images[i].__model__) !== 'undefined' && images[i].__model__ == 'Image'){
+			sizes.small = images[i].uri
+
+		// Mopidy image string
+		} else if (typeof(images[i]) == 'string'){
+			sizes.small = images[i]
 
 		// spotify-styled images
-		if( typeof(images[i].width) !== 'undefined' ){
+		} else if (typeof(images[i].width) !== 'undefined'){
 			if( images[i].width < 400 ){
 				sizes.small = images[i].url;
 			}else if( images[i].width < 800 ){
@@ -26,7 +34,7 @@ export let sizedImages = function( images ){
 			}
 
 		// lastfm-styled images
-		}else if( typeof(images[i].size) !== 'undefined' ){
+		} else if (typeof(images[i].size) !== 'undefined'){
 			switch( images[i].size ){
 				case 'mega':
 				case 'extralarge':
@@ -42,10 +50,6 @@ export let sizedImages = function( images ){
 					sizes.small = images[i]['#text']
 					break
 			}
-
-		// Mopidy-Images styled images
-		}else if( typeof(images[i]) == 'string' ){
-			sizes.small = images[i]
 		}
 	}
 
