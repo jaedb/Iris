@@ -17,16 +17,22 @@
 	}
 
 	.zoom {
+		@include animate();
 		display: none;
 		position: absolute;
-		bottom: 0;
-		right: 0;
+		bottom: 5px;
+		right: 5px;
 		z-index: 1;
-		padding: 10px;
-		background: rgba(0,0,0,0.2);
-		font-size: 12px;
+		padding: 6px;
+		border-radius: 100%;
+		background: rgba(0,0,0,0.4);
+		font-size: 10px;
 		cursor: pointer;
 		color: #FFFFFF;
+
+		&:hover {
+			background: #000000;
+		}
 	}
 
 	&.small {
