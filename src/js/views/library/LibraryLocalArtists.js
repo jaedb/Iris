@@ -28,7 +28,7 @@ class LibraryLocalArtists extends React.Component{
 
 	loadArtists(props = this.props){
 		if( props.mopidy_connected && !props.local_artists ){
-			this.props.mopidyActions.getArtists();
+			this.props.mopidyActions.getLibraryArtists();
 		}
 	}
 

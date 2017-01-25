@@ -32,7 +32,7 @@ class LibraryLocalAlbums extends React.Component{
 
 	loadAlbums(props = this.props){
 		if (props.mopidy_connected && !this.props.local_albums){
-			this.props.mopidyActions.getLocalAlbums();
+			this.props.mopidyActions.getLibraryAlbums();
 		}
 	}
 

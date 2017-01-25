@@ -544,7 +544,7 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
-            case 'MOPIDY_GET_LOCAL_ALBUMS':
+            case 'MOPIDY_GET_LIBRARY_ALBUMS':
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                     .then( response => {
 
@@ -658,7 +658,7 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
-            case 'MOPIDY_GET_ARTISTS':
+            case 'MOPIDY_GET_LIBRARY_ARTISTS':
                 store.dispatch({ type: 'LOCAL_ARTISTS_LOADED', data: false });
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                     .then( response => {                    

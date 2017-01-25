@@ -186,9 +186,9 @@ export function getArtist( uri ){
 	}
 }
 
-export function getArtists(){
+export function getLibraryArtists(){
 	return { 
-		type: 'MOPIDY_GET_ARTISTS'
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS'
 	}
 }
 
@@ -206,9 +206,9 @@ export function getAlbums( uris ){
 	}
 }
 
-export function getLocalAlbums(){
+export function getLibraryAlbums(){
 	return { 
-		type: 'MOPIDY_GET_LOCAL_ALBUMS'
+		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
 	}
 }
 
