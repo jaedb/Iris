@@ -198,7 +198,7 @@ export default function reducer(ui = {}, action){
             for (var i = 0; i < action.albums.length; i++){
                 var album = action.albums[i]
                 if (albums[album.uri]){
-                    artist = Object.assign({}, albums[album.uri], album)
+                    album = Object.assign({}, albums[album.uri], album)
                 }
                 albums[album.uri] = album
             }
