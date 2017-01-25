@@ -7,6 +7,7 @@ import AlbumGrid from '../../components/AlbumGrid'
 import Header from '../../components/Header'
 import DropdownField from '../../components/DropdownField'
 import List from '../../components/List'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -31,8 +32,25 @@ class LibraryLocalAlbums extends React.Component{
 
 	loadAlbums(props = this.props){
 		if (props.mopidy_connected && !this.props.local_albums){
-			this.props.mopidyActions.getAlbums();
+			this.props.mopidyActions.getLocalAlbums();
 		}
+	}
+
+	loadMore(){
+		var uris = []
+		if (this.props.albums && this.props.local_albums){
+			for (var i = 0; i < this.props.local_albums.length; i++){
+				var uri = this.props.local_albums[i]
+				if (!this.props.albums.hasOwnProperty(uri)){
+					uris.push(uri)
+				}
+
+				// limit each lookup to 50 URIs
+				if (uris.length >= 50) break
+			}
+		}
+
+		if (uris && uris.length > 0) this.props.mopidyActions.getAlbums(uris)
 	}
 
 	setSort(value){
@@ -125,6 +143,7 @@ class LibraryLocalAlbums extends React.Component{
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" actions={actions} />
 				{this.renderView(albums)}
+				<LazyLoadListener loadMore={ () => this.loadMore() }/>
 			</div>
 		)
 	}

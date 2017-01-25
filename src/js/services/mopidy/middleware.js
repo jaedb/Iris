@@ -544,42 +544,50 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
-            case 'MOPIDY_GET_ALBUMS':
+            case 'MOPIDY_GET_LOCAL_ALBUMS':
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                     .then( response => {
 
+                        var uris = helpers.asURIs(response)
+
                         store.dispatch({ 
-                            type: 'ALBUMS_LOADED', 
-                            albums: response 
+                            type: 'MOPIDY_GET_ALBUMS',
+                            uris: uris.slice(0,50)
                         });
 
                         store.dispatch({ 
                             type: 'LOCAL_ALBUMS_LOADED', 
-                            uris: helpers.asURIs(response)
+                            uris: uris
                         });
+                    })
+                break;
 
-                        // fetch album artwork
-                        instruct( socket, store, 'library.getImages', { uris: helpers.asURIs(response) } )
-                            .then(response => {
+            case 'MOPIDY_GET_ALBUMS':
+                instruct( socket, store, 'library.lookup', { uris: action.uris } )
+                    .then( response => {
 
-                                var albums = []
+                        var albums = []
 
-                                for (var uri in response){
-                                    if (response.hasOwnProperty(uri)){
-                                        albums.push({
-                                            uri: uri,
-                                            images: response[uri]
-                                        })
-                                    }
-                                }
+                        for (var uri in response){
+                            if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0] && response[uri][0].album ){
+                                var album = Object.assign(
+                                    {},
+                                    {
+                                        artists: response[uri][0].artists,
+                                        tracks: response[uri],
+                                        tracks_total: response[uri].length
+                                    },
+                                    response[uri][0].album
+                                )
 
-                                console.log(albums)
+                                albums.push(album)
+                            }
+                        }
 
-                                store.dispatch({ 
-                                    type: 'ALBUMS_LOADED',
-                                    albums: albums
-                                });
-                            })
+                        store.dispatch({ 
+                            type: 'ALBUMS_LOADED',
+                            albums: albums
+                        });
                     })
                 break;
 
@@ -679,7 +687,7 @@ const MopidyMiddleware = (function(){
                                 var existingAlbum = albums.find(getByURI);
                                 if( !existingAlbum ){
                                     albums.push(album)
-                                }                                
+                                }
                             }
                         }
                         if (albums){

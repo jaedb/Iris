@@ -199,9 +199,16 @@ export function getAlbum( uri ){
 	}
 }
 
-export function getAlbums(){
+export function getAlbums( uris ){
 	return { 
-		type: 'MOPIDY_GET_ALBUMS'
+		type: 'MOPIDY_GET_ALBUMS', 
+		uris: uris 
+	}
+}
+
+export function getLocalAlbums(){
+	return { 
+		type: 'MOPIDY_GET_LOCAL_ALBUMS'
 	}
 }
 
