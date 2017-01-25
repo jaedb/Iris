@@ -129,6 +129,10 @@ class LibraryLocalAlbums extends React.Component{
 			{
 				value: 'name',
 				label: 'Name'
+			},
+			{
+				value: 'tracks_total',
+				label: 'Tracks'
 			}
 		]
 
