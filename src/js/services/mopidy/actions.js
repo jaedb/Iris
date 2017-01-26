@@ -56,15 +56,15 @@ export function playURIs( uris ){
 	}
 }
 
-export function enqueueTracksNext( uris ){
+export function enqueueURIsNext( uris ){
 	if( typeof(uris) !== 'object' ) uris = [uris]
 	return {
-		type: 'MOPIDY_ENQUEUE_TRACKS_NEXT',
+		type: 'MOPIDY_ENQUEUE_URIS_NEXT',
 		uris: uris
 	}
 }
 
-export function enqueueTracks( uris, at_position = false ){
+export function enqueueURIs( uris, at_position = false ){
 	if( typeof(uris) !== 'object' ) uris = [uris];
 	var value = { uris: uris };
 	if( at_position ) value.at_position = at_position;

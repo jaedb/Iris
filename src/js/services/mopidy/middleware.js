@@ -229,7 +229,7 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break;
 
-            case 'MOPIDY_ENQUEUE_TRACKS_NEXT':
+            case 'MOPIDY_ENQUEUE_URIS_NEXT':
 
                 var current_track = store.getState().ui.current_track
                 var current_tracklist = store.getState().ui.current_tracklist

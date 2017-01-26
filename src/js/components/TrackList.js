@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Track from './Track'
 
+import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as uiActions from '../services/ui/actions'
 
@@ -78,8 +79,9 @@ class TrackList extends React.Component{
 				var selected_tracks = this.selectedTracks()
 				if( selected_tracks.length > 0 ){
 					var data = {
-						selected_tracks: selected_tracks,
-						selected_tracks_indexes: this.tracksIndexes( selected_tracks )
+						items: selected_tracks,
+						uris: helpers.asURIs(selected_tracks),
+						indexes: this.tracksIndexes(selected_tracks)
 					}
 					this.props.uiActions.showContextMenu( e, data, this.props.context, 'touch' )
 				}else{
@@ -133,8 +135,9 @@ class TrackList extends React.Component{
 	handleContextMenu(e, index){
 		var selected_tracks = this.selectedTracks()
 		var data = {
-			selected_tracks: selected_tracks,
-			selected_tracks_indexes: this.tracksIndexes( selected_tracks )
+			items: selected_tracks,
+			uris: helpers.asURIs(selected_tracks),
+			indexes: this.tracksIndexes(selected_tracks)
 		}
 		this.props.uiActions.showContextMenu( e, data, this.props.context, 'click' )
 	}

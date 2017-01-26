@@ -41,63 +41,59 @@ class ContextMenu extends React.Component{
 	}
 
 	playQueueItem(){
-		var selectedTracks = this.props.context_menu.data.selected_tracks;
-		this.props.mopidyActions.changeTrack( selectedTracks[0].tlid );		
+		var tracks = this.props.context_menu.data.items;
+		this.props.mopidyActions.changeTrack( tracks[0].tlid );		
 		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromQueue(){
-		var selected_tracks = this.props.context_menu.data.selected_tracks;
-		var selected_tracks_tlids = [];
-		for( var i = 0; i < selected_tracks.length; i++ ){
-			selected_tracks_tlids.push( selected_tracks[i].tlid );
+		var tracks = this.props.context_menu.data.items;
+		var tracks_tlids = [];
+		for( var i = 0; i < tracks.length; i++ ){
+			tracks_tlids.push( tracks[i].tlid );
 		}
-		this.props.mopidyActions.removeTracks( selected_tracks_tlids );
+		this.props.mopidyActions.removeTracks( tracks_tlids );
 		this.props.uiActions.hideContextMenu();
 	}
 
-	playItems(){
-		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-		this.props.mopidyActions.playURIs(selected_tracks_uris);
+	playURIs(){
+		this.props.mopidyActions.playURIs(this.props.context_menu.data.uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
-	playItemsNext(){
-		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-		this.props.mopidyActions.enqueueTracksNext(selected_tracks_uris);
+	playURIsNext(){
+		this.props.mopidyActions.enqueueURIsNext(this.props.context_menu.data.uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	addToPlaylist(){
-		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-		this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: selected_tracks_uris } )
+		this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: this.props.context_menu.data.uris } )
 		this.props.uiActions.hideContextMenu();
 	}
 
 	addToQueue(){
-		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-		this.props.mopidyActions.enqueueTracks(selected_tracks_uris);
-		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.enqueueURIs(this.props.context_menu.data.uris)
+		this.props.uiActions.hideContextMenu()
 	}
 
 	addTracksToPlaylist( playlist_uri ){
-		var selected_tracks_uris = helpers.asURIs(this.props.context_menu.data.selected_tracks)
-		this.props.uiActions.addTracksToPlaylist( playlist_uri, selected_tracks_uris )
+		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.context_menu.data.uris )
 		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromPlaylist(){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.selected_tracks_indexes )
+		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.indexes )
 		this.props.uiActions.hideContextMenu();
 	}
 
-	copyURIs(){
-		var uris = '';
-		for( var i = 0; i < this.props.context_menu.data.selected_tracks.length; i++ ){
-			if( i > 0 ) uris += ','
-			uris += this.props.context_menu.data.selected_tracks[i].uri
-		}
-		console.log('Yet to be implemented', uris)
+	copyURIs(e){
+		var temp = $("<input>");
+		$("body").append(temp);
+		temp.val(this.props.context_menu.data.uris.join(',')).select();
+		document.execCommand("copy");
+		temp.remove();
+
+		this.props.uiActions.createNotification( "Copied "+this.props.context_menu.data.uris.length+" URIs" )
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -144,8 +140,8 @@ class ContextMenu extends React.Component{
 
 			case 'editable-playlist':
 				var items = [
-					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
-					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
+					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
@@ -153,10 +149,19 @@ class ContextMenu extends React.Component{
 				]
 				break
 
+			case 'album':
+				var items = [
+					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
+					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
+					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
+				]
+				break
+
 			default:
 				var items = [
-					{ handleClick: 'playItems', label: 'Play', icon: 'play' },
-					{ handleClick: 'playItemsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
+					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }

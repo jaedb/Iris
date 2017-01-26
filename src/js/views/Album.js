@@ -15,6 +15,7 @@ import LazyLoadListener from '../components/LazyLoadListener'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -26,6 +27,12 @@ class Album extends React.Component{
 
 	componentDidMount(){
 		this.loadAlbum() 
+	}
+
+	handleContextMenu(e){
+		e.preventDefault()
+		var data = { uris: [this.props.params.uri] }
+		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
 	}
 
 	componentWillReceiveProps( nextProps ){
@@ -91,7 +98,7 @@ class Album extends React.Component{
 			<div className="view album-view">
 		        <SidebarToggleButton />
 				<div className="intro">
-					<Thumbnail size="large" canZoom images={ this.props.album.images } />
+					<Thumbnail size="large" canZoom images={ this.props.album.images } handleContextMenu={ e => this.handleContextMenu(e) } />
 					<ArtistGrid artists={artists} />
 
 					<div className="actions">
@@ -145,6 +152,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
