@@ -26,7 +26,6 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.library_artists_more ) return
 		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
@@ -127,7 +126,7 @@ class LibraryArtists extends React.Component{
 			<div className="view library-artists-view">
 				<Header icon="mic" title="My artists" actions={actions} />				
 				{ this.renderView(artists) }
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.library_artists_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

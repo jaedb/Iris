@@ -30,9 +30,7 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadMore(){
-		if (this.props.category.playlists_more){
-			this.props.spotifyActions.getURL( this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
-		}
+		this.props.spotifyActions.getURL( this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
 	}
 
 	render(){
@@ -54,7 +52,7 @@ class DiscoverCategory extends React.Component{
 				<section className="grid-wrapper">
 					<PlaylistGrid playlists={playlists} />
 				</section>
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.category.playlists_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

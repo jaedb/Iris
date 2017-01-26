@@ -66,7 +66,6 @@ class Album extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.album.tracks_more ) return
 		this.props.spotifyActions.getURL( this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
 	}
 
@@ -118,7 +117,7 @@ class Album extends React.Component{
 
 					<section className="list-wrapper">
 						{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
-						<LazyLoadListener loadMore={ () => this.loadMore() }/>
+						<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
 					</section>
 					
 				</div>

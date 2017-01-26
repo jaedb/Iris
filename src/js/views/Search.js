@@ -47,9 +47,7 @@ class Search extends React.Component{
 	}
 
 	loadMore(type){
-		if( this.props[type+'_more'] ){
-			this.props.spotifyActions.getURL( this.props[type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
-		}
+		this.props.spotifyActions.getURL( this.props[type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 	}
 
 	renderResults(){
@@ -91,7 +89,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} />
-							<LazyLoadListener loadMore={ () => this.loadMore('artists') }/>
+							<LazyLoadListener enabled={this.props['artists_more']} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
 				)
@@ -102,7 +100,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener loadMore={ () => this.loadMore('albums') }/>
+							<LazyLoadListener enabled={this.props['albums_more']} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
 				)
@@ -113,7 +111,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener loadMore={ () => this.loadMore('playlists') }/>
+							<LazyLoadListener enabled={this.props['playlists_more']} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
 				)
@@ -124,7 +122,7 @@ class Search extends React.Component{
 					<div>
 						<section className="list-wrapper">
 							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
-							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
+							<LazyLoadListener enabled={this.props['tracks_more']} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
 				)

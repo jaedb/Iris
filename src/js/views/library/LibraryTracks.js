@@ -23,7 +23,6 @@ class LibraryTracks extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.tracks_more ) return
 		this.props.spotifyActions.getURL( this.props.tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE' );
 	}
 
@@ -33,7 +32,7 @@ class LibraryTracks extends React.Component{
 				<Header icon="music" title="My tracks" />
 				<section className="list-wrapper">
 					{ this.props.tracks ? <TrackList tracks={this.props.tracks} /> : null }
-					<LazyLoadListener loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener enabled={this.props.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
 		);

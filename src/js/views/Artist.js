@@ -81,7 +81,6 @@ class Artist extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.artist.albums_more ) return
 		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
@@ -164,7 +163,7 @@ class Artist extends React.Component{
 				<h4 className="left-padding">Albums</h4>
 				<section className="grid-wrapper no-top-padding">
 					<AlbumGrid albums={albums} />
-					<LazyLoadListener loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
 		)

@@ -54,7 +54,6 @@ class Playlist extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.playlist.tracks_more ) return
 		this.props.spotifyActions.getURL( this.props.playlist.tracks_more, 'PLAYLIST_LOADED_MORE_TRACKS', this.props.playlist.uri );
 	}
 
@@ -155,7 +154,7 @@ class Playlist extends React.Component{
 
 					<section className="list-wrapper">
 						{ this.props.playlist.tracks ? <TrackList context={ this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
-						<LazyLoadListener loadMore={ () => this.loadMore() }/>
+						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
 					</section>
 					
 				</div>

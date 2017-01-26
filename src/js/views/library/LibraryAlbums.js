@@ -29,7 +29,6 @@ class LibraryAlbums extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.library_albums_more ) return
 		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
 	}
 
@@ -173,7 +172,7 @@ class LibraryAlbums extends React.Component{
 			<div className="view library-albums-view">
 				<Header icon="cd" title="My albums" actions={actions} />
 				{ this.renderView(albums) }
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.library_albums_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}
