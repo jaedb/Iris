@@ -42,6 +42,7 @@
 	},
 	"scripts": {
 		"dev": "NODE_ENV=development webpack && ./build.sh",
-		"prod": "NODE_ENV=production webpack && ./build.sh"
+		"prod": "NODE_ENV=production webpack && ./build.sh",
+		"release": "NODE_ENV=production webpack && ./build.sh && python setup.py sdist upload -r pypi"
 	}
 }
