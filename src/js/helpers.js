@@ -161,6 +161,7 @@ export let getFromUri = function( element, uri ){
 	    if( element == 'userid' && exploded[1] == 'user' ) return exploded[2];
 	    if( element == 'playlistid' && exploded[3] == 'playlist' ) return exploded[4];
 	    if( element == 'artistid' && exploded[1] == 'artist' ) return exploded[2];
+	    if( element == 'artistid' && exploded[3] == 'playlist' ) return exploded[2];
 	    if( element == 'albumid' && exploded[1] == 'album' ) return exploded[2];
 	    if( element == 'trackid' && exploded[1] == 'track' ) return exploded[2];
 	    return null;

@@ -56,6 +56,11 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
+
+                if( !store.getState().spotify.me || store.getState().spotify.me.id != helpers.getFromUri('artistid',action.key) ){
+                    store.dispatch( uiActions.createNotification( "You can't edit a playlist you don't own", 'bad' ) )
+                    return
+                }
                 store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break
 
