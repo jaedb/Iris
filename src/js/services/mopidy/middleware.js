@@ -268,7 +268,7 @@ const MopidyMiddleware = (function(){
                         // add the rest of our uris (if any)
                         action.uris.shift();
                         if( action.uris.length > 0 ){
-                            store.dispatch( mopidyActions.enqueueTracks( action.uris, 1 ) )
+                            store.dispatch( mopidyActions.enqueueURIs( action.uris, 1 ) )
                         }
                     })
                 break;

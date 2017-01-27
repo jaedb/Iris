@@ -154,7 +154,15 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
 					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
-					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
+					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
+				]
+				break
+
+			case 'artist':
+				var items = [
+					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
+					{ handleClick: 'toggleFollow', label: 'Follow/unfollow', icon: 'toggle-on' },
+					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
 				]
 				break
 

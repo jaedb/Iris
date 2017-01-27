@@ -1,11 +1,31 @@
 
 import React, { PropTypes } from 'react'
-import GridItem from './GridItem'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import { hashHistory } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
-export default class AlbumGrid extends React.Component{
+import Thumbnail from './Thumbnail'
+import ArtistSentence from './ArtistSentence'
+
+import * as uiActions from '../services/ui/actions'
+
+class AlbumGrid extends React.Component{
 
 	constructor(props) {
 		super(props);
+	}
+
+	handleClick(e,link){
+		if( e.target.tagName.toLowerCase() !== 'a' ){
+			hashHistory.push(link)
+		}
+	}
+
+	handleContextMenu(e,uri){
+		e.preventDefault()
+		var data = { uris: [uri] }
+		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
 	}
 
 	render(){
@@ -17,7 +37,18 @@ export default class AlbumGrid extends React.Component{
 					{
 						this.props.albums.map(
 							(album, index) => {
-								return <GridItem item={album} key={index} link={global.baseURL+'album/'+album.uri} />
+								return (
+									<div className="grid-item" 
+										key={index} 
+										onClick={ (e) => this.handleClick(e,global.baseURL+'album/'+album.uri) }
+										onContextMenu={e => this.handleContextMenu(e,album.uri)}>
+											<Thumbnail size="medium" images={album.images} />
+											<div className="name">{ album.name }</div>
+											<div className="secondary">
+												{ album.artists ? <ArtistSentence artists={album.artists} /> : <span>-</span> }
+											</div>
+									</div>
+								)
 							}
 						)
 					}
@@ -27,4 +58,16 @@ export default class AlbumGrid extends React.Component{
 		return null;
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AlbumGrid)
 

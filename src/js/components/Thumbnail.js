@@ -39,13 +39,6 @@ class Thumbnail extends React.Component{
 		return false
 	}
 
-	handleContextMenu(e){
-		if (this.props.handleContextMenu){
-			e.preventDefault()
-			this.props.handleContextMenu(e)
-		}
-	}
-
 	mapImageSizes( props = this.props ){
 
 		// no images
@@ -82,7 +75,7 @@ class Thumbnail extends React.Component{
 		}
 
 		return (
-			<div className={class_name} onContextMenu={ e => this.handleContextMenu(e) }>
+			<div className={class_name}>
 				<div className="image" style={style}></div>
 				{zoom_icon}
 			</div>
