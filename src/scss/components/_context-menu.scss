@@ -21,6 +21,28 @@
 		bottom: 0 !important;
 	}
 
+	.title {
+		cursor: pointer;
+		display: block;
+		padding: 8px 12px;
+		width: 100%;
+		font-weight: bold;
+		box-sizing: border-box;
+		position: relative;
+		overflow: hidden;
+
+		img {
+			@include blur(5px);
+			background-size: cover;
+			background-position: 50% 0%;
+			opacity: 0.2;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+		}
+	}
+
 	.menu-item-wrapper {
 		display: block;
 		position: relative;

@@ -3,6 +3,7 @@ import Mopidy from 'mopidy'
 import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
+var uiActions = require('../ui/actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 var pusherActions = require('../pusher/actions.js')
 

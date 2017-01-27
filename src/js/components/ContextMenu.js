@@ -166,6 +166,14 @@ class ContextMenu extends React.Component{
 				]
 				break
 
+			case 'playlist':
+				var items = [
+					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
+					{ handleClick: 'toggleFollow', label: 'Follow/unfollow', icon: 'toggle-on' },
+					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
+				]
+				break
+
 			default:
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
@@ -178,6 +186,21 @@ class ContextMenu extends React.Component{
 		}
 
 		return items
+	}
+
+	renderTitle(){
+		var style = {}
+		var item = this.props.context_menu.data.item
+		var image = null
+		if (item && item.images){
+			image = helpers.sizedImages(item.images).medium
+		}
+		return (
+			<div className="title" style={style}>
+				{image ? <img src={image} /> : null}
+				{this.props.context_menu.data.item.name}
+			</div>
+		)
 	}
 
 	renderItems(trigger){
@@ -254,7 +277,8 @@ class ContextMenu extends React.Component{
 
 		return (
 			<div className={className} style={style}>
-				{ this.renderItems(trigger) }
+				{this.renderTitle()}
+				{this.renderItems(trigger)}
 			</div>
 		);
 	}

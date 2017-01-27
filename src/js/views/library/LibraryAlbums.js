@@ -28,6 +28,12 @@ class LibraryAlbums extends React.Component{
 		if (!this.props.library_albums) this.props.spotifyActions.getLibraryAlbums();
 	}
 
+	handleContextMenu(e,uri){
+		e.preventDefault()
+		var data = { uris: [uri] }
+		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
+	}
+
 	loadMore(){
 		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
 	}
@@ -76,13 +82,19 @@ class LibraryAlbums extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={albums} columns={columns} link_prefix={global.baseURL+"album/"} />
+					<List 
+						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						rows={albums} 
+						columns={columns} 
+						link_prefix={global.baseURL+"album/"} />
 				</section>
 			)
 		}else if( this.props.view == 'thumbnails' ){
 			return (
 				<section className="grid-wrapper">
-					<AlbumGrid albums={albums} />
+					<AlbumGrid 
+						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						albums={albums} />
 				</section>			
 			)
 		}else{
