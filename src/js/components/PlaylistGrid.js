@@ -1,11 +1,27 @@
 
 import React, { PropTypes } from 'react'
-import GridItem from './GridItem'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
-export default class PlaylistGrid extends React.Component{
+import Thumbnail from './Thumbnail'
+
+import * as uiActions from '../services/ui/actions'
+
+class PlaylistGrid extends React.Component{
 
 	constructor(props) {
 		super(props);
+	}
+
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu( e, data, 'playlist', 'click' )
 	}
 
 	render(){
@@ -17,8 +33,21 @@ export default class PlaylistGrid extends React.Component{
 			<div className={className}>
 				{
 					this.props.playlists.map(
-						(playlist, index) => {
-							return <GridItem item={playlist} key={index} link={global.baseURL+'playlist/'+playlist.uri} />
+						(playlist, index) => {							
+							return (
+								<Link 
+									className="grid-item"
+									to={global.baseURL+'playlist/'+playlist.uri}
+									key={index} 
+									onContextMenu={e => this.handleContextMenu(e,playlist)}>
+										<Thumbnail size="medium" images={playlist.images} />
+										<div className="name">{ playlist.name }</div>
+										<div className="secondary">
+											{ playlist.tracks_total ? playlist.tracks_total+' tracks' : <span>0 tracks</span> }
+											{ playlist.can_edit ? <FontAwesome name="edit" /> : null }
+										</div>
+								</Link>
+							)
 						}
 					)
 				}
@@ -26,4 +55,16 @@ export default class PlaylistGrid extends React.Component{
 		);
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlaylistGrid)
 

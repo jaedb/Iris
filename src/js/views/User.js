@@ -33,7 +33,6 @@ class User extends React.Component{
 	}
 
 	loadMore(){
-		if( !this.props.user.playlists_more ) return
 		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
 	}
 
@@ -83,7 +82,7 @@ class User extends React.Component{
 
 					<section className="grid-wrapper">
 						<PlaylistGrid playlists={playlists} />
-						<LazyLoadListener loadMore={ () => this.loadMore() }/>
+						<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
 					</section>
 					
 				</div>

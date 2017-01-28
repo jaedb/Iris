@@ -3,6 +3,7 @@ import Mopidy from 'mopidy'
 import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
+var uiActions = require('../ui/actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 var pusherActions = require('../pusher/actions.js')
 
@@ -229,7 +230,7 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break;
 
-            case 'MOPIDY_ENQUEUE_TRACKS_NEXT':
+            case 'MOPIDY_ENQUEUE_URIS_NEXT':
 
                 var current_track = store.getState().ui.current_track
                 var current_tracklist = store.getState().ui.current_tracklist
@@ -268,7 +269,7 @@ const MopidyMiddleware = (function(){
                         // add the rest of our uris (if any)
                         action.uris.shift();
                         if( action.uris.length > 0 ){
-                            store.dispatch( mopidyActions.enqueueTracks( action.uris, 1 ) )
+                            store.dispatch( mopidyActions.enqueueURIs( action.uris, 1 ) )
                         }
                     })
                 break;

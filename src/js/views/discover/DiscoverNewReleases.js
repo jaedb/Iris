@@ -21,7 +21,6 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	loadMore(){
-		if (!this.props.new_releases_more) return
 		this.props.spotifyActions.getURL(this.props.new_releases_more, 'SPOTIFY_NEW_RELEASES_LOADED');
 	}
 
@@ -43,7 +42,7 @@ class DiscoverNewReleases extends React.Component{
 				<section className="grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.new_releases_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

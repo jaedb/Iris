@@ -1,14 +1,17 @@
 
 import React, { PropTypes } from 'react'
-import { Link, hashHistory } from 'react-router'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import { hashHistory, Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 
-export default class List extends React.Component{
+class List extends React.Component{
 
 	constructor(props) {
 		super(props);
@@ -20,6 +23,15 @@ export default class List extends React.Component{
 		if( e.target.tagName.toLowerCase() !== 'a' ){
 			hashHistory.push( this.props.link_prefix + uri );
 		}		
+	}
+
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(e, data, helpers.uriType(item.uri), 'click')
 	}
 
 	renderHeader(){
@@ -71,7 +83,11 @@ export default class List extends React.Component{
 						if( row.type ) className += ' '+row.type
 
 						return (
-							<div onClick={ e => this.handleClick(e, row.uri)} className={className} key={row_index}>
+							<div 
+								onClick={e => this.handleClick(e, row.uri)} 
+								onContextMenu={e => this.handleContextMenu(e,row)}
+								className={className} 
+								key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
 										return (
@@ -90,3 +106,15 @@ export default class List extends React.Component{
 		);
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(List)

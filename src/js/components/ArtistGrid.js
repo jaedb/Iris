@@ -1,11 +1,26 @@
 
 import React, { PropTypes } from 'react'
-import GridItem from './GridItem'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 
-export default class ArtistGrid extends React.Component{
+import Thumbnail from './Thumbnail'
+
+import * as uiActions from '../services/ui/actions'
+
+class ArtistGrid extends React.Component{
 
 	constructor(props) {
 		super(props);
+	}
+
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu( e, data, 'artist', 'click' )
 	}
 
 	render(){
@@ -17,7 +32,19 @@ export default class ArtistGrid extends React.Component{
 					{
 						this.props.artists.map(
 							(artist, index) => {
-								return <GridItem item={artist} key={index} link={global.baseURL+'artist/'+artist.uri} />
+								return (
+									<Link 
+										className="grid-item"
+										to={global.baseURL+'artist/'+artist.uri}
+										key={index} 
+										onContextMenu={e => this.handleContextMenu(e,artist)}>
+											<Thumbnail size="medium" images={artist.images} />
+											<div className="name">{ artist.name }</div>
+											<div className="secondary">
+												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : <span>0 followers</span>}
+											</div>
+									</Link>
+								)
 							}
 						)
 					}
@@ -27,4 +54,16 @@ export default class ArtistGrid extends React.Component{
 		return null;
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArtistGrid)
 

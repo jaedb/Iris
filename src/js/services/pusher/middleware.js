@@ -214,7 +214,7 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {                   
-                        uiActions.createNotification('Starting radio...')
+                        store.dispatch(uiActions.createNotification('Starting radio...'))
                     }
                 )
 
@@ -252,11 +252,11 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {                   
-                        uiActions.createNotification('Stopping radio')
+                        store.dispatch(uiActions.createNotification('Stopping radio'))
                     }
                 )
 
-                store.dispatch( uiActions.createNotification('Stopping radio') )
+                store.dispatch(uiActions.createNotification('Stopping radio'))
                 var data = {
                     action: 'stop_radio',
                     seed_artists: [],

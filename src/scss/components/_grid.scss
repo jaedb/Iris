@@ -16,6 +16,10 @@
 
 .grid {
 
+	.grid-item-wrapper {
+		display: inline-block;
+	}
+
 	.grid-item {
 		display: inline-block;
 		vertical-align: top;

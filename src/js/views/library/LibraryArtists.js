@@ -21,12 +21,17 @@ class LibraryArtists extends React.Component{
 		super(props);
 	}
 
+	handleContextMenu(e,uri){
+		e.preventDefault()
+		var data = { uris: [uri] }
+		this.props.uiActions.showContextMenu( e, data, 'artist', 'click' )
+	}
+
 	componentDidMount(){
 		if (!this.props.library_artists) this.props.spotifyActions.getLibraryArtists();
 	}
 
 	loadMore(){
-		if( !this.props.library_artists_more ) return
 		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
@@ -62,13 +67,19 @@ class LibraryArtists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={artists} columns={columns} link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
+					<List 
+						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						rows={artists} 
+						columns={columns} 
+						link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
 				</section>
 			)
 		}else{
 			return (
 				<section className="grid-wrapper">
-					<ArtistGrid artists={artists} />
+					<ArtistGrid 
+						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						artists={artists} />
 				</section>				
 			)
 		}
@@ -127,7 +138,7 @@ class LibraryArtists extends React.Component{
 			<div className="view library-artists-view">
 				<Header icon="mic" title="My artists" actions={actions} />				
 				{ this.renderView(artists) }
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.library_artists_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}

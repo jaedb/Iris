@@ -49,6 +49,18 @@ $bp_shallow: 650px;
     animation-timing-function: linear;
 }
 
+@keyframes spin {
+	from { transform: rotate(0); }
+	to {   transform: rotate(360deg); }
+}
+
+@mixin spin( $duration: 0.5s ){
+    animation-name: spin;
+    animation-duration: $duration;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
 @mixin blur( $size: 10px ) {
 	-webkit-filter: blur( $size );
 	filter: blur( $size );

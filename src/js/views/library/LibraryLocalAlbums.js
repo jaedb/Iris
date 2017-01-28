@@ -36,7 +36,7 @@ class LibraryLocalAlbums extends React.Component{
 		}
 	}
 
-	loadMore(){
+	moreURIsToLoad(){
 		var uris = []
 		if (this.props.albums && this.props.local_albums){
 			for (var i = 0; i < this.props.local_albums.length; i++){
@@ -50,7 +50,12 @@ class LibraryLocalAlbums extends React.Component{
 			}
 		}
 
-		if (uris && uris.length > 0) this.props.mopidyActions.getAlbums(uris)
+		return uris
+	}
+
+	loadMore(){
+		var uris = this.moreURIsToLoad()
+		this.props.mopidyActions.getAlbums(uris)
 	}
 
 	setSort(value){
@@ -147,7 +152,7 @@ class LibraryLocalAlbums extends React.Component{
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" actions={actions} />
 				{this.renderView(albums)}
-				<LazyLoadListener loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={(this.moreURIsToLoad().length > 0)} loadMore={ () => this.loadMore() }/>
 			</div>
 		)
 	}

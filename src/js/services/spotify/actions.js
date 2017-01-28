@@ -532,10 +532,9 @@ export function resolveRadioSeeds( radio ){
             
             // add to our list of async requests
             requests.push(
-                sendRequest( dispatch, getState, 'tracks/'+ track_ids )
+                sendRequest( dispatch, getState, 'tracks?ids='+ track_ids )
                 .then( response => {
-                    if (!(response instanceof Array)) response = [response]
-                    Object.assign(resolved_seeds.seed_tracks, response);
+                    Object.assign(resolved_seeds.seed_tracks, response.tracks);
                 })
             )
         }

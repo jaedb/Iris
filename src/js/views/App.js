@@ -12,6 +12,7 @@ import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
+import DebugInfo from '../components/DebugInfo'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -132,6 +133,7 @@ class App extends React.Component{
 		        <Dragger />
 		        <Modal />
 		        <Notifications />
+		        {this.props.debug_info ? <DebugInfo /> : null}
 	        </div>
 		);
 	}
@@ -151,7 +153,8 @@ const mapStateToProps = (state, ownProps) => {
 		sidebar_open: state.ui.sidebar_open,
 		dragger: state.ui.dragger,
 		modal: state.ui.modal,
-		context_menu: state.ui.context_menu
+		context_menu: state.ui.context_menu,
+		debug_info: state.ui.debug_info
 	}
 }
 
