@@ -14,9 +14,12 @@ class ArtistGrid extends React.Component{
 		super(props);
 	}
 
-	handleContextMenu(e,uri){
+	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { uris: [uri] }
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
 		this.props.uiActions.showContextMenu( e, data, 'artist', 'click' )
 	}
 
@@ -34,7 +37,7 @@ class ArtistGrid extends React.Component{
 										className="grid-item"
 										to={global.baseURL+'artist/'+artist.uri}
 										key={index} 
-										onContextMenu={e => this.handleContextMenu(e,artist.uri)}>
+										onContextMenu={e => this.handleContextMenu(e,artist)}>
 											<Thumbnail size="medium" images={artist.images} />
 											<div className="name">{ artist.name }</div>
 											<div className="secondary">

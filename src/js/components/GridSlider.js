@@ -1,9 +1,16 @@
 
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { createStore, bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
-import GridItem from './GridItem'
 
-export default class GridSlider extends React.Component{
+import ArtistSentence from './ArtistSentence'
+import Thumbnail from './Thumbnail'
+
+import * as uiActions from '../services/ui/actions'
+
+class GridSlider extends React.Component{
 
 	constructor(props) {
 		super(props)
@@ -13,6 +20,21 @@ export default class GridSlider extends React.Component{
 		this.state = {
 			page: 0
 		}
+	}
+
+	handleClick(e,link){
+		if( e.target.tagName.toLowerCase() !== 'a' ){
+			hashHistory.push(link)
+		}
+	}
+
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
 	}
 
 	next(){
@@ -47,8 +69,19 @@ export default class GridSlider extends React.Component{
 							{
 								this.props.tracks.map(
 									(track, index) => {
-										var item = Object.assign({}, track.album, { artists: track.artists })
-										return <GridItem item={item} key={index} link={global.baseURL+'album/'+track.album.uri} />
+										var album = Object.assign({}, track.album, { artists: track.artists })
+										return (
+											<div className="grid-item" 
+												key={index} 
+												onClick={ (e) => this.handleClick(e,global.baseURL+'album/'+album.uri) }
+												onContextMenu={e => this.handleContextMenu(e,album)}>
+													<Thumbnail size="medium" images={album.images} />
+													<div className="name">{ album.name }</div>
+													<div className="secondary">
+														{ album.artists ? <ArtistSentence artists={album.artists} /> : <span>-</span> }
+													</div>
+											</div>
+										)
 									}
 								)
 							}
@@ -60,4 +93,16 @@ export default class GridSlider extends React.Component{
 		return null;
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GridSlider)
 

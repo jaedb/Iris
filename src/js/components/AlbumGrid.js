@@ -22,9 +22,12 @@ class AlbumGrid extends React.Component{
 		}
 	}
 
-	handleContextMenu(e,uri){
+	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { uris: [uri] }
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
 		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
 	}
 
@@ -41,7 +44,7 @@ class AlbumGrid extends React.Component{
 									<div className="grid-item" 
 										key={index} 
 										onClick={ (e) => this.handleClick(e,global.baseURL+'album/'+album.uri) }
-										onContextMenu={e => this.handleContextMenu(e,album.uri)}>
+										onContextMenu={e => this.handleContextMenu(e,album)}>
 											<Thumbnail size="medium" images={album.images} />
 											<div className="name">{ album.name }</div>
 											<div className="secondary">

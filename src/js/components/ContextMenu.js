@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
@@ -7,6 +8,7 @@ import FontAwesome from 'react-fontawesome'
 import TrackList from './TrackList'
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
+import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -86,6 +88,11 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
+	startRadio(){
+		this.props.pusherActions.startRadio(this.props.context_menu.data.uris)
+		this.props.uiActions.hideContextMenu();
+	}
+
 	copyURIs(e){
 		var temp = $("<input>");
 		$("body").append(temp);
@@ -126,7 +133,7 @@ class ContextMenu extends React.Component{
 		)
 	}
 
-	getItems(trigger){
+	getItems(){
 		switch (this.props.context_menu.context) {
 
 			case 'queue':
@@ -138,22 +145,12 @@ class ContextMenu extends React.Component{
 				]
 				break
 
-			case 'editable-playlist':
-				var items = [
-					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
-					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
-					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
-					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
-					{ handleClick: 'removeFromPlaylist', label: 'Remove', icon: 'trash' }
-				]
-				break
-
 			case 'album':
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
 					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
+					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
 					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
 				]
 				break
@@ -174,12 +171,25 @@ class ContextMenu extends React.Component{
 				]
 				break
 
+			case 'editable-playlist-track':
+				var items = [
+					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
+					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
+					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
+					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
+					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
+					{ handleClick: 'removeFromPlaylist', label: 'Remove', icon: 'trash' }
+				]
+				break
+
 			default:
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
 					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
 					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
+					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
 					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
 				]
 				break
@@ -189,31 +199,23 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		var style = {}
 		var item = this.props.context_menu.data.item
-		var image = null
+		var style = null
 		if (item && item.images){
-			image = helpers.sizedImages(item.images).medium
+			style = {
+				backgroundImage: 'url('+helpers.sizedImages(item.images).medium+')'
+			}
 		}
 		return (
-			<div className="title" style={style}>
-				{image ? <img src={image} /> : null}
-				{this.props.context_menu.data.item.name}
-			</div>
+			<Link className="title" to={global.baseURL+helpers.uriType(item.uri)+'/'+item.uri}>
+				{style ? <div className="background" style={style}></div> : null}
+				<div className="text">{item.name}</div>
+			</Link>
 		)
 	}
 
-	renderItems(trigger){
-		var items = this.getItems(trigger)
-
-		var closeItem = (
-			<span className="menu-item-wrapper cancel">
-				<a className="menu-item" onClick={ (e) => this.closeAndDeselectTracks(e) }>
-					<FontAwesome className="icon" fixedWidth name='close' />
-					<span className="label">Cancel</span>
-				</a>
-			</span>
-		)
+	renderItems(){
+		var items = this.getItems()
 
 		return (
 			<div>
@@ -222,7 +224,7 @@ class ContextMenu extends React.Component{
 						if( item.playlists ){
 							return (
 								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
-									<a className="menu-item" onClick={ (e) => this[item.handleClick](e) }>
+									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
 										<FontAwesome className="icon" fixedWidth name={item.icon} />
 										<span className="label">{ item.label }</span>
 										<FontAwesome className="submenu-icon" name="caret-right" />
@@ -233,7 +235,7 @@ class ContextMenu extends React.Component{
 						}else{
 							return (
 								<span className="menu-item-wrapper" key={item.handleClick}>
-									<a className="menu-item" onClick={ (e) => this[item.handleClick](e) }>
+									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
 										<FontAwesome className="icon" fixedWidth name={item.icon} />
 										<span className="label">{ item.label }</span>
 									</a>
@@ -242,7 +244,6 @@ class ContextMenu extends React.Component{
 						}
 					})
 				}
-				{ trigger == 'touch' ? closeItem : null }
 			</div>
 		)
 	}
@@ -277,7 +278,7 @@ class ContextMenu extends React.Component{
 
 		return (
 			<div className={className} style={style}>
-				{this.renderTitle()}
+				{this.props.context_menu.data.item ? this.renderTitle() : null}
 				{this.renderItems(trigger)}
 			</div>
 		);
@@ -298,6 +299,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}

@@ -25,10 +25,13 @@ class List extends React.Component{
 		}		
 	}
 
-	handleContextMenu(e,uri){
+	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { uris: [uri] }
-		this.props.uiActions.showContextMenu(e, data, helpers.uriType(uri), 'click')
+		var data = { 
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(e, data, helpers.uriType(item.uri), 'click')
 	}
 
 	renderHeader(){
@@ -82,7 +85,7 @@ class List extends React.Component{
 						return (
 							<div 
 								onClick={e => this.handleClick(e, row.uri)} 
-								onContextMenu={e => this.handleContextMenu(e,row.uri)}
+								onContextMenu={e => this.handleContextMenu(e,row)}
 								className={className} 
 								key={row_index}>
 								{

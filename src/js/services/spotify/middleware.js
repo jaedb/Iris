@@ -94,7 +94,7 @@ const SpotifyMiddleware = (function(){
 
                 // only resolve if radio is enabled
                 if( action.data.radio.enabled ){
-                    store.dispatch( spotifyActions.resolveRadioSeeds( action.data.radio ) )
+                    store.dispatch(spotifyActions.resolveRadioSeeds(action.data.radio))
                 }
                 break
 

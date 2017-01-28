@@ -153,7 +153,7 @@ class Playlist extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList context={ this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+						{ this.props.playlist.tracks ? <TrackList context={ this.props.playlist.can_edit ? 'editable-playlist-track' : 'playlist-track'} tracks={ this.props.playlist.tracks } removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
 					</section>
 					
