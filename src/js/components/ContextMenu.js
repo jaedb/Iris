@@ -254,6 +254,7 @@ class ContextMenu extends React.Component{
 		var height = 0
 		if (items) height = items.length * 34 // this is an approximation of how tall each menu item is
 
+		var className = "context-menu"
 		if (this.props.menu.position_x > (window.innerWidth - 154)) className += ' right-align'
 		if (this.props.menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
 		if (this.props.menu.position_y > (window.innerHeight - height)){
@@ -262,7 +263,7 @@ class ContextMenu extends React.Component{
 		}
 
 		return (
-			<div className="context-menu" style={style}>
+			<div className={className} style={style}>
 				{this.props.menu.item ? this.renderTitle() : null}
 				{this.renderItems()}
 			</div>

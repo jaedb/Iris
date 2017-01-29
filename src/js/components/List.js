@@ -27,11 +27,13 @@ class List extends React.Component{
 
 	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { 
+		var data = {
+			e: e,
+			context: helpers.uriType(item.uri),
 			uris: [item.uri],
 			item: item
 		}
-		this.props.uiActions.showContextMenu(e, data, helpers.uriType(item.uri), 'click')
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	renderHeader(){

@@ -16,11 +16,13 @@ class ArtistGrid extends React.Component{
 
 	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { 
+		var data = {
+			e: e,
+			context: 'artist',
 			uris: [item.uri],
 			item: item
 		}
-		this.props.uiActions.showContextMenu( e, data, 'artist', 'click' )
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	render(){

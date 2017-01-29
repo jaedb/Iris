@@ -17,11 +17,13 @@ class PlaylistGrid extends React.Component{
 
 	handleContextMenu(e,item){
 		e.preventDefault()
-		var data = { 
+		var data = {
+			e: e,
+			context: 'playlist',
 			uris: [item.uri],
 			item: item
 		}
-		this.props.uiActions.showContextMenu( e, data, 'playlist', 'click' )
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	render(){

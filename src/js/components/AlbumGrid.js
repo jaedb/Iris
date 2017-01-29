@@ -25,10 +25,12 @@ class AlbumGrid extends React.Component{
 	handleContextMenu(e,item){
 		e.preventDefault()
 		var data = { 
+			e: e,
+			context: 'album',
 			uris: [item.uri],
 			item: item
 		}
-		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	render(){
