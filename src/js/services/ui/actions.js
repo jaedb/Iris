@@ -1,13 +1,11 @@
 
 import * as helpers from '../../helpers'
 
-export function showContextMenu( e, data, context = false, trigger = 'click' ){
+export function showContextMenu(data){
+    data.position_x = data.e.clientX
+    data.position_y = data.e.clientY
     return {
         type: 'SHOW_CONTEXT_MENU',
-        position_x: e.clientX,
-        position_y: e.clientY,
-        context: context,
-        trigger: trigger,
         data: data
     }
 }
@@ -15,6 +13,19 @@ export function showContextMenu( e, data, context = false, trigger = 'click' ){
 export function hideContextMenu(){
     return {
         type: 'HIDE_CONTEXT_MENU'
+    }
+}
+
+export function showTouchContextMenu(data){
+    return {
+        type: 'SHOW_TOUCH_CONTEXT_MENU',
+        data: data
+    }
+}
+
+export function hideTouchContextMenu(){
+    return {
+        type: 'HIDE_TOUCH_CONTEXT_MENU'
     }
 }
 

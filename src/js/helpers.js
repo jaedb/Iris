@@ -1,5 +1,9 @@
 
 
+export let isTouchDevice = function(){
+	return 'ontouchstart' in document.documentElement
+}
+
 export let sizedImages = function( images ){
 
 	var sizes = {

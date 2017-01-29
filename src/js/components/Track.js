@@ -20,6 +20,13 @@ export default class Track extends React.Component{
 		}
 	}
 
+	handleTouchStart(e){
+		var target = $(e.target);
+		if( !target.is('a') && target.closest('a').length <= 0 ){
+			this.props.handleTouchStart(e);
+		}
+	}
+
 	handleTouchEnd(e){
 		var target = $(e.target);
 		if( !target.is('a') && target.closest('a').length <= 0 ){

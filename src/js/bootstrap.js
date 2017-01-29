@@ -54,9 +54,6 @@ var initialState = {
 		me: false
 	},
 	ui: {
-		context_menu: {
-			show: false
-		},
 		current_tracklist: [],
 		current_tltrack: false,
 		notifications: []

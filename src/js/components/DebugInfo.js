@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 
 class DebugInfo extends React.Component{
@@ -13,6 +14,13 @@ class DebugInfo extends React.Component{
 	}
 
 	render(){
+		var touch_state = 'no touch'
+		if (this.props.ui.emulate_touch){
+			touch_state = 'emulated touch'
+		} else if (helpers.isTouchDevice()){
+			touch_state = 'touch device'
+		}
+
 		return (
 			<div className="debug-info">
 				<div className="item">
@@ -28,7 +36,7 @@ class DebugInfo extends React.Component{
 					{this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}&nbsp;users
 				</div>
 				<div className="item">
-					{'ontouchstart' in document.documentElement ? 'can touch' : 'no touch'}
+					{touch_state}
 				</div>
 			</div>
 		);

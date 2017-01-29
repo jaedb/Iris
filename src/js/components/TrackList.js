@@ -34,7 +34,7 @@ class TrackList extends React.Component{
 		window.removeEventListener("keyup", this.handleKeyUp, false);
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 		this.setState({ tracks: this.keyifyTracks(nextProps.tracks) });
 	}
 
@@ -53,12 +53,12 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleTouchStart(e, index){
+	handleTouchStart(e,index){
 		this._touch_x = Math.round(e.changedTouches[0].pageX)
 		this._touch_y = Math.round(e.changedTouches[0].pageY)
 	}
 
-	handleTouchEnd(e, index){
+	handleTouchEnd(e,index){
 		var pageX = Math.round(e.changedTouches[0].pageX)
 		var pageY = Math.round(e.changedTouches[0].pageY)
 
@@ -69,45 +69,30 @@ class TrackList extends React.Component{
 			this._touch_x > ( pageX - this._touch_threshold ) &&
 			this._touch_y < ( pageY + this._touch_threshold ) &&
 			this._touch_y > ( pageY - this._touch_threshold ) ){
-
-				// toggle selection
-				var tracks = this.state.tracks
-				tracks[index].selected = !tracks[index].selected
-				this.setState({ tracks: tracks, lastSelectedTrack: index })
-
-				// update our context menu to hide/show
-				var selected_tracks = this.selectedTracks()
-				if( selected_tracks.length > 0 ){
-					var data = {
-						items: selected_tracks,
-						uris: helpers.asURIs(selected_tracks),
-						indexes: this.tracksIndexes(selected_tracks)
-					}
-					this.props.uiActions.showContextMenu( e, data, this.props.context, 'touch' )
-				}else{
-					this.props.uiActions.hideContextMenu()
-				}
+				this.handleTouchContextMenu(e,index)
 		}
 
 		e.preventDefault()
 	}
 
-	handleDoubleClick(e, index){
-		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
+	handleDoubleClick(e,index){
+		if (this.props.context_menu) this.props.uiActions.hideContextMenu()
 		this.playTracks()
 	}
 
-	handleMouseDown(e, index){
+	handleMouseDown(e,index){
+		if (this.props.emulate_touch){
+			this.handleTouchContextMenu(e,index)
+		}else{
+			if (this.props.context_menu) this.props.uiActions.hideContextMenu()
+			if (!this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey) this.toggleTrackSelections(e, index)
 
-		if( this.props.context_menu.show ) this.props.uiActions.hideContextMenu()
-
-		if( !this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey ) this.toggleTrackSelections(e, index)
-
-		var selected_tracks = this.selectedTracks()
-		this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
+			var selected_tracks = this.selectedTracks()
+			this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
+		}
 	}
 
-	handleMouseUp(e, index){
+	handleMouseUp(e,index){
 
 		// right-clicking on an un-highlighted track
 		if( !this.state.tracks[index].selected && this.isRightClick(e) ){
@@ -132,14 +117,40 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleContextMenu(e, index){
+	handleContextMenu(e,index){
 		var selected_tracks = this.selectedTracks()
 		var data = {
+			e: e,
+			context: (this.props.context ? this.props.context : 'track'),
+			tracklist_uri: (this.props.tracklist_uri ? this.props.tracklist_uri : null),
 			items: selected_tracks,
 			uris: helpers.asURIs(selected_tracks),
 			indexes: this.tracksIndexes(selected_tracks)
 		}
-		this.props.uiActions.showContextMenu( e, data, this.props.context, 'click' )
+		this.props.uiActions.showContextMenu(data)
+	}
+
+	handleTouchContextMenu(e,index){
+
+		// toggle selection
+		var tracks = this.state.tracks
+		tracks[index].selected = !tracks[index].selected
+		this.setState({ tracks: tracks, lastSelectedTrack: index })
+
+		// update our context menu to hide/show
+		var selected_tracks = this.selectedTracks()
+		if( selected_tracks.length > 0 ){
+			var data = {
+				context: (this.props.context ? this.props.context : 'track'),
+				tracklist_uri: (this.props.tracklist_uri ? this.props.tracklist_uri : null),
+				items: selected_tracks,
+				uris: helpers.asURIs(selected_tracks),
+				indexes: this.tracksIndexes(selected_tracks)
+			}
+			this.props.uiActions.showTouchContextMenu(data)
+		}else{
+			this.props.uiActions.hideTouchContextMenu()
+		}
 	}
 
 	toggleTrackSelections(e, index){
@@ -285,6 +296,7 @@ class TrackList extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		dragger: state.ui.dragger,
+		emulate_touch: state.ui.emulate_touch,
 		current_track: state.ui.current_track,
 		context_menu: state.ui.context_menu
 	}

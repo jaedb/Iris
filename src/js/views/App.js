@@ -9,11 +9,13 @@ import Sidebar from '../components/Sidebar'
 import MiniPlayer from '../components/MiniPlayer'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenu from '../components/ContextMenu'
+import TouchContextMenu from '../components/TouchContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
 import DebugInfo from '../components/DebugInfo'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -117,10 +119,10 @@ class App extends React.Component{
 
 	render(){
 		var className = '';
-		if( this.props.dragger && this.props.dragger.active ) className += ' dragging'
-		if( this.props.sidebar_open ) className += ' sidebar-open'
-		if( this.props.modal ) className += ' modal-open'
-		if( 'ontouchstart' in document.documentElement ) className += ' has-touch-events'
+		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
+		if (this.props.sidebar_open) className += ' sidebar-open'
+		if (this.props.modal) className += ' modal-open'
+		if (helpers.isTouchDevice() || this.props.emulate_touch) className += ' can-touch'
 
 		return (
 			<div className={className}>
@@ -129,7 +131,8 @@ class App extends React.Component{
 		        <main>
 		      		{this.props.children}
 		        </main>
-		        <ContextMenu state={this.props.context_menu} />
+		        <ContextMenu />
+		        <TouchContextMenu />
 		        <Dragger />
 		        <Modal />
 		        <Notifications />

@@ -22,20 +22,22 @@ export default function reducer(ui = {}, action){
         /**
          * Context menu
          **/
+
         case 'SHOW_CONTEXT_MENU':
             return Object.assign({}, ui, { 
-            	context_menu: { 
-            		show: true,
-            		position_x: action.position_x,
-            		position_y: action.position_y,
-            		context: action.context, 
-                    trigger: action.trigger,
-            		data: action.data
-            	}
+                context_menu: action.data
             });
 
         case 'HIDE_CONTEXT_MENU':
-            return Object.assign({}, ui, { context_menu: { show: false } });
+            return Object.assign({}, ui, {context_menu: null});
+
+        case 'SHOW_TOUCH_CONTEXT_MENU':
+            return Object.assign({}, ui, { 
+            	touch_context_menu: action.data
+            });
+
+        case 'HIDE_TOUCH_CONTEXT_MENU':
+            return Object.assign({}, ui, {touch_context_menu: null});
 
 
 

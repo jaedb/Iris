@@ -31,25 +31,21 @@ class ContextMenu extends React.Component{
 	}
 
 	handleScroll(){
-		if( this.props.context_menu.show && this.props.context_menu.trigger == 'click' ){
-			this.props.uiActions.hideContextMenu();
-		}
+		if (this.props.menu) this.props.uiActions.hideContextMenu()
 	}
 
 	handleClick(){
-		if( this.props.context_menu.show && this.props.context_menu.trigger == 'click' ){
-			this.props.uiActions.hideContextMenu();
-		}
+		if (this.props.menu) this.props.uiActions.hideContextMenu()
 	}
 
 	playQueueItem(){
-		var tracks = this.props.context_menu.data.items;
+		var tracks = this.props.menu.items;
 		this.props.mopidyActions.changeTrack( tracks[0].tlid );		
 		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromQueue(){
-		var tracks = this.props.context_menu.data.items;
+		var tracks = this.props.menu.items;
 		var tracks_tlids = [];
 		for( var i = 0; i < tracks.length; i++ ){
 			tracks_tlids.push( tracks[i].tlid );
@@ -59,48 +55,48 @@ class ContextMenu extends React.Component{
 	}
 
 	playURIs(){
-		this.props.mopidyActions.playURIs(this.props.context_menu.data.uris);
+		this.props.mopidyActions.playURIs(this.props.menu.uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	playURIsNext(){
-		this.props.mopidyActions.enqueueURIsNext(this.props.context_menu.data.uris);
+		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	addToPlaylist(){
-		this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: this.props.context_menu.data.uris } )
+		this.props.uiActions.openModal('add_to_playlist', { tracks_uris: this.props.menu.uris })
 		this.props.uiActions.hideContextMenu();
 	}
 
 	addToQueue(){
-		this.props.mopidyActions.enqueueURIs(this.props.context_menu.data.uris)
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris)
 		this.props.uiActions.hideContextMenu()
 	}
 
-	addTracksToPlaylist( playlist_uri ){
-		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.context_menu.data.uris )
+	addTracksToPlaylist(playlist_uri){
+		this.props.uiActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
 		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromPlaylist(){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, this.props.context_menu.data.indexes )
+		this.props.uiActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
 		this.props.uiActions.hideContextMenu();
 	}
 
 	startRadio(){
-		this.props.pusherActions.startRadio(this.props.context_menu.data.uris)
+		this.props.pusherActions.startRadio(this.props.menu.uris)
 		this.props.uiActions.hideContextMenu();
 	}
 
 	copyURIs(e){
 		var temp = $("<input>");
 		$("body").append(temp);
-		temp.val(this.props.context_menu.data.uris.join(',')).select();
+		temp.val(this.props.menu.uris.join(',')).select();
 		document.execCommand("copy");
 		temp.remove();
 
-		this.props.uiActions.createNotification( "Copied "+this.props.context_menu.data.uris.length+" URIs" )
+		this.props.uiActions.createNotification( "Copied "+this.props.menu.uris.length+" URIs" )
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -134,63 +130,63 @@ class ContextMenu extends React.Component{
 	}
 
 	getItems(){
-		switch (this.props.context_menu.context) {
-
-			case 'queue':
-				var items = [
-					{ handleClick: 'playQueueItem', label: 'Play', icon: 'play' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
-					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
-					{ handleClick: 'removeFromQueue', label: 'Remove', icon: 'trash' }
-				]
-				break
+		switch (this.props.menu.context) {
 
 			case 'album':
 				var items = [
-					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
-					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
-					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
-					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
-					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
+					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'playURIsNext', label: 'Play next' },
+					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'startRadio', label: 'Start radio' },
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
 			case 'artist':
 				var items = [
-					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
-					{ handleClick: 'toggleFollow', label: 'Follow/unfollow', icon: 'toggle-on' },
-					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
+					{ handleClick: 'startRadio', label: 'Start radio' },
+					{ handleClick: 'toggleFollow', label: 'Follow/unfollow' },
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
 			case 'playlist':
 				var items = [
-					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
-					{ handleClick: 'toggleFollow', label: 'Follow/unfollow', icon: 'toggle-on' },
-					{ handleClick: 'copyURIs', label: 'Copy URI', icon: 'copy' }
+					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'toggleFollow', label: 'Follow/unfollow' },
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
+				]
+				break
+
+			case 'queue-track':
+				var items = [
+					{ handleClick: 'playQueueItem', label: 'Play' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist' },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' },
+					{ handleClick: 'removeFromQueue', label: 'Remove' }
 				]
 				break
 
 			case 'editable-playlist-track':
 				var items = [
-					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
-					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
-					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
-					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
-					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' },
-					{ handleClick: 'removeFromPlaylist', label: 'Remove', icon: 'trash' }
+					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'playURIsNext', label: 'Play next' },
+					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist' },
+					{ handleClick: 'startRadio', label: 'Start radio' },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' },
+					{ handleClick: 'removeFromPlaylist', label: 'Remove' }
 				]
 				break
 
 			default:
 				var items = [
-					{ handleClick: 'playURIs', label: 'Play', icon: 'play' },
-					{ handleClick: 'playURIsNext', label: 'Play next', icon: 'play' },
-					{ handleClick: 'addToQueue', label: 'Add to queue', icon: 'plus' },
-					{ handleClick: 'addToPlaylist', label: 'Add to playlist', icon: 'plus', playlists: true },
-					{ handleClick: 'startRadio', label: 'Start radio', icon: 'spotify' },
-					{ handleClick: 'copyURIs', label: 'Copy URIs', icon: 'copy' }
+					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'playURIsNext', label: 'Play next' },
+					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'addToPlaylist', label: 'Add to playlist' },
+					{ handleClick: 'startRadio', label: 'Start radio' },
+					{ handleClick: 'copyURIs', label: 'Copy URIs' }
 				]
 				break
 		}
@@ -199,7 +195,7 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		var item = this.props.context_menu.data.item
+		var item = this.props.menu.item
 		var style = null
 		if (item && item.images){
 			style = {
@@ -221,11 +217,10 @@ class ContextMenu extends React.Component{
 			<div>
 				{
 					items.map((item, index) => {
-						if( item.playlists ){
+						if (item.handleClick == 'addToPlaylist'){
 							return (
 								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
 									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
-										<FontAwesome className="icon" fixedWidth name={item.icon} />
 										<span className="label">{ item.label }</span>
 										<FontAwesome className="submenu-icon" name="caret-right" />
 									</a>
@@ -236,7 +231,6 @@ class ContextMenu extends React.Component{
 							return (
 								<span className="menu-item-wrapper" key={item.handleClick}>
 									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
-										<FontAwesome className="icon" fixedWidth name={item.icon} />
 										<span className="label">{ item.label }</span>
 									</a>
 								</span>
@@ -249,37 +243,28 @@ class ContextMenu extends React.Component{
 	}
 
 	render(){
-		if( !this.props.context_menu.show ) return null;
+		if (!this.props.menu) return null;
 
 		var style = {
-			left: this.props.context_menu.position_x,
-			top: this.props.context_menu.position_y,
+			left: this.props.menu.position_x,
+			top: this.props.menu.position_y,
 		}
 
-		var className = 'context-menu'
-		if (this.props.emulate_touch) {
-			className += ' touch'
-			var trigger = 'touch'
-		} else {
-			className += ' '+this.props.context_menu.trigger
-			var trigger = this.props.context_menu.trigger
-		}
-
-		var items = this.getItems(trigger)
+		var items = this.getItems()
 		var height = 0
 		if (items) height = items.length * 34 // this is an approximation of how tall each menu item is
 
-		if (this.props.context_menu.position_x > (window.innerWidth - 154)) className += ' right-align'
-		if (this.props.context_menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
-		if (this.props.context_menu.position_y > (window.innerHeight - height)){
+		if (this.props.menu.position_x > (window.innerWidth - 154)) className += ' right-align'
+		if (this.props.menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
+		if (this.props.menu.position_y > (window.innerHeight - height)){
 			style.top = style.top - height
 			className += ' bottom-align-submenu'
 		}
 
 		return (
-			<div className={className} style={style}>
-				{this.props.context_menu.data.item ? this.renderTitle() : null}
-				{this.renderItems(trigger)}
+			<div className="context-menu" style={style}>
+				{this.props.menu.item ? this.renderTitle() : null}
+				{this.renderItems()}
 			</div>
 		);
 	}
@@ -287,11 +272,9 @@ class ContextMenu extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		emulate_touch: state.ui.emulate_touch,
-		context_menu: state.ui.context_menu,
+		menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
 		current_tracklist: state.ui.current_tracklist,
-		playlist: state.ui.playlist,
 		playlists: state.ui.playlists
 	}
 }
