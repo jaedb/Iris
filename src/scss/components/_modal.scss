@@ -68,6 +68,7 @@
 
 		.list {
 			@include clearfix();
+			padding-top: 30px;
 
 			.list-item {
 				box-sizing: border-box;
@@ -79,20 +80,6 @@
 
 				&:nth-child(1){
 					border-top: 1px solid $mid_grey;
-				}
-
-				&.small {
-					padding-left: 30px;
-					width: 49%;
-					float: left;
-
-					&:nth-child(2){
-						border-top: 1px solid $mid_grey;
-					}
-
-					&:nth-child(2n){
-						margin-left: 2%;
-					}
 				}
 
 				.source {
@@ -107,8 +94,25 @@
 				}
 			}
 
-			&.pusher-connection-list {
-				padding-top: 50px;
+			&.playlists {
+				padding-top: 0;
+
+				.list-item {
+					padding-left: 30px;
+				}
+			}
+
+			&.small .list-item {
+				width: 49%;
+				float: left;
+
+				&:nth-child(2){
+					border-top: 1px solid $mid_grey;
+				}
+
+				&:nth-child(2n){
+					margin-left: 2%;
+				}
 			}
 		}
 	}
@@ -124,6 +128,27 @@
 				max-height: 90vh;
 				max-width: 100%;
 			}
+		}
+	}
+
+	&.edit_radio {
+		.field {
+			position: relative;
+			button {
+				position: absolute;
+				top: 5px;
+				right: 0;
+			}
+		}
+	}
+
+	.actions {
+		padding-top: 50px;
+		text-align: center;
+
+		.button,
+		button {
+			margin: 0 3px;
 		}
 	}
 

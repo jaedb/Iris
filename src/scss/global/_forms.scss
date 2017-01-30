@@ -96,17 +96,16 @@ input[type="submit"] {
 		}
 	}
 
-	&.centered {
-		display: block;
+	&.wide {
+		display: inline-block;
 		min-width: 200px;
-		margin: 0 auto;
 		text-align: center;
 		padding-left: 30px;
 		padding-right: 30px;
 	}
 
 	&[disabled],
-	&[disabled="disabled"] {
+	&[disabled="disabled"]{
 		background: rgba(200,200,200,0.4) !important;
 		color: $mid_grey !important;
 		cursor: not-allowed !important;

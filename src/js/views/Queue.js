@@ -57,26 +57,17 @@ class Queue extends React.Component{
 
 	render(){
 		var actions = (
-			<button onClick={() => this.props.mopidyActions.clearTracklist()}>
-				<FontAwesome name="trash" />&nbsp;
-				Clear
-			</button>
+			<span>
+				<button onClick={() => this.props.uiActions.openModal('edit_radio')}>
+					<FontAwesome name="spotify" />&nbsp;
+					Radio
+				</button>
+				<button onClick={() => this.props.mopidyActions.clearTracklist()}>
+					<FontAwesome name="trash" />&nbsp;
+					Clear
+				</button>
+			</span>
 		)
-
-		if (this.props.radio && this.props.radio.enabled){
-			var actions = (
-				<span>
-					<button onClick={() => this.props.uiActions.openModal('edit_radio')}>
-						<FontAwesome name="pencil" />&nbsp;
-						Edit
-					</button>
-					<button onClick={() => this.props.pusherActions.stopRadio()}>
-						<FontAwesome name="trash" />&nbsp;
-						Stop
-					</button>
-				</span>
-			)
-		}
 
 		return (
 			<div className="view queue-view">			

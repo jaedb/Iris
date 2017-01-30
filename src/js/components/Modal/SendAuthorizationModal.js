@@ -27,7 +27,7 @@ class SendAuthorizationModal extends React.Component{
 			<div>
 				<h4 className="no-bottom-padding">Share Spotify authentication</h4>
 				<h3 className="grey-text">Send your authentication tokens to another client. When the recipient client imports this, their Iris will have full access to your Spotify account ({this.props.me.id}).</h3>
-				<div className="list pusher-connection-list">
+				<div className="list small pusher-connection-list">
 					{
 						this.props.connections.map( (connection, index) => {
 							
@@ -35,7 +35,7 @@ class SendAuthorizationModal extends React.Component{
 							if (connection.connectionid == this.props.connectionid) return null
 
 							return (
-								<div className='list-item small connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
+								<div className='list-item connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
 									{ connection.username }
 									&nbsp;
 									<span className="grey-text">({ connection.ip })</span>

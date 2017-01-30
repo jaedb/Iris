@@ -98,6 +98,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 self.load_more_tracks()
                 
         except RuntimeError:
+            pusher.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
             logger.warning('IrisFrontend: Could not fetch tracklist length')
             pass
 
@@ -118,6 +119,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             token = token['access_token']
         except:
             logger.error('IrisFrontend: access_token missing or invalid')
+            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
             
         try:
             spotify = Spotify( auth = token )
@@ -129,7 +131,8 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             
             self.core.tracklist.add( uris = uris )
         except:
-            logger.error('IrisFrontend: Failed to fetch recommendations from Spotify')
+            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
+            logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             
     
     ##
@@ -154,7 +157,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.play()
         
         # notify clients
-        pusher.broadcast( 'radio', { 'radio': self.radio })
+        pusher.broadcast('radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio

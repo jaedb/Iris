@@ -10,31 +10,67 @@ export default class EditRadioModal extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			seed_tracks: [],
-			seed_genres: [],
-			seed_artists: [],
-			uri: ''
+			enabled: false,
+			seeds: [],
+			uri: '',
+			uri_validated: false
 		}
 	}
 
 	componentDidMount(){
-		this.setState(this.props.radio)
+		if (!this.props.radio || !this.props.radio.enabled) return null
+		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
+		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
+	}
+
+	handleChange(uri){
+		this.setState({uri: uri})
+
+		var allowed_types = ['artist','track']
+		if (allowed_types.indexOf(helpers.uriType(uri)) > -1){
+			this.setState({uri_validated: true})
+		}
 	}
 
 	save(){
+		this.props.pusherActions.startRadio(this.state.seeds)
 		this.props.uiActions.closeModal()
 	}
 
-	addSeed(seed){
-		this.setState({uri: ''})
+	stop(){
+		this.props.pusherActions.stopRadio()
+		this.props.uiActions.closeModal()
 	}
 
-	removeSeed(type,seed){
-		console.log('remove', type, seed)
+	addSeed(){
+		if (!this.state.uri_validated || this.state.uri == '') return null
+
+		var seeds = Object.assign([],this.state.seeds)
+
+		if (seeds.indexOf(this.state.uri) <= -1){
+			seeds.push(this.state.uri)
+		} else {
+			this.props.uiActions.createNotification('Seed already exists','bad')
+		}
+
+		// commit to state
+		this.setState({
+			seeds: seeds,
+			uri: '',
+			uri_validated: false
+		})
+	}
+
+	removeSeed(uri){
+		var seeds = Object.assign([],this.state.seeds)
+		var index = seeds.indexOf(uri)
+		if (index > -1){
+			delete seeds[index]
+			this.setState({seeds: seeds})
+		}
 	}
 
 	renderSeeds(){
-		if (!this.props.radio || !this.props.radio.enabled) return null
 /*
 		var seeds = this.props.radio.resolved_seeds
 		var uri
@@ -56,31 +92,11 @@ export default class EditRadioModal extends React.Component{
 		return (
 			<div className="list">
 				{
-					this.state.seed_tracks.map(seed => {
+					this.state.seeds.map((seed,index) => {
 						return (
-							<div className="list-item" key={seed}>
+							<div className="list-item" key={index+'_'+seed}>
 								{seed}
-								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed('track',seed)} />
-							</div>
-						)
-					})
-				}
-				{
-					this.state.seed_genres.map(seed => {
-						return (
-							<div className="list-item" key={seed}>
-								{seed}
-								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed('genre',seed)} />
-							</div>
-						)
-					})
-				}
-				{
-					this.state.seed_artists.map(seed => {
-						return (
-							<div className="list-item" key={seed}>
-								{seed}
-								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed('artist',seed)} />
+								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed)} />
 							</div>
 						)
 					})
@@ -89,21 +105,43 @@ export default class EditRadioModal extends React.Component{
 		)
 	}
 
+	renderActions(){
+		if (this.state.enabled){
+			return (
+				<span>
+					<button className="primary wide" onClick={e => this.save()}>Save</button>
+					<button className="destructive wide" onClick={e => this.stop()}>Stop</button>
+				</span>
+			)
+		}else{
+			return (
+				<span>				
+					<button className="primary wide" onClick={e => this.save()}>Start</button>
+				</span>
+			)
+		}
+	}
+
 	render(){
 		return (
 			<div>
 				<h4>Edit radio</h4>
 				<form>
-					{this.renderSeeds()}
+
 					<div className="field">
 						<input 
 							type="text"
-							placeholder="URI"
-							onChange={e => this.setState({uri: e.target.value})} 
+							placeholder="Spotify URI"
+							onChange={e => this.handleChange(e.target.value)} 
 							value={this.state.uri} />
+						<button disabled={!this.state.uri_validated} onClick={e => this.addSeed()}>Add</button>
 					</div>
-					<button className="secondary" onClick={e => this.addSeed(this.state.uri)}>Add</button>
-					<button type="submit" className="primary" onClick={e => this.save()}>Save and close</button>
+
+					{this.renderSeeds()}
+
+					<div className="actions centered-text">
+						{this.renderActions()}
+					</div>
 				</form>
 			</div>
 		)

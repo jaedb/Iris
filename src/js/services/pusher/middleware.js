@@ -128,6 +128,10 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+            case 'ERROR':
+                store.dispatch( uiActions.createNotification(action.data.source+': '+action.data.message,'bad') )
+                break;
+
             case 'START_UPGRADE':
                 request({ action: 'upgrade' })
                     .then(
@@ -233,6 +237,9 @@ const PusherMiddleware = (function(){
                         case 'track':
                             data.seed_tracks.push( action.uris[i] );
                             break;
+                        case 'genre':
+                            data.seed_genres.push( action.uris[i] );
+                            break;
                     }
                 }
                 
@@ -256,7 +263,6 @@ const PusherMiddleware = (function(){
                     }
                 )
 
-                store.dispatch(uiActions.createNotification('Stopping radio'))
                 var data = {
                     action: 'stop_radio',
                     seed_artists: [],
