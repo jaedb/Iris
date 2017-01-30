@@ -121,7 +121,7 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
 
         case 'RADIO_SEEDS_RESOLVED':
-            var radio = Object.assign({}, ui.radio, action.data, { seeds_resolved: true })
+            var radio = Object.assign({}, ui.radio, { resolved_seeds: action.resolved_seeds })
             return Object.assign({}, ui, { radio: radio })
 
 

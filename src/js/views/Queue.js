@@ -55,28 +55,6 @@ class Queue extends React.Component{
 		)
 	}
 
-	renderRadio(){
-		if (!this.props.radio || !this.props.radio.enabled) return null
-
-		var seed_sentence = 'nothing'
-		if (this.props.radio.seed_artists.length > 0){
-			if (this.props.radio.seeds_resolved){
-				seed_sentence = <ArtistSentence artists={this.props.radio.seed_artists} />
-			}else{
-				seed_sentence = this.props.radio.seed_artists.length +' artists'
-			}
-		}
-		if (this.props.radio.seed_genres.length > 0) seed_sentence =this.props.radio.seed_artists.length+' genres'
-		if (this.props.radio.seed_tracks.length > 0) seed_sentence =this.props.radio.seed_tracks.length+' tracks'
-
-		return (
-			<div className="radio">
-				Playing radio based on {seed_sentence}
-				<a className="text-button destructive pull-right" onClick={ e => this.props.pusherActions.stopRadio() }><FontAwesome name="close" />&nbsp; Stop radio</a>
-			</div>
-		)
-	}
-
 	render(){
 		var actions = (
 			<button onClick={() => this.props.mopidyActions.clearTracklist()}>
@@ -85,17 +63,27 @@ class Queue extends React.Component{
 			</button>
 		)
 
-		return (
-			<div className="view queue-view">
-			
-				<Header icon="play" title="Now playing" actions={actions} />
+		if (this.props.radio && this.props.radio.enabled){
+			var actions = (
+				<span>
+					<button onClick={() => this.props.uiActions.openModal('edit_radio')}>
+						<FontAwesome name="pencil" />&nbsp;
+						Edit
+					</button>
+					<button onClick={() => this.props.pusherActions.stopRadio()}>
+						<FontAwesome name="trash" />&nbsp;
+						Stop
+					</button>
+				</span>
+			)
+		}
 
+		return (
+			<div className="view queue-view">			
+				<Header icon="play" title="Now playing" actions={actions} />
 				<FullPlayer />
 
-				{ this.renderRadio() }
-
 				<section className="list-wrapper">
-
 					<TrackList
 						show_source_icon={true}
 						context="queue-track"

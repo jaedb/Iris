@@ -498,12 +498,7 @@ export function resolveRadioSeeds( radio ){
         // flush out the previous store value
         dispatch({ type: 'RADIO_SEEDS_RESOLVING' });
 
-        var resolved_seeds = {
-            seed_artists: [],
-            seed_tracks: [],
-            seed_genres: []
-        }
-
+        var resolved_seeds = {}
         var requests = []
 
         if (radio.seed_artists.length > 0){
@@ -518,7 +513,9 @@ export function resolveRadioSeeds( radio ){
                 sendRequest( dispatch, getState, 'artists/'+ artist_ids )
                 .then( response => {
                     if (!(response instanceof Array)) response = [response]
-                    Object.assign(resolved_seeds.seed_artists, response);
+                    for (var i = 0; i < response.length; i++){
+                        resolved_seeds[response[i].uri] = response[i]
+                    }
                 })
             )
         }
@@ -534,7 +531,9 @@ export function resolveRadioSeeds( radio ){
             requests.push(
                 sendRequest( dispatch, getState, 'tracks?ids='+ track_ids )
                 .then( response => {
-                    Object.assign(resolved_seeds.seed_tracks, response.tracks);
+                    for (var i = 0; i < response.tracks.length; i++){
+                        resolved_seeds[response.tracks[i].uri] = response.tracks[i]
+                    }
                 })
             )
         }
@@ -544,7 +543,7 @@ export function resolveRadioSeeds( radio ){
         ).then( () => {
             dispatch({
                 type: 'RADIO_SEEDS_RESOLVED',
-                data: resolved_seeds
+                resolved_seeds: resolved_seeds
             });
         });
     }

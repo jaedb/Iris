@@ -137,7 +137,6 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play' },
 					{ handleClick: 'playURIsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
-					{ handleClick: 'startRadio', label: 'Start radio' },
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break

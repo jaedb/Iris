@@ -35,7 +35,7 @@ class SendAuthorizationModal extends React.Component{
 							if (connection.connectionid == this.props.connectionid) return null
 
 							return (
-								<div className='list-item connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
+								<div className='list-item small connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
 									{ connection.username }
 									&nbsp;
 									<span className="grey-text">({ connection.ip })</span>
