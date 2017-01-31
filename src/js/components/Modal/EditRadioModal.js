@@ -12,8 +12,7 @@ export default class EditRadioModal extends React.Component{
 		this.state = {
 			enabled: false,
 			seeds: [],
-			uri: '',
-			uri_validated: false
+			uri: ''
 		}
 	}
 
@@ -21,15 +20,8 @@ export default class EditRadioModal extends React.Component{
 		if (!this.props.radio || !this.props.radio.enabled) return null
 		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
 		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
-	}
 
-	handleChange(uri){
-		this.setState({uri: uri})
-
-		var allowed_types = ['artist','track']
-		if (allowed_types.indexOf(helpers.uriType(uri)) > -1){
-			this.setState({uri_validated: true})
-		}
+		this.props.spotifyActions.resolveRadioSeeds(this.props.radio)
 	}
 
 	save(){
@@ -43,60 +35,77 @@ export default class EditRadioModal extends React.Component{
 	}
 
 	addSeed(){
-		if (!this.state.uri_validated || this.state.uri == '') return null
+		if (this.state.uri == '') return null
 
 		var seeds = Object.assign([],this.state.seeds)
+		var uris = this.state.uri.split(',')
 
-		if (seeds.indexOf(this.state.uri) <= -1){
-			seeds.push(this.state.uri)
-		} else {
-			this.props.uiActions.createNotification('Seed already exists','bad')
+		for (var i = 0; i < uris.length; i++){
+			if (seeds.indexOf(uris[i]) <= -1){
+				seeds.push(uris[i])
+			} else {
+				this.props.uiActions.createNotification(uris[i]+' already added','bad')
+			}			
 		}
 
 		// commit to state
 		this.setState({
 			seeds: seeds,
-			uri: '',
-			uri_validated: false
+			uri: ''
 		})
 	}
 
 	removeSeed(uri){
-		var seeds = Object.assign([],this.state.seeds)
-		var index = seeds.indexOf(uri)
-		if (index > -1){
-			delete seeds[index]
-			this.setState({seeds: seeds})
+		var seeds = []
+		for (var i = 0; i < this.state.seeds.length; i++){
+			if (this.state.seeds[i] != uri){
+				seeds.push(this.state.seeds[i])
+			}
 		}
+		this.setState({seeds: seeds})
 	}
 
 	renderSeeds(){
-/*
-		var seeds = this.props.radio.resolved_seeds
-		var uri
-
 		var seeds = []
-		for (var i = 0; i < this.props.radio.seed_tracks.length; i++){
-			var uri = this.props.radio.seed_tracks[i]
-			if (this.props.radio.resolved_seeds.hasOwnProperty(uri)){
-				seeds.push(this.props.radio.resolved_seeds[uri])
+
+		if (this.state.enabled && this.state.seeds){
+			for (var i = 0; i < this.state.seeds.length; i++){
+				var uri = this.state.seeds[i]
+				if (uri){
+					if (helpers.uriType(uri) == 'artist' && this.props.artists){
+						if (this.props.artists.hasOwnProperty(uri)){
+							seeds.push(this.props.artists[uri])
+						} else {
+							seeds.push({
+								type: 'artist',
+								unresolved: true,
+								uri: uri
+							})
+						}
+					} else if (helpers.uriType(uri) == 'track' && this.props.tracks){
+						if (this.props.tracks.hasOwnProperty(uri)){
+							seeds.push(this.props.tracks[uri])
+						} else {
+							seeds.push({
+								type: 'track',
+								unresolved: true,
+								uri: uri
+							})
+						}
+					}
+				}
 			}
 		}
-		for (var i = 0; i < this.props.radio.seed_artists.length; i++){
-			var uri = this.props.radio.seed_artists[i]
-			if (this.props.radio.resolved_seeds.hasOwnProperty(uri)){
-				seeds.push(this.props.radio.resolved_seeds[uri])
-			}
-		}*/
 
 		return (
 			<div className="list">
 				{
-					this.state.seeds.map((seed,index) => {
+					seeds.map((seed,index) => {
 						return (
-							<div className="list-item" key={index+'_'+seed}>
-								{seed}
-								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed)} />
+							<div className="list-item" key={seed.uri}>
+								{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
+								<span className="grey-text">&nbsp;({seed.type})</span>
+								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed.uri)} />
 							</div>
 						)
 					})
@@ -126,18 +135,20 @@ export default class EditRadioModal extends React.Component{
 		return (
 			<div>
 				<h4>Edit radio</h4>
-				<form>
 
+				<h3>Current seeds</h3>
+				{this.renderSeeds()}
+
+				<form>
+					<h3>Add seeds</h3>
 					<div className="field">
 						<input 
 							type="text"
-							placeholder="Spotify URI"
-							onChange={e => this.handleChange(e.target.value)} 
+							placeholder="Comma-separated URIs"
+							onChange={e => this.setState({uri: e.target.value})} 
 							value={this.state.uri} />
-						<button disabled={!this.state.uri_validated} onClick={e => this.addSeed()}>Add</button>
+						<button className="discrete" onClick={e => this.addSeed()}><FontAwesome name="check" /></button>
 					</div>
-
-					{this.renderSeeds()}
 
 					<div className="actions centered-text">
 						{this.renderActions()}

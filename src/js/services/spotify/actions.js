@@ -495,12 +495,6 @@ export function following(uri, method = 'GET'){
 export function resolveRadioSeeds( radio ){
     return (dispatch, getState) => {
 
-        // flush out the previous store value
-        dispatch({ type: 'RADIO_SEEDS_RESOLVING' });
-
-        var resolved_seeds = {}
-        var requests = []
-
         if (radio.seed_artists.length > 0){
             var artist_ids = '';
             for (var i = 0; i < radio.seed_artists.length; i++){
@@ -508,16 +502,14 @@ export function resolveRadioSeeds( radio ){
                 artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i])
             }
 
-            // add to our list of async requests
-            requests.push(
-                sendRequest( dispatch, getState, 'artists/'+ artist_ids )
-                .then( response => {
-                    if (!(response instanceof Array)) response = [response]
-                    for (var i = 0; i < response.length; i++){
-                        resolved_seeds[response[i].uri] = response[i]
-                    }
+            sendRequest( dispatch, getState, 'artists/'+ artist_ids )
+            .then( response => {
+                if (!(response instanceof Array)) response = [response]
+                dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: response
                 })
-            )
+            })
         }
 
         if (radio.seed_tracks.length > 0){
@@ -527,25 +519,14 @@ export function resolveRadioSeeds( radio ){
                 track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i])
             }
             
-            // add to our list of async requests
-            requests.push(
-                sendRequest( dispatch, getState, 'tracks?ids='+ track_ids )
-                .then( response => {
-                    for (var i = 0; i < response.tracks.length; i++){
-                        resolved_seeds[response.tracks[i].uri] = response.tracks[i]
-                    }
+            sendRequest( dispatch, getState, 'tracks?ids='+ track_ids )
+            .then( response => {
+                dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: response.tracks
                 })
-            )
+            })
         }
-
-        $.when.apply(
-            $, requests
-        ).then( () => {
-            dispatch({
-                type: 'RADIO_SEEDS_RESOLVED',
-                resolved_seeds: resolved_seeds
-            });
-        });
     }
 }
 

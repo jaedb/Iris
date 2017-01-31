@@ -132,13 +132,18 @@
 	}
 
 	&.edit_radio {
-		.field {
-			position: relative;
-			button {
-				position: absolute;
-				top: 5px;
-				right: 0;
-			}
+		form {
+			padding-top: 60px;
+			.field {
+				position: relative;
+				margin-top: 10px;
+				button {
+					position: absolute;
+					top: 5px;
+					right: 0;
+					padding: 10px 12px;
+				}
+			}			
 		}
 	}
 

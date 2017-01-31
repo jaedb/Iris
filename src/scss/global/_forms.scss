@@ -73,6 +73,20 @@ input[type="submit"] {
 		}
 	}
 
+	&.discrete {
+		background: transparent;
+		color: #FFFFFF;
+
+		&[disabled],
+		&[disabled="disabled"] {
+			background: transparent !important;
+		}
+
+		&:hover {
+			color: $turquoise;
+		}
+	}
+
 	&.confirming,
 	&.destructive {
 		background: $red;

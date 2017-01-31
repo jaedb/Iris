@@ -37,7 +37,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'send_authorization' ? <SendAuthorizationModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} radio={this.props.radio} /> : null }
+					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 
 				</div>
@@ -50,6 +50,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		modal: state.ui.modal,
 		radio: state.ui.radio,
+		tracks: state.ui.tracks,
+		artists: state.ui.artists,
 		playlists: state.ui.playlists,
 		context_menu: state.ui.context_menu,
 		mopidy_connected: state.mopidy.connected,

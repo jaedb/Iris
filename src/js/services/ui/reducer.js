@@ -358,6 +358,38 @@ export default function reducer(ui = {}, action){
 
 
         /**
+         * Tracks
+         **/
+
+        case 'TRACK_LOADED':
+            var tracks = Object.assign([], ui.tracks)
+
+            if (tracks[action.key]){
+                var track = Object.assign({}, tracks[action.key], action.track)
+            }else{
+                var track = Object.assign({}, action.track)
+            }
+
+            tracks[action.key] = track
+            return Object.assign({}, ui, { tracks: tracks });
+
+        case 'TRACKS_LOADED':
+            var tracks = Object.assign([], ui.tracks)
+
+            for (var i = 0; i < action.tracks.length; i++){
+                var track = action.tracks[i]
+                if (typeof(tracks[track.uri]) !== 'undefined'){
+                    track = Object.assign({}, tracks[track.uri], track)
+                }
+                tracks[track.uri] = track
+            }
+
+            return Object.assign({}, ui, { tracks: tracks });
+
+
+
+
+        /**
          * Playlists
          **/
 
