@@ -28,10 +28,14 @@ class LibraryAlbums extends React.Component{
 		if (!this.props.library_albums) this.props.spotifyActions.getLibraryAlbums();
 	}
 
-	handleContextMenu(e,uri){
-		e.preventDefault()
-		var data = { uris: [uri] }
-		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
+	handleContextMenu(e,item){
+		var data = {
+			e: e,
+			context: 'album',
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	loadMore(){
@@ -83,7 +87,7 @@ class LibraryAlbums extends React.Component{
 			return (
 				<section className="list-wrapper">
 					<List 
-						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={albums} 
 						columns={columns} 
 						link_prefix={global.baseURL+"album/"} />
@@ -93,7 +97,7 @@ class LibraryAlbums extends React.Component{
 			return (
 				<section className="grid-wrapper">
 					<AlbumGrid 
-						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						albums={albums} />
 				</section>			
 			)

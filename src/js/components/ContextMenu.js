@@ -137,14 +137,15 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play' },
 					{ handleClick: 'playURIsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
 			case 'artist':
 				var items = [
+					//{ handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'startRadio', label: 'Start radio' },
-					{ handleClick: 'toggleFollow', label: 'Follow/unfollow' },
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
@@ -152,7 +153,7 @@ class ContextMenu extends React.Component{
 			case 'playlist':
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play' },
-					{ handleClick: 'toggleFollow', label: 'Follow/unfollow' },
+					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break

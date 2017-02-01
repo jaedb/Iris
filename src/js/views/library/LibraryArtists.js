@@ -21,10 +21,14 @@ class LibraryArtists extends React.Component{
 		super(props);
 	}
 
-	handleContextMenu(e,uri){
-		e.preventDefault()
-		var data = { uris: [uri] }
-		this.props.uiActions.showContextMenu( e, data, 'artist', 'click' )
+	handleContextMenu(e,item){
+		var data = {
+			e: e,
+			context: 'artist',
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	componentDidMount(){
@@ -68,17 +72,18 @@ class LibraryArtists extends React.Component{
 			return (
 				<section className="list-wrapper">
 					<List 
-						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
 						columns={columns} 
-						link_prefix={global.baseURL+"artist/"} show_source_icon={true} />
+						link_prefix={global.baseURL+"artist/"}
+						show_source_icon={true} />
 				</section>
 			)
 		}else{
 			return (
 				<section className="grid-wrapper">
 					<ArtistGrid 
-						handleContextMenu={(e,uri) => this.handleContextMenu(e,uri)}
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />
 				</section>				
 			)

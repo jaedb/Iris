@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import Header from '../../components/Header'
 import List from '../../components/List'
 
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -24,6 +25,16 @@ class LibraryLocalArtists extends React.Component{
 		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
 			this.loadArtists(nextProps);
 		}
+	}
+
+	handleContextMenu(e,item){
+		var data = {
+			e: e,
+			context: 'artist',
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	loadArtists(props = this.props){
@@ -47,7 +58,12 @@ class LibraryLocalArtists extends React.Component{
 			<div className="view library-local-view">
 				<Header icon="music" title="Local artists" />
 				<section className="list-wrapper">
-					<List columns={[{ name: 'name', width: '100'}]} rows={artists} link_prefix={global.baseURL+"artist/"} />
+					<List 
+						columns={[{ name: 'name', width: '100'}]} 
+						rows={artists} 
+						link_prefix={global.baseURL+"artist/"}
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+					/>
 				</section>
 			</div>
 		);
@@ -71,6 +87,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

@@ -153,12 +153,18 @@ class TrackList extends React.Component{
 		}
 	}
 
-	toggleTrackSelections(e, index){
+	toggleTrackSelections(e,index){
 		var tracks = this.state.tracks
+		var lastSelectedTrack = this.state.lastSelectedTrack
 
 		if( e.ctrlKey ){
 
-			tracks[index].selected = !tracks[index].selected
+			if (tracks[index].selected){
+				tracks[index].selected = false
+			} else {
+				tracks[index].selected = true
+				lastSelectedTrack = index
+			}
 
 		}else if( e.shiftKey ){
 
@@ -170,8 +176,11 @@ class TrackList extends React.Component{
 				var end = this.state.lastSelectedTrack
 			}
 
-			for( var i = start; i <= end; i++ ){
-				tracks[i].selected = true
+			if (start !== false && end !== false){
+				for( var i = start; i <= end; i++ ){
+					tracks[i].selected = true
+					lastSelectedTrack = index
+				}
 			}
 
 		}else{
@@ -180,10 +189,11 @@ class TrackList extends React.Component{
 				tracks[i].selected = false
 			}
 
-			tracks[index].selected = !tracks[index].selected
+			tracks[index].selected = true
+			lastSelectedTrack = index
 		}
 
-		this.setState({ tracks: tracks, lastSelectedTrack: index })
+		this.setState({ tracks: tracks, lastSelectedTrack: lastSelectedTrack })
 	}
 
 	isRightClick(e){

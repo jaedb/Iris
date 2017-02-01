@@ -21,6 +21,16 @@ class LibraryPlaylists extends React.Component{
 		super(props);
 	}
 
+	handleContextMenu(e,item){
+		var data = {
+			e: e,
+			context: 'playlist',
+			uris: [item.uri],
+			item: item
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	setSort(value){
 		var reverse = false
 		if( this.props.sort == value ) reverse = !this.props.sort_reverse
@@ -72,13 +82,20 @@ class LibraryPlaylists extends React.Component{
 			]
 			return (
 				<section className="list-wrapper">
-					<List rows={playlists} columns={columns} link_prefix={global.baseURL+"playlist/"} show_source_icon={true} />
+					<List
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						rows={playlists}
+						columns={columns}
+						link_prefix={global.baseURL+"playlist/"}
+						show_source_icon={true} />
 				</section>
 			)
 		}else{
 			return (
 				<section className="grid-wrapper">
-					<PlaylistGrid playlists={playlists} />
+					<PlaylistGrid
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						playlists={playlists} />
 				</section>				
 			)
 		}

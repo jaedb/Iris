@@ -98,7 +98,7 @@ class Album extends React.Component{
 			<div className="view album-view">
 		        <SidebarToggleButton />
 				<div className="intro">
-					<Thumbnail size="large" canZoom images={ this.props.album.images } handleContextMenu={ e => this.handleContextMenu(e) } />
+					<Thumbnail size="large" canZoom images={ this.props.album.images } />
 					<ArtistGrid artists={artists} />
 
 					<div className="actions">
