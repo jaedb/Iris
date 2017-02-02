@@ -2,6 +2,7 @@
 import ReactGA from 'react-ga'
 
 var uiActions = require('./actions.js')
+var mopidyActions = require('../mopidy/actions.js')
 var spotifyActions = require('../spotify/actions.js')
 var helpers = require('../../helpers.js')
 
@@ -185,9 +186,15 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-
-                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))
-
+                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))                
+                switch(helpers.uriSource(action.key)){
+                    case 'spotify':
+                        store.dispatch(spotifyActions.getPlaylist(action.key))
+                        break
+                    case 'm3u':
+                        if( store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key))
+                        break
+                }
                 next(action)
                 break
 

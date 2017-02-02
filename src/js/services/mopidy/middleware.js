@@ -327,6 +327,7 @@ const MopidyMiddleware = (function(){
                                             type: 'playlist',
                                             name: response.name,
                                             uri: response.uri,
+                                            source: 'local',
                                             last_modified: response.last_modified,
                                             can_edit: (response.uri.startsWith('m3u:')),
                                             tracks_total: ( response.tracks ? response.tracks.length : 0 )
@@ -344,7 +345,6 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_PLAYLIST':
-                store.dispatch({ type: 'MOPIDY_PLAYLIST_LOADED', data: false });
                 instruct( socket, store, 'playlists.lookup', action.data )
                     .then( response => {
                         var playlist = Object.assign(
@@ -352,8 +352,8 @@ const MopidyMiddleware = (function(){
                             response,
                             {
                                 type: 'playlist',
-                                tracks: ( response.tracks ? response.tracks : null ),
-                                tracks_total: ( response.tracks ? response.tracks.length : null )
+                                tracks: ( response.tracks ? response.tracks : [] ),
+                                tracks_total: ( response.tracks ? response.tracks.length : [] )
                             }
                         )
 

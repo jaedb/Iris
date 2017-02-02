@@ -60,24 +60,24 @@ class LibraryPlaylists extends React.Component{
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 30,
+					width: 50,
 					label: 'Name',
 					name: 'name'
 				},
 				{
-					width: 30,
+					width: 20,
 					label: 'Owner',
 					name: 'owner'
 				},
 				{
 					width: 10,
-					label: 'Can edit',
-					name: 'can_edit'
+					label: 'Tracks',
+					name: 'tracks_total'
 				},
 				{
 					width: 10,
-					label: 'Tracks',
-					name: 'tracks_total'
+					label: 'Can edit',
+					name: 'can_edit'
 				}
 			]
 			return (
@@ -130,6 +130,10 @@ class LibraryPlaylists extends React.Component{
 			{
 				value: 'tracks.total',
 				label: 'Tracks'
+			},
+			{
+				value: 'source',
+				label: 'Source'
 			}
 		]
 

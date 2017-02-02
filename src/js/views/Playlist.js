@@ -174,8 +174,10 @@ class Playlist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
+	var uri = ownProps.params.uri
+	uri = uri.replace(' ','%20')
 	return {
-		playlist: (state.ui.playlists && typeof(state.ui.playlists[ownProps.params.uri]) !== 'undefined' ? state.ui.playlists[ownProps.params.uri] : false ),
+		playlist: (state.ui.playlists && typeof(state.ui.playlists[uri]) !== 'undefined' ? state.ui.playlists[uri] : false ),
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		spotify_userid: state.spotify.me.id

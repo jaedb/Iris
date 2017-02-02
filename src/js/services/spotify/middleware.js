@@ -236,6 +236,7 @@ const SpotifyMiddleware = (function(){
                         {},
                         action.playlists[i],
                         {
+                            source: 'spotify',
                             can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.playlists[i].owner.id == store.getState().spotify.me.id),
                             tracks_total: action.playlists[i].tracks.total
                         }

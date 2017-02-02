@@ -77,14 +77,23 @@ class List extends React.Component{
 				{
 					this.props.rows.map( (row, row_index) => {
 
-						var className = 'list-item'
-						if( row.type ) className += ' '+row.type
+						var class_name = 'list-item'
+						if( row.type ) class_name += ' '+row.type
+
+						var source_icon = null
+						if (this.props.show_source_icon){
+							if (row.source){
+								source_icon = <FontAwesome className="source" name={helpers.sourceIcon(false,row.source)} />
+							}else{
+								source_icon = <FontAwesome className="source" name={helpers.sourceIcon(row.uri)} />
+							}
+						}
 
 						return (
 							<div 
 								onClick={e => this.handleClick(e, row.uri)} 
 								onContextMenu={e => this.handleContextMenu(e,row)}
-								className={className} 
+								className={class_name} 
 								key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
@@ -95,7 +104,7 @@ class List extends React.Component{
 										)
 									})
 								}
-								{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(row.uri)} /> : null }
+								{source_icon}
 							</div>
 						)
 					})

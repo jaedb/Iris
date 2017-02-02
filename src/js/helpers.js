@@ -129,13 +129,13 @@ export let flattenTracks = function( tracks ){
  * Figure out a URI's source namespace
  * @param uri = string
  **/
-export let uriSource = function( uri ){
+export let uriSource = function(uri){
     var exploded = uri.split(':');
     return exploded[0]
 }
 
-export let sourceIcon = function( uri ){
-	var source = uriSource(uri)
+export let sourceIcon = function(uri,source = null){
+	if (uri) source = uriSource(uri)
 	switch( source ){
 		case 'local':
 		case 'm3u':
@@ -153,7 +153,7 @@ export let sourceIcon = function( uri ){
  * @param element = string, the element we wish to extract
  * @param uri = string
  **/
-export let getFromUri = function( element, uri ){
+export let getFromUri = function(element,uri){
     var exploded = uri.split(':');
 
     if( element == 'mbid'){

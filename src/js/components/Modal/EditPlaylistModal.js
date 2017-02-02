@@ -26,7 +26,7 @@ export default class EditPlaylistModal extends React.Component{
 
 	savePlaylist(e){		
 		e.preventDefault();
-		this.props.uiActions.savePlaylist( this.props.data.uri, this.state.name, this.state.is_public )
+		this.props.uiActions.savePlaylist(this.props.data.uri, this.state.name, this.state.is_public)
 		this.props.uiActions.closeModal()
 		return false;
 	}
