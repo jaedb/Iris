@@ -39,16 +39,17 @@ import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
 
 // setup our analytics tracking
 ReactGA.initialize('UA-64701652-3');
-function logPageView() {
+function handleUpdate() {
 	ReactGA.set({ page: window.location.hash })
 	ReactGA.pageview(window.location.hash)
+	$(window).scrollTop(0)
 }
 
 global.baseURL = '/'
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={hashHistory} onUpdate={logPageView}>
+		<Router history={hashHistory} onUpdate={handleUpdate}>
 			<Route path={global.baseURL} component={App}>
 
      			<IndexRoute component={Queue} />

@@ -6,7 +6,8 @@
 	left: 0;
 	right: 0;
 	text-align: center;
-	z-index: 100;
+	z-index: 99;
+	pointer-events: none;
 
 	.notification {
 		display: inline-block;
@@ -15,6 +16,7 @@
 		padding: 12px 32px 12px 18px;
 		margin: 0 0.5px;
 		color: #FFFFFF;
+		pointer-events: all;
 
 		&:first-child {
 			border-top-left-radius: 50px;

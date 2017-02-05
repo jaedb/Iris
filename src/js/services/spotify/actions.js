@@ -1,4 +1,5 @@
 
+var uiActions = require('../../services/ui/actions.js')
 var helpers = require('../../helpers.js')
 
 /**
@@ -39,6 +40,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         (xhr, status, error) => {
                             console.error( endpoint+' failed', xhr.responseText)
+                            dispatch(uiActions.createNotification(xhr.responseText,'bad'))
                             reject(error)
                         }
                     )

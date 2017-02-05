@@ -17,6 +17,10 @@ const SpotifyMiddleware = (function(){
                 store.dispatch( spotifyActions.getMe() )
                 break
 
+            case 'SPOTIFY_DISCONNECTED':
+                store.dispatch( uiActions.createNotification('Spotify disconnected','bad') )
+                break
+
             case 'SPOTIFY_CREATE_PLAYLIST':
                 if( !store.getState().spotify.authorized ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
