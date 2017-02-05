@@ -34,7 +34,8 @@ class Settings extends React.Component{
 
 	resetAllSettings(){
 		localStorage.clear();
-		window.location.reload(true);
+		window.location = '#'
+		window.location.reload(true)
 		return false;
 	}
 

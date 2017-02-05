@@ -189,6 +189,15 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 )
 
         # fetch our pusher connections
+        elif messageJson['action'] == 'get_config':                
+            send_message(
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'config': self.frontend.get_config() }
+            )
+
+        # fetch our pusher connections
         elif messageJson['action'] == 'get_connections':
         
             connectionsDetailsList = []
@@ -266,7 +275,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 { 'version': version } 
             )
     
-        # get system version and check for upgrade
+        # perform upgrade
         elif messageJson['action'] == 'upgrade':
             version = self.frontend.get_version()
             upgrade_successful = self.frontend.perform_upgrade()
@@ -290,7 +299,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 { 'error': 'Unhandled action' } 
             )
                         
-        logger.debug( 'Pusher: Message received from '+ self.connectionid )
+        logger.debug( 'Pusher: Unhandled message received from '+ self.connectionid )
   
     # connection closed
     def on_close(self):

@@ -103,12 +103,6 @@ const PusherMiddleware = (function(){
                 socket.onopen = () => {
                     store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
                     store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
-                    request({ action: 'get_radio' })
-                        .then(
-                            response => {
-                                store.dispatch({ type: 'RADIO', data: response.data })
-                            }
-                        )
                 };
 
                 socket.onmessage = (message) => {
@@ -119,10 +113,22 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
+                request({ action: 'get_config' })
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'CONFIG', data: response.data })
+                        }
+                    )
                 request({ action: 'get_version' })
                     .then(
                         response => {
                             store.dispatch({ type: 'VERSION', data: response.data })
+                        }
+                    )
+                request({ action: 'get_radio' })
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'RADIO', data: response.data })
                         }
                     )
                 return next(action);

@@ -49,8 +49,6 @@ var initialState = {
 	},
 	spotify: {
 		connected: false,
-		country: 'NZ',
-		locale: 'en_NZ',
 		me: false
 	},
 	ui: {

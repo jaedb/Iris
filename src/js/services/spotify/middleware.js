@@ -13,6 +13,12 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
+            case 'CONFIG':
+                if (!state.spotify.country || !state.spotify.locale){
+                    store.dispatch( spotifyActions.setConfig(action.data.config) )
+                }
+                break
+
             case 'SPOTIFY_CONNECT':
                 store.dispatch( spotifyActions.getMe() )
                 break
