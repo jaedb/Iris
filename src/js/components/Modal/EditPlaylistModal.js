@@ -53,7 +53,9 @@ export default class EditPlaylistModal extends React.Component{
 							<span className="label">Public</span>
 						</label>
 					</div>
-					<button type="submit" className="primary centered" disabled={!this.state.submit_enabled}>Save</button>
+					<div className="actions centered-text">
+						<button type="submit" className="primary wide" disabled={!this.state.submit_enabled}>Save</button>
+					</div>
 				</form>
 			</div>
 		)
