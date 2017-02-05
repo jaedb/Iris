@@ -47,6 +47,10 @@ input[type="submit"] {
 
 	&.large {
 		padding: 16px 24px;
+
+		@include responsive( $bp_medium ){
+			padding: 10px 20px;
+		}
 	}
 
 	&.primary {
