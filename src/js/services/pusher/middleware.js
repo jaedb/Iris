@@ -116,19 +116,23 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_config' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'CONFIG', data: response.data })
+                            store.dispatch({ type: 'CONFIG', config: response.data.config })
+                            var spotify = store.getState().spotify
+                            if (!spotify.country || !spotify.locale){
+                                store.dispatch({ type: 'SPOTIFY_SET_CONFIG', config: response.data.config })
+                            }
                         }
                     )
                 request({ action: 'get_version' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'VERSION', data: response.data })
+                            store.dispatch({ type: 'VERSION', version: response.data.version })
                         }
                     )
                 request({ action: 'get_radio' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'RADIO', data: response.data })
+                            store.dispatch({ type: 'RADIO', radio: response.data.radio })
                         }
                     )
                 return next(action);
@@ -147,7 +151,7 @@ const PusherMiddleware = (function(){
                             }else{
                                 store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                             }
-                            store.dispatch({ type: 'VERSION', data: response.data })
+                            store.dispatch({ type: 'VERSION', version: response.data.version })
                         }
                     )
                 return next(action);

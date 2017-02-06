@@ -81,7 +81,7 @@ class Settings extends React.Component{
 	}
 
 	renderSpotifyUser(){
-		if( this.props.spotify.me && this.props.spotify.authorized ){
+		if (this.props.spotify.me && this.props.spotify.authorized){
 			return (
 				<Link className="user" to={global.baseURL+'user/'+this.props.spotify.me.uri}>
 					<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
@@ -90,7 +90,16 @@ class Settings extends React.Component{
 					</span>
 				</Link>
 			)
-		}else{
+		} else if (this.props.ui.config && this.props.ui.config.spotify_user){
+			return (
+				<Link className="user" to={global.baseURL+'user/spotify:user:'+this.props.ui.config.spotify_user}>
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						{this.props.ui.config.spotify_user} <span className="grey-text">(As defined in mopidy.config)</span>
+					</span>
+				</Link>
+			)
+		} else {
 			return (
 				<Link className="user">
 					<Thumbnail circle={true} size="small" />

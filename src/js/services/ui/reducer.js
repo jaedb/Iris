@@ -13,6 +13,9 @@ export default function reducer(ui = {}, action){
         case 'UI_SET':
             return Object.assign({}, ui, action.data)
 
+        case 'CONFIG':
+            return Object.assign({}, ui, { config: action.config })
+
         case 'TOGGLE_SIDEBAR':
             var new_state = !ui.sidebar_open
             if( typeof(action.new_state) !== 'undefined' ) new_state = action.new_state
@@ -118,7 +121,7 @@ export default function reducer(ui = {}, action){
 
         case 'RADIO':
         case 'START_RADIO':
-            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
+            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.radio })
 
         case 'RADIO_SEEDS_RESOLVED':
             var radio = Object.assign({}, ui.radio, { resolved_seeds: action.resolved_seeds })

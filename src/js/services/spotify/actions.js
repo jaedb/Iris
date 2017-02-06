@@ -100,6 +100,7 @@ function refreshToken( dispatch, getState ){
                     },
                     error => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                        dispatch(uiActions.createNotification('Could not refresh token','bad'))
                         console.error('Could not refresh token', error)
                         reject(error)
                     }
@@ -126,6 +127,7 @@ function refreshToken( dispatch, getState ){
                     },
                     error => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                        dispatch(uiActions.createNotification('Could not refresh token','bad'))
                         console.error('Could not refresh token', error)
                         reject(error)
                     }

@@ -13,18 +13,8 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
-            case 'CONFIG':
-                if (!state.spotify.country || !state.spotify.locale){
-                    store.dispatch( spotifyActions.setConfig(action.data.config) )
-                }
-                break
-
             case 'SPOTIFY_CONNECT':
                 store.dispatch( spotifyActions.getMe() )
-                break
-
-            case 'SPOTIFY_DISCONNECTED':
-                store.dispatch( uiActions.createNotification('Spotify disconnected','bad') )
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
@@ -103,8 +93,8 @@ const SpotifyMiddleware = (function(){
                 next(action)
 
                 // only resolve if radio is enabled
-                if( action.data.radio.enabled ){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.data.radio))
+                if( action.radio.enabled ){
+                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
                 }
                 break
 
