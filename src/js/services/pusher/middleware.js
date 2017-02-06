@@ -117,6 +117,11 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_config' })
                     .then(
                         response => {
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+
                             store.dispatch({ type: 'CONFIG', config: response.data.config })
                             if (response.data.config.spotify_username){
                                 store.dispatch(spotifyActions.getUser('spotify:user:'+response.data.config.spotify_username))
@@ -130,12 +135,22 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_version' })
                     .then(
                         response => {
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+
                             store.dispatch({ type: 'VERSION', data: response.data })
                         }
                     )
                 request({ action: 'get_radio' })
                     .then(
                         response => {
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+
                             store.dispatch({ type: 'RADIO', data: response.data })
                         }
                     )
@@ -150,6 +165,11 @@ const PusherMiddleware = (function(){
                 request({ action: 'upgrade' })
                     .then(
                         response => {
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+
                             if (response.data.upgrade_successful){
                                 store.dispatch( uiActions.createNotification('Upgrade complete') )
                             }else{
@@ -165,6 +185,11 @@ const PusherMiddleware = (function(){
                 request({ action: 'set_username', username: action.username })
                     .then(
                         response => {
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+
                             store.dispatch({ type: 'PUSHER_USERNAME', data: { username: response.data.username }})
                         }
                     )
@@ -175,7 +200,12 @@ const PusherMiddleware = (function(){
             case 'NEW_CONNECTION':
                 request({ action: 'get_connections' })
                     .then(
-                        response => {                            
+                        response => {             
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+                                               
                             store.dispatch({ type: 'CONNECTIONS', data: response.data })
                         }
                     )
@@ -185,7 +215,12 @@ const PusherMiddleware = (function(){
             case 'PUSHER_DEBUG':
                 request( action.data )
                     .then(
-                        response => {                            
+                        response => {          
+                            if (response.data.error){
+                                console.error(response.data.error)
+                                return false
+                            }
+                                                  
                             store.dispatch({ type: 'DEBUG', response: response.data })
                         }
                     )
@@ -200,6 +235,11 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {                   
+                        if (response.data.error){
+                            console.error(response.data.error)
+                            return false
+                        }
+                            
                         store.dispatch( uiActions.createNotification('Authorization sent') )
                     }
                 )
@@ -232,6 +272,11 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {                   
+                        if (response.data.error){
+                            console.error(response.data.error)
+                            return false
+                        }
+                            
                         store.dispatch(uiActions.createNotification('Starting radio...'))
                     }
                 )
@@ -272,7 +317,12 @@ const PusherMiddleware = (function(){
                     }
                 })
                 .then(
-                    response => {                   
+                    response => {           
+                        if (response.data.error){
+                            console.error(response.data.error)
+                            return false
+                        }
+                                    
                         store.dispatch(uiActions.createNotification('Stopping radio'))
                     }
                 )
