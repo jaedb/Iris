@@ -1,7 +1,8 @@
 
-var pusherActions = require('./actions.js')
-var uiActions = require('../ui/actions.js')
 var helpers = require('../../helpers.js')
+var uiActions = require('../ui/actions.js')
+var pusherActions = require('./actions.js')
+var spotifyActions = require('../spotify/actions.js')
 
 const PusherMiddleware = (function(){ 
 
@@ -117,6 +118,9 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch({ type: 'CONFIG', config: response.data.config })
+                            if (response.data.config.spotify_username){
+                                store.dispatch(spotifyActions.getUser('spotify:user:'+response.data.config.spotify_username))
+                            }
                             var spotify = store.getState().spotify
                             if (!spotify.country || !spotify.locale){
                                 store.dispatch({ type: 'SPOTIFY_SET_CONFIG', config: response.data.config })

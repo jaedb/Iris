@@ -194,7 +194,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     def get_config( self ):
         all_config = self.config
         config = {
-            "spotify_user": all_config['spotify']['username'],
+            "spotify_username": all_config['spotify']['username'],
             "country": all_config['iris']['country'],
             "locale": all_config['iris']['locale']
         }
