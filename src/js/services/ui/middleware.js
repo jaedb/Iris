@@ -210,8 +210,8 @@ const UIMiddleware = (function(){
                 break
 
             case 'VERSION':
-                if( action.version.upgrade_available )
-                store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+                if( action.data.version.upgrade_available )
+                store.dispatch( uiActions.createNotification( 'Version '+action.data.version.latest+' is available. See settings to upgrade.' ) )
                 next( action )
                 break
 

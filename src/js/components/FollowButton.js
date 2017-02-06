@@ -31,10 +31,13 @@ class FollowButton extends React.Component{
 	render(){
 		if( !this.props.spotify_authorized || !this.props.uri ) return false
 
+		var className = 'tertiary'
+		if (this.props.className) className += ' '+this.props.className
+
 		if( this.props.is_following === true ){
-			return <button className="tertiary large" onClick={ () => this.remove() }>{ this.props.removeText }</button>
+			return <button className={className} onClick={ () => this.remove() }>{ this.props.removeText }</button>
 		}else{
-			return <button className="tertiary large" onClick={ () => this.add() }>{ this.props.addText }</button>
+			return <button className={className} onClick={ () => this.add() }>{ this.props.addText }</button>
 		}
 	}
 }

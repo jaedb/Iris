@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -55,9 +55,17 @@ class Debug extends React.Component{
 	}
 
 	render(){
+
+		var actions = (
+			<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
+				<FontAwesome name="cog" />&nbsp;
+				Settings
+			</button>
+		)
+
 		return (
 			<div className="view debugger-view">
-				<Header icon="cog" title="Debugger" />
+				<Header icon="cog" title="Debugger" actions={actions}  />
 
 				<section>
 

@@ -84,12 +84,6 @@ class Artist extends React.Component{
 		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
-	play(){
-		if (!this.props.artist.uri) return
-		this.props.uiActions.createNotification('Starting radio...')
-		this.props.pusherActions.startRadio([this.props.artist.uri])
-	}
-
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
@@ -105,6 +99,8 @@ class Artist extends React.Component{
 	}
 
 	renderBody(){
+		var scheme = helpers.uriSource( this.props.params.uri );
+
 		var related_artists = []
 		if (this.props.artist.related_artists_uris){
 			for (var i = 0; i < this.props.artist.related_artists_uris.length; i++){
@@ -138,6 +134,17 @@ class Artist extends React.Component{
 			return (
 				<div className="body biography">
 					<h4 className="left-padding">Biography</h4>
+
+					<ul className="details">
+						<li>
+							{ this.props.artist.followers ? <span>{ this.props.artist.followers.total.toLocaleString() } followers,&nbsp;</span> : null }
+							{ this.props.artist.popularity ? <span>{ this.props.artist.popularity }% popularity</span> : null }
+							{ this.props.artist.listeners && scheme == 'local' ? <span>{ this.props.artist.listeners.toLocaleString() } listeners</span> : null }
+						</li>
+						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
+						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
+					</ul>
+
 					<section className="text-wrapper no-top-padding">
 						{ this.props.artist.bio ? <div><p>{this.props.artist.bio.content}</p><br />
 						<div className="grey-text">Published: { this.props.artist.bio.published }</div>
@@ -183,33 +190,15 @@ class Artist extends React.Component{
 
 				<div className="intro">
 
-					<Thumbnail canZoom image={ image } />
 					<Parallax image={ image } />
 
-					<div className="heading-wrapper">
-						<div className="heading">
-							<h1>{ this.props.artist.name }</h1>
-							{ this.renderSubViewMenu() }
-						</div>
-					</div>
-
-					<div className="details-wrapper">
-
+					<div className="liner">
+						<h1>{ this.props.artist.name }</h1>
 						<div className="actions">
-							<button className="large primary" onClick={ e => this.play() }>Start radio</button>
-							{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null }						
+							<button className="primary rounded" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button>
+							{ scheme == 'spotify' ? <FollowButton className="rounded" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null }						
 						</div>
-
-						<ul className="details">
-							<li>
-								{ this.props.artist.followers ? <span>{ this.props.artist.followers.total.toLocaleString() } followers,&nbsp;</span> : null }
-								{ this.props.artist.popularity ? <span>{ this.props.artist.popularity }% popularity</span> : null }
-								{ this.props.artist.listeners && scheme == 'local' ? <span>{ this.props.artist.listeners.toLocaleString() } listeners</span> : null }
-							</li>
-							{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
-							{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
-						</ul>
-
+						{ this.renderSubViewMenu() }
 					</div>
 				</div>
 

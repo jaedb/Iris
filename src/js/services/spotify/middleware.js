@@ -86,15 +86,14 @@ const SpotifyMiddleware = (function(){
                 }
                 break
 
-            // when our mopidy server current track changes
+            // when radio returns
             case 'RADIO':
 
-                // proceed as usual so we don't inhibit default functionality
                 next(action)
 
                 // only resolve if radio is enabled
-                if( action.radio.enabled ){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
+                if( action.data.radio.enabled ){
+                    store.dispatch(spotifyActions.resolveRadioSeeds(action.data.radio))
                 }
                 break
 

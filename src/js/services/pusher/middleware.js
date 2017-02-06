@@ -130,13 +130,13 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_version' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'VERSION', version: response.data.version })
+                            store.dispatch({ type: 'VERSION', data: response.data })
                         }
                     )
                 request({ action: 'get_radio' })
                     .then(
                         response => {
-                            store.dispatch({ type: 'RADIO', radio: response.data.radio })
+                            store.dispatch({ type: 'RADIO', data: response.data })
                         }
                     )
                 return next(action);
@@ -155,7 +155,7 @@ const PusherMiddleware = (function(){
                             }else{
                                 store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                             }
-                            store.dispatch({ type: 'VERSION', version: response.data.version })
+                            store.dispatch({ type: 'VERSION', data: response.data })
                         }
                     )
                 return next(action);

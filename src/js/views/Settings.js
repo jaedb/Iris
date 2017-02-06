@@ -97,7 +97,7 @@ class Settings extends React.Component{
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.username}
-						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(As defined in config file)</span> : null}
+						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(limited access)</span> : null}
 					</span>
 				</Link>
 			)
@@ -107,7 +107,7 @@ class Settings extends React.Component{
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
 						Default user
-						<span className="grey-text">&nbsp;(As defined in config file)</span>
+						<span className="grey-text">&nbsp;(limited access)</span>
 					</span>
 				</Link>
 			)
@@ -127,9 +127,17 @@ class Settings extends React.Component{
 	}
 
 	render(){
+
+		var actions = (
+			<button onClick={e => hashHistory.push(global.baseURL+'debug')}>
+				<FontAwesome name="flask" />&nbsp;
+				Debug
+			</button>
+		)
+
 		return (
 			<div className="view settings-view">
-				<Header icon="cog" title="Settings" />
+				<Header icon="cog" title="Settings" actions={actions} />
 
 				<section>
 
@@ -238,7 +246,6 @@ class Settings extends React.Component{
 						<div className="name">Authentication</div>
 						<div className="input">
 							<SpotifyAuthenticationFrame />
-							&nbsp;&nbsp;
 							{ this.renderSendAuthorizationButton() }
 						</div>
 					</div>
@@ -264,22 +271,11 @@ class Settings extends React.Component{
 			        </div>
 					
 					<div className="field">
-						<div className="name">Version</div>
-						<div className="input">
-				        	<VersionManager />
-			        	</div>
-			        </div>
-
-					
-					<div className="field">
-						<div className="name"></div>
+						<div className="name">System</div>
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-					        &nbsp;&nbsp;
-					        <button className="primary" onClick={ () => hashHistory.push(global.baseURL+'debug') }>
-					        	<FontAwesome name="flask" />&nbsp;Debugger
-					        </button>
-			        	</div>
+				        	<VersionManager />
+				        </div>
 			        </div>
 
 					<h4 className="underline">About</h4>

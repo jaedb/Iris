@@ -33,15 +33,15 @@ class VersionManager extends React.Component{
 			return <button className="secondary" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
 		}
 
-		return <button className="secondary" disabled>Already up to date</button>
+		return <button className="secondary" disabled>No updates available</button>
 	}
 
 	render(){
 		return (
-			<div className="version-manager">
+			<span className="version-manager">
 				{ this.renderUpgradeButton() }
-				<div className="description">{ this.props.pusher.version.current } currently installed</div>
-			</div>
+				<span className="description">{ this.props.pusher.version.current } installed</span>
+			</span>
 		);
 	}
 }

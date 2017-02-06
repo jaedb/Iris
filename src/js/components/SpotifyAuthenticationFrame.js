@@ -104,10 +104,9 @@ class SpotifyAuthenticationFrame extends React.Component{
 	render(){
 		return (
 			<span>
-				{ this.renderAuthorizeButton() }
-				&nbsp;&nbsp;
-				{ this.renderRefreshButton() }
 				<iframe src={this.state.frameUrl} style={{ display: 'none' }}></iframe>
+				{ this.renderAuthorizeButton() }
+				{ this.renderRefreshButton() }
 			</span>
 		);
 	}
