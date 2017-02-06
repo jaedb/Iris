@@ -133,7 +133,6 @@
 
 	&.edit_radio {
 		form {
-			padding-top: 60px;
 			.field {
 				position: relative;
 				margin-top: 10px;
@@ -141,7 +140,11 @@
 					position: absolute;
 					top: 5px;
 					right: 0;
-					padding: 10px 12px;
+					padding: 14px;
+				}
+				input[type="text"]{
+					font-size: 14px;
+					padding: 16px 18px;
 				}
 			}			
 		}

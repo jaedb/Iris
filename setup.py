@@ -37,7 +37,7 @@ setup(
     ],
     entry_points={
         'mopidy.ext': [
-            'iris = mopidy_iris:IrisExtension',
+            'iris = mopidy_iris:Extension',
         ],
     },
 )

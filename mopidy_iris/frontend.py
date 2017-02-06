@@ -189,6 +189,17 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     def get_spotify_token( self ):
         return self.spotify_token
         
+   
+    # get our config values
+    def get_config( self ):
+        all_config = self.config
+        config = {
+            "spotify_username": all_config['spotify']['username'],
+            "country": all_config['iris']['country'],
+            "locale": all_config['iris']['locale']
+        }
+        return config
+        
         
     ##
     # Get Spotmop version, and check for updates

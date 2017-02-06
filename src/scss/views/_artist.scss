@@ -84,9 +84,7 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
-
-			padding: 50px 30px 0 30px;
-			margin: 0 0 140px 0;
+			padding: 50px 30px 60px 30px;
 
 			.parallax {
 				height: 100%;
@@ -107,26 +105,48 @@
 
 			.heading-wrapper {
 				height: auto;
+				position: static;
 
-				.heading,
-				.sub-views {
-					position: relative;
+				.heading {
+					position: static;
 					bottom: auto;
 					left: auto;
+
+					h1 {
+						position: relative;
+						text-align: center;
+						padding: 15px 0;
+					}
+
+					.sub-views {
+						position: absolute;
+						bottom: 0;
+						left: 20px;
+						right: 20px;
+					}
 				}
 			}
 
 			.details-wrapper {
 				padding: 0;
-				position: absolute;
+				position: relative;
 				left: 0;
 				right: 0;
-				padding: 30px;
-				background: $faint_grey;
-				z-index: 2;
+				padding: 20px 0;
+				z-index: 3;
+
+				.actions {
+					text-align: center;
+					margin: 0;
+					float: none;
+
+					button {
+						margin: 0 3px;
+					}
+				}
 
 				.details {
-					clear: both;
+					display: none;
 				}
 			}
 		}

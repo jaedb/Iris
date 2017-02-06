@@ -34,7 +34,8 @@ class Settings extends React.Component{
 
 	resetAllSettings(){
 		localStorage.clear();
-		window.location.reload(true);
+		window.location = '#'
+		window.location.reload(true)
 		return false;
 	}
 
@@ -80,21 +81,33 @@ class Settings extends React.Component{
 	}
 
 	renderSpotifyUser(){
-		if( this.props.spotify.me && this.props.spotify.authorized ){
+
+		var user = null
+		if (this.props.spotify.me && this.props.spotify.authorized){
+			user = this.props.spotify.me
+		} else if (this.props.ui.config && this.props.ui.config.spotify_username){
+			if (this.props.ui.users && typeof(this.props.ui.users['spotify:user:'+this.props.ui.config.spotify_username]) !== 'undefined'){
+				user = this.props.ui.users['spotify:user:'+this.props.ui.config.spotify_username]
+			}
+		}
+
+		if (user){
 			return (
-				<Link className="user" to={global.baseURL+'user/'+this.props.spotify.me.uri}>
-					<Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
+				<Link className="user" to={global.baseURL+'user/'+user.uri}>
+					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
-						{ this.props.spotify.me.display_name ? this.props.spotify.me.display_name : this.props.spotify.me.id }
+						{user.display_name ? user.display_name : user.username}
+						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(As defined in config file)</span> : null}
 					</span>
 				</Link>
 			)
-		}else{
+		} else {
 			return (
 				<Link className="user">
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
-						Default user <span className="grey-text">(As defined in mopidy.config)</span>
+						Default user
+						<span className="grey-text">&nbsp;(As defined in config file)</span>
 					</span>
 				</Link>
 			)

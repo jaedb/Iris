@@ -24,13 +24,12 @@ export default class EditRadioModal extends React.Component{
 		this.props.spotifyActions.resolveRadioSeeds(this.props.radio)
 	}
 
-	save(){
-		this.props.pusherActions.startRadio(this.state.seeds)
-		this.props.uiActions.closeModal()
-	}
-
-	stop(){
-		this.props.pusherActions.stopRadio()
+	handleSubmit(e){
+		if (this.state.enabled){
+			this.props.pusherActions.startRadio(this.state.seeds)
+		}else{
+			this.props.pusherActions.stopRadio()
+		}
 		this.props.uiActions.closeModal()
 	}
 
@@ -68,7 +67,7 @@ export default class EditRadioModal extends React.Component{
 	renderSeeds(){
 		var seeds = []
 
-		if (this.state.enabled && this.state.seeds){
+		if (this.state.seeds){
 			for (var i = 0; i < this.state.seeds.length; i++){
 				var uri = this.state.seeds[i]
 				if (uri){
@@ -98,37 +97,35 @@ export default class EditRadioModal extends React.Component{
 		}
 
 		return (
-			<div className="list">
-				{
-					seeds.map((seed,index) => {
-						return (
-							<div className="list-item" key={seed.uri}>
-								{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-								<span className="grey-text">&nbsp;({seed.type})</span>
-								<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed.uri)} />
-							</div>
-						)
-					})
-				}
+			<div>
+				<div className="list">
+					{
+						seeds.map((seed,index) => {
+							return (
+								<div className="list-item" key={seed.uri}>
+									{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
+									<span className="grey-text">&nbsp;({seed.type})</span>
+									<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed.uri)} />
+								</div>
+							)
+						})
+					}
+				</div>
 			</div>
 		)
 	}
 
-	renderActions(){
-		if (this.state.enabled){
-			return (
-				<span>
-					<button className="primary wide" onClick={e => this.save()}>Save</button>
-					<button className="destructive wide" onClick={e => this.stop()}>Stop</button>
-				</span>
-			)
-		}else{
-			return (
-				<span>				
-					<button className="primary wide" onClick={e => this.save()}>Start</button>
-				</span>
-			)
-		}
+	renderAddSeeds(){
+		return (
+			<div className="field no-top-margin">
+				<input 
+					type="text"
+					placeholder="Add comma-separated URIs"
+					onChange={e => this.setState({uri: e.target.value})} 
+					value={this.state.uri} />
+				<button type="button" className="discrete" onClick={e => this.addSeed()}><FontAwesome name="plus" /></button>
+			</div>
+		)
 	}
 
 	render(){
@@ -136,22 +133,23 @@ export default class EditRadioModal extends React.Component{
 			<div>
 				<h4>Edit radio</h4>
 
-				<h3>Current seeds</h3>
-				{this.renderSeeds()}
-
-				<form>
-					<h3>Add seeds</h3>
-					<div className="field">
-						<input 
-							type="text"
-							placeholder="Comma-separated URIs"
-							onChange={e => this.setState({uri: e.target.value})} 
-							value={this.state.uri} />
-						<button className="discrete" onClick={e => this.addSeed()}><FontAwesome name="check" /></button>
+				<form onSubmit={e => this.handleSubmit(e)}>
+					<div className="field checkbox white">
+						<label>
+							<input 
+								type="checkbox"
+								name="enabled"
+								checked={ this.state.enabled }
+								onChange={ e => this.setState({ enabled: !this.state.enabled })} />
+							<span className="label">Radio mode enabled</span>
+						</label>
 					</div>
 
+					{this.state.enabled ? this.renderSeeds() : null}
+					{this.state.enabled ? this.renderAddSeeds() : null}
+
 					<div className="actions centered-text">
-						{this.renderActions()}
+						<button type="submit" className="primary wide">Save</button>
 					</div>
 				</form>
 			</div>

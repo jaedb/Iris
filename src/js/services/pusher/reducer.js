@@ -39,7 +39,7 @@ export default function reducer(pusher = {}, action){
 
         case 'VERSION':
             return Object.assign({}, pusher, { 
-                version: action.data.version,
+                version: action.version,
                 upgrading: false
             });
 

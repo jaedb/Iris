@@ -15,7 +15,7 @@ __version__ = '2.11.3'
 #
 # Loads config and gets the party started. Initiates any additional frontends, etc.
 ##
-class IrisExtension( ext.Extension ):
+class Extension( ext.Extension ):
 
     dist_name = 'Mopidy-Iris'
     ext_name = 'iris'
@@ -26,9 +26,11 @@ class IrisExtension( ext.Extension ):
         return config.read(conf_file)
 
     def get_config_schema(self):
-        schema = super(IrisExtension, self).get_config_schema()
-        schema['debug'] = config.Boolean()
+        schema = config.ConfigSchema(self.ext_name)
+        schema['enabled'] = config.Boolean()
         schema['pusherport'] = config.String()
+        schema['country'] = config.String()
+        schema['locale'] = config.String()
         return schema
 
     def setup(self, registry):
