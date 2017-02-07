@@ -35,11 +35,12 @@
 
 			.sub-views {
 				color: #FFFFFF;
+				margin-left: -12px;
 
 				.option {
 					display: inline-block;
 					padding: 8px 0;
-					margin: 0 25px 0 0;
+					margin: 0 12px 0;
 					font-size: 18px;
 					font-weight: 400;
 					border-bottom: 4px solid transparent;
@@ -64,73 +65,20 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
-			padding: 50px 30px 60px 30px;
+			.liner {
+				text-align: center;
+				padding-left: 20px;
+				padding-right: 20px;
 
-			.parallax {
-				height: 100%;
-				background: $darkest_grey;
-				canvas {
-					opacity: 0.2;
-					@include blur( 5px );
-				}
-			}
+				.sub-views {
+					margin-left: 0;
 
-			.thumbnail {
-				position: relative;
-				width: 180px;
-				margin: 0 auto 10px;
-				left: auto;
-				bottom: auto;
-			}
-
-			.heading-wrapper {
-				height: auto;
-				position: static;
-
-				.heading {
-					position: static;
-					bottom: auto;
-					left: auto;
-
-					h1 {
-						position: relative;
-						text-align: center;
-						padding: 15px 0;
+					.option {
+						margin: 0 8px;
 					}
-
-					.sub-views {
-						position: absolute;
-						bottom: 0;
-						left: 20px;
-						right: 20px;
-					}
-				}
-			}
-
-			.details-wrapper {
-				padding: 0;
-				position: relative;
-				left: 0;
-				right: 0;
-				padding: 20px 0;
-				z-index: 3;
-
-				.actions {
-					text-align: center;
-					margin: 0;
-					float: none;
-
-					button {
-						margin: 0 3px;
-					}
-				}
-
-				.details {
-					display: none;
 				}
 			}
 		}
-
 		.body {
 			&.overview {
 				.col.w70 {

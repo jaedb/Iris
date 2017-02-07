@@ -46,20 +46,16 @@ input[type="submit"] {
 		background: darken( $light_grey, 6%);
 	}
 
-	&.large {
-		padding: 16px 24px;
-
-		@include responsive( $bp_medium ){
-			padding: 10px 20px;
-		}
-	}
-
 	&.rounded {
 		margin-right: 20px;
 		padding: 10px 20px;
 		text-align: center;
 		min-width: 140px;
 		border-radius: 20px;
+
+		@include responsive( $bp_medium ){
+			min-width: none;
+		}
 	}
 
 	&.outline {

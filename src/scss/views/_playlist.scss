@@ -30,4 +30,25 @@
 		max-width: 230px;
 		margin: 0 30px 30px 0;
 	}
+
+	@include responsive( $bp_medium ){
+		.title {
+			padding: 20px 20px;
+		}
+
+		.thumbnail {
+			float: none;
+			max-width: none;
+			margin: 0 0 0 0;
+
+			.image {
+				padding-bottom: 70%;
+			}
+		}
+
+		.actions {
+			text-align: center;
+			padding-bottom: 20px;
+		}
+	}
 }

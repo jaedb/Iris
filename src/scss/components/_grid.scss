@@ -107,7 +107,7 @@
 		}
 	}
 
-	@include responsive( 1199px, 850px ){
+	@include responsive( 1199px, 800px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
@@ -120,10 +120,28 @@
 		}
 	}
 
-	@include responsive( 849px ){
+	@include responsive( 799px, 500px ){
+		&.mini{
+			.grid-item {
+				@include grid_item( 6 )
+			}	
+		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 3 )
+			}	
+		}
+	}
+
+	@include responsive( 499px ){
+		&.mini{
+			.grid-item {
+				@include grid_item( 3 )
+			}	
+		}
+		&:not(.mini){
+			.grid-item {
+				@include grid_item( 2 )
 			}	
 		}
 	}

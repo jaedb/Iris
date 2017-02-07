@@ -1,13 +1,26 @@
 
 .search-view {
+
 	.search-result-sections {
 		padding: 20px 20px 0;
+
 		section {
 			width: 33.3334%;
 			float: left;
 
 			.inner {
 				padding: 10px;
+			}
+		}
+	}
+
+	@include responsive( $bp_medium ){
+		.search-result-sections {
+			padding: 20px 20px 0;
+			
+			section {
+				width: auto;
+				float: none;
 			}
 		}
 	}

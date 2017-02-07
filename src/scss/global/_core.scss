@@ -187,7 +187,7 @@ footer {
 
 		&:not(:first-child){
 			padding-left: 14px;
-			
+
 			&::before {
 				display: inline-block;
 				content: '•';
@@ -217,5 +217,17 @@ footer {
 	
 	.right-padding {		padding-right: 20px; }
 	.left-padding {			padding-left: 20px; }
+
+	h1 {
+		font-size: 30px;
+	}
+
+	h2 {
+		font-size: 24px;
+	}
+
+	h3 {
+		font-size: 18px;
+	}
 
 }
