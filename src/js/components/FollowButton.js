@@ -31,7 +31,7 @@ class FollowButton extends React.Component{
 	render(){
 		if( !this.props.spotify_authorized || !this.props.uri ) return false
 
-		var className = 'tertiary'
+		var className = ''
 		if (this.props.className) className += ' '+this.props.className
 
 		if( this.props.is_following === true ){

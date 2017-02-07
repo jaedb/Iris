@@ -1,103 +1,33 @@
 
 .playlist-view {
-	.main {
-		padding-left: 300px;
 
-		.title {
-			padding: 30px 40px;
+	.title {
+		padding: 30px 40px;
 
-			h3 {
-				color: $mid_grey;
-				a:hover {
-					color: darken($mid_grey, 20%);
-				}
+		h3 {
+			color: $mid_grey;
+			a:hover {
+				color: darken($mid_grey, 20%);
 			}
 		}
 	}
 
-	.intro {
-		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		width: 300px;
-		background: $faint_grey;
-
-		> .thumbnail {
-			float: none;
-			margin: 0 auto;
-			max-width: none;
-		}
-
-		.details {
-			padding: 30px;
-		}
-
-		.artist-grid {
-			padding: 0;
-			margin: 0;
-
-			.grid-item {
-				margin: 0;
-				width: 50%;
-				position: relative;
-
-				.thumbnail .image {
-					background-color: $secondary_grey;
-				}
-
-				.name {
-					@include animate();
-					position: absolute;
-					top: 35%;
-					left: 0;
-					right: 0;
-					text-align: center;
-					color: #FFFFFF;
-					opacity: 0;
-					z-index: 2;
-					font-weight: bold;
-				}
-
-				.secondary {
-					display: none;
-				}
-
-				&:hover {
-					.name {
-						opacity: 1;
-					}
-				}
-			}
-		}
-
-		.owner {
-			padding: 30px;
-		}
+	.source {
+		text-transform: uppercase;
+		padding-bottom: 15px;
 	}
 
-	@include responsive( $bp_medium ){
+	.actions {
+		@include clearfix();
+	}
 
-		.main {
-			padding-left: 0px;
+	.description {
+		padding-bottom: 5px;
+	}
 
-			.title {
-				padding: 20px;
-			}
-		}
-
-		.intro {
-			width: auto;
-			position: static;
-
-			.details {
-				padding: 20px;
-
-				li {
-					display: inline-block;
-					padding-right: 15px;
-				}
-			}
-		}
+	.thumbnail {
+		float: left;
+		max-width: 230px;
+		margin: 0 30px 30px 0;
 	}
 }

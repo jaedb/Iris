@@ -95,8 +95,8 @@ class Playlist extends React.Component{
 			case 'm3u':
 				return (
 					<span>
-						<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
-						<ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+						<button className="rounded outline" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
+						<ConfirmationButton className="rounded destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
 					</span>
 				)
 
@@ -104,12 +104,12 @@ class Playlist extends React.Component{
 				if( this.props.playlist.can_edit ){
 					return (
 						<span>
-							<button className="large tertiary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
-							<ConfirmationButton className="large tertiary" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+							<button className="outline rounded" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
+							<ConfirmationButton className="rounded destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
 						</span>
 					)
 				}
-				return <FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+				return <FollowButton className="rounded outline" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
 
 		}
 	}
@@ -126,41 +126,38 @@ class Playlist extends React.Component{
 			
 				<SidebarToggleButton />
 
-				<div className="intro">
+				<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
 
-					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
-
-					<div className="actions">
-						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ this.renderExtraButtons() }
+				<div className="title">
+					<div className="source grey-text">
+						<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
 					</div>
+					<h1>{ this.props.playlist.name }</h1>
+					{ this.props.playlist.description ? <div className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></div> : null }
 
 					<ul className="details">
-						<li>
-							{ this.props.playlist.tracks_total } tracks,&nbsp;
-							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : null }
-						</li>
-						{ this.props.playlist.last_modified ? <li>Updated <Dater type="ago" data={this.props.playlist.last_modified} /> ago</li> : null }
+						{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-						{ scheme == 'spotify' && this.props.playlist.owner ? <li>By <Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link> &nbsp;{ !this.props.playlist.public ? <FontAwesome name="lock" /> : null }</li> : null }
-						{ scheme == 'spotify' ? <li><FontAwesome name="spotify" /> Spotify playlist</li> : null }
-						{ scheme == 'm3u' ? <li><FontAwesome name="folder" /> Local playlist</li> : null }
+
+						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
+
+						<li>
+							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
+							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
+						</li>
 					</ul>
-
 				</div>
-				<div className="main">
 
-					<div className="title">
-						<h1>{ this.props.playlist.name }</h1>
-						{ this.props.playlist.description ? <h3 className="grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h3> : null }
-					</div>
-
-					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList tracklist_uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
-						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
-					</section>
-					
+				<div className="actions">
+					<button className="rounded primary" onClick={ e => this.play() }>Play</button>
+					{ this.renderExtraButtons() }
 				</div>
+
+				<section className="list-wrapper">
+					{ this.props.playlist.tracks ? <TrackList tracklist_uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+					<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
+				</section>
 			</div>
 		)
 	}

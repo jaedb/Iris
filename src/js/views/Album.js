@@ -97,37 +97,36 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view">
 		        <SidebarToggleButton />
-				<div className="intro">
-					<Thumbnail size="large" canZoom images={ this.props.album.images } />
-					<ArtistGrid artists={artists} />
 
-					<div className="actions">
-						<button className="large primary" onClick={ e => this.play() }>Play</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
+				<Thumbnail size="large" canZoom images={ this.props.album.images } />
+
+				<div className="title">
+					<div className="source grey-text">
+						<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} album
 					</div>
+
+					<h1>{ this.props.album.name }</h1>
 
 					<ul className="details">
+						{ artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
+						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li>
-							{ this.props.album.tracks_total } tracks,&nbsp;
-							{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : null }
+							{ this.props.album.tracks_total ? this.props.album.tracks_total : '0' } tracks,&nbsp;
+							{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : '0 mins' }
 						</li>
-						{ this.props.album.release_date ? <li>Released <Dater type="date" data={ this.props.album.release_date } /></li> : null }
-						<li><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist</li>	
 					</ul>
 				</div>
-				<div className="main">
 
-					<div className="title">
-						<h1>{ this.props.album.name }</h1>
-						<h3><ArtistSentence artists={artists} /></h3>
-					</div>
-
-					<section className="list-wrapper">
-						{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
-						<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
-					</section>
-					
+				<div className="actions">
+					<button className="rounded primary" onClick={e => this.play()}>Play</button>
+					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="outline rounded" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
 				</div>
+
+				<section className="list-wrapper">
+					{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
+					<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
+				</section>
+
 			</div>
 		);
 	}

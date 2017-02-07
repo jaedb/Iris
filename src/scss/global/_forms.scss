@@ -62,6 +62,29 @@ input[type="submit"] {
 		border-radius: 20px;
 	}
 
+	&.outline {
+		color: #FFFFFF;
+		padding: 9px 19px;
+		border: 1px solid $darkest_grey;
+		background: transparent;
+		color: $darkest_grey;
+
+		&.white {
+			border-color: #FFFFFF;
+			color: #FFFFFF;
+			background: rgba(0,0,0,0.2);
+
+			&:hover {
+				background: rgba(0,0,0,0.4);
+				border-color: inherit;
+			}
+		}
+
+		&:hover {
+			border-color: $turquoise;
+		}
+	}
+
 	&.primary {
 		background: $turquoise;
 		color: #FFFFFF;

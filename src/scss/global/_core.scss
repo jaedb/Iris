@@ -181,10 +181,20 @@ footer {
 .details {
 	list-style-type: none;
 	color: $mid_grey;
-	text-transform: uppercase;
 
 	li {
-		padding-bottom: 4px;
+		display: inline-block;
+
+		&:not(:first-child){
+			padding-left: 14px;
+			
+			&::before {
+				display: inline-block;
+				content: '•';
+				margin-left: -8px;
+				padding-right: 6px;
+			}
+		}
 	}
 }
 

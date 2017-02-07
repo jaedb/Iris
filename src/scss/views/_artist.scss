@@ -18,7 +18,7 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 15vh 40px 20px 40px;
+			padding: 20vh 40px 0 40px;
 
 			h1 {
 				color: #FFFFFF;
@@ -26,21 +26,20 @@
 			}
 
 			.actions {
-				.button {
-					margin-right: 30px;
+				padding-bottom: 15px;
+
+				button {
+					margin-right: 20px;
 				}
 			}
 
 			.sub-views {
 				color: #FFFFFF;
-				position: absolute;
-				bottom: 0;
-				right: 30px;
 
 				.option {
 					display: inline-block;
 					padding: 8px 0;
-					margin: 0 10px;
+					margin: 0 25px 0 0;
 					font-size: 18px;
 					font-weight: 400;
 					border-bottom: 4px solid transparent;
