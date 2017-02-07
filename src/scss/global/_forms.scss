@@ -156,6 +156,10 @@ input[type="submit"] {
 		color: $mid_grey !important;
 		cursor: not-allowed !important;
 	}
+
+	&:last-of-type {
+		margin-right: 0;
+	}
 }
 
 .field {

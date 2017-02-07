@@ -190,9 +190,10 @@ class Artist extends React.Component{
 
 				<div className="intro">
 
-					<Parallax image={ image } />
+					<Parallax image={image} />
 
 					<div className="liner">
+						<Thumbnail image={image} circle />
 						<h1>{ this.props.artist.name }</h1>
 						<div className="actions">
 							{ scheme == 'spotify' ? <button className="primary rounded" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null }

@@ -12,12 +12,25 @@
 
 		h1 {
 			padding-top: 80px;
-			padding-bottom: 20px;
 		}
 
 		.actions {
-			float: left;
-			margin-right: 20px;
+			padding-top: 20px;
+		}
+	}
+
+	@include responsive( $bp_medium ){
+		.intro {
+			text-align: center;
+
+			.thumbnail {
+				float: none;
+				margin: 20px auto 20px;
+			}
+
+			h1 {
+				padding-top: 0;
+			}
 		}
 	}
 }

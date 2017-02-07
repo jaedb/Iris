@@ -20,6 +20,14 @@
 			z-index: 1;
 			padding: 20vh 40px 0 40px;
 
+			.thumbnail {
+				position: relative;
+				z-index: 2;
+				float: left;
+				margin-right: 35px;
+				max-width: 144px;
+			}
+
 			h1 {
 				color: #FFFFFF;
 				padding-bottom: 20px;
@@ -69,6 +77,13 @@
 				text-align: center;
 				padding-left: 20px;
 				padding-right: 20px;
+				padding-top: 10vh;
+
+				.thumbnail {
+					float: none;
+					margin: 0 auto 20px;
+					max-width: 100px;
+				}
 
 				.sub-views {
 					margin-left: 0;

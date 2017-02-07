@@ -36,14 +36,9 @@ class User extends React.Component{
 		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
 	}
 
-	renderMeFlag(){
+	isMe(){
 		if( !this.props.spotify_authorized ) return null
-
-		if( helpers.getFromUri('userid',this.props.params.uri) == this.props.me.id ){
-			return <span className="flag blue"><FontAwesome name="star" />&nbsp;You</span>
-		}else{
-			return null
-		}
+		return helpers.getFromUri('userid',this.props.params.uri) == this.props.me.id
 	}
 
 	render(){
@@ -67,16 +62,17 @@ class User extends React.Component{
 				<div className="intro">
 					<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
 
-					<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }{ this.renderMeFlag() }</h1>
-
-					<div className="actions">
-						<FollowButton uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
-					</div>
+					<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
 
 					<ul className="details">
-						<li>{ this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0 } playlists</li>
-						<li>{ this.props.user.followers.total.toLocaleString() } followers</li>
+						{this.isMe() ? <li>You</li> : null}
+						<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
+						<li>{this.props.user.followers.total.toLocaleString()} followers</li>
 					</ul>
+
+					<div className="actions">
+						<FollowButton className="rounded outline" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+					</div>
 				</div>
 				<div className="main">
 
