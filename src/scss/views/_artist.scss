@@ -2,7 +2,7 @@
 .artist-view {
 	.intro {
 		position: relative;
-		@include clearfix;
+		@include clearfix();
 		margin-bottom: 40px;
 
 		.parallax {
@@ -18,13 +18,13 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 20vh 40px 0 40px;
+			padding: 20vh 40px 0 220px;
 
 			.thumbnail {
-				position: relative;
+				position: absolute;
 				z-index: 2;
-				float: left;
-				margin-right: 35px;
+				left: 40px;
+				bottom: 20px;
 				max-width: 144px;
 			}
 
@@ -43,12 +43,11 @@
 
 			.sub-views {
 				color: #FFFFFF;
-				margin-left: -12px;
 
 				.option {
 					display: inline-block;
 					padding: 8px 0;
-					margin: 0 12px 0;
+					margin-right: 15px;
 					font-size: 18px;
 					font-weight: 400;
 					border-bottom: 4px solid transparent;
@@ -67,8 +66,8 @@
 
 	}
 
-	.artist-list {
-		padding-top: 15px;
+	.body.about {
+		padding: 0 40px 40px 40px;
 	}
 
 	@include responsive( $bp_medium ){
@@ -80,6 +79,7 @@
 				padding-top: 10vh;
 
 				.thumbnail {
+					position: static;
 					float: none;
 					margin: 0 auto 20px;
 					max-width: 100px;

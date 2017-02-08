@@ -67,3 +67,33 @@
 		}
 	}
 }
+
+.tile {
+	@include grid_item( 2 );
+	color: $dark_grey;
+	text-align: center;
+	position: relative;
+	z-index: 1;
+	float: left;
+	padding-top: 16%;
+	font-size: 16px;
+
+	&:before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		padding-bottom: 100%;
+		background: $light_grey;
+		z-index: -1;
+	}
+
+	.fa {
+		display: block;
+		font-size: 40px;
+		opacity: 0.2;
+		z-index: 0;
+		padding-bottom: 10px;
+	}
+}

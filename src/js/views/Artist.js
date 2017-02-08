@@ -132,24 +132,22 @@ class Artist extends React.Component{
 			)
 		}else if( this.state.sub_view == 'about' ){
 			return (
-				<div className="body about">
-					<h4 className="left-padding">Biography</h4>
+				<div className="body about row">
 
-					<ul className="details">
-						<li>
-							{ this.props.artist.followers ? <span>{ this.props.artist.followers.total.toLocaleString() } followers,&nbsp;</span> : null }
-							{ this.props.artist.popularity ? <span>{ this.props.artist.popularity }% popularity</span> : null }
-							{ this.props.artist.listeners && scheme == 'local' ? <span>{ this.props.artist.listeners.toLocaleString() } listeners</span> : null }
-						</li>
-						{ scheme == 'spotify' ? <li><FontAwesome name='spotify' /> Spotify artist</li> : null }
-						{ scheme == 'local' ? <li><FontAwesome name='folder' /> Local artist</li> : null }
-					</ul>
+					<div className="col w40 tiles">
+						{this.props.artist.followers ? <div className="tile"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</div> : null}
+						{this.props.artist.popularity ? <div className="tile"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</div> : null}
+						{this.props.artist.listeners ? <div className="tile"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</div> : null }
+					</div>
 
-					<section className="text-wrapper no-top-padding">
-						{ this.props.artist.bio ? <div><p>{this.props.artist.bio.content}</p><br />
-						<div className="grey-text">Published: { this.props.artist.bio.published }</div>
-						<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
-					</section>
+					<div className="col w60 biography">
+						<h4 className="left-padding">Biography</h4>
+						<section className="text-wrapper no-top-padding">
+							{ this.props.artist.bio ? <div><p>{this.props.artist.bio.content}</p><br />
+							<div className="grey-text">Published: { this.props.artist.bio.published }</div>
+							<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
+						</section>
+					</div>
 				</div>
 			)
 		}
@@ -195,10 +193,7 @@ class Artist extends React.Component{
 					<div className="liner">
 						<Thumbnail image={image} circle />
 						<h1>{ this.props.artist.name }</h1>
-						<div className="actions">
-							{ scheme == 'spotify' ? <button className="primary rounded" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null }
-							{ scheme == 'spotify' ? <FollowButton className="outline rounded white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null }						
-						</div>
+						{ scheme == 'spotify' ? <div className="actions"><button className="primary rounded" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="outline rounded white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
 						{ this.renderSubViewMenu() }
 					</div>
 				</div>
