@@ -113,15 +113,24 @@
 			z-index: -2;
 		}
 
-		@include responsive( null, $bp_medium ){
+	}
+
+	@include responsive( null, $bp_medium ){
+		.tile {
 			@include grid_item( 2 );
 		}
+	}
 
-		@include responsive( $bp_medium ){
+	@include responsive( $bp_medium ){
+		padding-bottom: 20px;
+		
+		.tile {
 			@include grid_item( 3 );
 		}
+	}
 
-		@include responsive( $bp_narrow ){
+	@include responsive( $bp_narrow ){
+		.tile {
 			.text {
 				font-size: 14px;
 				.fa {

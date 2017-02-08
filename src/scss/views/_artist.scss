@@ -69,10 +69,21 @@
 	.body.about {		
 		@include clearfix();
 		padding: 0 40px 40px 40px;
+
+		.biography {
+			padding-left: 40px;
+			box-sizing: border-box;
+
+			.biography-text {
+				overflow-wrap: break-word;
+			}			
+		}
 	}
 
 	@include responsive( $bp_medium ){
 		.intro {
+			margin-bottom: 20px;
+
 			.liner {
 				text-align: center;
 				padding-left: 20px;
@@ -107,11 +118,17 @@
 			}
 
 			&.about {
+				padding: 0 20px 20px 20px;
+
 				.col.w40,
 				.col.w60 {
 					@include clearfix();
 					width: 100%;
 					float: none;
+				}
+				
+				.biography {
+					padding-left: 0;
 				}
 			}
 		}

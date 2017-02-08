@@ -141,9 +141,9 @@ class Artist extends React.Component{
 					</div>
 
 					<div className="col w60 biography">
-						<h4 className="left-padding">Biography</h4>
-						<section className="text-wrapper no-top-padding">
-							{ this.props.artist.bio ? <div><p>{this.props.artist.bio.content}</p><br />
+						<h4>Biography</h4>
+						<section>
+							{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
 							<div className="grey-text">Published: { this.props.artist.bio.published }</div>
 							<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
 						</section>
