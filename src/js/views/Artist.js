@@ -132,12 +132,12 @@ class Artist extends React.Component{
 			)
 		}else if( this.state.sub_view == 'about' ){
 			return (
-				<div className="body about row">
+				<div className="body about">
 
 					<div className="col w40 tiles">
-						{this.props.artist.followers ? <div className="tile"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</div> : null}
-						{this.props.artist.popularity ? <div className="tile"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</div> : null}
-						{this.props.artist.listeners ? <div className="tile"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</div> : null }
+						{this.props.artist.followers ? <div className="tile"><span className="text"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
+						{this.props.artist.popularity ? <div className="tile"><span className="text"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
+						{this.props.artist.listeners ? <div className="tile"><span className="text"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
 					</div>
 
 					<div className="col w60 biography">

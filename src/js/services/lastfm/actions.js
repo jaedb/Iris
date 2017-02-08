@@ -44,7 +44,10 @@ export function getArtist( uri, artist, mbid = false ){
                             key: uri,
                             artist: {
                                 images: response.artist.image,
-                                bio: response.artist.bio
+                                bio: response.artist.bio,
+                                listeners: parseInt(response.artist.stats.listeners),
+                                play_count: parseInt(response.artist.stats.playcount),
+                                on_tour: response.artist.stats.ontour
                             }
                         });
                     }
