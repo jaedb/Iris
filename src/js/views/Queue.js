@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -58,13 +59,17 @@ class Queue extends React.Component{
 	render(){
 		var actions = (
 			<span>
-				<button onClick={() => this.props.uiActions.openModal('edit_radio')}>
+				<button onClick={e => this.props.uiActions.openModal('edit_radio')}>
 					<FontAwesome name="spotify" />&nbsp;
 					Radio
 				</button>
-				<button onClick={() => this.props.mopidyActions.clearTracklist()}>
+				<button onClick={e => this.props.mopidyActions.clearTracklist()}>
 					<FontAwesome name="trash" />&nbsp;
 					Clear
+				</button>
+				<button onClick={e => hashHistory.push(global.baseURL+'queue-history')}>
+					<FontAwesome name="history" />&nbsp;
+					History
 				</button>
 			</span>
 		)

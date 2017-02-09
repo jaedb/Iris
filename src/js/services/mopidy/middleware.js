@@ -163,7 +163,6 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, action.call, action.value )
                 break;
 
-            // send an instruction to the websocket
             case 'MOPIDY_DEBUG':
                 instruct( socket, store, action.call, action.value )
                     .then( response => {
@@ -171,7 +170,29 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
-            // send an instruction to the websocket
+            case 'MOPIDY_URISCHEMES':
+                var uri_schemes = action.data
+                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
+
+                // remove all our ignored types
+                for( var i = 0; i < remove.length; i++ ){
+                    var index = uri_schemes.indexOf(remove[i])
+                    if( index > -1 ) uri_schemes.splice(index, 1);
+                }
+
+                // append with ':' to make them a mopidy URI
+                for( var i = 0; i < uri_schemes.length; i++ ){
+                    uri_schemes[i] = uri_schemes[i] +':'
+                }
+
+                store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
+                break;
+
+
+            /**
+             * General playback
+             **/
+
             case 'MOPIDY_NEXT':
                 var icon = false
                 if( store.getState().ui.current_track ){
@@ -210,24 +231,6 @@ const MopidyMiddleware = (function(){
                         }
                     } 
                 })
-                break;
-
-            case 'MOPIDY_URISCHEMES':
-                var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
-
-                // remove all our ignored types
-                for( var i = 0; i < remove.length; i++ ){
-                    var index = uri_schemes.indexOf(remove[i])
-                    if( index > -1 ) uri_schemes.splice(index, 1);
-                }
-
-                // append with ':' to make them a mopidy URI
-                for( var i = 0; i < uri_schemes.length; i++ ){
-                    uri_schemes[i] = uri_schemes[i] +':'
-                }
-
-                store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break;
 
             case 'MOPIDY_ENQUEUE_URIS_NEXT':

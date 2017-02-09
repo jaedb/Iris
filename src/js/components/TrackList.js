@@ -257,15 +257,28 @@ class TrackList extends React.Component{
 
 	renderHeader(){
 		if( this.props.noheader ) return null
-			
-		return (
-			<div className="list-item header track">
-				<span className="col name">Name</span>
-				<span className="col artists">Artists</span>
-				<span className="col album">Album</span>
-				<span className="col duration">Length</span>
-			</div>
-		)
+		
+		switch (this.props.context){
+
+			case 'history':
+				return (
+					<div className="list-item header track">
+						<span className="col name">Name</span>
+						<span className="col played_at">Started playing</span>
+					</div>
+				)
+				break
+
+			default:
+				return (
+					<div className="list-item header track">
+						<span className="col name">Name</span>
+						<span className="col artists">Artists</span>
+						<span className="col album">Album</span>
+						<span className="col duration">Length</span>
+					</div>
+				)
+		}
 	}
 
 	render(){
@@ -273,7 +286,7 @@ class TrackList extends React.Component{
 
 		let self = this;
 		return (
-			<div className="track-list">
+			<div className={this.props.context+" track-list"}>
 				{ this.renderHeader() }
 				{
 					this.state.tracks.map(

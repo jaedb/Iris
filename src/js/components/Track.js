@@ -45,6 +45,7 @@ export default class Track extends React.Component{
 		var track = this.props.track;
 		var className = 'list-item track';
 		if( typeof(track.selected) !== 'undefined' && track.selected ) className += ' selected';
+		if( typeof(track.type) !== 'undefined' ) className += ' '+track.type;
 		if( track.playing ) className += ' playing';
 
 		var album = '-'
@@ -54,6 +55,41 @@ export default class Track extends React.Component{
 			} else {
 				album = <span>{track.album.name}</span>
 			}
+		}
+
+		switch (track.type){
+
+			case 'history': 
+				var track_columns = (
+					<span>
+						<span className="col name">
+							{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+						</span>
+						<span className="col played_at">
+							{ track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null }
+						</span>
+					</span>
+				)
+				break;
+
+			default:
+				var track_columns = (
+					<span>
+						<span className="col name">
+							{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+						</span>
+						<span className="col artists">
+							{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
+						</span>
+						<span className="col album">
+							{album}
+						</span>
+						<span className="col duration">
+							{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
+							{ track.length ? <Dater type="length" data={track.length} /> : null }
+						</span>
+					</span>
+				)
 		}
 
 		return (
@@ -67,19 +103,7 @@ export default class Track extends React.Component{
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					{ this.props.track.playing ? <FontAwesome name="play" className="play-state" fixedWidth /> : null }
-					<span className="col name">
-						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
-					</span>
-					<span className="col artists">
-						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
-					</span>
-					<span className="col album">
-						{album}
-					</span>
-					<span className="col duration">
-						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
-						{ track.length ? <Dater type="length" data={track.length} /> : null }
-					</span>
+					{ track_columns }
 					{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(track.uri)} /> : null }
 			</div>
 		);

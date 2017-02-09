@@ -225,4 +225,11 @@ export function getSearchResults(query, uris = null, fields = ['any']){
 		fields: fields
 	}
 }
+
+export function getQueueHistory(){
+	return {
+		type: 'MOPIDY_INSTRUCT',
+		call: 'history.getHistory'
+	}
+}
  

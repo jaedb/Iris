@@ -62,6 +62,22 @@ export default function reducer(mopidy = {}, action){
                 time_position: action.data
             });
 
+        case 'MOPIDY_HISTORY':
+            var history = []
+            for (var i = 0; i < action.data.length; i++){
+                history.push(Object.assign(
+                    {},
+                    action.data[i][1],
+                    {
+                        played_at: action.data[i][0],
+                        type: 'history'
+                    }
+                ))
+            }
+            return Object.assign({}, mopidy, {
+                queue_history: history
+            });
+
 
         /**
          * Asset-oriented actions
