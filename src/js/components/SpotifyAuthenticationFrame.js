@@ -84,7 +84,8 @@ class SpotifyAuthenticationFrame extends React.Component{
 	}
 
 	renderRefreshButton(){
-		if( !this.props.authorized ) return null;
+		console.log(typeof(window._testMode));
+		if( !this.props.authorized || !window._testMode) return null;
 
 		if( this.props.refreshing_token ){
 			return (
