@@ -33,8 +33,10 @@ main {
 				font-size: 14px;
 				font-weight: 600;
 				padding: 13px 10px;
+				margin: 0;
 				line-height: 24px;
 				text-transform: uppercase;
+				min-width: 0;
 			}
 		}
 	}

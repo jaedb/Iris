@@ -37,25 +37,21 @@ input[type="submit"] {
 	@include animate();
 	padding: 10px 20px;
 	border: 0;
-	margin: 0 10px 5px 0;
+	margin: 0 10px 20px 0;
+	margin-right: 20px;
+	text-align: center;
+	min-width: 140px;
+	border-radius: 20px;
 	color: #000000;
 	background: $light_grey;
+
+	@include responsive( $bp_medium ){
+		min-width: none;
+	}
 
 	&:hover{
 		cursor: pointer;
 		background: darken( $light_grey, 6%);
-	}
-
-	&.rounded {
-		margin-right: 20px;
-		padding: 10px 20px;
-		text-align: center;
-		min-width: 140px;
-		border-radius: 20px;
-
-		@include responsive( $bp_medium ){
-			min-width: none;
-		}
 	}
 
 	&.outline {
@@ -152,13 +148,10 @@ input[type="submit"] {
 
 	&[disabled],
 	&[disabled="disabled"]{
-		background: rgba(200,200,200,0.4) !important;
+		background: none !important;
 		color: $mid_grey !important;
 		cursor: not-allowed !important;
-	}
-
-	&:last-of-type {
-		margin-right: 0;
+		border-color: $mid_grey !important;
 	}
 }
 

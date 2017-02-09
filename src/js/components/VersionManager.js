@@ -17,7 +17,7 @@ class VersionManager extends React.Component{
 	renderUpgradeButton(){
 		if( this.props.pusher.upgrading ){
 			return (
-				<button disabled>
+				<button className="outline" disabled>
 					<FontAwesome name="circle-o-notch" spin />
 					&nbsp;
 					Upgrading
@@ -26,14 +26,14 @@ class VersionManager extends React.Component{
 		}
 
 		if( !this.props.pusher.version.is_root ){
-			return <button className="secondary" disabled>Not running as root</button>
+			return <button className="outline" disabled>Not running as root</button>
 		}
 
 		if( this.props.pusher.version.upgrade_available ){
-			return <button className="secondary" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
+			return <button className="primary" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
 		}
 
-		return <button className="secondary" disabled>No updates available</button>
+		return <button className="outline" disabled>No updates available</button>
 	}
 
 	render(){

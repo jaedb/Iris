@@ -119,8 +119,6 @@ class Settings extends React.Component{
 
 		return (
 			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
-				<FontAwesome name="share-square-o" />
-				&nbsp;
 				Share authentication
 			</button>
 		)
