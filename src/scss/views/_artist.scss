@@ -84,6 +84,12 @@
 		.intro {
 			margin-bottom: 20px;
 
+			.parallax {
+				canvas {
+					@include blur(5px);
+				}
+			}
+
 			.liner {
 				text-align: center;
 				padding-left: 20px;
@@ -94,7 +100,7 @@
 					position: static;
 					float: none;
 					margin: 0 auto 20px;
-					max-width: 100px;
+					max-width: 65%;
 				}
 
 				.sub-views {

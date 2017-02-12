@@ -54,16 +54,15 @@
 	height: 50vh;
 	width: 100%;
 	overflow: hidden;
-	background: $dark_grey;
+	background: #000000;
 
 	canvas {
 		width: 100%;
 		height: 100%;
 		opacity: 0;
-		@include animate( 0.1s );
 
 		&.loaded {
-			opacity: 0.5;
+			opacity: 0.4;
 		}
 	}
 }

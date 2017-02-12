@@ -39,8 +39,11 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                             resolve(response)
                         },
                         (xhr, status, error) => {
+                            var message = xhr.responseText
+                            if (error.error && error.error.message) message = error.error.message
+                            dispatch(uiActions.createNotification(message,'bad'))
+
                             console.error( endpoint+' failed', xhr.responseText)
-                            dispatch(uiActions.createNotification(xhr.responseText,'bad'))
                             reject(error)
                         }
                     )
@@ -59,7 +62,7 @@ function getToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
         // token is okay for now, so just resolve with the current token
-        if( new Date().getTime() < getState().spotify.token_expiry ){
+        if( getState().spotify.token_expiry && new Date().getTime() < getState().spotify.token_expiry ){
             resolve(getState().spotify.access_token)
             return
         }
