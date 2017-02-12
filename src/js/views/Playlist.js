@@ -114,14 +114,14 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
 					</div>
 				)
 
 			default:
 				return (
 					<div className="actions">
-						<button className="rounded primary" onClick={ e => this.play() }>Play</button>
+						<button className="primary" onClick={ e => this.play() }>Play</button>
 					</div>
 				)
 		}

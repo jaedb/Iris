@@ -58,8 +58,8 @@ class Debug extends React.Component{
 
 		var actions = (
 			<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
-				<FontAwesome name="cog" />&nbsp;
-				Settings
+				<FontAwesome name="reply" />&nbsp;
+				Back
 			</button>
 		)
 

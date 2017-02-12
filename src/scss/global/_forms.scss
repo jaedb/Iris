@@ -226,10 +226,10 @@ input[type="submit"] {
 		input + .label:before {
 			content: ' ';
 			display: inline-block;
-			width: 16px;
-			height: 16px;
+			width: 14px;
+			height: 14px;
 		    border-radius: 50%;
-			border: 1px solid #000000;
+			border: 2px solid #000000;
 			position: absolute;
 			top: 4px;
 			left: 0;
@@ -256,14 +256,14 @@ input[type="submit"] {
 
 		input + .label:before {
 			font-family: FontAwesome;
-			font-size: 10px;
+			font-size: 8px;
 			content: ' ';
 			color: #000000;
 			display: inline-block;
-			width: 13px;
-			height: 13px;
+			width: 11px;
+			height: 11px;
 			padding: 3px 0 0 3px;
-			border: 1px solid #000000;
+			border: 2px solid #000000;
 			position: absolute;
 			top: 5px;
 			left: 0;
