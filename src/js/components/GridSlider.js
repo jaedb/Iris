@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
