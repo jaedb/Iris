@@ -52,10 +52,6 @@ input[type="submit"] {
 		min-width: 200px;
 	}
 
-	@include responsive( $bp_medium ){
-		min-width: none;
-	}
-
 	&:hover{
 		cursor: pointer;
 		border-color: darken( $mid_grey, 10%);
@@ -160,6 +156,18 @@ input[type="submit"] {
 			border-color: $mid_grey;
 			background: transparent;
 		}
+	}
+
+	@include responsive( $bp_medium ){
+		min-width: 0;
+	}
+}
+
+.actions {
+
+	.button:last-of-type,
+	button:last-of-type {
+		margin-right: 0;
 	}
 }
 
