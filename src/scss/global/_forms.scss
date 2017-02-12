@@ -35,15 +35,22 @@ button,
 input[type="button"],
 input[type="submit"] {
 	@include animate();
-	padding: 10px 20px;
+	padding: 6px 10px;
+	min-width: 150px;
 	border: 0;
 	margin: 0 10px 20px 0;
 	margin-right: 20px;
 	text-align: center;
-	min-width: 140px;
-	border-radius: 20px;
-	color: #000000;
-	background: $light_grey;
+	border: 2px solid $mid_grey;
+	color: $mid_grey;
+	background: transparent;
+	text-transform: uppercase;
+	font-size: 12px;
+	font-weight: 800;
+
+	&.wide {
+		min-width: 200px;
+	}
 
 	@include responsive( $bp_medium ){
 		min-width: none;
@@ -51,76 +58,56 @@ input[type="submit"] {
 
 	&:hover{
 		cursor: pointer;
-		background: darken( $light_grey, 6%);
+		border-color: darken( $mid_grey, 10%);
 	}
 
-	&.outline {
+	&:active {
+		@include noanimate();
+		background: $mid_grey;
 		color: #FFFFFF;
-		padding: 9px 19px;
-		border: 1px solid $darkest_grey;
-		background: transparent;
-		color: $darkest_grey;
+		border-color: $mid_grey;
+	}
 
-		&.white {
-			border-color: #FFFFFF;
-			color: #FFFFFF;
-			background: rgba(0,0,0,0.2);
-
-			&:hover {
-				background: rgba(0,0,0,0.4);
-				border-color: #FFFFFF;
-			}
-		}
-
+	&.primary {
+		border-color: $turquoise;
+		color: $turquoise;
 		&:hover {
+			color: darken( $turquoise, 10% );
+			border-color: darken( $turquoise, 10% );
+		}
+		&:active {
+			color: #FFFFFF;
+			background: $turquoise;
 			border-color: $turquoise;
 		}
 	}
 
-	&.primary {
-		background: $turquoise;
-		color: #FFFFFF;
-		&:hover {
-			background: darken( $turquoise, 6% );
-		}
-	}
-
 	&.secondary {
-		background: #000000;
-		color: #FFFFFF;
+		color: #000000;
+		border-color: #000000;
 		&:hover {
-			background: lighten( #000000, 20% );
+			color: lighten( #000000, 40% );
+			border-color: lighten( #000000, 40% );
 		}
-	}
-
-	&.tertiary {
-		background: $mid_grey;
-		color: #FFFFFF;
-		&:hover {
-			background: darken( $mid_grey, 6% );
-		}
-	}
-
-	&.discrete {
-		background: transparent;
-		color: #FFFFFF;
-
-		&[disabled],
-		&[disabled="disabled"] {
-			background: transparent !important;
-		}
-
-		&:hover {
-			color: $turquoise;
+		&:active {
+			color: #FFFFFF;
+			background: #000000;
+			border-color: #000000;
 		}
 	}
 
 	&.confirming,
 	&.destructive {
-		background: $red;
-		color: #FFFFFF;
+		border-color: $red;
+		color: $red;
 		&:hover {
-			background: darken( $red, 6% );
+			color: darken( $red, 6% );
+			border-color: darken( $red, 6% );
+		}
+		&:active {
+			color: #FFFFFF;
+			background: $red;
+			border-color: $red;
 		}
 	}
 
@@ -130,28 +117,49 @@ input[type="submit"] {
 			@include animate_timeout(2s);
 			content: '';
 			position: absolute;
-			top: 0;
 			left: 0;
 			bottom: 0;
 			width: 0;
-			background: rgba(255,255,255,0.15);
+			height: 3px;
+			background: $red;
 		}
 	}
 
-	&.wide {
-		display: inline-block;
-		min-width: 200px;
-		text-align: center;
-		padding-left: 30px;
-		padding-right: 30px;
+	&.white {
+		color: #FFFFFF;
+		border-color: #FFFFFF;
+		&:hover {
+			color: rgba(255,255,255,0.8);
+			border-color: rgba(255,255,255,0.8);
+		}
+		&:active {
+			color: #000000;
+			background: #FFFFFF;
+			border-color: #FFFFFF;
+		}
+	}
+
+	&.discrete {
+		border: transparent;
+
+		&[disabled],
+		&[disabled="disabled"] {
+			border-color: $light_grey !important;
+		}
 	}
 
 	&[disabled],
 	&[disabled="disabled"]{
-		background: none !important;
-		color: $mid_grey !important;
+		opacity: 0.5;
 		cursor: not-allowed !important;
-		border-color: $mid_grey !important;
+
+		&,
+		&:hover,
+		&:active {
+			color: $mid_grey;
+			border-color: $mid_grey;
+			background: transparent;
+		}
 	}
 }
 

@@ -38,13 +38,20 @@ $bp_shallow: 650px;
 		    transition: all $duration $easing; 
 }
 
-@keyframes fill_from_left {
-    from {	width: 0%; }
-    to {	width: 100%; }
+@mixin noanimate(){
+	-webkit-transition: none !important;
+	   -moz-transition: none !important;
+	     -o-transition: none !important;
+	        transition: none !important;
+}
+
+@keyframes shrink_from_right {
+    from {	width: 100%; }
+    to {	width: 0%; }
 }
 
 @mixin animate_timeout( $duration: 0.2s ){
-    animation-name: fill_from_left;
+    animation-name: shrink_from_right;
     animation-duration: $duration;
     animation-timing-function: linear;
 }

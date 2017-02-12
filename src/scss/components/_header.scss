@@ -37,6 +37,12 @@ main {
 				line-height: 24px;
 				text-transform: uppercase;
 				min-width: 0;
+				border: 0;
+				color: #000000;
+
+				&:active {
+					background: rgba(0,0,0,0.15);
+				}
 			}
 		}
 	}

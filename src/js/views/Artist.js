@@ -195,7 +195,7 @@ class Artist extends React.Component{
 					<div className="liner">
 						<Thumbnail image={image} circle />
 						<h1>{ this.props.artist.name }</h1>
-						{ scheme == 'spotify' ? <div className="actions"><button className="primary rounded" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="outline rounded white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
+						{ scheme == 'spotify' ? <div className="actions"><button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
 						{ this.renderSubViewMenu() }
 					</div>
 				</div>

@@ -118,8 +118,8 @@ class Album extends React.Component{
 				</div>
 
 				<div className="actions">
-					<button className="rounded primary" onClick={e => this.play()}>Play</button>
-					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="outline rounded" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
+					<button className="primary" onClick={e => this.play()}>Play</button>
+					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
 				</div>
 
 				<section className="list-wrapper">

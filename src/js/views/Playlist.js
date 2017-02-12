@@ -95,9 +95,9 @@ class Playlist extends React.Component{
 			case 'm3u':
 				return (
 					<div className="actions">
-						<button className="rounded primary" onClick={ e => this.play() }>Play</button>
-						<button className="rounded outline" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
-						<ConfirmationButton className="rounded destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
+						<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
 					</div>
 				)
 
@@ -105,16 +105,16 @@ class Playlist extends React.Component{
 				if( this.props.playlist.can_edit ){
 					return (
 						<div className="actions">
-							<button className="rounded primary" onClick={ e => this.play() }>Play</button>
-							<button className="outline rounded" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
-							<ConfirmationButton className="rounded destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+							<button className="primary" onClick={ e => this.play() }>Play</button>
+							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
+							<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
 						</div>
 					)
 				}
 				return (
 					<div className="actions">
-						<button className="rounded primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton className="rounded outline" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<FollowButton uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
 					</div>
 				)
 
