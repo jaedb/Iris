@@ -26,6 +26,10 @@
 				left: 40px;
 				bottom: 20px;
 				max-width: 144px;
+
+				.image {
+					background-color: $darkest_grey;
+				}
 			}
 
 			h1 {
