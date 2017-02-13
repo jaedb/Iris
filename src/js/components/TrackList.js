@@ -122,7 +122,7 @@ class TrackList extends React.Component{
 		var data = {
 			e: e,
 			context: (this.props.context ? this.props.context : 'track'),
-			tracklist_uri: (this.props.tracklist_uri ? this.props.tracklist_uri : null),
+			tracklist_uri: (this.props.uri ? this.props.uri : null),
 			items: selected_tracks,
 			uris: helpers.asURIs(selected_tracks),
 			indexes: this.tracksIndexes(selected_tracks)

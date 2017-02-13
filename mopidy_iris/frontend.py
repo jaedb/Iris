@@ -27,6 +27,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.version = mopidy_iris.__version__
         self.is_root = ( os.geteuid() == 0 )
         self.spotify_token = False
+        self.queue_metadata = {}
         self.radio = {
             "enabled": 0,
             "seed_artists": [],
@@ -188,6 +189,26 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     # get our spotify token
     def get_spotify_token( self ):
         return self.spotify_token
+        
+   
+    # get queue metadata
+    def get_queue_metadata( self ):
+        return self.queue_metadata
+        
+   
+    # add queue metadata
+    def add_queue_metadata( self, tlids, from_uri, added_by ):
+        queue_metadata = self.queue_metadata
+
+        for tlid in tlids:
+            item = {
+                'tlid': tlid,
+                'from_uri': from_uri,
+                'added_by': added_by
+            }
+            queue_metadata['tlid_'+str(tlid)] = item
+
+        return queue_metadata
         
    
     # get our config values

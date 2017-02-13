@@ -238,10 +238,13 @@ const MopidyMiddleware = (function(){
                 var current_track = store.getState().ui.current_track
                 var current_tracklist = store.getState().ui.current_tracklist
                 var current_track_index = -1
-                for( var i = 0; i < current_tracklist.length; i++ ){
-                    if( current_tracklist[i].tlid == current_track.tlid ){
-                        current_track_index = i
-                        break
+
+                if (typeof(current_track) !== 'undefined'){
+                    for( var i = 0; i < current_tracklist.length; i++ ){
+                        if( current_tracklist[i].tlid == current_track.tlid ){
+                            current_track_index = i
+                            break
+                        }
                     }
                 }
 
@@ -249,6 +252,13 @@ const MopidyMiddleware = (function(){
                 if( current_track_index > -1 ) at_position = current_track_index + 1
 
                 instruct( socket, store, 'tracklist.add', { uris: action.uris, at_position: at_position } )
+                    .then( response => {
+                        var tlids = []
+                        for (var i = 0; i < response.length; i++){
+                            tlids.push(response[i].tlid)
+                        }
+                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                    })
                 break
 
             case 'MOPIDY_PLAY_URIS':

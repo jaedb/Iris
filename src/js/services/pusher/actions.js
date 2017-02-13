@@ -76,3 +76,17 @@ export function debug( data = null ){
 		data: data
 	}
 }
+
+export function getQueueMetadata(){
+	return {
+		type: 'PUSHER_GET_QUEUE_METADATA'
+	}
+}
+
+export function addQueueMetadata( tlids = [], from_uri = null ){
+	return {
+		type: 'PUSHER_ADD_QUEUE_METADATA',
+		tlids: tlids,
+		from_uri: from_uri
+	}
+}

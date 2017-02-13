@@ -56,15 +56,17 @@ export function playURIs( uris ){
 	}
 }
 
-export function enqueueURIsNext( uris ){
+export function enqueueURIsNext( uris, from_uri = null ){
 	if( typeof(uris) !== 'object' ) uris = [uris]
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS_NEXT',
-		uris: uris
+		uris: uris,
+		from_uri: from_uri
 	}
 }
 
-export function enqueueURIs( uris, at_position = false ){
+// TODO: Create separate action type for this, rather than using _INSTRUCT
+export function enqueueURIs( uris, from_uri = null, at_position = false ){
 	if( typeof(uris) !== 'object' ) uris = [uris];
 	var value = { uris: uris };
 	if( at_position ) value.at_position = at_position;

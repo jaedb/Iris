@@ -161,6 +161,24 @@ const PusherMiddleware = (function(){
                 store.dispatch( uiActions.createNotification(action.data.source+': '+action.data.message,'bad') )
                 break;
 
+            case 'PUSHER_GET_QUEUE_METADATA':
+                request({ action: 'get_queue_metadata'})
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'QUEUE_METADATA', queue_metadata: response.data.queue_metadata })
+                        }
+                    )
+                break;
+
+            case 'PUSHER_ADD_QUEUE_METADATA':
+                request({ action: 'add_queue_metadata', tlids: action.tlids, from_uri: action.from_uri })
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'QUEUE_METADATA', queue_metadata: response.data.queue_metadata })
+                        }
+                    )
+                break;
+
             case 'START_UPGRADE':
                 request({ action: 'upgrade' })
                     .then(

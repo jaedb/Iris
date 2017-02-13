@@ -119,6 +119,10 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
+        case 'QUEUE_METADATA':
+        console.log(action)
+            return Object.assign({}, ui, { queue_metadata: action.queue_metadata })
+
         case 'RADIO':
         case 'START_RADIO':
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
