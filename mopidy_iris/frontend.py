@@ -85,6 +85,9 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     ##
     def track_playback_ended( self, tl_track, time_position ):
         self.check_for_radio_update()
+
+    def tracklist_changed( self ):
+        self.clean_queue_metadata()
         
         
     ##
@@ -212,9 +215,31 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
 
         return self.queue_metadata
+
+    # fetch our tracklist, and remove any metadata for tlids that don't exist anymore
+    def clean_queue_metadata( self ):
+
+        cleaned_queue_metadata = {}
+
+        # get and loop all tltracks
+        for tltrack in self.core.tracklist.get_tl_tracks().get():
+
+            # if we have metadata for this track, push it through to cleaned dictionary
+            if 'tlid_'+str(tltrack.tlid) in self.queue_metadata:
+                cleaned_queue_metadata['tlid_'+str(tltrack.tlid)] = self.queue_metadata['tlid_'+str(tltrack.tlid)]
+
+        # update our cleaned store
+        self.queue_metadata = cleaned_queue_metadata
+
+        # broadcast to all clients
+        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
         
    
-    # get our config values
+    ##
+    # System configuration
+    #
+    # This enables Iris to respect system config
+    ##
     def get_config( self ):
         all_config = self.config
         config = {
