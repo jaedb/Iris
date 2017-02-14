@@ -154,12 +154,9 @@ const PusherMiddleware = (function(){
                             store.dispatch({ type: 'RADIO', data: response.data })
                         }
                     )
-                request({ action: 'get_queue_metadata'})
-                    .then(
-                        response => {
-                            store.dispatch({ type: 'QUEUE_METADATA', queue_metadata: response.data.queue_metadata })
-                        }
-                    )
+
+                store.dispatch(pusherActions.getQueueMetadata())
+
                 return next(action);
                 break;
 
@@ -171,18 +168,13 @@ const PusherMiddleware = (function(){
                 request({ action: 'get_queue_metadata'})
                     .then(
                         response => {
-                            store.dispatch({ type: 'QUEUE_METADATA', queue_metadata: response.data.queue_metadata })
+                            store.dispatch({ type: 'QUEUE_METADATA', data: response.data })
                         }
                     )
                 break;
 
             case 'PUSHER_ADD_QUEUE_METADATA':
                 request({ action: 'add_queue_metadata', tlids: action.tlids, added_from: action.from_uri })
-                    .then(
-                        response => {
-                            store.dispatch({ type: 'QUEUE_METADATA', queue_metadata: response.data.queue_metadata })
-                        }
-                    )
                 break;
 
             case 'START_UPGRADE':

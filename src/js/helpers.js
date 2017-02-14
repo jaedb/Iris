@@ -182,7 +182,7 @@ export let getFromUri = function(element,uri){
 export let uriType = function( uri ){
     var exploded = uri.split(':');
 
-    if( exploded[0] == 'spotify' ){
+    if (exploded[0] == 'spotify'){
     	switch( exploded[1] ){
     		case 'track':
     			return 'track'
@@ -197,6 +197,15 @@ export let uriType = function( uri ){
     			if( exploded[3] == 'playlist' ) return 'playlist'
     			if( exploded.length == 3 ) return 'user'
     			return null
+    			break;
+    	}
+    } else if (exploded[0] == 'local'){
+    	switch( exploded[1] ){
+    		case 'album':
+    			return 'album'
+    			break;
+    		case 'artist':
+    			return 'artist'
     			break;
     	}
     }

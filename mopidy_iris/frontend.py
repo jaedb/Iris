@@ -84,7 +84,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     # Listen for core events, and update our frontend as required
     ##
     def track_playback_ended( self, tl_track, time_position ):
-        self.check_for_radio_update()        
+        self.check_for_radio_update()
         
         
     ##
@@ -190,15 +190,15 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     def get_spotify_token( self ):
         return self.spotify_token
         
-   
-    # get queue metadata
+
+    ##
+    # Queue metadata
+    ##
+
     def get_queue_metadata( self ):
         return self.queue_metadata
         
-   
-    # add queue metadata
     def add_queue_metadata( self, tlids, added_from, added_by ):
-        queue_metadata = self.queue_metadata
 
         for tlid in tlids:
             item = {
@@ -206,9 +206,12 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 'added_from': added_from,
                 'added_by': added_by
             }
-            queue_metadata['tlid_'+str(tlid)] = item
+            self.queue_metadata['tlid_'+str(tlid)] = item
 
-        return queue_metadata
+        # broadcast to all clients
+        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+
+        return self.queue_metadata
         
    
     # get our config values
