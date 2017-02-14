@@ -158,7 +158,7 @@ class ContextMenu extends React.Component{
 				]
 				break
 
-			case 'queue-track':
+			case 'queue':
 				var items = [
 					{ handleClick: 'playQueueItem', label: 'Play' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist' },

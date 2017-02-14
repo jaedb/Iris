@@ -77,7 +77,7 @@ class Album extends React.Component{
 	}
 
 	play(){
-		this.props.mopidyActions.playURIs([this.props.params.uri])
+		this.props.mopidyActions.playURIs([this.props.params.uri], this.props.params.uri)
 	}
 
 	render(){

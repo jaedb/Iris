@@ -215,7 +215,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'add_queue_metadata':
             queue_metadata = self.frontend.add_queue_metadata(
                 messageJson['tlids'],
-                messageJson['from_uri'],
+                messageJson['added_from'],
                 connections[self.connectionid]['client']['username']
             )
 

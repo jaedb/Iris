@@ -57,22 +57,35 @@ export default class Track extends React.Component{
 			}
 		}
 
-		switch (track.type){
+		if (track.type == 'history'){
 
-			case 'history': 
-				var track_columns = (
-					<span>
-						<span className="col name">
-							{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
-						</span>
-						<span className="col played_at">
-							{ track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null }
-						</span>
+			var track_columns = (
+				<span>
+					<span className="col name">
+						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 					</span>
-				)
-				break;
+					<span className="col played_at">
+						{ track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null }
+					</span>
+				</span>
+			)
 
-			default:
+		} else if (this.props.context == 'queue'){
+				var type = (track.added_from ? helpers.uriType(track.added_from) : null)
+
+				if (track.added_from && track.added_by){
+					var added = <span>{track.added_by} <span className="grey-text"> (from <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>)</span></span>
+
+				} else if (track.added_from){
+					var added = <span className="grey-text"> (from <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>)</span>
+
+				} else if (track.added_by){
+					var added = track.added_by
+
+				} else {
+					var added = '-'
+				}
+
 				var track_columns = (
 					<span>
 						<span className="col name">
@@ -84,12 +97,35 @@ export default class Track extends React.Component{
 						<span className="col album">
 							{album}
 						</span>
+						<span className="col added">
+							{added}
+						</span>
 						<span className="col duration">
 							{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
 							{ track.length ? <Dater type="length" data={track.length} /> : null }
 						</span>
 					</span>
 				)
+
+		} else {
+
+			var track_columns = (
+				<span>
+					<span className="col name">
+						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+					</span>
+					<span className="col artists">
+						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
+					</span>
+					<span className="col album">
+						{album}
+					</span>
+					<span className="col duration">
+						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
+						{ track.length ? <Dater type="length" data={track.length} /> : null }
+					</span>
+				</span>
+			)
 		}
 
 		return (

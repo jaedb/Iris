@@ -197,13 +197,13 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         
    
     # add queue metadata
-    def add_queue_metadata( self, tlids, from_uri, added_by ):
+    def add_queue_metadata( self, tlids, added_from, added_by ):
         queue_metadata = self.queue_metadata
 
         for tlid in tlids:
             item = {
                 'tlid': tlid,
-                'from_uri': from_uri,
+                'added_from': added_from,
                 'added_by': added_by
             }
             queue_metadata['tlid_'+str(tlid)] = item

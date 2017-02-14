@@ -240,7 +240,7 @@ class TrackList extends React.Component{
 		for( var i = 0; i < tracks.length; i++ ){
 			uris.push( tracks[i].uri )
 		}
-		return this.props.mopidyActions.playURIs( uris )
+		return this.props.mopidyActions.playURIs( uris, this.props.uri )
 	}
 
 	removeTracks(){
@@ -265,6 +265,18 @@ class TrackList extends React.Component{
 					<div className="list-item header track">
 						<span className="col name">Name</span>
 						<span className="col played_at">Started playing</span>
+					</div>
+				)
+				break
+
+			case 'queue':
+				return (
+					<div className="list-item header track">
+						<span className="col name">Name</span>
+						<span className="col artists">Artists</span>
+						<span className="col album">Album</span>
+						<span className="col added">Added by</span>
+						<span className="col duration">Length</span>
 					</div>
 				)
 				break
@@ -295,6 +307,7 @@ class TrackList extends React.Component{
 									show_source_icon={ this.props.show_source_icon }
 									key={track.key} 
 									track={track} 
+									context={this.props.context} 
 									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
 									handleMouseUp={ e => self.handleMouseUp(e, index)}
 									handleMouseDown={ e => self.handleMouseDown(e, index)}

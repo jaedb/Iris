@@ -49,10 +49,11 @@ export function changeTrack( tlid ){
 	}
 }
 
-export function playURIs( uris ){
+export function playURIs( uris, from_uri = null ){
 	return {
 		type: 'MOPIDY_PLAY_URIS',
-		uris: uris
+		uris: uris,
+		from_uri: from_uri
 	}
 }
 
@@ -65,15 +66,12 @@ export function enqueueURIsNext( uris, from_uri = null ){
 	}
 }
 
-// TODO: Create separate action type for this, rather than using _INSTRUCT
 export function enqueueURIs( uris, from_uri = null, at_position = false ){
-	if( typeof(uris) !== 'object' ) uris = [uris];
-	var value = { uris: uris };
-	if( at_position ) value.at_position = at_position;
 	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'tracklist.add',
-		value: value
+		type: 'MOPIDY_ENQUEUE_URIS',
+		uris: uris,
+		at_position: at_position,
+		from_uri: from_uri
 	}
 }
 

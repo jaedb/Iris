@@ -82,8 +82,8 @@ class Queue extends React.Component{
 				<section className="list-wrapper">
 					<TrackList
 						show_source_icon={true}
-						context="queue-track"
-						tracks={this.props.current_tracklist} 
+						context="queue"
+						tracks={this.props.current_tracklist}
 						removeTracks={ tracks => this.removeTracks( tracks ) }
 						playTracks={ tracks => this.playTracks( tracks ) }
 						playTrack={ track => this.playTrack( track ) }

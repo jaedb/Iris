@@ -161,4 +161,15 @@
 			}
 		}
 	}
+
+	.queue.track-list {
+		.list-item {
+			.col{
+				&.name,
+				&.artists,
+				&.album { width: 25%; }
+				&.added { width: 20%; }
+			}
+		}
+	}
 }

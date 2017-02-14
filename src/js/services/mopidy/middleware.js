@@ -233,6 +233,22 @@ const MopidyMiddleware = (function(){
                 })
                 break;
 
+            case 'MOPIDY_ENQUEUE_URIS':
+                var value = { uris: action.uris }
+                if (action.at_position){
+                    value.at_position = action.at_position
+                }
+
+                instruct( socket, store, 'tracklist.add', value )
+                    .then( response => {
+                        var tlids = []
+                        for (var i = 0; i < response.length; i++){
+                            tlids.push(response[i].tlid)
+                        }
+                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                    })
+                break
+
             case 'MOPIDY_ENQUEUE_URIS_NEXT':
 
                 var current_track = store.getState().ui.current_track
@@ -273,16 +289,22 @@ const MopidyMiddleware = (function(){
                     .then( response => {
 
                         if( !response || response.length <= 0 ){
-                            store.dispatch( uiActions.createNotification('Could not add URI(s) to tracklist', 'error') )
+                            store.dispatch( uiActions.createNotification('Failed to load URI(s)', 'bad') )
                         }else{
                             // play it
-                            store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );                            
+                            store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );
+
+                            var tlids = []
+                            for (var i = 0; i < response.length; i++){
+                                tlids.push(response[i].tlid)
+                            }
+                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
                         }
 
                         // add the rest of our uris (if any)
                         action.uris.shift();
                         if( action.uris.length > 0 ){
-                            store.dispatch( mopidyActions.enqueueURIs( action.uris, 1 ) )
+                            store.dispatch( mopidyActions.enqueueURIs( action.uris, action.from_uri, 1 ) )
                         }
                     })
                 break;

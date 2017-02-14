@@ -81,12 +81,23 @@ export default function reducer(ui = {}, action){
 
             var tracklist = []
             for( var i = 0; i < action.data.length; i++ ){
+
+                var tltrack = action.data[i]
+
+                // load our metadata (if we have any for that tlid)
+                if (typeof(ui.queue_metadata) !== 'undefined' && typeof(ui.queue_metadata['tlid_'+tltrack.tlid]) !== 'undefined'){
+                    var metadata = ui.queue_metadata['tlid_'+tltrack.tlid]
+                } else {
+                    var metadata = {}
+                }
+
                 var track = Object.assign(
                     {}, 
-                    action.data[i].track, 
+                    tltrack.track,
+                    metadata,
                     { 
-                        tlid: action.data[i].tlid,
-                        playing: ( ui.current_track && action.data[i].tlid == ui.current_track.tlid )
+                        tlid: tltrack.tlid,
+                        playing: ( ui.current_track && tltrack.tlid == ui.current_track.tlid )
                     })
                 tracklist.push( track )
             }
@@ -120,8 +131,8 @@ export default function reducer(ui = {}, action){
             });
 
         case 'QUEUE_METADATA':
-        console.log(action)
-            return Object.assign({}, ui, { queue_metadata: action.queue_metadata })
+            console.log(action);
+            return Object.assign({}, ui, { queue_metadata: action.queue_metadata });
 
         case 'RADIO':
         case 'START_RADIO':
