@@ -8,7 +8,7 @@ from frontend import IrisFrontend
 from http import RequestHandler
 
 logger = logging.getLogger(__name__)
-__version__ = '2.11.5'
+__version__ = '2.12.0'
 
 ##
 # Core extension class
