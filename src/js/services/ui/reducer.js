@@ -54,6 +54,7 @@ export default function reducer(ui = {}, action){
                     dragging: true,
                     active: false,
                     context: action.context, 
+                    from_uri: action.from_uri, 
                     victims: action.victims,
                     victims_indexes: action.victims_indexes,
                     start_x: action.start_x,

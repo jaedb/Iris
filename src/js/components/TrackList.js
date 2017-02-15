@@ -88,7 +88,7 @@ class TrackList extends React.Component{
 			if (!this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey) this.toggleTrackSelections(e, index)
 
 			var selected_tracks = this.selectedTracks()
-			this.props.uiActions.dragStart( e, this.props.context, selected_tracks, this.tracksIndexes(selected_tracks) )
+			this.props.uiActions.dragStart( e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks) )
 		}
 	}
 
