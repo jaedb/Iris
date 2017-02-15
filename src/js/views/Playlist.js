@@ -59,7 +59,7 @@ class Playlist extends React.Component{
 
 	play(){
         ReactGA.event({ category: 'Playlist', action: 'Play', label: this.props.playlist.uri })
-		this.props.mopidyActions.playURIs([this.props.playlist.uri])
+		this.props.mopidyActions.playURIs([this.props.playlist.uri], this.props.params.uri)
 	}
 
 	follow(){
@@ -165,7 +165,7 @@ class Playlist extends React.Component{
 				{ this.renderActions() }
 
 				<section className="list-wrapper">
-					{ this.props.playlist.tracks ? <TrackList tracklist_uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+					{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 					<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>

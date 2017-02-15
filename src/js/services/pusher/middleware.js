@@ -154,11 +154,27 @@ const PusherMiddleware = (function(){
                             store.dispatch({ type: 'RADIO', data: response.data })
                         }
                     )
+
+                store.dispatch(pusherActions.getQueueMetadata())
+
                 return next(action);
                 break;
 
             case 'ERROR':
                 store.dispatch( uiActions.createNotification(action.data.source+': '+action.data.message,'bad') )
+                break;
+
+            case 'PUSHER_GET_QUEUE_METADATA':
+                request({ action: 'get_queue_metadata'})
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'QUEUE_METADATA', data: response.data })
+                        }
+                    )
+                break;
+
+            case 'PUSHER_ADD_QUEUE_METADATA':
+                request({ action: 'add_queue_metadata', tlids: action.tlids, added_from: action.from_uri })
                 break;
 
             case 'START_UPGRADE':

@@ -55,12 +55,12 @@ class ContextMenu extends React.Component{
 	}
 
 	playURIs(){
-		this.props.mopidyActions.playURIs(this.props.menu.uris);
+		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri);
 		this.props.uiActions.hideContextMenu();
 	}
 
 	playURIsNext(){
-		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris);
+		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris, this.props.menu.tracklist_uri);
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -70,7 +70,7 @@ class ContextMenu extends React.Component{
 	}
 
 	addToQueue(){
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris)
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -158,7 +158,7 @@ class ContextMenu extends React.Component{
 				]
 				break
 
-			case 'queue-track':
+			case 'queue':
 				var items = [
 					{ handleClick: 'playQueueItem', label: 'Play' },
 					{ handleClick: 'addToPlaylist', label: 'Add to playlist' },

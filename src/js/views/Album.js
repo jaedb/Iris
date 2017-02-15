@@ -77,8 +77,7 @@ class Album extends React.Component{
 	}
 
 	play(){
-		var tracks_uris = helpers.asURIs( this.props.album.tracks )
-		this.props.mopidyActions.playURIs( tracks_uris )
+		this.props.mopidyActions.playURIs([this.props.params.uri], this.props.params.uri)
 	}
 
 	render(){
@@ -123,7 +122,7 @@ class Album extends React.Component{
 				</div>
 
 				<section className="list-wrapper">
-					{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } /> : null }
+					{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
 					<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 

@@ -210,6 +210,35 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 messageJson['request_id'], 
                 { 'connections': connectionsDetailsList }
             )
+
+        # add some queue metadata
+        elif messageJson['action'] == 'add_queue_metadata':
+            queue_metadata = self.frontend.add_queue_metadata(
+                messageJson['tlids'],
+                messageJson['added_from'],
+                connections[self.connectionid]['client']['username']
+            )
+
+            send_message(
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'queue_metadata': queue_metadata }
+            )
+
+        # get our queue metadata (added_by, from, etc)
+        elif messageJson['action'] == 'get_queue_metadata':
+        
+            connectionsDetailsList = []
+            for connection in connections.itervalues():
+                connectionsDetailsList.append(connection['client'])
+                
+            send_message(
+                self.connectionid, 
+                'response', 
+                messageJson['request_id'], 
+                { 'queue_metadata': self.frontend.get_queue_metadata() }
+            )
         
         # change connection's client username
         elif messageJson['action'] == 'set_username':
