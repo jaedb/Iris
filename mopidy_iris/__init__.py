@@ -5,7 +5,8 @@ import tornado.web
 import tornado.websocket
 from mopidy import config, ext
 from frontend import IrisFrontend
-from http import RequestHandler
+from http import HttpHandler
+from websocket import WebsocketHandler
 
 logger = logging.getLogger(__name__)
 __version__ = '2.12.1'
@@ -52,9 +53,14 @@ def factory(config, core):
         (r"/images/(.*)", tornado.web.StaticFileHandler, {
             "path": config['local-images']['image_dir']
         }),
-        (r'/http/([^/]*)', RequestHandler, {
+        (r'/http/([^/]*)', HttpHandler, {
                 'core': core,
+                'frontend': IrisFrontend,
                 'config': config
+            }),
+        (r'/ws/?', WebsocketHandler, {
+                'core': core,
+                'frontend': IrisFrontend
             }),
         (r'/(.*)', tornado.web.StaticFileHandler, {
 				"path": path,

@@ -95,9 +95,9 @@ const PusherMiddleware = (function(){
                     username: Math.random().toString(36).substr(2, 9)
                 }
                 if( state.pusher.username ) connection.username = state.pusher.username;
-
+                
                 socket = new WebSocket(
-                    'ws://'+state.mopidy.host+':'+state.pusher.port+'/pusher',
+                    'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
                     [ connection.clientid, connection.connectionid, connection.username ]
                 );
 

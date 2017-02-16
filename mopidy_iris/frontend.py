@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import logging, json, pykka, pylast, pusher, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -8,6 +8,7 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from spotipy import Spotify
+from websocket import WebsocketHandler
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -35,23 +36,8 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             "seed_tracks": []
         }
 
-    def on_start(self):
-        
+    def on_start(self):        
         logger.info('Starting Iris '+self.version)
-        
-        # try and start a pusher server
-        port = str(self.config['iris']['pusherport'])
-        try:
-            self.pusher = tornado.web.Application([( '/pusher', pusher.PusherWebsocketHandler, { 'frontend': self } )])
-            self.pusher.listen(port)
-            logger.info('Pusher server running at [0.0.0.0]:'+port)
-            
-        except( pylast.NetworkError, pylast.MalformedResponseError, pylast.WSError ) as e:
-            logger.error('Error starting Pusher: %s', e)
-            self.stop()
-        
-        # get a fresh spotify authentication token and store for future use
-        # self.refresh_spotify_token()
 
 
     ##
@@ -102,7 +88,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 self.load_more_tracks()
                 
         except RuntimeError:
-            pusher.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
+            WebsocketHandler.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
             logger.warning('IrisFrontend: Could not fetch tracklist length')
             pass
 
@@ -123,7 +109,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             token = token['access_token']
         except:
             logger.error('IrisFrontend: access_token missing or invalid')
-            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
+            WebsocketHandler.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
             
         try:
             spotify = Spotify( auth = token )
@@ -161,7 +147,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.play()
         
         # notify clients
-        pusher.broadcast('radio', { 'radio': self.radio })
+        WebsocketHandler.broadcast('radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -183,7 +169,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.stop()
 
         # notify clients
-        pusher.broadcast( 'radio', { 'radio': self.radio })
+        WebsocketHandler.broadcast( 'radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -212,7 +198,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             self.queue_metadata['tlid_'+str(tlid)] = item
 
         # broadcast to all clients
-        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        WebsocketHandler.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
 
         return self.queue_metadata
 
@@ -232,7 +218,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.queue_metadata = cleaned_queue_metadata
 
         # broadcast to all clients
-        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        WebsocketHandler.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
         
    
     ##

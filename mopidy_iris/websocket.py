@@ -76,9 +76,10 @@ def digest_protocol( protocol ):
 # This is the actual websocket thread that accepts, digests and emits messages.
 # TODO: Figure out how to merge this into the main Mopidy websocket to avoid needing two websocket servers
 ##    
-class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
+class WebsocketHandler(tornado.websocket.WebSocketHandler):
     
-    def initialize(self, frontend):
+    def initialize(self, core, frontend):
+        self.core = core
         self.frontend = frontend
 
     def check_origin(self, origin):
