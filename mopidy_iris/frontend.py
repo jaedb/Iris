@@ -1,3 +1,4 @@
+
 from __future__ import unicode_literals
 
 import logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
@@ -8,14 +9,20 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from spotipy import Spotify
+
 from websocket import WebsocketHandler
 from http import HttpHandler
 
 # import logger
 logger = logging.getLogger(__name__)
 
+###
+# Create our factory
+#
+# This hooks all our components into the Mopidy registry. Called from __init__.py
+##
 def make_iris_factory(apps, statics):
-    def mopidy_app_factory(config, core):
+    def iris_factory(config, core):
 
         path = os.path.join( os.path.dirname(__file__), 'static')
         frontend = IrisFrontend(config, core)
@@ -25,19 +32,17 @@ def make_iris_factory(apps, statics):
                 "path": config['local-images']['image_dir']
             }),
             (r'/http/([^/]*)', HttpHandler, {
-                    'core': core,
-                    'frontend': frontend,
-                    'config': config
-                }),
-            (r'/ws/?', WebsocketHandler, {
-                    'core': core,
-                    'frontend': frontend
-                }),
+                "frontend": frontend
+            }),
+            (r'/ws/?', WebsocketHandler, { 
+                "frontend": frontend
+            }),
             (r'/(.*)', tornado.web.StaticFileHandler, {
-                    "path": path,
-                    "default_filename": "index.html"
-                }),
+                "path": path,
+                "default_filename": "index.html"
+            }),
         ]
+    return iris_factory
     
 ###
 # Spotmop supporting frontend
@@ -54,6 +59,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.is_root = ( os.geteuid() == 0 )
         self.spotify_token = False
         self.queue_metadata = {}
+        self.connections = {}
         self.radio = {
             "enabled": 0,
             "seed_artists": [],
@@ -113,7 +119,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 self.load_more_tracks()
                 
         except RuntimeError:
-            WebsocketHandler.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
+            self.websocket.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
             logger.warning('IrisFrontend: Could not fetch tracklist length')
             pass
 
@@ -134,7 +140,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             token = token['access_token']
         except:
             logger.error('IrisFrontend: access_token missing or invalid')
-            WebsocketHandler.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
+            self.websocket.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
             
         try:
             spotify = Spotify( auth = token )
@@ -146,7 +152,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             
             self.core.tracklist.add( uris = uris )
         except:
-            WebsocketHandler.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
+            self.websocket.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             
     
@@ -172,7 +178,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.play()
         
         # notify clients
-        WebsocketHandler.broadcast('radio', { 'radio': self.radio })
+        self.websocket.broadcast('radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -194,7 +200,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.stop()
 
         # notify clients
-        WebsocketHandler.broadcast( 'radio', { 'radio': self.radio })
+        self.websocket.broadcast( 'radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -223,7 +229,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             self.queue_metadata['tlid_'+str(tlid)] = item
 
         # broadcast to all clients
-        WebsocketHandler.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        self.websocket.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
 
         return self.queue_metadata
 
@@ -243,7 +249,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.queue_metadata = cleaned_queue_metadata
 
         # broadcast to all clients
-        WebsocketHandler.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        self.websocket.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
         
    
     ##

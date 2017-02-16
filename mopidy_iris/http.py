@@ -1,3 +1,4 @@
+
 from __future__ import unicode_literals
 
 import logging, json, urllib, urllib2
@@ -12,10 +13,8 @@ class HttpHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
 
-    def initialize(self, frontend, core, config):
+    def initialize(self, frontend):
         self.frontend = frontend
-        self.core = core
-        self.config = config
     
     def get(self, slug=None):
 
