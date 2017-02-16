@@ -9,9 +9,35 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from spotipy import Spotify
 from websocket import WebsocketHandler
+from http import HttpHandler
 
 # import logger
 logger = logging.getLogger(__name__)
+
+def make_iris_factory(apps, statics):
+    def mopidy_app_factory(config, core):
+
+        path = os.path.join( os.path.dirname(__file__), 'static')
+        frontend = IrisFrontend(config, core)
+        
+        return [
+            (r"/images/(.*)", tornado.web.StaticFileHandler, {
+                "path": config['local-images']['image_dir']
+            }),
+            (r'/http/([^/]*)', HttpHandler, {
+                    'core': core,
+                    'frontend': frontend,
+                    'config': config
+                }),
+            (r'/ws/?', WebsocketHandler, {
+                    'core': core,
+                    'frontend': frontend
+                }),
+            (r'/(.*)', tornado.web.StaticFileHandler, {
+                    "path": path,
+                    "default_filename": "index.html"
+                }),
+        ]
     
 ###
 # Spotmop supporting frontend
@@ -21,7 +47,6 @@ logger = logging.getLogger(__name__)
 class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def __init__(self, config, core):
-        global spotmop
         super(IrisFrontend, self).__init__()
         self.config = config
         self.core = core
@@ -121,7 +146,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             
             self.core.tracklist.add( uris = uris )
         except:
-            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
+            WebsocketHandler.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             
     

@@ -48,6 +48,7 @@ class Extension( ext.Extension ):
 def factory(config, core):
 
     path = os.path.join( os.path.dirname(__file__), 'static')
+    frontend = IrisFrontend(config, core)
 	
     return [
         (r"/images/(.*)", tornado.web.StaticFileHandler, {
@@ -55,12 +56,12 @@ def factory(config, core):
         }),
         (r'/http/([^/]*)', HttpHandler, {
                 'core': core,
-                'frontend': IrisFrontend,
+                'frontend': frontend,
                 'config': config
             }),
         (r'/ws/?', WebsocketHandler, {
                 'core': core,
-                'frontend': IrisFrontend
+                'frontend': frontend
             }),
         (r'/(.*)', tornado.web.StaticFileHandler, {
 				"path": path,

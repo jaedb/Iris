@@ -26,7 +26,6 @@ class Settings extends React.Component{
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
 			pusher_username: this.props.pusher.username,
-			pusher_port: this.props.pusher.port,
 			spotify_country: this.props.spotify.country,
 			spotify_locale: this.props.spotify.locale
 		};
@@ -148,6 +147,16 @@ class Settings extends React.Component{
 							</div>
 						</div>
 						<div className="field">
+							<div className="name">Username</div>
+							<div className="input">
+								<input 
+									type="text"
+									onChange={ e => this.setState({ pusher_username: e.target.value }) } 
+									onBlur={ e => this.props.pusherActions.setUsername(this.state.pusher_username) } 
+									value={ this.state.pusher_username } />
+							</div>
+						</div>
+						<div className="field">
 							<div className="name">Host</div>
 							<div className="input">
 								<input 
@@ -169,36 +178,6 @@ class Settings extends React.Component{
 							<div className="name"></div>
 							<div className="input">
 								<button type="submit" className="secondary">Apply</button>
-							</div>
-						</div>
-					</form>
-
-					<h4 className="underline">Pusher</h4>
-					<form>
-						<div className="field">
-							<div className="name">Status</div>
-							<div className="input">
-								{ this.renderConnectionStatus('pusher') }
-							</div>
-						</div>
-						<div className="field">
-							<div className="name">Username</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={ e => this.setState({ pusher_username: e.target.value }) } 
-									onBlur={ e => this.props.pusherActions.setUsername(this.state.pusher_username) } 
-									value={ this.state.pusher_username } />
-							</div>
-						</div>
-						<div className="field">
-							<div className="name">Port</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={ e => this.setState({ pusher_port: e.target.value })} 
-									onBlur={ e => this.props.pusherActions.setPort(this.state.pusher_port) } 
-									value={ this.state.pusher_port } />
 							</div>
 						</div>
 					</form>
