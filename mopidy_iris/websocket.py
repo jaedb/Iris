@@ -1,11 +1,14 @@
 
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import logging, uuid, subprocess, pykka
+import random, string, logging, uuid, subprocess, pykka
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 
 logger = logging.getLogger(__name__)
-        
+
+# generate random string
+def generateGuid(length):
+   return ''.join(random.choice(string.lowercase) for i in range(length))
         
 # digest a protocol header into it's id/name parts
 def digest_protocol( protocol ):
@@ -26,9 +29,9 @@ def digest_protocol( protocol ):
       
     # invalid, so just create a default connection, and auto-generate an ID
     except:
-		clientid = str(uuid.uuid4().hex)
-		connectionid = str(uuid.uuid4().hex)
-		username = str(uuid.uuid4().hex)
+		clientid = generateGuid(12)
+		connectionid = generateGuid(12)
+		username = 'Anonymous'
 		generated = True
     
     # construct our protocol object, and return

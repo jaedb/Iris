@@ -51,6 +51,10 @@ class Settings extends React.Component{
 		return false;
 	}
 
+	handleUsernameChange(username){
+		this.setState({pusher_username: username.replace(/\W/g, '')})
+	}
+
 	renderConnectionStatus(service){
 		if( this.props[service].connected ){
 			return (
@@ -151,7 +155,7 @@ class Settings extends React.Component{
 							<div className="input">
 								<input 
 									type="text"
-									onChange={ e => this.setState({ pusher_username: e.target.value }) } 
+									onChange={e => this.handleUsernameChange(e.target.value)} 
 									onBlur={ e => this.props.pusherActions.setUsername(this.state.pusher_username) } 
 									value={ this.state.pusher_username } />
 							</div>
