@@ -1,3 +1,4 @@
+
 from __future__ import unicode_literals
 
 import logging, json, urllib, urllib2
@@ -7,14 +8,13 @@ from spotipy import Spotify
 # import logger
 logger = logging.getLogger(__name__)
         
-class RequestHandler(tornado.web.RequestHandler):
+class HttpHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
 
-    def initialize(self, core, config):
-        self.core = core
-        self.config = config
+    def initialize(self, frontend):
+        self.frontend = frontend
     
     def get(self, slug=None):
 

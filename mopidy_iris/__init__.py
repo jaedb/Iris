@@ -1,11 +1,13 @@
+
 from __future__ import unicode_literals
 
 import logging, os, json
 import tornado.web
 import tornado.websocket
 from mopidy import config, ext
-from frontend import IrisFrontend
-from http import RequestHandler
+from frontend import IrisFrontend, make_iris_factory
+from http import HttpHandler
+from websocket import WebsocketHandler
 
 logger = logging.getLogger(__name__)
 __version__ = '2.12.1'
@@ -38,26 +40,8 @@ class Extension( ext.Extension ):
         # Add web extension
         registry.add('http:app', {
             'name': self.ext_name,
-            'factory': factory
+            'factory': make_iris_factory(
+                registry['http:app'], 
+                registry['http:static']
+            )
         })
-        
-        # add our frontend
-        registry.add('frontend', IrisFrontend)
-        
-def factory(config, core):
-
-    path = os.path.join( os.path.dirname(__file__), 'static')
-	
-    return [
-        (r"/images/(.*)", tornado.web.StaticFileHandler, {
-            "path": config['local-images']['image_dir']
-        }),
-        (r'/http/([^/]*)', RequestHandler, {
-                'core': core,
-                'config': config
-            }),
-        (r'/(.*)', tornado.web.StaticFileHandler, {
-				"path": path,
-				"default_filename": "index.html"
-			}),
-    ]

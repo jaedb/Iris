@@ -90,14 +90,15 @@ const PusherMiddleware = (function(){
 
                 var state = store.getState();
                 var connection = {
-                    clientid: Math.random().toString(36).substr(2, 9),
+                    clientid: helpers.generateGuid(),
                     connectionid: helpers.generateGuid(),
-                    username: Math.random().toString(36).substr(2, 9)
+                    username: 'Anonymous'
                 }
                 if( state.pusher.username ) connection.username = state.pusher.username;
-
+                connection.username = connection.username.replace(/\W/g, '')
+                
                 socket = new WebSocket(
-                    'ws://'+state.mopidy.host+':'+state.pusher.port+'/pusher',
+                    'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
                     [ connection.clientid, connection.connectionid, connection.username ]
                 );
 

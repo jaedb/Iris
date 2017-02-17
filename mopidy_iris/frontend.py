@@ -1,6 +1,7 @@
+
 from __future__ import unicode_literals
 
-import logging, json, pykka, pylast, pusher, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -9,8 +10,39 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from spotipy import Spotify
 
+from websocket import WebsocketHandler
+from http import HttpHandler
+
 # import logger
 logger = logging.getLogger(__name__)
+
+###
+# Create our factory
+#
+# This hooks all our components into the Mopidy registry. Called from __init__.py
+##
+def make_iris_factory(apps, statics):
+    def iris_factory(config, core):
+
+        path = os.path.join( os.path.dirname(__file__), 'static')
+        frontend = IrisFrontend(config, core)
+        
+        return [
+            (r"/images/(.*)", tornado.web.StaticFileHandler, {
+                "path": config['local-images']['image_dir']
+            }),
+            (r'/http/([^/]*)', HttpHandler, {
+                "frontend": frontend
+            }),
+            (r'/ws/?', WebsocketHandler, { 
+                "frontend": frontend
+            }),
+            (r'/(.*)', tornado.web.StaticFileHandler, {
+                "path": path,
+                "default_filename": "index.html"
+            }),
+        ]
+    return iris_factory
     
 ###
 # Spotmop supporting frontend
@@ -20,7 +52,6 @@ logger = logging.getLogger(__name__)
 class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def __init__(self, config, core):
-        global spotmop
         super(IrisFrontend, self).__init__()
         self.config = config
         self.core = core
@@ -28,6 +59,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.is_root = ( os.geteuid() == 0 )
         self.spotify_token = False
         self.queue_metadata = {}
+        self.connections = {}
         self.radio = {
             "enabled": 0,
             "seed_artists": [],
@@ -35,23 +67,8 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             "seed_tracks": []
         }
 
-    def on_start(self):
-        
+    def on_start(self):        
         logger.info('Starting Iris '+self.version)
-        
-        # try and start a pusher server
-        port = str(self.config['iris']['pusherport'])
-        try:
-            self.pusher = tornado.web.Application([( '/pusher', pusher.PusherWebsocketHandler, { 'frontend': self } )])
-            self.pusher.listen(port)
-            logger.info('Pusher server running at [0.0.0.0]:'+port)
-            
-        except( pylast.NetworkError, pylast.MalformedResponseError, pylast.WSError ) as e:
-            logger.error('Error starting Pusher: %s', e)
-            self.stop()
-        
-        # get a fresh spotify authentication token and store for future use
-        # self.refresh_spotify_token()
 
 
     ##
@@ -102,7 +119,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
                 self.load_more_tracks()
                 
         except RuntimeError:
-            pusher.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
+            self.websocket.broadcast('error', {'source': 'check_for_radio_update', 'message': 'Could not fetch tracklist length'})
             logger.warning('IrisFrontend: Could not fetch tracklist length')
             pass
 
@@ -123,7 +140,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             token = token['access_token']
         except:
             logger.error('IrisFrontend: access_token missing or invalid')
-            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
+            self.websocket.broadcast('error', {'source': 'load_more_tracks', 'message': 'access_token missing or invalid'})
             
         try:
             spotify = Spotify( auth = token )
@@ -135,7 +152,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             
             self.core.tracklist.add( uris = uris )
         except:
-            pusher.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
+            self.websocket.broadcast('error', {'source': 'load_more_tracks', 'message': 'Failed to fetch Spotify recommendations'})
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             
     
@@ -161,7 +178,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.play()
         
         # notify clients
-        pusher.broadcast('radio', { 'radio': self.radio })
+        self.websocket.broadcast('radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -183,7 +200,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.core.playback.stop()
 
         # notify clients
-        pusher.broadcast( 'radio', { 'radio': self.radio })
+        self.websocket.broadcast( 'radio', { 'radio': self.radio })
         
         # return new radio state to initial call
         return self.radio
@@ -212,7 +229,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             self.queue_metadata['tlid_'+str(tlid)] = item
 
         # broadcast to all clients
-        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        self.websocket.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
 
         return self.queue_metadata
 
@@ -232,7 +249,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         self.queue_metadata = cleaned_queue_metadata
 
         # broadcast to all clients
-        pusher.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
+        self.websocket.broadcast('queue_metadata', {'queue_metadata': self.queue_metadata})
         
    
     ##

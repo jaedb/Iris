@@ -1,46 +1,14 @@
+
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import logging, uuid, subprocess, pykka
+import random, string, logging, uuid, subprocess, pykka
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 
 logger = logging.getLogger(__name__)
 
-# container for all current pusher connections
-connections = {}
-frontend = {}
-  
-  
-##
-# Send a message to an individual connection
-#
-# @param recipient_connection_ids = array
-# @param action = string (action method of this message)
-# @param request_id = string (used for callbacks)
-# @param data = array (any data required to include in our message)
-##
-def send_message( recipient_connection_id, action, request_id, data ):          
-    message = {
-        'action': action,
-        'request_id': request_id,
-        'data': data
-    }
-    connections[recipient_connection_id]['connection'].write_message( json_encode(message) )
-        
-##
-# Broadcast a message to all recipients
-#
-# @param action = string
-# @param data = array (the body of our message to send)
-##
-def broadcast( type, data ):    
-    for connection in connections.itervalues():
-        message = {
-            'action': 'broadcast',
-            'type': type,
-            'data': data
-        }
-        connection['connection'].write_message( json_encode(message) )
-        
+# generate random string
+def generateGuid(length):
+   return ''.join(random.choice(string.lowercase) for i in range(length))
         
 # digest a protocol header into it's id/name parts
 def digest_protocol( protocol ):
@@ -61,9 +29,9 @@ def digest_protocol( protocol ):
       
     # invalid, so just create a default connection, and auto-generate an ID
     except:
-		clientid = str(uuid.uuid4().hex)
-		connectionid = str(uuid.uuid4().hex)
-		username = str(uuid.uuid4().hex)
+		clientid = generateGuid(12)
+		connectionid = generateGuid(12)
+		username = 'Anonymous'
 		generated = True
     
     # construct our protocol object, and return
@@ -76,14 +44,17 @@ def digest_protocol( protocol ):
 # This is the actual websocket thread that accepts, digests and emits messages.
 # TODO: Figure out how to merge this into the main Mopidy websocket to avoid needing two websocket servers
 ##    
-class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
+class WebsocketHandler(tornado.websocket.WebSocketHandler):
     
-    def initialize(self, frontend):
-        self.frontend = frontend
 
-    def check_origin(self, origin):
-        return True
+    # initiate (not the actual object __init__, but run shortly after)
+    def initialize(self, frontend):
+
+        # add this websocket instance to our Frontend
+        frontend.websocket = self
+        self.frontend = frontend
   
+
     # when a new connection is opened
     def open(self):
     
@@ -104,7 +75,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
             'ip': self.request.remote_ip,
             'created': created
         }
-        connections[connectionid] = {
+        self.frontend.connections[connectionid] = {
             'client': client,
             'connection': self
         }
@@ -112,8 +83,13 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         logger.info( 'Pusher connection established: '+ connectionid +' ('+ clientid +'/'+ username +')' )
 
         # broadcast to all connections that a new user has connected
-        broadcast( 'new_connection', client )
+        self.broadcast( 'new_connection', client )
+
+
+    def check_origin(self, origin):
+        return True
   
+
     def select_subprotocol(self, subprotocols):
         # select one of our subprotocol elements and return it. This confirms the connection has been accepted.
         protocols = digest_protocol( subprotocols )
@@ -127,6 +103,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         else:
             return protocols['clientid']
   
+
     # server received a message
     def on_message(self, message):
         messageJson = json_decode(message)
@@ -134,9 +111,9 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         # construct the origin client info
         messageJson['origin'] = {
             'connectionid' : self.connectionid,
-            'clientid': connections[self.connectionid]['client']['clientid'],
+            'clientid': self.frontend.connections[self.connectionid]['client']['clientid'],
             'ip': self.request.remote_ip,
-            'username': connections[self.connectionid]['client']['username']
+            'username': self.frontend.connections[self.connectionid]['client']['username']
         }
         
         logger.debug('Pusher message received: '+message)
@@ -145,14 +122,14 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         if messageJson['action'] == 'broadcast':
 
             # respond to request with status update
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
                 { 'status': 'Ok' }
             )
 
-            for connection in connections.itervalues():
+            for connection in self.frontend.connections.itervalues():
                 if connection['client']['connectionid'] != self.connectionid:
                     connection['connection'].write_message(messageJson)
     
@@ -160,7 +137,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'send_authorization':
 
             # make sure we actually have a connection matching the provided connectionid
-            if messageJson['recipient_connectionid'] in connections:
+            if messageJson['recipient_connectionid'] in self.frontend.connections:
 
                 # send payload to recipient
                 authorization_message = {
@@ -170,10 +147,10 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                     'me': messageJson['me'],
                     'origin': messageJson['origin']
                 }
-                connections[messageJson['recipient_connectionid']]['connection'].write_message(authorization_message)
+                self.frontend.connections[messageJson['recipient_connectionid']]['connection'].write_message(authorization_message)
 
                 # respond to request with status update
-                send_message(
+                self.send_message(
                     self.connectionid, 
                     'response', 
                     messageJson['request_id'], 
@@ -181,7 +158,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 )
             else:
                 # respond to request with status update
-                send_message(
+                self.send_message(
                     self.connectionid, 
                     'response', 
                     messageJson['request_id'], 
@@ -190,7 +167,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
 
         # fetch our pusher connections
         elif messageJson['action'] == 'get_config':                
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -201,10 +178,10 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'get_connections':
         
             connectionsDetailsList = []
-            for connection in connections.itervalues():
+            for connection in self.frontend.connections.itervalues():
                 connectionsDetailsList.append(connection['client'])
                 
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -216,10 +193,10 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
             queue_metadata = self.frontend.add_queue_metadata(
                 messageJson['tlids'],
                 messageJson['added_from'],
-                connections[self.connectionid]['client']['username']
+                self.frontend.connections[self.connectionid]['client']['username']
             )
 
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -230,10 +207,10 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'get_queue_metadata':
         
             connectionsDetailsList = []
-            for connection in connections.itervalues():
+            for connection in self.frontend.connections.itervalues():
                 connectionsDetailsList.append(connection['client'])
                 
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -244,10 +221,10 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'set_username':
             
             # username is the only value we allow clients to change
-            connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['username']
+            self.frontend.connections[messageJson['origin']['connectionid']]['client']['username'] = messageJson['username']
             
             # respond to request
-            send_message(
+            self.send_message(
                 self.connectionid, 
                 'response',
                 messageJson['request_id'],
@@ -255,7 +232,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
             )
             
             # notify all clients of this change
-            broadcast( 'connection_updated', { 'connection': connections[messageJson['origin']['connectionid']]['client'] })
+            self.broadcast( 'connection_updated', { 'connection': self.frontend.connections[messageJson['origin']['connectionid']]['client'] })
     
         # start radio
         elif messageJson['action'] == 'start_radio':
@@ -268,7 +245,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                 'seed_tracks': messageJson['seed_tracks']
             }
             radio = self.frontend.start_radio( radio )
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response',
                 messageJson['request_id'], 
@@ -278,7 +255,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         # stop radio
         elif messageJson['action'] == 'stop_radio':
             radio = self.frontend.stop_radio()
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -287,7 +264,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         
         # fetch our current radio state
         elif messageJson['action'] == 'get_radio':
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response',
                 messageJson['request_id'],
@@ -297,7 +274,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         # get system version and check for upgrade
         elif messageJson['action'] == 'get_version':
             version = self.frontend.get_version()
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response',
                 messageJson['request_id'], 
@@ -308,7 +285,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         elif messageJson['action'] == 'upgrade':
             version = self.frontend.get_version()
             upgrade_successful = self.frontend.perform_upgrade()
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response',
                 messageJson['request_id'], 
@@ -321,7 +298,7 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
         
         # not an action we recognise!
         else:
-            send_message( 
+            self.send_message( 
                 self.connectionid, 
                 'response', 
                 messageJson['request_id'], 
@@ -330,20 +307,52 @@ class PusherWebsocketHandler(tornado.websocket.WebSocketHandler):
                         
         logger.debug( 'Pusher: Unhandled message received from '+ self.connectionid )
   
+
     # connection closed
     def on_close(self):
-        if self.connectionid in connections:
+        if self.connectionid in self.frontend.connections:
             
-            clientRemoved = connections[self.connectionid]['client']
+            clientRemoved = self.frontend.connections[self.connectionid]['client']
             logger.debug( 'Spotmop Pusher connection to '+ self.connectionid +' closed' )
             
             # now actually remove it
             try:
-                del connections[self.connectionid]
+                del self.frontend.connections[self.connectionid]
             except:
                 logger.info( 'Failed to close connection to '+ self.connectionid )                
             
-            broadcast( 'client_disconnected', clientRemoved )
+            self.broadcast( 'client_disconnected', clientRemoved )
+      
+    ##
+    # Send a message to an individual connection
+    #
+    # @param recipient_connection_ids = array
+    # @param action = string (action method of this message)
+    # @param request_id = string (used for callbacks)
+    # @param data = array (any data required to include in our message)
+    ##
+    def send_message( self, recipient_connection_id, action, request_id, data ):          
+        message = {
+            'action': action,
+            'request_id': request_id,
+            'data': data
+        }
+        self.frontend.connections[recipient_connection_id]['connection'].write_message( json_encode(message) )
+            
+    ##
+    # Broadcast a message to all recipients
+    #
+    # @param action = string
+    # @param data = array (the body of our message to send)
+    ##
+    def broadcast( self, type, data ):    
+        for connection in self.frontend.connections.itervalues():
+            message = {
+                'action': 'broadcast',
+                'type': type,
+                'data': data
+            }
+            connection['connection'].write_message( json_encode(message) )
         
         
         
