@@ -89,7 +89,7 @@ const PusherMiddleware = (function(){
                 );
 
                 socket.onopen = () => {
-                    store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
+                    store.dispatch({ type: 'PUSHER_CONNECTED', connection_id: connection.connection_id });
                     store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
                 };
 
