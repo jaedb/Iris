@@ -132,23 +132,24 @@ export default function reducer(ui = {}, action){
             });
 
         case 'QUEUE_METADATA':
+        case 'QUEUE_METADATA_CHANGED':
             var tracklist = Object.assign([], ui.current_tracklist)
             for( var i = 0; i < tracklist.length; i++ ){
 
                 // load our metadata (if we have any for that tlid)
-                if (typeof(action.data.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
+                if (typeof(action.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
                     tracklist[i] = Object.assign(
                         {},
                         tracklist[i],
-                        action.data.queue_metadata['tlid_'+tracklist[i].tlid],
+                        action.queue_metadata['tlid_'+tracklist[i].tlid],
                     )
                 }
             }
-            return Object.assign({}, ui, { current_tracklist: tracklist, queue_metadata: action.data.queue_metadata });
+            return Object.assign({}, ui, { current_tracklist: tracklist, queue_metadata: action.queue_metadata });
 
         case 'RADIO':
         case 'START_RADIO':
-            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
+            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.radio })
 
         case 'RADIO_SEEDS_RESOLVED':
             var radio = Object.assign({}, ui.radio, { resolved_seeds: action.resolved_seeds })

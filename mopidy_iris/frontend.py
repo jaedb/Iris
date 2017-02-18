@@ -4,6 +4,10 @@ from mopidy.core import CoreListener
 
 import mem
 import pykka
+import logging
+
+# import logger
+logger = logging.getLogger(__name__)
 
 class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
@@ -13,10 +17,11 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         mem.iris.config = config
 
     def on_start(self):        
-        print '--- Starting IrisFrontend'
+        logger.info('Starting Iris '+mem.iris.version)
 
-    def track_playback_started(self, tl_track):
-        mem.iris.broadcast({
-            'action': 'started_playback'
-        })
+    def track_playback_ended( self, tl_track, time_position ):
+        mem.iris.check_for_radio_update()
+
+    def tracklist_changed( self ):
+        mem.iris.clean_queue_metadata()
         

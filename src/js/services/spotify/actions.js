@@ -119,14 +119,15 @@ function refreshToken( dispatch, getState ){
                 })
                 .then(
                     response => {
-                        response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 );
-                        response.source = 'mopidy';
+                        var token = response.spotify_token
+                        token.token_expiry = new Date().getTime() + ( token.expires_in * 1000 );
+                        token.source = 'mopidy';
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
                             provider: 'mopidy-spotify',
-                            data: response
+                            data: token
                         });
-                        resolve(response);
+                        resolve(token);
                     },
                     error => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })

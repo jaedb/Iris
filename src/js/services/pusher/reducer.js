@@ -10,7 +10,7 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { 
                 connected: true, 
                 connecting: false, 
-                connectionid: action.connection.connectionid, 
+                connection_id: action.connection.connection_id, 
                 username: action.connection.username
             });
 
@@ -21,25 +21,25 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { port: action.port });
 
         case 'PUSHER_USERNAME':
-            return Object.assign({}, pusher, { username: action.data.username });
+            return Object.assign({}, pusher, { username: action.username });
 
         case 'CONNECTIONS':
-            return Object.assign({}, pusher, { connections: action.data.connections });
+            return Object.assign({}, pusher, { connections: action.connections });
 
         case 'CONNECTION_UPDATED':
             function byID(connection){
-                return connection.connectionid == action.data.connection.connectionid;
+                return connection.connection_id == action.connection.connection_id;
             }
             var connection = pusher.connections.find(byID);
             var index = pusher.connections.indexOf(connection);
             var connections = Object.assign([], pusher.connections);
-            connections[index] = action.data.connection;
+            connections[index] = action.connection;
 
             return Object.assign({}, pusher, { connections: connections });
 
         case 'VERSION':
             return Object.assign({}, pusher, { 
-                version: action.data.version,
+                version: action.version,
                 upgrading: false
             });
 

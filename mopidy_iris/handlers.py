@@ -1,7 +1,7 @@
 
 from __future__ import unicode_literals
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka
+import random, string, logging, uuid, subprocess, pykka, ast
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import logging, json, urllib, urllib2
@@ -62,12 +62,15 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
  
 
     def on_message(self, message):
+
         message = json_decode(message)
 
         if 'data' in message:
             data = message['data']
         else:
             data = {}
+
+        data['connection_id'] = self.connection_id
 
         if 'request_id' in message:
             request_id = message['request_id']
@@ -82,8 +85,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
                 # make the call, and return it's response
                 response = getattr(mem.iris, message['method'])(data)
-                response['request_id'] = request_id
-                mem.iris.send_message(self.connection_id, response)
+                if response:
+                    response['request_id'] = request_id
+                    mem.iris.send_message(self.connection_id, response)
             else:
                 response = {
                     'error': 'Method "'+message['method']+'" does not exist',
@@ -117,11 +121,13 @@ class HttpHandler(tornado.web.RequestHandler):
     
     def get(self, slug=None):
 
-        if( slug == 'refresh_spotify_token' ):
-            self.write( mem.iriscore.refresh_spotify_token() )
-            return
+        # make sure the method exists
+        if hasattr(mem.iris, slug):
 
+            # make the call, and return it's response
+            self.write(getattr(mem.iris, slug)({}))
         else:
-            self.write('Invalid request')
-            return
+            self.write({
+                'error': 'Method "'+slug+'" does not exist'
+            })
         

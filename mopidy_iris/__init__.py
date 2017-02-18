@@ -8,8 +8,7 @@ import handlers
 
 from mopidy import config, ext
 from frontend import IrisFrontend
-from http import HttpHandler
-from websocket import WebsocketHandler
+from handlers import WebsocketHandler, HttpHandler
 from core import IrisCore
 
 logger = logging.getLogger(__name__)

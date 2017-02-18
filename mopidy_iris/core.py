@@ -74,12 +74,7 @@ class IrisCore(object):
         # construct our protocol object, and return
         return {"clientid": clientid, "connection_id": connection_id, "username": username, "generated": generated}
 
-    ##
-    # Send a message to an individual connection
-    #
-    # @param to = recipient's connection_id
-    # @param data = array (any data required to include in our message)
-    ##
+
     def send_message(self, to, data):
         self.connections[to]['connection'].write_message( json_encode(data) )
 
@@ -90,8 +85,22 @@ class IrisCore(object):
         return {}
     
     ##
-    # Add a new connection
+    # Connections
+    #
+    # Contains all our connections and client details. This requires updates
+    # when new clients connect, and old ones disconnect. These events are broadcast
+    # to all current connections
     ##
+
+    def get_connections(self, data):        
+        connections = []
+        for connection in self.connections.itervalues():
+            connections.append(connection['client'])
+        
+        return {
+            'connections': connections
+        }
+
     def add_connection(self, connection_id, connection, client):
         new_connection = {
             'client': client,
@@ -100,28 +109,47 @@ class IrisCore(object):
         self.connections[connection_id] = new_connection
 
         self.broadcast({
-            'action': 'client_connected',
+            'type': 'client_connected',
             'client': client
         })
     
-    ##
-    # Add a new connection
-    ##
     def remove_connection(self, connection_id):
         if connection_id in self.connections:
             try:
+                client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
-                self.broadcast(self.get_connections())
+                self.broadcast({
+                    'type': 'client_disconnected',
+                    'client': client
+                })
             except:
-                print 'Failed to close connection to '+ connection_id              
-            
+                logger.error('Failed to close connection to '+ connection_id)           
+
+    def set_username(self, data):
+        connection_id = data['connection_id']
+        if connection_id in self.connections:
+            self.connections[connection_id]['client']['username'] = data['username']
             self.broadcast({
-                'action': 'client_disconnected',
-                'client': client
+                'type': 'connection_updated',
+                'connection': self.connections[connection_id]['client']
             })
-  
+            return {}
+
+        else:
+            error = 'Connection "'+data['connection_id']+'" not found'
+            logger.error(error)
+            return {
+                'error': error
+            }           
+            
 
 
+
+    ##
+    # System controls
+    #
+    # Faciitates upgrades and configuration fetching
+    ##  
 
     def get_config(self, data):
         config = {
@@ -132,7 +160,6 @@ class IrisCore(object):
         return {
             'config': config
         }
-
 
     def get_version(self, data):
 
@@ -161,22 +188,47 @@ class IrisCore(object):
             }
         }
 
-    def get_connections(self, data):        
-        connections = []
-        for connection in self.connections.itervalues():
-            connections.append(connection['client'])
+    def perform_upgrade( self ):
+        try:
+            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
+            return True
+        except subprocess.CalledProcessError:
+            return False
         
-        return {
-            'connections': connections
-        }
+    def restart( self ):
+        os.execl(sys.executable, *([sys.executable]+sys.argv))
+
+
+    ##
+    # Spotify Radio
+    #
+    # Accepts seed URIs and creates radio-like experience. When our tracklist is nearly
+    # empty, we fetch more recommendations. This can result in duplicates. We keep the
+    # recommendations limit low to avoid timeouts and slow UI
+    ##
 
     def get_radio(self, data):
         return {
             'radio': self.radio
         }
 
-    def stop_radio(self, data):
+    def start_radio(self, data):
+        self.radio = data
+        self.radio['enabled'] = 1;
+        
+        self.core.tracklist.clear()
+        self.core.tracklist.set_consume( True )
+        self.load_more_tracks()
+        self.core.playback.play()
+        
+        self.broadcast({
+            'type': 'radio_started',
+            'radio': self.radio
+        })
+        
+        return self.get_radio({})
 
+    def stop_radio(self, data):
         self.radio = {
             "enabled": 0,
             "seed_artists": [],
@@ -187,14 +239,125 @@ class IrisCore(object):
         self.core.playback.stop()
 
         self.broadcast({
-            'action': 'radio_stopped',
+            'type': 'radio_stopped',
             'radio': self.radio
         })
         
         return {}
+
+
+    def load_more_tracks( self ):
+        
+        # this is crude, but it means we don't need to handle expired tokens
+        # TODO: address this when it's clear what Jodal and the team want to do with Pyspotify
+        self.refresh_spotify_token({})
+        
+        try:
+            token = self.spotify_token
+            token = token['access_token']
+        except:
+            logger.error('IrisFrontend: access_token missing or invalid')
+            self.broadcast({
+                'error': 'Could not get radio tracks: access_token missing or invalid'
+            })
+            
+        try:
+            spotify = Spotify( auth = token )
+            response = spotify.recommendations(seed_artists = self.radio['seed_artists'], seed_genres = self.radio['seed_genres'], seed_tracks = self.radio['seed_tracks'], limit = 5)
+            
+            uris = []
+            for track in response['tracks']:
+                uris.append( track['uri'] )
+            
+            self.core.tracklist.add( uris = uris )
+        except:
+            logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
+            self.broadcast({
+                'error': 'Failed to fetch radio recommendations'
+            })
+
+
+    ##
+    # Additional queue metadata
+    #
+    # This maps tltracks with extra info for display in Iris, including
+    # added_by and from_uri.
+    ##
 
     def get_queue_metadata(self, data):
         return {
             'queue_metadata': self.queue_metadata
         }
 
+    def add_queue_metadata(self, data):
+
+        for tlid in data['tlids']:
+            item = {
+                'tlid': tlid,
+                'added_from': data['added_from'],
+                'added_by': data['added_by']
+            }
+            self.queue_metadata['tlid_'+str(tlid)] = item
+
+        self.broadcast({
+            'type': 'queue_metadata_changed',
+            'queue_metadata': self.queue_metadata
+        })
+
+        return {}
+
+    def clean_queue_metadata( self ):
+        cleaned_queue_metadata = {}
+
+        for tltrack in self.core.tracklist.get_tl_tracks().get():
+
+            # if we have metadata for this track, push it through to cleaned dictionary
+            if 'tlid_'+str(tltrack.tlid) in self.queue_metadata:
+                cleaned_queue_metadata['tlid_'+str(tltrack.tlid)] = self.queue_metadata['tlid_'+str(tltrack.tlid)]
+
+        self.queue_metadata = cleaned_queue_metadata
+
+        self.broadcast({
+            'type': 'queue_metadata_changed',
+            'queue_metadata': self.queue_metadata
+        })
+
+        return {}
+
+
+    ##
+    # Spotify authentication
+    #
+    # Uses the Client Credentials Flow, so is invisible to the user. We need this token for
+    # any backend spotify requests (we don't tap in to Mopidy-Spotify, yet). Also used for
+    # passing token to frontend for javascript requests without use of the Authorization Code Flow.
+    ##
+
+    def get_spotify_token(self, data):
+        return {
+            'spotify_token': self.spotify_token
+        }
+
+    def refresh_spotify_token(self, data):
+    
+        url = 'https://accounts.spotify.com/api/token'
+        authorization = 'YTg3ZmI0ZGJlZDMwNDc1YjhjZWMzODUyM2RmZjUzZTI6ZDdjODlkMDc1M2VmNDA2OGJiYTE2NzhjNmNmMjZlZDY='
+
+        headers = {'Authorization' : 'Basic ' + authorization}
+        data = {'grant_type': 'client_credentials'}
+        data_encoded = urllib.urlencode( data )
+        req = urllib2.Request(url, data_encoded, headers)
+
+        try:
+            response = urllib2.urlopen(req, timeout=30).read()
+            response_dict = json.loads(response)
+            self.spotify_token = response_dict
+
+            self.broadcast({
+                'type': 'spotify_token_changed',
+                'spotify_token': self.spotify_token
+            })
+
+            return self.get_spotify_token({})
+        except urllib2.HTTPError as e:
+            return e

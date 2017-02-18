@@ -35,13 +35,13 @@ class PusherConnectionList extends React.Component{
 				{
 					this.props.connections.map( (connection, index) => {
 						var is_me = false;
-						if( connection.connectionid == this.props.connectionid ) is_me = true;
+						if( connection.connection_id == this.props.connection_id ) is_me = true;
 						return (
-							<div className={ is_me ? 'connection cf me': 'connection cf'} key={connection.connectionid}>
+							<div className={ is_me ? 'connection cf me': 'connection cf'} key={connection.connection_id}>
 								<div className="col w30">{ connection.username } { is_me ? <span>(you)</span> : null }</div>
 								<div className="col w70">
 									{ connection.ip }
-									<span className="grey-text"> ({ connection.connectionid })</span>
+									<span className="grey-text"> ({ connection.connection_id })</span>
 								</div>
 							</div>
 						);
@@ -55,7 +55,7 @@ class PusherConnectionList extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		connected: state.pusher.connected,
-		connectionid: state.pusher.connectionid,
+		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
 	}
 }
