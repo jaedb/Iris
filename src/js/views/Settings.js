@@ -181,7 +181,7 @@ class Settings extends React.Component{
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
-								<button type="submit" className="secondary">Apply</button>
+								<button type="submit" className="secondary">Apply and reload</button>
 							</div>
 						</div>
 					</form>

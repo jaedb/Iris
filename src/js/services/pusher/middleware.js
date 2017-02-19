@@ -22,7 +22,7 @@ const PusherMiddleware = (function(){
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
-        console.log(message)
+
         // response to a request [we] made
         if (typeof(message.request_id) !== 'undefined' && message.request_id){            
             if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
@@ -34,7 +34,7 @@ const PusherMiddleware = (function(){
         // general message
         // this can be client-client, server-client or a broadcast to many clients
         } else {
-            message.type = message.type.toUpperCase()
+            message.type = 'PUSHER_'+message.type.toUpperCase()
             store.dispatch(message)
         }
     }
@@ -87,11 +87,6 @@ const PusherMiddleware = (function(){
                     'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
                     [ connection.clientid, connection.connection_id, connection.username ]
                 );
-
-                socket.onopen = () => {
-                    store.dispatch({ type: 'PUSHER_CONNECTED', connection_id: connection.connection_id });
-                    store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
-                };
 
                 socket.onmessage = (message) => {
                     var message = JSON.parse(message.data);
@@ -149,10 +144,6 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
-            case 'ERROR':
-                store.dispatch( uiActions.createNotification(action.source+': '+action.message,'bad') )
-                break;
-
             case 'PUSHER_GET_QUEUE_METADATA':
                 request('get_queue_metadata')
                     .then(
@@ -171,7 +162,7 @@ const PusherMiddleware = (function(){
                 })
                 break;
 
-            case 'START_UPGRADE':
+            case 'PUSHER_START_UPGRADE':
                 request('upgrade')
                 .then(
                     response => {
@@ -199,21 +190,18 @@ const PusherMiddleware = (function(){
                 })
                 .then(
                     response => {
-                        console.log(response)
                         if (response.error){
                             console.error(response.error)
                             return false
                         }
-
-                        //response.type = 'PUSHER_USERNAME'
-                        //store.dispatch(response)
+                        response.type = 'PUSHER_USERNAME_CHANGED'
+                        store.dispatch(response)
                     }
                 )
                 return next(action);
                 break;
 
-            case 'GET_CONNECTIONS':
-            case 'NEW_CONNECTION':
+            case 'PUSHER_GET_CONNECTIONS':
                 request('get_connections')
                 .then(
                     response => {             
@@ -221,8 +209,7 @@ const PusherMiddleware = (function(){
                             console.error(response.error)
                             return false
                         }
-
-                        response.type = 'CONNECTIONS'
+                        response.type = 'PUSHER_CONNECTIONS'
                         store.dispatch(response)
                     }
                 )
@@ -237,7 +224,6 @@ const PusherMiddleware = (function(){
                             console.error(response.error)
                             return false
                         }
-
                         response.type = 'DEBUG'
                         store.dispatch(response)
                     }

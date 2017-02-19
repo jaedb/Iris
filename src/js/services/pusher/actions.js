@@ -37,7 +37,7 @@ export function startUpgrade(){
 
 export function getConnections(){
 	return {
-		type: 'GET_CONNECTIONS'
+		type: 'PUSHER_GET_CONNECTIONS'
 	}
 }
 

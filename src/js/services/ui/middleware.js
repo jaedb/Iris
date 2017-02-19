@@ -21,7 +21,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.connection.username })
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.connection_id+'/'+action.username })
                 next(action)
                 break
 

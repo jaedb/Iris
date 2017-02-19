@@ -108,9 +108,17 @@ class IrisCore(object):
         }
         self.connections[connection_id] = new_connection
 
+        self.send_message(
+            connection_id, {
+                'type': 'connected',
+                'connection_id': connection_id,
+                'username': client['username']
+            }
+        )
+
         self.broadcast({
-            'type': 'client_connected',
-            'client': client
+            'type': 'connection_added',
+            'connection': client
         })
     
     def remove_connection(self, connection_id):
@@ -119,8 +127,8 @@ class IrisCore(object):
                 client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
                 self.broadcast({
-                    'type': 'client_disconnected',
-                    'client': client
+                    'type': 'connection_removed',
+                    'connection': client
                 })
             except:
                 logger.error('Failed to close connection to '+ connection_id)           
@@ -133,7 +141,10 @@ class IrisCore(object):
                 'type': 'connection_updated',
                 'connection': self.connections[connection_id]['client']
             })
-            return {}
+            return {
+                'type': 'username_changed',
+                'username': data['username']
+            }
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'
