@@ -29,10 +29,6 @@ class IrisCore(object):
     }
 
 
-    def on_start(self):        
-        logger.info('--- Starting Iris core '+self.version)
-
-
     ##
     # Generate a random string
     #
@@ -83,7 +79,7 @@ class IrisCore(object):
         for connection in self.connections.itervalues():
             connection['connection'].write_message( json_encode(data) )
         return {
-            'status': 'ok',
+            'status': 1,
             'message': 'Broadcast to '+str(len(self.connections))+' connections'
         }
     
@@ -101,6 +97,7 @@ class IrisCore(object):
             connections.append(connection['client'])
         
         return {
+            'status': 1,
             'connections': connections
         }
 
@@ -145,7 +142,7 @@ class IrisCore(object):
                 'connection': self.connections[connection_id]['client']
             })
             return {
-                'type': 'username_changed',
+                'status': 1,
                 'username': data['username']
             }
 
@@ -153,8 +150,27 @@ class IrisCore(object):
             error = 'Connection "'+data['connection_id']+'" not found'
             logger.error(error)
             return {
-                'error': error
-            }           
+                'status': 0,
+                'message': error
+            }         
+
+    def deliver_message(self, data):  
+        to = data['to']
+        if to in self.connections:
+
+            self.send_message(to, data['message'])
+
+            return {
+                'status': 1
+            }
+
+        else:
+            error = 'Connection "'+data['connection_id']+'" not found'
+            logger.error(error)
+            return {
+                'status': 0,
+                'message': error
+            }    
             
 
 
@@ -194,6 +210,7 @@ class IrisCore(object):
             upgrade_available = False
         
         return {
+            'status': 1,
             'version': {
                 'current': self.version,
                 'latest': latest_version,
@@ -223,6 +240,7 @@ class IrisCore(object):
 
     def get_radio(self, data):
         return {
+            'status': 1,
             'radio': self.radio
         }
 
@@ -235,7 +253,8 @@ class IrisCore(object):
         # no uris means we can't play radio
         if not uris:
             return {
-                'error': 'No recommendations found'
+                'status': 0,
+                'message': 'No recommendations found'
             }
 
         # if we got recommendations
@@ -268,7 +287,9 @@ class IrisCore(object):
             'radio': self.radio
         })
         
-        return {}
+        return {
+            'status': 1
+        }
 
 
     def load_more_tracks( self ):
@@ -327,6 +348,7 @@ class IrisCore(object):
 
     def get_queue_metadata(self, data):
         return {
+            'status': 1,
             'queue_metadata': self.queue_metadata
         }
 
@@ -345,7 +367,9 @@ class IrisCore(object):
             'queue_metadata': self.queue_metadata
         })
 
-        return {}
+        return {
+            'status': 1
+        }
 
     def clean_queue_metadata( self ):
         cleaned_queue_metadata = {}
@@ -363,7 +387,9 @@ class IrisCore(object):
             'queue_metadata': self.queue_metadata
         })
 
-        return {}
+        return {
+            'status': 1
+        }
 
 
     ##

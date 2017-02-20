@@ -60,15 +60,6 @@ const PusherMiddleware = (function(){
     return store => next => action => {
         switch(action.type) {
 
-            case 'PUSHER_INSTRUCT':
-                request( action )
-                    .then(
-                        response => {
-                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
-                        }
-                    )
-                break
-
             case 'PUSHER_CONNECT':
 
                 if(socket != null) socket.close();
@@ -143,6 +134,24 @@ const PusherMiddleware = (function(){
 
                 return next(action);
                 break;
+
+            case 'PUSHER_INSTRUCT':
+                request( action )
+                    .then(
+                        response => {
+                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+                        }
+                    )
+                break
+
+            case 'PUSHER_DELIVER_MESSAGE':
+                request('deliver_message', action)
+                    .then(
+                        response => {
+                            store.dispatch( uiActions.createNotification(response.message) )
+                        }
+                    )
+                break
 
             case 'PUSHER_GET_QUEUE_METADATA':
                 request('get_queue_metadata')

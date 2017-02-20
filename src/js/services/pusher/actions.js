@@ -50,10 +50,13 @@ export function instruct( data = null ){
 
 export function sendAuthorization( recipient_connectionid, authorization, me ){
 	return {
-		type: 'PUSHER_SEND_AUTHORIZATION',
-		recipient_connectionid: recipient_connectionid,
-		authorization: authorization,
-		me: me
+		type: 'PUSHER_DELIVER_MESSAGE',
+		to: recipient_connectionid,
+		message: {
+			type: 'spotify_authorization',
+			authorization: authorization,
+			me: me
+		}
 	}
 }
 
