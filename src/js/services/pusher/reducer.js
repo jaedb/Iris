@@ -9,6 +9,7 @@ export default function reducer(pusher = {}, action){
         case 'PUSHER_CONNECTED':
             return Object.assign({}, pusher, {
                 connected: true,
+                connecting: false,
                 connection_id: action.connection_id,
                 username: action.username
             });
