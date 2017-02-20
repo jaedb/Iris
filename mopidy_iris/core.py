@@ -82,7 +82,10 @@ class IrisCore(object):
     def broadcast(self, data):
         for connection in self.connections.itervalues():
             connection['connection'].write_message( json_encode(data) )
-        return {}
+        return {
+            'status': 'ok',
+            'message': 'Broadcast to '+str(len(self.connections))+' connections'
+        }
     
     ##
     # Connections
@@ -227,17 +230,28 @@ class IrisCore(object):
         self.radio = data
         self.radio['enabled'] = 1;
         
-        self.core.tracklist.clear()
-        self.core.tracklist.set_consume( True )
-        self.load_more_tracks()
-        self.core.playback.play()
-        
-        self.broadcast({
-            'type': 'radio_started',
-            'radio': self.radio
-        })
-        
-        return self.get_radio({})
+        uris = self.load_more_tracks()
+
+        # no uris means we can't play radio
+        if not uris:
+            return {
+                'error': 'No recommendations found'
+            }
+
+        # if we got recommendations
+        else:
+            self.core.tracklist.clear()
+            self.core.tracklist.set_consume( True )
+            self.core.tracklist.add( uris = uris )
+            self.core.playback.play()
+
+            self.broadcast({
+                'type': 'radio_started',
+                'radio': self.radio
+            })
+
+            return self.get_radio({})
+
 
     def stop_radio(self, data):
         self.radio = {
@@ -280,12 +294,28 @@ class IrisCore(object):
             for track in response['tracks']:
                 uris.append( track['uri'] )
             
-            self.core.tracklist.add( uris = uris )
+            return uris
         except:
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
-            self.broadcast({
-                'error': 'Failed to fetch radio recommendations'
-            })
+            return False
+
+
+    def check_for_radio_update( self ):
+        tracklistLength = self.core.tracklist.length.get()        
+        if( tracklistLength <= 5 and self.radio['enabled'] == 1 ):
+            
+            uris = self.load_more_tracks()
+
+            if not uris:
+                self.broadcast({
+                    'error': 'Could not fetch tracklist length',
+                    'source': 'check_for_radio_update'
+                })
+                logger.warning('IrisFrontend: Could not fetch tracklist length')
+
+            else:
+                self.core.tracklist.add( uris = uris )
+                
 
 
     ##

@@ -56,28 +56,28 @@ class Settings extends React.Component{
 	}
 
 	renderConnectionStatus(service){
-		if( this.props[service].connected ){
+		if( this.props[service.toLowerCase()].connected ){
 			return (
-				<span className="text green-text connection-status">
+				<span className="green-text connection-status">
 					<FontAwesome name="check" />
 					&nbsp;
-					Connected
+					{service}
 				</span>
 			)
-		}else if( this.props[service].connecting ){			
+		}else if( this.props[service.toLowerCase()].connecting ){			
 			return (
-				<span className="text grey-text connection-status">
+				<span className="grey-text connection-status">
 					<FontAwesome name="circle-o-notch" spin />
 					&nbsp;
-					Connecting
+					{service}
 				</span>
 			)
 		}else{			
 			return (
-				<span className="text red-text connection-status">
+				<span className="red-text connection-status">
 					<FontAwesome name="exclamation-triangle" />
 					&nbsp;
-					Not connected
+					{service}
 				</span>
 			)
 		}
@@ -127,6 +127,19 @@ class Settings extends React.Component{
 		)
 	}
 
+	renderApplyButton(){
+		if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) return null
+
+		return (
+			<div className="field">
+				<div className="name"></div>
+				<div className="input">
+					<button type="submit" className="secondary">Apply and reload</button>
+				</div>
+			</div>
+		)
+	}
+
 	render(){
 
 		var actions = (
@@ -142,12 +155,16 @@ class Settings extends React.Component{
 
 				<section>
 
-					<h4 className="underline">Mopidy</h4>
+					<h4 className="underline">System</h4>
 					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<div className="field">
 							<div className="name">Status</div>
 							<div className="input">
-								{ this.renderConnectionStatus('mopidy') }
+								<div className="text">							
+									{ this.renderConnectionStatus('Mopidy') }
+									&nbsp;&nbsp;
+									{ this.renderConnectionStatus('Pusher') }
+								</div>
 							</div>
 						</div>
 						<div className="field">
@@ -177,20 +194,17 @@ class Settings extends React.Component{
 									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
 									value={ this.state.mopidy_port } />
 							</div>
-						</div>					
-						<div className="field">
-							<div className="name"></div>
-							<div className="input">
-								<button type="submit" className="secondary">Apply and reload</button>
-							</div>
 						</div>
+						{this.renderApplyButton()}
 					</form>
 
 					<h4 className="underline">Spotify</h4>
 					<div className="field">
 						<div className="name">Status</div>
 						<div className="input">
-							{ this.renderConnectionStatus('spotify') }
+							<div className="text">
+								{ this.renderConnectionStatus('Spotify') }
+							</div>
 						</div>
 					</div>
 					<form>

@@ -87,7 +87,8 @@ const SpotifyMiddleware = (function(){
                 break
 
             // when radio returns
-            case 'RADIO':
+            case 'PUSHER_RADIO_STARTED':
+            case 'PUSHER_RADIO_CHANGED':
 
                 next(action)
 

@@ -13,7 +13,7 @@ export default function reducer(ui = {}, action){
         case 'UI_SET':
             return Object.assign({}, ui, action.data)
 
-        case 'CONFIG':
+        case 'PUSHER_CONFIG':
             return Object.assign({}, ui, { config: action.config })
 
         case 'TOGGLE_SIDEBAR':
@@ -147,8 +147,10 @@ export default function reducer(ui = {}, action){
             }
             return Object.assign({}, ui, { current_tracklist: tracklist, queue_metadata: action.queue_metadata });
 
-        case 'RADIO':
-        case 'START_RADIO':
+        case 'PUSHER_RADIO':
+        case 'PUSHER_RADIO_STARTED':
+        case 'PUSHER_RADIO_CHANGED':
+        case 'PUSHER_RADIO_STOPPED':
             return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.radio })
 
         case 'RADIO_SEEDS_RESOLVED':
@@ -371,7 +373,7 @@ export default function reducer(ui = {}, action){
         case 'USER_PLAYLISTS_LOADED':
             var users = Object.assign([], ui.users)
             var playlists_uris = []
-            if (users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
+            if (users[action.key] && users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
 
             var artist = Object.assign(
                 {}, 

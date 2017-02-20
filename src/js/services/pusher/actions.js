@@ -59,21 +59,21 @@ export function sendAuthorization( recipient_connectionid, authorization, me ){
 
 export function startRadio( uris ){
 	return {
-		type: 'START_RADIO',
+		type: 'PUSHER_START_RADIO',
 		uris: uris
 	}
 }
 
 export function stopRadio(){
 	return {
-		type: 'STOP_RADIO'
+		type: 'PUSHER_STOP_RADIO'
 	}
 }
 
-export function debug( data = null ){
+export function debug( message = null ){
 	return {
 		type: 'PUSHER_DEBUG',
-		data: data
+		message: message
 	}
 }
 

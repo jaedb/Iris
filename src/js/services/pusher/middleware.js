@@ -104,7 +104,7 @@ const PusherMiddleware = (function(){
                                 return false
                             }
 
-                            response.type = 'CONFIG'
+                            response.type = 'PUSHER_CONFIG'
                             store.dispatch(response)
                             if (response.config.spotify_username){
                                 store.dispatch(spotifyActions.getUser('spotify:user:'+response.config.spotify_username))
@@ -122,7 +122,7 @@ const PusherMiddleware = (function(){
                                 console.error(response.error)
                                 return false
                             }
-                            response.type = 'VERSION'
+                            response.type = 'PUSHER_VERSION'
                             store.dispatch(response)
                         }
                     )
@@ -134,7 +134,7 @@ const PusherMiddleware = (function(){
                                 return false
                             }
 
-                            response.type = 'RADIO'
+                            response.type = 'PUSHER_RADIO'
                             store.dispatch(response)
                         }
                     )
@@ -177,7 +177,7 @@ const PusherMiddleware = (function(){
                             store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                         }
 
-                        response.type = 'VERSION'
+                        response.type = 'PUSHER_VERSION'
                         store.dispatch(response)
                     }
                 )
@@ -217,15 +217,10 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DEBUG':
-                request( action )
+                request( action.message.method, action.message.data )
                 .then(
-                    response => {          
-                        if (response.error){
-                            console.error(response.error)
-                            return false
-                        }
-                        response.type = 'DEBUG'
-                        store.dispatch(response)
+                    response => {
+                        store.dispatch({type: 'DEBUG', response: response})
                     }
                 )
                 break;
@@ -262,26 +257,10 @@ const PusherMiddleware = (function(){
                 }
                 break
 
-            case 'START_RADIO':
-                request('broadcast', {
-                    type: 'browser_notification',
-                    title: 'Radio started',
-                    body: store.getState().pusher.username +' started radio mode',
-                    icon: ''
-                })
-                .then(
-                    response => {                   
-                        if (response.data.error){
-                            console.error(response.data.error)
-                            return false
-                        }
-                            
-                        store.dispatch(uiActions.createNotification('Starting radio...'))
-                    }
-                )
+            case 'PUSHER_START_RADIO':
+                store.dispatch(uiActions.createNotification('Starting radio...'))
 
                 var data = {
-                    method: 'start_radio',
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
@@ -301,34 +280,27 @@ const PusherMiddleware = (function(){
                     }
                 }
                 
-                request( data )
+                request( 'start_radio', data )
+                .then(response => {
+                    console.log(response)
+                })
                 break
 
-            case 'STOP_RADIO':
-                request('broadcast', {
-                    type: 'browser_notification',
-                    title: 'Radio stopped',
-                    body: store.getState().pusher.username +' stopped radio mode',
-                    icon: ''
-                })
-                .then(
-                    response => {           
-                        if (response.data.error){
-                            console.error(response.data.error)
-                            return false
-                        }
-                                    
-                        store.dispatch(uiActions.createNotification('Stopping radio'))
-                    }
-                )
+            case 'PUSHER_STOP_RADIO':
+                store.dispatch(uiActions.createNotification('Stopping radio'))
 
                 var data = {
-                    method: 'stop_radio',
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
                 }
-                request( data )
+
+                // we don't need to wait for request, as change will be broadcast
+                request( 'stop_radio', data )
+                break
+
+            case 'PUSHER_BROWSER_NOTIFICATION':
+                store.dispatch(uiActions.createBrowserNotification(action))
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

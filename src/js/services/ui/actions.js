@@ -215,6 +215,13 @@ export function closeModal(){
  * Subtle info/tooltip messages
  **/
 
+export function createBrowserNotification( data ){
+    return { 
+        type: 'BROWSER_NOTIFICATION',
+        data: data
+    }
+}
+
 export function createNotification( content, type = 'default' ){
     return { 
         type: 'CREATE_NOTIFICATION',

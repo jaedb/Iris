@@ -62,7 +62,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
  
 
     def on_message(self, message):
-
+        
         message = json_decode(message)
 
         if 'data' in message:
