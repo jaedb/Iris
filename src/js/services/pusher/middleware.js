@@ -148,7 +148,7 @@ const PusherMiddleware = (function(){
                 request('deliver_message', action)
                     .then(
                         response => {
-                            store.dispatch( uiActions.createNotification(response.message) )
+                            store.dispatch( uiActions.createNotification('Message delivered') )
                         }
                     )
                 break
@@ -234,25 +234,7 @@ const PusherMiddleware = (function(){
                 )
                 break;
 
-            case 'PUSHER_SEND_AUTHORIZATION':
-                request('send_authorization', {
-                    recipient_connection_id: action.recipient_connection_id,
-                    authorization: action.authorization,
-                    me: action.me
-                })
-                .then(
-                    response => {                   
-                        if (response.error){
-                            console.error(response.error)
-                            return false
-                        }
-                            
-                        store.dispatch( uiActions.createNotification('Authorization sent') )
-                    }
-                )
-                break;
-
-            case 'PUSHER_SEND_AUTHORIZATION':
+            case 'PUSHER_SPOTIFY_AUTHORIZATION':
                 if( window.confirm('Spotify authorization for user '+action.me.id+' received. Do you want to import?') ){
 
                     // remove any existing authentication
