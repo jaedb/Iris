@@ -84,6 +84,16 @@ const PusherMiddleware = (function(){
                     handleMessage( socket, store, message )
                 };
 
+                socket.onclose = () => {
+                    store.dispatch({
+                        type: 'PUSHER_DISCONNECTED'
+                    })
+
+                    setTimeout(() => {
+                        store.dispatch(pusherActions.connect())
+                    }, 5000);
+                };
+
                 break;
 
             case 'PUSHER_CONNECTED':
