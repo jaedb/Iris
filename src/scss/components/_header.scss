@@ -45,5 +45,34 @@ main {
 				}
 			}
 		}
+
+		@include responsive( $bp_medium ){
+			.dropdown-field {
+				.label {
+					padding-left: 16px;
+					padding-right: 16px;
+
+					.text {
+						display: none;
+					}
+					.fa {
+						line-height: 24px;
+					}
+				}
+			}
+			.actions {
+				button {
+					font-size: 1px;
+					color: transparent;
+					vertical-align: top;
+
+					.fa {
+						font-size: 14px;
+						color: #000000;
+						vertical-align: middle;
+					}
+				}
+			}
+		}
 	}
 }

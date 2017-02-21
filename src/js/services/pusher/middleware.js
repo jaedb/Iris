@@ -89,6 +89,7 @@ const PusherMiddleware = (function(){
                         type: 'PUSHER_DISCONNECTED'
                     })
 
+                    // attempt to reconnect ever 5 seconds
                     setTimeout(() => {
                         store.dispatch(pusherActions.connect())
                     }, 5000);
