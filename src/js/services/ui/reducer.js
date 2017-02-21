@@ -13,7 +13,7 @@ export default function reducer(ui = {}, action){
         case 'UI_SET':
             return Object.assign({}, ui, action.data)
 
-        case 'CONFIG':
+        case 'PUSHER_CONFIG':
             return Object.assign({}, ui, { config: action.config })
 
         case 'TOGGLE_SIDEBAR':
@@ -132,23 +132,26 @@ export default function reducer(ui = {}, action){
             });
 
         case 'QUEUE_METADATA':
+        case 'QUEUE_METADATA_CHANGED':
             var tracklist = Object.assign([], ui.current_tracklist)
             for( var i = 0; i < tracklist.length; i++ ){
 
                 // load our metadata (if we have any for that tlid)
-                if (typeof(action.data.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
+                if (typeof(action.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
                     tracklist[i] = Object.assign(
                         {},
                         tracklist[i],
-                        action.data.queue_metadata['tlid_'+tracklist[i].tlid],
+                        action.queue_metadata['tlid_'+tracklist[i].tlid],
                     )
                 }
             }
-            return Object.assign({}, ui, { current_tracklist: tracklist, queue_metadata: action.data.queue_metadata });
+            return Object.assign({}, ui, { current_tracklist: tracklist, queue_metadata: action.queue_metadata });
 
-        case 'RADIO':
-        case 'START_RADIO':
-            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.data.radio })
+        case 'PUSHER_RADIO':
+        case 'PUSHER_RADIO_STARTED':
+        case 'PUSHER_RADIO_CHANGED':
+        case 'PUSHER_RADIO_STOPPED':
+            return Object.assign({}, ui, { seeds_resolved: false }, { radio: action.radio })
 
         case 'RADIO_SEEDS_RESOLVED':
             var radio = Object.assign({}, ui.radio, { resolved_seeds: action.resolved_seeds })
@@ -370,7 +373,7 @@ export default function reducer(ui = {}, action){
         case 'USER_PLAYLISTS_LOADED':
             var users = Object.assign([], ui.users)
             var playlists_uris = []
-            if (users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
+            if (users[action.key] && users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
 
             var artist = Object.assign(
                 {}, 

@@ -15,27 +15,34 @@ class SendAuthorizationModal extends React.Component{
 		super(props)
 	}
 
-	handleClick(e, connectionid){		
+	handleClick(e, connection_id){		
 		e.preventDefault()
-		this.props.pusherActions.sendAuthorization( connectionid, this.props.authorization, this.props.me )
+		this.props.pusherActions.sendAuthorization( connection_id, this.props.authorization, this.props.me )
 		this.props.uiActions.closeModal()
 		return false;
 	}
 
 	render(){
+		var connections = []
+		for (var connection_id in this.props.connections){
+			if (this.props.connections.hasOwnProperty(connection_id)) {
+				connections.push(this.props.connections[connection_id])
+			}
+		}
+
 		return (
 			<div>
 				<h4 className="no-bottom-padding">Share Spotify authentication</h4>
 				<h3 className="grey-text">Send your authentication tokens to another client. When the recipient client imports this, their Iris will have full access to your Spotify account ({this.props.me.id}).</h3>
 				<div className="list small pusher-connection-list">
 					{
-						this.props.connections.map( (connection, index) => {
+						connections.map( (connection, index) => {
 							
 							// don't list OUR connection
-							if (connection.connectionid == this.props.connectionid) return null
+							if (connection.connection_id == this.props.connection_id) return null
 
 							return (
-								<div className='list-item connection' key={connection.connectionid} onClick={ e => this.handleClick(e, connection.connectionid) }>
+								<div className='list-item connection' key={connection.connection_id} onClick={ e => this.handleClick(e, connection.connection_id) }>
 									{ connection.username }
 									&nbsp;
 									<span className="grey-text">({ connection.ip })</span>
@@ -53,7 +60,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		me: state.spotify.me,
 		authorization: state.spotify.authorization,
-		connectionid: state.pusher.connectionid,
+		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
 	}
 }

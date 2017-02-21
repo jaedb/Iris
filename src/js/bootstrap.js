@@ -37,7 +37,7 @@ var initialState = {
 		connected: false,
 		port: 6681,
 		username: 'Anonymous',
-		connections: [],
+		connections: {},
 		version: {
 			current: '0.0.0'
 		}

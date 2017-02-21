@@ -23,65 +23,42 @@ const PusherMiddleware = (function(){
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
 
-        //console.log('handleMessage', message)
+        // response to a request [we] made
+        if (typeof(message.request_id) !== 'undefined' && message.request_id){            
+            if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
+                deferredRequests[ message.request_id ].resolve( message )
+            } else {
+                console.error('Pusher: Response with no matching request', message);
+            }
 
-        switch (message.action){
-            case 'response':
-                if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
-                    deferredRequests[ message.request_id ].resolve( message )
-                } else {
-                    console.error('Pusher: Response with no matching request', message);
-                }
-                break
-
-            case 'broadcast':                
-                if (message.type ){
-                    var type = message.type.toUpperCase()
-                } else if (message.data.type ){
-                    var type = message.data.type.toUpperCase()
-                } else {
-                    var type = 'UNRECOGNISED_BROADCAST'
-                }
-                store.dispatch({ type: type, data: message.data })
-                break
+        // general message
+        // this can be client-client, server-client or a broadcast to many clients
+        } else {
+            message.type = 'PUSHER_'+message.type.toUpperCase()
+            store.dispatch(message)
         }
     }
 
-    const request = (data) => {
+    const request = (method, data = {}) => {
         return new Promise( (resolve, reject) => {
-
-            // send the payload
-            data.request_id = helpers.generateGuid()
-            socket.send( JSON.stringify(data) )
+            var request_id = helpers.generateGuid()
+            var message = {
+                method: method,
+                data: data,
+                request_id: request_id
+            }
+            socket.send( JSON.stringify(message) )
             
             // add query to our deferred responses
-            deferredRequests[ data.request_id ] = {
+            deferredRequests[request_id] = {
                 resolve: resolve,
                 reject: reject
             }
         })
     }
 
-
-    /**
-     * Middleware
-     *
-     * This behaves like an action interceptor. We listen for specific actions
-     * and handle special functionality. If the action is not in our switch, then
-     * it just proceeds to the next middleware, or default functionality
-     **/
     return store => next => action => {
-
         switch(action.type) {
-
-            case 'PUSHER_INSTRUCT':
-                request( action.data )
-                    .then(
-                        response => {
-                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
-                        }
-                    )
-                break
 
             case 'PUSHER_CONNECT':
 
@@ -91,7 +68,7 @@ const PusherMiddleware = (function(){
                 var state = store.getState();
                 var connection = {
                     clientid: helpers.generateGuid(),
-                    connectionid: helpers.generateGuid(),
+                    connection_id: helpers.generateGuid(),
                     username: 'Anonymous'
                 }
                 if( state.pusher.username ) connection.username = state.pusher.username;
@@ -99,60 +76,68 @@ const PusherMiddleware = (function(){
                 
                 socket = new WebSocket(
                     'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
-                    [ connection.clientid, connection.connectionid, connection.username ]
+                    [ connection.clientid, connection.connection_id, connection.username ]
                 );
-
-                socket.onopen = () => {
-                    store.dispatch({ type: 'PUSHER_CONNECTED', connection: connection });
-                    store.dispatch({ type: 'PUSHER_SET_USERNAME', username: connection.username });
-                };
 
                 socket.onmessage = (message) => {
                     var message = JSON.parse(message.data);
                     handleMessage( socket, store, message )
                 };
 
+                socket.onclose = () => {
+                    store.dispatch({
+                        type: 'PUSHER_DISCONNECTED'
+                    })
+
+                    // attempt to reconnect ever 5 seconds
+                    setTimeout(() => {
+                        store.dispatch(pusherActions.connect())
+                    }, 5000);
+                };
+
                 break;
 
             case 'PUSHER_CONNECTED':
-                request({ action: 'get_config' })
+                request('get_config')
                     .then(
                         response => {
-                            if (response.data.error){
-                                console.error(response.data.error)
+                            if (response.error){
+                                console.error(response.error)
                                 return false
                             }
 
-                            store.dispatch({ type: 'CONFIG', config: response.data.config })
-                            if (response.data.config.spotify_username){
-                                store.dispatch(spotifyActions.getUser('spotify:user:'+response.data.config.spotify_username))
+                            response.type = 'PUSHER_CONFIG'
+                            store.dispatch(response)
+                            if (response.config.spotify_username){
+                                store.dispatch(spotifyActions.getUser('spotify:user:'+response.config.spotify_username))
                             }
                             var spotify = store.getState().spotify
                             if (!spotify.country || !spotify.locale){
-                                store.dispatch({ type: 'SPOTIFY_SET_CONFIG', config: response.data.config })
+                                store.dispatch({ type: 'SPOTIFY_SET_CONFIG', config: response.config })
                             }
                         }
                     )
-                request({ action: 'get_version' })
+                request('get_version')
                     .then(
                         response => {
-                            if (response.data.error){
-                                console.error(response.data.error)
+                            if (response.error){
+                                console.error(response.error)
                                 return false
                             }
-
-                            store.dispatch({ type: 'VERSION', data: response.data })
+                            response.type = 'PUSHER_VERSION'
+                            store.dispatch(response)
                         }
                     )
-                request({ action: 'get_radio' })
+                request('get_radio')
                     .then(
                         response => {
-                            if (response.data.error){
-                                console.error(response.data.error)
+                            if (response.error){
+                                console.error(response.error)
                                 return false
                             }
 
-                            store.dispatch({ type: 'RADIO', data: response.data })
+                            response.type = 'PUSHER_RADIO'
+                            store.dispatch(response)
                         }
                     )
 
@@ -161,145 +146,123 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
-            case 'ERROR':
-                store.dispatch( uiActions.createNotification(action.data.source+': '+action.data.message,'bad') )
-                break;
-
-            case 'PUSHER_GET_QUEUE_METADATA':
-                request({ action: 'get_queue_metadata'})
+            case 'PUSHER_INSTRUCT':
+                request( action )
                     .then(
                         response => {
-                            store.dispatch({ type: 'QUEUE_METADATA', data: response.data })
+                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+                        }
+                    )
+                break
+
+            case 'PUSHER_DELIVER_MESSAGE':
+                request('deliver_message', action)
+                    .then(
+                        response => {
+                            store.dispatch( uiActions.createNotification('Message delivered') )
+                        }
+                    )
+                break
+
+            case 'PUSHER_GET_QUEUE_METADATA':
+                request('get_queue_metadata')
+                    .then(
+                        response => {
+                            response.type = 'QUEUE_METADATA'
+                            store.dispatch(response)
                         }
                     )
                 break;
 
             case 'PUSHER_ADD_QUEUE_METADATA':
-                request({ action: 'add_queue_metadata', tlids: action.tlids, added_from: action.from_uri })
+                request('add_queue_metadata', {
+                    tlids: action.tlids, 
+                    added_from: action.from_uri,
+                    added_by: store.getState().pusher.username
+                })
                 break;
 
-            case 'START_UPGRADE':
-                request({ action: 'upgrade' })
-                    .then(
-                        response => {
-                            if (response.data.error){
-                                console.error(response.data.error)
-                                return false
-                            }
-
-                            if (response.data.upgrade_successful){
-                                store.dispatch( uiActions.createNotification('Upgrade complete') )
-                            }else{
-                                store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
-                            }
-                            store.dispatch({ type: 'VERSION', data: response.data })
+            case 'PUSHER_START_UPGRADE':
+                request('upgrade')
+                .then(
+                    response => {
+                        if (response.error){
+                            console.error(response.error)
+                            return false
                         }
-                    )
+
+                        if (response.upgrade_successful){
+                            store.dispatch( uiActions.createNotification('Upgrade complete') )
+                        }else{
+                            store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
+                        }
+
+                        response.type = 'PUSHER_VERSION'
+                        store.dispatch(response)
+                    }
+                )
                 return next(action);
                 break;
 
             case 'PUSHER_SET_USERNAME':
-                request({ action: 'set_username', username: action.username })
-                    .then(
-                        response => {
-                            if (response.data.error){
-                                console.error(response.data.error)
-                                return false
-                            }
-
-                            store.dispatch({ type: 'PUSHER_USERNAME', data: { username: response.data.username }})
+                request('set_username', {
+                    username: action.username
+                })
+                .then(
+                    response => {
+                        if (response.error){
+                            console.error(response.error)
+                            return false
                         }
-                    )
+                        response.type = 'PUSHER_USERNAME_CHANGED'
+                        store.dispatch(response)
+                    }
+                )
                 return next(action);
                 break;
 
-            case 'GET_CONNECTIONS':
-            case 'NEW_CONNECTION':
-                request({ action: 'get_connections' })
-                    .then(
-                        response => {             
-                            if (response.data.error){
-                                console.error(response.data.error)
-                                return false
-                            }
-                                               
-                            store.dispatch({ type: 'CONNECTIONS', data: response.data })
+            case 'PUSHER_GET_CONNECTIONS':
+                request('get_connections')
+                .then(
+                    response => {             
+                        if (response.error){
+                            console.error(response.error)
+                            return false
                         }
-                    )
+                        response.type = 'PUSHER_CONNECTIONS'
+                        store.dispatch(response)
+                    }
+                )
                 return next(action);
                 break
 
             case 'PUSHER_DEBUG':
-                request( action.data )
-                    .then(
-                        response => {          
-                            if (response.data.error){
-                                console.error(response.data.error)
-                                return false
-                            }
-                                                  
-                            store.dispatch({ type: 'DEBUG', response: response.data })
-                        }
-                    )
-                break;
-
-            case 'PUSHER_SEND_AUTHORIZATION':
-                request({
-                    action: 'send_authorization',
-                    recipient_connectionid: action.recipient_connectionid,
-                    authorization: action.authorization,
-                    me: action.me
-                })
+                request( action.message.method, action.message.data )
                 .then(
-                    response => {                   
-                        if (response.data.error){
-                            console.error(response.data.error)
-                            return false
-                        }
-                            
-                        store.dispatch( uiActions.createNotification('Authorization sent') )
+                    response => {
+                        store.dispatch({type: 'DEBUG', response: response})
                     }
                 )
                 break;
 
-            case 'PUSHER_SEND_AUTHORIZATION':
-                if( window.confirm('Spotify authorization for user '+action.data.me.id+' received. Do you want to import?') ){
+            case 'PUSHER_SPOTIFY_AUTHORIZATION':
+                if( window.confirm('Spotify authorization for user '+action.me.id+' received. Do you want to import?') ){
 
                     // remove any existing authentication
                     store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_REVOKED' })
 
                     // import our new authentication
-                    store.dispatch({ type: 'SPOTIFY_ME_LOADED', data: action.data.me })
-                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: action.data.authorization })
+                    store.dispatch({ type: 'SPOTIFY_ME_LOADED', data: action.me })
+                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: action.authorization })
                 }else{
                     console.log('Authorization ignored')
                 }
                 break
 
-            case 'START_RADIO':
-
-                request({
-                    action: 'broadcast',
-                    data: {
-                        type: 'browser_notification',
-                        title: 'Radio started',
-                        body: store.getState().pusher.username +' started radio mode',
-                        icon: ''
-                    }
-                })
-                .then(
-                    response => {                   
-                        if (response.data.error){
-                            console.error(response.data.error)
-                            return false
-                        }
-                            
-                        store.dispatch(uiActions.createNotification('Starting radio...'))
-                    }
-                )
+            case 'PUSHER_START_RADIO':
+                store.dispatch(uiActions.createNotification('Starting radio...'))
 
                 var data = {
-                    action: 'start_radio',
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
@@ -319,38 +282,27 @@ const PusherMiddleware = (function(){
                     }
                 }
                 
-                request( data )
+                request( 'start_radio', data )
+                .then(response => {
+                    console.log(response)
+                })
                 break
 
-            case 'STOP_RADIO':
-
-                request({
-                    action: 'broadcast',
-                    data: {
-                        type: 'browser_notification',
-                        title: 'Radio stopped',
-                        body: store.getState().pusher.username +' stopped radio mode',
-                        icon: ''
-                    }
-                })
-                .then(
-                    response => {           
-                        if (response.data.error){
-                            console.error(response.data.error)
-                            return false
-                        }
-                                    
-                        store.dispatch(uiActions.createNotification('Stopping radio'))
-                    }
-                )
+            case 'PUSHER_STOP_RADIO':
+                store.dispatch(uiActions.createNotification('Stopping radio'))
 
                 var data = {
-                    action: 'stop_radio',
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
                 }
-                request( data )
+
+                // we don't need to wait for request, as change will be broadcast
+                request( 'stop_radio', data )
+                break
+
+            case 'PUSHER_BROWSER_NOTIFICATION':
+                store.dispatch(uiActions.createBrowserNotification(action))
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

@@ -1,2 +1,3 @@
-queuemanager = None
-localfiles = None
+
+iris = None
+

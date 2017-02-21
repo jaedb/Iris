@@ -11,6 +11,7 @@ import PusherConnectionList from '../components/PusherConnectionList'
 import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
+import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 
 import * as uiActions from '../services/ui/actions'
@@ -56,25 +57,33 @@ class Settings extends React.Component{
 	}
 
 	renderConnectionStatus(service){
-		if( this.props[service].connected ){
+		if (service == 'Spotify' && !this.props[service.toLowerCase()].authorized){			
 			return (
-				<span className="text green-text connection-status">
-					<FontAwesome name="check" />
+				<span className="red-text connection-status">
+					<FontAwesome name="exclamation-triangle" />
 					&nbsp;
-					Connected
+					Not connected
 				</span>
 			)
-		}else if( this.props[service].connecting ){			
+		} else if (this.props[service.toLowerCase()].connected){
 			return (
-				<span className="text grey-text connection-status">
+				<span className="green-text connection-status">
+					<FontAwesome name="check" />
+					&nbsp;
+					{service}
+				</span>
+			)
+		} else if (this.props[service.toLowerCase()].connecting){			
+			return (
+				<span className="grey-text connection-status">
 					<FontAwesome name="circle-o-notch" spin />
 					&nbsp;
 					Connecting
 				</span>
 			)
-		}else{			
+		} else {			
 			return (
-				<span className="text red-text connection-status">
+				<span className="red-text connection-status">
 					<FontAwesome name="exclamation-triangle" />
 					&nbsp;
 					Not connected
@@ -99,7 +108,7 @@ class Settings extends React.Component{
 				<Link className="user" to={global.baseURL+'user/'+user.uri}>
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
-						{user.display_name ? user.display_name : user.username}
+						{user.display_name ? user.display_name : user.id}
 						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(limited access)</span> : null}
 					</span>
 				</Link>
@@ -127,6 +136,31 @@ class Settings extends React.Component{
 		)
 	}
 
+	renderApplyButton(){
+		if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) return null
+
+		return (
+			<div className="field">
+				<div className="name"></div>
+				<div className="input">
+					<button type="submit" className="secondary">Apply and reload</button>
+				</div>
+			</div>
+		)
+	}
+
+	serviceStatus(service){
+		if (this.props[service].connecting){
+			return <span className="grey-text">Connecting</span>
+		} else if (service == 'spotify' && !this.props[service].authorized){
+			return <span className="orange-text">Not authorized</span>
+		} else if (this.props[service].connected){
+			return <span className="green-text">Connected</span>
+		} else {
+			return <span className="red-text">Disconnected</span>
+		}
+	}
+
 	render(){
 
 		var actions = (
@@ -142,14 +176,30 @@ class Settings extends React.Component{
 
 				<section>
 
-					<h4 className="underline">Mopidy</h4>
-					<form onSubmit={(e) => this.setMopidyConfig(e)}>
-						<div className="field">
-							<div className="name">Status</div>
-							<div className="input">
-								{ this.renderConnectionStatus('mopidy') }
-							</div>
+					<div className="status">
+					
+						<div className="item">
+							<Icon name="server" />
+							<h4>Mopidy</h4>
+							{this.serviceStatus('mopidy')}
 						</div>
+					
+						<div className="item">
+							<Icon name="connection" />
+							<h4>Pusher</h4>
+							{this.serviceStatus('pusher')}
+						</div>
+
+						<div className="item">
+							<Icon name="spotify" />
+							<h4>Spotify</h4>
+							{this.serviceStatus('spotify')}
+						</div>
+
+					</div>
+
+					<h4 className="underline">System</h4>
+					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<div className="field">
 							<div className="name">Username</div>
 							<div className="input">
@@ -177,22 +227,11 @@ class Settings extends React.Component{
 									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
 									value={ this.state.mopidy_port } />
 							</div>
-						</div>					
-						<div className="field">
-							<div className="name"></div>
-							<div className="input">
-								<button type="submit" className="secondary">Apply</button>
-							</div>
 						</div>
+						{this.renderApplyButton()}
 					</form>
 
 					<h4 className="underline">Spotify</h4>
-					<div className="field">
-						<div className="name">Status</div>
-						<div className="input">
-							{ this.renderConnectionStatus('spotify') }
-						</div>
-					</div>
 					<form>
 						<div className="field">
 							<div className="name">Country</div>

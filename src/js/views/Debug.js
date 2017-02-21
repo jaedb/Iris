@@ -25,22 +25,7 @@ class Debug extends React.Component{
 		this.state = {
 			mopidy_call: 'playlists.asList',
 			mopidy_data: '{}',
-			pusher_data: '{}'
-		}
-	}
-
-	componentDidMount(){
-		if( this.props.connectionid ){
-			var data = {
-				action: "broadcast",
-				data: {
-					type: 'browser_notification',
-					title: "Title",
-					body: "Test notification",
-					icon: "http://lorempixel.com/100/100/nature/"
-				}
-			}
-			this.setState({ pusher_data: JSON.stringify(data) })
+			pusher_data: '{"method":"broadcast","data":{"type":"browser_notification","title":"Testing","body":"This is my message"}}'
 		}
 	}
 

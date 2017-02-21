@@ -37,7 +37,7 @@ export function startUpgrade(){
 
 export function getConnections(){
 	return {
-		type: 'GET_CONNECTIONS'
+		type: 'PUSHER_GET_CONNECTIONS'
 	}
 }
 
@@ -50,30 +50,33 @@ export function instruct( data = null ){
 
 export function sendAuthorization( recipient_connectionid, authorization, me ){
 	return {
-		type: 'PUSHER_SEND_AUTHORIZATION',
-		recipient_connectionid: recipient_connectionid,
-		authorization: authorization,
-		me: me
+		type: 'PUSHER_DELIVER_MESSAGE',
+		to: recipient_connectionid,
+		message: {
+			type: 'spotify_authorization',
+			authorization: authorization,
+			me: me
+		}
 	}
 }
 
 export function startRadio( uris ){
 	return {
-		type: 'START_RADIO',
+		type: 'PUSHER_START_RADIO',
 		uris: uris
 	}
 }
 
 export function stopRadio(){
 	return {
-		type: 'STOP_RADIO'
+		type: 'PUSHER_STOP_RADIO'
 	}
 }
 
-export function debug( data = null ){
+export function debug( message = null ){
 	return {
 		type: 'PUSHER_DEBUG',
-		data: data
+		message: message
 	}
 }
 

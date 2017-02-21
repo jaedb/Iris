@@ -28,20 +28,28 @@ class PusherConnectionList extends React.Component{
 
 	render(){
 		if( !this.props.connected ) return <div className="pusher-connection-list grey-text">Not connected</div>
-		if( typeof(this.props.connections) == 'undefined' || this.props.connections.length <= 0 ) return <div className="pusher-connection-list grey-text">No connections</div>;
+
+		var connections = []
+		for (var connection_id in this.props.connections){
+			if (this.props.connections.hasOwnProperty(connection_id)) {
+				connections.push(this.props.connections[connection_id])
+			}
+		}
+
+		if (connections.length <= 0) return <div className="pusher-connection-list grey-text">No connections</div>;
 
 		return (
 			<div className="pusher-connection-list">
 				{
-					this.props.connections.map( (connection, index) => {
+					connections.map( (connection, index) => {
 						var is_me = false;
-						if( connection.connectionid == this.props.connectionid ) is_me = true;
+						if( connection.connection_id == this.props.connection_id ) is_me = true;
 						return (
-							<div className={ is_me ? 'connection cf me': 'connection cf'} key={connection.connectionid}>
+							<div className={ is_me ? 'connection cf me': 'connection cf'} key={connection.connection_id}>
 								<div className="col w30">{ connection.username } { is_me ? <span>(you)</span> : null }</div>
 								<div className="col w70">
 									{ connection.ip }
-									<span className="grey-text"> ({ connection.connectionid })</span>
+									<span className="grey-text"> ({ connection.connection_id })</span>
 								</div>
 							</div>
 						);
@@ -55,7 +63,7 @@ class PusherConnectionList extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		connected: state.pusher.connected,
-		connectionid: state.pusher.connectionid,
+		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
 	}
 }

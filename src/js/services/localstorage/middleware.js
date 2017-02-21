@@ -23,8 +23,7 @@ const localstorageMiddleware = (function(){
                 if( !pusher ) pusher = {};
                 Object.assign(
                     pusher,{
-                        username: action.connection.username,
-                        connectionid: action.connection.connectionid
+                        connection_id: action.connection_id
                     }
                 );
                 localStorage.setItem('pusher', JSON.stringify(pusher));
@@ -37,9 +36,9 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('pusher', JSON.stringify(pusher));
                 break;
 
-            case 'PUSHER_USERNAME':
+            case 'PUSHER_USERNAME_CHANGED':
                 var stored_pusher = JSON.parse( localStorage.getItem('pusher') )
-                var pusher = Object.assign({}, stored_pusher, { username: action.data.username })
+                var pusher = Object.assign({}, stored_pusher, { username: action.username })
                 localStorage.setItem('pusher', JSON.stringify(pusher))
                 break;
 
