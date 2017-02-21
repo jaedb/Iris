@@ -108,7 +108,7 @@ class Settings extends React.Component{
 				<Link className="user" to={global.baseURL+'user/'+user.uri}>
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
-						{user.display_name ? user.display_name : user.username}
+						{user.display_name ? user.display_name : user.id}
 						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(limited access)</span> : null}
 					</span>
 				</Link>
