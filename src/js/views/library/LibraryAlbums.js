@@ -162,6 +162,10 @@ class LibraryAlbums extends React.Component{
 
 		var sort_options = [
 			{
+				value: 'artists',
+				label: 'Artists'
+			},
+			{
 				value: 'name',
 				label: 'Name'
 			},
