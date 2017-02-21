@@ -159,6 +159,10 @@ input[type="submit"] {
 	}
 
 	@include responsive( $bp_medium ){
+		min-width: 140px;
+	}
+
+	@include responsive( $bp_narrow ){
 		min-width: 0;
 	}
 }
