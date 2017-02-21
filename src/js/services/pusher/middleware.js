@@ -23,6 +23,9 @@ const PusherMiddleware = (function(){
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
 
+        // if debug enabled
+        if (store.getState().ui.log_pusher) console.log('Pusher', message)
+
         // response to a request [we] made
         if (typeof(message.request_id) !== 'undefined' && message.request_id){            
             if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
@@ -168,7 +171,7 @@ const PusherMiddleware = (function(){
                 request('get_queue_metadata')
                     .then(
                         response => {
-                            response.type = 'QUEUE_METADATA'
+                            response.type = 'PUSHER_QUEUE_METADATA'
                             store.dispatch(response)
                         }
                     )

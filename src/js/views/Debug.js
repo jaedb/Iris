@@ -78,7 +78,23 @@ class Debug extends React.Component{
 										name="emulate_touch"
 										checked={ this.props.log_actions }
 										onChange={ e => this.props.uiActions.set({ log_actions: !this.props.log_actions })} />
-									<span className="label">Log actions in developer console</span>
+									<span className="label">Log actions</span>
+								</label>
+								<label>
+									<input 
+										type="checkbox"
+										name="emulate_touch"
+										checked={ this.props.log_mopidy }
+										onChange={ e => this.props.uiActions.set({ log_mopidy: !this.props.log_mopidy })} />
+									<span className="label">Log Mopidy</span>
+								</label>
+								<label>
+									<input 
+										type="checkbox"
+										name="emulate_touch"
+										checked={ this.props.log_pusher }
+										onChange={ e => this.props.uiActions.set({ log_pusher: !this.props.log_pusher })} />
+									<span className="label">Log Pusher</span>
 								</label>
 								<label>
 									<input 

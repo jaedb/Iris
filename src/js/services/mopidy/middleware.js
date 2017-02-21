@@ -14,6 +14,10 @@ const MopidyMiddleware = (function(){
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, type, data) => {
+
+        // if debug enabled
+        if (store.getState().ui.log_mopidy) console.log('Mopidy', type, data)
+
         switch( type ){
 
             case 'state:online':

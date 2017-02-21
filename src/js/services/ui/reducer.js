@@ -131,8 +131,8 @@ export default function reducer(ui = {}, action){
                 current_track: current_track
             });
 
-        case 'QUEUE_METADATA':
-        case 'QUEUE_METADATA_CHANGED':
+        case 'PUSHER_QUEUE_METADATA':
+        case 'PUSHER_QUEUE_METADATA_CHANGED':
             var tracklist = Object.assign([], ui.current_tracklist)
             for( var i = 0; i < tracklist.length; i++ ){
 
