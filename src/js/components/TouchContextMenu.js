@@ -39,12 +39,12 @@ class TouchContextMenu extends React.Component{
 	}
 
 	playURIs(e){
-		this.props.mopidyActions.playURIs(this.props.menu.uris)
+		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 		this.close()
 	}
 
 	playURIsNext(e){
-		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris)
+		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris, this.props.menu.tracklist_uri)
 		this.close()
 	}
 
@@ -54,7 +54,7 @@ class TouchContextMenu extends React.Component{
 	}
 
 	addToQueue(e){
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris)
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 		this.close()
 	}
 

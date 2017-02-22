@@ -175,10 +175,12 @@ class Debug extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		connectionid: state.pusher.connectionid,
-		emulate_touch: state.ui.emulate_touch,
-		log_actions: state.ui.log_actions,
-		debug_info: state.ui.debug_info,
+		connection_id: state.pusher.connection_id,
+		emulate_touch: (state.ui.emulate_touch ? state.ui.emulate_touch : false),
+		log_actions: (state.ui.log_actions ? state.ui.log_actions : false),
+		log_pusher: (state.ui.log_pusher ? state.ui.log_pusher : false),
+		log_mopidy: (state.ui.log_mopidy ? state.ui.log_mopidy : false),
+		debug_info: (state.ui.debug_info ? state.ui.debug_info : false),
 		debug_response: state.ui.debug_response
 	}
 }
