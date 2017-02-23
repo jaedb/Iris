@@ -178,19 +178,23 @@ class Playlist extends React.Component{
 					<Thumbnail size="large" />
 					<div className="title">
 						<div className="source grey-text">
-							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
+							<span className="placeholder"></span>
 						</div>
-						<h1 className="grey-text">{ this.props.params.uri }</h1>
+						<h1><span className="placeholder"></span></h1>
 						<ul className="details">
 							<li>
-								0 tracks,
-								0 mins
+								<span className="placeholder"></span>
 							</li>
 						</ul>
 					</div>					
 					<div className="actions">
-						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<button className="placeholder">&nbsp;</button>
 					</div>
+					<section className="list-wrapper">
+						<span className="placeholder"></span>
+						<span className="placeholder"></span>
+						<span className="placeholder"></span>
+					</section>
 				</div>
 			)
 		}

@@ -216,9 +216,54 @@ class Artist extends React.Component{
 						<Parallax />
 						<div className="liner">
 							<Thumbnail circle />
-							<h1 className="grey-text">{this.props.params.uri}</h1>
+							<h1>
+								<span className="placeholder"></span>
+							</h1>
+							<div className="actions">
+								<button className="placeholder">&nbsp;</button>
+								<button className="placeholder">&nbsp;</button>
+							</div>
 							{ this.renderSubViewMenu() }
 						</div>
+					</div>
+
+					<div className="body overview">
+						<div className="col w70">
+							<h4 className="left-padding">
+								<span className="placeholder"></span>
+							</h4>
+							<div className="list-wrapper">
+								<span className="placeholder"></span>
+								<span className="placeholder"></span>
+								<span className="placeholder"></span>
+							</div>
+						</div>
+
+						<div className="col w5"></div>
+
+						<div className="col w25 related-artists">
+							<h4>
+								<span className="placeholder"></span>
+							</h4>
+							<div className="list-wrapper">
+								<span className="placeholder"></span>
+								<span className="placeholder"></span>
+								<span className="placeholder"></span>
+							</div>
+						</div>
+
+						<div className="cf"></div>
+
+						<h4 className="left-padding">
+							<span className="placeholder"></span>
+						</h4>
+						<section className="grid-wrapper no-top-padding">
+							<div className="grid">
+								<span className="grid-item placeholder"></span>
+								<span className="grid-item placeholder"></span>
+								<span className="grid-item placeholder"></span>
+							</div>
+						</section>
 					</div>
 				</div>
 			);

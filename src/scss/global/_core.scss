@@ -111,6 +111,65 @@ h4 {
 	}
 }
 
+.placeholder {
+	display: inline-block;
+	height: 1.2em;
+	width: 100px;
+	max-width: 100%;
+	background: rgba(150,150,150,0.15);
+	pointer-events: none !important;
+}
+
+h1 .placeholder {
+	width: 50%;
+}
+
+h2 .placeholder,
+h3 .placeholder,
+h4 .placeholder {
+	max-width: 50%;
+	width: 150px;
+}
+
+button.placeholder {
+	border-color: transparent;
+	height: auto;
+}
+
+.list-wrapper .placeholder {
+	display: block;
+	width: auto;
+	margin: 25px 40px;
+	height: 10px;
+}
+
+.grid-wrapper .placeholder {
+	height: auto;
+	
+	&:after {
+		content: ' ';
+		display: block;
+		padding-bottom: 100%;
+	}
+}
+
+.related-artists .list-wrapper .placeholder {
+	position: relative;
+	margin: 40px 20px 50px 65px;
+
+	&:after {
+		content: ' ';
+		display: block;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background: rgba(150,150,150,0.15);
+		position: absolute;
+		top: -20px;
+		left: -65px;
+	}
+}
+
 .no-top-padding {		padding-top: 0 !important; }
 .no-bottom-padding {	padding-bottom: 0 !important; }
 .no-right-padding {		padding-right: 0 !important; }
