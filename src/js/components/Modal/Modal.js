@@ -11,6 +11,7 @@ import EditPlaylistModal from './EditPlaylistModal'
 import SendAuthorizationModal from './SendAuthorizationModal'
 import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
+import KioskModeModal from './KioskModeModal'
 
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -39,6 +40,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'send_authorization' ? <SendAuthorizationModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 
 				</div>
 			</div>

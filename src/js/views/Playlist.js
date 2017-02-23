@@ -46,7 +46,7 @@ class Playlist extends React.Component{
 				this.props.spotifyActions.getPlaylist( props.params.uri );
 				break
 
-			case 'm3u':
+			default:
 				if( props.mopidy_connected ) this.props.mopidyActions.getPlaylist( props.params.uri );
 				break
 
@@ -128,48 +128,72 @@ class Playlist extends React.Component{
 	}
 
 	render(){
-		if( !this.props.playlist || !this.props.playlist.name ) return null
-		var scheme = helpers.uriSource( this.props.playlist.uri )
-
+		var scheme = helpers.uriSource( this.props.params.uri )
 		var context = 'playlist-track'
-		if (this.props.playlist.can_edit) context = 'editable-playlist-track'
 
-		return (
-			<div className="view playlist-view">
-			
-				<SidebarToggleButton />
+		if (this.props.playlist){
+			if (this.props.playlist.can_edit) context = 'editable-playlist-track'
 
-				<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
+			return (
+				<div className="view playlist-view">
+				
+					<SidebarToggleButton />
 
-				<div className="title">
-					<div className="source grey-text">
-						<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
+					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
+
+					<div className="title">
+						<div className="source grey-text">
+							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
+						</div>
+						<h1>{ this.props.playlist.name }</h1>
+						{ this.props.playlist.description ? <div className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></div> : null }
+
+						<ul className="details">
+							{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+
+							{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
+
+							{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
+
+							<li>
+								{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
+								{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
+							</li>
+						</ul>
 					</div>
-					<h1>{ this.props.playlist.name }</h1>
-					{ this.props.playlist.description ? <div className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></div> : null }
 
-					<ul className="details">
-						{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+					{ this.renderActions() }
 
-						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-
-						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
-
-						<li>
-							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
-							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
-						</li>
-					</ul>
+					<section className="list-wrapper">
+						{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
+					</section>
 				</div>
+			)
 
-				{ this.renderActions() }
-
-				<section className="list-wrapper">
-					{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
-					<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
-				</section>
-			</div>
-		)
+		} else {
+			return (
+				<div className="view playlist-view">				
+					<SidebarToggleButton />
+					<Thumbnail size="large" />
+					<div className="title">
+						<div className="source grey-text">
+							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
+						</div>
+						<h1 className="grey-text">{ this.props.params.uri }</h1>
+						<ul className="details">
+							<li>
+								0 tracks,
+								0 mins
+							</li>
+						</ul>
+					</div>					
+					<div className="actions">
+						<button className="primary" onClick={ e => this.play() }>Play</button>
+					</div>
+				</div>
+			)
+		}
 	}
 }
 

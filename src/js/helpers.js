@@ -141,6 +141,9 @@ export let sourceIcon = function(uri,source = null){
 		case 'm3u':
 			return 'folder'
 			break
+		case 'gmusic':
+			return 'google'
+			break
 		default:
 			return source
 	}

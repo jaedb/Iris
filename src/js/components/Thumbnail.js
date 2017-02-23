@@ -68,6 +68,7 @@ class Thumbnail extends React.Component{
 		var style = { backgroundImage: 'url("'+image+'")' }
 		var class_name = 'thumbnail '+this.props.size;
 		if( this.props.circle ) class_name += ' circle';
+		if( this.props.className ) class_name += ' '+this.props.className;
 		
 		var zoom_icon = null
 		if (this.props.canZoom){

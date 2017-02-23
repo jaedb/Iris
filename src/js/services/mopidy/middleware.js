@@ -360,13 +360,14 @@ const MopidyMiddleware = (function(){
                         for (var i = 0; i < response.length; i++ ){
                             instruct( socket, store, 'playlists.lookup', { uri: response[i].uri })
                                 .then( response => {
+                                    var source = helpers.uriSource(response.uri)
                                     var playlist = Object.assign(
                                         {},
                                         {
                                             type: 'playlist',
                                             name: response.name,
                                             uri: response.uri,
-                                            source: 'local',
+                                            source: (source == 'spotify' ? 'local' : source),
                                             last_modified: response.last_modified,
                                             can_edit: (response.uri.startsWith('m3u:')),
                                             tracks_total: ( response.tracks ? response.tracks.length : 0 )
@@ -739,7 +740,7 @@ const MopidyMiddleware = (function(){
 
                         var artist = Object.assign(
                             {},
-                            response[0].artists[0],
+                            (response ? response[0].artists[0] : {}),
                             {
                                 albums_uris: helpers.asURIs(albums),
                                 tracks: response.slice(0,10)

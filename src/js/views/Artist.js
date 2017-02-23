@@ -65,7 +65,7 @@ class Artist extends React.Component{
 				}
 				break
 
-			case 'local':
+			default:
 				if (props.mopidy_connected){
 					if (props.artist && props.artist.images){
 						console.info('Loading local artist from index')
@@ -177,33 +177,52 @@ class Artist extends React.Component{
 	}
 
 	render(){
-		if( !this.props.artist ) return null
 		var scheme = helpers.uriSource( this.props.params.uri );
 
-		var image = null
-		if( this.props.artist.images ) image = helpers.sizedImages( this.props.artist.images ).huge
+		if ( this.props.artist && this.props.artist.images ){
+			var image = helpers.sizedImages( this.props.artist.images ).huge
+		} else {
+			var image = null
+		}
 
-		return (
-			<div className="view artist-view">
+		if (this.props.artist){
+			return (
+				<div className="view artist-view">
 
-				<SidebarToggleButton />
+					<SidebarToggleButton />
 
-				<div className="intro">
+					<div className="intro">
 
-					<Parallax image={image} />
+						<Parallax image={image} />
 
-					<div className="liner">
-						<Thumbnail image={image} circle />
-						<h1>{ this.props.artist.name }</h1>
-						{ scheme == 'spotify' ? <div className="actions"><button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
-						{ this.renderSubViewMenu() }
+						<div className="liner">
+							<Thumbnail image={image} circle />
+							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
+							{ scheme == 'spotify' ? <div className="actions"><button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
+							{ this.renderSubViewMenu() }
+						</div>
+					</div>
+
+					{this.props.artist ? this.renderBody() : null}
+
+				</div>
+			);
+
+		} else {
+			return (
+				<div className="view artist-view">
+					<SidebarToggleButton />
+					<div className="intro">
+						<Parallax />
+						<div className="liner">
+							<Thumbnail circle />
+							<h1 className="grey-text">{this.props.params.uri}</h1>
+							{ this.renderSubViewMenu() }
+						</div>
 					</div>
 				</div>
-
-				{ this.renderBody() }
-
-			</div>
-		);
+			);
+		}
 	}
 }
 

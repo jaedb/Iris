@@ -21,7 +21,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 class Queue extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	removeTracks( tracks_indexes ){
@@ -59,6 +59,10 @@ class Queue extends React.Component{
 	render(){
 		var actions = (
 			<span>
+				<button onClick={e => this.props.uiActions.openModal('kiosk_mode')}>
+					<FontAwesome name="television" />&nbsp;
+					Kiosk mode
+				</button>
 				<button onClick={e => this.props.uiActions.openModal('edit_radio')}>
 					<FontAwesome name="spotify" />&nbsp;
 					Radio

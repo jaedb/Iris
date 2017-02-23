@@ -17,6 +17,7 @@
 		opacity: 0.5;
 		cursor: pointer;
 		padding: 20px;
+		z-index: 99;
 
 		img {
 			width: 30px;
@@ -150,6 +151,46 @@
 					padding: 16px 18px;
 				}
 			}			
+		}
+	}
+
+	&.kiosk_mode {
+		background: #000000;
+		overflow: hidden;
+
+		.content {
+			padding: 5%;
+			width: 90%;
+			height: 90%;
+			text-align: center;
+
+			.background {
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				opacity: 0.2;
+				max-width: none;
+
+				.image {
+					@include blur();
+					width: 110vw;
+					padding-bottom: 110vh;
+				}
+			}
+
+			.foreground {
+				width: 70vw;
+				margin: 0 auto;
+				max-width: 70vh;
+				max-height: 70vh;
+				z-index: 2;
+			}
+
+			.current-track {
+				padding-top: 30px;
+			}
 		}
 	}
 
