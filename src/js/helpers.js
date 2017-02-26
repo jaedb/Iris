@@ -207,34 +207,22 @@ export let getFromUri = function(element,uri){
  * @return string
  **/
 export let uriType = function( uri ){
-    var exploded = uri.split(':');
+    var exploded = uri.split(':')
 
-    if (exploded[0] == 'spotify'){
-    	switch( exploded[1] ){
-    		case 'track':
-    			return 'track'
-    			break;
-    		case 'artist':
-    			return 'artist'
-    			break;
-    		case 'album':
-    			return 'album'
-    			break;
-    		case 'user':
-    			if( exploded[3] == 'playlist' ) return 'playlist'
-    			if( exploded.length == 3 ) return 'user'
-    			return null
-    			break;
-    	}
-    } else if (exploded[0] == 'local'){
-    	switch( exploded[1] ){
-    		case 'album':
-    			return 'album'
-    			break;
-    		case 'artist':
-    			return 'artist'
-    			break;
-    	}
+    switch (exploded[1]){
+    	case 'track':
+    	case 'artist':
+    	case 'album':
+    	case 'playlist':
+    		return exploded[1]
+    		break
+
+    	case 'user':
+    		if (exploded.length > 3 && exploded[3] == 'playlist'){
+    			return 'playlist'
+    		}
+    		return exploded[1]
+    		break
     }
 
     return null;
