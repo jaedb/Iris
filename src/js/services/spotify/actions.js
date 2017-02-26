@@ -40,10 +40,11 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         (xhr, status, error) => {
                             var message = xhr.responseText
-                            if (error.error && error.error.message) message = error.error.message
-                            dispatch(uiActions.createNotification(message,'bad'))
+                            var response = JSON.parse(xhr.responseText)                            
+                            if (response.error && response.error.message) message = response.error.message
 
-                            console.error( endpoint+' failed', xhr.responseText)
+                            dispatch(uiActions.createNotification('Spotify: '+message,'bad'))
+                            console.error( endpoint+' failed', response)
                             reject(error)
                         }
                     )

@@ -186,6 +186,9 @@ class Artist extends React.Component{
 		}
 
 		if (this.props.artist){
+			var can_play_radio = (scheme == 'spotify')
+			var can_follow = (scheme == 'spotify')
+
 			return (
 				<div className="view artist-view">
 
@@ -198,7 +201,11 @@ class Artist extends React.Component{
 						<div className="liner">
 							<Thumbnail image={image} circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
-							{ scheme == 'spotify' ? <div className="actions"><button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
+							<div className="actions">
+								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
+								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null}
+								<button>...</button>
+							</div>
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
