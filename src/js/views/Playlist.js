@@ -39,6 +39,16 @@ class Playlist extends React.Component{
 		}
 	}
 
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
+			item: this.props.playlist,
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	loadPlaylist( props = this.props ){
 		switch( helpers.uriSource( props.params.uri ) ){
 
@@ -97,7 +107,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
-						<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+						<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 					</div>
 				)
 
@@ -107,7 +117,7 @@ class Playlist extends React.Component{
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
 							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
-							<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+							<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 						</div>
 					)
 				}
@@ -115,6 +125,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+						<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 					</div>
 				)
 
@@ -122,6 +133,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 					</div>
 				)
 		}

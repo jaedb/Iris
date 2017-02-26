@@ -144,6 +144,39 @@ input[type="submit"] {
 		}
 	}
 
+	&.context-menu-trigger {
+		border-color: transparent;
+		padding: 6px;
+		font-size: 20px;
+		min-width: 0;
+		line-height: 20px;
+		color: #000000;
+
+		&:hover {
+			border-color: transparent;
+			background: rgba(0,0,0,0.1);
+		}
+
+		&:active {
+			color: #FFFFFF;
+			background: #000000;
+		}
+
+		&.white {
+			color: #FFFFFF;
+
+			&:hover {
+				border-color: transparent;
+				background: rgba(255,255,255,0.1);
+			}
+
+			&:active {
+				color: #000000;
+				background: #FFFFFF;
+			}
+		}
+	}
+
 	&[disabled],
 	&[disabled="disabled"]{
 		opacity: 0.5;

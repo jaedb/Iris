@@ -54,6 +54,16 @@ class Artist extends React.Component{
 		}
 	}
 
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: 'artist',
+			item: this.props.artist,
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	loadArtist( props = this.props ){
 		switch( helpers.uriSource( props.params.uri ) ){
 
@@ -204,7 +214,7 @@ class Artist extends React.Component{
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
 								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null}
-								<button>...</button>
+								<button className="context-menu-trigger white" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 							</div>
 							{ this.renderSubViewMenu() }
 						</div>

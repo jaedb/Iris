@@ -122,7 +122,11 @@ class App extends React.Component{
 		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
 		if (this.props.sidebar_open) className += ' sidebar-open'
 		if (this.props.modal) className += ' modal-open'
-		if (helpers.isTouchDevice() || this.props.emulate_touch) className += ' can-touch'
+		if (helpers.isTouchDevice() || this.props.emulate_touch){
+			className += ' touch'
+		} else {
+			className += ' notouch'
+		}
 
 		return (
 			<div className={className}>

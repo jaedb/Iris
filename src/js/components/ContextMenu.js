@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
@@ -30,12 +30,17 @@ class ContextMenu extends React.Component{
 		window.removeEventListener("click", this.handleClick, false)
 	}
 
-	handleScroll(){
-		if (this.props.menu) this.props.uiActions.hideContextMenu()
+	handleScroll(e){
+		if (this.props.menu){
+			this.props.uiActions.hideContextMenu()
+		}
 	}
 
-	handleClick(){
-		if (this.props.menu) this.props.uiActions.hideContextMenu()
+	handleClick(e){
+		var target = e.target
+		if (this.props.menu && !target.classList.contains('context-menu-trigger')){
+			this.props.uiActions.hideContextMenu()
+		}
 	}
 
 	playQueueItem(){
@@ -89,6 +94,10 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
+	goToUser(){
+		hashHistory.push( global.baseURL +'user/'+ this.props.menu.item.owner.uri );
+	}
+
 	copyURIs(e){
 		var temp = $("<input>");
 		$("body").append(temp);
@@ -97,6 +106,17 @@ class ContextMenu extends React.Component{
 		temp.remove();
 
 		this.props.uiActions.createNotification( "Copied "+this.props.menu.uris.length+" URIs" )
+		this.props.uiActions.hideContextMenu()
+	}
+
+	copyLinks(e){
+		var temp = $("<input>");
+		$("body").append(temp);
+		temp.val(this.props.menu.item.external_urls.spotify).select();
+		document.execCommand("copy");
+		temp.remove();
+
+		this.props.uiActions.createNotification( "Copied link" )
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -137,8 +157,10 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play' },
 					{ handleClick: 'playURIsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'goToArtist', label: 'Go to artist' },
 					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
-					{ handleClick: 'copyURIs', label: 'Copy URI' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' },
+					{ handleClick: 'copyLinks', label: 'Copy link' }
 				]
 				break
 
@@ -146,15 +168,18 @@ class ContextMenu extends React.Component{
 				var items = [
 					//{ handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'startRadio', label: 'Start radio' },
-					{ handleClick: 'copyURIs', label: 'Copy URI' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' },
+					{ handleClick: 'copyLinks', label: 'Copy link' }
 				]
 				break
 
 			case 'playlist':
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'goToUser', label: 'Go to user' },
 					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
-					{ handleClick: 'copyURIs', label: 'Copy URI' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' },
+					{ handleClick: 'copyLinks', label: 'Copy link' }
 				]
 				break
 
@@ -205,6 +230,11 @@ class ContextMenu extends React.Component{
 		return (
 			<Link className="title" to={global.baseURL+helpers.uriType(item.uri)+'/'+item.uri}>
 				{style ? <div className="background" style={style}></div> : null}
+				<div className="type">
+					{helpers.uriSource(item.uri)}
+					&nbsp;
+					{this.props.menu.context}
+				</div>
 				<div className="text">{item.name}</div>
 			</Link>
 		)
@@ -264,8 +294,10 @@ class ContextMenu extends React.Component{
 
 		return (
 			<div className={className} style={style}>
-				{this.props.menu.item ? this.renderTitle() : null}
-				{this.renderItems()}
+				<div className="liner">
+					{this.props.menu.item ? this.renderTitle() : null}
+					{this.renderItems()}
+				</div>
 			</div>
 		);
 	}

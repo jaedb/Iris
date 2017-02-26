@@ -49,6 +49,16 @@ class Album extends React.Component{
 		}
 	}
 
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: 'album',
+			item: this.props.album,
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	loadAlbum( props = this.props ){
 		switch( helpers.uriSource( props.params.uri ) ){
 
@@ -119,6 +129,7 @@ class Album extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={e => this.play()}>Play</button>
 						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
+						<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
 					</div>
 
 					<section className="list-wrapper">
