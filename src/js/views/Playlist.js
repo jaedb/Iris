@@ -33,7 +33,7 @@ class Playlist extends React.Component{
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadPlaylist( nextProps )
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'm3u' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadPlaylist( nextProps )
 			}
 		}

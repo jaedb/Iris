@@ -42,48 +42,77 @@ class User extends React.Component{
 	}
 
 	render(){
-		if( !this.props.user ) return null
-
-		var playlists = []
-		if (this.props.user.playlists_uris){
-			for (var i = 0; i < this.props.user.playlists_uris.length; i++){
-				var uri = this.props.user.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(uri)){
-					playlists.push(this.props.playlists[uri])
+		if (this.props.user){
+			var playlists = []
+			if (this.props.user.playlists_uris){
+				for (var i = 0; i < this.props.user.playlists_uris.length; i++){
+					var uri = this.props.user.playlists_uris[i]
+					if (this.props.playlists.hasOwnProperty(uri)){
+						playlists.push(this.props.playlists[uri])
+					}
 				}
 			}
-		}
 
-		return (
-			<div className="view user-view">
-			
-				<Header icon="play" title="User" />
+			return (
+				<div className="view user-view">
+				
+					<Header icon="play" title="User" />
 
-				<div className="intro">
-					<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
+					<div className="intro">
+						<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
 
-					<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
+						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
 
-					<ul className="details">
-						{this.isMe() ? <li>You</li> : null}
-						<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
-						<li>{this.props.user.followers.total.toLocaleString()} followers</li>
-					</ul>
+						<ul className="details">
+							{this.isMe() ? <li>You</li> : null}
+							<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
+							<li>{this.props.user.followers.total.toLocaleString()} followers</li>
+						</ul>
 
-					<div className="actions">
-						<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+						<div className="actions">
+							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+						</div>
+					</div>
+					<div className="main">
+
+						<section className="grid-wrapper">
+							<PlaylistGrid playlists={playlists} />
+							<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
+						</section>
+						
 					</div>
 				</div>
-				<div className="main">
+			)
+		} else {
 
-					<section className="grid-wrapper">
-						<PlaylistGrid playlists={playlists} />
-						<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
-					</section>
-					
+			return (
+				<div className="view user-view">				
+					<Header icon="play" title="User" />
+					<div className="intro">
+						<Thumbnail circle size="medium" images={[]} />
+						<h1><span className="playlist"></span></h1>
+						<ul className="details">
+							<li>
+								<span className="placeholder"></span>
+							</li>
+						</ul>
+						<div className="actions">
+							<button className="placeholder"></button>
+						</div>
+					</div>
+					<div className="main">
+						<section className="grid-wrapper">
+							<div className="grid">
+								<span className="grid-item placeholder"></span>
+								<span className="grid-item placeholder"></span>
+								<span className="grid-item placeholder"></span>
+							</div>
+						</section>						
+					</div>
 				</div>
-			</div>
-		);
+			);
+		}
+
 	}
 }
 

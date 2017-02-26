@@ -40,7 +40,7 @@ class Artist extends React.Component{
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadArtist( nextProps )
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadArtist( nextProps )
 			}
 		}

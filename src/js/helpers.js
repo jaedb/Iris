@@ -158,23 +158,47 @@ export let sourceIcon = function(uri,source = null){
  **/
 export let getFromUri = function(element,uri){
     var exploded = uri.split(':');
+    var namespace = exploded[0]
 
-    if( element == 'mbid'){
-        var index = exploded.indexOf('mbid')
-        if( index > -1 ) return exploded[index+1]
+    switch (element){
+    	case 'mbid':
+	        var index = exploded.indexOf('mbid')
+	        if( index > -1 ) return exploded[index+1]
+	        break
+
+    	case 'artistid':
+    		if (exploded[1] == 'artist'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'albumid':
+    		if (exploded[1] == 'album'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'playlistid':
+    		if (exploded[1] == 'playlist'){
+    			return exploded[2]
+    		} else if (exploded[1] == 'user' && exploded[3] == 'playlist'){
+    			return exploded[4]
+    		}
+    		break
+
+    	case 'trackid':
+    		if (exploded[1] == 'track'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'userid':
+    		if (exploded[1] == 'user'){
+    			return exploded[2]
+    		}
+    		break
     }
-
-    if( exploded[0] == 'spotify' ){
-	    if( element == 'userid' && exploded[1] == 'user' ) return exploded[2];
-	    if( element == 'playlistid' && exploded[3] == 'playlist' ) return exploded[4];
-	    if( element == 'artistid' && exploded[1] == 'artist' ) return exploded[2];
-	    if( element == 'artistid' && exploded[3] == 'playlist' ) return exploded[2];
-	    if( element == 'albumid' && exploded[1] == 'album' ) return exploded[2];
-	    if( element == 'trackid' && exploded[1] == 'track' ) return exploded[2];
-	    return null;
-	}
-
-	return null
+    return null
 }
 
 /**

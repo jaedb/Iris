@@ -43,7 +43,7 @@ class Album extends React.Component{
 
 		// if mopidy has just connected AND we're a local album, go get
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadAlbum( nextProps )
 			}
 		}
@@ -56,6 +56,7 @@ class Album extends React.Component{
 				if (props.album && props.album.tracks && props.album.artists_uris){
 					console.info('Loading album from index')
 				}else{
+					console.log(props.params.uri)
 					this.props.spotifyActions.getAlbum( props.params.uri );
 				}
 				break;
@@ -91,6 +92,7 @@ class Album extends React.Component{
 					}
 				}
 			}
+
 			return (
 				<div className="view album-view">
 			        <SidebarToggleButton />
