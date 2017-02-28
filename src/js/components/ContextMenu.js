@@ -15,12 +15,15 @@ import * as spotifyActions from '../services/spotify/actions'
 class ContextMenu extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+		this.state = {
+			submenu_expanded: false
+		}
 		this.handleScroll = this.handleScroll.bind(this)
 		this.handleClick = this.handleClick.bind(this)
 	}
 
-	componentDidMount(){		
+	componentDidMount(){
 		window.addEventListener("scroll", this.handleScroll, false)
 		window.addEventListener("click", this.handleClick, false)
 	}
@@ -31,9 +34,13 @@ class ContextMenu extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if (nextProps.menu){
+		// if we've been given a menu object (ie activated) when we didn't have one prior
+		if (nextProps.menu && !this.props.menu){			
+			this.setState({ submenu_expanded: false })
 			$('body').addClass('context-menu-open')
-		} else {
+
+		// we DID have one prior, and now we don't
+		} else if (this.props.menu && !nextProps.menu){
 			$('body').removeClass('context-menu-open')
 		}
 	}
@@ -45,12 +52,8 @@ class ContextMenu extends React.Component{
 	}
 
 	handleClick(e){
-		if (helpers.isTouchDevice()){
-			return null
-		}
-
-		var target = e.target
-		if (this.props.menu && !target.classList.contains('context-menu-trigger')){
+		// if we click outside of the context menu, kill it
+		if ($(e.target).closest('.context-menu').length <= 0){
 			this.props.uiActions.hideContextMenu()
 		}
 	}
@@ -82,8 +85,7 @@ class ContextMenu extends React.Component{
 	}
 
 	addToPlaylist(){
-		this.props.uiActions.hideContextMenu();
-		this.props.uiActions.openModal('add_to_playlist', { tracks_uris: this.props.menu.uris })
+		this.setState({ submenu_expanded: !this.state.submenu_expanded })
 	}
 
 	addToQueue(){
@@ -292,9 +294,9 @@ class ContextMenu extends React.Component{
 								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
 									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
 										<span className="label">{ item.label }</span>
-										<FontAwesome className="submenu-icon" name="caret-right" />
+										<FontAwesome className="submenu-icon" name={this.state.submenu_expanded ? 'caret-up' : 'caret-right'} />
 									</a>
-									{ this.renderPlaylistSubmenu() }
+									{this.state.submenu_expanded ? this.renderPlaylistSubmenu() : null}
 								</span>
 							)
 						}else{

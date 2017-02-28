@@ -63,7 +63,7 @@
 				text-transform: capitalize;
 			}
 
-			&:hover{
+			.notouch &:hover{
 				.background {
 					opacity: 0.7;
 				}
@@ -103,7 +103,7 @@
 
 				.menu-item {
 					width: 140px;
-					&:hover {
+					.notouch &:hover {
 						background: lighten($dark_grey, 10%);
 					}
 				}
@@ -133,7 +133,7 @@
 		overflow-y: scroll;
 
 		.background {
-			position: absolute;
+			position: fixed;
 			top: 0;
 			right: 0;
 			bottom: 0;
@@ -160,6 +160,20 @@
 					padding: 16px 20px;
 					width: 100%;
 					box-sizing: border-box;
+				}
+
+				.submenu {
+					display: block;
+					position: relative;
+					width: 100%;
+					top: auto;
+					right: auto;
+					bottom: auto;
+					left: auto;
+
+					.menu-item {
+						width: 100%;
+					}
 				}
 			}
 		}
