@@ -30,6 +30,14 @@ class ContextMenu extends React.Component{
 		window.removeEventListener("click", this.handleClick, false)
 	}
 
+	componentWillReceiveProps( nextProps ){
+		if (nextProps.menu){
+			$('body').addClass('context-menu-open')
+		} else {
+			$('body').removeClass('context-menu-open')
+		}
+	}
+
 	handleScroll(e){
 		if (this.props.menu){
 			this.props.uiActions.hideContextMenu()
@@ -37,6 +45,10 @@ class ContextMenu extends React.Component{
 	}
 
 	handleClick(e){
+		if (helpers.isTouchDevice()){
+			return null
+		}
+
 		var target = e.target
 		if (this.props.menu && !target.classList.contains('context-menu-trigger')){
 			this.props.uiActions.hideContextMenu()
@@ -44,58 +56,72 @@ class ContextMenu extends React.Component{
 	}
 
 	playQueueItem(){
+		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
-		this.props.mopidyActions.changeTrack( tracks[0].tlid );		
-		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.changeTrack( tracks[0].tlid )
 	}
 
 	removeFromQueue(){
+		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
 		var tracks_tlids = [];
 		for( var i = 0; i < tracks.length; i++ ){
 			tracks_tlids.push( tracks[i].tlid );
 		}
 		this.props.mopidyActions.removeTracks( tracks_tlids );
-		this.props.uiActions.hideContextMenu();
 	}
 
 	playURIs(){
-		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri);
-		this.props.uiActions.hideContextMenu();
+		this.props.uiActions.hideContextMenu()
+		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 	}
 
 	playURIsNext(){
-		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris, this.props.menu.tracklist_uri);
-		this.props.uiActions.hideContextMenu();
+		this.props.uiActions.hideContextMenu()
+		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris, this.props.menu.tracklist_uri)
 	}
 
 	addToPlaylist(){
-		this.props.uiActions.openModal('add_to_playlist', { tracks_uris: this.props.menu.uris })
 		this.props.uiActions.hideContextMenu();
+		this.props.uiActions.openModal('add_to_playlist', { tracks_uris: this.props.menu.uris })
 	}
 
 	addToQueue(){
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 		this.props.uiActions.hideContextMenu()
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 	}
 
 	addTracksToPlaylist(playlist_uri){
+		this.props.uiActions.hideContextMenu()
 		this.props.uiActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
-		this.props.uiActions.hideContextMenu();
 	}
 
 	removeFromPlaylist(){
+		this.props.uiActions.hideContextMenu()
 		this.props.uiActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
-		this.props.uiActions.hideContextMenu();
 	}
 
 	startRadio(){
+		this.props.uiActions.hideContextMenu()
 		this.props.pusherActions.startRadio(this.props.menu.uris)
-		this.props.uiActions.hideContextMenu();
+	}
+
+	goToArtist(){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0){
+			return null
+		} else {
+			this.props.uiActions.hideContextMenu()
+			hashHistory.push( global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri )
+		}
 	}
 
 	goToUser(){
-		hashHistory.push( global.baseURL +'user/'+ this.props.menu.item.owner.uri );
+		if (!this.props.menu.items || this.props.menu.items.length <= 0){
+			return null
+		} else {
+			this.props.uiActions.hideContextMenu()
+			hashHistory.push( global.baseURL +'user/'+ this.props.menu.items[0].owner.uri )
+		}
 	}
 
 	copyURIs(e){
@@ -106,17 +132,6 @@ class ContextMenu extends React.Component{
 		temp.remove();
 
 		this.props.uiActions.createNotification( "Copied "+this.props.menu.uris.length+" URIs" )
-		this.props.uiActions.hideContextMenu()
-	}
-
-	copyLinks(e){
-		var temp = $("<input>");
-		$("body").append(temp);
-		temp.val(this.props.menu.item.external_urls.spotify).select();
-		document.execCommand("copy");
-		temp.remove();
-
-		this.props.uiActions.createNotification( "Copied link" )
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -159,8 +174,7 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
 					{ handleClick: 'goToArtist', label: 'Go to artist' },
 					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
-					{ handleClick: 'copyURIs', label: 'Copy URI' },
-					{ handleClick: 'copyLinks', label: 'Copy link' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
@@ -168,8 +182,7 @@ class ContextMenu extends React.Component{
 				var items = [
 					//{ handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'startRadio', label: 'Start radio' },
-					{ handleClick: 'copyURIs', label: 'Copy URI' },
-					{ handleClick: 'copyLinks', label: 'Copy link' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
@@ -178,8 +191,7 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play' },
 					{ handleClick: 'goToUser', label: 'Go to user' },
 					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
-					{ handleClick: 'copyURIs', label: 'Copy URI' },
-					{ handleClick: 'copyLinks', label: 'Copy link' }
+					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
@@ -220,24 +232,52 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		var item = this.props.menu.item
-		var style = null
-		if (item && item.images){
-			style = {
-				backgroundImage: 'url('+helpers.sizedImages(item.images).medium+')'
-			}
+		if (!this.props.menu.items || this.props.menu.items.length <= 0){
+			return null
 		}
-		return (
-			<Link className="title" to={global.baseURL+helpers.uriType(item.uri)+'/'+item.uri}>
-				{style ? <div className="background" style={style}></div> : null}
-				<div className="type">
-					{helpers.uriSource(item.uri)}
-					&nbsp;
-					{this.props.menu.context}
-				</div>
-				<div className="text">{item.name}</div>
-			</Link>
-		)
+
+		switch (this.props.menu.context){
+
+			case 'artist':
+			case 'album':
+			case 'playlist':
+				var item = this.props.menu.items[0]
+				var style = null
+				if (item && item.images){
+					style = {
+						backgroundImage: 'url('+helpers.sizedImages(item.images).medium+')'
+					}
+				}
+
+				return (
+					<Link className="title" to={global.baseURL+helpers.uriType(item.uri)+'/'+item.uri}>
+						{style ? <div className="background" style={style}></div> : null}
+						<div className="type">
+							{helpers.uriSource(item.uri)}
+							&nbsp;
+							{this.props.menu.context}
+						</div>
+						<div className="text">{item.name}</div>
+					</Link>
+				)
+				break
+
+			default:
+				return (
+					<span className="title">
+						<div className="type">
+							{helpers.uriSource(this.props.menu.items[0].uri)}
+							&nbsp;
+							{this.props.menu.context}s
+						</div>
+						<div className="text">							
+							{this.props.menu.items.length} items
+						</div>
+					</span>
+				)
+				break
+
+		}
 	}
 
 	renderItems(){
@@ -295,9 +335,10 @@ class ContextMenu extends React.Component{
 		return (
 			<div className={className} style={style}>
 				<div className="liner">
-					{this.props.menu.item ? this.renderTitle() : null}
+					{this.renderTitle()}
 					{this.renderItems()}
 				</div>
+				<div className="background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
 			</div>
 		);
 	}

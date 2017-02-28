@@ -9,7 +9,6 @@ import Sidebar from '../components/Sidebar'
 import MiniPlayer from '../components/MiniPlayer'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenu from '../components/ContextMenu'
-import TouchContextMenu from '../components/TouchContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
@@ -136,7 +135,6 @@ class App extends React.Component{
 		      		{this.props.children}
 		        </main>
 		        <ContextMenu />
-		        <TouchContextMenu />
 		        <Dragger />
 		        <Modal />
 		        <Notifications />

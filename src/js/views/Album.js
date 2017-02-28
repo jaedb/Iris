@@ -13,6 +13,7 @@ import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import SidebarToggleButton from '../components/SidebarToggleButton'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -53,7 +54,7 @@ class Album extends React.Component{
 		var data = {
 			e: e,
 			context: 'album',
-			item: this.props.album,
+			items: [this.props.album],
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data)
@@ -66,7 +67,6 @@ class Album extends React.Component{
 				if (props.album && props.album.tracks && props.album.artists_uris){
 					console.info('Loading album from index')
 				}else{
-					console.log(props.params.uri)
 					this.props.spotifyActions.getAlbum( props.params.uri );
 				}
 				break;
@@ -129,7 +129,7 @@ class Album extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={e => this.play()}>Play</button>
 						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
-						<button className="context-menu-trigger" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 
 					<section className="list-wrapper">

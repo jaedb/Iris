@@ -9,6 +9,7 @@ import PlaylistGrid from '../components/PlaylistGrid'
 import FollowButton from '../components/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -71,6 +72,7 @@ class User extends React.Component{
 
 						<div className="actions">
 							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					</div>
 					<div className="main">

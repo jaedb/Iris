@@ -24,7 +24,6 @@
 		}
 
 		.title {
-			cursor: pointer;
 			display: block;
 			padding: 8px 12px;
 			width: 140px;
@@ -131,13 +130,24 @@
 		bottom: 0 !important;
 		left: 0 !important;
 		margin: 0 !important;
-		background: rgba(10, 10, 10, 0.95);
 		overflow-y: scroll;
+
+		.background {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background: rgba(10, 10, 10, 0.95);
+			z-index: 1;
+		}
 
 		.liner {
 			width: 250px;
 			margin: 30px auto;
 			max-width: 90vw;
+			position: relative;
+			z-index: 2;
 
 			.title {				
 				padding: 16px 20px;

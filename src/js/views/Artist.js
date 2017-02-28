@@ -14,6 +14,7 @@ import ArtistList from '../components/ArtistList'
 import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
 import SidebarToggleButton from '../components/SidebarToggleButton'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -58,7 +59,7 @@ class Artist extends React.Component{
 		var data = {
 			e: e,
 			context: 'artist',
-			item: this.props.artist,
+			items: [this.props.artist],
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data)
@@ -214,7 +215,7 @@ class Artist extends React.Component{
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
 								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null}
-								<button className="context-menu-trigger white" onClick={e => this.handleContextMenu(e)}><FontAwesome name="ellipsis-v" /></button>
+								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 							</div>
 							{ this.renderSubViewMenu() }
 						</div>

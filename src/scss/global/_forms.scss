@@ -38,8 +38,7 @@ input[type="submit"] {
 	padding: 6px 20px;
 	min-width: 160px;
 	border: 0;
-	margin: 0 10px 20px 0;
-	margin-right: 20px;
+	margin: 0 20px 10px 0;
 	text-align: center;
 	border: 2px solid $mid_grey;
 	color: $mid_grey;
@@ -147,10 +146,16 @@ input[type="submit"] {
 	&.context-menu-trigger {
 		border-color: transparent;
 		padding: 6px;
+		margin-bottom: 8px;
 		font-size: 20px;
 		min-width: 0;
 		line-height: 20px;
 		color: #000000;
+		vertical-align: bottom;
+
+		.fa {
+			pointer-events: none;
+		}
 
 		&:hover {
 			border-color: transparent;
@@ -192,7 +197,8 @@ input[type="submit"] {
 	}
 
 	@include responsive( $bp_medium ){
-		min-width: 140px;
+		min-width: 120px;
+		margin-right: 10px;
 	}
 
 	@include responsive( $bp_narrow ){
