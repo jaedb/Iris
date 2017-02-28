@@ -8,14 +8,15 @@
 	.liner {
 		background: $dark_grey;
 		color: #FFFFFF;
+		width: 160px;
 
 		&.right-align {
-			margin-left: -140px;
+			margin-left: -160px;
 		}
 
 		&.right-align-submenu .submenu {
 			left: auto !important;
-			right: 140px !important;
+			right: 160px !important;
 		}
 
 		&.bottom-align-submenu .submenu {
@@ -26,7 +27,6 @@
 		.title {
 			display: block;
 			padding: 8px 12px;
-			width: 140px;
 			font-weight: bold;
 			box-sizing: border-box;
 			position: relative;
@@ -72,14 +72,16 @@
 
 		.menu-item-wrapper {
 			display: block;
-			position: relative;
 
 			.menu-item {
 				cursor: pointer;
 				display: block;
 				padding: 8px 12px;
-				width: 140px;
-				box-sizing: border-box;	
+				box-sizing: border-box;
+
+				.notouch &:hover {
+					background: lighten($dark_grey, 5%);
+				}
 			}
 
 			.icon {
@@ -93,18 +95,27 @@
 			}
 
 			.submenu {
-				display: none;
 				position: absolute;
-				left: 140px;
 				top: 0;
-				max-height: 200px;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				min-height: 200px;
 				overflow-y: scroll;			
-				background: lighten($dark_grey, 5%);
+				background: lighten($dark_grey, 10%);
+				z-index: 3;
 
 				.menu-item {
-					width: 140px;
+					width: 100%;
+
+					&.close-submenu {
+						background: $dark_grey;
+						border-top: 0;
+						color: $mid_grey;
+					}
+
 					.notouch &:hover {
-						background: lighten($dark_grey, 10%);
+						background: lighten($dark_grey, 15%);
 					}
 				}
 			}
@@ -112,14 +123,13 @@
 			.menu-item {
 				border-top: 1px solid lighten($dark_grey, 8%);
 			}
+		}
+	}
 
-			&:hover {
-				.menu-item {
-					background: lighten($dark_grey, 5%);
-				}
-				.submenu {
-					display: block;
-				}
+	@include responsive( null, $bp_medium ){
+		.liner {
+			.title {
+				display: none;
 			}
 		}
 	}
@@ -151,29 +161,13 @@
 
 			.title {				
 				padding: 16px 20px;
-				width: 100%;
 				box-sizing: border-box;
 			}
 
 			.menu-item-wrapper {
 				.menu-item {
 					padding: 16px 20px;
-					width: 100%;
 					box-sizing: border-box;
-				}
-
-				.submenu {
-					display: block;
-					position: relative;
-					width: 100%;
-					top: auto;
-					right: auto;
-					bottom: auto;
-					left: auto;
-
-					.menu-item {
-						width: 100%;
-					}
 				}
 			}
 		}

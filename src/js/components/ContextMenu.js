@@ -151,6 +151,15 @@ class ContextMenu extends React.Component{
 
 		return (			
 			<div className="submenu">
+				<span className="menu-item-wrapper">
+					<a className="menu-item close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
+						<span className="label">
+							<FontAwesome name='close' />
+							&nbsp;
+							Cancel
+						</span>
+					</a>
+				</span>
 				{
 					playlists.map( playlist => {
 						return (
@@ -294,7 +303,7 @@ class ContextMenu extends React.Component{
 								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
 									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
 										<span className="label">{ item.label }</span>
-										<FontAwesome className="submenu-icon" name={this.state.submenu_expanded ? 'caret-up' : 'caret-right'} />
+										<FontAwesome className="submenu-icon" name='caret-right' />
 									</a>
 									{this.state.submenu_expanded ? this.renderPlaylistSubmenu() : null}
 								</span>
@@ -326,7 +335,8 @@ class ContextMenu extends React.Component{
 		var height = 0
 		if (items) height = items.length * 34 // this is an approximation of how tall each menu item is
 
-		var className = "context-menu"
+		var className = "context-menu "+this.props.menu.context
+		if (this.state.submenu_expanded) className += ' submenu-expanded'
 		if (this.props.menu.position_x > (window.innerWidth - 154)) className += ' right-align'
 		if (this.props.menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
 		if (this.props.menu.position_y > (window.innerHeight - height)){
