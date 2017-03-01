@@ -156,7 +156,7 @@ class ContextMenu extends React.Component{
 						<span className="label">
 							<FontAwesome name='caret-left' />
 							&nbsp;&nbsp;
-							Cancel
+							Back
 						</span>
 					</a>
 				</span>
