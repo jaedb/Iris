@@ -150,12 +150,12 @@ class ContextMenu extends React.Component{
 		playlists = helpers.sortItems(playlists, 'name')
 
 		return (			
-			<div className="submenu">
+			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
 				<span className="menu-item-wrapper">
 					<a className="menu-item close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
 						<span className="label">
-							<FontAwesome name='close' />
-							&nbsp;
+							<FontAwesome name='caret-left' />
+							&nbsp;&nbsp;
 							Cancel
 						</span>
 					</a>
@@ -305,7 +305,7 @@ class ContextMenu extends React.Component{
 										<span className="label">{ item.label }</span>
 										<FontAwesome className="submenu-icon" name='caret-right' />
 									</a>
-									{this.state.submenu_expanded ? this.renderPlaylistSubmenu() : null}
+									{this.renderPlaylistSubmenu()}
 								</span>
 							)
 						}else{

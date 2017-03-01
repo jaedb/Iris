@@ -72,6 +72,7 @@
 
 		.menu-item-wrapper {
 			display: block;
+			overflow-x: hidden;
 
 			.menu-item {
 				cursor: pointer;
@@ -89,21 +90,31 @@
 			}
 
 			.submenu-icon {
-				font-size: 10px;
 				float: right;
 				padding-top: 4px;
 			}
 
+			.fa {
+				font-size: 10px;
+			}
+
 			.submenu {
+				@include animate();
 				position: absolute;
 				top: 0;
 				right: 0;
 				bottom: 0;
-				left: 0;
+				left: 100%;
+				width: 0;
 				min-height: 180px;
 				overflow-y: scroll;			
 				background: lighten($dark_grey, 10%);
 				z-index: 3;
+
+				&.expanded {
+					width: 100%;
+					left: 0;
+				}
 
 				.menu-item {
 					width: 100%;
