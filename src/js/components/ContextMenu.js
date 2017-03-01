@@ -52,8 +52,8 @@ class ContextMenu extends React.Component{
 	}
 
 	handleClick(e){
-		// if we click outside of the context menu, kill it
-		if ($(e.target).closest('.context-menu').length <= 0){
+		// if we click outside of the context menu or context menu trigger, kill it
+		if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0){
 			this.props.uiActions.hideContextMenu()
 		}
 	}

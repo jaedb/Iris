@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Track from './Track'
+import ContextMenuTrigger from './ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -19,7 +20,7 @@ class TrackList extends React.Component{
 		this._touch_y = null
 
 		this.state = {
-			tracks: this.keyifyTracks(this.props.tracks),
+			tracks: [],
 			lastSelectedTrack: false
 		}
 
@@ -32,6 +33,10 @@ class TrackList extends React.Component{
 
 	componentWillUnmount(){
 		window.removeEventListener("keyup", this.handleKeyUp, false);
+	}
+
+	componentDidMount(){
+		this.setState({ tracks: this.keyifyTracks(this.props.tracks) })
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -206,7 +211,12 @@ class TrackList extends React.Component{
 
 	keyifyTracks( tracks ){
 		for( var i = 0; i < tracks.length; i++ ){
-			tracks[i] = Object.assign({}, tracks[i], { key: i+'_'+tracks[i].uri })
+			tracks[i] = Object.assign(
+				{}, 
+				tracks[i], 
+				{
+					key: i+'_'+tracks[i].uri
+				})
 		}
 		return tracks
 	}
@@ -317,6 +327,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
+				{this.selectedTracks().length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} /> : null}
 			</div>
 		);
 	}
