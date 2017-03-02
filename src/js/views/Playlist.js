@@ -13,6 +13,7 @@ import ConfirmationButton from '../components/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import FollowButton from '../components/FollowButton'
 import SidebarToggleButton from '../components/SidebarToggleButton'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -33,10 +34,20 @@ class Playlist extends React.Component{
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadPlaylist( nextProps )
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'm3u' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadPlaylist( nextProps )
 			}
 		}
+	}
+
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
+			items: [this.props.playlist],
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	loadPlaylist( props = this.props ){
@@ -97,7 +108,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
-						<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.delete() } />
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 
@@ -107,7 +118,7 @@ class Playlist extends React.Component{
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
 							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public }) }>Edit</button>
-							<ConfirmationButton className="destructive" content="Delete" confirmingContent="Are you sure?" onConfirm={ e => this.unfollow() } />
+							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)
 				}
@@ -115,6 +126,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 
@@ -122,6 +134,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 		}

@@ -158,23 +158,47 @@ export let sourceIcon = function(uri,source = null){
  **/
 export let getFromUri = function(element,uri){
     var exploded = uri.split(':');
+    var namespace = exploded[0]
 
-    if( element == 'mbid'){
-        var index = exploded.indexOf('mbid')
-        if( index > -1 ) return exploded[index+1]
+    switch (element){
+    	case 'mbid':
+	        var index = exploded.indexOf('mbid')
+	        if( index > -1 ) return exploded[index+1]
+	        break
+
+    	case 'artistid':
+    		if (exploded[1] == 'artist'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'albumid':
+    		if (exploded[1] == 'album'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'playlistid':
+    		if (exploded[1] == 'playlist'){
+    			return exploded[2]
+    		} else if (exploded[1] == 'user' && exploded[3] == 'playlist'){
+    			return exploded[4]
+    		}
+    		break
+
+    	case 'trackid':
+    		if (exploded[1] == 'track'){
+    			return exploded[2]
+    		}
+    		break
+
+    	case 'userid':
+    		if (exploded[1] == 'user'){
+    			return exploded[2]
+    		}
+    		break
     }
-
-    if( exploded[0] == 'spotify' ){
-	    if( element == 'userid' && exploded[1] == 'user' ) return exploded[2];
-	    if( element == 'playlistid' && exploded[3] == 'playlist' ) return exploded[4];
-	    if( element == 'artistid' && exploded[1] == 'artist' ) return exploded[2];
-	    if( element == 'artistid' && exploded[3] == 'playlist' ) return exploded[2];
-	    if( element == 'albumid' && exploded[1] == 'album' ) return exploded[2];
-	    if( element == 'trackid' && exploded[1] == 'track' ) return exploded[2];
-	    return null;
-	}
-
-	return null
+    return null
 }
 
 /**
@@ -183,34 +207,22 @@ export let getFromUri = function(element,uri){
  * @return string
  **/
 export let uriType = function( uri ){
-    var exploded = uri.split(':');
+    var exploded = uri.split(':')
 
-    if (exploded[0] == 'spotify'){
-    	switch( exploded[1] ){
-    		case 'track':
-    			return 'track'
-    			break;
-    		case 'artist':
-    			return 'artist'
-    			break;
-    		case 'album':
-    			return 'album'
-    			break;
-    		case 'user':
-    			if( exploded[3] == 'playlist' ) return 'playlist'
-    			if( exploded.length == 3 ) return 'user'
-    			return null
-    			break;
-    	}
-    } else if (exploded[0] == 'local'){
-    	switch( exploded[1] ){
-    		case 'album':
-    			return 'album'
-    			break;
-    		case 'artist':
-    			return 'artist'
-    			break;
-    	}
+    switch (exploded[1]){
+    	case 'track':
+    	case 'artist':
+    	case 'album':
+    	case 'playlist':
+    		return exploded[1]
+    		break
+
+    	case 'user':
+    		if (exploded.length > 3 && exploded[3] == 'playlist'){
+    			return 'playlist'
+    		}
+    		return exploded[1]
+    		break
     }
 
     return null;

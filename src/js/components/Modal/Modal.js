@@ -24,6 +24,14 @@ class Modal extends React.Component{
 		super(props)
 	}
 
+	componentWillReceiveProps( nextProps ){
+		if (nextProps.modal){
+			$('body').addClass('modal-open')
+		} else {
+			$('body').removeClass('modal-open')
+		}
+	}
+
 	render(){
 		if( !this.props.modal ) return null;
 

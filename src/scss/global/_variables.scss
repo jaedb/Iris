@@ -32,6 +32,17 @@ $bp_shallow: 650px;
 	}
 }
 
+@mixin bullet {
+	padding-left: 14px;
+	
+	&:before {
+		display: inline-block;
+		content: '\2022';
+		margin-left: -8px;
+		padding-right: 6px;
+	}
+}
+
 @mixin animate( $duration: 0.2s, $easing: ease-in-out ){
 	-webkit-transition: all $duration $easing;
 	   -moz-transition: all $duration $easing;

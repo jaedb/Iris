@@ -21,7 +21,7 @@ class PlaylistGrid extends React.Component{
 			e: e,
 			context: 'playlist',
 			uris: [item.uri],
-			item: item
+			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}

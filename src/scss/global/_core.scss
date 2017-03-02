@@ -15,6 +15,12 @@ body {
 	&.modal-open {
 		overflow-y: hidden;
 	}
+
+	@include responsive( $bp_medium ){
+		&.context-menu-open {
+			overflow-y: hidden;
+		}
+	}
 }
 
 main,
@@ -141,6 +147,11 @@ button.placeholder {
 	width: auto;
 	margin: 25px 40px;
 	height: 10px;
+
+	@include responsive( $bp_medium ){
+		margin-left: 20px;
+		margin-right: 20px;
+	}
 }
 
 .grid-wrapper .placeholder {
@@ -246,14 +257,7 @@ footer {
 		display: inline-block;
 
 		&:not(:first-child){
-			padding-left: 14px;
-
-			&::before {
-				display: inline-block;
-				content: '•';
-				margin-left: -8px;
-				padding-right: 6px;
-			}
+			@include bullet();
 		}
 	}
 }

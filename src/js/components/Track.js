@@ -1,10 +1,10 @@
 
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
+
 import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
-
 import * as helpers from '../helpers'
 
 export default class Track extends React.Component{
@@ -140,7 +140,6 @@ export default class Track extends React.Component{
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					{ this.props.track.playing ? <FontAwesome name="play" className="play-state" fixedWidth /> : null }
 					{ track_columns }
-					{ this.props.show_source_icon ? <FontAwesome className="source" name={helpers.sourceIcon(track.uri)} /> : null }
 			</div>
 		);
 	}

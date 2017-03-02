@@ -13,6 +13,7 @@ import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import SidebarToggleButton from '../components/SidebarToggleButton'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -43,10 +44,20 @@ class Album extends React.Component{
 
 		// if mopidy has just connected AND we're a local album, go get
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadAlbum( nextProps )
 			}
 		}
+	}
+
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: 'album',
+			items: [this.props.album],
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	loadAlbum( props = this.props ){
@@ -91,6 +102,7 @@ class Album extends React.Component{
 					}
 				}
 			}
+
 			return (
 				<div className="view album-view">
 			        <SidebarToggleButton />
@@ -117,6 +129,7 @@ class Album extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={e => this.play()}>Play</button>
 						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 
 					<section className="list-wrapper">

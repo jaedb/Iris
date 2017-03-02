@@ -14,6 +14,7 @@ import ArtistList from '../components/ArtistList'
 import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
 import SidebarToggleButton from '../components/SidebarToggleButton'
+import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -40,7 +41,7 @@ class Artist extends React.Component{
 		if( nextProps.params.uri != this.props.params.uri ){
 			this.loadArtist( nextProps )
 		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) == 'local' ){
+			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadArtist( nextProps )
 			}
 		}
@@ -52,6 +53,16 @@ class Artist extends React.Component{
 				this.props.lastfmActions.getArtist( this.props.params.uri, this.props.artist.name.replace('&','and') )
 			}
 		}
+	}
+
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: 'artist',
+			items: [this.props.artist],
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	loadArtist( props = this.props ){
@@ -186,6 +197,9 @@ class Artist extends React.Component{
 		}
 
 		if (this.props.artist){
+			var can_play_radio = (scheme == 'spotify')
+			var can_follow = (scheme == 'spotify')
+
 			return (
 				<div className="view artist-view">
 
@@ -198,7 +212,11 @@ class Artist extends React.Component{
 						<div className="liner">
 							<Thumbnail image={image} circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
-							{ scheme == 'spotify' ? <div className="actions"><button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button><FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /></div> : null}
+							<div className="actions">
+								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
+								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null}
+								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
+							</div>
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>

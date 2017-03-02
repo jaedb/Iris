@@ -5,6 +5,7 @@ import { Link, hashHistory } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -19,8 +20,28 @@ class SearchForm extends React.Component{
 	}
 
 	handleSubmit(e){
-		e.preventDefault();
-		hashHistory.push(global.baseURL+'search/'+this.state.query);
+		e.preventDefault()
+
+		// check for uri type matching
+		switch (helpers.uriType(this.state.query)){
+
+			case 'album':
+				hashHistory.push(global.baseURL+'album/'+this.state.query)
+				break
+
+			case 'artist':
+				hashHistory.push(global.baseURL+'artist/'+this.state.query)
+				break
+
+			case 'playlist':
+				hashHistory.push(global.baseURL+'playlist/'+this.state.query)
+				break
+
+			default:
+				hashHistory.push(global.baseURL+'search/'+this.state.query)
+				break
+		}
+
 		return false
 	}
 

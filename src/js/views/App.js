@@ -9,7 +9,6 @@ import Sidebar from '../components/Sidebar'
 import MiniPlayer from '../components/MiniPlayer'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenu from '../components/ContextMenu'
-import TouchContextMenu from '../components/TouchContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
@@ -122,7 +121,11 @@ class App extends React.Component{
 		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
 		if (this.props.sidebar_open) className += ' sidebar-open'
 		if (this.props.modal) className += ' modal-open'
-		if (helpers.isTouchDevice() || this.props.emulate_touch) className += ' can-touch'
+		if (helpers.isTouchDevice() || this.props.emulate_touch){
+			className += ' touch'
+		} else {
+			className += ' notouch'
+		}
 
 		return (
 			<div className={className}>
@@ -132,7 +135,6 @@ class App extends React.Component{
 		      		{this.props.children}
 		        </main>
 		        <ContextMenu />
-		        <TouchContextMenu />
 		        <Dragger />
 		        <Modal />
 		        <Notifications />
