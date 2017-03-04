@@ -78,7 +78,7 @@ const PusherMiddleware = (function(){
                 connection.username = connection.username.replace(/\W/g, '')
                 
                 socket = new WebSocket(
-                    'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
+                    'ws'+(state.mopidy.port === '443' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
                     [ connection.clientid, connection.connection_id, connection.username ]
                 );
 
