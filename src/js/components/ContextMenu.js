@@ -345,10 +345,10 @@ class ContextMenu extends React.Component{
 		}
 
 		return (
-			<div className={className} style={style}>
+			<div id="context-menu" className={className} style={style}>
 				<div className="liner">
 					{this.renderTitle()}
-					{this.renderItems()}
+					{this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
 				</div>
 				<div className="background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
 			</div>

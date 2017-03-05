@@ -4,6 +4,7 @@ import FontAwesome from 'react-fontawesome'
 
 import Icon from './Icon'
 import SidebarToggleButton from './SidebarToggleButton'
+import ContextMenuTrigger from './ContextMenuTrigger'
 
 export default class Header extends React.Component{
 
@@ -15,17 +16,25 @@ export default class Header extends React.Component{
 		}
 	}
 
-	renderActions(){
-		if (!this.props.actions) return null
+	handleContextMenuTrigger(e,options){		
+		e.preventDefault()
+		var data = {
+			e: e,
+			context: 'custom',
+			options: options
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
+	renderOptions(){
+		if (!this.props.options) return null
 
 		return (
-			<div className={this.state.expanded ? 'expanded actions' : 'actions'}>
-				<button className="trigger" onClick={e => this.setState({expanded: !this.state.expanded})}>
-					<FontAwesome name="ellipsis-v" />
-				</button>
+			<div className='options'>
+				<ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
 				<span className="items">
 					<span className="liner">
-						{ this.props.actions }
+						{ this.props.options }
 					</span>
 				</span>
 			</div>
@@ -38,7 +47,7 @@ export default class Header extends React.Component{
 				<Icon name={ this.props.icon } />
 				<SidebarToggleButton />
 				<h1>{ this.props.title }</h1>
-				{this.renderActions()}
+				{this.renderOptions()}
 			</header>
 		);
 	}

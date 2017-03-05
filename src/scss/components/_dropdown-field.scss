@@ -48,34 +48,5 @@
 			}
 		}
 	}
-
-	@include responsive( $bp_medium ){
-		&.expanded {
-			background: none !important;
-			color: inherit !important;
-		}
-
-		.label {
-			background: none !important;
-			color: inherit !important;
-
-			.fa {
-				display: none;
-			}
-		}
-
-		.options {
-			display: block;
-			position: relative;
-			top: 0;
-			background: lighten($light_grey,5%);
-
-			.option {
-				color: #000000;
-				border-color: $light_grey;
-				background: none !important;
-			}
-		}
-	}
 }
 

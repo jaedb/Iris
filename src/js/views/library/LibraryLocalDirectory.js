@@ -71,9 +71,9 @@ class LibraryLocalDirectory extends React.Component{
 
 		var items = this.arrange_directory( this.props.directory )
 
-		var actions = null
+		var options = null
 		if (this.props.params.uri != 'local:directory' ){
-			actions = (
+			options = (
 				<button onClick={ () => window.history.back() }>
 					<FontAwesome name="reply" />&nbsp;
 					Back
@@ -83,7 +83,7 @@ class LibraryLocalDirectory extends React.Component{
 
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title="Local files" actions={actions} />
+				<Header icon="music" title="Local files" options={options} uiActions={this.props.uiActions} />
 				<section className="list-wrapper">
 					<List
 						columns={[{ name: 'name', width: '100'}]} 

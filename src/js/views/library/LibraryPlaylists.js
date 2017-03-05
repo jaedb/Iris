@@ -71,12 +71,17 @@ class LibraryPlaylists extends React.Component{
 				},
 				{
 					width: 10,
+					label: 'Source',
+					name: 'source'
+				},
+				{
+					width: 10,
 					label: 'Tracks',
 					name: 'tracks_total'
 				},
 				{
 					width: 10,
-					label: 'Can edit',
+					label: 'Editable',
 					name: 'can_edit'
 				}
 			]
@@ -86,8 +91,7 @@ class LibraryPlaylists extends React.Component{
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
 						columns={columns}
-						link_prefix={global.baseURL+"playlist/"}
-						show_source_icon={true} />
+						link_prefix={global.baseURL+"playlist/"} />
 				</section>
 			)
 		}else{
@@ -137,20 +141,20 @@ class LibraryPlaylists extends React.Component{
 			}
 		]
 
-		var actions = (
-			<div>
-				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => this.setSort(val)} />
-				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => this.props.uiActions.set({ library_playlists_view: val}) } />
+		var options = (
+			<span>
+				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_playlists_view: val}); this.props.uiActions.hideContextMenu() }} />
 				<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
 					<FontAwesome name="plus" />&nbsp;
 					New
 				</button>
-			</div>
+			</span>
 		)
 
 		return (
 			<div className="view library-playlists-view">
-				<Header icon="playlist" title="My playlists" actions={actions} />
+				<Header icon="playlist" title="My playlists" options={options} uiActions={this.props.uiActions} />
 				{ this.renderView() }
 			</div>
 		)

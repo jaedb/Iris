@@ -23,10 +23,16 @@ main {
 			}
 		}
 
-		.actions {
+		.options {
 			position: absolute;
 			top: 0;
 			right: 10px;
+
+			.context-menu-trigger {
+				display: none;
+				font-size: 18px;
+				padding: 16px 14px;
+			}
 
 			button {
 				background: transparent;
@@ -43,73 +49,19 @@ main {
 				&:active {
 					background: rgba(0,0,0,0.15);
 				}
-
-				&.trigger {
-					display: none;
-					font-size: 18px;
-					padding: 16px 14px;
-				}
 			}
 		}
 
 		@include responsive( $bp_medium ){
-			.actions {
+			.options {
 				right: 0;
 
-				button.trigger {
-					display: inline-block;
+				.context-menu-trigger {
+					display: block;
 				}
 
 				.items {
 					display: none;
-				}
-
-				&.expanded {
-					z-index: 98;
-
-					button.trigger {
-						z-index: 99;
-						color: #FFFFFF;
-						position: relative;
-					}
-
-					.items {
-						display: block;
-						position: fixed;
-						top: 0;
-						right: 0;
-						bottom: 0;
-						left: 0;
-						background: rgba(0,0,0,0.9);
-						overflow-y: scroll;
-
-						.liner {
-							display: block;
-							width: 200px;
-							margin: 30px auto;
-							background: $light_grey;
-						}
-
-						button,
-						.dropdown-field {
-							display: block;
-							width: 100%;
-							text-align: left;
-							border-bottom: 1px solid rgba(0,0,0,0.1);
-
-							.fa {
-								width: 1.5em;
-								text-align: center;
-							}
-
-							&.dropdown-field {
-								.label {
-									padding-left: 14px;
-									padding-right: 14px;
-								}
-							}
-						}
-					}
 				}
 			}
 		}

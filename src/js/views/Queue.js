@@ -57,7 +57,7 @@ class Queue extends React.Component{
 	}
 
 	render(){
-		var actions = (
+		var options = (
 			<span>
 				<button onClick={e => this.props.uiActions.openModal('kiosk_mode')}>
 					<FontAwesome name="television" />&nbsp;
@@ -80,7 +80,7 @@ class Queue extends React.Component{
 
 		return (
 			<div className="view queue-view">			
-				<Header icon="play" title="Now playing" actions={actions} />
+				<Header icon="play" title="Now playing" options={options} uiActions={this.props.uiActions} />
 				<FullPlayer />
 
 				<section className="list-wrapper">

@@ -75,8 +75,7 @@ class LibraryArtists extends React.Component{
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
 						columns={columns} 
-						link_prefix={global.baseURL+"artist/"}
-						show_source_icon={true} />
+						link_prefix={global.baseURL+"artist/"} />
 				</section>
 			)
 		}else{
@@ -132,16 +131,16 @@ class LibraryArtists extends React.Component{
 			}
 		]
 
-		var actions = (
+		var options = (
 			<span>
-				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={ value => this.setSort(value) } />
-				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={ value => this.props.uiActions.set({ library_artists_view: value }) } />
+				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={value => {this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu()}} />
 			</span>
 		)
 
 		return (
 			<div className="view library-artists-view">
-				<Header icon="mic" title="My artists" actions={actions} />				
+				<Header icon="mic" title="My artists" options={options} uiActions={this.props.uiActions} />				
 				{ this.renderView(artists) }
 				<LazyLoadListener enabled={this.props.library_artists_more} loadMore={ () => this.loadMore() }/>
 			</div>

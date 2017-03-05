@@ -80,15 +80,6 @@ class List extends React.Component{
 						var class_name = 'list-item'
 						if( row.type ) class_name += ' '+row.type
 
-						var source_icon = null
-						if (this.props.show_source_icon){
-							if (row.source){
-								source_icon = <FontAwesome className="source" name={helpers.sourceIcon(false,row.source)} />
-							}else{
-								source_icon = <FontAwesome className="source" name={helpers.sourceIcon(row.uri)} />
-							}
-						}
-
 						return (
 							<div 
 								onClick={e => this.handleClick(e, row.uri)} 
@@ -104,7 +95,6 @@ class List extends React.Component{
 										)
 									})
 								}
-								{source_icon}
 							</div>
 						)
 					})

@@ -163,7 +163,7 @@ class Settings extends React.Component{
 
 	render(){
 
-		var actions = (
+		var options = (
 			<button onClick={e => hashHistory.push(global.baseURL+'debug')}>
 				<FontAwesome name="flask" />&nbsp;
 				Debug
@@ -172,7 +172,7 @@ class Settings extends React.Component{
 
 		return (
 			<div className="view settings-view">
-				<Header icon="cog" title="Settings" actions={actions} />
+				<Header icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
 
 				<section>
 

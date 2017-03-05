@@ -41,7 +41,7 @@ class Debug extends React.Component{
 
 	render(){
 
-		var actions = (
+		var options = (
 			<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
 				<FontAwesome name="reply" />&nbsp;
 				Back
@@ -50,7 +50,7 @@ class Debug extends React.Component{
 
 		return (
 			<div className="view debugger-view">
-				<Header icon="cog" title="Debugger" actions={actions}  />
+				<Header icon="cog" title="Debugger" options={options} uiActions={this.props.uiActions} />
 
 				<section>
 

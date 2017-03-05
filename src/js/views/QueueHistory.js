@@ -37,7 +37,7 @@ class QueueHistory extends React.Component{
 	}
 
 	render(){
-		var actions = (
+		var options = (
 			<span>
 				<button onClick={e => hashHistory.push(global.baseURL+'queue')}>
 					<FontAwesome name="reply" />&nbsp;
@@ -48,7 +48,7 @@ class QueueHistory extends React.Component{
 
 		return (
 			<div className="view playback-history-view">			
-				<Header icon="play" title="Playback history" actions={actions} />
+				<Header icon="play" title="Playback history" options={options} uiActions={this.props.uiActions} />
 
 				<section className="list-wrapper">
 					<TrackList

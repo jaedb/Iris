@@ -141,16 +141,16 @@ class LibraryLocalAlbums extends React.Component{
 			}
 		]
 
-		var actions = (
+		var options = (
 			<span>
-				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => this.setSort(val)} />
-				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => this.props.uiActions.set({ library_local_albums_view: val })} />
+				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_local_albums_view: val }); this.props.uiActions.hideContextMenu() }} />
 			</span>
 		)
 
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title="Local albums" actions={actions} />
+				<Header icon="music" title="Local albums" options={options} uiActions={this.props.uiActions} />
 				{this.renderView(albums)}
 				<LazyLoadListener enabled={(this.moreURIsToLoad().length > 0)} loadMore={ () => this.loadMore() }/>
 			</div>

@@ -44,6 +44,7 @@ function handleUpdate() {
 	ReactGA.set({ page: window.location.hash })
 	ReactGA.pageview(window.location.hash)
 	$(window).scrollTop(0)
+	store.dispatch({type: 'HIDE_CONTEXT_MENU'})
 }
 
 global.baseURL = '/'
