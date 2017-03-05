@@ -239,15 +239,6 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break
 
-            case 'PUSHER_DEBUG':
-                request( action.message.method, action.message.data )
-                .then(
-                    response => {
-                        store.dispatch({type: 'DEBUG', response: response})
-                    }
-                )
-                break;
-
             case 'PUSHER_SPOTIFY_AUTHORIZATION':
                 if( window.confirm('Spotify authorization for user '+action.me.id+' received. Do you want to import?') ){
 
@@ -307,6 +298,22 @@ const PusherMiddleware = (function(){
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
+
+            case 'PUSHER_RESTART':
+
+                // Hard reload. This doesn't strictly clear the cache, but our compiler's
+                // cache buster should handle that 
+                window.location.reload(true);
+                break
+
+            case 'PUSHER_DEBUG':
+                request( action.message.method, action.message.data )
+                .then(
+                    response => {
+                        store.dispatch({type: 'DEBUG', response: response})
+                    }
+                )
+                break;
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:
