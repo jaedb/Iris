@@ -21,11 +21,11 @@ setup(
     include_package_data=True,
     install_requires=[
         'setuptools >= 3.3',
-        'pylast',
-        'spotipy',
+        'pylast >= 1.6.0',
+        'spotipy >= 2.3.8',
         'Mopidy >= 2.0',
         'Mopidy-Local-Images >= 1.0',
-        'ConfigObj'
+        'ConfigObj >= 5.0.6'
     ],
     classifiers=[
         'Environment :: No Input/Output (Daemon)',
