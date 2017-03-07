@@ -164,10 +164,12 @@ class Settings extends React.Component{
 	render(){
 
 		var options = (
-			<button onClick={e => hashHistory.push(global.baseURL+'debug')}>
-				<FontAwesome name="flask" />&nbsp;
-				Debug
-			</button>
+			<span>
+				<button onClick={e => hashHistory.push(global.baseURL+'debug')}>
+					<FontAwesome name="flask" />&nbsp;
+					Debug
+				</button>
+			</span>
 		)
 
 		return (
