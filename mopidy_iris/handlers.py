@@ -1,10 +1,10 @@
 
-import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem
 from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 from spotipy import Spotify
+import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem
 
 logger = logging.getLogger(__name__)
 
