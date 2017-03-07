@@ -59,21 +59,25 @@ class Queue extends React.Component{
 	render(){
 		var options = (
 			<span>
-				<button onClick={e => this.props.uiActions.openModal('kiosk_mode')}>
-					<FontAwesome name="television" />&nbsp;
-					Kiosk mode
-				</button>
 				<button onClick={e => this.props.uiActions.openModal('edit_radio')}>
-					<FontAwesome name="spotify" />&nbsp;
+					<FontAwesome name="podcast" />&nbsp;
 					Radio
+				</button>
+				<button onClick={e => this.props.uiActions.openModal('kiosk_mode')}>
+					<FontAwesome name="expand" />&nbsp;
+					Fullscreen
+				</button>
+				<button onClick={e => hashHistory.push(global.baseURL+'queue-history')}>
+					<FontAwesome name="history" />&nbsp;
+					History
 				</button>
 				<button onClick={e => this.props.mopidyActions.clearTracklist()}>
 					<FontAwesome name="trash" />&nbsp;
 					Clear
 				</button>
-				<button onClick={e => hashHistory.push(global.baseURL+'queue-history')}>
-					<FontAwesome name="history" />&nbsp;
-					History
+				<button onClick={e => this.props.uiActions.openModal('add_to_queue', {})}>
+					<FontAwesome name="plus" />&nbsp;
+					Add URI
 				</button>
 			</span>
 		)

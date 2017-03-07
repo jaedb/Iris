@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import * as helpers from '../../helpers'
 import Icon from '../Icon'
 import AddToPlaylistModal from './AddToPlaylistModal'
+import AddToQueueModal from './AddToQueueModal'
 import CreatePlaylistModal from './CreatePlaylistModal'
 import EditPlaylistModal from './EditPlaylistModal'
 import SendAuthorizationModal from './SendAuthorizationModal'
@@ -43,6 +44,7 @@ class Modal extends React.Component{
 				<div className="content">
 
 					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} /> : null }
+					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} /> : null }
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'send_authorization' ? <SendAuthorizationModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }

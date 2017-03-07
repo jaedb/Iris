@@ -72,7 +72,6 @@ class User extends React.Component{
 
 						<div className="actions">
 							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
-							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					</div>
 					<div className="main">

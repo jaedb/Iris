@@ -1,57 +1,74 @@
 
-var dev = process.env.NODE_ENV !== "production";
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const isDev = process.env.NODE_ENV !== "production";
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var node_dir = __dirname + '/node_modules';
-var output_dir = __dirname +"/mopidy_iris/static"
+const node_dir = path.resolve(__dirname, 'node_modules');
+const output_dir = path.resolve(__dirname, 'mopidy_iris/static');
 
-var config = {
+const config = {
 	
-	context: __dirname,
-	entry: "./src/js/index.js",
+	context: path.resolve(__dirname),
+
+	entry: {
+		js: './src/js/index'
+	},
 	
 	output: {
-		path: output_dir,
+		path: path.resolve(__dirname, 'mopidy_iris/static'),
 		filename: 'app.js'
 	},
 	
 	module: {
-		loaders: [
+		rules: [
 			{
-				test: require.resolve('jquery'), loader: 'expose?jQuery!expose?$'
+				test: require.resolve('jquery'),
+        		exclude: [
+        			/node_modules/
+        		],
+				use: 'expose-loader?jQuery!expose?$'
 			},
 			{
-				// loading JSX (aka Babel) into browser-friendly ES6
+				// JSX
 				test: /\.js$/,
 				exclude: [
-					/(node_modules|bower_components)/,
+        			/node_modules/,
 					'index.js',
 				],
-				loader: 'babel-loader',
-				query: {
-					presets: ['es2015', 'react', 'stage-2']
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [
+							'react',
+							'es2015',
+							'stage-2'
+						]
+					}
 				}
 			},
 			{
-				// loading sass asset files
 				test: /\.scss$/,
-				loader: ExtractTextPlugin.extract([
-					'css'+(dev? '?sourceMap=true': ''),
-					'sass'+(dev? '?outputStyle=expanded&sourceMap=true&sourceMapContents=true': '')
-				])
+				use: ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					//resolve-url-loader may be chained before sass-loader if necessary
+					use: ['css-loader', 'sass-loader']
+				})
 			},
 			{
 				// load external resources (ie Google fonts)
 				test: /.(gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-				loader: 'url-loader?limit=100000'
+				use: { 
+					loader: 'url-loader',
+					options: {
+						'limit': 100000
+					}
+				}
 			}
 		]
 	},
 	
 	plugins: [
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.ProvidePlugin({
 		    $: "jquery",
 		    jQuery: "jquery",
@@ -63,7 +80,7 @@ var config = {
 /**
  * Development-only configuration values
  **/
-if( dev ){
+if (isDev){
 	
 	// set compiled css location
 	config.plugins.push( new ExtractTextPlugin("app.css") );
@@ -75,7 +92,7 @@ if( dev ){
 /**
  * Production-only configuration values
  **/
-}else{
+} else {
 	
 	// set our final output filename
 	config.output.filename = 'app.min.js';
@@ -90,10 +107,15 @@ if( dev ){
 	);
 	
 	// remove all debug and console code
-	config.module.loaders.push(
+	config.module.rules.push(
 		{ 
-			test: /\.(js|jsx)$/,
-			loader: "webpack-strip?strip[]=console.log,strip[]=console.info,strip[]=debug"
+			test: /\.(js)$/,
+			use: {
+				loader: 'webpack-strip',
+				options: {
+					strip: ['console.log', 'console.info', 'debug']
+				}
+			}
 		}
 	);
 	

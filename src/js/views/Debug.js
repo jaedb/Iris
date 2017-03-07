@@ -42,10 +42,12 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
-				<FontAwesome name="reply" />&nbsp;
-				Back
-			</button>
+			<span>
+				<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
+					<FontAwesome name="reply" />&nbsp;
+					Back
+				</button>
+			</span>
 		)
 
 		return (

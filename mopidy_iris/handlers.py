@@ -1,17 +1,12 @@
 
 from __future__ import unicode_literals
-import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
-import logging, json, urllib, urllib2
-import tornado.web
 from spotipy import Spotify
-
-import mem
+import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem
 
 logger = logging.getLogger(__name__)
-
 
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
     
