@@ -131,8 +131,10 @@
 				}
 			}
 
-			.menu-item {
-				border-top: 1px solid lighten($dark_grey, 8%);
+			&:not(:first-child){
+				.menu-item {
+					border-top: 1px solid lighten($dark_grey, 8%);
+				}
 			}
 		}
 
@@ -152,7 +154,10 @@
 				text-transform: none;
 				font-weight: 300;
 				color: inherit;
-				border-top: 1px solid lighten($dark_grey, 8%);
+
+				&:not(:first-child){
+					border-top: 1px solid lighten($dark_grey, 8%);
+				}
 
 				.fa {
 					display: none;
@@ -179,16 +184,16 @@
 				.options {
 					display: block;
 					position: static;
-					background: lighten($dark_grey, 10%);
+					background: darken($dark_grey, 5%);
 
 					.option {
-						padding: 16px 20px 16px 50px;
-						border-top: 1px solid lighten($dark_grey, 8%);
+						padding: 12px 20px 12px 50px;
+						border-top: 1px solid $dark_grey;
 
 						.fa {
 							display: inline-block;
 							left: 25px;
-							top: 18px;
+							top: 14px;
 						}
 					}
 				}
