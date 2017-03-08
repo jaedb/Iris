@@ -198,43 +198,23 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_NEXT':
-                var icon = false
-                if( store.getState().ui.current_track ){
-                    icon = helpers.getTrackIcon( store.getState().ui.current_track )
+                var data = {
+                    type: 'browser_notification',
+                    title: 'Track skipped',
+                    body: store.getState().pusher.username +' skipped this track',
+                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
                 }
-                store.dispatch({ 
-                    type: 'PUSHER_SEND_BROADCAST',
-                    action: 'broadcast',
-                    ignore_self: true,
-                    data: {
-                        type: 'notification',
-                        data: {
-                            title: 'Track skipped',
-                            body: store.getState().pusher.username +' skipped this track',
-                            icon: icon
-                        }
-                    } 
-                })
+                store.dispatch( pusherActions.deliverBroadcast(data) )
                 break;
 
             case 'MOPIDY_STOP':
-                var icon = false
-                if( store.getState().ui.current_track ){
-                    icon = helpers.getTrackIcon( store.getState().ui.current_track )
+                var data = {
+                    type: 'browser_notification',
+                    title: 'Playback stopped',
+                    body: store.getState().pusher.username +' stopped playback',
+                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
                 }
-                store.dispatch({ 
-                    type: 'PUSHER_SEND_BROADCAST',
-                    action: 'broadcast',
-                    ignore_self: true,
-                    data: {
-                        type: 'notification',
-                        data: {
-                            title: 'Playback stopped',
-                            body: store.getState().pusher.username +' stopped playback',
-                            icon: icon
-                        }
-                    } 
-                })
+                store.dispatch( pusherActions.deliverBroadcast(data) )
                 break;
 
             case 'MOPIDY_ENQUEUE_URIS':

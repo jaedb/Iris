@@ -48,6 +48,13 @@ export function instruct( data = null ){
 	}
 }
 
+export function deliverBroadcast( data = null ){
+	return {
+		type: 'PUSHER_DELIVER_BROADCAST',
+		data: data
+	}
+}
+
 export function sendAuthorization( recipient_connectionid, authorization, me ){
 	return {
 		type: 'PUSHER_DELIVER_MESSAGE',

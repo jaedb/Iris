@@ -159,12 +159,16 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELIVER_MESSAGE':
-                request('deliver_message', action)
+                request('deliver_message', action.data)
                     .then(
                         response => {
                             store.dispatch( uiActions.createNotification('Message delivered') )
                         }
                     )
+                break
+
+            case 'PUSHER_DELIVER_BROADCAST':
+                request('broadcast', action.data)
                 break
 
             case 'PUSHER_GET_QUEUE_METADATA':
@@ -276,10 +280,18 @@ const PusherMiddleware = (function(){
                     }
                 }
                 
+                // we don't need to wait for response, as change will be broadcast
                 request( 'start_radio', data )
-                .then(response => {
-                    console.log(response)
-                })
+                break
+
+            case 'PUSHER_RADIO_STARTED':
+                var data = {
+                    type: 'browser_notification',
+                    title: 'Radio',
+                    body: 'Radio mode started',
+                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
+                }
+                store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
 
             case 'PUSHER_STOP_RADIO':
@@ -291,8 +303,18 @@ const PusherMiddleware = (function(){
                     seed_tracks: []
                 }
 
-                // we don't need to wait for request, as change will be broadcast
+                // we don't need to wait for response, as change will be broadcast
                 request( 'stop_radio', data )
+                break
+
+            case 'PUSHER_RADIO_STOPPED':
+                var data = {
+                    type: 'browser_notification',
+                    title: 'Radio',
+                    body: 'Radio mode stopped',
+                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
+                }
+                store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
 
             case 'PUSHER_BROWSER_NOTIFICATION':
