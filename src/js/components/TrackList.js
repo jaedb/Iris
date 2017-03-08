@@ -74,7 +74,13 @@ class TrackList extends React.Component{
 			this._touch_x > ( pageX - this._touch_threshold ) &&
 			this._touch_y < ( pageY + this._touch_threshold ) &&
 			this._touch_y > ( pageY - this._touch_threshold ) ){
-				this.handleTouchContextMenu(e,index)
+
+				// toggle selection
+				var tracks = this.state.tracks
+				tracks[index].selected = !tracks[index].selected
+				this.setState({ tracks: tracks, lastSelectedTrack: index })
+
+				//this.handleContextMenu(e)
 		}
 
 		e.preventDefault()
@@ -122,7 +128,7 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleContextMenu(e,index){
+	handleContextMenu(e){
 		var selected_tracks = this.selectedTracks()
 		var data = {
 			e: e,
@@ -133,29 +139,6 @@ class TrackList extends React.Component{
 			indexes: this.tracksIndexes(selected_tracks)
 		}
 		this.props.uiActions.showContextMenu(data)
-	}
-
-	handleTouchContextMenu(e,index){
-
-		// toggle selection
-		var tracks = this.state.tracks
-		tracks[index].selected = !tracks[index].selected
-		this.setState({ tracks: tracks, lastSelectedTrack: index })
-
-		// update our context menu to hide/show
-		var selected_tracks = this.selectedTracks()
-		if( selected_tracks.length > 0 ){
-			var data = {
-				context: (this.props.context ? this.props.context : 'track'),
-				tracklist_uri: (this.props.uri ? this.props.uri : null),
-				items: selected_tracks,
-				uris: helpers.asURIs(selected_tracks),
-				indexes: this.tracksIndexes(selected_tracks)
-			}
-			this.props.uiActions.showTouchContextMenu(data)
-		}else{
-			this.props.uiActions.hideTouchContextMenu()
-		}
 	}
 
 	toggleTrackSelections(e,index){
@@ -323,7 +306,7 @@ class TrackList extends React.Component{
 									handleMouseDown={ e => self.handleMouseDown(e, index)}
 									handleTouchStart={ e => self.handleTouchStart(e, index)}
 									handleTouchEnd={ e => self.handleTouchEnd(e, index)}
-									handleContextMenu={ e => self.handleContextMenu(e, index)} />
+									handleContextMenu={ e => self.handleContextMenu(e)} />
 						}
 					)
 				}
