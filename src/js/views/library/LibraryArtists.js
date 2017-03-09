@@ -32,7 +32,9 @@ class LibraryArtists extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.library_artists) this.props.spotifyActions.getLibraryArtists();
+		if (!this.props.library_artists_started){
+			this.props.spotifyActions.getLibraryArtists();
+		}
 	}
 
 	loadMore(){
@@ -162,6 +164,7 @@ const mapStateToProps = (state, ownProps) => {
 		sort_reverse: state.ui.library_artists_sort_reverse,
 		library_artists: state.ui.library_artists,
 		library_artists_more: state.ui.library_artists_more,
+		library_artists_started: state.ui.library_artists_started,
 		view: state.ui.library_artists_view
 	}
 }

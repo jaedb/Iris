@@ -43,9 +43,10 @@ class App extends React.Component{
 		this.props.spotifyActions.connect();
 
 		if (this.props.spotify_authorized){
+
+			// TODO: remove this so we don't tap out our API limits before we even get started
+			// Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
 			this.props.spotifyActions.getAllLibraryPlaylists();
-			this.props.spotifyActions.getLibraryAlbums();
-			this.props.spotifyActions.getLibraryArtists();
 		}
 
 		// when we navigate to a new route

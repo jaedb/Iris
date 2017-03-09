@@ -25,7 +25,9 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.library_albums) this.props.spotifyActions.getLibraryAlbums();
+		if (!this.props.library_albums_started){
+			this.props.spotifyActions.getLibraryAlbums();
+		}
 	}
 
 	handleContextMenu(e,item){
@@ -215,6 +217,7 @@ const mapStateToProps = (state, ownProps) => {
 		sort_reverse: state.ui.library_albums_sort_reverse,
 		library_albums: state.ui.library_albums,
 		library_albums_more: state.ui.library_albums_more,
+		library_albums_started: state.ui.library_albums_started,
 	}
 }
 
