@@ -100,6 +100,10 @@ class Playlist extends React.Component{
 		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 
+	inLibrary(){
+		return (this.props.library_playlists && this.props.library_playlists.indexOf(this.props.params.uri) > -1)
+	}
+
 	renderActions(){
 		switch( helpers.uriSource( this.props.playlist.uri ) ){
 
@@ -125,7 +129,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.playlist.is_following} />
+						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -226,6 +230,7 @@ const mapStateToProps = (state, ownProps) => {
 	uri = uri.replace(' ','%20')
 	return {
 		playlist: (state.ui.playlists && typeof(state.ui.playlists[uri]) !== 'undefined' ? state.ui.playlists[uri] : false ),
+		library_playlists: state.ui.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		spotify_userid: state.spotify.me.id

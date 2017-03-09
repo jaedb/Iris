@@ -91,6 +91,10 @@ class Album extends React.Component{
 		this.props.mopidyActions.playURIs([this.props.params.uri], this.props.params.uri)
 	}
 
+	inLibrary(){
+		return (this.props.library_albums && this.props.library_albums.indexOf(this.props.params.uri) > -1)
+	}
+
 	render(){
 		if (this.props.album){
 			var artists = []
@@ -128,7 +132,7 @@ class Album extends React.Component{
 
 					<div className="actions">
 						<button className="primary" onClick={e => this.play()}>Play</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.props.album.is_following} /> : null }
+						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 
@@ -186,6 +190,7 @@ const mapStateToProps = (state, ownProps) => {
 		artists: state.ui.artists,
 		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
 		albums: state.ui.albums,
+		library_albums: state.ui.library_albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	};

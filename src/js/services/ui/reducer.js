@@ -258,6 +258,21 @@ export default function reducer(ui = {}, action){
                 library_albums_total: action.total
             });
 
+        case 'ALBUM_LIBRARY_CHECK':
+            var items = Object.assign([], ui.library_albums)
+
+            // add/remove library reference
+            var index = items.indexOf(action.key)
+
+            // removing existing
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+
+            return Object.assign({}, ui, { library_albums: items });
+
         case 'LOCAL_ALBUMS_LOADED':
             if (!action.uris) return Object.assign({}, ui, { local_albums: null });
             return Object.assign({}, ui, { local_albums: action.uris });
@@ -348,6 +363,21 @@ export default function reducer(ui = {}, action){
                 library_artists_more: action.more,
                 library_artists_total: action.total
             });
+
+        case 'ARTIST_LIBRARY_CHECK':
+            var items = Object.assign([], ui.library_artists)
+
+            // add/remove library reference
+            var index = items.indexOf(action.key)
+
+            // removing existing
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+
+            return Object.assign({}, ui, { library_artists: items });
 
         case 'LOCAL_ARTISTS_LOADED':
             if (!action.uris) return Object.assign({}, ui, { local_artists: null });
@@ -511,13 +541,6 @@ export default function reducer(ui = {}, action){
             playlists[action.key] = playlist
             return Object.assign({}, ui, { playlists: playlists });
 
-        case 'PLAYLIST_FOLLOWING_LOADED':
-            var playlists = Object.assign([], ui.playlists)
-            var playlist = Object.assign({}, playlists[action.key], { following: action.is_following })
-
-            playlists[action.key] = playlist
-            return Object.assign({}, ui, { playlists: playlists });
-
         case 'LIBRARY_PLAYLISTS_LOADED':
             if (ui.library_playlists){
                 var library_playlists = [...ui.library_playlists, ...action.uris]
@@ -530,6 +553,21 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { 
                 library_playlists: library_playlists
             });
+
+        case 'PLAYLIST_LIBRARY_CHECK':
+            var items = Object.assign([], ui.library_playlists)
+
+            // add/remove library reference
+            var index = items.indexOf(action.key)
+
+            // removing existing
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+
+            return Object.assign({}, ui, { library_playlists: items });
 
 
         /**

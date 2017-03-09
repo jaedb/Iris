@@ -98,46 +98,6 @@ const SpotifyMiddleware = (function(){
                 }
                 break
 
-            case 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED':
-                store.dispatch({
-                    type: 'PLAYLIST_LOADED',
-                    key: action.key,
-                    playlist: {
-                        is_following: action.is_following
-                    }
-                });
-                break
-
-            case 'SPOTIFY_ALBUM_FOLLOWING_LOADED':
-                store.dispatch({
-                    type: 'ALBUM_LOADED',
-                    key: action.key,
-                    album: {
-                        is_following: action.is_following
-                    }
-                });
-                break
-
-            case 'SPOTIFY_ARTIST_FOLLOWING_LOADED':
-                store.dispatch({
-                    type: 'ARTIST_LOADED',
-                    key: action.key,
-                    artist: {
-                        is_following: action.is_following
-                    }
-                });
-                break
-
-            case 'SPOTIFY_USER_FOLLOWING_LOADED':
-                store.dispatch({
-                    type: 'USER_LOADED',
-                    key: action.key,
-                    user: {
-                        is_following: action.is_following
-                    }
-                });
-                break
-
             case 'SPOTIFY_NEW_RELEASES_LOADED':
                 store.dispatch({
                     type: 'ALBUMS_LOADED',
@@ -237,6 +197,7 @@ const SpotifyMiddleware = (function(){
                         action.playlists[i],
                         {
                             source: 'spotify',
+                            in_library: true,    // assumed because we asked for library items
                             can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.playlists[i].owner.id == store.getState().spotify.me.id),
                             tracks_total: action.playlists[i].tracks.total
                         }
@@ -260,13 +221,25 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
+                var artists = []
+                for (var i = 0; i < action.data.artists.items.length; i++){
+                    artists.push(
+                        Object.assign(
+                            {},
+                            action.data.artists.items[i],
+                            {
+                                in_library: true     // assumed because we asked for library items
+                            }
+                        )
+                    )
+                }
                 store.dispatch({
                     type: 'ARTISTS_LOADED',
-                    artists: action.data.artists.items
+                    artists: artists
                 });
                 store.dispatch({
                     type: 'LIBRARY_ARTISTS_LOADED',
-                    uris: helpers.asURIs(action.data.artists.items),
+                    uris: helpers.asURIs(artists),
                     more: action.data.artists.next,
                     total: action.data.artists.total
                 });
@@ -280,6 +253,7 @@ const SpotifyMiddleware = (function(){
                             {},
                             action.data.items[i].album,
                             {
+                                in_library: true,    // assumed because we asked for library items
                                 added_at: action.data.items[i].added_at,
                                 tracks: action.data.items[i].album.tracks.items,
                                 tracks_more: action.data.items[i].album.tracks.next,

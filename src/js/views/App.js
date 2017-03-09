@@ -41,7 +41,12 @@ class App extends React.Component{
 		this.props.pusherActions.connect();
 		this.props.mopidyActions.connect();
 		this.props.spotifyActions.connect();
-		if( this.props.spotify_authorized ) this.props.spotifyActions.getAllLibraryPlaylists();
+
+		if (this.props.spotify_authorized){
+			this.props.spotifyActions.getAllLibraryPlaylists();
+			this.props.spotifyActions.getLibraryAlbums();
+			this.props.spotifyActions.getLibraryArtists();
+		}
 
 		// when we navigate to a new route
 		hashHistory.listen( location => {

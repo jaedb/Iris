@@ -487,10 +487,11 @@ export function following(uri, method = 'GET'){
             .then( response => {
                 if( response ) is_following = response
                 if( typeof(is_following) === 'object' ) is_following = is_following[0]
+
                 dispatch({
-                    type: 'SPOTIFY_'+asset_name.toUpperCase()+'_FOLLOWING_LOADED',
+                    type: asset_name.toUpperCase()+'_LIBRARY_CHECK',
                     key: uri,
-                    is_following: is_following
+                    in_library: is_following
                 });
             });
     }

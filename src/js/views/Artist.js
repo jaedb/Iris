@@ -95,6 +95,10 @@ class Artist extends React.Component{
 		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
+	inLibrary(){
+		return (this.props.library_artists && this.props.library_artists.indexOf(this.props.params.uri) > -1)
+	}
+
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
@@ -214,7 +218,7 @@ class Artist extends React.Component{
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
-								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.props.artist.is_following} /> : null}
+								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Unfollow" addText="Follow" is_following={this.inLibrary()} /> : null}
 								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 							</div>
 							{ this.renderSubViewMenu() }
@@ -300,6 +304,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
 		artists: state.ui.artists,
+		library_artists: state.ui.library_artists,
 		albums: state.ui.albums,
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
