@@ -17,7 +17,8 @@ class ContextMenu extends React.Component{
 	constructor(props) {
 		super(props)
 		this.state = {
-			submenu_expanded: false
+			submenu_expanded: false,
+			in_library: false
 		}
 		this.handleScroll = this.handleScroll.bind(this)
 		this.handleClick = this.handleClick.bind(this)
@@ -34,10 +35,11 @@ class ContextMenu extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
+
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
 			this.setState({ submenu_expanded: false })
-			$('body').addClass('context-menu-open')
+			$('body').addClass('context-menu-open')	
 
 		// we DID have one prior, and now we don't
 		} else if (this.props.menu && !nextProps.menu){
@@ -55,6 +57,37 @@ class ContextMenu extends React.Component{
 		// if we click outside of the context menu or context menu trigger, kill it
 		if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0){
 			this.props.uiActions.hideContextMenu()
+		}
+	}
+
+	inLibrary(){
+		if (!this.props.menu || !this.props.menu.context){
+			return false
+		}
+
+		switch (this.props.menu.context){
+			case 'artist':
+				return (this.props.library_artists && this.props.library_artists.indexOf(this.props.menu.items[0].uri) > -1)
+				break
+
+			case 'album':
+				return (this.props.library_albums && this.props.library_albums.indexOf(this.props.menu.items[0].uri) > -1)
+				break
+
+			case 'playlist':
+				return (this.props.library_playlists && this.props.library_playlists.indexOf(this.props.menu.items[0].uri) > -1)
+				break
+		}
+
+		return false
+	}
+
+	toggleInLibrary(in_library){
+		this.props.uiActions.hideContextMenu()
+		if (in_library){
+			this.props.spotifyActions.following(this.props.menu.items[0].uri, 'DELETE')
+		} else {
+			this.props.spotifyActions.following(this.props.menu.items[0].uri, 'PUT')
 		}
 	}
 
@@ -183,16 +216,16 @@ class ContextMenu extends React.Component{
 					{ handleClick: 'playURIs', label: 'Play' },
 					{ handleClick: 'playURIsNext', label: 'Play next' },
 					{ handleClick: 'addToQueue', label: 'Add to queue' },
+					{ handleClick: 'toggleInLibrary', label: 'Add to library' },
 					{ handleClick: 'goToArtist', label: 'Go to artist' },
-					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
 
 			case 'artist':
 				var items = [
-					//{ handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'startRadio', label: 'Start radio' },
+					{ handleClick: 'toggleInLibrary', label: 'Add to library' },
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
@@ -200,8 +233,8 @@ class ContextMenu extends React.Component{
 			case 'playlist':
 				var items = [
 					{ handleClick: 'playURIs', label: 'Play' },
+					{ handleClick: 'toggleInLibrary', label: 'Add to library' },
 					{ handleClick: 'goToUser', label: 'Go to user' },
-					// { handleClick: 'toggleFollow', label: 'Follow/unfollow' }, TODO
 					{ handleClick: 'copyURIs', label: 'Copy URI' }
 				]
 				break
@@ -298,24 +331,40 @@ class ContextMenu extends React.Component{
 			<div>
 				{
 					items.map((item, index) => {
-						if (item.handleClick == 'addToPlaylist'){
-							return (
-								<span key={item.handleClick} className="menu-item-wrapper has-submenu">
-									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
-										<span className="label">{ item.label }</span>
-										<FontAwesome className="submenu-icon" name='caret-right' />
-									</a>
-									{this.renderPlaylistSubmenu()}
-								</span>
-							)
-						}else{
-							return (
-								<span className="menu-item-wrapper" key={item.handleClick}>
-									<a className="menu-item" onClick={e => this[item.handleClick](e)}>
-										<span className="label">{ item.label }</span>
-									</a>
-								</span>
-							)
+						switch (item.handleClick){
+
+							case 'addToPlaylist':
+								return (
+									<span key={item.handleClick} className="menu-item-wrapper has-submenu">
+										<a className="menu-item" onClick={e => this[item.handleClick](e)}>
+											<span className="label">{ item.label }</span>
+											<FontAwesome className="submenu-icon" name='caret-right' />
+										</a>
+										{this.renderPlaylistSubmenu()}
+									</span>
+								)
+								break
+
+							case 'toggleInLibrary':
+								return (
+									<span className="menu-item-wrapper" key={item.handleClick}>
+										<a className="menu-item" onClick={e => this[item.handleClick](this.inLibrary())}>
+											<span className="label">
+												{this.inLibrary() ? 'Remove from library' : 'Add to library'}
+											</span>
+										</a>
+									</span>
+								)
+								break
+
+							default:
+								return (
+									<span className="menu-item-wrapper" key={item.handleClick}>
+										<a className="menu-item" onClick={e => this[item.handleClick](e)}>
+											<span className="label">{ item.label }</span>
+										</a>
+									</span>
+								)
 						}
 					})
 				}
@@ -361,6 +410,9 @@ const mapStateToProps = (state, ownProps) => {
 		menu: state.ui.context_menu,
 		current_track: state.ui.current_track,
 		current_tracklist: state.ui.current_tracklist,
+		library_artists: state.ui.library_artists,
+		library_albums: state.ui.library_albums,
+		library_playlists: state.ui.library_playlists,
 		playlists: state.ui.playlists
 	}
 }
