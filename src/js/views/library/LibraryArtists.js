@@ -26,13 +26,15 @@ class LibraryArtists extends React.Component{
 			e: e,
 			context: 'artist',
 			uris: [item.uri],
-			item: item
+			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}
 
 	componentDidMount(){
-		if (!this.props.library_artists) this.props.spotifyActions.getLibraryArtists();
+		if (!this.props.library_artists_started){
+			this.props.spotifyActions.getLibraryArtists();
+		}
 	}
 
 	loadMore(){
@@ -55,22 +57,19 @@ class LibraryArtists extends React.Component{
 			var columns = [
 				{
 					label: 'Name',
-					width: 70,
 					name: 'name'
 				},
 				{
 					label: 'Followers',
-					width: 15,
 					name: 'followers.total'
 				},
 				{
 					label: 'Popularity',
-					width: 15,
 					name: 'popularity'
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="list-wrapper artist-list">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
@@ -161,6 +160,7 @@ const mapStateToProps = (state, ownProps) => {
 		sort: state.ui.library_artists_sort,
 		sort_reverse: state.ui.library_artists_sort_reverse,
 		library_artists: state.ui.library_artists,
+		library_artists_started: state.ui.library_artists_started,
 		library_artists_more: state.ui.library_artists_more,
 		view: state.ui.library_artists_view
 	}

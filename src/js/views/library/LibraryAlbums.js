@@ -25,7 +25,9 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.library_albums) this.props.spotifyActions.getLibraryAlbums();
+		if (!this.props.library_albums_started){
+			this.props.spotifyActions.getLibraryAlbums();
+		}
 	}
 
 	handleContextMenu(e,item){
@@ -33,7 +35,7 @@ class LibraryAlbums extends React.Component{
 			e: e,
 			context: 'album',
 			uris: [item.uri],
-			item: item
+			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}
@@ -59,33 +61,28 @@ class LibraryAlbums extends React.Component{
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 30,
 					label: 'Name',
 					name: 'name'
 				},
 				{
-					width: 30,
 					label: 'Artists',
 					name: 'artists'
 				},
 				{
-					width: 15,
 					label: 'Added',
 					name: 'added_at'
 				},
 				{
-					width: 15,
 					label: 'Released',
 					name: 'release_date'
 				},
 				{
-					width: 10,
 					label: 'Tracks',
 					name: 'tracks_total'
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="list-wrapper album-list">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={albums} 
@@ -214,7 +211,8 @@ const mapStateToProps = (state, ownProps) => {
 		sort: state.ui.library_albums_sort,
 		sort_reverse: state.ui.library_albums_sort_reverse,
 		library_albums: state.ui.library_albums,
-		library_albums_more: state.ui.library_albums_more,
+		library_albums_started: state.ui.library_albums_started,
+		library_albums_more: state.ui.library_albums_more
 	}
 }
 

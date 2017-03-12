@@ -79,57 +79,105 @@
 				margin-top: -3px;
 				background: transparent;
 			}
-
-			@include responsive( $bp_medium ){
-				padding: 7px 10px 7px 20px;
-
-				.col {
-					&.name {
-						width: 90%;
-						padding-right: 10%;
-					}
-
-					&.duration {
-						width: auto;
-						position: absolute;
-						right: 10px;
-						text-align: right;
-					}
-
-					&.artists,
-					&.album { 
-						width: auto;
-						color: $mid_grey;
-						display: inline-block;
-					}
-
-					&.album {
-						@include bullet();
-					}
-				}
-
-				&.header { 
-					display: none; 
-				}
-
-				.select-state,
-				.play-state {
-					top: 11px;
-					left: 5px;
-				}
-			}
 		}
 
-
-		&.playlist {
+		@include responsive( $bp_medium ){
+			padding: 7px 10px 7px 20px;
 
 			.col {
 				&.name {
-					width: 30%;
+					width: 90% !important;
+					padding-right: 10%;
 				}
-				&.owner {
-					width: 20%;
+
+				&.duration {
+					width: auto;
+					position: absolute;
+					right: 10px;
+					text-align: right;
 				}
+
+				&:not(.name){
+					color: $mid_grey;
+					display: inline-block;
+					width: auto !important;
+				}
+
+				&:not(.name):not(:nth-child(2)){
+					@include bullet();
+				}
+
+				&.followers_total:after {
+					content: ' followers';
+				}
+
+				&.tracks_total:after {
+					content: ' tracks';
+				}
+
+				&.popularity:after {
+					content: '% popularity';
+				}
+
+				&.can_edit,
+				&.release_date {
+					display: none;
+				}
+			}
+
+			&.header { 
+				display: none; 
+			}
+
+			.select-state,
+			.play-state {
+				top: 11px;
+				left: 5px;
+			}
+		}
+	}
+
+	&.playlist-list .list-item {
+		.col {
+			&.name { 
+				width: 50%;
+			}
+			&.owner {
+				width: 20%
+			}
+			&.source,
+			&.can_edit,
+			&.tracks_total,
+			&.popularity {
+				width: 10%;
+			}
+		}
+	}
+
+	&.album-list .list-item {
+		.col {
+			&.name,
+			&.artists { 
+				width: 30%;
+			}
+			&.added_at,
+			&.release_date {
+				width: 15%;
+			}
+			&.tracks_total {
+				width: 10%;
+			}
+		}
+	}
+
+	&.artist-list .list-item {
+		.col {
+			&.name { 
+				width: 70%;
+			}
+			&.followers_total,
+			&.popularity {
+				width: 15%;
 			}
 		}
 	}

@@ -32,7 +32,7 @@ class LibraryLocalArtists extends React.Component{
 			e: e,
 			context: 'artist',
 			uris: [item.uri],
-			item: item
+			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}

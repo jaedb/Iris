@@ -44,8 +44,6 @@ class App extends React.Component{
 
 		if (this.props.spotify_authorized){
 			this.props.spotifyActions.getAllLibraryPlaylists();
-			this.props.spotifyActions.getLibraryAlbums();
-			this.props.spotifyActions.getLibraryArtists();
 		}
 
 		// when we navigate to a new route

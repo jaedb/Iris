@@ -254,6 +254,7 @@ export default function reducer(ui = {}, action){
 
             return Object.assign({}, ui, { 
                 library_albums: [...library_albums, ...action.uris],
+                library_albums_started: true,
                 library_albums_more: action.more,
                 library_albums_total: action.total
             });
@@ -347,19 +348,12 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { artists: artists });
 
         case 'LIBRARY_ARTISTS_LOADED':
-            if (!action.uris){
-                return Object.assign({}, ui, { 
-                    library_artists: null,
-                    library_artists_more: null,
-                    library_artists_total: null
-                });
-            }
-
             var library_artists = []
             if (ui.library_artists) library_artists = Object.assign([], ui.library_artists)
 
             return Object.assign({}, ui, { 
                 library_artists: [...library_artists, ...action.uris],
+                library_artists_started: true,
                 library_artists_more: action.more,
                 library_artists_total: action.total
             });
@@ -551,7 +545,8 @@ export default function reducer(ui = {}, action){
             library_playlists = helpers.removeDuplicates(library_playlists)
 
             return Object.assign({}, ui, { 
-                library_playlists: library_playlists
+                library_playlists: library_playlists,
+                library_playlists_started: true
             });
 
         case 'PLAYLIST_LIBRARY_CHECK':
