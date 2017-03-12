@@ -38,10 +38,12 @@ class ContextMenu extends React.Component{
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
 			this.setState({ submenu_expanded: false })
-			$('body').addClass('context-menu-open')	
+			$('body').addClass('context-menu-open')
+
+			var context = this.getContext()
 
 			// if we're able to be in the library, run a check
-			if (this.props.spotify_authorized && this.contextType().source == 'spotify'){
+			if (this.props.spotify_authorized && context.source == 'spotify'){
 				switch (nextProps.menu.context){
 					case 'artist':
 					case 'album':
@@ -70,54 +72,62 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	contextType(){
+	getContext(){
 		var context = {
 			name: null,
-			label: 'Unknown'
+			nice_name: 'Unknown'
 		}
 
 		if (this.props.menu && this.props.menu.context){
 			context.name = this.props.menu.context
-			context.label = this.props.menu.context
+			context.nice_name = this.props.menu.context
 
+			// handle ugly labels
 			switch (this.props.menu.context){
-
 				case 'playlist':
 				case 'editable-playlist':
-					context.label = 'playlist'
+					context.nice_name = 'playlist'
 					break
 
 				case 'track':
 				case 'queue-track':
 				case 'playlist-track':
 				case 'editable-playlist-track':
-					context.label = 'track'
+					context.nice_name = 'track'
 					break
+			}
+
+			// Consider the object(s) themselves
+			// We can only really accommodate the first item. The only instances where
+			// there is multiple is tracklists, when they're all of the same source (except search?)
+			if (this.props.menu.items && this.props.menu.items.length > 0){
+				var item = this.props.menu.items[0]
+				context.item = item
+				context.source = helpers.uriSource(item.uri)
+				context.type = helpers.uriType(item.uri)
+				context.in_library = this.inLibrary(item)
 			}
 		}
 
 		return context
 	}
 
-	inLibrary(){
-		if (!this.props.menu || !this.props.menu.context){
+	inLibrary(item = null){
+		if (!item){
 			return false
 		}
 
-		switch (this.props.menu.context){
+		switch (helpers.uriType(item.uri)){
 			case 'artist':
-				return (this.props.library_artists && this.props.library_artists.indexOf(this.props.menu.items[0].uri) > -1)
+				return (this.props.library_artists && this.props.library_artists.indexOf(item.uri) > -1)
 				break
-
 			case 'album':
-				return (this.props.library_albums && this.props.library_albums.indexOf(this.props.menu.items[0].uri) > -1)
+				return (this.props.library_albums && this.props.library_albums.indexOf(item.uri) > -1)
 				break
-
 			case 'playlist':
-				return (this.props.library_playlists && this.props.library_playlists.indexOf(this.props.menu.items[0].uri) > -1)
+				return (this.props.library_playlists && this.props.library_playlists.indexOf(item.uri) > -1)
 				break
 		}
-
 		return false
 	}
 
@@ -125,7 +135,6 @@ class ContextMenu extends React.Component{
 		if (!this.props.spotify_authorized){
 			return false
 		}
-
 		return (helpers.uriSource(this.props.menu.items[0].uri) == 'spotify')
 	}
 
@@ -215,6 +224,7 @@ class ContextMenu extends React.Component{
 
 	closeAndDeselectTracks(){
 		this.props.uiActions.hideContextMenu();
+		// TODO
 	}
 
 	renderPlaylistSubmenu(){
@@ -252,32 +262,29 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0){
-			return null
-		}
+		var context = this.getContext()
 
-		switch (this.contextType().name){
+		switch (context.type){
 
 			case 'artist':
 			case 'album':
 			case 'playlist':
-				var item = this.props.menu.items[0]
 				var style = null
-				if (item && item.images){
+				if (context.item && context.item.images){
 					style = {
-						backgroundImage: 'url('+helpers.sizedImages(item.images).medium+')'
+						backgroundImage: 'url('+helpers.sizedImages(context.item.images).medium+')'
 					}
 				}
 
 				return (
-					<Link className="title" to={global.baseURL+helpers.uriType(item.uri)+'/'+item.uri}>
+					<Link className="title" to={global.baseURL+context.type+'/'+context.item.uri}>
 						{style ? <div className="background" style={style}></div> : null}
 						<div className="type">
-							{helpers.uriSource(item.uri)}
+							{context.source}
 							&nbsp;
-							{this.contextType().label}
+							{context.nice_name}
 						</div>
-						<div className="text">{item.name}</div>
+						<div className="text">{context.item.name}</div>
 					</Link>
 				)
 				break
@@ -286,9 +293,9 @@ class ContextMenu extends React.Component{
 				return (
 					<span className="title">
 						<div className="type">
-							{helpers.uriSource(this.props.menu.items[0].uri)}
+							{context.source}
 							&nbsp;
-							{this.contextType().label}s
+							{context.nice_name}s
 						</div>
 						<div className="text">							
 							{this.props.menu.items.length} items
@@ -301,6 +308,8 @@ class ContextMenu extends React.Component{
 	}
 
 	renderItems(){
+		var context = this.getContext()
+
 		var play_uris = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.playURIs(e)}>
@@ -345,9 +354,9 @@ class ContextMenu extends React.Component{
 
 		var toggle_in_library = (
 			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.toggleInLibrary(this.inLibrary())}>
+				<a className="menu-item" onClick={e => this.toggleInLibrary(context.in_library)}>
 					<span className="label">
-						{this.inLibrary() ? 'Remove from library' : 'Add to library'}
+						{context.in_library ? 'Remove from library' : 'Add to library'}
 					</span>
 				</a>
 			</span>
@@ -372,7 +381,7 @@ class ContextMenu extends React.Component{
 		var start_radio = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.startRadio(e)}>
-					<span className="label">Start {this.contextType().label} radio</span>
+					<span className="label">Start {this.context.nice_name} radio</span>
 				</a>
 			</span>
 		)
@@ -401,7 +410,7 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
-		switch (this.contextType().name){
+		switch (context.name){
 
 			case 'album':
 				return (
@@ -431,7 +440,7 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_uris}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						{go_to_user}
+						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
 					</div>
 				)
