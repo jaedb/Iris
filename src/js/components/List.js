@@ -39,7 +39,8 @@ class List extends React.Component{
 			<div className="list-item header cf">
 				{
 					this.props.columns.map( (col, col_index) => {
-						return <div className={'col w'+col.width} key={col_index}>{ col.label ? col.label : col.name }</div>
+						var className = 'col '+col.name.replace('.','_')
+						return <div className={className} key={col_index}>{ col.label ? col.label : col.name }</div>
 					})
 				}
 			</div>
@@ -88,8 +89,9 @@ class List extends React.Component{
 								key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
+										var className = 'col '+col.name.replace('.','_')
 										return (
-											<div className={'col w'+col.width} key={col_index}>
+											<div className={className} key={col_index}>
 												{ this.renderValue(row, col.name) }
 											</div>
 										)

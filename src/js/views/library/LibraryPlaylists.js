@@ -26,7 +26,7 @@ class LibraryPlaylists extends React.Component{
 			e: e,
 			context: 'playlist',
 			uris: [item.uri],
-			item: item
+			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}
@@ -60,33 +60,28 @@ class LibraryPlaylists extends React.Component{
 		if( this.props.view == 'list' ){
 			var columns = [
 				{
-					width: 50,
 					label: 'Name',
 					name: 'name'
 				},
 				{
-					width: 20,
 					label: 'Owner',
 					name: 'owner'
 				},
 				{
-					width: 10,
 					label: 'Source',
 					name: 'source'
 				},
 				{
-					width: 10,
 					label: 'Tracks',
 					name: 'tracks_total'
 				},
 				{
-					width: 10,
 					label: 'Editable',
 					name: 'can_edit'
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="list-wrapper playlist-list">
 					<List
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
