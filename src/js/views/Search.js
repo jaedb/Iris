@@ -1,12 +1,13 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
+import DropdownField from '../components/DropdownField'
 import TrackList from '../components/TrackList'
 import ArtistGrid from '../components/ArtistGrid'
 import AlbumGrid from '../components/AlbumGrid'
@@ -163,10 +164,44 @@ class Search extends React.Component{
 		}
 	}
 
+	handleViewChange(val){
+		this.props.uiActions.hideContextMenu()
+		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+val)
+	}
+
 	render(){
+		var view_options = [
+			{
+				value: '',
+				label: 'All'
+			},
+			{
+				value: 'artists',
+				label: 'Artists'
+			},
+			{
+				value: 'albums',
+				label: 'Albums'
+			},
+			{
+				value: 'playlists',
+				label: 'Playlists'
+			},
+			{
+				value: 'tracks',
+				label: 'Tracks'
+			}
+		]
+
+		var options = (
+			<span>
+				<DropdownField icon="eye" name="View" value={this.props.params.type} options={view_options} handleChange={val => this.handleViewChange(val)} />
+			</span>
+		)
+
 		return (
 			<div className="view search-view">			
-				<Header icon="search" title="Search results" />
+				<Header icon="search" title="Search results" options={options} uiActions={this.props.uiActions} />
 				{ this.renderResults() }
 			</div>
 		);
