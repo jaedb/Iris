@@ -103,6 +103,7 @@ class ContextMenu extends React.Component{
 			if (this.props.menu.items && this.props.menu.items.length > 0){
 				var item = this.props.menu.items[0]
 				context.item = item
+				context.items_count = this.props.menu.items.length
 				context.source = helpers.uriSource(item.uri)
 				context.type = helpers.uriType(item.uri)
 				context.in_library = this.inLibrary(item)
@@ -264,6 +265,11 @@ class ContextMenu extends React.Component{
 	renderTitle(){
 		var context = this.getContext()
 
+		if (context.name == 'custom'){
+			return null
+			// TODO: make this the page title
+		}
+
 		switch (context.type){
 
 			case 'artist':
@@ -298,7 +304,7 @@ class ContextMenu extends React.Component{
 							{context.nice_name}s
 						</div>
 						<div className="text">							
-							{this.props.menu.items.length} items
+							{context.items_count} items
 						</div>
 					</span>
 				)

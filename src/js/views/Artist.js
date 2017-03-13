@@ -172,7 +172,7 @@ class Artist extends React.Component{
 				<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
 					<h4 className="left-padding">Top tracks</h4>
 					<div className="list-wrapper">
-						{ this.props.artist.tracks ? <TrackList uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
+						{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
 					</div>
 				</div>
 
@@ -247,45 +247,6 @@ class Artist extends React.Component{
 							</div>
 							{ this.renderSubViewMenu() }
 						</div>
-					</div>
-
-					<div className="body overview">
-						<div className="col w70">
-							<h4 className="left-padding">
-								<span className="placeholder"></span>
-							</h4>
-							<div className="list-wrapper">
-								<span className="placeholder"></span>
-								<span className="placeholder"></span>
-								<span className="placeholder"></span>
-							</div>
-						</div>
-
-						<div className="col w5"></div>
-
-						<div className="col w25 related-artists">
-							<h4>
-								<span className="placeholder"></span>
-							</h4>
-							<div className="list-wrapper">
-								<span className="placeholder"></span>
-								<span className="placeholder"></span>
-								<span className="placeholder"></span>
-							</div>
-						</div>
-
-						<div className="cf"></div>
-
-						<h4 className="left-padding">
-							<span className="placeholder"></span>
-						</h4>
-						<section className="grid-wrapper no-top-padding">
-							<div className="grid">
-								<span className="grid-item placeholder"></span>
-								<span className="grid-item placeholder"></span>
-								<span className="grid-item placeholder"></span>
-							</div>
-						</section>
 					</div>
 				</div>
 			);

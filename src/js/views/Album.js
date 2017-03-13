@@ -137,7 +137,7 @@ class Album extends React.Component{
 					</div>
 
 					<section className="list-wrapper">
-						{ this.props.album.tracks ? <TrackList tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
+						{ this.props.album.tracks ? <TrackList className="album-track-list" tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
 						<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
 					</section>
 
@@ -151,7 +151,7 @@ class Album extends React.Component{
 					<Thumbnail size="large" />
 					<div className="title">
 						<div className="source grey-text">
-							<span className="placeholder"></span>
+							Album
 						</div>
 						<h1>
 							<span className="placeholder"></span>
@@ -165,12 +165,6 @@ class Album extends React.Component{
 					<div className="actions">
 						<button className="placeholder">&nbsp;</button>
 					</div>
-
-					<section className="list-wrapper">
-						<span className="placeholder"></span>
-						<span className="placeholder"></span>
-						<span className="placeholder"></span>
-					</section>
 				</div>
 			);
 

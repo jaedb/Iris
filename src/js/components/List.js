@@ -72,8 +72,13 @@ class List extends React.Component{
 	render(){
 		if (!this.props.rows) return null
 
+		var className = 'list'
+		if (this.props.className){
+			className += ' '+this.props.className
+		}
+
 		return (
-			<div className="list">
+			<div className={className}>
 				{ this.renderHeader() }
 				{
 					this.props.rows.map( (row, row_index) => {

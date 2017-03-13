@@ -182,7 +182,7 @@ class Playlist extends React.Component{
 					{ this.renderActions() }
 
 					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+						{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
 						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
 					</section>
 				</div>
@@ -195,7 +195,7 @@ class Playlist extends React.Component{
 					<Thumbnail size="large" />
 					<div className="title">
 						<div className="source grey-text">
-							<span className="placeholder"></span>
+							Playlist
 						</div>
 						<h1><span className="placeholder"></span></h1>
 						<ul className="details">
@@ -207,11 +207,6 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="placeholder">&nbsp;</button>
 					</div>
-					<section className="list-wrapper">
-						<span className="placeholder"></span>
-						<span className="placeholder"></span>
-						<span className="placeholder"></span>
-					</section>
 				</div>
 			)
 		}

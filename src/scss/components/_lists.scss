@@ -1,5 +1,5 @@
 
-.list-wrapper {
+.list {
 
 	.list-item {
 
@@ -35,105 +35,57 @@
 			border-top: 0;
 			padding-bottom: 2px;
 		}
+	}
 
-		&.track {
-			padding-left: 40px;
+	&.track-list .list-item {
+		padding-left: 40px;
 
-			.col {
-				&.name { width: 40%; }
-				&.artists,
-				&.album { width: 26%; }
+		.col {
+			&.name { 
+				width: 40%;
 			}
-
-			.select-state {
-				position: absolute;
-				top: 12px;
-				left: 15px;
-				font-size: 10px;
+			&.artists,
+			&.album { 
+				width: 25%;
 			}
-
-			.play-state {
-				display: none;
-				position: absolute;
-				top: 13px;
-				left: 15px;
-				font-size: 10px;
-			}
-
-			&.playing {
-				font-weight: 600;
-				.play-state {
-					display: block;
-					opacity: 1;
-				}
-			}
-
-			&.playing.selected {
-				.play-state {
-					display: none;
-				}
-			}
-
-			:root .dragging &:hover {
-				border-top: 3px solid $blue;
-				margin-top: -3px;
-				background: transparent;
+			&.duration {
+				width: 5%;
 			}
 		}
 
-		@include responsive( $bp_medium ){
-			padding: 7px 10px 7px 20px;
+		.select-state {
+			position: absolute;
+			top: 12px;
+			left: 15px;
+			font-size: 10px;
+		}
 
-			.col {
-				&.name {
-					width: 90% !important;
-					padding-right: 10%;
-				}
+		.play-state {
+			display: none;
+			position: absolute;
+			top: 13px;
+			left: 15px;
+			font-size: 10px;
+		}
 
-				&.duration {
-					width: auto;
-					position: absolute;
-					right: 10px;
-					text-align: right;
-				}
-
-				&:not(.name){
-					color: $mid_grey;
-					display: inline-block;
-					width: auto !important;
-				}
-
-				&:not(.name):not(:nth-child(2)){
-					@include bullet();
-				}
-
-				&.followers_total:after {
-					content: ' followers';
-				}
-
-				&.tracks_total:after {
-					content: ' tracks';
-				}
-
-				&.popularity:after {
-					content: '% popularity';
-				}
-
-				&.can_edit,
-				&.release_date {
-					display: none;
-				}
-			}
-
-			&.header { 
-				display: none; 
-			}
-
-			.select-state,
+		&.playing {
+			font-weight: 600;
 			.play-state {
-				top: 11px;
-				left: 5px;
+				display: block;
+				opacity: 1;
 			}
+		}
+
+		&.playing.selected {
+			.play-state {
+				display: none;
+			}
+		}
+
+		:root .dragging &:hover {
+			border-top: 3px solid $blue;
+			margin-top: -3px;
+			background: transparent;
 		}
 	}
 
@@ -182,6 +134,30 @@
 		}
 	}
 
+	&.queue-track-list {
+		.col {
+			&.name,
+			&.artists,
+			&.album { 
+				width: 25% !important;
+			}
+			&.added { 
+				width: 20%;
+			}
+		}
+	}
+
+	&.queue-history-track-list {
+		.col {
+			&.name { 
+				width: 60%;
+			}
+			&.played_at {
+				width: 20%;
+			}
+		}
+	}
+
 	.artist-list {
 		.artist {
 			display: block;
@@ -211,42 +187,60 @@
 		}
 	}
 
-	.history.track-list {
+	@include responsive( $bp_medium ){
 		.list-item {
-			.col{
-				&.name { width: 60%; }
-				&.played_at { width: 20%; }
-			}
-		}
-	}
+			padding: 7px 10px 7px 16px !important;
 
-	.queue.track-list {
-		.list-item {
-			.col{
-				&.name,
-				&.artists,
-				&.album { width: 25%; }
-				&.added { width: 20%; }
-			}
-
-			@include responsive( $bp_medium ){
-				.col {
-					&.name {
-						width: 90%;
-						padding-right: 10%;
-					}
-
-					&.artists,
-					&.album { 
-						width: auto;
-						color: $mid_grey;
-						display: inline-block;
-					}
-
-					&.added {
-						display: none;
-					}
+			&.track {
+				.select-state,
+				.play-state {
+					display: none !important;
 				}
+			}
+
+			.col {
+				&.name {
+					width: 90% !important;
+					padding-right: 10%;
+				}
+
+				&.duration {
+					width: auto;
+					position: absolute;
+					right: 10px;
+					text-align: right;
+				}
+
+				&:not(.name):not(.duration){
+					color: $mid_grey;
+					display: inline-block;
+					width: auto !important;
+				}
+
+				&:not(.name):not(.duration):not(:nth-child(2)){
+					@include bullet();
+				}
+
+				&.followers_total:after {
+					content: ' followers';
+				}
+
+				&.tracks_total:after {
+					content: ' tracks';
+				}
+
+				&.popularity:after {
+					content: '% popularity';
+				}
+
+				&.can_edit,
+				&.release_date {
+					display: none;
+				}
+			}
+
+			&.header { 
+				display: none; 
 			}
 		}
 	}

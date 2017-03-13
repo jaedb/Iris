@@ -47,11 +47,12 @@ class QueueHistory extends React.Component{
 		)
 
 		return (
-			<div className="view playback-history-view">			
+			<div className="view queue-history-view">			
 				<Header icon="play" title="Playback history" options={options} uiActions={this.props.uiActions} />
 
 				<section className="list-wrapper">
 					<TrackList
+						className="queue-history-list"
 						show_source_icon={true}
 						context="history"
 						tracks={this.props.queue_history} />

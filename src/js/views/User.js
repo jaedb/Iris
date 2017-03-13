@@ -91,24 +91,10 @@ class User extends React.Component{
 					<Header icon="play" title="User" />
 					<div className="intro">
 						<Thumbnail circle size="medium" images={[]} />
-						<h1><span className="playlist"></span></h1>
-						<ul className="details">
-							<li>
-								<span className="placeholder"></span>
-							</li>
-						</ul>
+						<h1><span className="placeholder"></span></h1>
 						<div className="actions">
 							<button className="placeholder"></button>
 						</div>
-					</div>
-					<div className="main">
-						<section className="grid-wrapper">
-							<div className="grid">
-								<span className="grid-item placeholder"></span>
-								<span className="grid-item placeholder"></span>
-								<span className="grid-item placeholder"></span>
-							</div>
-						</section>						
 					</div>
 				</div>
 			);

@@ -539,7 +539,6 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { 
                 library_playlists: library_playlists,
                 library_playlists_started: true
-                library_playlists_loaded: true
             });
 
         case 'PLAYLIST_LIBRARY_CHECK':

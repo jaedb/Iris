@@ -290,8 +290,13 @@ class TrackList extends React.Component{
 		if( !this.state.tracks || Object.prototype.toString.call(this.state.tracks) !== '[object Array]' ) return null
 
 		let self = this;
+		var className = 'list track-list '+this.props.context
+		if (this.props.className){
+			className += ' '+this.props.className
+		}
+
 		return (
-			<div className={this.props.context+" track-list"}>
+			<div className={className}>
 				{ this.renderHeader() }
 				{
 					this.state.tracks.map(
