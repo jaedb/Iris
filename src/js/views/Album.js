@@ -115,7 +115,9 @@ class Album extends React.Component{
 
 					<div className="title">
 						<div className="source grey-text">
-							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} album
+							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />&nbsp;
+							{helpers.uriSource( this.props.params.uri )}&nbsp;
+							{this.props.album.album_type ? this.props.album.album_type : 'album'}
 						</div>
 
 						<h1>{ this.props.album.name }</h1>
