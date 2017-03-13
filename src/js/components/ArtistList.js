@@ -13,7 +13,7 @@ export default class ArtistList extends React.Component{
 		if( !this.props.artists ) return null
 
 		return (
-			<div className="artist-list">
+			<div className="list artist-list">
 				{
 					this.props.artists.map( (artist, index) => {
 						if( artist.uri ){

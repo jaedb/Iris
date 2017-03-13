@@ -21,6 +21,7 @@ export default class Header extends React.Component{
 		var data = {
 			e: e,
 			context: 'custom',
+			title: this.props.title,
 			options: options
 		}
 		this.props.uiActions.showContextMenu(data)

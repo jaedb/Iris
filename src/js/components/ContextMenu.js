@@ -266,8 +266,13 @@ class ContextMenu extends React.Component{
 		var context = this.getContext()
 
 		if (context.name == 'custom'){
-			return null
-			// TODO: make this the page title
+			return (
+				<span className="title">
+					<div className="text">
+						{this.props.menu.title}
+					</div>
+				</span>
+			)
 		}
 
 		switch (context.type){
