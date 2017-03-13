@@ -18,6 +18,8 @@ class TrackList extends React.Component{
 		this._touch_threshold = 10
 		this._touch_x = null
 		this._touch_y = null
+		this._touch_hold_timer = null
+		this._touch_held = false
 
 		this.state = {
 			tracks: [],
@@ -61,11 +63,20 @@ class TrackList extends React.Component{
 	handleTouchStart(e,index){
 		this._touch_x = Math.round(e.changedTouches[0].pageX)
 		this._touch_y = Math.round(e.changedTouches[0].pageY)
+		this._touch_hold_timer = setTimeout(() => {this.handleTouchHold(e,index)}, 500, e)
+	}
+
+	handleTouchHold(e,index){
+		this._touch_held = true
+		var tracks = this.state.tracks
+		tracks[index].selected = true
+		this.setState({ tracks: tracks, lastSelectedTrack: index })
 	}
 
 	handleTouchEnd(e,index){
 		var pageX = Math.round(e.changedTouches[0].pageX)
 		var pageY = Math.round(e.changedTouches[0].pageY)
+		clearTimeout(this._touch_hold_timer)
 
 		// make sure our touch was within the threshold of the touch start
 		// this helps us differentiate between taps and drags but doesn't consider
@@ -75,12 +86,16 @@ class TrackList extends React.Component{
 			this._touch_y < ( pageY + this._touch_threshold ) &&
 			this._touch_y > ( pageY - this._touch_threshold ) ){
 
-				// toggle selection
-				var tracks = this.state.tracks
-				tracks[index].selected = !tracks[index].selected
-				this.setState({ tracks: tracks, lastSelectedTrack: index })
+				// make sure we didn't touch and hold, as that's different to a tap
+				if (!this._touch_held){
+					var tracks = this.state.tracks
+					tracks[index].selected = !tracks[index].selected
+					this.setState({ tracks: tracks, lastSelectedTrack: index })
 
-				//this.handleContextMenu(e)
+				// release our held switch for the next interaction
+				} else {
+					this._touch_held = false
+				}
 		}
 
 		e.preventDefault()
