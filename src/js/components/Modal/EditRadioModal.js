@@ -120,7 +120,7 @@ export default class EditRadioModal extends React.Component{
 			<div className="field no-top-margin">
 				<input 
 					type="text"
-					placeholder="Add comma-separated URIs"
+					placeholder="Comma-separated URIs"
 					onChange={e => this.setState({uri: e.target.value})} 
 					value={this.state.uri} />
 				<button type="button" className="discrete" onClick={e => this.addSeed()}><FontAwesome name="plus" /></button>

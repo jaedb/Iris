@@ -257,6 +257,7 @@ class TrackList extends React.Component{
 				return (
 					<div className="list-item header track">
 						<span className="col name">Name</span>
+						<span className="col source">Source</span>
 						<span className="col played_at">Started playing</span>
 					</div>
 				)

@@ -64,6 +64,9 @@ export default class Track extends React.Component{
 					<span className="col name">
 						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 					</span>
+					<span className="col source">
+						{helpers.uriSource(track.uri)}
+					</span>
 					<span className="col played_at">
 						{ track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null }
 					</span>

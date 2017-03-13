@@ -147,12 +147,13 @@
 		}
 	}
 
-	&.queue-history-track-list {
+	&.queue-history-track-list .list-item {
 		.col {
 			&.name { 
 				width: 60%;
 			}
-			&.played_at {
+			&.played_at,
+			&.source {
 				width: 20%;
 			}
 		}

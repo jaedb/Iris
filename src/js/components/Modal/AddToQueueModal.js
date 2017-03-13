@@ -34,7 +34,7 @@ export default class AddToQueueModal extends React.Component{
 					<div className="field text">
 						<input 
 							type="text"
-							placeholder="Add comma-separated URIs"
+							placeholder="Comma-separated URIs"
 							onChange={e => this.setState({uris: e.target.value})} 
 							value={this.state.uris} />
 					</div>
