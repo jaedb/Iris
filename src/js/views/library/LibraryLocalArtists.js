@@ -62,6 +62,7 @@ class LibraryLocalArtists extends React.Component{
 						columns={[{ name: 'name', width: '100'}]} 
 						rows={artists} 
 						link_prefix={global.baseURL+"artist/"}
+						className="library-local-artist-list"
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 					/>
 				</section>

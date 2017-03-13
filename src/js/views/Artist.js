@@ -10,8 +10,8 @@ import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
-import ArtistList from '../components/ArtistList'
 import ArtistGrid from '../components/ArtistGrid'
+import RelatedArtists from '../components/RelatedArtists'
 import FollowButton from '../components/FollowButton'
 import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
@@ -178,7 +178,7 @@ class Artist extends React.Component{
 
 				<div className="col w5"></div>
 
-				{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><ArtistList artists={related_artists.slice(0,6)} /></div></div> : null}
+				{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div></div> : null}
 
 				<div className="cf"></div>
 

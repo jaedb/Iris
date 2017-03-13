@@ -88,8 +88,12 @@ class LibraryLocalDirectory extends React.Component{
 					<List
 						columns={[{ name: 'name', width: '100'}]} 
 						rows={items.folders} 
+						className="library-local-directory-list"
 						link_prefix={global.baseURL+"library/local/directory/"} />
-					<TrackList tracks={items.tracks} noheader />
+					<TrackList 
+						tracks={items.tracks} 
+						className="library-local-track-list" 
+						noheader />
 				</section>
 			</div>
 		);

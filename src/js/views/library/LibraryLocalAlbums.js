@@ -92,7 +92,11 @@ class LibraryLocalAlbums extends React.Component{
 
 			return (
 				<section className="list-wrapper">
-					<List columns={columns} rows={albums} link_prefix={global.baseURL+"album/"} />
+					<List 
+						columns={columns} 
+						rows={albums} 
+						className="library-local-album-list"
+						link_prefix={global.baseURL+"album/"} />
 				</section>
 			)
 		}else{

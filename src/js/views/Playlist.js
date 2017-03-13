@@ -146,10 +146,10 @@ class Playlist extends React.Component{
 
 	render(){
 		var scheme = helpers.uriSource( this.props.params.uri )
-		var context = 'playlist-track'
+		var context = 'playlist'
 
 		if (this.props.playlist){
-			if (this.props.playlist.can_edit) context = 'editable-playlist-track'
+			if (this.props.playlist.can_edit) context = 'editable-playlist'
 
 			return (
 				<div className="view playlist-view">

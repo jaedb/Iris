@@ -82,11 +82,12 @@ class LibraryAlbums extends React.Component{
 				}
 			]
 			return (
-				<section className="list-wrapper album-list">
+				<section className="list-wrapper">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={albums} 
 						columns={columns} 
+						className="album-list"
 						link_prefix={global.baseURL+"album/"} />
 				</section>
 			)

@@ -268,6 +268,7 @@ class ContextMenu extends React.Component{
 		if (context.name == 'custom'){
 			return (
 				<span className="title">
+					<div className="background generic"></div>
 					<div className="text">
 						{this.props.menu.title}
 					</div>
@@ -311,6 +312,7 @@ class ContextMenu extends React.Component{
 						<div className="text">							
 							{context.items_count} items
 						</div>
+						<div className="background generic"></div>
 					</span>
 				)
 				break
@@ -392,7 +394,7 @@ class ContextMenu extends React.Component{
 		var start_radio = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.startRadio(e)}>
-					<span className="label">Start {this.context.nice_name} radio</span>
+					<span className="label">Start radio</span>
 				</a>
 			</span>
 		)

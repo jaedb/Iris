@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import Thumbnail from './Thumbnail'
 
-export default class ArtistList extends React.Component{
+export default class RelatedArtists extends React.Component{
 
 	constructor(props) {
 		super(props)
@@ -13,7 +13,7 @@ export default class ArtistList extends React.Component{
 		if( !this.props.artists ) return null
 
 		return (
-			<div className="list artist-list">
+			<div className="list related-artist-list">
 				{
 					this.props.artists.map( (artist, index) => {
 						if( artist.uri ){

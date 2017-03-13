@@ -69,11 +69,12 @@ class LibraryArtists extends React.Component{
 				}
 			]
 			return (
-				<section className="list-wrapper artist-list">
+				<section className="list-wrapper">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
 						columns={columns} 
+						className="artist-list"
 						link_prefix={global.baseURL+"artist/"} />
 				</section>
 			)
