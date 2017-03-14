@@ -175,8 +175,8 @@ const mapStateToProps = (state, ownProps) => {
 		albums: state.ui.albums,
 		local_albums: state.ui.local_albums,
 		view: state.ui.library_local_albums_view,
-		sort: state.ui.library_local_albums_sort,
-		sort_reverse: state.ui.library_local_albums_sort_reverse
+		sort: (state.ui.library_local_albums_sort ? state.ui.library_local_albums_sort : 'name'),
+		sort_reverse: (state.ui.library_local_albums_sort_reverse ? true : false)
 	}
 }
 

@@ -160,12 +160,12 @@ class LibraryAlbums extends React.Component{
 
 		var sort_options = [
 			{
-				value: 'artists',
-				label: 'Artists'
-			},
-			{
 				value: 'name',
 				label: 'Name'
+			},
+			{
+				value: 'artists',
+				label: 'Artist'
 			},
 			{
 				value: 'added_at',
@@ -209,8 +209,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_albums_view,
 		albums: state.ui.albums,
-		sort: state.ui.library_albums_sort,
-		sort_reverse: state.ui.library_albums_sort_reverse,
+		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
+		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false),
 		library_albums: state.ui.library_albums,
 		library_albums_started: state.ui.library_albums_started,
 		library_albums_more: state.ui.library_albums_more

@@ -167,8 +167,8 @@ class LibraryPlaylists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		view: state.ui.library_playlists_view,
-		sort: state.ui.library_playlists_sort,
-		sort_reverse: state.ui.library_playlists_sort_reverse,
+		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
+		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
 		library_playlists: state.ui.library_playlists,
 		playlists: state.ui.playlists
 	}
