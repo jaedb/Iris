@@ -12,7 +12,7 @@
 
 		display: block;
 		position: relative;
-		padding: 9px 10px 9px 20px;
+		padding: 12px 10px 12px 20px;
 		border-top: 1px solid $faint_grey;
 		border-bottom: 1px solid $faint_grey;
 		margin-bottom: -1px;
@@ -55,7 +55,7 @@
 
 		.select-state {
 			position: absolute;
-			top: 12px;
+			top: 15px;
 			left: 15px;
 			font-size: 10px;
 		}
@@ -63,7 +63,7 @@
 		.play-state {
 			display: none;
 			position: absolute;
-			top: 13px;
+			top: 16px;
 			left: 15px;
 			font-size: 10px;
 		}
