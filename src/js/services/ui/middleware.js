@@ -198,6 +198,28 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'PLAYLIST_LOADED':
+                var playlist = action.playlist
+
+                switch (helpers.uriSource(playlist.uri)){
+
+                    case 'm3u':
+                        playlist.can_edit = true
+                        break
+
+                    case 'spotify':
+                        if (store.getState().spotify.authorized && store.getState().spotify.me){
+                            playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
+                        } else {
+                            console.log('nah')
+                        }
+                }
+
+                // proceed as usual
+                action.playlist = playlist
+                next(action)
+                break
+
 
             case 'MOPIDY_STATE':
                 helpers.setWindowTitle(store.getState().ui.current_track, action.data)

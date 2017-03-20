@@ -353,7 +353,6 @@ const MopidyMiddleware = (function(){
                                             uri: response.uri,
                                             source: (source == 'spotify' ? 'local' : source),
                                             last_modified: response.last_modified,
-                                            can_edit: (response.uri.startsWith('m3u:')),
                                             tracks_total: ( response.tracks ? response.tracks.length : 0 )
                                         }
                                     )

@@ -186,6 +186,12 @@ export let getFromUri = function(element,uri){
     		}
     		break
 
+    	case 'playlistowner':
+    		if (exploded[1] == 'user' && exploded[3] == 'playlist'){
+    			return exploded[2]
+    		}
+    		break
+
     	case 'trackid':
     		if (exploded[1] == 'track'){
     			return exploded[2]

@@ -132,7 +132,6 @@ const SpotifyMiddleware = (function(){
                         {},
                         action.data.items[i],
                         {
-                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.data.items[i].owner.id == store.getState().spotify.me.id),
                             tracks_total: action.data.items[i].tracks.total
                         }
                     )
@@ -164,7 +163,6 @@ const SpotifyMiddleware = (function(){
                         {},
                         action.data.playlists.items[i],
                         {
-                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.data.playlists.items[i].owner.id == store.getState().spotify.me.id),
                             tracks_total: action.data.playlists.items[i].tracks.total
                         }
                     )
@@ -198,7 +196,6 @@ const SpotifyMiddleware = (function(){
                         {
                             source: 'spotify',
                             in_library: true,    // assumed because we asked for library items
-                            can_edit: (store.getState().spotify.authorized && store.getState().spotify.me && action.playlists[i].owner.id == store.getState().spotify.me.id),
                             tracks_total: action.playlists[i].tracks.total
                         }
                     )
@@ -320,7 +317,6 @@ const SpotifyMiddleware = (function(){
                         {},
                         action.data.playlists.items[i],
                         {
-                            can_edit: (getState().spotify.me && action.data.playlists.items[i].owner.id == getState().spotify.me.id),
                             tracks_total: action.data.playlists.items[i].tracks.total
                         }
                     ))
