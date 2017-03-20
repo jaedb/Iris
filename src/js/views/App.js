@@ -82,7 +82,7 @@ class App extends React.Component{
 
 	shouldTriggerShortcut(e){
 		var ignoreNodes = ['INPUT', 'TEXTAREA'];
-		var keyCodes = [32,27];
+		var keyCodes = [32,27,191];
 
 		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
 			return false;
@@ -104,19 +104,31 @@ class App extends React.Component{
 		switch(e.keyCode){	
 
 			case 32: // spacebar
-				if( this.props.play_state == 'playing' ){
-					this.props.mopidyActions.pause();
+				if (this.props.play_state == 'playing'){
+					this.props.mopidyActions.pause()
+					this.props.uiActions.createNotification(null, 'pause', true)
 				}else{
-					this.props.mopidyActions.play();
+					this.props.mopidyActions.play()
+					this.props.uiActions.createNotification(null, 'play', true)
 				}
-				break;	
+				break;
 
 			case 27: // esc
-				if( this.props.dragger && this.props.dragger.dragging ){
-					this.props.uiActions.dragCancel();
+				if (this.props.dragger && this.props.dragger.dragging){
+					this.props.uiActions.dragCancel()
 				}
-				if( this.props.modal ){
-					this.props.uiActions.closeModal();
+				if (this.props.modal){
+					this.props.uiActions.closeModal()
+				}
+				break;
+
+			case 191: // "/"
+				if (e.ctrlKey){
+					if (this.props.modal){
+						this.props.uiActions.closeModal()
+					} else {
+						this.props.uiActions.openModal('kiosk_mode')
+					}
 				}
 				break;
 		}

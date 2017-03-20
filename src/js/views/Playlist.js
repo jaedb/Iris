@@ -70,7 +70,8 @@ class Playlist extends React.Component{
 
 	play(){
         ReactGA.event({ category: 'Playlist', action: 'Play', label: this.props.playlist.uri })
-		this.props.mopidyActions.playURIs([this.props.playlist.uri], this.props.params.uri)
+        var track_uris = helpers.asURIs(this.props.playlist.tracks)
+        this.props.mopidyActions.playURIs(track_uris, this.props.params.uri)
 	}
 
 	follow(){

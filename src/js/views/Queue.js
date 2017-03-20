@@ -63,10 +63,6 @@ class Queue extends React.Component{
 					<FontAwesome name="podcast" />&nbsp;
 					Radio
 				</button>
-				<button onClick={e => this.props.uiActions.openModal('kiosk_mode')}>
-					<FontAwesome name="expand" />&nbsp;
-					Fullscreen
-				</button>
 				<button onClick={e => hashHistory.push(global.baseURL+'queue-history')}>
 					<FontAwesome name="history" />&nbsp;
 					History

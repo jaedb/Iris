@@ -55,4 +55,21 @@
 			background: $red;
 		}
 	}
+
+	.shortcut-notification {
+		position: fixed;
+		top: 50vh;
+		left: 50vw;
+		height: 400px;
+		width: 400px;
+		margin: -200px 0 0 -200px;
+		background: rgba(10, 10, 10, 0.95);
+		color: $white;
+		border-radius: 10px;
+
+		.fa {
+			font-size: 140px;
+			line-height: 400px;
+		}
+	}
 }

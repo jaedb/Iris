@@ -222,13 +222,14 @@ export function createBrowserNotification( data ){
     }
 }
 
-export function createNotification( content, type = 'default' ){
+export function createNotification(content, type = 'default', is_shortcut = false){
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: {
             id: helpers.generateGuid(),
             type: type,
-            content: content
+            content: content,
+            is_shortcut: is_shortcut
         }
     }
 }

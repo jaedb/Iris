@@ -19,12 +19,20 @@ class Notifications extends React.Component{
 			<div className="notifications">
 				{
 					this.props.notifications.map( notification => {
-						return (
-							<div className={ notification.type+" notification" } key={ notification.id }>
-								<FontAwesome name="close" className="close-button" onClick={ e => this.props.actions.removeNotification(notification.id) } />
-								{ notification.content }
-							</div>
-						)
+						if (notification.is_shortcut){
+							return (
+								<div className="shortcut-notification" key={notification.id}>
+									<FontAwesome name={notification.type} />
+								</div>
+							)
+						} else {
+							return (
+								<div className={notification.type+" notification"} key={notification.id}>
+									<FontAwesome name="close" className="close-button" onClick={ e => this.props.actions.removeNotification(notification.id) } />
+									{ notification.content }
+								</div>
+							)
+						}
 					})
 				}
 			</div>
