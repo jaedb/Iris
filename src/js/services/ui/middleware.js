@@ -199,7 +199,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_LOADED':
-                var playlist = action.playlist
+                var playlist = Object.assign({}, action.playlist)
 
                 switch (helpers.uriSource(playlist.uri)){
 
@@ -210,13 +210,37 @@ const UIMiddleware = (function(){
                     case 'spotify':
                         if (store.getState().spotify.authorized && store.getState().spotify.me){
                             playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
-                        } else {
-                            console.log('nah')
                         }
                 }
 
                 // proceed as usual
                 action.playlist = playlist
+                next(action)
+                break
+
+            case 'PLAYLISTS_LOADED':
+                var playlists = []
+
+                for (var i = 0; i < action.playlists.length; i++){
+                    var playlist = Object.assign({}, action.playlists[i])
+
+                    switch (helpers.uriSource(playlist.uri)){
+
+                        case 'm3u':
+                            playlist.can_edit = true
+                            break
+
+                        case 'spotify':
+                            if (store.getState().spotify.authorized && store.getState().spotify.me){
+                                playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
+                            }
+                    }
+
+                    playlists.push(playlist)
+                }
+
+                // proceed as usual
+                action.playlists = playlists
                 next(action)
                 break
 
