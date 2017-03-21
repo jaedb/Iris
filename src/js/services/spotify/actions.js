@@ -905,6 +905,11 @@ export function getPlaylist( uri ){
         sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
         .then( response => {
 
+            // convert links in description
+            var description = response.description
+            description = description.replace('<a href="spotify:artist:', '<a href="#'+global.baseURL+'artist/spotify:artist:')
+            description = description.replace('<a href="spotify:album:', '<a href="#'+global.baseURL+'album/spotify:album:')
+
             var playlist = Object.assign(
                 {},
                 response,
@@ -912,7 +917,8 @@ export function getPlaylist( uri ){
                     can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
                     tracks: helpers.flattenTracks(response.tracks.items),
                     tracks_more: response.tracks.next,
-                    tracks_total: response.tracks.total
+                    tracks_total: response.tracks.total,
+                    description: description
                 }
             )
 

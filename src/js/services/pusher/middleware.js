@@ -337,6 +337,10 @@ const PusherMiddleware = (function(){
                 )
                 break;
 
+            case 'PUSHER_ERROR':
+                store.dispatch(uiActions.createNotification(action.message, 'bad'))
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

@@ -304,7 +304,9 @@ class IrisCore(object):
         except:
             logger.error('IrisFrontend: access_token missing or invalid')
             self.broadcast({
-                'error': 'Could not get radio tracks: access_token missing or invalid'
+                'type': 'error',
+                'message': 'Could not get radio tracks: access_token missing or invalid',
+                'source': 'load_more_tracks'
             })
             
         try:
@@ -318,6 +320,11 @@ class IrisCore(object):
             return uris
         except:
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
+            self.broadcast({
+                'type': 'error',
+                'message': 'Could not get radio tracks',
+                'source': 'load_more_tracks'
+            })
             return False
 
 
@@ -329,7 +336,8 @@ class IrisCore(object):
 
             if not uris:
                 self.broadcast({
-                    'error': 'Could not fetch tracklist length',
+                    'type': 'error',
+                    'message': 'Could not fetch tracklist length',
                     'source': 'check_for_radio_update'
                 })
                 logger.warning('IrisFrontend: Could not fetch tracklist length')

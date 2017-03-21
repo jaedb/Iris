@@ -10,12 +10,24 @@ import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
 import Dater from './Dater'
 
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
 class FullPlayer extends React.Component{
 
 	constructor(props) {
 		super(props);
+	}
+
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			e: e,
+			context: 'album',
+			uris: [item.uri],
+			items: [item]
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	renderPlayButton(){
@@ -65,7 +77,7 @@ class FullPlayer extends React.Component{
 		var link = null
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
-			<Link className="artwork" to={link}>
+			<Link className="artwork" to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
 				<Thumbnail size="huge" images={this.props.current_track.album.images} canZoom />
 			</Link>
 		)
@@ -134,6 +146,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
