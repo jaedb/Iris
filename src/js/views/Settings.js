@@ -169,6 +169,10 @@ class Settings extends React.Component{
 					<FontAwesome name="flask" />&nbsp;
 					Debug
 				</button>
+				<a className="button" href="https://github.com/jaedb/Iris/wiki" target="_blank">
+					<FontAwesome name="question" />&nbsp;
+					Help
+				</a>
 			</span>
 		)
 

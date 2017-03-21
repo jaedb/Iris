@@ -35,6 +35,7 @@ button,
 input[type="button"],
 input[type="submit"] {
 	@include animate();
+	display: inline-block;
 	padding: 6px 20px;
 	min-width: 160px;
 	border: 0;

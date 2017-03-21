@@ -459,7 +459,7 @@ class ContextMenu extends React.Component{
 				)
 				break
 
-			case 'queue':
+			case 'queue-track':
 				return (
 					<div>
 						{play_queue_item}
