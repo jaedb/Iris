@@ -446,24 +446,67 @@ export default function reducer(ui = {}, action){
         case 'PLAYLIST_UPDATED':
             var playlists = Object.assign([], ui.playlists)
 
-            if (playlists[action.key]){
-                var playlist = Object.assign({}, playlists[action.key], action.playlist)
+            if (typeof(playlists[action.key]) !== 'undefined'){
+                var existing_playlist = Object.assign({}, playlists[action.key])
+
+                if (existing_playlist.tracks && action.playlist.tracks){
+                    var tracks = [...existing_playlist.tracks, ...action.playlist.tracks]
+                } else if (existing_playlist.tracks){
+                    var tracks = existing_playlist.tracks
+                } else if (action.playlist.tracks){
+                    var tracks = action.playlist.tracks
+                } else {
+                    var tracks = []
+                }
+
+                var merged_playlist = Object.assign(
+                    {},
+                    existing_playlist, 
+                    action.playlist,
+                    {
+                        tracks: tracks
+                    }
+                )
             }else{
-                var playlist = Object.assign({}, action.playlist)
+                var merged_playlist = Object.assign({}, action.playlist)
             }
 
-            playlists[action.key] = playlist
+            playlists[action.key] = merged_playlist
             return Object.assign({}, ui, { playlists: playlists });
 
         case 'PLAYLISTS_LOADED':
             var playlists = Object.assign([], ui.playlists)
 
             for (var i = 0; i < action.playlists.length; i++){
-                var playlist = action.playlists[i]
-                if (typeof(playlists[playlist.uri]) !== 'undefined'){
-                    playlist = Object.assign({}, playlists[playlist.uri], playlist)
+                var loaded_playlist = action.playlists[i]
+
+                if (typeof(playlists[loaded_playlist.uri]) !== 'undefined'){
+                    var existing_playlist = Object.assign({}, playlists[loaded_playlist.uri])
+
+                    if (existing_playlist.tracks && loaded_playlist.tracks){
+                        var tracks = [...existing_playlist.tracks, ...loaded_playlist.tracks]
+                    } else if (existing_playlist.tracks){
+                        var tracks = existing_playlist.tracks
+                    } else if (loaded_playlist.tracks){
+                        var tracks = loaded_playlist.tracks
+                    } else {
+                        var tracks = []
+                    }
+
+                    var merged_playlist = Object.assign(
+                        {}, 
+                        existing_playlist,
+                        loaded_playlist,
+                        {
+                            tracks: tracks
+                        }
+                    )
+
+                } else {
+                    var merged_playlist = loaded_playlist
                 }
-                playlists[playlist.uri] = playlist
+
+                playlists[merged_playlist.uri] = merged_playlist
             }
 
             return Object.assign({}, ui, { playlists: playlists });

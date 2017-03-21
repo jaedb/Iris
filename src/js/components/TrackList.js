@@ -220,10 +220,14 @@ class TrackList extends React.Component{
 	}
 
 	selectedTracks(){
-		function isSelected( track ){
-			return ( typeof(track.selected) !== 'undefined' && track.selected );
+		if (!this.state.tracks || this.state.tracks.length <= 0){
+			return []
+		} else {
+			function isSelected( track ){
+				return ( typeof(track.selected) !== 'undefined' && track.selected );
+			}
+			return this.state.tracks.filter(isSelected)
 		}
-		return this.state.tracks.filter(isSelected)
 	}
 
 	tracksIndexes(tracks){
