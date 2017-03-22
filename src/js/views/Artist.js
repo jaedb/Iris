@@ -150,6 +150,7 @@ class Artist extends React.Component{
 				<div className="body about">
 
 					<div className="col w40 tiles">
+						{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="large" images={this.props.artist.images_additional} /></div> : null}
 						{this.props.artist.followers ? <div className="tile"><span className="text"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
 						{this.props.artist.popularity ? <div className="tile"><span className="text"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
 						{this.props.artist.listeners ? <div className="tile"><span className="text"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
@@ -214,7 +215,7 @@ class Artist extends React.Component{
 						<Parallax image={image} />
 
 						<div className="liner">
-							<Thumbnail image={image} circle />
+							<Thumbnail image={image} canZoom circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}

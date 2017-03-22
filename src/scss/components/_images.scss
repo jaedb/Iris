@@ -40,7 +40,14 @@
 	}
 
 	&.circle {
-		border-radius: 50%;
+		.image {
+			border-radius: 50%;
+		}
+
+		.zoom {
+			bottom: 0;
+			right: 0;
+		}
 	}
 
 	&:hover {
@@ -112,6 +119,11 @@
 			z-index: -2;
 		}
 
+		&.thumbnail-wrapper {
+			&:before {
+				display: none;
+			}
+		}
 	}
 
 	@include responsive( null, $bp_medium ){

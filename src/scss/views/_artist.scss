@@ -18,14 +18,14 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 20vh 40px 0 220px;
+			padding: 20vh 40px 0 260px;
 
 			.thumbnail {
 				position: absolute;
 				z-index: 2;
 				left: 40px;
 				bottom: 20px;
-				max-width: 144px;
+				max-width: 184px;
 
 				.image {
 					background-color: $darkest_grey;

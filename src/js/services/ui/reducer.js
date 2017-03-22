@@ -298,9 +298,14 @@ export default function reducer(ui = {}, action){
             var artists = Object.assign([], ui.artists)
 
             if (artists[action.key]){
-                // if we've already got images, delete our new ones
+
+                // if we've already got images, remove and add as additional_images
                 // this is to prevent LastFM overwriting Spotify images
-                if (artists[action.key].images) delete action.artist.images
+                if (artists[action.key].images){
+                    action.artist.images_additional = action.artist.images
+                    delete action.artist.images
+                }
+
                 var artist = Object.assign({}, artists[action.key], action.artist)
             }else{
                 var artist = Object.assign({}, action.artist)
