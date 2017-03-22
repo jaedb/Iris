@@ -35,6 +35,13 @@
 			border-top: 0;
 			padding-bottom: 2px;
 		}
+
+		.source {
+			color: $mid_grey;
+			position: absolute;
+			top: 14px;
+			right: 12px;
+		}
 	}
 
 	&.track-list .list-item {

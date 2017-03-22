@@ -40,7 +40,7 @@ export default class Track extends React.Component{
 		if( typeof(track.selected) !== 'undefined' && track.selected ) className += ' selected';
 		if( typeof(track.type) !== 'undefined' ) className += ' '+track.type;
 		if( track.playing ) className += ' playing';
-
+		
 		var album = '-'
 		if( track.album ){
 			if( track.album.uri ){
@@ -136,6 +136,7 @@ export default class Track extends React.Component{
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					{ this.props.track.playing ? <FontAwesome name="play" className="play-state" fixedWidth /> : null }
 					{ track_columns }
+					{ this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null }
 			</div>
 		);
 	}

@@ -322,7 +322,7 @@ class TrackList extends React.Component{
 					this.state.tracks.map(
 						(track, index) => {
 							return <Track
-									show_source_icon={ this.props.show_source_icon }
+									show_source_icon={this.props.show_source_icon}
 									key={track.key} 
 									track={track} 
 									context={this.props.context} 
