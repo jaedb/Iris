@@ -61,7 +61,7 @@ ReactDOM.render(
 				<Route path="debug" component={Debug} />
 				
 				<Route path="search/:query" component={Search} />
-				<Route path="search/:query/:type" component={Search} />
+				<Route path="search/:query/:source/:type" component={Search} />
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />

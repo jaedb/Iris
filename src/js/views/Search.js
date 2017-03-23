@@ -42,9 +42,18 @@ class Search extends React.Component{
 	}
 
 	performSearch( props = this.props ){
+		var source = props.params.source
+		var type = props.params.type
+
 		this.props.uiActions.startSearch(props.params.query)
-		this.props.spotifyActions.getSearchResults( props.params.query )
-		if( props.mopidy_connected ) this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
+
+		if (!source || source == 'all' || source == 'spotify'){
+			this.props.spotifyActions.getSearchResults( props.params.query )
+		}
+
+		if( props.mopidy_connected ){
+			this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
+		}
 	}
 
 	loadMore(type){
@@ -164,15 +173,22 @@ class Search extends React.Component{
 		}
 	}
 
-	handleViewChange(val){
+	handleTypeChange(val){
 		this.props.uiActions.hideContextMenu()
-		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+val)
+		var source = (this.props.params.source ? this.props.params.source : 'all')
+		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+source+'/'+val)
+	}
+
+	handleSourceChange(val){
+		this.props.uiActions.hideContextMenu()
+		var type = (this.props.params.type ? this.props.params.type : 'all')
+		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+val+'/'+type)
 	}
 
 	render(){
-		var view_options = [
+		var type_options = [
 			{
-				value: '',
+				value: 'all',
 				label: 'All'
 			},
 			{
@@ -193,9 +209,28 @@ class Search extends React.Component{
 			}
 		]
 
+		var source_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'spotify',
+				label: 'Spotify'
+			}
+		]
+		for (var i = 0; i < this.props.uri_schemes.length; i++){
+			var scheme = this.props.uri_schemes[i].replace(':','')
+			source_options.push({
+				value: scheme,
+				label: scheme
+			})
+		}
+
 		var options = (
 			<span>
-				<DropdownField icon="eye" name="View" value={this.props.params.type} options={view_options} handleChange={val => this.handleViewChange(val)} />
+				<DropdownField icon="cube" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
+				<DropdownField icon="server" name="Source" value={this.props.params.source} options={source_options} handleChange={val => this.handleSourceChange(val)} />
 			</span>
 		)
 
