@@ -26,34 +26,19 @@ class Search extends React.Component{
 	}
 
 	componentDidMount(){
-		this.performSearch()
+		this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
 	}
 
 	componentWillReceiveProps(newProps){
 
 		// new query
 		if( this.props.params.query != newProps.params.query ){
-			this.performSearch( newProps )
+			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
 		}
 
 		// mopidy comes online
 		if( !this.props.mopidy_connected && newProps.mopidy_connected ){
-			this.props.mopidyActions.getSearchResults( newProps.params.query, newProps.uri_schemes )
-		}
-	}
-
-	performSearch( props = this.props ){
-		var source = props.params.source
-		var type = props.params.type
-
-		this.props.uiActions.startSearch(props.params.query)
-
-		if (!source || source == 'all' || source == 'spotify'){
-			this.props.spotifyActions.getSearchResults( props.params.query )
-		}
-
-		if( props.mopidy_connected ){
-			this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
+			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
 		}
 	}
 
@@ -62,14 +47,11 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
-		var type = (this.props.params.type ? this.props.params.type : 'all')
-		var source = (this.props.params.source ? this.props.params.source : 'all')
-
 		var artists = []
 		if (this.props.artists_uris){
 			for (var i = 0; i < this.props.artists_uris.length; i++){
 				var uri = this.props.artists_uris[i]
-				if (this.props.artists.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
+				if (this.props.artists.hasOwnProperty(uri)){
 					artists.push(this.props.artists[uri])
 				}
 			}
@@ -79,7 +61,7 @@ class Search extends React.Component{
 		if (this.props.albums_uris){
 			for (var i = 0; i < this.props.albums_uris.length; i++){
 				var uri = this.props.albums_uris[i]
-				if (this.props.albums.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
+				if (this.props.albums.hasOwnProperty(uri)){
 					albums.push(this.props.albums[uri])
 				}
 			}
@@ -89,7 +71,7 @@ class Search extends React.Component{
 		if (this.props.playlists_uris){
 			for (var i = 0; i < this.props.playlists_uris.length; i++){
 				var uri = this.props.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
+				if (this.props.playlists.hasOwnProperty(uri)){
 					playlists.push(this.props.playlists[uri])
 				}
 			}
@@ -97,25 +79,21 @@ class Search extends React.Component{
 
 		var tracks = []
 		if (this.props.tracks){
-			if (source == 'all'){
-				tracks = this.props.tracks
-			} else {
-				for (var i = 0; i < this.props.tracks.length; i++){
-					if (helpers.uriSource(this.props.tracks[i].uri) == source){
-						tracks.push(this.props.tracks[i])
-					}
+			for (var i = 0; i < this.props.tracks.length; i++){
+				if (helpers.uriSource(this.props.tracks[i].uri)){
+					tracks.push(this.props.tracks[i])
 				}
 			}
 		}
 
-		switch( type ){
+		switch (this.props.params.type){
 
 			case 'artists':
 				return (
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} />
-							<LazyLoadListener enabled={this.props['artists_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('artists') }/>
+							<LazyLoadListener enabled={this.props['artists_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
 				)
@@ -126,7 +104,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props['albums_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('albums') }/>
+							<LazyLoadListener enabled={this.props['albums_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
 				)
@@ -137,7 +115,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props['playlists_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('playlists') }/>
+							<LazyLoadListener enabled={this.props['playlists_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
 				)
@@ -148,7 +126,7 @@ class Search extends React.Component{
 					<div>
 						<section className="list-wrapper">
 							<TrackList show_source_icon={true} tracks={ tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('tracks') }/>
+							<LazyLoadListener enabled={this.props['tracks_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
 				)
@@ -181,7 +159,7 @@ class Search extends React.Component{
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList show_source_icon={true} tracks={ tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('tracks') }/>
+							<LazyLoadListener enabled={this.props['tracks_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
 					</div>
@@ -191,14 +169,7 @@ class Search extends React.Component{
 
 	handleTypeChange(val){
 		this.props.uiActions.hideContextMenu()
-		var source = (this.props.params.source ? this.props.params.source : 'all')
-		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+source+'/'+val)
-	}
-
-	handleSourceChange(val){
-		this.props.uiActions.hideContextMenu()
-		var type = (this.props.params.type ? this.props.params.type : 'all')
-		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+val+'/'+type)
+		hashHistory.push(global.baseURL+'search/'+val+'/'+this.props.params.query)
 	}
 
 	render(){
@@ -225,28 +196,13 @@ class Search extends React.Component{
 			}
 		]
 
-		var source_options = [
-			{
-				value: 'all',
-				label: 'All'
-			},
-			{
-				value: 'spotify',
-				label: 'Spotify'
-			}
-		]
-		for (var i = 0; i < this.props.uri_schemes.length; i++){
-			var scheme = this.props.uri_schemes[i].replace(':','')
-			source_options.push({
-				value: scheme,
-				label: scheme
-			})
-		}
-
 		var options = (
 			<span>
-				<DropdownField name="Filter" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
-				<DropdownField name="Source" value={this.props.params.source} options={source_options} handleChange={val => this.handleSourceChange(val)} />
+				<DropdownField icon="eye" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
+				<button onClick={e => this.props.uiActions.openModal('search_settings', {type: this.props.params.type, query: this.props.params.query})}>
+					<FontAwesome name="wrench" />&nbsp;
+					Advanced
+				</button>
 			</span>
 		)
 
@@ -262,7 +218,7 @@ class Search extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		uri_schemes: state.mopidy.uri_schemes,
+		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
 		tracks_more: (state.ui.search_results && state.ui.search_results.tracks_more ? state.ui.search_results.tracks_more : null),
 		artists: state.ui.artists,

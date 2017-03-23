@@ -112,7 +112,26 @@ const UIMiddleware = (function(){
                 break
 
             case 'SEARCH_STARTED':
-                ReactGA.event({ category: 'Search', action: 'Started', label: action.query })
+                ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+                var state = store.getState()
+
+                // initiate spotify searching
+                if (!action.only_mopidy){
+                    if (!state.ui.search_settings || state.ui.search_settings.spotify){
+                        store.dispatch(spotifyActions.getSearchResults(action.query))
+                    }
+                }
+
+                // backend searching (mopidy)
+                if (state.mopidy.connected){
+                    if (state.ui.search_settings){
+                        var uri_schemes = state.ui.search_settings.uri_schemes
+                    } else {
+                        var uri_schemes = state.mopidy.uri_schemes
+                    }
+                    store.dispatch(mopidyActions.getSearchResults(action.query, uri_schemes))
+                }
+
                 next(action)
                 break
 
