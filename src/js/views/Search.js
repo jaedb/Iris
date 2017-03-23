@@ -14,6 +14,7 @@ import AlbumGrid from '../components/AlbumGrid'
 import PlaylistGrid from '../components/PlaylistGrid'
 import LazyLoadListener from '../components/LazyLoadListener'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -61,12 +62,14 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
+		var type = (this.props.params.type ? this.props.params.type : 'all')
+		var source = (this.props.params.source ? this.props.params.source : 'all')
 
 		var artists = []
 		if (this.props.artists_uris){
 			for (var i = 0; i < this.props.artists_uris.length; i++){
 				var uri = this.props.artists_uris[i]
-				if (this.props.artists.hasOwnProperty(uri)){
+				if (this.props.artists.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
 					artists.push(this.props.artists[uri])
 				}
 			}
@@ -76,7 +79,7 @@ class Search extends React.Component{
 		if (this.props.albums_uris){
 			for (var i = 0; i < this.props.albums_uris.length; i++){
 				var uri = this.props.albums_uris[i]
-				if (this.props.albums.hasOwnProperty(uri)){
+				if (this.props.albums.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
 					albums.push(this.props.albums[uri])
 				}
 			}
@@ -86,20 +89,33 @@ class Search extends React.Component{
 		if (this.props.playlists_uris){
 			for (var i = 0; i < this.props.playlists_uris.length; i++){
 				var uri = this.props.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(uri)){
+				if (this.props.playlists.hasOwnProperty(uri) && (source == 'all' || helpers.uriSource(uri) == source)){
 					playlists.push(this.props.playlists[uri])
 				}
 			}
 		}
 
-		switch( this.props.params.type ){
+		var tracks = []
+		if (this.props.tracks){
+			if (source == 'all'){
+				tracks = this.props.tracks
+			} else {
+				for (var i = 0; i < this.props.tracks.length; i++){
+					if (helpers.uriSource(this.props.tracks[i].uri) == source){
+						tracks.push(this.props.tracks[i])
+					}
+				}
+			}
+		}
+
+		switch( type ){
 
 			case 'artists':
 				return (
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} />
-							<LazyLoadListener enabled={this.props['artists_more']} loadMore={ () => this.loadMore('artists') }/>
+							<LazyLoadListener enabled={this.props['artists_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
 				)
@@ -110,7 +126,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props['albums_more']} loadMore={ () => this.loadMore('albums') }/>
+							<LazyLoadListener enabled={this.props['albums_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
 				)
@@ -121,7 +137,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props['playlists_more']} loadMore={ () => this.loadMore('playlists') }/>
+							<LazyLoadListener enabled={this.props['playlists_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
 				)
@@ -131,8 +147,8 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more']} loadMore={ () => this.loadMore('tracks') }/>
+							<TrackList show_source_icon={true} tracks={ tracks } />
+							<LazyLoadListener enabled={this.props['tracks_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
 				)
@@ -164,8 +180,8 @@ class Search extends React.Component{
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
-							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
+							<TrackList show_source_icon={true} tracks={ tracks } />
+							<LazyLoadListener enabled={this.props['tracks_more'] && (source == 'spotify' || source == 'all')} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
 					</div>
@@ -229,8 +245,8 @@ class Search extends React.Component{
 
 		var options = (
 			<span>
-				<DropdownField icon="cube" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
-				<DropdownField icon="server" name="Source" value={this.props.params.source} options={source_options} handleChange={val => this.handleSourceChange(val)} />
+				<DropdownField name="Filter" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
+				<DropdownField name="Source" value={this.props.params.source} options={source_options} handleChange={val => this.handleSourceChange(val)} />
 			</span>
 		)
 
