@@ -306,14 +306,25 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+
+            /**
+             * =============================================================== SEARCHING ============
+             * ======================================================================================
+             **/
+
+
             case 'MOPIDY_GET_SEARCH_RESULTS':
                 var queryObject = {};
                 for( var i = 0; i < action.fields.length; i++ ){
                     queryObject[action.fields[i]] = [action.query];
                 }
 
+                console.log({query: queryObject, uris: action.uris})
+
                 instruct( socket, store, 'library.search', {query: queryObject, uris: action.uris})
                     .then( response => {     
+
+                        console.log(response)
 
                         // collate all our different sources into one array
                         var tracks = []
@@ -322,6 +333,38 @@ const MopidyMiddleware = (function(){
                         }
 
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
+                    })
+                break;
+
+            case 'MOPIDY_GET_ARTIST_SEARCH_RESULTS':
+                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: ['local:','file:','m3u:']})
+                    .then( response => {     
+
+                        // collate all our different sources into one array
+                        var artists_uris = []
+                        for (var i = 0; i < response.length; i++){
+                            if (response[i].tracks){
+                                for (var j = 0; j < response[i].tracks.length; j++){
+                                    if (response[i].tracks[j].artists){
+                                        for (var k = 0; k < response[i].tracks[j].artists.length; k++){
+                                            var artist = response[i].tracks[j].artists[k]
+                                            if (artist.uri){
+                                                artists_uris.push(artist.uri)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        artists_uris = helpers.removeDuplicates(artists_uris)
+
+                        // load each artist
+                        for (var i = 0; i < artists_uris.length; i++){
+                            store.dispatch(mopidyActions.getArtist(artists_uris[i]))
+                        }
+
+                        // and plug in their URIs
+                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', artists_uris: artists_uris })
                     })
                 break;
 
@@ -715,10 +758,11 @@ const MopidyMiddleware = (function(){
                             }
                         }
                         if (albums){
-                            store.dispatch({
+                            console.log(albums)
+                            /*store.dispatch({
                                 type: 'ALBUMS_LOADED',
                                 albums: albums
-                            })
+                            })*/
                         }
 
                         var artist = Object.assign(
@@ -734,7 +778,7 @@ const MopidyMiddleware = (function(){
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
                             artist: artist 
-                        });
+                        })
 
                         // load artwork from LastFM
                         if( !artist.images || artist.images.length <= 0 ){

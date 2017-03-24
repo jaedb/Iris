@@ -50,7 +50,7 @@ export default class SearchSettingsModal extends React.Component{
 		return (
 			<div>
 				<h4 className="no-bottom-padding">Advanced search settings</h4>
-				<h3 className="grey-text bottom-padding">Customise the providers used when searching</h3>
+				<h3 className="grey-text bottom-padding">Customise the providers used when searching. Only Spotify and local backends support searching by artist, album or playlist.</h3>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field checkbox white">

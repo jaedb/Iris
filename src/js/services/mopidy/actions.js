@@ -226,6 +226,13 @@ export function getSearchResults(query, uris = null, fields = ['any']){
 	}
 }
 
+export function getArtistSearchResults(query){
+	return {
+		type: 'MOPIDY_GET_ARTIST_SEARCH_RESULTS',
+		query: query
+	}
+}
+
 export function getQueueHistory(){
 	return {
 		type: 'MOPIDY_INSTRUCT',

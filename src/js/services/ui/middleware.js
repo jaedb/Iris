@@ -129,7 +129,39 @@ const UIMiddleware = (function(){
                     } else {
                         var uri_schemes = state.mopidy.uri_schemes
                     }
-                    store.dispatch(mopidyActions.getSearchResults(action.query, uri_schemes))
+
+                    uri_schemes.sort()
+
+                    // put local backends first as they'll always be fastest
+                    var local_backends = ['local:','m3u:','file:']
+                    for (var i = 0; i < local_backends.length; i++){
+                        var index = uri_schemes.indexOf(local_backends[i])
+                        if (index > -1){
+                            uri_schemes.splice(index,1)
+                            uri_schemes.unshift(local_backends[i])
+                        }
+                    }
+
+                    switch (action.search_type){
+                        case 'playlists':
+                            store.dispatch(mopidyActions.getPlaylistSearchResults(action.query))
+                            break
+
+                        case 'artists':
+                            store.dispatch(mopidyActions.getArtistSearchResults(action.query))
+                            break
+
+                        case 'albums':
+                            store.dispatch(mopidyActions.getAlbumSearchResults(action.query))
+                            break
+
+                        default:
+                            // wrap each uri scheme in it's own search request
+                            // this means slow backends won't hold up the whole request
+                            for (var i = 0; i < uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getSearchResults(action.query, [uri_schemes[i]], ['any']))
+                            }
+                    }
                 }
 
                 next(action)
