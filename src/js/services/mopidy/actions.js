@@ -217,36 +217,39 @@ export function getLibraryAlbums(){
  * Searching
  **/
 
-export function getTrackSearchResults(query, limit = 100, uri_schemes){
+export function getTrackSearchResults(query, limit = 100, uri_scheme){
 	return {
 		type: 'MOPIDY_GET_TRACK_SEARCH_RESULTS',
 		query: query,
 		limit: limit,
-		uri_schemes: uri_schemes
+		uri_scheme: uri_scheme
 	}
 }
 
-export function getArtistSearchResults(query, limit = 100){
+export function getArtistSearchResults(query, limit = 100, uri_scheme){
 	return {
 		type: 'MOPIDY_GET_ARTIST_SEARCH_RESULTS',
 		query: query,
-		limit: limit
+		limit: limit,
+		uri_scheme: uri_scheme
 	}
 }
 
-export function getAlbumSearchResults(query, limit = 100){
+export function getAlbumSearchResults(query, limit = 100, uri_scheme){
 	return {
 		type: 'MOPIDY_GET_ALBUM_SEARCH_RESULTS',
 		query: query,
-		limit: limit
+		limit: limit,
+		uri_scheme: uri_scheme
 	}
 }
 
-export function getPlaylistSearchResults(query, limit = 100){
+export function getPlaylistSearchResults(query, limit = 100, uri_scheme){
 	return {
 		type: 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS',
 		query: query,
-		limit: limit
+		limit: limit,
+		uri_scheme: uri_scheme
 	}
 }
 

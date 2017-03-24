@@ -314,37 +314,29 @@ const MopidyMiddleware = (function(){
 
 
             case 'MOPIDY_GET_TRACK_SEARCH_RESULTS':
-                instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: action.uri_schemes})
+                instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: [action.uri_scheme]})
                     .then( response => {
-                        // collate all our different sources into one array
-                        var tracks = []
-                        for( var i = 0; i < response.length; i++ ){
-                            if( response[i].tracks ) tracks = [...tracks, ...response[i].tracks.splice(0,action.limit)]
-                        }
+                        if (response.length <= 0) return
+
+                        var tracks = response[0].tracks.splice(0,action.limit)
 
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
                     })
                 break;
 
             case 'MOPIDY_GET_ARTIST_SEARCH_RESULTS':
+                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: [action.uri_scheme]})
+                    .then( response => { 
+                        if (response.length <= 0) return
 
-                // backends that provide artist data
-                var uri_schemes = ['local:','file:','m3u:']
-
-                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: uri_schemes})
-                    .then( response => {     
-
-                        // collate all our different sources into one array
                         var artists_uris = []
-                        for (var i = 0; i < response.length; i++){
-                            if (response[i].tracks){
-                                for (var j = 0; j < response[i].tracks.length; j++){
-                                    if (response[i].tracks[j].artists){
-                                        for (var k = 0; k < response[i].tracks[j].artists.length; k++){
-                                            var artist = response[i].tracks[j].artists[k]
-                                            if (artist.uri){
-                                                artists_uris.push(artist.uri)
-                                            }
+                        if (response[0].tracks){
+                            for (var i = 0; i < response[0].tracks.length; i++){
+                                if (response[0].tracks[i].artists){
+                                    for (var j = 0; j < response[0].tracks[i].artists.length; j++){
+                                        var artist = response[0].tracks[i].artists[j]
+                                        if (artist.uri){
+                                            artists_uris.push(artist.uri)
                                         }
                                     }
                                 }
@@ -365,23 +357,18 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_ALBUM_SEARCH_RESULTS':
-
-                // backends that provide artist data
-                var uri_schemes = ['local:','file:','m3u:']
-
-                instruct( socket, store, 'library.search', {query: {album: [action.query]}, uris: uri_schemes})
-                    .then( response => {     
+                instruct( socket, store, 'library.search', {query: {album: [action.query]}, uris: [action.uri_scheme]})
+                    .then( response => {
+                        if (response.length <= 0) return
 
                         // collate all our different sources into one array
                         var albums_uris = []
-                        for (var i = 0; i < response.length; i++){
-                            if (response[i].tracks){
-                                for (var j = 0; j < response[i].tracks.length; j++){
-                                    if (response[i].tracks[j].album){
-                                        var album = response[i].tracks[j].album
-                                        if (album.uri){
-                                            albums_uris.push(album.uri)
-                                        }
+                        if (response[0].tracks){
+                            for (var i = 0; i < response[0].tracks.length; i++){
+                                if (response[0].tracks[i].album){
+                                    var album = response[0].tracks[i].album
+                                    if (album.uri){
+                                        albums_uris.push(album.uri)
                                     }
                                 }
                             }
@@ -401,21 +388,14 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS':
-
-                var state = store.getState()
-                if (state.ui.search_settings){
-                    var uri_schemes = state.ui.search_settings.uri_schemes
-                } else {
-                    var uri_schemes = state.mopidy.uri_schemes
-                }
-
                 instruct( socket, store, 'playlists.asList')
                     .then( response => {
+                        if (response.length <= 0) return
 
                         var playlists_uris = []
                         for (var i = 0; i < response.length; i++){
                             var playlist = response[i]
-                            if (playlist.name.includes(action.query) && uri_schemes.indexOf(helpers.uriSource(playlist.uri)+':') > -1){
+                            if (playlist.name.includes(action.query) && action.uri_scheme == helpers.uriSource(playlist.uri)+':'){
                                 playlists_uris.push(playlist.uri)
                             }
                         }
@@ -678,6 +658,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_LIBRARY_ALBUMS':
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                     .then( response => {
+                        if (response.length <= 0) return
 
                         var uris = helpers.asURIs(response)
 
@@ -696,6 +677,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUMS':
                 instruct( socket, store, 'library.lookup', { uris: action.uris } )
                     .then( response => {
+                        if (response.length <= 0) return
 
                         var albums = []
 
@@ -725,6 +707,8 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUM':
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
+                        if (response.length <= 0) return
+                            
                         var album = Object.assign(
                             {},
                             { images: [] },
@@ -807,6 +791,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ARTIST':
                 instruct( socket, store, 'library.lookup', action.data )
                     .then( response => {
+                        if (response.length <= 0) return
                                           
                         var albums = []
                         for( var i = 0; i < response.length; i++ ){

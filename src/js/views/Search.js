@@ -139,19 +139,19 @@ class Search extends React.Component{
 						<div className="search-result-sections cf">
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
+									<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
 									<ArtistGrid className="mini" artists={artists.slice(0,6)} />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
+									<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
 									<AlbumGrid className="mini" albums={albums.slice(0,6)} />
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
+									<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
 									<PlaylistGrid className="mini" playlists={playlists.slice(0,6)} />
 								</div>
 							</section>

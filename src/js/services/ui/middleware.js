@@ -121,6 +121,17 @@ const UIMiddleware = (function(){
                     var uri_schemes = state.mopidy.uri_schemes
                 }
 
+                // backends that can handle more than just track results
+                // make sure they are available and respect our settings
+                var available_full_uri_schemes = ['local:','file:','gmusic:']
+                var full_uri_schemes = []
+                for (var i = 0; i < available_full_uri_schemes.length; i++){
+                    var index = uri_schemes.indexOf(available_full_uri_schemes[i])
+                    if (index > -1){
+                        full_uri_schemes.push(available_full_uri_schemes[i])
+                    }
+                }
+
                 // initiate spotify searching
                 if (!action.only_mopidy){
                     if (!state.ui.search_settings || state.ui.search_settings.spotify){
@@ -132,32 +143,38 @@ const UIMiddleware = (function(){
                 if (state.mopidy.connected){
                     switch (action.search_type){
                         case 'playlists':
-                            store.dispatch(mopidyActions.getPlaylistSearchResults(action.query))
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
                             break
 
                         case 'artists':
-                            store.dispatch(mopidyActions.getArtistSearchResults(action.query))
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
                             break
 
                         case 'albums':
-                            store.dispatch(mopidyActions.getAlbumSearchResults(action.query))
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
                             break
 
                         case 'tracks':
                             for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,[uri_schemes[i]]))
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,uri_schemes[i]))
                             }
                             break
 
                         default:
-                            store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6))
-                            store.dispatch(mopidyActions.getArtistSearchResults(action.query,6))
-                            store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6))
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6,full_uri_schemes[i]))
+                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,6,full_uri_schemes[i]))
+                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6,full_uri_schemes[i]))
+                            }
 
-                            // wrap each uri scheme in it's own search request
-                            // this means slow backends won't hold up the whole request
                             for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,[uri_schemes[i]]))
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,20,uri_schemes[i]))
                             }
                     }
                 }
