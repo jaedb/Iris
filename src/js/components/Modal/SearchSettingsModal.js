@@ -49,36 +49,38 @@ export default class SearchSettingsModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4 className="no-bottom-padding">Advanced search settings</h4>
-				<h3 className="grey-text bottom-padding">Customise the providers used when searching. Only Spotify and local backends support searching by artist, album or playlist.</h3>
+				<h4 className="no-bottom-padding">Search sourced</h4>
+				<h3 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches. Please note that not all backends support searching by artist, album or playlist.</h3>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
-					<div className="field checkbox white">
-						<label>
-							<input 
-								type="checkbox"
-								name="enabled"
-								checked={ this.state.spotify }
-								onChange={ e => this.setState({ spotify: !this.state.spotify })} />
-							<span className="label">spotify <span className="grey-text">(http)</span></span>
-						</label>
-					</div>
-					{
-						this.props.uri_schemes.map(scheme => {
-							return (								
-								<div className="field checkbox white" key={scheme}>
-									<label>
-										<input 
-											type="checkbox"
-											name={scheme}
-											checked={this.state.uri_schemes.indexOf(scheme) > -1}
-											onChange={ e => this.handleToggle(scheme)} />
-										<span className="label">{scheme.replace(':','')} <span className="grey-text">(mopidy)</span></span>
-									</label>
-								</div>
-							)
-						})
-					}
+					<div className="list small">
+						<div className="list-item field checkbox white">
+							<label>
+								<input 
+									type="checkbox"
+									name="enabled"
+									checked={ this.state.spotify }
+									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
+								<span className="label">spotify <span className="grey-text">(http)</span></span>
+							</label>
+						</div>
+						{
+							this.props.uri_schemes.map(scheme => {
+								return (								
+									<div className="list-item field checkbox white" key={scheme}>
+										<label>
+											<input 
+												type="checkbox"
+												name={scheme}
+												checked={this.state.uri_schemes.indexOf(scheme) > -1}
+												onChange={ e => this.handleToggle(scheme)} />
+											<span className="label">{scheme.replace(':','')} <span className="grey-text">(mopidy)</span></span>
+										</label>
+									</div>
+								)
+							})
+						}
+						</div>
 
 					<div className="actions centered-text">
 						<button type="submit" className="primary wide">Save</button>

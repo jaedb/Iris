@@ -140,26 +140,26 @@ class Search extends React.Component{
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
-									<ArtistGrid className="mini" artists={artists.slice(0,6)} />
+									{artists.length > 0 ? <ArtistGrid className="mini" artists={artists.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
-									<AlbumGrid className="mini" albums={albums.slice(0,6)} />
+									{albums.length > 0 ? <AlbumGrid className="mini" albums={albums.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 							<section>
 								<div className="inner">
 									<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
-									<PlaylistGrid className="mini" playlists={playlists.slice(0,6)} />
+									{playlists.length > 0 ? <PlaylistGrid className="mini" playlists={playlists.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 						</div>
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={ tracks } />
+							<TrackList show_source_icon={true} tracks={tracks} />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
@@ -202,7 +202,7 @@ class Search extends React.Component{
 				<DropdownField icon="eye" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
 				<button onClick={e => this.props.uiActions.openModal('search_settings', {type: this.props.params.type, query: this.props.params.query})}>
 					<FontAwesome name="wrench" />&nbsp;
-					Advanced
+					Sources
 				</button>
 			</span>
 		)
