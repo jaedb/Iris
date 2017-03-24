@@ -31,13 +31,12 @@ class Search extends React.Component{
 
 	componentWillReceiveProps(newProps){
 
-		// new query
-		if( this.props.params.query != newProps.params.query ){
+		if (this.props.params.query != newProps.params.query || this.props.params.type != newProps.params.type){
 			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
 		}
 
 		// mopidy comes online
-		if( !this.props.mopidy_connected && newProps.mopidy_connected ){
+		if (!this.props.mopidy_connected && newProps.mopidy_connected){
 			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
 		}
 	}
@@ -47,6 +46,8 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
+		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
+
 		var artists = []
 		if (this.props.artists_uris){
 			for (var i = 0; i < this.props.artists_uris.length; i++){
@@ -93,7 +94,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} />
-							<LazyLoadListener enabled={this.props['artists_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('artists') }/>
+							<LazyLoadListener enabled={this.props['artists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
 				)
@@ -104,7 +105,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props['albums_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('albums') }/>
+							<LazyLoadListener enabled={this.props['albums_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
 				)
@@ -115,7 +116,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props['playlists_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('playlists') }/>
+							<LazyLoadListener enabled={this.props['playlists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
 				)
@@ -126,7 +127,7 @@ class Search extends React.Component{
 					<div>
 						<section className="list-wrapper">
 							<TrackList show_source_icon={true} tracks={ tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('tracks') }/>
+							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
 				)
@@ -159,7 +160,7 @@ class Search extends React.Component{
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList show_source_icon={true} tracks={ tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more'] && this.props.search_settings.spotify} loadMore={ () => this.loadMore('tracks') }/>
+							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
 					</div>

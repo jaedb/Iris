@@ -214,24 +214,46 @@ export function getLibraryAlbums(){
 
 
 /**
- * Other general actions
+ * Searching
  **/
 
-export function getSearchResults(query, uris = null, fields = ['any']){
+export function getTrackSearchResults(query, limit = 100, uri_schemes){
 	return {
-		type: 'MOPIDY_GET_SEARCH_RESULTS',
-		query: query, 
-		uris: uris,
-		fields: fields
+		type: 'MOPIDY_GET_TRACK_SEARCH_RESULTS',
+		query: query,
+		limit: limit,
+		uri_schemes: uri_schemes
 	}
 }
 
-export function getArtistSearchResults(query){
+export function getArtistSearchResults(query, limit = 100){
 	return {
 		type: 'MOPIDY_GET_ARTIST_SEARCH_RESULTS',
-		query: query
+		query: query,
+		limit: limit
 	}
 }
+
+export function getAlbumSearchResults(query, limit = 100){
+	return {
+		type: 'MOPIDY_GET_ALBUM_SEARCH_RESULTS',
+		query: query,
+		limit: limit
+	}
+}
+
+export function getPlaylistSearchResults(query, limit = 100){
+	return {
+		type: 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS',
+		query: query,
+		limit: limit
+	}
+}
+
+
+/**
+ * Other general actions
+ **/
 
 export function getQueueHistory(){
 	return {

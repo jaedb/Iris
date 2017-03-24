@@ -113,7 +113,13 @@ const UIMiddleware = (function(){
 
             case 'SEARCH_STARTED':
                 ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+
                 var state = store.getState()
+                if (state.ui.search_settings){
+                    var uri_schemes = state.ui.search_settings.uri_schemes
+                } else {
+                    var uri_schemes = state.mopidy.uri_schemes
+                }
 
                 // initiate spotify searching
                 if (!action.only_mopidy){
@@ -124,24 +130,6 @@ const UIMiddleware = (function(){
 
                 // backend searching (mopidy)
                 if (state.mopidy.connected){
-                    if (state.ui.search_settings){
-                        var uri_schemes = state.ui.search_settings.uri_schemes
-                    } else {
-                        var uri_schemes = state.mopidy.uri_schemes
-                    }
-
-                    uri_schemes.sort()
-
-                    // put local backends first as they'll always be fastest
-                    var local_backends = ['local:','m3u:','file:']
-                    for (var i = 0; i < local_backends.length; i++){
-                        var index = uri_schemes.indexOf(local_backends[i])
-                        if (index > -1){
-                            uri_schemes.splice(index,1)
-                            uri_schemes.unshift(local_backends[i])
-                        }
-                    }
-
                     switch (action.search_type){
                         case 'playlists':
                             store.dispatch(mopidyActions.getPlaylistSearchResults(action.query))
@@ -155,11 +143,21 @@ const UIMiddleware = (function(){
                             store.dispatch(mopidyActions.getAlbumSearchResults(action.query))
                             break
 
+                        case 'tracks':
+                            for (var i = 0; i < uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,[uri_schemes[i]]))
+                            }
+                            break
+
                         default:
+                            store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6))
+                            store.dispatch(mopidyActions.getArtistSearchResults(action.query,6))
+                            store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6))
+
                             // wrap each uri scheme in it's own search request
                             // this means slow backends won't hold up the whole request
                             for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getSearchResults(action.query, [uri_schemes[i]], ['any']))
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,[uri_schemes[i]]))
                             }
                     }
                 }

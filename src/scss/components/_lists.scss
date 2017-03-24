@@ -129,6 +129,18 @@
 		}
 	}
 
+	&.library-local-album-list .list-item{
+		.col {
+			&.name,
+			&.artists { 
+				width: 45%;
+			}
+			&.tracks_total {
+				width: 10%;
+			}
+		}
+	}
+
 	&.artist-list .list-item {
 		.col {
 			&.name { 

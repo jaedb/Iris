@@ -313,23 +313,13 @@ const MopidyMiddleware = (function(){
              **/
 
 
-            case 'MOPIDY_GET_SEARCH_RESULTS':
-                var queryObject = {};
-                for( var i = 0; i < action.fields.length; i++ ){
-                    queryObject[action.fields[i]] = [action.query];
-                }
-
-                console.log({query: queryObject, uris: action.uris})
-
-                instruct( socket, store, 'library.search', {query: queryObject, uris: action.uris})
-                    .then( response => {     
-
-                        console.log(response)
-
+            case 'MOPIDY_GET_TRACK_SEARCH_RESULTS':
+                instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: action.uri_schemes})
+                    .then( response => {
                         // collate all our different sources into one array
                         var tracks = []
                         for( var i = 0; i < response.length; i++ ){
-                            if( response[i].tracks ) tracks = [...tracks, ...response[i].tracks]
+                            if( response[i].tracks ) tracks = [...tracks, ...response[i].tracks.splice(0,action.limit)]
                         }
 
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
@@ -337,7 +327,11 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_ARTIST_SEARCH_RESULTS':
-                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: ['local:','file:','m3u:']})
+
+                // backends that provide artist data
+                var uri_schemes = ['local:','file:','m3u:']
+
+                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: uri_schemes})
                     .then( response => {     
 
                         // collate all our different sources into one array
@@ -356,7 +350,9 @@ const MopidyMiddleware = (function(){
                                 }
                             }
                         }
-                        artists_uris = helpers.removeDuplicates(artists_uris)
+
+                        // TODO: limit uris at the loop, rather than post loop for performance
+                        artists_uris = helpers.removeDuplicates(artists_uris).splice(0, action.limit)
 
                         // load each artist
                         for (var i = 0; i < artists_uris.length; i++){
@@ -365,6 +361,74 @@ const MopidyMiddleware = (function(){
 
                         // and plug in their URIs
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', artists_uris: artists_uris })
+                    })
+                break;
+
+            case 'MOPIDY_GET_ALBUM_SEARCH_RESULTS':
+
+                // backends that provide artist data
+                var uri_schemes = ['local:','file:','m3u:']
+
+                instruct( socket, store, 'library.search', {query: {album: [action.query]}, uris: uri_schemes})
+                    .then( response => {     
+
+                        // collate all our different sources into one array
+                        var albums_uris = []
+                        for (var i = 0; i < response.length; i++){
+                            if (response[i].tracks){
+                                for (var j = 0; j < response[i].tracks.length; j++){
+                                    if (response[i].tracks[j].album){
+                                        var album = response[i].tracks[j].album
+                                        if (album.uri){
+                                            albums_uris.push(album.uri)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // TODO: limit uris at the loop, rather than post loop for performance
+                        albums_uris = helpers.removeDuplicates(albums_uris).splice(0, action.limit)
+
+                        // load each album
+                        for (var i = 0; i < albums_uris.length; i++){
+                            store.dispatch(mopidyActions.getAlbum(albums_uris[i]))
+                        }
+
+                        // and plug in their URIs
+                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', albums_uris: albums_uris })
+                    })
+                break;
+
+            case 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS':
+
+                var state = store.getState()
+                if (state.ui.search_settings){
+                    var uri_schemes = state.ui.search_settings.uri_schemes
+                } else {
+                    var uri_schemes = state.mopidy.uri_schemes
+                }
+
+                instruct( socket, store, 'playlists.asList')
+                    .then( response => {
+
+                        var playlists_uris = []
+                        for (var i = 0; i < response.length; i++){
+                            var playlist = response[i]
+                            if (playlist.name.includes(action.query) && uri_schemes.indexOf(helpers.uriSource(playlist.uri)+':') > -1){
+                                playlists_uris.push(playlist.uri)
+                            }
+                        }
+
+                        playlists_uris = playlists_uris.splice(0, action.limit)
+
+                        // load each playlist
+                        for (var i = 0; i < playlists_uris.length; i++){
+                            store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]))
+                        }
+
+                        // and plug in their URIs
+                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', playlists_uris: playlists_uris })
                     })
                 break;
 
@@ -758,11 +822,10 @@ const MopidyMiddleware = (function(){
                             }
                         }
                         if (albums){
-                            console.log(albums)
-                            /*store.dispatch({
+                            store.dispatch({
                                 type: 'ALBUMS_LOADED',
                                 albums: albums
-                            })*/
+                            })
                         }
 
                         var artist = Object.assign(
