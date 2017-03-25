@@ -29,10 +29,12 @@ export function hideTouchContextMenu(){
     }
 }
 
-export function startSearch( query ){
+export function startSearch(search_type, query, only_mopidy = false){
 	return {
 		type: 'SEARCH_STARTED',
-        query: query
+        search_type: search_type,
+        query: query,
+        only_mopidy: only_mopidy
 	}
 }
 

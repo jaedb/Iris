@@ -60,8 +60,8 @@ export default class DropdownField extends React.Component{
 		return (
 			<div className={classname} data-key={this.props.name.replace(' ','_').toLowerCase()}>
 				<div className="label" onClick={ () => this.handleToggle() }>
-					<FontAwesome name={this.props.icon} />
-					<span className="text">&nbsp; { this.props.name }</span>
+					{this.props.icon ? <span><FontAwesome name={this.props.icon} />&nbsp; </span> : null}
+					<span className="text">{ this.props.name }</span>
 				</div>
 				<div className="options">
 					{

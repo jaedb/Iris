@@ -42,6 +42,17 @@
 			top: 14px;
 			right: 12px;
 		}
+
+		&.field {
+			padding: 0 !important;
+
+			& > label {
+				display: block;
+				position: relative;
+				padding: 12px 10px 12px 20px;
+				cursor: pointer;
+			}
+		}
 	}
 
 	&.track-list .list-item {
@@ -122,6 +133,18 @@
 			&.added_at,
 			&.release_date {
 				width: 15%;
+			}
+			&.tracks_total {
+				width: 10%;
+			}
+		}
+	}
+
+	&.library-local-album-list .list-item{
+		.col {
+			&.name,
+			&.artists { 
+				width: 45%;
 			}
 			&.tracks_total {
 				width: 10%;

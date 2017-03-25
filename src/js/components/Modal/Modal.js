@@ -13,6 +13,7 @@ import SendAuthorizationModal from './SendAuthorizationModal'
 import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
+import SearchSettingsModal from './SearchSettingsModal'
 
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -51,6 +52,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'search_settings' ? <SearchSettingsModal uiActions={this.props.uiActions} search_settings={this.props.search_settings} uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
 
 				</div>
 			</div>
@@ -60,6 +62,8 @@ class Modal extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : null),
+		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		modal: state.ui.modal,
 		radio: state.ui.radio,
 		tracks: state.ui.tracks,

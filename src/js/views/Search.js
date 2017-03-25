@@ -14,6 +14,7 @@ import AlbumGrid from '../components/AlbumGrid'
 import PlaylistGrid from '../components/PlaylistGrid'
 import LazyLoadListener from '../components/LazyLoadListener'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -25,26 +26,19 @@ class Search extends React.Component{
 	}
 
 	componentDidMount(){
-		this.performSearch()
+		this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
 	}
 
 	componentWillReceiveProps(newProps){
 
-		// new query
-		if( this.props.params.query != newProps.params.query ){
-			this.performSearch( newProps )
+		if (this.props.params.query != newProps.params.query || this.props.params.type != newProps.params.type){
+			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
 		}
 
 		// mopidy comes online
-		if( !this.props.mopidy_connected && newProps.mopidy_connected ){
-			this.props.mopidyActions.getSearchResults( newProps.params.query, newProps.uri_schemes )
+		if (!this.props.mopidy_connected && newProps.mopidy_connected){
+			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
 		}
-	}
-
-	performSearch( props = this.props ){
-		this.props.uiActions.startSearch(props.params.query)
-		this.props.spotifyActions.getSearchResults( props.params.query )
-		if( props.mopidy_connected ) this.props.mopidyActions.getSearchResults( props.params.query, props.uri_schemes )
 	}
 
 	loadMore(type){
@@ -52,6 +46,7 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
+		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
 
 		var artists = []
 		if (this.props.artists_uris){
@@ -83,14 +78,23 @@ class Search extends React.Component{
 			}
 		}
 
-		switch( this.props.params.type ){
+		var tracks = []
+		if (this.props.tracks){
+			for (var i = 0; i < this.props.tracks.length; i++){
+				if (helpers.uriSource(this.props.tracks[i].uri)){
+					tracks.push(this.props.tracks[i])
+				}
+			}
+		}
+
+		switch (this.props.params.type){
 
 			case 'artists':
 				return (
 					<div>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} />
-							<LazyLoadListener enabled={this.props['artists_more']} loadMore={ () => this.loadMore('artists') }/>
+							<LazyLoadListener enabled={this.props['artists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
 				)
@@ -101,7 +105,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props['albums_more']} loadMore={ () => this.loadMore('albums') }/>
+							<LazyLoadListener enabled={this.props['albums_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
 				)
@@ -112,7 +116,7 @@ class Search extends React.Component{
 					<div>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props['playlists_more']} loadMore={ () => this.loadMore('playlists') }/>
+							<LazyLoadListener enabled={this.props['playlists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
 				)
@@ -122,8 +126,8 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
-							<LazyLoadListener enabled={this.props['tracks_more']} loadMore={ () => this.loadMore('tracks') }/>
+							<TrackList show_source_icon={true} tracks={ tracks } />
+							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
 				)
@@ -135,28 +139,28 @@ class Search extends React.Component{
 						<div className="search-result-sections cf">
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/artists'}>Artists</Link></h4>
-									<ArtistGrid className="mini" artists={artists.slice(0,6)} />
+									<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
+									{artists.length > 0 ? <ArtistGrid className="mini" artists={artists.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/albums'}>Albums</Link></h4>
-									<AlbumGrid className="mini" albums={albums.slice(0,6)} />
+									<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
+									{albums.length > 0 ? <AlbumGrid className="mini" albums={albums.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 							<section>
 								<div className="inner">
-									<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/playlists'}>Playlists</Link></h4>
-									<PlaylistGrid className="mini" playlists={playlists.slice(0,6)} />
+									<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
+									{playlists.length > 0 ? <PlaylistGrid className="mini" playlists={playlists.slice(0,6)} /> : <span className="grey-text">No results</span>}
 								</div>
 							</section>
 						</div>
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={ this.props.tracks } />
-							<LazyLoadListener loadMore={ () => this.loadMore('tracks') }/>
+							<TrackList show_source_icon={true} tracks={tracks} />
+							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 
 					</div>
@@ -164,15 +168,15 @@ class Search extends React.Component{
 		}
 	}
 
-	handleViewChange(val){
+	handleTypeChange(val){
 		this.props.uiActions.hideContextMenu()
-		hashHistory.push(global.baseURL+'search/'+this.props.params.query+'/'+val)
+		hashHistory.push(global.baseURL+'search/'+val+'/'+this.props.params.query)
 	}
 
 	render(){
-		var view_options = [
+		var type_options = [
 			{
-				value: '',
+				value: 'all',
 				label: 'All'
 			},
 			{
@@ -195,7 +199,11 @@ class Search extends React.Component{
 
 		var options = (
 			<span>
-				<DropdownField icon="eye" name="View" value={this.props.params.type} options={view_options} handleChange={val => this.handleViewChange(val)} />
+				<DropdownField icon="eye" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
+				<button onClick={e => this.props.uiActions.openModal('search_settings', {type: this.props.params.type, query: this.props.params.query})}>
+					<FontAwesome name="wrench" />&nbsp;
+					Sources
+				</button>
 			</span>
 		)
 
@@ -211,16 +219,16 @@ class Search extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		uri_schemes: state.mopidy.uri_schemes,
+		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
 		tracks_more: (state.ui.search_results && state.ui.search_results.tracks_more ? state.ui.search_results.tracks_more : null),
-		artists: state.ui.artists,
+		artists: (state.ui.artists ? state.ui.artists : []),
 		artists_uris: (state.ui.search_results ? state.ui.search_results.artists_uris : []),
 		artists_more: (state.ui.search_results ? state.ui.search_results.artists_more : null),
-		albums: state.ui.albums,
+		albums: (state.ui.albums ? state.ui.albums : []),
 		albums_uris: (state.ui.search_results ? state.ui.search_results.albums_uris : []),
 		albums_more: (state.ui.search_results ? state.ui.search_results.albums_more : null),
-		playlists: state.ui.playlists,
+		playlists: (state.ui.playlists ? state.ui.playlists : []),
 		playlists_uris: (state.ui.search_results ? state.ui.search_results.playlists_uris : []),
 		playlists_more: (state.ui.search_results ? state.ui.search_results.playlists_more : null)
 	}

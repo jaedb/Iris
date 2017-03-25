@@ -43,7 +43,8 @@ class ArtistGrid extends React.Component{
 											<Thumbnail size="medium" images={artist.images} />
 											<div className="name">{ artist.name }</div>
 											<div className="secondary">
-												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : <span>0 followers</span>}
+												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
+												{artist.albums_uris ? artist.albums_uris.length+' albums' : null}
 											</div>
 									</Link>
 								)

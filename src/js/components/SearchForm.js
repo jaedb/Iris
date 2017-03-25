@@ -7,7 +7,6 @@ import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
-import * as spotifyActions from '../services/spotify/actions'
 
 class SearchForm extends React.Component{
 
@@ -38,7 +37,7 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				hashHistory.push(global.baseURL+'search/'+this.state.query)
+				hashHistory.push(global.baseURL+'search/all/'+this.state.query)
 				break
 		}
 
@@ -58,15 +57,10 @@ class SearchForm extends React.Component{
 	}
 }
 
-const mapStateToProps = (state, ownProps) => {
-	return state;
-}
-
 const mapDispatchToProps = (dispatch) => {
 	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		uiActions: bindActionCreators(uiActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchForm)
+export default connect(mapDispatchToProps)(SearchForm)

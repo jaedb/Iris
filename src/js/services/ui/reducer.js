@@ -683,11 +683,11 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, {
                 search_results: {
                     artists_more: artists_more,
-                    artists_uris: artists_uris,
+                    artists_uris: helpers.removeDuplicates(artists_uris),
                     albums_more: albums_more,
-                    albums_uris: albums_uris,
+                    albums_uris: helpers.removeDuplicates(albums_uris),
                     playlists_more: playlists_more,
-                    playlists_uris: playlists_uris,
+                    playlists_uris: helpers.removeDuplicates(playlists_uris),
                     tracks: tracks,
                     tracks_more: tracks_more
                 }

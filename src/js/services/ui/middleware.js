@@ -112,7 +112,73 @@ const UIMiddleware = (function(){
                 break
 
             case 'SEARCH_STARTED':
-                ReactGA.event({ category: 'Search', action: 'Started', label: action.query })
+                ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+
+                var state = store.getState()
+                if (state.ui.search_settings){
+                    var uri_schemes = state.ui.search_settings.uri_schemes
+                } else {
+                    var uri_schemes = state.mopidy.uri_schemes
+                }
+
+                // backends that can handle more than just track results
+                // make sure they are available and respect our settings
+                var available_full_uri_schemes = ['local:','file:','gmusic:']
+                var full_uri_schemes = []
+                for (var i = 0; i < available_full_uri_schemes.length; i++){
+                    var index = uri_schemes.indexOf(available_full_uri_schemes[i])
+                    if (index > -1){
+                        full_uri_schemes.push(available_full_uri_schemes[i])
+                    }
+                }
+
+                // initiate spotify searching
+                if (!action.only_mopidy){
+                    if (!state.ui.search_settings || state.ui.search_settings.spotify){
+                        store.dispatch(spotifyActions.getSearchResults(action.query))
+                    }
+                }
+
+                // backend searching (mopidy)
+                if (state.mopidy.connected){
+                    switch (action.search_type){
+                        case 'playlists':
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
+                            break
+
+                        case 'artists':
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
+                            break
+
+                        case 'albums':
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,100,full_uri_schemes[i]))
+                            }
+                            break
+
+                        case 'tracks':
+                            for (var i = 0; i < uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,uri_schemes[i]))
+                            }
+                            break
+
+                        default:
+                            for (var i = 0; i < full_uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6,full_uri_schemes[i]))
+                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,6,full_uri_schemes[i]))
+                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6,full_uri_schemes[i]))
+                            }
+
+                            for (var i = 0; i < uri_schemes.length; i++){
+                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,20,uri_schemes[i]))
+                            }
+                    }
+                }
+
                 next(action)
                 break
 

@@ -38,6 +38,14 @@ export default class GridItem extends React.Component{
 				)
 				break
 
+			case 'artist':
+				return (
+					<span>
+						{ item.followers ? item.followers.total.toLocaleString()+' followers' : item.albums_uris.length+' albums' }
+					</span>
+				)
+				break
+
 			default:
 				return (
 					<span>

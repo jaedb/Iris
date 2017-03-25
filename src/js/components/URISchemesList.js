@@ -8,16 +8,16 @@ import FontAwesome from 'react-fontawesome'
 class URISchemesList extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	render(){
-		if( !this.props.mopidy.uri_schemes ) return null;
+		if( !this.props.uri_schemes ) return null;
 
 		return (
 			<div className="uri-schemes-list">
 				{
-					this.props.mopidy.uri_schemes.map( (scheme, index) => {
+					this.props.uri_schemes.map( (scheme, index) => {
 						scheme = scheme.replace(':','')
 						return (
 							<span key={index+'_'+scheme}>
@@ -26,7 +26,7 @@ class URISchemesList extends React.Component{
 									{ scheme }
 								</span>
 							</span>
-						);
+						)
 					})
 				}
 			</div>
@@ -35,7 +35,9 @@ class URISchemesList extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return state;
+	return {
+		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : [])
+	}
 }
 
 export default connect(mapStateToProps)(URISchemesList)
