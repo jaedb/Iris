@@ -44,7 +44,7 @@ class ArtistGrid extends React.Component{
 											<div className="name">{ artist.name }</div>
 											<div className="secondary">
 												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
-												{artist.albums_uris ? artist.albums_uris.length+' albums' : null}
+												{artist.albums_uris && !artist.followers ? artist.albums_uris.length+' albums' : null}
 											</div>
 									</Link>
 								)
