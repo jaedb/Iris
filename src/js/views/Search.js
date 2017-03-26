@@ -93,7 +93,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<ArtistGrid artists={artists} />
+							<ArtistGrid artists={artists} show_source_icon />
 							<LazyLoadListener enabled={this.props['artists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('artists') }/>
 						</section>
 					</div>
@@ -104,7 +104,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<AlbumGrid albums={albums} />
+							<AlbumGrid albums={albums} show_source_icon />
 							<LazyLoadListener enabled={this.props['albums_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('albums') }/>
 						</section>
 					</div>
@@ -115,7 +115,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="grid-wrapper">
-							<PlaylistGrid playlists={playlists} />
+							<PlaylistGrid playlists={playlists} show_source_icon />
 							<LazyLoadListener enabled={this.props['playlists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('playlists') }/>
 						</section>
 					</div>
@@ -126,7 +126,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<section className="list-wrapper">
-							<TrackList show_source_icon={true} tracks={ tracks } />
+							<TrackList tracks={ tracks } show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -134,32 +134,57 @@ class Search extends React.Component{
 				break
 
 			default:
+			
+				if (artists.length > 0){
+					var artists_section = (					
+						<section>
+							<div className="inner">
+								<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
+								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
+							</div>
+						</section>
+					)
+				} else {
+					var artists_section = null
+				}
+
+				if (albums.length > 0){
+					var albums_section = (					
+						<section>
+							<div className="inner">
+								<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
+								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
+							</div>
+						</section>
+					)
+				} else {
+					var albums_section = null
+				}
+			
+				if (playlists.length > 0){
+					var playlists_section = (					
+						<section>
+							<div className="inner">
+								<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
+								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
+							</div>
+						</section>
+					)
+				} else {
+					var playlists_section = null
+				}
+
 				return (
 					<div>
 						<div className="search-result-sections cf">
-							<section>
-								<div className="inner">
-									<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
-									{artists.length > 0 ? <ArtistGrid className="mini" artists={artists.slice(0,6)} /> : <span className="grey-text">No results</span>}
-								</div>
-							</section>
-							<section>
-								<div className="inner">
-									<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
-									{albums.length > 0 ? <AlbumGrid className="mini" albums={albums.slice(0,6)} /> : <span className="grey-text">No results</span>}
-								</div>
-							</section>
-							<section>
-								<div className="inner">
-									<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
-									{playlists.length > 0 ? <PlaylistGrid className="mini" playlists={playlists.slice(0,6)} /> : <span className="grey-text">No results</span>}
-								</div>
-							</section>
+							{artists_section}
+							{albums_section}
+							{playlists_section}
 						</div>
 
 						<section className="list-wrapper">
 							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
-							<TrackList show_source_icon={true} tracks={tracks} />
+							<TrackList show_source_icon tracks={tracks} />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 

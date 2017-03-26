@@ -3,9 +3,11 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import { Link } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 
 class ArtistGrid extends React.Component{
@@ -41,7 +43,10 @@ class ArtistGrid extends React.Component{
 										key={index} 
 										onContextMenu={e => this.handleContextMenu(e,artist)}>
 											<Thumbnail size="medium" images={artist.images} />
-											<div className="name">{ artist.name }</div>
+											<div className="name">
+												{artist.name}
+												{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(artist.uri)} className="source" fixedWidth /> : null}
+											</div>
 											<div className="secondary">
 												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
 												{artist.albums_uris && !artist.followers ? artist.albums_uris.length+' albums' : null}

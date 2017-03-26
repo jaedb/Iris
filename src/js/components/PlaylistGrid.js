@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 
 class PlaylistGrid extends React.Component{
@@ -43,10 +44,13 @@ class PlaylistGrid extends React.Component{
 									key={index} 
 									onContextMenu={e => this.handleContextMenu(e,playlist)}>
 										<Thumbnail size="medium" images={playlist.images} />
-										<div className="name">{ playlist.name }</div>
+										<div className="name">
+											{playlist.name}
+											{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(playlist.uri)} className="source" fixedWidth /> : null}
+										</div>
 										<div className="secondary">
-											{ playlist.tracks_total ? playlist.tracks_total+' tracks' : <span>0 tracks</span> }
-											{ playlist.can_edit ? <FontAwesome name="edit" /> : null }
+											{playlist.tracks_total ? playlist.tracks_total+' tracks' : <span>0 tracks</span>}
+											{playlist.can_edit ? <FontAwesome name="edit" /> : null}
 										</div>
 								</Link>
 							)
