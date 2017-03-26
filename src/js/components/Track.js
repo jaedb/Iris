@@ -87,6 +87,7 @@ export default class Track extends React.Component{
 						<span className="col name">
 							{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 						</span>
+						{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null}
 						<span className="col artists">
 							{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
 						</span>
@@ -110,6 +111,7 @@ export default class Track extends React.Component{
 					<span className="col name">
 						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
 					</span>
+					{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null}
 					<span className="col artists">
 						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
 					</span>
@@ -136,7 +138,6 @@ export default class Track extends React.Component{
 					{ this.props.track.selected ? <FontAwesome name="check" className="select-state" fixedWidth /> : null }
 					{ this.props.track.playing ? <FontAwesome name="play" className="play-state" fixedWidth /> : null }
 					{ track_columns }
-					{ this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null }
 			</div>
 		);
 	}
