@@ -130,7 +130,7 @@ export function seek( time_position ){
 	return {
 		type: 'MOPIDY_INSTRUCT',
 		call: 'playback.seek',
-		value: { time_position: time_position }
+		value: { time_position: parseInt(time_position) }
 	}
 }
 
