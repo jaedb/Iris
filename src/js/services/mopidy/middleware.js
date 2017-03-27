@@ -153,7 +153,7 @@ const MopidyMiddleware = (function(){
                 var state = store.getState();
 
                 socket = new Mopidy({
-                    webSocketUrl: 'ws://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws',
+                    webSocketUrl: 'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws',
                     callingConvention: 'by-position-or-by-name'
                 });
 
