@@ -152,8 +152,13 @@ const MopidyMiddleware = (function(){
 
                 var state = store.getState();
 
+                if (window.location.protocol == 'https'){
+                    var protocol = 'wss'
+                } else {
+                    var protocol = 'ws'
+                }
                 socket = new Mopidy({
-                    webSocketUrl: 'ws://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws',
+                    webSocketUrl: protocol+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws',
                     callingConvention: 'by-position-or-by-name'
                 });
 

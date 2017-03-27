@@ -72,8 +72,14 @@ const PusherMiddleware = (function(){
                 if( state.pusher.username ) connection.username = state.pusher.username;
                 connection.username = connection.username.replace(/\W/g, '')
                 
+                if (window.location.protocol == 'https'){
+                    var protocol = 'wss'
+                } else {
+                    var protocol = 'ws'
+                }
+
                 socket = new WebSocket(
-                    'ws://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
+                    protocol+'://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws',
                     [ connection.clientid, connection.connection_id, connection.username ]
                 );
 
