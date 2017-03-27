@@ -12,6 +12,7 @@ import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
+import Loader from '../components/Loader'
 import DebugInfo from '../components/DebugInfo'
 
 import * as helpers from '../helpers'
@@ -157,6 +158,7 @@ class App extends React.Component{
 		        <Modal />
 		        <Notifications />
 		        {this.props.debug_info ? <DebugInfo /> : null}
+		        <Loader load_queue={this.props.load_queue} />
 	        </div>
 		);
 	}
@@ -170,6 +172,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,

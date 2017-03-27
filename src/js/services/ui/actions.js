@@ -244,4 +244,21 @@ export function removeNotification( id ){
 }
 
 
+/**
+ * Loaders
+ **/
 
+export function startLoading(key,source){
+    return {
+        type: 'START_LOADING',
+        source: source,
+        key: key
+    }
+}
+
+export function stopLoading(key){
+    return { 
+        type: 'STOP_LOADING',
+        key: key
+    }
+}

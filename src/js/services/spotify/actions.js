@@ -13,6 +13,7 @@ var helpers = require('../../helpers.js')
  * @return Promise
  **/
 const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false) => {
+
     return new Promise( (resolve, reject) => {         
         getToken( dispatch, getState )
             .then( response => {
@@ -34,11 +35,18 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                 // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
                 if (data) config.data = JSON.stringify(data)
 
+                // add reference to loader queue
+                var loader_key = helpers.generateGuid()
+                dispatch(uiActions.startLoading(loader_key, 'spotify_'+endpoint))
+
                 $.ajax(config).then( 
                         response => {
+                            dispatch(uiActions.stopLoading(loader_key))                            
                             resolve(response)
                         },
                         (xhr, status, error) => {
+                            dispatch(uiActions.stopLoading(loader_key))
+                            
                             var message = xhr.responseText
                             var response = JSON.parse(xhr.responseText)                            
                             if (response.error && response.error.message) message = response.error.message

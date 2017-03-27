@@ -725,6 +725,24 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { notifications: notifications })
 
 
+
+        /**
+         * Loader
+         **/
+
+         case 'START_LOADING':
+            var load_queue = Object.assign({}, (ui.load_queue ? ui.load_queue : {}))
+            load_queue[action.key] = action.source
+            return Object.assign({}, ui, {load_queue: load_queue})
+
+         case 'STOP_LOADING':
+            var load_queue = Object.assign({}, (ui.load_queue ? ui.load_queue : {}))
+            if (load_queue[action.key]){
+                delete load_queue[action.key]
+            }
+            return Object.assign({}, ui, {load_queue: load_queue})
+
+
         default:
             return ui
     }

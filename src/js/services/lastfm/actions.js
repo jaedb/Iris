@@ -1,5 +1,6 @@
 
-var helpers = require('../../helpers.js')
+var uiActions = require('../ui/actions')
+var helpers = require('../../helpers')
 
 /**
  * Send an ajax request to the Spotify API
@@ -13,13 +14,20 @@ const sendRequest = ( dispatch, getState, params ) => {
 
         var url = '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&'+params
 
+        var loader_key = helpers.generateGuid()
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
+
         $.ajax({
                 method: 'GET',
                 cache: true,
                 url: url
             }).then( 
-                response => resolve(response),
+                response => {
+                    dispatch(uiActions.stopLoading(loader_key))    
+                    resolve(response)
+                },
                 (xhr, status, error) => {
+                    dispatch(uiActions.stopLoading(loader_key))    
                     console.error( params+' failed', xhr.responseText)
                     reject(error)
                 }

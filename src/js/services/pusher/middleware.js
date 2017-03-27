@@ -6,19 +6,11 @@ var spotifyActions = require('../spotify/actions.js')
 
 const PusherMiddleware = (function(){ 
 
-    // container for the actual Mopidy socket
-    var socket = null;
-    var deferredRequests = [];
+    // container for the actual websocket
+    var socket = null
 
-    const resolveRequest = (requestId, message ) => {
-        var response = JSON.parse( message );
-        deferredRequests[request_id].resolve( response );
-        delete deferredRequests[request_id];
-    }
-
-    const rejectRequest = (requestId, message) => {
-        deferredRequests[requestId].reject( message );
-    }
+    // requests pending
+    var deferredRequests = []
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
@@ -29,6 +21,7 @@ const PusherMiddleware = (function(){
         // response to a request [we] made
         if (typeof(message.request_id) !== 'undefined' && message.request_id){            
             if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
+                store.dispatch(uiActions.stopLoading(message.request_id))
                 deferredRequests[ message.request_id ].resolve( message )
             } else {
                 console.error('Pusher: Response with no matching request', message);
@@ -42,7 +35,7 @@ const PusherMiddleware = (function(){
         }
     }
 
-    const request = (method, data = {}) => {
+    const request = (store, method, data = {}) => {
         return new Promise( (resolve, reject) => {
             var request_id = helpers.generateGuid()
             var message = {
@@ -51,6 +44,8 @@ const PusherMiddleware = (function(){
                 request_id: request_id
             }
             socket.send( JSON.stringify(message) )
+
+            store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method))
             
             // add query to our deferred responses
             deferredRequests[request_id] = {
@@ -101,7 +96,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
-                request('get_config')
+                request(store, 'get_config')
                     .then(
                         response => {
                             if (response.error){
@@ -120,7 +115,7 @@ const PusherMiddleware = (function(){
                             }
                         }
                     )
-                request('get_version')
+                request(store, 'get_version')
                     .then(
                         response => {
                             if (response.error){
@@ -131,7 +126,7 @@ const PusherMiddleware = (function(){
                             store.dispatch(response)
                         }
                     )
-                request('get_radio')
+                request(store, 'get_radio')
                     .then(
                         response => {
                             if (response.error){
@@ -159,7 +154,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELIVER_MESSAGE':
-                request('deliver_message', action.data)
+                request(store, 'deliver_message', action.data)
                     .then(
                         response => {
                             store.dispatch( uiActions.createNotification('Message delivered') )
@@ -168,11 +163,11 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELIVER_BROADCAST':
-                request('broadcast', action.data)
+                request(store, 'broadcast', action.data)
                 break
 
             case 'PUSHER_GET_QUEUE_METADATA':
-                request('get_queue_metadata')
+                request(store, 'get_queue_metadata')
                     .then(
                         response => {
                             response.type = 'PUSHER_QUEUE_METADATA'
@@ -182,7 +177,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_ADD_QUEUE_METADATA':
-                request('add_queue_metadata', {
+                request(store, 'add_queue_metadata', {
                     tlids: action.tlids, 
                     added_from: action.from_uri,
                     added_by: store.getState().pusher.username
@@ -190,7 +185,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_START_UPGRADE':
-                request('upgrade')
+                request(store, 'upgrade')
                 .then(
                     response => {
                         if (response.error){
@@ -212,7 +207,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_SET_USERNAME':
-                request('set_username', {
+                request(store, 'set_username', {
                     username: action.username
                 })
                 .then(
@@ -229,7 +224,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_GET_CONNECTIONS':
-                request('get_connections')
+                request(store, 'get_connections')
                 .then(
                     response => {             
                         if (response.error){
@@ -281,7 +276,7 @@ const PusherMiddleware = (function(){
                 }
                 
                 // we don't need to wait for response, as change will be broadcast
-                request( 'start_radio', data )
+                request(store, 'start_radio', data)
                 break
 
             case 'PUSHER_RADIO_STARTED':
@@ -304,7 +299,7 @@ const PusherMiddleware = (function(){
                 }
 
                 // we don't need to wait for response, as change will be broadcast
-                request( 'stop_radio', data )
+                request(store, 'stop_radio', data)
                 break
 
             case 'PUSHER_RADIO_STOPPED':
@@ -329,7 +324,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DEBUG':
-                request( action.message.method, action.message.data )
+                request(store, action.message.method, action.message.data )
                 .then(
                     response => {
                         store.dispatch({type: 'DEBUG', response: response})

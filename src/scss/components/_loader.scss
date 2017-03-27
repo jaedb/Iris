@@ -1,24 +1,28 @@
 
+.loader {
+	opacity: 0;
+	position: fixed;
+	bottom: 12px;
+	right: 12px;
+	margin: 0 auto;
+	width: 16px;
+	height: 16px;
+	border: {
+		radius: 100%;
+		style: solid;
+		color: $blue;
+		width: 2px;
+	}
+	border-top-color: transparent;
+	pointer-events: none;
+
+	&.active {
+		opacity: 1;
+		@include animate();
+		@include spin();
+	}
+}
+
 .lazy-loader {
 	padding: 20px 0 40px;
-
-	.loader {
-		@include animate();
-		opacity: 0;
-		margin: 0 auto;
-		width: 30px;
-		height: 30px;
-		border: {
-			radius: 100%;
-			style: solid;
-			color: $mid_grey;
-			width: 2px;
-		}
-		border-top-color: transparent;
-	}
-
-	&.loading .loader {
-		@include spin();
-		opacity: 1;
-	}
 }

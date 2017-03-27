@@ -13,6 +13,41 @@ class DebugInfo extends React.Component{
 		super(props);
 	}
 
+	renderLoadQueue(){
+		if (!this.props.ui.load_queue){
+			return null
+		}
+
+		var load_queue = this.props.ui.load_queue
+		var queue = []
+
+		return (
+			<div className="item">
+				{queue}
+			</div>
+		)
+	}
+
+	renderLoadQueue(){
+		if (!this.props.ui.load_queue){
+			return null
+		}
+
+		var load_queue = this.props.ui.load_queue
+		var queue = []
+		for (var key in load_queue){
+			if (load_queue.hasOwnProperty(key)){
+				queue.push(<div key={key}>{load_queue[key]}</div>)
+			}
+		}
+
+		return (
+			<div className="item">
+				{queue}
+			</div>
+		)
+	}
+
 	render(){
 		var touch_state = 'no touch'
 		if (this.props.ui.emulate_touch){
@@ -41,6 +76,7 @@ class DebugInfo extends React.Component{
 				<div className="item">
 					{touch_state}
 				</div>
+				{this.renderLoadQueue()}
 			</div>
 		);
 	}

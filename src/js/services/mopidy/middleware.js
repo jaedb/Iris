@@ -115,15 +115,20 @@ const MopidyMiddleware = (function(){
             property = property.replace('get','');
             property = property.replace('set','');
 
+            var loader_key = helpers.generateGuid()
+            store.dispatch(uiActions.startLoading(loader_key, 'mopidy_'+property))
+
             mopidyObject( value )
                 .then(
                     response => {
-                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), call: call, data: response });
-                        resolve(response);
+                        store.dispatch(uiActions.stopLoading(loader_key))
+                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), call: call, data: response })
+                        resolve(response)
                     },
                     error => {
+                        store.dispatch(uiActions.stopLoading(loader_key))
                         console.error(error)
-                        reject(error);
+                        reject(error)
                     }
                 );
         });
