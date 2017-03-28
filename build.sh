@@ -1,13 +1,7 @@
 #!/bin/bash
 
-if [ ! -d public_html ]; then
-	echo -e Creating mopidy_iris/static folder
-	ln -s mopidy_iris/static public_html
-fi
-
 # copy assets
 echo -e Copying assets $SERVER
-cp src/.htaccess mopidy_iris/static/.htaccess
 rsync -avrs src/assets/ mopidy_iris/static/assets/ 2>&1 >/dev/null
 
 # create HTML files
