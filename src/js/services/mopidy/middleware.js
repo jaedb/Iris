@@ -222,20 +222,31 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ENQUEUE_URIS':
-                var value = { uris: action.uris }
-                if (action.at_position){
-                    value.at_position = action.at_position
+
+                // create batches of 20 uris to load
+                var all_uris = Object.assign([], action.uris)
+                var batched_uris = []
+                while (all_uris.length > 0){
+                    batched_uris.push( all_uris.splice(0,20) )
                 }
 
-                instruct( socket, store, 'tracklist.add', value )
-                    .then( response => {
-                        var tlids = []
-                        for (var i = 0; i < response.length; i++){
-                            tlids.push(response[i].tlid)
-                        }
-                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
-                        store.dispatch( uiActions.createNotification('Added '+tlids.length+' URI(s) to queue') )
-                    })
+                // run each batch
+                for (var i = 0; i < batched_uris.length; i++){
+                    var value = { uris: batched_uris[i] }
+                    if (action.at_position){
+                        value.at_position = action.at_position
+                    }
+
+                    instruct( socket, store, 'tracklist.add', value )
+                        .then( response => {
+                            var tlids = []
+                            for (var i = 0; i < response.length; i++){
+                                tlids.push(response[i].tlid)
+                            }
+                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                            console.info('Added '+tlids.length+' URI(s) to queue')
+                        })
+                }
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_NEXT':
