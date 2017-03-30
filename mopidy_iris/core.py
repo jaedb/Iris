@@ -182,6 +182,9 @@ class IrisCore(object):
     ##  
 
     def get_config(self, data):
+
+        # handle config setups where there is no username/password
+        # Iris won't work properly anyway, but at least we won't get server errors
         if 'spotify' in self.config and 'username' in self.config['spotify']:
             spotify_username = self.config['spotify']['username']
         else:        

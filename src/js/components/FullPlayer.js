@@ -69,7 +69,7 @@ class FullPlayer extends React.Component{
 			!this.props.current_track.album.images ){
 				return (
 					<span className="artwork">
-						<Thumbnail size="huge" images={[]} />
+						<Thumbnail size="huge" />
 					</span>
 				)
 		}
