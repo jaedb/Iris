@@ -218,7 +218,7 @@ class Artist extends React.Component{
 							<Thumbnail image={image} canZoom circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
-								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : null}
+								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : <button className="primary" onClick={e => this.props.mopidyActions.playURIs(this.props.artist.albums_uris, this.props.artist.uri)}>Play all</button>}
 								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
 								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 							</div>
