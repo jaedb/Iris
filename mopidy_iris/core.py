@@ -182,8 +182,13 @@ class IrisCore(object):
     ##  
 
     def get_config(self, data):
+        if 'spotify' in self.config and 'username' in self.config['spotify']:
+            spotify_username = self.config['spotify']['username']
+        else:        
+            spotify_username = False
+
         config = {
-            "spotify_username": self.config['spotify']['username'],
+            "spotify_username": spotify_username,
             "country": self.config['iris']['country'],
             "locale": self.config['iris']['locale']
         }
