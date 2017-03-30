@@ -61,5 +61,5 @@ Support
 -------
 
 * [Releases and changelog](https://github.com/jaedb/iris/releases)
-* [Issues and requests](https://github.com/jaedb/iris/issues)
+* [Issues and requests](https://github.com/jaedb/Iris/wiki/Logging-an-issue)
 
