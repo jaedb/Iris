@@ -12,7 +12,6 @@ import ContextMenu from '../components/ContextMenu'
 import Dragger from '../components/Dragger'
 import Modal from '../components/Modal/Modal'
 import Notifications from '../components/Notifications'
-import Loader from '../components/Loader'
 import DebugInfo from '../components/DebugInfo'
 
 import * as helpers from '../helpers'
