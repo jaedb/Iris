@@ -3,9 +3,9 @@
   "name": "Iris",
   "icons": [
     {
-      "src": "/iris/assets/favicon.ico",
+      "src": "/iris/assets/logo.png",
       "type": "image/png",
-      "sizes": "48x48"
+      "sizes": "256x265"
     }
   ],
   "start_url": "/iris/index.html",
