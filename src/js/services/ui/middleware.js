@@ -252,7 +252,8 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))                
+                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))
+                
                 switch(helpers.uriSource(action.key)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.key))

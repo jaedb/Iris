@@ -156,9 +156,11 @@ class App extends React.Component{
 		        <ContextMenu />
 		        <Dragger />
 		        <Modal />
-		        <Notifications />
+		        <Notifications 
+		        	uiActions={this.props.uiActions} 
+		        	notifications={this.props.notifications} 
+		        	load_queue={this.props.load_queue} />
 		        {this.props.debug_info ? <DebugInfo /> : null}
-		        <Loader load_queue={this.props.load_queue} />
 	        </div>
 		);
 	}
@@ -172,6 +174,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		notifications: (state.ui.notifications ? state.ui.notifications : []),
 		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,

@@ -1,55 +1,66 @@
 
 import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import * as actions from '../services/ui/actions'
-
-class Notifications extends React.Component{
+export default class Notifications extends React.Component{
 
 	constructor(props) {
 		super(props)
 	}
 
-	render(){
-		if( !this.props.notifications ) return null
+	renderNotifications(){
+		if (!this.props.notifications || this.props.notifications.length <= 0) return null
 
+		// we only care about the last notification
+		var notification = this.props.notifications[this.props.notifications.length-1]
+
+		if (notification.is_shortcut){
+			return (
+				<div className="shortcut-notification">
+					<FontAwesome name={notification.type} />
+				</div>
+			)
+		} else {
+			return (
+				<div className={notification.type+" notification"}>
+					<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
+					{ notification.content }
+				</div>
+			)
+		}
+	}
+
+	renderLoader(){
+		if (!this.props.load_queue){
+			return null
+		}
+
+		var load_queue = this.props.load_queue
+		var is_loading = false
+		for (var key in load_queue){
+			if (load_queue.hasOwnProperty(key)){
+				is_loading = true
+				break
+			}
+		}
+
+		if (is_loading){
+			return (
+				<div className="notification loading">
+					Loading
+				</div>
+			)
+		} else {
+			return null
+		}
+	}
+
+	render(){
 		return (
 			<div className="notifications">
-				{
-					this.props.notifications.map( notification => {
-						if (notification.is_shortcut){
-							return (
-								<div className="shortcut-notification" key={notification.id}>
-									<FontAwesome name={notification.type} />
-								</div>
-							)
-						} else {
-							return (
-								<div className={notification.type+" notification"} key={notification.id}>
-									<FontAwesome name="close" className="close-button" onClick={ e => this.props.actions.removeNotification(notification.id) } />
-									{ notification.content }
-								</div>
-							)
-						}
-					})
-				}
+				{this.renderNotifications()}
+				{this.renderLoader()}
 			</div>
 		)
 	}
 }
-
-const mapStateToProps = (state, ownProps) => {
-	return {
-		notifications: state.ui.notifications
-	}
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		actions: bindActionCreators(actions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications)

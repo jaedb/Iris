@@ -59,20 +59,20 @@ class Debug extends React.Component{
 					<h4 className="underline">User interface</h4>
 					<form>
 						<div className="field checkbox">
-							<div className="name">Emulation</div>
+							<div className="name">Debug</div>
 							<div className="input">
 								<label>
 									<input 
 										type="checkbox"
-										name="emulate_touch"
-										checked={ this.props.emulate_touch }
-										onChange={ e => this.props.uiActions.set({ emulate_touch: !this.props.emulate_touch })} />
-									<span className="label">Mouse events as touch</span>
+										name="debug_info"
+										checked={ this.props.debug_info }
+										onChange={ e => this.props.uiActions.set({ debug_info: !this.props.debug_info })} />
+									<span className="label">Show debug info panel</span>
 								</label>
 							</div>
 						</div>
 						<div className="field checkbox">
-							<div className="name">Debug data</div>
+							<div className="name">Logging</div>
 							<div className="input">
 								<label>
 									<input 
@@ -98,14 +98,12 @@ class Debug extends React.Component{
 										onChange={ e => this.props.uiActions.set({ log_pusher: !this.props.log_pusher })} />
 									<span className="label">Log Pusher</span>
 								</label>
-								<label>
-									<input 
-										type="checkbox"
-										name="debug_info"
-										checked={ this.props.debug_info }
-										onChange={ e => this.props.uiActions.set({ debug_info: !this.props.debug_info })} />
-									<span className="label">Show debug info</span>
-								</label>
+							</div>
+						</div>
+						<div className="field">
+							<div className="name"></div>
+							<div className="input">
+								<button className="secondary" onClick={e => this.props.uiActions.createNotification('Test '+Math.floor(Date.now() / 1000))}>Create notification</button>
 							</div>
 						</div>
 					</form>

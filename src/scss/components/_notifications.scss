@@ -2,31 +2,20 @@
 
 .notifications {
 	position: fixed;
-	top: 15px;
-	left: 0;
-	right: 0;
-	text-align: center;
+	bottom: 15px;
+	right: 15px;
 	z-index: 99;
 	pointer-events: none;
+	max-width: 400px;
 
 	.notification {
-		display: inline-block;
+		display: block;
 		position: relative;
 		background: $dark_grey;
 		padding: 12px 32px 12px 18px;
-		margin: 0 0.5px;
+		margin: 10px 0 0 0;
 		color: #FFFFFF;
 		pointer-events: all;
-
-		&:first-child {
-			border-top-left-radius: 50px;
-			border-bottom-left-radius: 50px;
-		}
-
-		&:last-child {
-			border-top-right-radius: 50px;
-			border-bottom-right-radius: 50px;
-		}
 
 		.close-button {
 			position: absolute;
@@ -54,6 +43,25 @@
 		&.bad {
 			background: $red;
 		}
+
+		&.loading {
+			position: relative;
+			padding-right: 18px;
+
+			&:after {
+				position: absolute;
+				display: block;
+				content: '';
+				background: $blue;
+				opacity: 1;
+			    animation: slideloader 1s infinite;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				z-index: 1;
+			}
+		}
 	}
 
 	.shortcut-notification {
@@ -63,9 +71,10 @@
 		height: 400px;
 		width: 400px;
 		margin: -200px 0 0 -200px;
-		background: rgba(10, 10, 10, 0.95);
+		background: $dark_grey;
 		color: $white;
 		border-radius: 10px;
+		text-align: center;
 
 		.fa {
 			font-size: 140px;

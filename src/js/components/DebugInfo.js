@@ -74,6 +74,9 @@ class DebugInfo extends React.Component{
 					{this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}&nbsp;users
 				</div>
 				<div className="item">
+					{this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}&nbsp;notifications
+				</div>
+				<div className="item">
 					{touch_state}
 				</div>
 				{this.renderLoadQueue()}

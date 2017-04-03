@@ -292,7 +292,7 @@ const MopidyMiddleware = (function(){
                         // treat empty response as a failed lookup
                         if( !response || response.length <= 0 ){
                             store.dispatch( uiActions.createNotification('Failed to load URI(s)', 'bad') )
-
+                            console.error(action)
                         }else{
                             // play it
                             store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );
