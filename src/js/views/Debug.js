@@ -103,7 +103,7 @@ class Debug extends React.Component{
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
-								<button className="secondary" onClick={e => this.props.uiActions.createNotification('Test '+Math.floor(Date.now() / 1000))}>Create notification</button>
+								<a className="button secondary" onClick={e => this.props.uiActions.createNotification('Test '+Math.floor(Date.now() / 1000))}>Create notification</a>
 							</div>
 						</div>
 					</form>

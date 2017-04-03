@@ -47,6 +47,7 @@ input[type="submit"] {
 	text-transform: uppercase;
 	font-size: 12px;
 	font-weight: 800;
+	box-sizing: border-box;
 
 	&.wide {
 		min-width: 200px;

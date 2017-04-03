@@ -20,7 +20,7 @@
 	    "expose-loader": "0.7.3",
 
 	    "node-sass": "4.5.0",
-	    "extract-text-webpack-plugin": "2.0.0",	    
+	    "extract-text-webpack-plugin": "2.0.0",
 
 		"babel-core": "^6.23.1",
 		"babel-loader": "^6.3.0",

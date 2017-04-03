@@ -50,7 +50,6 @@ class PlaylistGrid extends React.Component{
 										</div>
 										<div className="secondary">
 											{playlist.tracks_total ? playlist.tracks_total+' tracks' : <span>0 tracks</span>}
-											{playlist.can_edit ? <FontAwesome name="edit" /> : null}
 										</div>
 								</Link>
 							)
