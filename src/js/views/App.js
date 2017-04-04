@@ -106,10 +106,10 @@ class App extends React.Component{
 			case 32: // spacebar
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause()
-					this.props.uiActions.createNotification(null, 'pause', true)
+					this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut')
 				}else{
 					this.props.mopidyActions.play()
-					this.props.uiActions.createNotification(null, 'play', true)
+					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut')
 				}
 				break;
 

@@ -224,14 +224,13 @@ export function createBrowserNotification( data ){
     }
 }
 
-export function createNotification(content, type = 'default', is_shortcut = false){
+export function createNotification(content, type = 'default', id = helpers.generateGuid()){
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: {
-            id: helpers.generateGuid(),
+            id: id,
             type: type,
-            content: content,
-            is_shortcut: is_shortcut
+            content: content
         }
     }
 }

@@ -711,6 +711,7 @@ export default function reducer(ui = {}, action){
 
         case 'CREATE_NOTIFICATION':
             var notifications = [...ui.notifications, action.notification]
+            notifications = helpers.mergeDuplicates(notifications,'id')
             return Object.assign({}, ui, { notifications: notifications })
 
         case 'REMOVE_NOTIFICATION':

@@ -237,8 +237,10 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                let process_batch = function(){
-                    var params = {uris: remaining_uris.splice(0,10)}
+                let process_batch = function(){                    
+                    store.dispatch(uiActions.createNotification('Adding '+remaining_uris.length+' URI(s)', 'loading', action.type))
+
+                    var params = {uris: remaining_uris.splice(0,5)}
                     if (action.next && current_track_index > -1){
                         params.at_position = current_track_index + uris_added + 1
                     } else if (action.at_position){
@@ -256,11 +258,9 @@ const MopidyMiddleware = (function(){
                             for (var i = 0; i < response.length; i++){
                                 tlids.push(response[i].tlid)
                             }
-                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                            store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
 
-                            console.info('Added '+tlids.length+' URI(s) to queue')
-
-                            // still more URIs? run again in 0.8s
+                            // still more URIs? run again in 200ms
                             // this gives our server time to handle other requests
                             // crude, but prevents locking the server
                             if (remaining_uris.length > 0){
@@ -268,8 +268,12 @@ const MopidyMiddleware = (function(){
                                     function(){ 
                                         process_batch()
                                     }, 
-                                    800
+                                    200
                                 )
+
+                            // all done
+                            } else {
+                                store.dispatch(uiActions.removeNotification(action.type))
                             }
                         })
                 }

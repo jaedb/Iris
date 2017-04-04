@@ -14,22 +14,42 @@ export default class Notifications extends React.Component{
 		// we only care about the last notification
 		var notification = this.props.notifications[this.props.notifications.length-1]
 
-		if (notification.is_shortcut){
-			return (
-				<div className="shortcut-notification">
-					<FontAwesome name={notification.type} />
-				</div>
-			)
-		} else {
-			return (
-				<div className={notification.type+" notification"}>
-					<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
-					{ notification.content }
-				</div>
-			)
-		}
+		return (
+			<span>
+				{
+					this.props.notifications.map(notification => {
+						switch (notification.type){
+							case 'shortcut':
+								return (
+									<div className="shortcut-notification" key={notification.id}>
+										<FontAwesome name={notification.content} />
+									</div>
+								)
+
+							case 'loading':
+								return (
+									<div className="loading notification" key={notification.id}>
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
+										{ notification.content }
+									</div>
+								)
+
+							default:
+								return (
+									<div className={notification.type+" notification"} key={notification.id}>
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
+										{ notification.content }
+									</div>
+								)
+						}
+					})
+				}
+			</span>
+		)
 	}
 
+	// do we want the loading of everything to be displayed?
+	// not likely...
 	renderLoader(){
 		if (!this.props.load_queue){
 			return null
@@ -59,7 +79,6 @@ export default class Notifications extends React.Component{
 		return (
 			<div className="notifications">
 				{this.renderNotifications()}
-				{this.renderLoader()}
 			</div>
 		)
 	}
