@@ -57,20 +57,12 @@ export function playURIs( uris, from_uri = null ){
 	}
 }
 
-export function enqueueURIsNext( uris, from_uri = null ){
-	if( typeof(uris) !== 'object' ) uris = [uris]
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_NEXT',
-		uris: uris,
-		from_uri: from_uri
-	}
-}
-
-export function enqueueURIs( uris, from_uri = null, at_position = false ){
+export function enqueueURIs( uris, from_uri = null, next = false, at_position = null ){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS',
 		uris: uris,
 		at_position: at_position,
+		next: next,
 		from_uri: from_uri
 	}
 }

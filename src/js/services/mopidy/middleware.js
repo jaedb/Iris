@@ -222,35 +222,8 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ENQUEUE_URIS':
-
-                // create batches of 20 uris to load
-                var all_uris = Object.assign([], action.uris)
-                var batched_uris = []
-                while (all_uris.length > 0){
-                    batched_uris.push( all_uris.splice(0,20) )
-                }
-
-                // run each batch
-                for (var i = 0; i < batched_uris.length; i++){
-                    var value = { uris: batched_uris[i] }
-                    if (action.at_position){
-                        value.at_position = action.at_position
-                    }
-
-                    instruct( socket, store, 'tracklist.add', value )
-                        .then( response => {
-                            var tlids = []
-                            for (var i = 0; i < response.length; i++){
-                                tlids.push(response[i].tlid)
-                            }
-                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
-                            console.info('Added '+tlids.length+' URI(s) to queue')
-                        })
-                }
-                break
-
-            case 'MOPIDY_ENQUEUE_URIS_NEXT':
-
+                var uris_added = 0
+                var remaining_uris = Object.assign([], action.uris)
                 var current_track = store.getState().ui.current_track
                 var current_tracklist = store.getState().ui.current_tracklist
                 var current_track_index = -1
@@ -264,18 +237,46 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                var at_position = null
-                if( current_track_index > -1 ) at_position = current_track_index + 1
+                let process_batch = function(){
+                    var params = {uris: remaining_uris.splice(0,10)}
+                    if (action.next && current_track_index > -1){
+                        params.at_position = current_track_index + uris_added + 1
+                    } else if (action.at_position){
+                        params.at_position = action.at_position
+                    }
 
-                instruct( socket, store, 'tracklist.add', { uris: action.uris, at_position: at_position } )
-                    .then( response => {
-                        var tlids = []
-                        for (var i = 0; i < response.length; i++){
-                            tlids.push(response[i].tlid)
-                        }
-                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
-                        store.dispatch( uiActions.createNotification('Added '+tlids.length+' URI(s) to queue') )
-                    })
+                    instruct(socket, store, 'tracklist.add', params)
+                        .then( response => {
+
+                            // append our counter
+                            uris_added += response.length
+
+                            // add metadata to queue
+                            var tlids = []
+                            for (var i = 0; i < response.length; i++){
+                                tlids.push(response[i].tlid)
+                            }
+                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+
+                            console.info('Added '+tlids.length+' URI(s) to queue')
+
+                            // still more URIs? run again in 0.8s
+                            // this gives our server time to handle other requests
+                            // crude, but prevents locking the server
+                            if (remaining_uris.length > 0){
+                                setTimeout(
+                                    function(){ 
+                                        process_batch()
+                                    }, 
+                                    800
+                                )
+                            }
+                        })
+                }
+
+                // start processing
+                process_batch()
+
                 break
 
             case 'MOPIDY_PLAY_URIS':
