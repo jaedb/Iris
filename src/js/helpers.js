@@ -57,13 +57,13 @@ export let sizedImages = function( images ){
 		}
 	}
 
-	if( !sizes.medium ){
-		if( sizes.large ) sizes.medium = sizes.large
-		else if( sizes.huge ) sizes.medium = sizes.huge
+	if (!sizes.medium){
+		if (sizes.large) sizes.medium = sizes.large
+		else if (sizes.huge) sizes.medium = sizes.huge
 		else sizes.medium = sizes.small
 	}
-	if( !sizes.large ) sizes.large = sizes.medium;
-	if( !sizes.huge ) sizes.huge = sizes.large;
+	if (!sizes.large) sizes.large = sizes.medium;
+	if (!sizes.huge) sizes.huge = sizes.large;
 	
 	return sizes;
 }
