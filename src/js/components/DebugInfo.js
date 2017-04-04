@@ -41,43 +41,45 @@ class DebugInfo extends React.Component{
 			}
 		}
 
-		return (
-			<div className="item">
-				{queue}
-			</div>
-		)
+		if (queue.length > 0){
+			return (
+				<div className="item">
+					<br />
+					{queue}
+				</div>
+			)
+		} else {
+			return null
+		}
 	}
 
 	render(){
-		var touch_state = 'no touch'
-		if (this.props.ui.emulate_touch){
-			touch_state = 'emulated touch'
-		} else if (helpers.isTouchDevice()){
-			touch_state = 'touch device'
-		}
-
 		return (
 			<div className="debug-info">
 				<div className="item">
-					{this.props.ui.albums ? Object.keys(this.props.ui.albums).length : '0'}&nbsp;albums
+					Albums: {this.props.ui.albums ? Object.keys(this.props.ui.albums).length : '0'}
 				</div>
 				<div className="item">
-					{this.props.ui.artists ? Object.keys(this.props.ui.artists).length : '0'}&nbsp;artists
+					Artists: {this.props.ui.artists ? Object.keys(this.props.ui.artists).length : '0'}
 				</div>
 				<div className="item">
-					{this.props.ui.playlists ? Object.keys(this.props.ui.playlists).length : '0'}&nbsp;playlists
+					Playlists: {this.props.ui.playlists ? Object.keys(this.props.ui.playlists).length : '0'}
 				</div>
 				<div className="item">
-					{this.props.ui.tracks ? Object.keys(this.props.ui.tracks).length : '0'}&nbsp;tracks
+					Tracks: {this.props.ui.tracks ? Object.keys(this.props.ui.tracks).length : '0'}
 				</div>
 				<div className="item">
-					{this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}&nbsp;users
+					Users: {this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}
 				</div>
 				<div className="item">
-					{this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}&nbsp;notifications
+					Notifications: {this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}
+				</div>
+				<br />
+				<div className="item">
+					_testMode: {window._testMode ? 'on' : 'off'}
 				</div>
 				<div className="item">
-					{touch_state}
+					Touch: {helpers.isTouchDevice() ? 'yes' : 'no'}
 				</div>
 				{this.renderLoadQueue()}
 			</div>
