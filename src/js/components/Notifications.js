@@ -29,7 +29,7 @@ export default class Notifications extends React.Component{
 							case 'loading':
 								return (
 									<div className="loading notification" key={notification.id}>
-										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelLoading(notification.id) } />
 										{ notification.content }
 									</div>
 								)

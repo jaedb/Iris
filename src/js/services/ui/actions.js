@@ -235,7 +235,14 @@ export function createNotification(content, type = 'default', id = helpers.gener
     }
 }
 
-export function removeNotification( id ){
+export function cancelLoading(id){
+    return { 
+        type: 'CANCEL_LOADING_'+id,
+        id: id
+    }
+}
+
+export function removeNotification(id){
     return { 
         type: 'REMOVE_NOTIFICATION',
         id: id
