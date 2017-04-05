@@ -21,23 +21,23 @@ export default class Notifications extends React.Component{
 						switch (notification.type){
 							case 'shortcut':
 								return (
-									<div className="shortcut-notification" key={notification.id}>
+									<div className="shortcut-notification" key={notification.key}>
 										<FontAwesome name={notification.content} />
 									</div>
 								)
 
-							case 'loading':
+							case 'process':
 								return (
-									<div className="loading notification" key={notification.id}>
-										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelLoading(notification.id) } />
+									<div className="process notification" key={notification.key}>
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelProcess(notification.key) } />
 										{ notification.content }
 									</div>
 								)
 
 							default:
 								return (
-									<div className={notification.type+" notification"} key={notification.id}>
-										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.id) } />
+									<div className={notification.type+" notification"} key={notification.key}>
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key) } />
 										{ notification.content }
 									</div>
 								)

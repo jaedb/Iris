@@ -237,7 +237,13 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                let process_batch = function(){                    
+                let process_batch = function(){
+
+                    // process is not active, so abort
+                    if (!store.getState().ui.processes || !store.getState().ui.processes[action.uri]){
+                        return false
+                    }
+                    
                     store.dispatch(uiActions.createNotification('Adding '+remaining_uris.length+' URI(s)', 'loading', action.type))
 
                     var params = {uris: remaining_uris.splice(0,5)}
@@ -274,11 +280,13 @@ const MopidyMiddleware = (function(){
                             // all done
                             } else {
                                 store.dispatch(uiActions.removeNotification(action.type))
+                                store.dispatch(uiActions.stopProcess(action.type))
                             }
                         })
                 }
 
                 // start processing
+                store.dispatch(uiActions.startProcess(action.type))
                 process_batch()
 
                 break

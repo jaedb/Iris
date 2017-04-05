@@ -224,28 +224,21 @@ export function createBrowserNotification( data ){
     }
 }
 
-export function createNotification(content, type = 'default', id = helpers.generateGuid()){
+export function createNotification(content, type = 'default', key = helpers.generateGuid()){
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: {
-            id: id,
+            key: key,
             type: type,
             content: content
         }
     }
 }
 
-export function cancelLoading(id){
-    return { 
-        type: 'CANCEL_LOADING_'+id,
-        id: id
-    }
-}
-
-export function removeNotification(id){
+export function removeNotification(key){
     return { 
         type: 'REMOVE_NOTIFICATION',
-        id: id
+        key: key
     }
 }
 
@@ -265,6 +258,27 @@ export function startLoading(key,source){
 export function stopLoading(key){
     return { 
         type: 'STOP_LOADING',
+        key: key
+    }
+}
+
+export function startProcess(key){
+    return { 
+        type: 'START_PROCESS',
+        key: key
+    }
+}
+
+export function cancelProcess(key){
+    return { 
+        type: 'CANCEL_PROCESS',
+        key: key
+    }
+}
+
+export function stopProcess(key){
+    return { 
+        type: 'STOP_PROCESS',
         key: key
     }
 }
