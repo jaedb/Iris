@@ -745,7 +745,23 @@ export default function reducer(ui = {}, action){
 
          case 'START_PROCESS':
             var processes = Object.assign({}, (ui.processes ? ui.processes : []))
-            processes[action.key] = 'active'
+            processes[action.key] = {
+                key: action.key,
+                content: action.content
+            }
+            return Object.assign({}, ui, {processes: processes})
+
+         case 'CANCEL_PROCESS':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                processes[action.key] = Object.assign(
+                    {},
+                    processes[action.key],
+                    {
+                        cancelling: true
+                    }
+                )
+            }
             return Object.assign({}, ui, {processes: processes})
 
          case 'STOP_PROCESS':

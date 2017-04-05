@@ -268,15 +268,13 @@ const UIMiddleware = (function(){
 
             case 'CREATE_NOTIFICATION':
 
-                // start a timeout to remove this (non loading) notification
-                if (action.notification.type != 'process'){
-                    var timeout = setTimeout(
-                        function(){
-                            store.dispatch(uiActions.removeNotification(action.notification.key))
-                        },
-                        (action.notification.type == 'shortcut' ? 1000 : 3000)
-                    )
-                }
+                // start a timeout to remove this notification
+                var timeout = setTimeout(
+                    function(){
+                        store.dispatch(uiActions.removeNotification(action.notification.key))
+                    },
+                    (action.notification.type == 'shortcut' ? 1000 : 3000)
+                )
 
                 next(action)
                 break

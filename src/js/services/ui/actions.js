@@ -262,10 +262,11 @@ export function stopLoading(key){
     }
 }
 
-export function startProcess(key){
+export function startProcess(key,content){
     return { 
         type: 'START_PROCESS',
-        key: key
+        key: key,
+        content: content
     }
 }
 

@@ -104,7 +104,8 @@ class Debug extends React.Component{
 							<div className="name"></div>
 							<div className="input">
 								<a className="button secondary" onClick={e => this.props.uiActions.createNotification('Test notification')}>Create notification</a>
-								<a className="button secondary" onClick={e => this.props.uiActions.createNotification('Process running','process')}>Create process</a>
+								<a className="button secondary" onClick={e => this.props.uiActions.startProcess('test_process', 'Test process')}>Start process</a>
+								<a className="button secondary" onClick={e => this.props.uiActions.stopProcess('test_process')}>Stop process</a>
 							</div>
 						</div>
 					</form>

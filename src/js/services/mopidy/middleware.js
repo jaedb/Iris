@@ -239,12 +239,19 @@ const MopidyMiddleware = (function(){
 
                 let process_batch = function(){
 
-                    // process is not active, so abort
-                    if (!store.getState().ui.processes || !store.getState().ui.processes[action.uri]){
+                    // process is not running
+                    if (store.getState().ui.processes && store.getState().ui.processes[action.type]){
+                        if (store.getState().ui.processes[action.type].cancelling){
+                            // recognise as cancelled
+                            store.dispatch(uiActions.stopProcess(action.type))
+                            return false
+                        }
+                    } else {
                         return false
                     }
                     
-                    store.dispatch(uiActions.createNotification('Adding '+remaining_uris.length+' URI(s)', 'loading', action.type))
+                    // update our process details
+                    store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
 
                     var params = {uris: remaining_uris.splice(0,5)}
                     if (action.next && current_track_index > -1){
@@ -279,14 +286,13 @@ const MopidyMiddleware = (function(){
 
                             // all done
                             } else {
-                                store.dispatch(uiActions.removeNotification(action.type))
                                 store.dispatch(uiActions.stopProcess(action.type))
                             }
                         })
                 }
 
                 // start processing
-                store.dispatch(uiActions.startProcess(action.type))
+                store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
                 process_batch()
 
                 break
