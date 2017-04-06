@@ -250,8 +250,8 @@ class ContextMenu extends React.Component{
 				{
 					playlists.map( playlist => {
 						return (
-							<span className="menu-item-wrapper" key={playlist.uri} >
-								<a className="menu-item" onClick={ () => this.addTracksToPlaylist(playlist.uri) }>
+							<span className="menu-item-wrapper" key={playlist.uri}>
+								<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
 									<span className="label">{ playlist.name }</span>
 								</a>
 							</span>
