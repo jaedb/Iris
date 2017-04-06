@@ -266,7 +266,7 @@ export let asURIs = function(items){
  * Merge duplicated items in an array
  *
  * @param list Array the unclean array
- * @param key string = the unique key (uri, tlid, etc)
+ * @param key string = the unique key (id, uri, tlid, etc)
  **/
 export let mergeDuplicates = function(list, key){
 	var clean_list = [];

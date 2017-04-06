@@ -271,9 +271,9 @@ const UIMiddleware = (function(){
                 // start a timeout to remove this notification
                 var timeout = setTimeout(
                     function(){
-                        store.dispatch(uiActions.removeNotification(action.notification.id))
+                        store.dispatch(uiActions.removeNotification(action.notification.key))
                     },
-                    3000
+                    (action.notification.type == 'shortcut' ? 1000 : 3000)
                 )
 
                 next(action)

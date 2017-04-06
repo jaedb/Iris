@@ -74,12 +74,15 @@ class DebugInfo extends React.Component{
 				<div className="item">
 					Notifications: {this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}
 				</div>
+				<div className="item">
+					Processes: {this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'}
+				</div>
 				<br />
 				<div className="item">
 					_testMode: {window._testMode ? 'on' : 'off'}
 				</div>
 				<div className="item">
-					Touch: {helpers.isTouchDevice() ? 'yes' : 'no'}
+					Touch: {helpers.isTouchDevice() ? 'on' : 'off'}
 				</div>
 				{this.renderLoadQueue()}
 			</div>

@@ -139,7 +139,7 @@ class ContextMenu extends React.Component{
 		return (helpers.uriSource(this.props.menu.items[0].uri) == 'spotify')
 	}
 
-	toggleInLibrary(in_library){
+	toggleInLibrary(e, in_library){
 		this.props.uiActions.hideContextMenu()
 		if (in_library){
 			this.props.spotifyActions.following(this.props.menu.items[0].uri, 'DELETE')
@@ -148,13 +148,13 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	playQueueItem(){
+	playQueueItem(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
 		this.props.mopidyActions.changeTrack( tracks[0].tlid )
 	}
 
-	removeFromQueue(){
+	removeFromQueue(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
 		var tracks_tlids = [];
@@ -164,37 +164,37 @@ class ContextMenu extends React.Component{
 		this.props.mopidyActions.removeTracks( tracks_tlids );
 	}
 
-	playURIs(){
+	playURIs(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
 	}
 
-	playURIsNext(){
+	playPlaylist(e){
 		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.enqueueURIsNext(this.props.menu.uris, this.props.menu.tracklist_uri)
+		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0])
 	}
 
-	addToQueue(){
+	addToQueue(e, next = false){
 		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, next)
 	}
 
-	addTracksToPlaylist(playlist_uri){
+	addTracksToPlaylist(e, playlist_uri){
 		this.props.uiActions.hideContextMenu()
 		this.props.uiActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
 	}
 
-	removeFromPlaylist(){
+	removeFromPlaylist(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.uiActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
 	}
 
-	startRadio(){
+	startRadio(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.pusherActions.startRadio(this.props.menu.uris)
 	}
 
-	goToArtist(){
+	goToArtist(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0){
 			return null
 		} else {
@@ -203,7 +203,7 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	goToUser(){
+	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0){
 			return null
 		} else {
@@ -223,7 +223,7 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu()
 	}
 
-	closeAndDeselectTracks(){
+	closeAndDeselectTracks(e){
 		this.props.uiActions.hideContextMenu();
 		// TODO
 	}
@@ -331,6 +331,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var play_playlist = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.playPlaylist(e)}>
+					<span className="label">Play</span>
+				</a>
+			</span>
+		)
+
 		var play_queue_item = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.playQueueItem(e)}>
@@ -341,7 +349,7 @@ class ContextMenu extends React.Component{
 
 		var play_uris_next = (
 			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.playURIsNext(e)}>
+				<a className="menu-item" onClick={e => this.addToQueue(e, true)}>
 					<span className="label">Play next</span>
 				</a>
 			</span>
@@ -367,7 +375,7 @@ class ContextMenu extends React.Component{
 
 		var toggle_in_library = (
 			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.toggleInLibrary(context.in_library)}>
+				<a className="menu-item" onClick={e => this.toggleInLibrary(e, context.in_library)}>
 					<span className="label">
 						{context.in_library ? 'Remove from library' : 'Add to library'}
 					</span>
@@ -451,7 +459,7 @@ class ContextMenu extends React.Component{
 			case 'playlist':
 				return (
 					<div>
-						{play_uris}
+						{play_playlist}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}

@@ -224,22 +224,21 @@ export function createBrowserNotification( data ){
     }
 }
 
-export function createNotification(content, type = 'default', is_shortcut = false){
+export function createNotification(content, type = 'default', key = helpers.generateGuid()){
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: {
-            id: helpers.generateGuid(),
+            key: key,
             type: type,
-            content: content,
-            is_shortcut: is_shortcut
+            content: content
         }
     }
 }
 
-export function removeNotification( id ){
+export function removeNotification(key){
     return { 
         type: 'REMOVE_NOTIFICATION',
-        id: id
+        key: key
     }
 }
 
@@ -259,6 +258,28 @@ export function startLoading(key,source){
 export function stopLoading(key){
     return { 
         type: 'STOP_LOADING',
+        key: key
+    }
+}
+
+export function startProcess(key,content){
+    return { 
+        type: 'START_PROCESS',
+        key: key,
+        content: content
+    }
+}
+
+export function cancelProcess(key){
+    return { 
+        type: 'CANCEL_PROCESS',
+        key: key
+    }
+}
+
+export function stopProcess(key){
+    return { 
+        type: 'STOP_PROCESS',
         key: key
     }
 }

@@ -106,10 +106,10 @@ class App extends React.Component{
 			case 32: // spacebar
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause()
-					this.props.uiActions.createNotification(null, 'pause', true)
+					this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut')
 				}else{
 					this.props.mopidyActions.play()
-					this.props.uiActions.createNotification(null, 'play', true)
+					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut')
 				}
 				break;
 
@@ -158,6 +158,7 @@ class App extends React.Component{
 		        <Notifications 
 		        	uiActions={this.props.uiActions} 
 		        	notifications={this.props.notifications} 
+		        	processes={this.props.processes} 
 		        	load_queue={this.props.load_queue} />
 		        {this.props.debug_info ? <DebugInfo /> : null}
 	        </div>
@@ -174,6 +175,7 @@ class App extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		notifications: (state.ui.notifications ? state.ui.notifications : []),
+		processes: (state.ui.processes ? state.ui.processes : {}),
 		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,

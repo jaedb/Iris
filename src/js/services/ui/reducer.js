@@ -711,15 +711,16 @@ export default function reducer(ui = {}, action){
 
         case 'CREATE_NOTIFICATION':
             var notifications = [...ui.notifications, action.notification]
+            notifications = helpers.mergeDuplicates(notifications,'key')
             return Object.assign({}, ui, { notifications: notifications })
 
         case 'REMOVE_NOTIFICATION':
             var notifications = Object.assign([], ui.notifications)
 
-            function getByID( notification ){
-                return notification.id === action.id
+            function getByKey( notification ){
+                return notification.key === action.key
             }
-            var index = notifications.findIndex(getByID)
+            var index = notifications.findIndex(getByKey)
             if( index > -1 ) notifications.splice(index, 1)
 
             return Object.assign({}, ui, { notifications: notifications })
@@ -727,7 +728,7 @@ export default function reducer(ui = {}, action){
 
 
         /**
-         * Loader
+         * Loading and processes
          **/
 
          case 'START_LOADING':
@@ -741,6 +742,34 @@ export default function reducer(ui = {}, action){
                 delete load_queue[action.key]
             }
             return Object.assign({}, ui, {load_queue: load_queue})
+
+         case 'START_PROCESS':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : []))
+            processes[action.key] = {
+                key: action.key,
+                content: action.content
+            }
+            return Object.assign({}, ui, {processes: processes})
+
+         case 'CANCEL_PROCESS':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                processes[action.key] = Object.assign(
+                    {},
+                    processes[action.key],
+                    {
+                        cancelling: true
+                    }
+                )
+            }
+            return Object.assign({}, ui, {processes: processes})
+
+         case 'STOP_PROCESS':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                delete processes[action.key]
+            }
+            return Object.assign({}, ui, {processes: processes})
 
 
         default:
