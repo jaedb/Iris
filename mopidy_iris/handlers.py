@@ -91,13 +91,15 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     mem.iris.send_message(self.connection_id, response)
             else:
                 response = {
-                    'error': 'Method "'+message['method']+'" does not exist',
+                    'status': 0,
+                    'message': 'Method "'+message['method']+'" does not exist',
                     'request_id': request_id
                 }
                 mem.iris.send_message(self.connection_id, response)
         else:
             response = {
-                'error': 'Method key missing from request',
+                'status': 0,
+                'message': 'Method key missing from request',
                 'request_id': request_id
             }
             mem.iris.send_message(self.connection_id, response)
