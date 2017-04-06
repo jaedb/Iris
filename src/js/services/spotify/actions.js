@@ -919,6 +919,7 @@ export function getPlaylist( uri ){
                 description = response.description
                 description = description.split('<a href="spotify:artist:').join('<a href="#'+global.baseURL+'artist/spotify:artist:')
                 description = description.split('<a href="spotify:album:').join('<a href="#'+global.baseURL+'album/spotify:album:')
+                description = description.split('<a href="spotify:user:').join('<a href="#'+global.baseURL+'user/spotify:user:')
             }
 
             var playlist = Object.assign(
