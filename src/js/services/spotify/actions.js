@@ -890,7 +890,7 @@ export function createPlaylist( name, is_public ){
     }
 }
 
-export function savePlaylist( uri, name, is_public ){
+export function savePlaylist(uri, name, is_public){
     return (dispatch, getState) => {
 
         sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', { name: name, public: is_public } )
@@ -906,7 +906,7 @@ export function savePlaylist( uri, name, is_public ){
     }
 }
 
-export function getPlaylist( uri ){
+export function getPlaylist(uri){
     return (dispatch, getState) => {
 
         // get the main playlist object
@@ -943,7 +943,44 @@ export function getPlaylist( uri ){
     }
 }
 
-function loadNextPlaylistsBatch( dispatch, getState, playlists, lastResponse ){
+/**
+ * Get all tracks for a playlist
+ *
+ * Recursively get .next until we have all tracks
+ **/
+function loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, lastResponse){
+    if( lastResponse.next ){
+        sendRequest(dispatch, getState, lastResponse.next)
+            .then( response => {
+                tracks = [...tracks, ...response.items]
+                loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, response)
+            });
+    }else{
+        dispatch({
+            type: 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING',
+            uri: uri,
+            tracks: tracks
+        });
+    }
+}
+
+export function getAllPlaylistTracks(uri){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country)
+            .then( response => {
+                loadNextPlaylistTracksBatch(dispatch, getState, uri, response.items, response)
+            });
+    }
+}
+
+
+/**
+ * Get all of our playlists in one foul swoop
+ *
+ * Recursively gets playlists until no more .next value. Fails when user has
+ * a lot of playlists, and we hit the API limits
+ **/
+function loadNextPlaylistsBatch(dispatch, getState, playlists, lastResponse){
     if( lastResponse.next ){
         sendRequest( dispatch, getState, lastResponse.next )
             .then( response => {
@@ -967,7 +1004,7 @@ export function getAllLibraryPlaylists(){
     }
 }
 
-export function toggleFollowingPlaylist( uri, method ){
+export function toggleFollowingPlaylist(uri, method){
     if( method == 'PUT' ) var new_state = 1
     if( method == 'DELETE' ) var new_state = 0
 

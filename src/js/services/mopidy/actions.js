@@ -67,6 +67,20 @@ export function enqueueURIs( uris, from_uri = null, next = false, at_position = 
 	}
 }
 
+export function playPlaylist(uri){
+	return {
+		type: 'MOPIDY_PLAY_PLAYLIST',
+		uri: uri
+	}
+}
+
+export function playAlbum(uri){
+	return {
+		type: 'MOPIDY_PLAY_ALBUM',
+		uri: uri
+	}
+}
+
 export function removeTracks( tlids ){
 	return {
 		type: 'MOPIDY_INSTRUCT',

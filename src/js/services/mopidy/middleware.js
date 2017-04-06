@@ -4,8 +4,9 @@ import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
 var uiActions = require('../ui/actions.js')
-var lastfmActions = require('../lastfm/actions.js')
+var spotifyActions = require('../spotify/actions.js')
 var pusherActions = require('../pusher/actions.js')
+var lastfmActions = require('../lastfm/actions.js')
 
 const MopidyMiddleware = (function(){ 
 
@@ -219,7 +220,42 @@ const MopidyMiddleware = (function(){
                     icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
-                break;
+                break
+
+            case 'MOPIDY_PLAY_PLAYLIST':
+                if (helpers.uriSource(action.uri) == 'spotify'){
+
+                    // playlist already in index
+                    if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
+                        
+                        // make sure we didn't get this playlist from Mopidy-Spotify
+                        // if we did, we'd have a cached version on server so no need to fetch
+                        if (!store.getState().ui.playlists[action.uri].is_mopidy){
+                            store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
+                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                            break
+                        }
+
+                    // not loaded, so we need to fetch
+                    } else {
+                        store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
+                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                        break
+                    }
+                }
+
+                // default to load it as per usual
+                store.dispatch(mopidyActions.playURIs([action.uri], action.uri))
+
+                break
+
+            case 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING':
+                var uris = []
+                for (var i = 0; i < action.tracks.length; i++){
+                    uris.push(action.tracks[i].track.uri)
+                }
+                store.dispatch(mopidyActions.playURIs(uris, action.uri))
+                break
 
             case 'MOPIDY_ENQUEUE_URIS':
                 var uris_added = 0
@@ -273,7 +309,7 @@ const MopidyMiddleware = (function(){
                             }
                             store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
 
-                            // still more URIs? run again in 200ms
+                            // still more URIs? run again in 100ms
                             // this gives our server time to handle other requests
                             // crude, but prevents locking the server
                             if (remaining_uris.length > 0){
@@ -281,7 +317,7 @@ const MopidyMiddleware = (function(){
                                     function(){ 
                                         process_batch()
                                     }, 
-                                    200
+                                    100
                                 )
 
                             // all done
@@ -306,45 +342,35 @@ const MopidyMiddleware = (function(){
 
                 var first_uri = action.uris[0]
 
-                // spotify playlist and albums are handled differently
-                if (helpers.uriSource(first_uri) == 'spotify'){
-                    switch (helpers.uriType(first_uri)){
-                        case 'playlist':
-                            // TODO
-                            // trigger loading of all the playlist tracks
-                            // once loaded, re-run play uris
-                            // maybe create new play_album play_playlist actions to handle
-                            // as we'd then reuse play_uris for the loaded track uris
-                            break
-
-                        case 'album':
-                            break
-                    }
-                }
-
                 // add our first track
-                instruct( socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 } )
-                    .then( response => {
+                instruct(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
+                    .then(response => {
 
-                        // treat empty response as a failed lookup
-                        if( !response || response.length <= 0 ){
-                            store.dispatch( uiActions.createNotification('Failed to load URI(s)', 'bad') )
-                            console.error(action)
-                        }else{
-                            // play it
-                            store.dispatch( mopidyActions.changeTrack( response[0].tlid ) );
+                        // play it (only if we got a successful lookup)
+                        if (response.length > 0){
+                            store.dispatch(mopidyActions.changeTrack(response[0].tlid));
 
                             var tlids = []
                             for (var i = 0; i < response.length; i++){
                                 tlids.push(response[i].tlid)
                             }
-                            store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                            store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
+                        } else {
+                            store.dispatch(uiActions.createNotification('Failed to add some URI(s)', 'bad'))
+                        }
 
-                            // add the rest of our uris (if any)
-                            action.uris.shift();
-                            if( action.uris.length > 0 ){
-                                store.dispatch( mopidyActions.enqueueURIs( action.uris, action.from_uri, 1 ) )
-                            }
+                        // add the rest of our uris (if any)
+                        action.uris.shift();
+                        if( action.uris.length > 0 ){
+
+                            // wait 100ms so the server can trigger track_changed etc
+                            // this means our UI feels snappier as the first track shows up quickly
+                            setTimeout(
+                                function(){ 
+                                    store.dispatch(mopidyActions.enqueueURIs( action.uris, action.from_uri, 1 ))
+                                }, 
+                                100
+                            )
                         }
                     })
                 break;
@@ -490,7 +516,8 @@ const MopidyMiddleware = (function(){
                                             type: 'playlist',
                                             name: response.name,
                                             uri: response.uri,
-                                            source: (source == 'spotify' ? 'local' : source),
+                                            source: source,
+                                            is_mopidy: true,
                                             last_modified: response.last_modified,
                                             tracks_total: ( response.tracks ? response.tracks.length : 0 )
                                         }
@@ -514,6 +541,7 @@ const MopidyMiddleware = (function(){
                             response,
                             {
                                 type: 'playlist',
+                                is_mopidy: true,
                                 tracks: ( response.tracks ? response.tracks : [] ),
                                 tracks_total: ( response.tracks ? response.tracks.length : [] )
                             }
@@ -738,6 +766,7 @@ const MopidyMiddleware = (function(){
                                 var album = Object.assign(
                                     {},
                                     {
+                                        is_mopidy: true,
                                         artists: response[uri][0].artists,
                                         tracks: response[uri],
                                         tracks_total: response[uri].length
@@ -766,6 +795,7 @@ const MopidyMiddleware = (function(){
                             { images: [] },
                             response[0].album,
                             {
+                                is_mopidy: true,
                                 artists: response[0].artists,
                                 tracks: response,
                                 tracks_total: response.length
@@ -869,6 +899,7 @@ const MopidyMiddleware = (function(){
                             {},
                             (response ? response[0].artists[0] : {}),
                             {
+                                is_mopidy: true,
                                 albums_uris: helpers.asURIs(albums),
                                 tracks: response.slice(0,10)
                             }
