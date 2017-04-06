@@ -304,8 +304,26 @@ const MopidyMiddleware = (function(){
                     store.dispatch( pusherActions.stopRadio() )
                 }
 
+                var first_uri = action.uris[0]
+
+                // spotify playlist and albums are handled differently
+                if (helpers.uriSource(first_uri) == 'spotify'){
+                    switch (helpers.uriType(first_uri)){
+                        case 'playlist':
+                            // TODO
+                            // trigger loading of all the playlist tracks
+                            // once loaded, re-run play uris
+                            // maybe create new play_album play_playlist actions to handle
+                            // as we'd then reuse play_uris for the loaded track uris
+                            break
+
+                        case 'album':
+                            break
+                    }
+                }
+
                 // add our first track
-                instruct( socket, store, 'tracklist.add', { uri: action.uris[0], at_position: 0 } )
+                instruct( socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 } )
                     .then( response => {
 
                         // treat empty response as a failed lookup
