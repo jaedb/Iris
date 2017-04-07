@@ -44,9 +44,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         created = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
 
         # get our IP
-        # if it's local, then use our proxy origin
+        # if it's local, then check for proxy origin
         ip = self.request.remote_ip
-        if (ip == '127.0.0.1'):
+        if (ip == '127.0.0.1' and hasattr(self.request.headers,'X-Forwarded-For')):
             ip = self.request.headers['X-Forwarded-For']
 
         # construct our client object, and add to our list of connections
