@@ -11,7 +11,7 @@
 	.notification {
 		display: block;
 		position: relative;
-		background: $dark_grey;
+		background: $blue;
 		padding: 12px 32px 12px 18px;
 		margin: 10px 0 0 0;
 		color: #FFFFFF;
@@ -48,11 +48,15 @@
 			position: relative;
 			padding-right: 18px;
 
+			&.cancelling {
+				color: rgba(255,255,255,0.5);
+			}
+
 			&:after {
 				position: absolute;
 				display: block;
 				content: '';
-				background: $blue;
+				background: rgba(0,0,0,0.35);
 				opacity: 1;
 			    animation: slideloader 1s infinite;
 				bottom: 0;
@@ -80,5 +84,12 @@
 			font-size: 140px;
 			line-height: 400px;
 		}
+	}
+
+	@include responsive( $bp_medium ){
+		bottom: 48px;
+		left: 0;
+		right: 0;
+		width: auto;
 	}
 }
