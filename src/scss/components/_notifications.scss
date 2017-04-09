@@ -3,7 +3,7 @@
 .notifications {
 	position: fixed;
 	bottom: 15px;
-	right: 15px;
+	right: 30px;
 	z-index: 99;
 	pointer-events: none;
 	width: 200px;
@@ -62,7 +62,7 @@
 				bottom: 0;
 				left: 0;
 				right: 0;
-				height: 3px;
+				height: 4px;
 				z-index: 1;
 			}
 		}
@@ -83,6 +83,29 @@
 		.fa {
 			font-size: 140px;
 			line-height: 400px;
+		}
+	}
+
+	.loading {
+		@include pulse(0.1s);
+		position: fixed;
+		bottom: 8px;
+		right: 8px;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: $mid_grey;
+
+		&.high {
+			background: $red;
+		}
+
+		&.medium {
+			background: $orange;
+		}
+
+		&.low {
+			background: $green;
 		}
 	}
 

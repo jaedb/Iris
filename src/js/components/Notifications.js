@@ -76,19 +76,24 @@ export default class Notifications extends React.Component{
 		}
 
 		var load_queue = this.props.load_queue
-		var is_loading = false
+		var load_count = 0
 		for (var key in load_queue){
 			if (load_queue.hasOwnProperty(key)){
-				is_loading = true
-				break
+				load_count++
 			}
 		}
 
-		if (is_loading){
+		if (load_count > 0){
+			var className = "loading "
+			if (load_count > 20){
+				className += 'high'
+			} else if (load_count > 5){
+				className += 'medium'
+			} else {
+				className += 'low'
+			}
 			return (
-				<div className="notification loading">
-					Loading
-				</div>
+				<div className={className}></div>
 			)
 		} else {
 			return null
@@ -98,6 +103,7 @@ export default class Notifications extends React.Component{
 	render(){
 		return (
 			<div className="notifications">
+				{this.renderLoader()}
 				{this.renderNotifications()}
 				{this.renderProcesses()}
 			</div>

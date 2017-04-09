@@ -45,6 +45,10 @@ $bp_shallow: 650px;
 	}
 }
 
+/** 
+ * General animations
+ **/
+
 @mixin animate( $duration: 0.2s, $easing: ease-in-out ){
 	-webkit-transition: all $duration $easing;
 	   -moz-transition: all $duration $easing;
@@ -57,12 +61,6 @@ $bp_shallow: 650px;
 	   -moz-transition: none !important;
 	     -o-transition: none !important;
 	        transition: none !important;
-}
-
-@keyframes slideloader {
-    0% { left: 0%; right: 100%; }
-    50% { left: 0%; right: 0%; }
-    100% { left: 100%; right: 0%; }
 }
 
 @keyframes shrink_from_right {
@@ -88,10 +86,35 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
+@keyframes pulse {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@mixin pulse( $duration: 0.5s ){
+    animation-name: pulse;
+    animation-duration: $duration;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
 @mixin blur( $size: 10px ) {
 	-webkit-filter: blur( $size );
 	filter: blur( $size );
 }
+
+@keyframes slideloader {
+    0% { left: 0%; right: 100%; }
+    50% { left: 0%; right: 0%; }
+    100% { left: 100%; right: 0%; }
+}
+
+
+/**
+ * Grid layout
+ * Produces most album/playlist/artist grids
+ **/
 
 @mixin grid_item( $cols, $gap: 2% ){
 	width: ( 0% + ( 100 / $cols ) - ( $gap * 2 ) + ( ( $gap * 2 ) / $cols ) );
@@ -107,6 +130,12 @@ $bp_shallow: 650px;
 		margin-left: 0;
 	}
 }
+
+
+/** 
+ * Responsive rules
+ * Creates @media wrappers
+ **/
 
 @mixin responsive( $max_width: null, $min_width: null, $max_height: null, $min_height: null ){
 	@if $max_width and $max_height {
@@ -131,5 +160,3 @@ $bp_shallow: 650px;
 		}
 	}
 }
-
-
