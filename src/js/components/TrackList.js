@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
 import Track from './Track'
 import ContextMenuTrigger from './ContextMenuTrigger'
@@ -267,6 +268,14 @@ class TrackList extends React.Component{
 		// by default, do nothing
 	}
 
+	unselectAll(e){
+		var tracks = this.props.tracks
+		for (var i = 0; i < tracks.length; i++){
+			tracks[i].selected = false
+		}
+		this.setState({tracks: tracks})
+	}
+
 	renderHeader(){
 		if( this.props.noheader ) return null
 		
@@ -306,6 +315,21 @@ class TrackList extends React.Component{
 		}
 	}
 
+	renderContextButtons(){
+		if (this.selectedTracks().length <= 0){
+			return null
+		} else {
+			return (
+				<div className="context-buttons">
+					<button className="context-menu-trigger unselect-all" onClick={e => this.unselectAll(e)}>
+						<FontAwesome name="close" />
+					</button>
+					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+				</div>
+			)
+		}
+	}
+
 	render(){
 		if( !this.state.tracks || Object.prototype.toString.call(this.state.tracks) !== '[object Array]' ) return null
 
@@ -335,7 +359,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.selectedTracks().length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} /> : null}
+				{this.renderContextButtons()}
 			</div>
 		);
 	}
