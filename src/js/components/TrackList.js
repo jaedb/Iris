@@ -144,7 +144,7 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleContextMenu(e){
+	handleContextMenu(e, deselect = false){
 		var selected_tracks = this.selectedTracks()
 		var data = {
 			e: e,
@@ -155,6 +155,10 @@ class TrackList extends React.Component{
 			indexes: this.tracksIndexes(selected_tracks)
 		}
 		this.props.uiActions.showContextMenu(data)
+
+		if (deselect){
+			this.deselectAllTracks()
+		}
 	}
 
 	toggleTrackSelections(e,index){
@@ -198,6 +202,14 @@ class TrackList extends React.Component{
 		}
 
 		this.setState({ tracks: tracks, lastSelectedTrack: lastSelectedTrack })
+	}
+
+	deselectAllTracks(){		
+		var tracks = this.props.tracks
+		for (var i = 0; i < tracks.length; i++){
+			tracks[i].selected = false
+		}
+		this.setState({tracks: tracks})
 	}
 
 	isRightClick(e){
@@ -268,14 +280,6 @@ class TrackList extends React.Component{
 		// by default, do nothing
 	}
 
-	unselectAll(e){
-		var tracks = this.props.tracks
-		for (var i = 0; i < tracks.length; i++){
-			tracks[i].selected = false
-		}
-		this.setState({tracks: tracks})
-	}
-
 	renderHeader(){
 		if( this.props.noheader ) return null
 		
@@ -315,21 +319,6 @@ class TrackList extends React.Component{
 		}
 	}
 
-	renderContextButtons(){
-		if (this.selectedTracks().length <= 0){
-			return null
-		} else {
-			return (
-				<div className="context-buttons">
-					<button className="context-menu-trigger unselect-all" onClick={e => this.unselectAll(e)}>
-						<FontAwesome name="close" />
-					</button>
-					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
-				</div>
-			)
-		}
-	}
-
 	render(){
 		if( !this.state.tracks || Object.prototype.toString.call(this.state.tracks) !== '[object Array]' ) return null
 
@@ -359,7 +348,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.renderContextButtons()}
+				{this.selectedTracks().length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, true)} /> : null}
 			</div>
 		);
 	}
