@@ -154,7 +154,9 @@
 			display: block;
 
 			button,
+			.button,
 			.dropdown-field {
+				text-decoration: none;
 				display: block;
 				border: 0;
 				margin: 0;
@@ -180,7 +182,8 @@
 				}
 			}
 
-			button {
+			button,
+			.button {
 				padding: 16px 20px;
 				min-width: 100% !important;
 				max-width: 100% !important;
