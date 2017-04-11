@@ -264,9 +264,9 @@
 	}
 }
 
-.track-list {
+.track-list.edit-mode {
 	.context-menu-trigger {	
-		display: none;
+		display: block;
 		position: fixed;
 		bottom: 50px;
 		right: 5px;
@@ -281,10 +281,6 @@
 		&:focus,
 		&:active {
 			background: darken($blue, 10%);
-		}
-
-		@include responsive( $bp_medium ){
-			display: block;
 		}
 	}
 }

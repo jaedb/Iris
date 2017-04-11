@@ -22,7 +22,7 @@
 			background: $yellow !important;
 		}
 
-		&:not(.header):hover {
+		:root .notouch &:not(.header):hover {
 			background: $faint_grey;
 			cursor: pointer;
 			border-color: $faint_grey;
@@ -55,55 +55,57 @@
 		}
 	}
 
-	&.track-list .list-item {
-		padding-left: 40px;
+	&.track-list {
+		.list-item {
+			padding-left: 40px;
 
-		.col {
-			&.name { 
-				width: 40%;
+			.col {
+				&.name { 
+					width: 40%;
+				}
+				&.artists,
+				&.album { 
+					width: 25%;
+				}
+				&.duration {
+					width: 5%;
+				}
 			}
-			&.artists,
-			&.album { 
-				width: 25%;
+
+			.select-state {
+				position: absolute;
+				top: 15px;
+				left: 15px;
+				font-size: 10px;
 			}
-			&.duration {
-				width: 5%;
-			}
-		}
 
-		.select-state {
-			position: absolute;
-			top: 15px;
-			left: 15px;
-			font-size: 10px;
-		}
-
-		.play-state {
-			display: none;
-			position: absolute;
-			top: 16px;
-			left: 15px;
-			font-size: 10px;
-		}
-
-		&.playing {
-			font-weight: 600;
-			.play-state {
-				display: block;
-				opacity: 1;
-			}
-		}
-
-		&.playing.selected {
 			.play-state {
 				display: none;
+				position: absolute;
+				top: 16px;
+				left: 15px;
+				font-size: 10px;
 			}
-		}
 
-		:root .dragging &:hover {
-			border-top: 3px solid $blue;
-			margin-top: -3px;
-			background: transparent;
+			&.playing {
+				font-weight: 600;
+				.play-state {
+					display: block;
+					opacity: 1;
+				}
+			}
+
+			&.playing.selected {
+				.play-state {
+					display: none;
+				}
+			}
+
+			:root .dragging &:hover {
+				border-top: 3px solid $blue;
+				margin-top: -3px;
+				background: transparent;
+			}
 		}
 	}
 
@@ -223,13 +225,6 @@
 		.list-item {
 			padding: 7px 30px 7px 16px !important;
 
-			&.track {
-				.select-state,
-				.play-state {
-					display: none !important;
-				}
-			}
-
 			.source {
 				position: static;
 				float: none;
@@ -280,6 +275,25 @@
 
 			&.header { 
 				display: none; 
+			}
+
+			&.track {
+				.select-state,
+				.play-state {
+					display: none !important;
+				}
+			}
+		}
+
+		&.edit-mode {
+			.list-item {
+				padding-left: 40px !important;
+
+				&.track {
+					.select-state {
+						display: block !important;
+					}
+				}
 			}
 		}
 	}

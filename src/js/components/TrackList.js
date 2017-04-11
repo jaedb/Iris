@@ -19,12 +19,11 @@ class TrackList extends React.Component{
 		this._touch_threshold = 10
 		this._touch_x = null
 		this._touch_y = null
-		this._touch_hold_timer = null
-		this._touch_held = false
 
 		this.state = {
 			tracks: [],
-			lastSelectedTrack: false
+			last_selected_track: false,
+			edit_mode: false
 		}
 
 		this.handleKeyUp = this.handleKeyUp.bind(this)
@@ -64,14 +63,6 @@ class TrackList extends React.Component{
 	handleTouchStart(e,index){
 		this._touch_x = Math.round(e.changedTouches[0].pageX)
 		this._touch_y = Math.round(e.changedTouches[0].pageY)
-		this._touch_hold_timer = setTimeout(() => {this.handleTouchHold(e,index)}, 500, e)
-	}
-
-	handleTouchHold(e,index){
-		this._touch_held = true
-		var tracks = this.state.tracks
-		tracks[index].selected = true
-		this.setState({ tracks: tracks, lastSelectedTrack: index })
 	}
 
 	handleTouchEnd(e,index){
@@ -82,21 +73,14 @@ class TrackList extends React.Component{
 		// make sure our touch was within the threshold of the touch start
 		// this helps us differentiate between taps and drags but doesn't consider
 		// multi-finger touches
-		if( this._touch_x < ( pageX + this._touch_threshold ) &&
+		if( this.state.edit_mode &&
+			this._touch_x < ( pageX + this._touch_threshold ) &&
 			this._touch_x > ( pageX - this._touch_threshold ) &&
 			this._touch_y < ( pageY + this._touch_threshold ) &&
 			this._touch_y > ( pageY - this._touch_threshold ) ){
-
-				// make sure we didn't touch and hold, as that's different to a tap
-				if (!this._touch_held){
-					var tracks = this.state.tracks
-					tracks[index].selected = !tracks[index].selected
-					this.setState({ tracks: tracks, lastSelectedTrack: index })
-
-				// release our held switch for the next interaction
-				} else {
-					this._touch_held = false
-				}
+				var tracks = this.state.tracks
+				tracks[index].selected = !tracks[index].selected
+				this.setState({ tracks: tracks, last_selected_track: index })
 		}
 
 		e.preventDefault()
@@ -144,7 +128,17 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleContextMenu(e, deselect = false){
+	handleContextMenu(e, native_event = true){
+
+		// touch events fired? we assume the user is primarily touching,
+		// so for touch devices we disable direct context menus
+		// hybrid devices will only work with touch OR mouse, not both in this case
+		if (this._touch_x && this._touch_y && native_event){
+			this.setState({edit_mode: true})
+			e.preventDefault()
+			return false
+		}
+
 		var selected_tracks = this.selectedTracks()
 		var data = {
 			e: e,
@@ -156,14 +150,15 @@ class TrackList extends React.Component{
 		}
 		this.props.uiActions.showContextMenu(data)
 
-		if (deselect){
+		if (!native_event){
 			this.deselectAllTracks()
+			this.setState({edit_mode: false})
 		}
 	}
 
 	toggleTrackSelections(e,index){
 		var tracks = this.state.tracks
-		var lastSelectedTrack = this.state.lastSelectedTrack
+		var last_selected_track = this.state.last_selected_track
 
 		if( e.ctrlKey ){
 
@@ -171,23 +166,23 @@ class TrackList extends React.Component{
 				tracks[index].selected = false
 			} else {
 				tracks[index].selected = true
-				lastSelectedTrack = index
+				last_selected_track = index
 			}
 
 		}else if( e.shiftKey ){
 
-			if( this.state.lastSelectedTrack < index ){
-				var start = this.state.lastSelectedTrack
+			if( this.state.last_selected_track < index ){
+				var start = this.state.last_selected_track
 				var end = index
 			}else{
 				var start = index
-				var end = this.state.lastSelectedTrack
+				var end = this.state.last_selected_track
 			}
 
 			if (start !== false && end !== false){
 				for( var i = start; i <= end; i++ ){
 					tracks[i].selected = true
-					lastSelectedTrack = index
+					last_selected_track = index
 				}
 			}
 
@@ -198,10 +193,10 @@ class TrackList extends React.Component{
 			}
 
 			tracks[index].selected = true
-			lastSelectedTrack = index
+			last_selected_track = index
 		}
 
-		this.setState({ tracks: tracks, lastSelectedTrack: lastSelectedTrack })
+		this.setState({ tracks: tracks, last_selected_track: last_selected_track })
 	}
 
 	deselectAllTracks(){		
@@ -327,6 +322,9 @@ class TrackList extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
+		if (this.state.edit_mode){
+			className += ' edit-mode'
+		}
 
 		return (
 			<div className={className}>
@@ -348,7 +346,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.selectedTracks().length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, true)} /> : null}
+				{this.selectedTracks().length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
 			</div>
 		);
 	}
