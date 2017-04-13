@@ -264,23 +264,29 @@
 	}
 }
 
-.track-list.edit-mode {
-	.context-menu-trigger {	
-		display: block;
-		position: fixed;
-		bottom: 50px;
-		right: 5px;
-		width: 50px;
-		height: 50px;
-		overflow: hidden;
-		z-index: 97;
-		border-radius: 50%;
-		background: $blue;
-		color: #FFFFFF;
-		
-		&:focus,
-		&:active {
-			background: darken($blue, 10%);
+.list {
+	.context-menu-trigger {
+		display: none;
+	}
+
+	&.track-list.edit-mode {
+		.context-menu-trigger {	
+			display: block;
+			position: fixed;
+			bottom: 50px;
+			right: 5px;
+			width: 50px;
+			height: 50px;
+			overflow: hidden;
+			z-index: 97;
+			border-radius: 50%;
+			background: $blue;
+			color: #FFFFFF;
+			
+			&:focus,
+			&:active {
+				background: darken($blue, 10%);
+			}
 		}
 	}
 }
