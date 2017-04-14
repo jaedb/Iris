@@ -199,6 +199,14 @@ export function refreshingToken(){
     }
 }
 
+export function importAuthorization(data){
+    return {
+        type: 'SPOTIFY_IMPORT_AUTHORIZATION',
+        user: data.user,
+        authorization: data.authorization
+    }
+}
+
 
 /**
  * Get current user

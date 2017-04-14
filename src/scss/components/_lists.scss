@@ -23,9 +23,8 @@
 		}
 
 		:root .notouch &:not(.header):hover {
-			background: $faint_grey;
+			background: rgba(150,150,150,0.1);
 			cursor: pointer;
-			border-color: $faint_grey;
 		}
 
 		&.header {

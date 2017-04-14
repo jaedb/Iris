@@ -239,17 +239,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_SPOTIFY_AUTHORIZATION':
-                if( window.confirm('Spotify authorization for user '+action.me.id+' received. Do you want to import?') ){
-
-                    // remove any existing authentication
-                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_REVOKED' })
-
-                    // import our new authentication
-                    store.dispatch({ type: 'SPOTIFY_ME_LOADED', data: action.me })
-                    store.dispatch({ type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: action.authorization })
-                }else{
-                    console.log('Authorization ignored')
-                }
+                store.dispatch(uiActions.openModal('receive_authorization', {authorization: action.authorization, user: action.me}))
                 break
 
             case 'PUSHER_START_RADIO':

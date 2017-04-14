@@ -9,11 +9,12 @@ import AddToPlaylistModal from './AddToPlaylistModal'
 import AddToQueueModal from './AddToQueueModal'
 import CreatePlaylistModal from './CreatePlaylistModal'
 import EditPlaylistModal from './EditPlaylistModal'
-import SendAuthorizationModal from './SendAuthorizationModal'
 import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
 import SearchSettingsModal from './SearchSettingsModal'
+import AuthorizationModal_Send from './AuthorizationModal_Send'
+import AuthorizationModal_Receive from './AuthorizationModal_Receive'
 
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -48,7 +49,8 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} /> : null }
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'send_authorization' ? <SendAuthorizationModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'send_authorization' ? <AuthorizationModal_Send uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'receive_authorization' ? <AuthorizationModal_Receive uiActions={this.props.uiActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }

@@ -9,7 +9,7 @@ import * as helpers from '../../helpers'
 
 import Icon from '../Icon'
 
-class SendAuthorizationModal extends React.Component{
+class AuthorizationModal_Send extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -71,4 +71,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SendAuthorizationModal)
+export default connect(mapStateToProps, mapDispatchToProps)(AuthorizationModal_Send)

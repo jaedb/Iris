@@ -46,6 +46,17 @@ export default function reducer(spotify = {}, action){
                 me: false
             })
 
+        case 'SPOTIFY_IMPORT_AUTHORIZATION':
+            return Object.assign({}, spotify, { 
+                authorizing: false, 
+                authorized: true,
+                authorization: action.authorization,
+                access_token: action.authorization.access_token,
+                refresh_token: action.authorization.refresh_token,
+                token_expiry: action.authorization.token_expiry,
+                me: action.user
+            })
+
         case 'SPOTIFY_TOKEN_REFRESHING':
             return Object.assign({}, spotify, { refreshing_token: true })
 

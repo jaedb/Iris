@@ -195,6 +195,16 @@
 		}
 	}
 
+	&.receive_authorization {
+		.user-view {
+			padding-top: 40px;
+
+			.thumbnail {
+				max-width: 150px;
+			}
+		}
+	}
+
 	.actions {
 		padding-top: 50px;
 		text-align: center;
@@ -208,7 +218,7 @@
 	@include responsive( $bp_medium ){
 
 		.content {
-			padding: 50px 10%;
+			padding: 100px 10%;
 			width: 80%;
 
 			.list {
