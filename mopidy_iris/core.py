@@ -154,7 +154,7 @@ class IrisCore(object):
                 'message': error
             }         
 
-    def deliver_message(self, data):  
+    def deliver_message(self, data):
         to = data['to']
         if to in self.connections:
 
