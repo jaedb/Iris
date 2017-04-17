@@ -76,6 +76,13 @@ export function startRadio( uris ){
 	}
 }
 
+export function updateRadio( uris ){
+	return {
+		type: 'PUSHER_UPDATE_RADIO',
+		uris: uris
+	}
+}
+
 export function stopRadio(){
 	return {
 		type: 'PUSHER_STOP_RADIO'

@@ -243,7 +243,16 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_START_RADIO':
-                store.dispatch(uiActions.createNotification('Starting radio...'))
+            case 'PUSHER_UPDATE_RADIO':                
+                if (action.type == 'PUSHER_UPDATE_RADIO'){
+                    var method = 'update_radio'
+                    var process_text = 'Updating radio'
+                } else {
+                    var method = 'start_radio'
+                    var process_text = 'Starting radio'
+                }
+
+                store.dispatch(uiActions.startProcess('PUSHER_RADIO', process_text))
 
                 var data = {
                     seed_artists: [],
@@ -264,19 +273,11 @@ const PusherMiddleware = (function(){
                             break;
                     }
                 }
-                
-                // we don't need to wait for response, as change will be broadcast
-                request(store, 'start_radio', data)
-                break
 
-            case 'PUSHER_RADIO_STARTED':
-                var data = {
-                    type: 'browser_notification',
-                    title: 'Radio',
-                    body: 'Radio mode started',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
-                }
-                store.dispatch( pusherActions.deliverBroadcast(data) )
+                request(store, method, data)
+                .then(response => {
+                    store.dispatch(uiActions.stopProcess('PUSHER_RADIO'))
+                })
                 break
 
             case 'PUSHER_STOP_RADIO':
@@ -292,22 +293,11 @@ const PusherMiddleware = (function(){
                 request(store, 'stop_radio', data)
                 break
 
-            case 'PUSHER_RADIO_STOPPED':
-                var data = {
-                    type: 'browser_notification',
-                    title: 'Radio',
-                    body: 'Radio mode stopped',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
-                }
-                store.dispatch( pusherActions.deliverBroadcast(data) )
-                break
-
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
 
             case 'PUSHER_RESTART':
-
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
                 window.location.reload(true);

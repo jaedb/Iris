@@ -69,6 +69,7 @@ class FullPlayer extends React.Component{
 			!this.props.current_track.album.images ){
 				return (
 					<span className="artwork">
+						{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
 						<Thumbnail size="huge" />
 					</span>
 				)
@@ -78,6 +79,7 @@ class FullPlayer extends React.Component{
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className="artwork" to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
+				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
 				<Thumbnail size="huge" images={this.props.current_track.album.images} canZoom />
 			</Link>
 		)
@@ -90,8 +92,10 @@ class FullPlayer extends React.Component{
 				{ this.renderArtwork() }
 
 				<div className="current-track">
-					<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
-					{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
+					<div className="title">
+						{this.props.current_track ? this.props.current_track.name : <span>-</span>}
+					</div>
+					{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
 				</div>
 
 				<div className="controls cf">
@@ -135,6 +139,7 @@ class FullPlayer extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
 		current_track: state.ui.current_track,
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,

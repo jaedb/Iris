@@ -260,9 +260,11 @@ class IrisCore(object):
 
         # no uris means we can't play radio
         if not uris:
+            self.radio['enabled'] = 0
             return {
                 'status': 0,
-                'message': 'No recommendations found'
+                'message': 'No recommendations found',
+                'radio': self.radio
             }
 
         # if we got recommendations
@@ -274,6 +276,31 @@ class IrisCore(object):
 
             self.broadcast({
                 'type': 'radio_started',
+                'radio': self.radio
+            })
+
+            return self.get_radio({})
+
+    def update_radio(self, data):
+        self.radio = data
+        self.radio['enabled'] = 1;
+        
+        uris = self.load_more_tracks()
+
+        # no uris means we can't play radio
+        if not uris:
+            self.radio['enabled'] = 0
+            return {
+                'status': 0,
+                'message': 'No recommendations found',
+                'radio': self.radio
+            }
+
+        # if we got recommendations
+        else:
+            self.core.tracklist.add( uris = uris )
+            self.broadcast({
+                'type': 'radio_updated',
                 'radio': self.radio
             })
 

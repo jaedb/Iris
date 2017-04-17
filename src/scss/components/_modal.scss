@@ -137,20 +137,23 @@
 			.field {
 				position: relative;
 				margin-top: 10px;
-				button {
-					position: absolute;
-					top: 5px;
-					right: 0;
-					padding: 14px;
-					margin: 0;
-					min-width: 0;
-					color: #FFFFFF;
-				}
+
 				input[type="text"]{
 					font-size: 14px;
 					padding: 16px 18px;
 				}
 			}			
+		}
+
+		button.add-uri,
+		button.remove-uri {
+			position: absolute;
+			top: 3px;
+			right: 0;
+			padding: 14px;
+			margin: 0;
+			min-width: 0;
+			color: #FFFFFF;
 		}
 	}
 

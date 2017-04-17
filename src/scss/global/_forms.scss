@@ -198,6 +198,15 @@ input[type="submit"] {
 		}
 	}
 
+	.flag {
+		font-size: 10px;
+		margin-left: 3px;
+		padding: 1px 4px;
+		line-height: 1.2em;
+		vertical-align: top;
+		margin-top: 6px;
+	}
+
 	@include responsive( $bp_medium ){
 		min-width: 120px;
 		margin-right: 10px;
@@ -335,6 +344,11 @@ input[type="submit"] {
 			    color: #FFFFFF;
 			}
 		}
+	}
+
+	.error {
+		color: $red;
+		display: inline-block;
 	}
 }
 

@@ -528,13 +528,16 @@ export function resolveRadioSeeds( radio ){
                 artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i])
             }
 
-            sendRequest( dispatch, getState, 'artists/'+ artist_ids )
+            sendRequest( dispatch, getState, 'artists?ids='+ artist_ids )
             .then( response => {
-                if (!(response instanceof Array)) response = [response]
-                dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: response
-                })
+                if (response && response.artists){
+                    dispatch({
+                        type: 'ARTISTS_LOADED',
+                        artists: response.artists
+                    })
+                } else {
+                    console.error('No Spotify artists returned', artist_ids)
+                }
             })
         }
 

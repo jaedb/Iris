@@ -284,6 +284,23 @@
 			}
 		}
 
+		&.queue-track-list {
+			.list-item {
+				.artists {
+					padding-left: 0 !important;
+
+					&:before {
+						display: none !important;
+					}
+				}
+
+				.source,
+				.added {
+					display: none !important;
+				}
+			}
+		}
+
 		&.edit-mode {
 			.list-item {
 				padding-left: 40px !important;

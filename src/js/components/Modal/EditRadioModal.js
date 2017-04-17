@@ -12,7 +12,8 @@ export default class EditRadioModal extends React.Component{
 		this.state = {
 			enabled: false,
 			seeds: [],
-			uri: ''
+			uri: '',
+			error_message: null
 		}
 	}
 
@@ -24,26 +25,39 @@ export default class EditRadioModal extends React.Component{
 		this.props.spotifyActions.resolveRadioSeeds(this.props.radio)
 	}
 
-	handleSubmit(e){
-		if (this.state.enabled){
-			this.props.pusherActions.startRadio(this.state.seeds)
-		}else{
-			this.props.pusherActions.stopRadio()
-		}
+	handleStart(e){
+		e.preventDefault()
+		this.props.pusherActions.startRadio(this.state.seeds)
+		this.props.uiActions.closeModal()
+	}
+
+	handleUpdate(e){
+		e.preventDefault()
+		this.props.pusherActions.updateRadio(this.state.seeds)
+		this.props.uiActions.closeModal()
+	}
+
+	handleStop(e){
+		e.preventDefault()
+		this.props.pusherActions.stopRadio()
 		this.props.uiActions.closeModal()
 	}
 
 	addSeed(){
-		if (this.state.uri == '') return null
+		if (this.state.uri == ''){
+			this.setState({error_message: 'Cannot be empty'})
+			return null
+		}
 
 		var seeds = Object.assign([],this.state.seeds)
 		var uris = this.state.uri.split(',')
 
 		for (var i = 0; i < uris.length; i++){
-			if (seeds.indexOf(uris[i]) <= -1){
-				seeds.push(uris[i])
+			if (seeds.indexOf(uris[i]) > -1){
+				this.setState({error_message: 'URI already added'})
 			} else {
-				this.props.uiActions.createNotification(uris[i]+' already added','bad')
+				seeds.push(uris[i])
+				this.setState({error_message: null})
 			}			
 		}
 
@@ -71,8 +85,8 @@ export default class EditRadioModal extends React.Component{
 			for (var i = 0; i < this.state.seeds.length; i++){
 				var uri = this.state.seeds[i]
 				if (uri){
-					if (helpers.uriType(uri) == 'artist' && this.props.artists){
-						if (this.props.artists.hasOwnProperty(uri)){
+					if (helpers.uriType(uri) == 'artist'){
+						if (this.props.artists && this.props.artists.hasOwnProperty(uri)){
 							seeds.push(this.props.artists[uri])
 						} else {
 							seeds.push({
@@ -81,8 +95,8 @@ export default class EditRadioModal extends React.Component{
 								uri: uri
 							})
 						}
-					} else if (helpers.uriType(uri) == 'track' && this.props.tracks){
-						if (this.props.tracks.hasOwnProperty(uri)){
+					} else if (helpers.uriType(uri) == 'track'){
+						if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)){
 							seeds.push(this.props.tracks[uri])
 						} else {
 							seeds.push({
@@ -105,7 +119,9 @@ export default class EditRadioModal extends React.Component{
 								<div className="list-item" key={seed.uri}>
 									{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 									<span className="grey-text">&nbsp;({seed.type})</span>
-									<FontAwesome name="close" className="pull-right destructive" onClick={() => this.removeSeed(seed.uri)} />
+									<button className="discrete remove-uri"  onClick={e => this.removeSeed(seed.uri)}>
+										<FontAwesome name="close" />&nbsp;Remove
+									</button>
 								</div>
 							)
 						})
@@ -115,41 +131,29 @@ export default class EditRadioModal extends React.Component{
 		)
 	}
 
-	renderAddSeeds(){
-		return (
-			<div className="field no-top-margin">
-				<input 
-					type="text"
-					placeholder="Comma-separated URIs"
-					onChange={e => this.setState({uri: e.target.value})} 
-					value={this.state.uri} />
-				<button type="button" className="discrete" onClick={e => this.addSeed()}><FontAwesome name="plus" /></button>
-			</div>
-		)
-	}
-
 	render(){
 		return (
 			<div>
-				<h4>Edit radio</h4>
+				<h4>Manage radio</h4>
 
-				<form onSubmit={e => this.handleSubmit(e)}>
-					<div className="field checkbox white">
-						<label>
-							<input 
-								type="checkbox"
-								name="enabled"
-								checked={ this.state.enabled }
-								onChange={ e => this.setState({ enabled: !this.state.enabled })} />
-							<span className="label">Radio mode enabled</span>
-						</label>
+				<form>
+					{this.renderSeeds()}
+
+					<div className="field no-top-margin">
+						<input 
+							type="text"
+							placeholder="Comma-separated URIs"
+							onChange={e => this.setState({uri: e.target.value, error_message: null})} 
+							value={this.state.uri} />
+						<button className="discrete add-uri" onClick={e => this.addSeed()}>
+							<FontAwesome name="plus" />&nbsp; Add
+						</button>
+						{this.state.error_message ? <span className="error">{this.state.error_message}</span> : null}
 					</div>
 
-					{this.state.enabled ? this.renderSeeds() : null}
-					{this.state.enabled ? this.renderAddSeeds() : null}
-
 					<div className="actions centered-text">
-						<button type="submit" className="primary wide">Save</button>
+						{this.state.enabled ? <button className="destructive wide" onClick={e => this.handleStop(e)}>Stop</button> : null}
+						{this.state.enabled ? <button className="primary wide" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary wide" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
 			</div>
