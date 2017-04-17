@@ -21,6 +21,7 @@ class IrisCore(object):
     spotify_token = False
     queue_metadata = {}
     connections = {}
+    initial_consume = False
     radio = {
         "enabled": 0,
         "seed_artists": [],
@@ -252,70 +253,64 @@ class IrisCore(object):
             'radio': self.radio
         }
 
-    def start_radio(self, data):
+    def change_radio(self, data):
+
+        # figure out if we're starting or updating radio mode
+        if self.radio['enabled']:
+            starting = False
+            self.initial_consume = self.core.tracklist.get_consume()
+        else:
+            starting = True
+        
+        # fetch more tracks from Mopidy-Spotify
         self.radio = data
         self.radio['enabled'] = 1;
-        
         uris = self.load_more_tracks()
 
-        # no uris means we can't play radio
-        if not uris:
-            self.radio['enabled'] = 0
-            return {
-                'status': 0,
-                'message': 'No recommendations found',
-                'radio': self.radio
-            }
+        # make sure we got recommendations
+        if uris:
+            if starting:
+                self.core.tracklist.clear()
 
-        # if we got recommendations
-        else:
-            self.core.tracklist.clear()
-            self.core.tracklist.set_consume( True )
-            self.core.tracklist.add( uris = uris )
-            self.core.playback.play()
+            self.core.tracklist.set_consume(True)
+            added = self.core.tracklist.add(uris = uris)
 
-            self.broadcast({
-                'type': 'radio_started',
-                'radio': self.radio
-            })
+            if added.get():
+                if starting:
+                    self.core.playback.play()
+                    self.broadcast({
+                        'type': 'radio_started',
+                        'radio': self.radio
+                    })
+                else:
+                    self.broadcast({
+                        'type': 'radio_changed',
+                        'radio': self.radio
+                    })
 
-            return self.get_radio({})
+                return self.get_radio({})
 
-    def update_radio(self, data):
-        self.radio = data
-        self.radio['enabled'] = 1;
-        
-        uris = self.load_more_tracks()
-
-        # no uris means we can't play radio
-        if not uris:
-            self.radio['enabled'] = 0
-            return {
-                'status': 0,
-                'message': 'No recommendations found',
-                'radio': self.radio
-            }
-
-        # if we got recommendations
-        else:
-            self.core.tracklist.add( uris = uris )
-            self.broadcast({
-                'type': 'radio_updated',
-                'radio': self.radio
-            })
-
-            return self.get_radio({})
+        # failed fetching/adding tracks, so no-go
+        self.radio['enabled'] = 0;
+        return {
+            'status': 0,
+            'message': 'Could not start radio',
+            'radio': self.radio
+        }
 
 
     def stop_radio(self, data):
+
         self.radio = {
             "enabled": 0,
             "seed_artists": [],
             "seed_genres": [],
             "seed_tracks": []
         }
-        
-        self.core.playback.stop()
+
+        # restore initial consume state
+        self.core.tracklist.set_consume(self.initial_consume)
+        self.core.playback.stop()        
 
         self.broadcast({
             'type': 'radio_stopped',
@@ -378,7 +373,7 @@ class IrisCore(object):
                 logger.warning('IrisFrontend: Could not fetch tracklist length')
 
             else:
-                self.core.tracklist.add( uris = uris )
+                self.core.tracklist.add(uris = uris)
                 
 
 

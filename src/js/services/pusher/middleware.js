@@ -243,16 +243,14 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_START_RADIO':
-            case 'PUSHER_UPDATE_RADIO':                
-                if (action.type == 'PUSHER_UPDATE_RADIO'){
-                    var method = 'update_radio'
-                    var process_text = 'Updating radio'
-                } else {
-                    var method = 'start_radio'
-                    var process_text = 'Starting radio'
-                }
+            case 'PUSHER_UPDATE_RADIO':
 
-                store.dispatch(uiActions.startProcess('PUSHER_RADIO', process_text))
+                // start our UI process notification  
+                if (action.type == 'PUSHER_UPDATE_RADIO'){
+                    store.dispatch(uiActions.startProcess('PUSHER_RADIO', 'Updating radio'))
+                } else {
+                    store.dispatch(uiActions.startProcess('PUSHER_RADIO', 'Starting radio'))
+                }
 
                 var data = {
                     seed_artists: [],
@@ -274,8 +272,11 @@ const PusherMiddleware = (function(){
                     }
                 }
 
-                request(store, method, data)
+                request(store, 'change_radio', data)
                 .then(response => {
+                    if (response.status == 0){
+                        store.dispatch(uiActions.createNotification(response.message, 'bad'))
+                    }
                     store.dispatch(uiActions.stopProcess('PUSHER_RADIO'))
                 })
                 break
