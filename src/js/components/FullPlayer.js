@@ -68,7 +68,7 @@ class FullPlayer extends React.Component{
 			!this.props.current_track.album || 
 			!this.props.current_track.album.images ){
 				return (
-					<span className="artwork">
+					<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
 						{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
 						<Thumbnail size="huge" />
 					</span>
@@ -78,7 +78,7 @@ class FullPlayer extends React.Component{
 		var link = null
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
-			<Link className="artwork" to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
+			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
 				<Thumbnail size="huge" images={this.props.current_track.album.images} canZoom />
 			</Link>
