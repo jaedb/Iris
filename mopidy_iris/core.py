@@ -256,7 +256,7 @@ class IrisCore(object):
     def change_radio(self, data):
 
         # figure out if we're starting or updating radio mode
-        if self.radio['enabled']:
+        if data['update'] and self.radio['enabled']:
             starting = False
             self.initial_consume = self.core.tracklist.get_consume()
         else:

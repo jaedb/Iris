@@ -253,6 +253,7 @@ const PusherMiddleware = (function(){
                 }
 
                 var data = {
+                    update: (action.type == 'PUSHER_UPDATE_RADIO'),
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
