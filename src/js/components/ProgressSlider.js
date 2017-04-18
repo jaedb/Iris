@@ -10,37 +10,6 @@ class ProgressSlider extends React.Component{
 
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			animating: false
-		}
-	}
-
-	componentDidMount(){
-		var interval_counter = 0
-		setInterval(() => {
-			if( this.props.play_state == 'playing' ){
-
-				// every 10 seconds get real position from Mopidy
-				if( interval_counter % 10 == 0 ){
-					this.updateProgress()
-				}else{
-					var time_position = this.props.time_position
-
-					// only add 600ms every 1000ms as Mopidy's time tracker is a bit shit
-					// TODO: Why does this kill UI?
-					//this.props.mopidyActions.setTimePosition( time_position + 600 )					
-				}
-
-				interval_counter++
-			}
-		}, 1000);
-	}
-
-	updateProgress(){
-		if( this.props.connected && this.props.play_state == 'playing' ){
-			this.props.mopidyActions.getTimePosition()
-		}
 	}
 
 	handleClick(e){

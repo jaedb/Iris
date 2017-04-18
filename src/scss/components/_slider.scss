@@ -6,7 +6,6 @@
 	.track {
 		position: absolute;
 		background: rgba(255,255,255,0.3);
-		@include animate()
 
 		.progress {
 			position: absolute;

@@ -11,7 +11,11 @@ var lastfmActions = require('../lastfm/actions.js')
 const MopidyMiddleware = (function(){ 
 
     // container for the actual Mopidy socket
-    var socket = null;
+    var socket = null
+
+    // play position timer
+    var progress_interval = null
+    var progress_interval_counter = 0
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, type, data) => {
@@ -32,10 +36,32 @@ const MopidyMiddleware = (function(){
                 instruct( ws, store, 'playback.getCurrentTlTrack' );
                 instruct( ws, store, 'playback.getTimePosition' );
                 instruct( ws, store, 'getUriSchemes' );
+
+                // every 1000s update our play position (when playing)
+                progress_interval = setInterval(() => {
+                    if (store.getState().mopidy.play_state == 'playing'){
+
+                        // every 10s get real position from server
+                        if( progress_interval_counter % 10 == 0 ){
+                            store.dispatch(mopidyActions.getTimePosition())
+
+                        // otherwise we just assume to add 1000ms every 1000ms of play time
+                        }else{
+                            store.dispatch(mopidyActions.setTimePosition( store.getState().mopidy.time_position + 1000 ))              
+                        }
+
+                        progress_interval_counter++
+                    }
+                }, 1000);
+
                 break;
 
             case 'state:offline':
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+
+                // reset our playback interval timer
+                clearInterval(progress_interval)
+                progress_interval_counter = 0
                 break;
 
             case 'event:tracklistChanged':

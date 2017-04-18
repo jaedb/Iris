@@ -46,10 +46,6 @@
 
 	.slider.horizontal {
 		margin-bottom: 0;
-
-		.progress{
-			@include animate(1s);
-		}
 	}
 
 	.artwork {
