@@ -38,7 +38,7 @@ class TrackList extends React.Component{
 	}
 
 	componentDidMount(){
-		this.setState({ tracks: this.keyifyTracks(this.props.tracks) })
+		this.setState({ tracks: this.keyifyTracks(this.props.tracks, true) })
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -215,14 +215,19 @@ class TrackList extends React.Component{
 		return false
 	}
 
-	keyifyTracks( tracks ){
+	keyifyTracks(tracks, deselect = false){
 		for( var i = 0; i < tracks.length; i++ ){
+			var new_properties = {
+				key: i+'_'+tracks[i].uri
+			}
+			if (deselect){
+				new_properties.selected = false
+			}
 			tracks[i] = Object.assign(
 				{}, 
 				tracks[i], 
-				{
-					key: i+'_'+tracks[i].uri
-				})
+				new_properties
+			)
 		}
 		return tracks
 	}
