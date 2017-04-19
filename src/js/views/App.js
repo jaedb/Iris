@@ -82,7 +82,7 @@ class App extends React.Component{
 
 	shouldTriggerShortcut(e){
 		var ignoreNodes = ['INPUT', 'TEXTAREA'];
-		var keyCodes = [32,27,191];
+		var keyCodes = [32,27,59,186,188,190,191,222];
 
 		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
 			return false;
@@ -99,7 +99,9 @@ class App extends React.Component{
 	}
 
 	handleKeyUp(e){
-		if( !this.shouldTriggerShortcut(e) ) return;
+		if (!this.shouldTriggerShortcut(e)){
+			return
+		}
 
 		switch(e.keyCode){	
 
@@ -111,16 +113,55 @@ class App extends React.Component{
 					this.props.mopidyActions.play()
 					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut')
 				}
-				break;
+				break
 
 			case 27: // esc
 				if (this.props.dragger && this.props.dragger.dragging){
 					this.props.uiActions.dragCancel()
 				}
-				if (this.props.modal){
+				if (this.props.modal){';'
 					this.props.uiActions.closeModal()
 				}
-				break;
+				break
+
+			case 59: // ";" in Firefox
+			case 186: // ";"
+				if (e.ctrlKey){
+					var volume = this.props.volume
+					if (volume !== 'false'){
+						volume -= 10
+						if (volume < 0) volume = 0
+						this.props.mopidyActions.setVolume(volume)
+						this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut')
+					}
+				}
+				break
+
+			case 222: // "'"
+				if (e.ctrlKey){
+					var volume = this.props.volume
+					if (volume !== 'false'){
+						volume += 10
+						if (volume > 100) volume = 100
+						this.props.mopidyActions.setVolume(volume)
+						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut')
+					}
+				}
+				break
+
+			case 188: // ","
+				if (e.ctrlKey){
+					this.props.mopidyActions.previous()
+					this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut')
+				}
+				break
+
+			case 190: // "."
+				if (e.ctrlKey){
+					this.props.mopidyActions.next()
+					this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut')
+				}
+				break
 
 			case 191: // "/"
 				if (e.ctrlKey){
@@ -130,7 +171,7 @@ class App extends React.Component{
 						this.props.uiActions.openModal('kiosk_mode')
 					}
 				}
-				break;
+				break
 		}
 	}
 
@@ -174,6 +215,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		volume: (state.mopidy.volume ? state.mopidy.volume : false),
 		notifications: (state.ui.notifications ? state.ui.notifications : []),
 		processes: (state.ui.processes ? state.ui.processes : {}),
 		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
