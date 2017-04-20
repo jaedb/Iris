@@ -514,14 +514,19 @@ class ContextMenu extends React.Component{
 			left: this.props.menu.position_x,
 			top: this.props.menu.position_y,
 		}
-		var height = 0 // TODO: use jquery to detect height
+		var height = 200 // TODO: use jquery to detect height
 		var className = "context-menu "+this.props.menu.context
-		if (this.state.submenu_expanded) className += ' submenu-expanded'
-		if (this.props.menu.position_x > (window.innerWidth - 154)) className += ' right-align'
-		if (this.props.menu.position_x > (window.innerWidth - 308)) className += ' right-align-submenu'
+		if (this.state.submenu_expanded){
+			className += ' submenu-expanded'
+		}
+
+		if (this.props.menu.position_x > (window.innerWidth - 174)){
+			style.left = 'auto'
+			style.right = 10
+		}
 		if (this.props.menu.position_y > (window.innerHeight - height)){
-			style.top = style.top - height
-			className += ' bottom-align-submenu'
+			style.top = 'auto'
+			style.bottom = 10
 		}
 
 		return (
