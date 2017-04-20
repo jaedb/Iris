@@ -85,11 +85,6 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
-            case 'PLAYLIST_LOADED':
-                if (action.data) ReactGA.event({ category: 'Playlist', action: 'Load', label: action.playlist.uri })
-                next(action)
-                break
-
             case 'ARTIST_LOADED':
                 if (action.data) ReactGA.event({ category: 'Artist', action: 'Load', label: action.artist.uri })
                 next(action)
@@ -215,6 +210,11 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'PUSHER_UPDATE_RADIO':
+                ReactGA.event({ category: 'Pusher', action: 'Update radio', label: action.uris.join() })
+                next(action)
+                break
+
             case 'PUSHER_STOP_RADIO':
                 ReactGA.event({ category: 'Pusher', action: 'Stop radio' })
                 next(action)
@@ -280,8 +280,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))
-                
+                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))                
                 switch(helpers.uriSource(action.key)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.key))
@@ -294,8 +293,9 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_LOADED':
-                var playlist = Object.assign({}, action.playlist)
+                if (action.data) ReactGA.event({ category: 'Playlist', action: 'Load', label: action.playlist.uri })
 
+                var playlist = Object.assign({}, action.playlist)
                 switch (helpers.uriSource(playlist.uri)){
 
                     case 'm3u':
@@ -314,8 +314,9 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLISTS_LOADED':
-                var playlists = []
+                if (action.data) ReactGA.event({ category: 'Playlists', action: 'Load', label: action.playlists.length+' items' })
 
+                var playlists = []
                 for (var i = 0; i < action.playlists.length; i++){
                     var playlist = Object.assign({}, action.playlists[i])
 
@@ -352,7 +353,7 @@ const UIMiddleware = (function(){
 
             case 'PUSHER_VERSION':
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
-                
+
                 if (action.version.upgrade_available){
                     store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
                 }
