@@ -6,7 +6,7 @@
 	bottom: 0;
 	right: 0;
 	z-index: 99;
-	background: rgba(10, 10, 10, 0.95);
+	background: $overlay_dark;
 	overflow-y: scroll;
 
 	.close-modal {

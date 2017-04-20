@@ -39,25 +39,25 @@ class FullPlayer extends React.Component{
 	}
 
 	renderConsumeButton(){
-		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /></a>
+		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		if( this.props.consume ){
-			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /></a>
+			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		}
 		return button;
 	}
 
 	renderRandomButton(){
-		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /></a>
+		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		if( this.props.random ){
-			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /></a>
+			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		}
 		return button;
 	}
 
 	renderRepeatButton(){
-		var button = <a onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /></a>
+		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		if( this.props.repeat ){
-			button = <a className="active" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /></a>
+			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		}
 		return button;
 	}
