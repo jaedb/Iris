@@ -49,6 +49,15 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'SPOTIFY_IMPORT_AUTHORIZATION':
+                var label = null
+                if (action.me && action.me.id){
+                    label = action.me.id
+                }
+                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label })
+                next(action)
+                break
+
             case 'ALBUM_LOADED':
                 if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.album.uri })
 
@@ -131,6 +140,11 @@ const UIMiddleware = (function(){
             case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri })
+                next(action)
+                break
+
+            case 'PUSHER_ERROR':
+                ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message })
                 next(action)
                 break
 
