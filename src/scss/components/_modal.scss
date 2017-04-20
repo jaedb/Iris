@@ -88,11 +88,6 @@
 					top: 18px;
 					left: 10px;
 				}
-
-				&:hover {
-					cursor: pointer;
-					background: rgba(255,255,255,0.1);
-				}
 			}
 
 			&.playlists {
@@ -136,11 +131,10 @@
 		form {
 			.field {
 				position: relative;
-				margin-top: 10px;
+				margin-top: 50px;
 
 				input[type="text"]{
-					font-size: 14px;
-					padding: 16px 18px;
+					padding-right: 80px;
 				}
 			}			
 		}

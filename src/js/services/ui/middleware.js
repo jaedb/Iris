@@ -21,7 +21,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.connection_id+'/'+action.username })
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username })
                 next(action)
                 break
 
@@ -350,9 +350,12 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
-            case 'VERSION':
-                if( action.version.upgrade_available )
-                store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+            case 'PUSHER_VERSION':
+                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
+                
+                if (action.version.upgrade_available){
+                    store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+                }
                 next( action )
                 break
 

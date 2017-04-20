@@ -110,25 +110,37 @@ export default class EditRadioModal extends React.Component{
 			}
 		}
 
-		return (
-			<div>
-				<div className="list">
-					{
-						seeds.map((seed,index) => {
-							return (
-								<div className="list-item" key={seed.uri}>
-									{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-									<span className="grey-text">&nbsp;({seed.type})</span>
-									<button className="discrete remove-uri"  onClick={e => this.removeSeed(seed.uri)}>
-										<FontAwesome name="close" />&nbsp;Remove
-									</button>
-								</div>
-							)
-						})
-					}
+		if (seeds.length > 0){
+			return (
+				<div>
+					<div className="list">
+						{
+							seeds.map((seed,index) => {
+								return (
+									<div className="list-item" key={seed.uri}>
+										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
+										<span className="grey-text">&nbsp;({seed.type})</span>
+										<button className="discrete remove-uri"  onClick={e => this.removeSeed(seed.uri)}>
+											<FontAwesome name="close" />&nbsp;Remove
+										</button>
+									</div>
+								)
+							})
+						}
+					</div>
 				</div>
-			</div>
-		)
+			)
+		} else {
+			return (
+				<div>
+					<div className="list">
+						<div className="list-item no-click">
+							<span className="grey-text">No seeds</span>
+						</div>
+					</div>
+				</div>
+			)
+		}
 	}
 
 	render(){
@@ -139,7 +151,7 @@ export default class EditRadioModal extends React.Component{
 				<form>
 					{this.renderSeeds()}
 
-					<div className="field no-top-margin">
+					<div className="field">
 						<input 
 							type="text"
 							placeholder="Comma-separated URIs"

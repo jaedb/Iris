@@ -22,7 +22,7 @@
 			background: $yellow !important;
 		}
 
-		:root .notouch &:not(.header):hover {
+		:root .notouch &:not(.header):not(.no-click):hover {
 			background: rgba(150,150,150,0.1);
 			cursor: pointer;
 		}
