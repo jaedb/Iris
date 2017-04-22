@@ -84,9 +84,9 @@ class SpotifyAuthenticationFrame extends React.Component{
 	}
 
 	renderRefreshButton(){
-		if( !this.props.authorized || !window._testMode) return null;
+		if (!this.props.authorized) return null
 
-		if( this.props.refreshing_token ){
+		if (this.props.refreshing_token){
 			return (
 				<button disabled>
 					<FontAwesome name="circle-o-notch" spin />
@@ -94,10 +94,10 @@ class SpotifyAuthenticationFrame extends React.Component{
 					Refreshing...
 				</button>
 			);
-		}else{
+		} else {
 			return (
-				<button onClick={() => this.props.spotifyActions.refreshingToken()}>Refresh token</button>
-			);
+				<button onClick={() => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>
+			)
 		}
 	}
 
