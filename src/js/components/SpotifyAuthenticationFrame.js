@@ -17,7 +17,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 		super(props);
 
 		this.state = {
-			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
+			frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
 			authorizing: false
 		}
 	}
@@ -32,7 +32,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			
 			if(event.data == 'closed'){
 				self.setState({
-					frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
+					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
 					authorizing: false
 				})	
 			}else if(event.data == 'blocked'){
@@ -48,7 +48,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 				// and turn off our authorizing switch
 				self.setState({
-					frameUrl: '//jamesbarnsley.co.nz/auth.php?action=frame',
+					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
 					authorizing: false
 				})				
 			}
@@ -58,7 +58,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 	startAuthorization(){
 		this.setState({
-			frameUrl: '//jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
+			frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
 	}
