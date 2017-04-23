@@ -5,7 +5,7 @@ import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, m
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
-from mopidy import config, ext
+from mopidy import config, ext, models
 from mopidy.core import CoreListener
 from mopidy_spotify import translator
 from pkg_resources import parse_version
@@ -478,7 +478,6 @@ class IrisCore(object):
     # waiting on backends to load each track (a very slow process)
     ##
     def add_tracks_to_queue(self,data):
-        print data
         tracks = []
         at_position = None
 
@@ -491,34 +490,75 @@ class IrisCore(object):
         for track in data['tracks']:
 
             # piggy-back Mopidy-Spotify's JSON > Object translator
-            tracks.append(translator.web_to_track(track))
+            #if track['uri'].startsWith('spotify:'):
+            #    tracks.append(translator.web_to_track(track))
+            #else:
+            tracks.append(self.translate_track(track))
 
         try:
             # add all tracks to queue
             tltracks = self.core.tracklist.add(tracks = tracks, at_position = at_position)
 
-            # and then play
-            if data['then_play'] == True:
-                self.core.playback.play(tl_track = tltracks.get()[0])
+            if tltracks:
+                # and then play
+                if data['then_play'] == True:
+                    self.core.playback.play(tl_track = tltracks.get()[0])
 
-            # while we're here, add our supplementary queue data
-            if data['added_by'] and data['added_from']:
-                tlids = []
-                for tltrack in tltracks.get():
-                    tlids.append(tltrack.tlid)
+                # while we're here, add our supplementary queue data
+                if data['added_by'] and data['added_from']:
+                    tlids = []
+                    for tltrack in tltracks.get():
+                        tlids.append(tltrack.tlid)
 
-                self.add_queue_metadata({"tlids": tlids, "added_by": data["added_by"], "added_from": data["added_from"]})
+                    self.add_queue_metadata({"tlids": tlids, "added_by": data["added_by"], "added_from": data["added_from"]})
 
-            return {
-                "status": "1",
-                "message": "Added "+str(len(tltracks.get()))+" tracks"
-            }
+                return {
+                    "status": "1",
+                    "message": "Added "+str(len(tltracks.get()))+" tracks"
+                }
+
+            else:
+                return {
+                    "status": "0",
+                    "message": "No tracks added"
+                }
 
         except:
             return {
                 "status": "0",
                 "message": "Failed to add tracks"
             }
+
+
+    def translate_track(self,track):
+
+        artists = []
+        for artist in track['artists']:
+            artists.append(self.translate_artist(artist))
+
+        length = 0
+        if 'length' in track:
+            length = track['length']
+        elif 'duration_ms' in track:
+            length = track['duration_ms']
+
+        return models.Track(
+            name=track['name'],
+            uri=track['uri'],
+            artists=artists,
+            album=self.translate_album(track['album']),
+            length=length)
+
+    def translate_artist(self,artist):
+        return models.Artist(
+            name=artist['name'],
+            uri=artist['uri'])
+
+    def translate_album(self,album):
+        print album
+        return models.Album(
+            name=album['name'],
+            uri=album['uri'])
 
 
     ##
