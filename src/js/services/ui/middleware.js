@@ -174,6 +174,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAY_PLAYLIST':
+                console.log(action)
                 ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
 
                 // handle different playlist sources
@@ -182,13 +183,8 @@ const UIMiddleware = (function(){
                     case 'spotify':
                         // playlist already in index
                         if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
-                            
-                            // make sure we didn't get this playlist from Mopidy-Spotify
-                            // if we did, we'd have a cached version on server so no need to fetch
-                            if (!store.getState().ui.playlists[action.uri].is_mopidy){
-                                store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
-                                break
-                            }
+                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                            break
 
                         // not loaded, so we need to fetch
                         } else {
@@ -199,6 +195,7 @@ const UIMiddleware = (function(){
 
                     default:
                         if (store.getState().mopidy.connected){
+                            // TODO: why get playlist? We need to play it proper
                             store.dispatch(mopidyActions.getPlaylist(action.uri))
                         }
                         break
@@ -217,9 +214,7 @@ const UIMiddleware = (function(){
                         tracks.push(action.tracks[i])
                     }
                 }
-                var added_by = store.getState().pusher.username
-                var added_from = action.uri
-                store.dispatch(pusherActions.addTracksToQueue(tracks, 0, true, added_by, added_from))
+                store.dispatch(uiActions.playTracks(tracks, action.uri))
                 break
 
 

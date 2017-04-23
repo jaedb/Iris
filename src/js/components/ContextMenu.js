@@ -164,6 +164,11 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.enqueueTracks(this.props.menu.items, this.props.menu.tracklist_uri, true)
 	}
 
+	playPlaylist(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.uiActions.playPlaylist(this.props.menu.items[0].uri)
+	}
+
 	removeFromQueue(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
@@ -177,11 +182,6 @@ class ContextMenu extends React.Component{
 	playURIs(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
-	}
-
-	playPlaylist(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0])
 	}
 
 	addToQueue(e, next = false){

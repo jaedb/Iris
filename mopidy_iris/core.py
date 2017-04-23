@@ -7,7 +7,7 @@ import tornado.websocket
 import tornado.ioloop
 from mopidy import config, ext, models
 from mopidy.core import CoreListener
-from mopidy_spotify import translator
+from mopidy_spotify import translator       ## need to create __exit__ to prevent errors
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 from spotipy import Spotify
@@ -490,10 +490,13 @@ class IrisCore(object):
         for track in data['tracks']:
 
             # piggy-back Mopidy-Spotify's JSON > Object translator
-            #if track['uri'].startsWith('spotify:'):
-            #    tracks.append(translator.web_to_track(track))
-            #else:
-            tracks.append(self.translate_track(track))
+            if track['uri'].startswith('spotify'):
+                tracks.append(translator.web_to_track(track))
+
+            # non-spotify, let's just let the core do it's thing
+            else:
+                track_object = self.core.library.lookup(uri=str(track['uri']))
+                tracks.append(track_object.get()[0])
 
         try:
             # add all tracks to queue
@@ -568,22 +571,7 @@ class IrisCore(object):
     # offers no functionality to production use
     ##
     def test(self,data):
-        from mopidy_spotify import translator
-
         print "Testing"
-
-        #track = models.Track(
-        #    uri="spotify:track:5T0HCN6xFFmcUOeQMSOnO9",
-        #    name="Test name",
-        #    length=5000,
-        #    bitrate=128)
-        #json = '{"uri":"spotify:track:5T0HCN6xFFmcUOeQMSOnO9","is_loaded":True,"name":"Test name","length":10000}'
-
-        track = translator.web_to_track(data)
-
-        self.core.tracklist.add(tracks = [track])
-
-        print track
 
     
 
