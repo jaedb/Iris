@@ -7,6 +7,7 @@ import tornado.websocket
 import tornado.ioloop
 from mopidy import config, ext
 from mopidy.core import CoreListener
+from mopidy_spotify import translator
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 from spotipy import Spotify
@@ -466,3 +467,83 @@ class IrisCore(object):
             return self.get_spotify_token({})
         except urllib2.HTTPError as e:
             return e
+
+    ##
+    # Add tracks to queue
+    #
+    # Preloaded tracks can be added directly to the queue, without needing to be
+    # loaded again by Mopidy-Spotify. However these tracks must be clean!
+    #
+    # This means we can load tracks via HTTP and pass them straight to Mopidy without
+    # waiting on backends to load each track (a very slow process)
+    ##
+    def add_tracks_to_queue(self,data):
+        print data
+        tracks = []
+        at_position = None
+
+        if data['then_play']:
+            at_position = 0
+
+        if data['at_position']:
+            at_position = data['at_position']
+
+        for track in data['tracks']:
+
+            # piggy-back Mopidy-Spotify's JSON > Object translator
+            tracks.append(translator.web_to_track(track))
+
+        try:
+            # add all tracks to queue
+            tltracks = self.core.tracklist.add(tracks = tracks, at_position = at_position)
+
+            # and then play
+            if data['then_play'] == True:
+                self.core.playback.play(tl_track = tltracks.get()[0])
+
+            # while we're here, add our supplementary queue data
+            if data['added_by'] and data['added_from']:
+                tlids = []
+                for tltrack in tltracks.get():
+                    tlids.append(tltrack.tlid)
+
+                self.add_queue_metadata({"tlids": tlids, "added_by": data["added_by"], "added_from": data["added_from"]})
+
+            return {
+                "status": "1",
+                "message": "Added "+str(len(tltracks.get()))+" tracks"
+            }
+
+        except:
+            return {
+                "status": "0",
+                "message": "Failed to add tracks"
+            }
+
+
+    ##
+    # Test endpoint
+    #
+    # This is only used when experimenting backend functions and
+    # offers no functionality to production use
+    ##
+    def test(self,data):
+        from mopidy_spotify import translator
+
+        print "Testing"
+
+        #track = models.Track(
+        #    uri="spotify:track:5T0HCN6xFFmcUOeQMSOnO9",
+        #    name="Test name",
+        #    length=5000,
+        #    bitrate=128)
+        #json = '{"uri":"spotify:track:5T0HCN6xFFmcUOeQMSOnO9","is_loaded":True,"name":"Test name","length":10000}'
+
+        track = translator.web_to_track(data)
+
+        self.core.tracklist.add(tracks = [track])
+
+        print track
+
+    
+

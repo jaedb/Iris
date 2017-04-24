@@ -109,3 +109,14 @@ export function addQueueMetadata( tlids = [], from_uri = null ){
 		from_uri: from_uri
 	}
 }
+
+export function addTracksToQueue(tracks, at_position = false, then_play = false, added_by = false, added_from = false){
+	return {
+		type: 'PUSHER_ADD_TRACKS_TO_QUEUE',
+		tracks: tracks,
+		at_position: at_position,
+		then_play: then_play,
+		added_by: added_by,
+		added_from: added_from
+	}
+}

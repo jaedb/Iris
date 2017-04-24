@@ -251,6 +251,11 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_PLAY_PLAYLIST':
                 if (helpers.uriSource(action.uri) == 'spotify'){
 
+                    // TESTING
+                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
+                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                    break
+
                     // playlist already in index
                     if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
                         
@@ -276,6 +281,18 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING':
+
+                // TESTING
+                var tracks = []
+                for (var i = 0; i < action.tracks.length; i++){
+                    tracks.push(action.tracks[i].track)
+                }
+                console.log(tracks)
+                store.dispatch(pusherActions.addTracksToQueue(tracks))
+                break
+
+
+
                 var uris = []
                 for (var i = 0; i < action.tracks.length; i++){
                     uris.push(action.tracks[i].track.uri)

@@ -85,6 +85,41 @@ export function set( data ){
     }
 }
 
+
+/**
+ * Play/enqueue tracks
+ **/
+
+export function playPlaylist(uri){
+    return {
+        type: 'PLAY_PLAYLIST',
+        uri: uri
+    }
+}
+
+export function playTracks(tracks = null, added_from = null){
+    return {
+        type: 'PLAY_TRACKS',
+        tracks: tracks,
+        added_from: added_from
+    }
+}
+
+export function enqueueTracks(tracks = null, added_from = null, next = false){
+    return {
+        type: 'ENQUEUE_TRACKS',
+        tracks: tracks,
+        added_from: added_from,
+        next: next
+    }
+}
+
+
+
+/**
+ * Playlist track management
+ **/
+
 export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id = false ){
     var range = helpers.createRange( indexes );
     switch( helpers.uriSource( uri ) ){

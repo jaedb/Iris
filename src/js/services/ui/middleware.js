@@ -2,6 +2,7 @@
 import ReactGA from 'react-ga'
 
 var uiActions = require('./actions.js')
+var pusherActions = require('../pusher/actions.js')
 var mopidyActions = require('../mopidy/actions.js')
 var spotifyActions = require('../spotify/actions.js')
 var helpers = require('../../helpers.js')
@@ -147,6 +148,84 @@ const UIMiddleware = (function(){
                 ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message })
                 next(action)
                 break
+
+            /**
+             * Playing and enqueing items
+             **/
+
+            case 'PLAY_TRACKS':
+                ReactGA.event({ category: 'Tracks', action: 'Play', label: action.tracks.length+' items' })
+
+                var added_by = store.getState().pusher.username
+                var added_from = action.added_from
+                store.dispatch(pusherActions.addTracksToQueue(action.tracks, 0, true, added_by, added_from))
+
+                next(action)
+                break
+                
+            case 'ENQUEUE_TRACKS':
+                ReactGA.event({ category: 'Tracks', action: 'Play', label: action.tracks.length+' items' })
+
+                var added_by = store.getState().pusher.username
+                var added_from = action.added_from
+                store.dispatch(pusherActions.addTracksToQueue(action.tracks, 0, true, added_by, added_from))
+
+                next(action)
+                break
+
+            case 'PLAY_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
+
+                // handle different playlist sources
+                switch(helpers.uriSource(action.uri)){
+
+                    case 'spotify':
+                        // playlist already in index
+                        if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
+                            
+                            // make sure we didn't get this playlist from Mopidy-Spotify
+                            // if we did, we'd have a cached version on server so no need to fetch
+                            if (!store.getState().ui.playlists[action.uri].is_mopidy){
+                                store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                                break
+                            }
+
+                        // not loaded, so we need to fetch
+                        } else {
+                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                            break
+                        }
+                        break
+
+                    default:
+                        if (store.getState().mopidy.connected){
+                            store.dispatch(mopidyActions.getPlaylist(action.uri))
+                        }
+                        break
+                }
+                next(action)
+                break
+
+            case 'PLAY_PLAYLIST_TRACKS_LOADED':
+                var tracks = []
+                for (var i = 0; i < action.tracks.length; i++){
+
+                    // spotify nests playlist tracks
+                    if (action.tracks[i].track){
+                        tracks.push(action.tracks[i].track)
+                    } else {
+                        tracks.push(action.tracks[i])
+                    }
+                }
+                var added_by = store.getState().pusher.username
+                var added_from = action.uri
+                store.dispatch(pusherActions.addTracksToQueue(tracks, 0, true, added_by, added_from))
+                break
+
+
+            /**
+             * Searching
+             **/
 
             case 'SEARCH_STARTED':
                 ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
@@ -294,7 +373,7 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))                
+                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))
                 switch(helpers.uriSource(action.key)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.key))

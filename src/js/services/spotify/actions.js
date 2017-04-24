@@ -968,7 +968,7 @@ function loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, lastRespon
             });
     }else{
         dispatch({
-            type: 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING',
+            type: 'PLAY_PLAYLIST_TRACKS_LOADED',
             uri: uri,
             tracks: tracks
         });

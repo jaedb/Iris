@@ -252,20 +252,14 @@ class TrackList extends React.Component{
 	}
 
 	playTracks(){
-
 		var tracks = this.selectedTracks();
 
 		// if we've got a specific action, run it
 		if( typeof(this.props.playTracks) !== 'undefined' ){
-			return this.props.playTracks( tracks );
+			return this.props.playTracks(tracks);
 		}
 
-		// default to playing a bunch of uris
-		var uris = [];
-		for( var i = 0; i < tracks.length; i++ ){
-			uris.push( tracks[i].uri )
-		}
-		return this.props.mopidyActions.playURIs( uris, this.props.uri )
+		return this.props.uiActions.playTracks(tracks, this.props.uri)
 	}
 
 	removeTracks(){

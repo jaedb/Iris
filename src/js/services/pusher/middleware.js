@@ -174,7 +174,7 @@ const PusherMiddleware = (function(){
                             store.dispatch(response)
                         }
                     )
-                break;
+                break
 
             case 'PUSHER_ADD_QUEUE_METADATA':
                 request(store, 'add_queue_metadata', {
@@ -182,7 +182,17 @@ const PusherMiddleware = (function(){
                     added_from: action.from_uri,
                     added_by: store.getState().pusher.username
                 })
-                break;
+                break
+
+            case 'PUSHER_ADD_TRACKS_TO_QUEUE':
+                request(store, 'add_tracks_to_queue', {
+                    tracks: action.tracks,
+                    at_position: action.at_position,
+                    then_play: action.then_play,
+                    added_from: action.added_from,
+                    added_by: action.added_by
+                })
+                break
 
             case 'PUSHER_START_UPGRADE':
                 request(store, 'upgrade')

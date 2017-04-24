@@ -154,6 +154,16 @@ class ContextMenu extends React.Component{
 		this.props.mopidyActions.changeTrack( tracks[0].tlid )
 	}
 
+	playTracks(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.uiActions.playTracks(this.props.menu.items, this.props.menu.tracklist_uri)
+	}
+
+	playTracksNext(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.uiActions.enqueueTracks(this.props.menu.items, this.props.menu.tracklist_uri, true)
+	}
+
 	removeFromQueue(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
@@ -323,6 +333,22 @@ class ContextMenu extends React.Component{
 	renderItems(){
 		var context = this.getContext()
 
+		var play_tracks = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.playTracks(e)}>
+					<span className="label">Play</span>
+				</a>
+			</span>
+		)
+
+		var play_tracks_next = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.playTracksNext(e)}>
+					<span className="label">Play next</span>
+				</a>
+			</span>
+		)
+
 		var play_uris = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.playURIs(e)}>
@@ -481,8 +507,8 @@ class ContextMenu extends React.Component{
 			case 'editable-playlist-track':
 				return (
 					<div>
-						{play_uris}
-						{play_uris_next}
+						{play_tracks}
+						{play_tracks_next}
 						{add_to_queue}
 						{add_to_playlist}
 						{start_radio}
@@ -495,8 +521,8 @@ class ContextMenu extends React.Component{
 			default:
 				return (
 					<div>
-						{play_uris}
-						{play_uris_next}
+						{play_tracks}
+						{play_tracks_next}
 						{add_to_queue}
 						{add_to_playlist}
 						{start_radio}
