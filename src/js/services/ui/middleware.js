@@ -157,8 +157,7 @@ const UIMiddleware = (function(){
                 ReactGA.event({ category: 'Tracks', action: 'Play', label: action.tracks.length+' items' })
 
                 var added_by = store.getState().pusher.username
-                var added_from = action.added_from
-                store.dispatch(pusherActions.addTracksToQueue(action.tracks, 0, true, added_by, added_from))
+                store.dispatch(pusherActions.addTracksToQueue(action.tracks, 0, true, added_by, action.added_from))
 
                 next(action)
                 break
@@ -166,9 +165,9 @@ const UIMiddleware = (function(){
             case 'ENQUEUE_TRACKS':
                 ReactGA.event({ category: 'Tracks', action: 'Play', label: action.tracks.length+' items' })
 
+                var at_position = helpers.nextTrackIndex(store.getState().ui)
                 var added_by = store.getState().pusher.username
-                var added_from = action.added_from
-                store.dispatch(pusherActions.addTracksToQueue(action.tracks, 0, true, added_by, added_from))
+                store.dispatch(pusherActions.addTracksToQueue(action.tracks, at_position, false, added_by, action.added_from))
 
                 next(action)
                 break

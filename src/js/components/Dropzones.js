@@ -42,22 +42,18 @@ class Dropzones extends React.Component{
 	handleMouseUp(e, index){
 		var target = this._zones[index]
 		var victims = this.props.dragger.victims
-		var uris = []
-		for( var i = 0; i < victims.length; i++ ){
-			uris.push( victims[i].uri )
-		}
 
 		switch( target.action ){
 			case 'enqueue':
-				this.props.mopidyActions.enqueueURIs( uris, this.props.dragger.from_uri )
+				this.props.uiActions.enqueueTracks(victims, this.props.dragger.from_uri)
 				break
 
 			case 'enqueue_next':
-				this.props.mopidyActions.enqueueURIsNext( uris, this.props.dragger.from_uri )
+				this.props.uiActions.enqueueTracks(victims, this.props.dragger.from_uri, true)
 				break
 
 			case 'add_to_playlist':
-				this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: uris } )
+				this.props.uiActions.openModal( 'add_to_playlist', { tracks_uris: helpers.asURIs(victims[i]) } )
 				break
 		}
 	}

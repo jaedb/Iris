@@ -89,6 +89,35 @@ export let getCurrentPusherConnection = function( connections, connectionid ){
 
 
 /**
+ * Figure out the next track's index
+ *
+ * @param ui = ui state
+ * @return int
+ **/
+export let nextTrackIndex = function(ui){
+    var current_track = ui.current_track
+    var current_tracklist = ui.current_tracklist
+    var current_track_index = -1
+
+    if (typeof(current_track) !== 'undefined'){
+        for( var i = 0; i < current_tracklist.length; i++ ){
+            if( current_tracklist[i].tlid == current_track.tlid ){
+                current_track_index = i
+                break
+            }
+        }
+    }
+
+    if( current_track_index > -1 ){
+    	return current_track_index + 1
+    } else {
+    	return null
+    }
+}
+
+
+
+/**
  * Get a track's icon
  * @param track object
  * @return string
@@ -220,6 +249,7 @@ export let uriType = function( uri ){
     	case 'artist':
     	case 'album':
     	case 'playlist':
+    	case 'search':
     		return exploded[1]
     		break
 

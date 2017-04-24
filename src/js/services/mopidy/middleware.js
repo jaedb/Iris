@@ -1,12 +1,12 @@
 
 import Mopidy from 'mopidy'
-import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
 var uiActions = require('../ui/actions.js')
 var spotifyActions = require('../spotify/actions.js')
 var pusherActions = require('../pusher/actions.js')
 var lastfmActions = require('../lastfm/actions.js')
+var helpers = require('../../helpers.js')
 
 const MopidyMiddleware = (function(){ 
 
@@ -301,79 +301,35 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_ENQUEUE_URIS':
-                var uris_added = 0
-                var remaining_uris = Object.assign([], action.uris)
-                var current_track = store.getState().ui.current_track
-                var current_tracklist = store.getState().ui.current_tracklist
-                var current_track_index = -1
-
-                if (typeof(current_track) !== 'undefined'){
-                    for( var i = 0; i < current_tracklist.length; i++ ){
-                        if( current_tracklist[i].tlid == current_track.tlid ){
-                            current_track_index = i
-                            break
-                        }
-                    }
+                var value = { uris: action.uris }
+                if (action.at_position){
+                    value.at_position = action.at_position
                 }
 
-                let process_batch = function(){
-
-                    // process is not running
-                    if (store.getState().ui.processes && store.getState().ui.processes[action.type]){
-                        if (store.getState().ui.processes[action.type].cancelling){
-                            // recognise as cancelled
-                            store.dispatch(uiActions.stopProcess(action.type))
-                            return false
+                instruct( socket, store, 'tracklist.add', value )
+                    .then( response => {
+                        var tlids = []
+                        for (var i = 0; i < response.length; i++){
+                            tlids.push(response[i].tlid)
                         }
-                    } else {
-                        return false
-                    }
-                    
-                    // update our process details
-                    store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
+                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                        store.dispatch( uiActions.createNotification('Added '+tlids.length+' URI(s) to queue') )
+                    })
+                break
 
-                    var params = {uris: remaining_uris.splice(0,5)}
-                    if (action.next && current_track_index > -1){
-                        params.at_position = current_track_index + uris_added + 1
-                    } else if (action.at_position){
-                        params.at_position = action.at_position
-                    }
+            case 'MOPIDY_ENQUEUE_URIS_NEXT':
 
-                    instruct(socket, store, 'tracklist.add', params)
-                        .then( response => {
+                var at_position = helpers.nextTrackIndex(store.getState().ui)
 
-                            // append our counter
-                            uris_added += response.length
-
-                            // add metadata to queue
-                            var tlids = []
-                            for (var i = 0; i < response.length; i++){
-                                tlids.push(response[i].tlid)
-                            }
-                            store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
-
-                            // still more URIs? run again in 100ms
-                            // this gives our server time to handle other requests
-                            // crude, but prevents locking the server
-                            if (remaining_uris.length > 0){
-                                setTimeout(
-                                    function(){ 
-                                        process_batch()
-                                    }, 
-                                    100
-                                )
-
-                            // all done
-                            } else {
-                                store.dispatch(uiActions.stopProcess(action.type))
-                            }
-                        })
-                }
-
-                // start processing
-                store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
-                process_batch()
-
+                instruct( socket, store, 'tracklist.add', { uris: action.uris, at_position: at_position } )
+                    .then( response => {
+                        var tlids = []
+                        for (var i = 0; i < response.length; i++){
+                            tlids.push(response[i].tlid)
+                        }
+                        store.dispatch( pusherActions.addQueueMetadata(tlids, action.from_uri) )
+                        store.dispatch( uiActions.createNotification('Added '+tlids.length+' URI(s) to queue') )
+                    })
                 break
 
             case 'MOPIDY_PLAY_URIS':
