@@ -173,29 +173,20 @@ const UIMiddleware = (function(){
                 break
 
             case 'PLAY_PLAYLIST':
-                console.log(action)
                 ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
+                store.dispatch(uiActions.startProcess('PLAY_PLAYLIST', 'Playing playlist'))
 
                 // handle different playlist sources
                 switch(helpers.uriSource(action.uri)){
 
                     case 'spotify':
-                        // playlist already in index
-                        if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
-                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
-                            break
-
-                        // not loaded, so we need to fetch
-                        } else {
-                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
-                            break
-                        }
+                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
 
                     default:
                         if (store.getState().mopidy.connected){
                             // TODO: why get playlist? We need to play it proper
-                            store.dispatch(mopidyActions.getPlaylist(action.uri))
+                            store.dispatch(mopidyActions.playURIs([action.uri], action.uri))
                         }
                         break
                 }
@@ -214,6 +205,7 @@ const UIMiddleware = (function(){
                     }
                 }
                 store.dispatch(uiActions.playTracks(tracks, action.uri))
+                store.dispatch(uiActions.stopProcess('PLAY_PLAYLIST'))
                 break
 
 

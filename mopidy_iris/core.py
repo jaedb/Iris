@@ -490,15 +490,17 @@ class IrisCore(object):
         for track in data['tracks']:
 
             # piggy-back Mopidy-Spotify's JSON > Object translator
-            if track['uri'].startswith('spotify'):
+            if track['uri'].startswith('spotify') and 'duration_ms' in track:
                 track_object = translator.web_to_track(track)
+                tracks.append(track_object)
 
             # non-spotify, let's just let the core do it's thing
             else:
-                track_object = self.core.library.lookup(uri=str(track['uri']))
-                track_object = track_object.get()[0]
+                track_objects = self.core.library.lookup(uri=str(track['uri']))
+                track_objects = track_objects.get()
 
-            tracks.append(track_object)
+                if track_objects:
+                    tracks.append(track_objects[0])
 
         try:
             # add all tracks to queue
