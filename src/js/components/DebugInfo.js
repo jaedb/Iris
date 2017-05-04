@@ -77,6 +77,9 @@ class DebugInfo extends React.Component{
 				<div className="item">
 					Processes: {this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'}
 				</div>
+				<div className="item">
+					Enqueue batches: {this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'}
+				</div>
 				<br />
 				<div className="item">
 					_testMode: {window._testMode ? 'on' : 'off'}
@@ -92,7 +95,8 @@ class DebugInfo extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		ui: state.ui
+		ui: state.ui,
+		mopidy: state.mopidy
 	}
 }
 

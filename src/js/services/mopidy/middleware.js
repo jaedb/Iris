@@ -312,7 +312,11 @@ const MopidyMiddleware = (function(){
 
                     var batches = store.getState().mopidy.enqueue_uris_batches
                     var batch = batches[0]
-                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Adding '+(batches.length*5)+' URI(s)'))
+                    var total_uris = 0
+                    for (var i = 0; i < batches.length; i++){
+                        total_uris += batches[i].uris.length
+                    }
+                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Adding '+total_uris+' URI(s)'))
 
                 // no batches means we're done here
                 } else {
@@ -334,8 +338,21 @@ const MopidyMiddleware = (function(){
                 }
 
                 var params = {uris: batch.uris}
-                if (batch.next && current_track_index > -1){
-                    params.at_position = current_track_index + 1
+
+                // Play this batch next
+                if (batch.next){
+
+                    // Make sure we're playing something first
+                    if (current_track_index > -1){
+                        params.at_position = current_track_index + 1
+
+                    // Default to top of queue if we're not playing
+                    } else {
+                        params.at_position = 0
+                    }
+
+                // A specific position has been defined
+                // NOTE: This is likely to be wrong as the original action is unaware of batches or other client requests
                 } else if (batch.at_position){
                     params.at_position = batch.at_position
                 }
@@ -350,15 +367,16 @@ const MopidyMiddleware = (function(){
                         }
                         store.dispatch(pusherActions.addQueueMetadata(tlids, batch.from_uri))
 
-                        // still more URIs? run again in 100ms
-                        // this gives our server time to handle other requests
-                        // crude, but prevents locking the server
+                        // Re-run the batch checker in 100ms. This allows a small window for other
+                        // server requests before our next batch. It's a little crude but it means the server isn't
+                        // locked until we're completely done.
                         setTimeout(
                             function(){ 
                                 store.dispatch(mopidyActions.enqueueURIsBatchDone())
                                 store.dispatch(mopidyActions.enqueueUrisProcessor())
                             }, 
-                            100
+                            5000
+                            //100
                         )
                     })
 
