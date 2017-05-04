@@ -375,8 +375,7 @@ const MopidyMiddleware = (function(){
                                 store.dispatch(mopidyActions.enqueueURIsBatchDone())
                                 store.dispatch(mopidyActions.enqueueUrisProcessor())
                             }, 
-                            5000
-                            //100
+                            100
                         )
                     })
 
@@ -452,6 +451,7 @@ const MopidyMiddleware = (function(){
                 instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: [action.uri_scheme]})
                     .then( response => {
                         if (response.length <= 0) return
+                        if (typeof(response[0].tracks) === 'undefined') return
 
                         var tracks = response[0].tracks.splice(0,action.limit)
 

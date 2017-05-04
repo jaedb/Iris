@@ -220,6 +220,7 @@ export let uriType = function( uri ){
     	case 'artist':
     	case 'album':
     	case 'playlist':
+    	case 'search':
     		return exploded[1]
     		break
 

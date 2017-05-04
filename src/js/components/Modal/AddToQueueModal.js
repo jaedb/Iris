@@ -11,24 +11,21 @@ export default class AddToQueueModal extends React.Component{
 		super(props)
 		this.state = {
 			uris: '',
-			at_position: 'end'
+			next: false
 		}
 	}
 
 	handleSubmit(e){
 		var uris = this.state.uris.split(',')
-		if (this.state.at_position == 'next'){
-			this.props.mopidyActions.enqueueURIsNext(uris)
-		}else{
-			this.props.mopidyActions.enqueueURIs(uris)
-		}
+		console.log(this.state)
+		this.props.mopidyActions.enqueueURIs(uris, null, this.state.next)
 		this.props.uiActions.closeModal()
 	}
 
 	render(){
 		return (
 			<div>
-				<h4>Add URI(s) to tracklist</h4>
+				<h4>Add URI(s) to queue</h4>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field text">
@@ -43,19 +40,17 @@ export default class AddToQueueModal extends React.Component{
 						<label>
 							<input 
 								type="radio"
-								name="at_position"
-								value="end"
-								checked={ this.state.at_position == 'end' }
-								onChange={ e => this.setState({ at_position: e.target.value })} />
+								name="next"
+								checked={!this.state.next}
+								onChange={e => this.setState({next: false})} />
 							<span className="label">Add to end</span>
 						</label>
 						<label>
 							<input 
 								type="radio"
-								name="at_position"
-								value="next"
-								checked={ this.state.at_position == 'next' }
-								onChange={ e => this.setState({ at_position: e.target.value })} />
+								name="next"
+								checked={this.state.next}
+								onChange={e => this.setState({next: true})} />
 							<span className="label">Add after current track</span>
 						</label>
 					</div>

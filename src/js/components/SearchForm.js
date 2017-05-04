@@ -37,7 +37,7 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				hashHistory.push(global.baseURL+'search/all/'+this.state.query)
+				hashHistory.push(global.baseURL+'search/iris:search:all:'+this.state.query)
 				break
 		}
 
