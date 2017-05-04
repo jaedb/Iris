@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import LazyLoadListener from '../components/LazyLoadListener'
@@ -27,10 +28,6 @@ class Artist extends React.Component{
 
 	constructor(props) {
 		super(props)
-
-		this.state = {
-			sub_view: 'overview'
-		}
 	}
 
 	componentDidMount(){
@@ -48,8 +45,8 @@ class Artist extends React.Component{
 	}
 
 	componentWillUpdate( nextProps, nextState ){
-		if( nextState.sub_view != this.state.sub_view && nextState.sub_view == 'about' ){
-			if( this.props.artist && !this.props.artist.bio ){
+		if (nextProps.params.sub_view != this.props.params.sub_view && nextProps.params.sub_view == 'about'){
+			if (this.props.artist && !this.props.artist.bio){
 				this.props.lastfmActions.getArtist( this.props.params.uri, this.props.artist.name.replace('&','and') )
 			}
 		}
@@ -86,9 +83,6 @@ class Artist extends React.Component{
 				}
 				break
 		}
-		
-		// go back to overview
-		this.setState({ sub_view: 'overview' })
 	}
 
 	loadMore(){
@@ -102,13 +96,9 @@ class Artist extends React.Component{
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
-				<span className={'option '+( this.state.sub_view == 'overview' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'overview' })}>
-					Overview
-				</span>
-				{this.props.artist.related_artists_uris ? <span className={'option '+( this.state.sub_view == 'related_artists' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'related_artists' })}>Related artists</span> : null}
-				<span className={'option '+( this.state.sub_view == 'about' ? 'active' : null)} onClick={() => this.setState({ sub_view: 'about' })}>
-					About
-				</span>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}>Overview</Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}>Related artists</Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}>About</Link>
 			</div>
 		)
 	}
@@ -136,60 +126,64 @@ class Artist extends React.Component{
 			}
 		}
 
-		if( this.state.sub_view == 'related_artists' ){
-			return (
-				<div className="body related-artists">
-					<h4 className="left-padding">Related artists</h4>
-					<section className="grid-wrapper no-top-padding">
-						<ArtistGrid artists={related_artists} />
-					</section>
-				</div>
-			)
-		}else if( this.state.sub_view == 'about' ){
-			return (
-				<div className="body about">
+		switch (this.props.params.sub_view){
 
-					<div className="col w40 tiles">
-						{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images_additional} /></div> : null}
-						{this.props.artist.followers ? <div className="tile"><span className="text"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
-						{this.props.artist.popularity ? <div className="tile"><span className="text"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
-						{this.props.artist.listeners ? <div className="tile"><span className="text"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
-					</div>
-
-					<div className="col w60 biography">
-						<h4>Biography</h4>
-						<section>
-							{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
-							<div className="grey-text">Published: { this.props.artist.bio.published }</div>
-							<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
+			case 'related-artists':
+				return (
+					<div className="body related-artists">
+						<h4 className="left-padding">Related artists</h4>
+						<section className="grid-wrapper no-top-padding">
+							<ArtistGrid artists={related_artists} />
 						</section>
 					</div>
-				</div>
-			)
-		}
+				)
 
-		return (
-			<div className="body overview">
-				<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
-					<h4 className="left-padding">Top tracks</h4>
-					<div className="list-wrapper">
-						{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
+			case 'about':
+				return (
+					<div className="body about">
+
+						<div className="col w40 tiles">
+							{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images_additional} /></div> : null}
+							{this.props.artist.followers ? <div className="tile"><span className="text"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
+							{this.props.artist.popularity ? <div className="tile"><span className="text"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
+							{this.props.artist.listeners ? <div className="tile"><span className="text"><FontAwesome name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
+						</div>
+
+						<div className="col w60 biography">
+							<h4>Biography</h4>
+							<section>
+								{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
+								<div className="grey-text">Published: { this.props.artist.bio.published }</div>
+								<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
+							</section>
+						</div>
 					</div>
-				</div>
+				)
 
-				<div className="col w5"></div>
+			default:
+				return (
+					<div className="body overview">
+						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
+							<h4 className="left-padding">Top tracks</h4>
+							<div className="list-wrapper">
+								{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
+							</div>
+						</div>
 
-				{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div></div> : null}
+						<div className="col w5"></div>
 
-				<div className="cf"></div>
+						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div></div> : null}
 
-				<h4 className="left-padding">Albums</h4>
-				<section className="grid-wrapper no-top-padding">
-					<AlbumGrid albums={albums} />
-					<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
-				</section>
-			</div>
-		)
+						<div className="cf"></div>
+
+						<h4 className="left-padding">Albums</h4>
+						<section className="grid-wrapper no-top-padding">
+							<AlbumGrid albums={albums} />
+							<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
+						</section>
+					</div>
+				)
+		}
 	}
 
 	render(){

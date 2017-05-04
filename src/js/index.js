@@ -62,7 +62,7 @@ ReactDOM.render(
 				
 				<Route path="search/:type/:query" component={Search} />
 				<Route path="album/:uri" component={Album} />
-				<Route path="artist/:uri" component={Artist} />
+				<Route path="artist/:uri(/:sub_view)" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />
 				<Route path="user/:uri" component={User} />
 	
