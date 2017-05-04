@@ -284,8 +284,44 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_ENQUEUE_URIS':
-                var uris_added = 0
-                var remaining_uris = Object.assign([], action.uris)
+                console.log(action)
+
+                // split into batches
+                var uris = Object.assign([], action.uris)
+                var batches = []
+                while (uris.length > 0){
+                    batches.push({
+                        uris: uris.splice(0,5),
+                        at_position: action.at_position,
+                        next: action.next,
+                        from_uri: action.from_uri
+                    })
+                }
+
+                // pass off this modified action to the reducer (and other middleware)
+                action.batches = batches
+                next(action)
+
+                // start our processor
+                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                break
+
+            case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
+                console.log(action)
+
+                // make sure we have some uris in the queue
+                if (store.getState().mopidy.enqueue_uris_batches && store.getState().mopidy.enqueue_uris_batches.length > 0){
+
+                    var batches = store.getState().mopidy.enqueue_uris_batches
+                    var batch = batches[0]
+                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Adding '+(batches.length*5)+' URI(s)'))
+
+                // no batches means we're done here
+                } else {
+                    store.dispatch(uiActions.stopProcess('MOPIDY_ENQUEUE_URIS'))
+                    break
+                }
+
                 var current_track = store.getState().ui.current_track
                 var current_tracklist = store.getState().ui.current_tracklist
                 var current_track_index = -1
@@ -299,63 +335,34 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                let process_batch = function(){
-
-                    // process is not running
-                    if (store.getState().ui.processes && store.getState().ui.processes[action.type]){
-                        if (store.getState().ui.processes[action.type].cancelling){
-                            // recognise as cancelled
-                            store.dispatch(uiActions.stopProcess(action.type))
-                            return false
-                        }
-                    } else {
-                        return false
-                    }
-                    
-                    // update our process details
-                    store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
-
-                    var params = {uris: remaining_uris.splice(0,5)}
-                    if (action.next && current_track_index > -1){
-                        params.at_position = current_track_index + uris_added + 1
-                    } else if (action.at_position){
-                        params.at_position = action.at_position
-                    }
-
-                    instruct(socket, store, 'tracklist.add', params)
-                        .then( response => {
-
-                            // append our counter
-                            uris_added += response.length
-
-                            // add metadata to queue
-                            var tlids = []
-                            for (var i = 0; i < response.length; i++){
-                                tlids.push(response[i].tlid)
-                            }
-                            store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
-
-                            // still more URIs? run again in 100ms
-                            // this gives our server time to handle other requests
-                            // crude, but prevents locking the server
-                            if (remaining_uris.length > 0){
-                                setTimeout(
-                                    function(){ 
-                                        process_batch()
-                                    }, 
-                                    100
-                                )
-
-                            // all done
-                            } else {
-                                store.dispatch(uiActions.stopProcess(action.type))
-                            }
-                        })
+                var params = {uris: batch.uris}
+                if (batch.next && current_track_index > -1){
+                    params.at_position = current_track_index + 1
+                } else if (batch.at_position){
+                    params.at_position = batch.at_position
                 }
 
-                // start processing
-                store.dispatch(uiActions.startProcess(action.type, 'Adding '+remaining_uris.length+' URI(s)'))
-                process_batch()
+                instruct(socket, store, 'tracklist.add', params)
+                    .then( response => {
+
+                        // add metadata to queue
+                        var tlids = []
+                        for (var i = 0; i < response.length; i++){
+                            tlids.push(response[i].tlid)
+                        }
+                        store.dispatch(pusherActions.addQueueMetadata(tlids, batch.from_uri))
+
+                        // still more URIs? run again in 100ms
+                        // this gives our server time to handle other requests
+                        // crude, but prevents locking the server
+                        setTimeout(
+                            function(){ 
+                                store.dispatch(mopidyActions.enqueueURIsBatchDone())
+                                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                            }, 
+                            100
+                        )
+                    })
 
                 break
 
@@ -383,6 +390,7 @@ const MopidyMiddleware = (function(){
                             store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
                         } else {
                             store.dispatch(uiActions.createNotification('Failed to add some URI(s)', 'bad'))
+                            console.error('Failed to add some URI(s)', response)
                         }
 
                         // add the rest of our uris (if any)

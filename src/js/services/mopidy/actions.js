@@ -49,7 +49,7 @@ export function changeTrack( tlid ){
 	}
 }
 
-export function playURIs( uris, from_uri = null ){
+export function playURIs(uris, from_uri = null){
 	return {
 		type: 'MOPIDY_PLAY_URIS',
 		uris: uris,
@@ -57,13 +57,25 @@ export function playURIs( uris, from_uri = null ){
 	}
 }
 
-export function enqueueURIs( uris, from_uri = null, next = false, at_position = null ){
+export function enqueueURIs(uris, from_uri = null, next = false, at_position = null){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS',
 		uris: uris,
 		at_position: at_position,
 		next: next,
 		from_uri: from_uri
+	}
+}
+
+export function enqueueURIsBatchDone(){
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
+	}
+}
+
+export function enqueueUrisProcessor(){
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS_PROCESSOR'
 	}
 }
 

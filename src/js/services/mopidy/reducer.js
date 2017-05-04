@@ -89,6 +89,28 @@ export default function reducer(mopidy = {}, action){
                 directory: action.data   
             });
 
+        case 'MOPIDY_ENQUEUE_URIS':
+            if (mopidy.enqueue_uris_batches){
+                var batches = [...mopidy.enqueue_uris_batches, ...action.batches]
+            } else {
+                var batches = Object.assign([],action.batches)
+            }
+            return Object.assign({}, mopidy, {
+                enqueue_uris_batches: batches  
+            });
+
+        case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
+            if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
+                var batches = []
+                console.error('Cannot remove batch when queue empty',action)
+            } else {
+                var batches = mopidy.enqueue_uris_batches
+                batches.shift()
+            }
+            return Object.assign({}, mopidy, {
+                enqueue_uris_batches: batches  
+            });
+
         default:
             return mopidy
     }
