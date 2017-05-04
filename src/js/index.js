@@ -12,7 +12,7 @@ import ReactGA from 'react-ga'
 import store from './bootstrap.js'
 require('../scss/app.scss');
 
-import App from './views/App'
+import App from './App'
 import Album from './views/Album'
 import Artist from './views/Artist'
 import Playlist from './views/Playlist'

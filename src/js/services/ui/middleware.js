@@ -244,11 +244,13 @@ const UIMiddleware = (function(){
                 break
 
             case 'OPEN_MODAL':
+                ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name })
                 $('body').addClass('modal-open')
                 next(action)
                 break
 
             case 'CLOSE_MODAL':
+                ReactGA.event({ category: 'Modal', action: 'Closed', label: action.modal.name })
                 $('body').removeClass('modal-open')
                 next(action)
                 break
