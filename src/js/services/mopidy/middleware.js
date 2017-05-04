@@ -284,7 +284,6 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_ENQUEUE_URIS':
-                console.log(action)
 
                 // split into batches
                 var uris = Object.assign([], action.uris)
@@ -298,7 +297,7 @@ const MopidyMiddleware = (function(){
                     })
                 }
 
-                // pass off this modified action to the reducer (and other middleware)
+                // pass this modified action to the reducer (and other middleware)
                 action.batches = batches
                 next(action)
 
@@ -307,7 +306,6 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
-                console.log(action)
 
                 // make sure we have some uris in the queue
                 if (store.getState().mopidy.enqueue_uris_batches && store.getState().mopidy.enqueue_uris_batches.length > 0){
@@ -364,6 +362,13 @@ const MopidyMiddleware = (function(){
                         )
                     })
 
+                break
+
+            case 'CANCEL_PROCESS':
+                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
+                    store.dispatch(mopidyActions.enqueueURIsCancel())
+                }
+                next(action)
                 break
 
             case 'MOPIDY_PLAY_URIS':

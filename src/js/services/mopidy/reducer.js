@@ -99,6 +99,11 @@ export default function reducer(mopidy = {}, action){
                 enqueue_uris_batches: batches  
             });
 
+        case 'MOPIDY_ENQUEUE_URIS_CANCEL':
+            return Object.assign({}, mopidy, {
+                enqueue_uris_batches: []  
+            });
+
         case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
             if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
                 var batches = []
