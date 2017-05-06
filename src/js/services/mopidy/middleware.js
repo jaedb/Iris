@@ -249,29 +249,37 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_PLAY_PLAYLIST':
-                if (helpers.uriSource(action.uri) == 'spotify'){
 
-                    // playlist already in index
-                    if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
-                        
-                        // make sure we didn't get this playlist from Mopidy-Spotify
-                        // if we did, we'd have a cached version on server so no need to fetch
-                        if (!store.getState().ui.playlists[action.uri].is_mopidy){
-                            store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
-                            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
-                            break
-                        }
-
-                    // not loaded, so we need to fetch
-                    } else {
+                // playlist already in index
+                if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
+                    
+                    // make sure we didn't get this playlist from Mopidy-Spotify
+                    // if we did, we'd have a cached version on server so no need to fetch
+                    if (!store.getState().ui.playlists[action.uri].is_mopidy){
                         store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
                     }
+
+                // it's a spotify playlist that we haven't loaded
+                // we need to fetch via HTTP API to avoid timeout
+                } else if (helpers.uriSource(action.uri) == 'spotify'){
+                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
+                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                    break
                 }
 
-                // default to load it as per usual
-                store.dispatch(mopidyActions.playURIs([action.uri], action.uri))
+                // fetch the playlist tracks via backend
+                // add each track by URI
+                instruct(socket, store, 'playlists.lookup', {uri: action.uri})
+                .then( response => {
+                    if (typeof(response.tracks) === 'undefined'){
+                        store.dispatch(uiActions.createNotification('Failed to load playlist tracks','bad'))
+                    } else {
+                        var tracks_uris = helpers.asURIs(response.tracks)
+                        store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
+                    }
+                })
 
                 break
 
@@ -294,7 +302,7 @@ const MopidyMiddleware = (function(){
                         uris: uris.splice(0,batch_size),
                         at_position: action.at_position,
                         next: action.next,
-                        offset: batch_size * batches.length,
+                        offset: action.offset + (batch_size * batches.length),
                         from_uri: action.from_uri
                     })
                 }
@@ -425,7 +433,7 @@ const MopidyMiddleware = (function(){
                             // this means our UI feels snappier as the first track shows up quickly
                             setTimeout(
                                 function(){ 
-                                    store.dispatch(mopidyActions.enqueueURIs( action.uris, action.from_uri, 1 ))
+                                    store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, true, null, 1))
                                 }, 
                                 100
                             )

@@ -57,13 +57,14 @@ export function playURIs(uris, from_uri = null){
 	}
 }
 
-export function enqueueURIs(uris, from_uri = null, next = false, at_position = null){
+export function enqueueURIs(uris, from_uri = null, next = false, at_position = null, offset = 0){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS',
 		uris: uris,
 		at_position: at_position,
 		next: next,
-		from_uri: from_uri
+		from_uri: from_uri,
+		offset: offset
 	}
 }
 

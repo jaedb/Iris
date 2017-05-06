@@ -75,7 +75,7 @@ class Playlist extends React.Component{
 
 	follow(){
         ReactGA.event({ category: 'Playlist', action: 'Follow', label: this.props.playlist.uri })
-		this.props.spotifyActions.toggleFollowingPlaylist( this.props.playlist.uri, 'PUT' )
+		this.props.spotifyActions.toggleFollowingPlaylist(this.props.playlist.uri, 'PUT')
 	}
 
 	// TODO: Once unfollowing occurs, remove playlist from global playlists list

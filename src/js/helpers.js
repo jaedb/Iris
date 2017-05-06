@@ -215,6 +215,10 @@ export let getFromUri = function(element,uri){
 export let uriType = function( uri ){
     var exploded = uri.split(':')
 
+    if (exploded[0] == 'm3u'){
+    	return 'playlist'
+    }
+
     switch (exploded[1]){
     	case 'track':
     	case 'artist':
