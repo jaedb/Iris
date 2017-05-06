@@ -288,11 +288,13 @@ const MopidyMiddleware = (function(){
                 // split into batches
                 var uris = Object.assign([], action.uris)
                 var batches = []
+                var batch_size = 5
                 while (uris.length > 0){
                     batches.push({
-                        uris: uris.splice(0,5),
+                        uris: uris.splice(0,batch_size),
                         at_position: action.at_position,
                         next: action.next,
+                        offset: batch_size * batches.length,
                         from_uri: action.from_uri
                     })
                 }
@@ -344,17 +346,17 @@ const MopidyMiddleware = (function(){
 
                     // Make sure we're playing something first
                     if (current_track_index > -1){
-                        params.at_position = current_track_index + 1
+                        params.at_position = current_track_index + batch.offset + 1
 
                     // Default to top of queue if we're not playing
                     } else {
-                        params.at_position = 0
+                        params.at_position = 0 + batch.offset
                     }
 
                 // A specific position has been defined
                 // NOTE: This is likely to be wrong as the original action is unaware of batches or other client requests
                 } else if (batch.at_position){
-                    params.at_position = batch.at_position
+                    params.at_position = batch.at_position + batch.offset
                 }
 
                 instruct(socket, store, 'tracklist.add', params)
