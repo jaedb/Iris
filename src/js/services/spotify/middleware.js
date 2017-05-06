@@ -1,7 +1,7 @@
 
-var helpers = require('./../../helpers.js')
-var spotifyActions = require('./actions.js')
-var uiActions = require('../ui/actions.js')
+var helpers = require('./../../helpers')
+var spotifyActions = require('./actions')
+var uiActions = require('../ui/actions')
 
 const SpotifyMiddleware = (function(){
 

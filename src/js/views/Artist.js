@@ -44,14 +44,6 @@ class Artist extends React.Component{
 		}
 	}
 
-	componentWillUpdate( nextProps, nextState ){
-		if (nextProps.params.sub_view != this.props.params.sub_view && nextProps.params.sub_view == 'about'){
-			if (this.props.artist && !this.props.artist.bio){
-				this.props.lastfmActions.getArtist( this.props.params.uri, this.props.artist.name.replace('&','and') )
-			}
-		}
-	}
-
 	handleContextMenu(e){
 		var data = {
 			e: e,

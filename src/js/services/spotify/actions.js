@@ -1,6 +1,7 @@
 
-var uiActions = require('../../services/ui/actions.js')
-var helpers = require('../../helpers.js')
+var uiActions = require('../../services/ui/actions')
+var lastfmActions = require('../../services/lastfm/actions')
+var helpers = require('../../helpers')
 
 /**
  * Send an ajax request to the Spotify API
@@ -648,7 +649,14 @@ export function getArtist( uri ){
                     Object.assign(artist, { related_artists_uris: helpers.asURIs(response.artists) });
                 })
 
-        ).then( () => {
+        ).then(() => {
+
+            if (artist.musicbrainz_id){
+                dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
+            } else {
+                dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and')))
+            }
+
             dispatch({
                 type: 'ARTIST_LOADED',
                 key: artist.uri,

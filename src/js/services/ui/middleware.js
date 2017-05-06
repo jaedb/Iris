@@ -363,7 +363,21 @@ const UIMiddleware = (function(){
                 break
 
             case 'MOPIDY_CURRENTTLTRACK':
-                if( action.data && action.data.track ) helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state)
+                if (action.data && action.data.track ){
+                    helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state)
+
+                    // make sure our images use mopidy host:port
+                    if (action.data.track.album && action.data.track.album.images && action.data.track.album.images.length > 0){
+                        var images = Object.assign([], action.data.track.album.images)
+                        for (var i = 0; i < images.length; i++){
+                            if (typeof(images[i]) === 'string' && images[i].startsWith('/images/')){
+                                images[i] = '//'+store.getState().mopidy.host+':'+store.getState().mopidy.port+images[i]
+                            }
+                        }
+                        action.data.track.album.images = images
+                    }
+                }
+
                 next(action)
                 break
 
