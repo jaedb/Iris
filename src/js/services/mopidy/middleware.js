@@ -433,7 +433,7 @@ const MopidyMiddleware = (function(){
                             // this means our UI feels snappier as the first track shows up quickly
                             setTimeout(
                                 function(){ 
-                                    store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, true, null, 1))
+                                    store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1))
                                 }, 
                                 100
                             )
