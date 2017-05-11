@@ -406,8 +406,8 @@ export function getURL( url, action_name, key = false ){
     }
 }
 
-export function getSearchResults( query, type = 'album,artist,playlist,track', limit = 50, offset = 0 ){
-	return (dispatch, getState) => {
+export function getSearchResults(query, type = 'album,artist,playlist,track', limit = 50, offset = 0){
+    return (dispatch, getState) => {
 
         var url = 'search?q='+query
         url += '&type='+type
@@ -456,7 +456,62 @@ export function getSearchResults( query, type = 'album,artist,playlist,track', l
                     tracks_more: response.tracks.next
                 });
             });
-	}
+    }
+}
+
+export function getAutocompleteResults(field_id, query, types = ['album','artist','playlist','track']){
+    return (dispatch, getState) => {
+        console.log(types)
+
+        dispatch({type: 'SPOTIFY_AUTOCOMPLETE_LOADING', field_id: field_id})
+
+        var genre_included = types.includes('genre')
+        if (genre_included){
+            var index = types.indexOf('genre')
+            types.splice(index,1)
+        }
+
+        var endpoint = 'search?q='+query
+        endpoint += '&type='+types.join(',')
+        endpoint += '&country='+getState().spotify.country
+
+        $.when(
+            sendRequest(dispatch, getState, endpoint),
+            sendRequest(dispatch, getState, 'recommendations/available-genre-seeds')
+
+        ).then((search_response, genres_response) => {
+            var genres = []
+            if (genre_included){
+                for (var i = 0; i < genres_response.genres.length; i++){
+                    if (genres_response.genres[i].includes(query)){
+                        var genre = genres_response.genres[i]
+                        genres.push({
+                            name: (genre.charAt(0).toUpperCase()+genre.slice(1)).replace('-',' '),
+                            uri: 'spotify:genre:'+genre
+                        })
+                    }
+                }
+            }
+            dispatch({
+                type: 'SPOTIFY_AUTOCOMPLETE_LOADED',
+                field_id: field_id,
+                results: {
+                    artists: (search_response.artists ? search_response.artists.items : []),
+                    albums: (search_response.albums ? search_response.albums.items : []),
+                    playlists: (search_response.playlists ? search_response.playlists.items : []),
+                    tracks: (search_response.tracks ? search_response.tracks.items : []),
+                    genres: genres
+                }
+            });
+        })
+    }
+}
+
+export function clearAutocompleteResults(field_id = null){
+    return {
+        type: 'SPOTIFY_AUTOCOMPLETE_CLEAR',
+        field_id: field_id
+    }
 }
 
 export function following(uri, method = 'GET'){
@@ -568,43 +623,99 @@ export function resolveRadioSeeds( radio ){
 
 
 /**
- * Get our recommendations
- * This is based off our 'favorites' and then we use those as seeds
+ * Get my favorites
  *
  * @param uri string
  **/
-export function getDiscover(){
+export function getFavorites(limit = 50, term = 'long_term'){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_DISCOVER_LOADED', data: false })
+        dispatch({type: 'SPOTIFY_FAVORITES_LOADED', artists: [], tracks: []})
 
-        // get favorite tracks
-        sendRequest( dispatch, getState, 'me/top/tracks?limit=50&time_range=long_term' )
+        $.when(
+            sendRequest(dispatch, getState, 'me/top/artists?limit='+limit+'&time_range='+term),
+            sendRequest(dispatch, getState, 'me/top/tracks?limit='+limit+'&time_range='+term)
+
+        ).then((artists_response, tracks_response) => {
+            dispatch({
+                type: 'SPOTIFY_FAVORITES_LOADED',
+                artists: artists_response.items,
+                tracks: tracks_response.items
+            });
+        })
+    }
+}
+
+
+/**
+ * Get our recommendations
+ * This is based off our 'favorites' and then we use those as seeds
+ *
+ * @param uris = array of artist or track URIs or a genre string
+ **/
+export function getRecommendations(uris = []){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'SPOTIFY_RECOMMENDATIONS_LOADED', data: false })
+
+        // build our starting point
+        var artists_ids = []
+        var tracks_ids = []
+        var genres = []
+
+        for (var i = 0; i < uris.length; i++){
+            var uri = uris[i]
+
+            switch (helpers.uriType(uri)){
+                
+                case 'artist':
+                    artists_ids.push(helpers.getFromUri('artistid',uri))
+                    break
+
+                case 'track':
+                    tracks_ids.push(helpers.getFromUri('trackid',uri))
+                    break
+
+                case 'genre':
+                    genres.push(helpers.getFromUri('genreid',uri))
+                    break
+
+                case 'default':
+                    genres.push(uri)
+                    break
+            }
+        }
+
+        // construct our endpoint URL with all the appropriate arguments
+        var endpoint = 'recommendations'
+        endpoint += '?seed_artists='+artists_ids.join(',')
+        endpoint += '&seed_tracks='+tracks_ids.join(',')
+        endpoint += '&seed_genres='+genres.join(',')
+
+        sendRequest(dispatch, getState, endpoint)
             .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
+                    tracks: response.tracks
+                });
+            })
+    }
+}
 
-                var favorite_tracks_uris = helpers.asURIs(response.items)
-                favorite_tracks_uris = favorite_tracks_uris.sort(() => .5 - Math.random())
-                favorite_tracks_uris = favorite_tracks_uris.slice(0,10)
 
-                for (var i = 0; i < favorite_tracks_uris.length; i++){
-
-                    var seed_id = helpers.getFromUri('trackid',favorite_tracks_uris[i] )
-
-                    $.when(
-
-                        sendRequest( dispatch, getState, 'recommendations?seed_tracks='+seed_id ),
-                        sendRequest( dispatch, getState, 'tracks/'+seed_id )
-
-                    ).then( ( tracks_response, seed_response ) => {
-                        dispatch({
-                            type: 'SPOTIFY_DISCOVER_LOADED',
-                            data: {
-                                tracks: tracks_response.tracks,
-                                seed: seed_response
-                            }
-                        });
-                    });
-                }
+/**
+ * Get all the available genres
+ *
+ * @param uri string
+ **/
+export function getGenres(){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, 'recommendations/available-genre-seeds')
+            .then( response => {
+                dispatch({
+                    type: 'SPOTIFY_GENRES_LOADED',
+                    genres: response
+                });
             })
     }
 }

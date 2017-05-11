@@ -25,10 +25,10 @@ export default class ArtistSentence extends React.Component{
 						}
 						if (!artist.name){							
 							var content = <span>-</span>
-						} else if (artist.uri){
-							var content = <Link className="artist" to={global.baseURL+'artist/'+artist.uri}>{ artist.name }</Link>
-						}else{
+						} else if (!artist.uri || this.props.nolinks){
 							var content = <span>{ artist.name }</span>
+						}else{
+							var content = <Link className="artist" to={global.baseURL+'artist/'+artist.uri}>{ artist.name }</Link>
 						}
 						return (
 							<span key={'index_'+artist.uri}>

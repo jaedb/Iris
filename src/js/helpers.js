@@ -203,6 +203,12 @@ export let getFromUri = function(element,uri){
     			return exploded[2]
     		}
     		break
+
+    	case 'genreid':
+    		if (exploded[1] == 'genre'){
+    			return exploded[2]
+    		}
+    		break
     }
     return null
 }
@@ -225,6 +231,7 @@ export let uriType = function( uri ){
     	case 'album':
     	case 'playlist':
     	case 'search':
+    	case 'genre':
     		return exploded[1]
     		break
 

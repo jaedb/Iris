@@ -179,6 +179,59 @@ export default function reducer(spotify = {}, action){
             if( !action.data ) return Object.assign({}, spotify, { discover: [] })
             return Object.assign({}, spotify, { discover: [...spotify.discover, ...[action.data]] })
 
+        case 'SPOTIFY_GENRES_LOADED':
+            return Object.assign({}, spotify, {genres: action.genres})
+
+        case 'SPOTIFY_RECOMMENDATIONS_LOADED':
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    recommendations: action.tracks
+                })
+
+        case 'SPOTIFY_FAVORITES_LOADED':
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    favorite_artists: action.artists,
+                    favorite_tracks: action.tracks
+                })
+
+        case 'SPOTIFY_AUTOCOMPLETE_LOADING':
+            var autocomplete_results = spotify.autocomplete_results
+            autocomplete_results[action.field_id] = {loading: true}
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    autocomplete_results: autocomplete_results
+                })
+
+        case 'SPOTIFY_AUTOCOMPLETE_LOADED':
+            var autocomplete_results = spotify.autocomplete_results
+            autocomplete_results[action.field_id] = action.results
+            autocomplete_results[action.field_id].loading = false
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    autocomplete_results: autocomplete_results
+                })
+
+        case 'SPOTIFY_AUTOCOMPLETE_CLEAR':
+            var autocomplete_results = spotify.autocomplete_results
+            if (typeof(autocomplete_results[action.field_id]) !== 'undefined'){
+                delete autocomplete_results[action.field_id]
+            }
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    autocomplete_results: autocomplete_results
+                })
+
         default:
             return spotify
     }

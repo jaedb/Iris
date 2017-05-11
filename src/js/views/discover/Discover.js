@@ -2,10 +2,14 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
-import Header from '../../components/Header'
+import SidebarToggleButton from '../../components/SidebarToggleButton'
 import GridSlider from '../../components/GridSlider'
 import ArtistSentence from '../../components/ArtistSentence'
+import TrackList from '../../components/TrackList'
+import Parallax from '../../components/Parallax'
+import AutocompleteField from '../../components/AutocompleteField'
 
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -13,35 +17,88 @@ import * as spotifyActions from '../../services/spotify/actions'
 class Discover extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this._autocomplete_timer = false
+
+		this.state = {
+			seeds: [],
+			adding_seed: false
+		}
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getDiscover()
+		this.props.spotifyActions.getGenres()
+		if (this.props.authorized){
+			this.props.spotifyActions.getFavorites()
+		}
 	}
 
-	renderRecommendations(){
-		if (!this.props.discover || this.props.discover.length <= 0) return null
+	componentWillReceiveProps(newProps, newState){
+		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length > 0 && this.state.seeds.length <= 0){
+			var initial_seeds = newProps.favorite_artists.sort(() => .5 - Math.random())
+			initial_seeds = initial_seeds.slice(0,2)
 
+			this.setState({seeds: initial_seeds})
+			this.getRecommendations(initial_seeds)
+		}
+	}
+
+	getRecommendations(seeds = this.state.seeds){
+		var uris = helpers.asURIs(seeds)
+		this.props.spotifyActions.getRecommendations(uris)
+	}
+
+	removeSeed(index){
+		var seeds = this.state.seeds
+		seeds.splice(index,1)
+		this.setState({seeds: seeds})
+		this.getRecommendations(seeds)
+	}
+
+	handleSelect(item){
+		var seeds = this.state.seeds
+		seeds.push(item)
+		this.setState({seeds: seeds})
+		this.getRecommendations(seeds)
+	}
+
+	renderSeeds(){
 		return (
-			<section className="recommendations">
+			<div className="seeds">
 				{
-					this.props.discover.map(
-						(discover, index) => {
-							var title = <h4>Because you listened to <ArtistSentence artists={discover.seed.artists} /></h4>
-							return <GridSlider title={title} tracks={discover.tracks} key={index} />
+					this.state.seeds.map((seed,index) => {
+						var type = helpers.uriType(seed.uri)
+						if (!type){
+							type = 'genre'
 						}
-					)
+						return (
+							<span className="seed" key={seed.uri}>
+								{seed.name}
+								<span className="type">({type})</span>
+								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
+							</span>
+						)
+					})
 				}
-			</section>
+				<AutocompleteField types={['artist','track','genre']} placeholder="Add seed" handleSelect={item => this.handleSelect(item)} clearOnSelect />
+			</div>
 		)
 	}
 
 	render(){
 		return (
 			<div className="view discover-view">
-				<Header icon="compass" title="Discover" />
-				{ this.renderRecommendations() }
+				<SidebarToggleButton />
+				<div className="intro">
+					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
+					<div className="liner">
+						<h1>Discover new music</h1>
+						<h3>Add seeds below to build your sound</h3>
+						{this.renderSeeds()}
+					</div>
+				</div>
+				{this.props.recommendations ? <section className="list-wrapper"><TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations} /></section> : null}
 			</div>
 		)
 	}
@@ -57,7 +114,10 @@ class Discover extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorized: state.spotify.authorized,
-		discover: state.spotify.discover
+		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),
+		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : []),
+		favorite_artists: (state.spotify.favorite_artists ? state.spotify.favorite_artists : []),
+		favorite_tracks: (state.spotify.favorite_tracks ? state.spotify.favorite_tracks : [])
 	}
 }
 
