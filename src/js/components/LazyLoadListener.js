@@ -31,8 +31,8 @@ export default class LazyLoadListener extends React.Component{
 
 	render(){
 		return (
-			<div className={this.state.loading ? "lazy-loader loading" : "lazy-loader"}>
-				<div className="loader"></div>
+			<div className="lazy-loader body-loader">
+				{this.state.loading ? <div className="loader"></div> : null}
 			</div>
 		)
 	}

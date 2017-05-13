@@ -22,20 +22,27 @@ class Discover extends React.Component{
 		this._autocomplete_timer = false
 
 		this.state = {
-			seeds: [],
+			seeds: [
+				{
+					uri: 'spotify:genre:chill',
+					name: 'Chill'
+				}
+			],
+			add_seed: '',
 			adding_seed: false
 		}
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getGenres()
 		if (this.props.authorized){
 			this.props.spotifyActions.getFavorites()
+		} else {
+			this.getRecommendations()
 		}
 	}
 
 	componentWillReceiveProps(newProps, newState){
-		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length > 0 && this.state.seeds.length <= 0){
+		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length){
 			var initial_seeds = newProps.favorite_artists.sort(() => .5 - Math.random())
 			initial_seeds = initial_seeds.slice(0,2)
 
@@ -56,7 +63,7 @@ class Discover extends React.Component{
 		this.getRecommendations(seeds)
 	}
 
-	handleSelect(item){
+	handleSelect(e,item){
 		var seeds = this.state.seeds
 		seeds.push(item)
 		this.setState({seeds: seeds})
@@ -81,7 +88,13 @@ class Discover extends React.Component{
 						)
 					})
 				}
-				<AutocompleteField types={['artist','track','genre']} placeholder="Add seed" handleSelect={item => this.handleSelect(item)} clearOnSelect />
+				<AutocompleteField 
+					value={this.state.add_seed} 
+					types={['artist','track','genre']} 
+					placeholder="Add seed" 
+					onSelect={(e,item) => this.handleSelect(e,item)} 
+					clearOnSelect
+					hideAllResultsButton />
 			</div>
 		)
 	}
@@ -94,11 +107,14 @@ class Discover extends React.Component{
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
 					<div className="liner">
 						<h1>Discover new music</h1>
-						<h3>Add seeds below to build your sound</h3>
+						<h3>
+							Add seeds below to build your sound. Let's start with 
+							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.
+						</h3>
 						{this.renderSeeds()}
 					</div>
 				</div>
-				{this.props.recommendations ? <section className="list-wrapper"><TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations} /></section> : null}
+				{helpers.isLoading(this.props.load_queue, 'spotify_recommendations') ? <div className="body-loader"><div className="loader"></div></div> : <section className="list-wrapper"><TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations} /></section>}
 			</div>
 		)
 	}
@@ -114,6 +130,7 @@ class Discover extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorized: state.spotify.authorized,
+		load_queue: state.ui.load_queue,
 		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),
 		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : []),
 		favorite_artists: (state.spotify.favorite_artists ? state.spotify.favorite_artists : []),

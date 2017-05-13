@@ -5,6 +5,7 @@ import { Link, hashHistory } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import AutocompleteField from './AutocompleteField'
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 
@@ -18,7 +19,7 @@ class SearchForm extends React.Component{
 		}
 	}
 
-	handleSubmit(e){
+	handleSubmit(e,value){
 		e.preventDefault()
 
 		// check for uri type matching
@@ -46,12 +47,12 @@ class SearchForm extends React.Component{
 
 	render(){
 		return (
-			<form className={this.props.context+' search-form'} onSubmit={ e => this.handleSubmit(e) }>
-				<input					
-					type="text"
+			<form className={this.props.context+' search-form'} onSubmit={e => this.handleSubmit(e, this.state.query)}>
+				<AutocompleteField 
+					value={this.state.query}
+					types={['artist','album','playlist']}
 					placeholder="Search"
-					onChange={ e => this.setState({ query: e.target.value }) } 
-					value={ this.state.query } />
+					onChange={(e,value) => this.setState({query: value})} />
 			</form>
 		)
 	}

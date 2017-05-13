@@ -34,7 +34,13 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                 }
 
                 // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
-                if (data) config.data = JSON.stringify(data)
+                if (data){
+                    if (typeof(data) === 'string'){
+                        config.data = data
+                    } else {
+                        config.data = JSON.stringify(data)
+                    }
+                }
 
                 // add reference to loader queue
                 var loader_key = helpers.generateGuid()
@@ -461,7 +467,6 @@ export function getSearchResults(query, type = 'album,artist,playlist,track', li
 
 export function getAutocompleteResults(field_id, query, types = ['album','artist','playlist','track']){
     return (dispatch, getState) => {
-        console.log(types)
 
         dispatch({type: 'SPOTIFY_AUTOCOMPLETE_LOADING', field_id: field_id})
 
@@ -475,16 +480,14 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
         endpoint += '&type='+types.join(',')
         endpoint += '&country='+getState().spotify.country
 
-        $.when(
-            sendRequest(dispatch, getState, endpoint),
-            sendRequest(dispatch, getState, 'recommendations/available-genre-seeds')
-
-        ).then((search_response, genres_response) => {
+        sendRequest(dispatch, getState, endpoint)
+        .then(response => {
             var genres = []
             if (genre_included){
-                for (var i = 0; i < genres_response.genres.length; i++){
-                    if (genres_response.genres[i].includes(query)){
-                        var genre = genres_response.genres[i]
+                var available_genres = getState().spotify.genres
+                for (var i = 0; i < available_genres.length; i++){
+                    if (available_genres[i].includes(query)){
+                        var genre = available_genres[i]
                         genres.push({
                             name: (genre.charAt(0).toUpperCase()+genre.slice(1)).replace('-',' '),
                             uri: 'spotify:genre:'+genre
@@ -496,10 +499,10 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                 type: 'SPOTIFY_AUTOCOMPLETE_LOADED',
                 field_id: field_id,
                 results: {
-                    artists: (search_response.artists ? search_response.artists.items : []),
-                    albums: (search_response.albums ? search_response.albums.items : []),
-                    playlists: (search_response.playlists ? search_response.playlists.items : []),
-                    tracks: (search_response.tracks ? search_response.tracks.items : []),
+                    artists: (response.artists ? response.artists.items : []),
+                    albums: (response.albums ? response.albums.items : []),
+                    playlists: (response.playlists ? response.playlists.items : []),
+                    tracks: (response.tracks ? response.tracks.items : []),
                     genres: genres
                 }
             });
@@ -656,7 +659,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
 export function getRecommendations(uris = []){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'SPOTIFY_RECOMMENDATIONS_LOADED', data: false })
+        dispatch({type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: []})
 
         // build our starting point
         var artists_ids = []
@@ -687,12 +690,11 @@ export function getRecommendations(uris = []){
         }
 
         // construct our endpoint URL with all the appropriate arguments
-        var endpoint = 'recommendations'
-        endpoint += '?seed_artists='+artists_ids.join(',')
-        endpoint += '&seed_tracks='+tracks_ids.join(',')
-        endpoint += '&seed_genres='+genres.join(',')
+        var data = 'seed_artists='+artists_ids.join(',')
+        data += '&seed_tracks='+tracks_ids.join(',')
+        data += '&seed_genres='+genres.join(',')
 
-        sendRequest(dispatch, getState, endpoint)
+        sendRequest(dispatch, getState, 'recommendations', 'GET', data)
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
@@ -714,7 +716,7 @@ export function getGenres(){
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_GENRES_LOADED',
-                    genres: response
+                    genres: response.genres
                 });
             })
     }

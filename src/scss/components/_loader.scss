@@ -1,0 +1,22 @@
+
+.body-loader {
+	padding: 50px 0;
+
+	.loader {
+		@include spin();
+		margin: 0 auto;
+		width: 30px;
+		height: 30px;
+		border: {
+			radius: 100%;
+			style: solid;
+			color: $mid_grey;
+			width: 2px;
+		}
+		border-top-color: transparent;
+	}
+
+	&.lazy-loader {
+		padding: 20px 0 40px;
+	}
+}

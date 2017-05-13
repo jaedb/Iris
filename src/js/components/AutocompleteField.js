@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link, hashHistory } from 'react-router'
 
 import ArtistSentence from './ArtistSentence'
 import * as helpers from '../helpers'
@@ -11,6 +12,7 @@ class AutocompleteField extends React.Component{
 
 	constructor(props) {
 		super(props)
+
 		this.state = {
 			value: ''
 		}
@@ -21,6 +23,10 @@ class AutocompleteField extends React.Component{
 
 	componentDidMount(){
 		window.addEventListener("click", this.handleClick, false)
+
+		if (this.props.types.includes('genre') && !this.props.genres){
+			this.props.spotifyActions.getGenres()
+		}
 	}
 
 	componentWillUnmount(){		
@@ -33,10 +39,20 @@ class AutocompleteField extends React.Component{
 		}
 	}
 
-	handleChange(value){
+	handleChange(e,value){
 		var self = this
-		clearTimeout(this.timer)
+
+		// update our local state
 		this.setState({value: value})
+
+		// pass the change up the line
+		if (this.props.onChange){
+			this.props.onChange(e,value)
+		}
+		
+		// start a timer to perform the actual search
+		// this provides a wee delay between key presses to avoid request spamming
+		clearTimeout(this.timer)
         this.timer = setTimeout(
             function(){
             	self.setState({searching: true})
@@ -46,14 +62,43 @@ class AutocompleteField extends React.Component{
         )
 	}
 
-	handleSelect(item){
+	handleSelect(e,item){
 		if (this.props.clearOnSelect){
 			this.setState({value: ''})
 		} else {
 			this.setState({value: item.name})
 		}
 
-		this.props.handleSelect(item)
+		// if we have a handler to pass down to
+		if (this.props.onSelect){
+			this.props.onSelect(e,item)
+
+		// no handler, so let's just go to this asset
+		} else {
+			switch (helpers.uriType(item.uri)){
+
+				case 'album':
+					hashHistory.push(global.baseURL+'album/'+item.uri)
+					break
+
+				case 'artist':
+					hashHistory.push(global.baseURL+'artist/'+item.uri)
+					break
+
+				case 'playlist':
+					hashHistory.push(global.baseURL+'playlist/'+item.uri)
+					break
+
+				case 'track':
+					hashHistory.push(global.baseURL+'album/'+item.album.uri)
+					break
+
+				case 'search':
+					hashHistory.push(global.baseURL+'search/'+item.uri)
+					break
+			}
+		}
+
 		this.props.spotifyActions.clearAutocompleteResults(this.id)
 	}
 
@@ -65,6 +110,18 @@ class AutocompleteField extends React.Component{
 		} else {
 			return this.props.results[this.id]
 		}
+	}
+
+	renderAllResultsButton(){
+		 if (this.props.hideAllResultsButton || !this.results()){
+		 	return null
+		 } else {
+			return (
+				<div className="all-results" onClick={e => this.handleSelect(e,{uri:'iris:search:all:'+this.state.value, name: ''})}>
+					All results
+				</div>
+			)
+		 }
 	}
 
 	renderResults(type){
@@ -80,7 +137,7 @@ class AutocompleteField extends React.Component{
 				{
 					items.map(item => {
 						return (
-							<div className="result" key={item.uri} onClick={() => this.handleSelect(item)}>
+							<div className="result" key={item.uri} onClick={e => this.handleSelect(e,item)}>
 								{item.name}
 								{type == 'tracks' ? <span className="grey-text"> <ArtistSentence artists={item.artists} nolinks /></span> : null}
 							</div>
@@ -102,7 +159,7 @@ class AutocompleteField extends React.Component{
 					<input 
 						type="text" 
 						value={this.state.value}
-						onChange={e => this.handleChange(e.target.value)} 
+						onChange={e => this.handleChange(e,e.target.value)} 
 						placeholder={this.props.placeholder ? this.props.placeholder : "Start typing..."} />
 				</div>
 				<div className="results">
@@ -115,6 +172,7 @@ class AutocompleteField extends React.Component{
 							)
 						})
 					}
+					{this.renderAllResultsButton()}
 				</div>
 			</div>
 		);
@@ -123,6 +181,7 @@ class AutocompleteField extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		genres: (state.spotify.genres ? state.spotify.genres : null),
 		results: (state.spotify.autocomplete_results ? state.spotify.autocomplete_results : {})
 	}
 }

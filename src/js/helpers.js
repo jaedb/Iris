@@ -443,3 +443,25 @@ export let setWindowTitle = function (track = false, play_state = false){
     
     document.title = title
 }
+
+
+/**
+ * Detect if an item is in the loading queue. We simply loop all load items to
+ * see if any items contain our searched key.
+ *
+ * TODO: Explore performance of this
+ *
+ * @param load_queue = obj (passed from store)
+ * @param key = string (the string to lookup)
+ * @return boolean
+ **/
+export let isLoading = function(load_queue = [], key = ''){
+	for (var load_queue_key in load_queue) {
+		if (load_queue.hasOwnProperty(load_queue_key)){
+			if (load_queue[load_queue_key] == key){
+				return true
+			}
+		}
+	}
+	return false
+}
