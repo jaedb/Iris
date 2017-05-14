@@ -159,5 +159,9 @@ $bp_shallow: 650px;
 		@media( min-width: $min_width ){ 
 			@content;
 		}
+	}@else if $min_height {
+		@media( min-height: $min_height ){ 
+			@content;
+		}
 	}
 }

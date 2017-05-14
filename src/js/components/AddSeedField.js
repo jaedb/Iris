@@ -8,7 +8,7 @@ import ArtistSentence from './ArtistSentence'
 import * as helpers from '../helpers'
 import * as spotifyActions from '../services/spotify/actions'
 
-class AutocompleteField extends React.Component{
+class AddSeedField extends React.Component{
 
 	constructor(props) {
 		super(props)
@@ -24,7 +24,7 @@ class AutocompleteField extends React.Component{
 	componentDidMount(){
 		window.addEventListener("click", this.handleClick, false)
 
-		if (this.props.types.includes('genre') && !this.props.genres){
+		if (!this.props.genres){
 			this.props.spotifyActions.getGenres()
 		}
 	}
@@ -34,8 +34,8 @@ class AutocompleteField extends React.Component{
 	}
 
 	handleClick(e){
-		if ($(e.target).closest('.autocomplete-field').length <= 0){
-			this.props.spotifyActions.clearAutocompleteResults()
+		if ($(e.target).closest('.add-seed-field').length <= 0){
+			this.props.spotifyActions.clearAutocompleteResults(this.id)
 		}
 	}
 
@@ -44,11 +44,6 @@ class AutocompleteField extends React.Component{
 
 		// update our local state
 		this.setState({value: value})
-
-		// pass the change up the line
-		if (this.props.onChange){
-			this.props.onChange(e,value)
-		}
 		
 		// start a timer to perform the actual search
 		// this provides a wee delay between key presses to avoid request spamming
@@ -56,49 +51,15 @@ class AutocompleteField extends React.Component{
         this.timer = setTimeout(
             function(){
             	self.setState({searching: true})
-                self.props.spotifyActions.getAutocompleteResults(self.id,value,self.props.types)
+                self.props.spotifyActions.getAutocompleteResults(self.id,value,['artist','track','genre'])
             },
             500
         )
 	}
 
 	handleSelect(e,item){
-		if (this.props.clearOnSelect){
-			this.setState({value: ''})
-		} else {
-			this.setState({value: item.name})
-		}
-
-		// if we have a handler to pass down to
-		if (this.props.onSelect){
-			this.props.onSelect(e,item)
-
-		// no handler, so let's just go to this asset
-		} else {
-			switch (helpers.uriType(item.uri)){
-
-				case 'album':
-					hashHistory.push(global.baseURL+'album/'+item.uri)
-					break
-
-				case 'artist':
-					hashHistory.push(global.baseURL+'artist/'+item.uri)
-					break
-
-				case 'playlist':
-					hashHistory.push(global.baseURL+'playlist/'+item.uri)
-					break
-
-				case 'track':
-					hashHistory.push(global.baseURL+'album/'+item.album.uri)
-					break
-
-				case 'search':
-					hashHistory.push(global.baseURL+'search/'+item.uri)
-					break
-			}
-		}
-
+		this.setState({value: ''})
+		this.props.onSelect(e,item)
 		this.props.spotifyActions.clearAutocompleteResults(this.id)
 	}
 
@@ -110,18 +71,6 @@ class AutocompleteField extends React.Component{
 		} else {
 			return this.props.results[this.id]
 		}
-	}
-
-	renderAllResultsButton(){
-		 if (this.props.hideAllResultsButton || !this.results()){
-		 	return null
-		 } else {
-			return (
-				<div className="all-results" onClick={e => this.handleSelect(e,{uri:'iris:search:all:'+this.state.value, name: ''})}>
-					All results
-				</div>
-			)
-		 }
 	}
 
 	renderResults(type){
@@ -149,7 +98,7 @@ class AutocompleteField extends React.Component{
 	}
 
 	render(){
-		var className = "field autocomplete-field"
+		var className = "field autocomplete-field add-seed-field"
 		if (this.results() && this.results().loading){
 			className += " loading"
 		}
@@ -163,16 +112,9 @@ class AutocompleteField extends React.Component{
 						placeholder={this.props.placeholder ? this.props.placeholder : "Start typing..."} />
 				</div>
 				<div className="results">
-					{
-						this.props.types.map(type => {
-							return (
-								<div key={type}>
-									{this.renderResults(type+'s')}
-								</div>
-							)
-						})
-					}
-					{this.renderAllResultsButton()}
+					{this.renderResults('artists')}
+					{this.renderResults('tracks')}
+					{this.renderResults('genres')}
 				</div>
 			</div>
 		);
@@ -192,4 +134,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AutocompleteField)
+export default connect(mapStateToProps, mapDispatchToProps)(AddSeedField)

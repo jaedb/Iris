@@ -9,7 +9,7 @@ import GridSlider from '../../components/GridSlider'
 import ArtistSentence from '../../components/ArtistSentence'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
-import AutocompleteField from '../../components/AutocompleteField'
+import AddSeedField from '../../components/AddSeedField'
 
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -88,13 +88,7 @@ class Discover extends React.Component{
 						)
 					})
 				}
-				<AutocompleteField 
-					value={this.state.add_seed} 
-					types={['artist','track','genre']} 
-					placeholder="Add seed" 
-					onSelect={(e,item) => this.handleSelect(e,item)} 
-					clearOnSelect
-					hideAllResultsButton />
+				<AddSeedField onSelect={(e,item) => this.handleSelect(e,item)} />
 			</div>
 		)
 	}
