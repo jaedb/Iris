@@ -5,8 +5,9 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import SidebarToggleButton from '../../components/SidebarToggleButton'
-import GridSlider from '../../components/GridSlider'
 import ArtistSentence from '../../components/ArtistSentence'
+import ArtistGrid from '../../components/ArtistGrid'
+import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
 import AddSeedField from '../../components/AddSeedField'
@@ -29,7 +30,10 @@ class Discover extends React.Component{
 				}
 			],
 			add_seed: '',
-			adding_seed: false
+			adding_seed: false,
+			artists: [],
+			albums: [],
+			tracks: []
 		}
 	}
 
@@ -42,7 +46,11 @@ class Discover extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps, newState){
-		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length){
+
+		// When we've loaded favorite_artists.
+		// This indirectly listens for when the action has
+		// loaded new data.
+		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length > 0){
 			var initial_seeds = newProps.favorite_artists.sort(() => .5 - Math.random())
 			initial_seeds = initial_seeds.slice(0,2)
 
@@ -52,8 +60,10 @@ class Discover extends React.Component{
 	}
 
 	getRecommendations(seeds = this.state.seeds){
-		var uris = helpers.asURIs(seeds)
-		this.props.spotifyActions.getRecommendations(uris)
+		if (seeds){
+			var uris = helpers.asURIs(seeds)
+			this.props.spotifyActions.getRecommendations(uris, 50)
+		}
 	}
 
 	removeSeed(index){
@@ -93,6 +103,57 @@ class Discover extends React.Component{
 		)
 	}
 
+	renderResults(){		
+		if (helpers.isLoading(this.props.load_queue, 'spotify_recommendations')){
+			return (
+				<div className="body-loader">
+					<div className="loader"></div>
+				</div>
+			)
+		}
+		
+		if (!this.props.recommendations || typeof(this.props.recommendations.albums_uris) === 'undefined' || typeof(this.props.recommendations.artists_uris) === 'undefined'){
+			return null
+		}
+
+		var albums = []
+		if (this.props.recommendations.albums_uris && this.props.albums){
+			for (var i = 0; i < this.props.recommendations.albums_uris.length; i++){
+				var uri = this.props.recommendations.albums_uris[i]
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri])
+				}
+			}
+		}
+
+		var artists = []
+		if (this.props.recommendations.artists_uris && this.props.artists){
+			for (var i = 0; i < this.props.recommendations.artists_uris.length; i++){
+				var uri = this.props.recommendations.artists_uris[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
+				}
+			}
+		}
+		
+		return (
+			<div className="recommendations-results">
+				<section className="grid-wrapper">
+					<h4>Artists</h4>
+					<ArtistGrid artists={artists} />
+				</section>
+				<section className="grid-wrapper">
+					<h4>Albums</h4>
+					<AlbumGrid albums={albums} />
+				</section>
+				<section className="list-wrapper">
+					<h4 className="left-padding">Tracks</h4>
+					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations.tracks} /> : null}
+				</section>
+			</div>
+		)
+	}
+
 	render(){
 		return (
 			<div className="view discover-view">
@@ -108,7 +169,7 @@ class Discover extends React.Component{
 						{this.renderSeeds()}
 					</div>
 				</div>
-				{helpers.isLoading(this.props.load_queue, 'spotify_recommendations') ? <div className="body-loader"><div className="loader"></div></div> : <section className="list-wrapper"><TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations} /></section>}
+				{this.renderResults()}
 			</div>
 		)
 	}
@@ -123,10 +184,12 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		albums: state.ui.albums,
+		artists: state.ui.artists,
 		authorized: state.spotify.authorized,
 		load_queue: state.ui.load_queue,
 		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),
-		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : []),
+		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : {}),
 		favorite_artists: (state.spotify.favorite_artists ? state.spotify.favorite_artists : []),
 		favorite_tracks: (state.spotify.favorite_tracks ? state.spotify.favorite_tracks : [])
 	}

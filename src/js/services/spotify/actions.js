@@ -656,7 +656,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
  *
  * @param uris = array of artist or track URIs or a genre string
  **/
-export function getRecommendations(uris = []){
+export function getRecommendations(uris = [], limit = 20){
     return (dispatch, getState) => {
 
         dispatch({type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: []})
@@ -693,13 +693,50 @@ export function getRecommendations(uris = []){
         var data = 'seed_artists='+artists_ids.join(',')
         data += '&seed_tracks='+tracks_ids.join(',')
         data += '&seed_genres='+genres.join(',')
+        data += '&limit='+limit
 
         sendRequest(dispatch, getState, 'recommendations', 'GET', data)
             .then( response => {
+
+                // We only get simple artist objects, so we need to
+                // get the full object. We'll add URIs to our recommendations
+                // anyway so we can proceed in the meantime
+                var artists_uris = []
+                if (response.tracks.length > artists_ids.length && response.tracks.length > 10){
+                    while (artists_uris.length < 5){
+                        var random_index = Math.round(Math.random() * (response.tracks.length - 1))
+                        var artist = response.tracks[random_index].artists[0]
+
+                        // Make sure this artist is not already in our sample, and
+                        // is not one of the seeds
+                        if (!artists_uris.includes(artist.uri) && !artists_ids.includes(artist.id)){
+                            artists_uris.push(artist.uri)
+                            dispatch(getArtist(artist.uri))
+                        }
+                    }
+                }
+
+                // Copy already loaded albums into array
+                var albums = []
+                if (response.tracks.length > 10){
+                    for (var i = 0; i < 5; i++){
+                        var random_index = Math.round(Math.random() * (response.tracks.length - 1))
+                        albums.push(response.tracks[random_index].album)
+                    }
+                }
+
+                // Officially add albums to index
+                dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: albums
+                })
+
                 dispatch({
                     type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
-                    tracks: response.tracks
-                });
+                    tracks: response.tracks,
+                    artists_uris: artists_uris,
+                    albums_uris: helpers.asURIs(albums)
+                })
             })
     }
 }

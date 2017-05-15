@@ -187,7 +187,11 @@ export default function reducer(spotify = {}, action){
                 {}, 
                 spotify, 
                 {
-                    recommendations: action.tracks
+                    recommendations: {
+                        artists_uris: action.artists_uris,
+                        albums_uris: action.albums_uris,
+                        tracks: action.tracks
+                    }
                 })
 
         case 'SPOTIFY_FAVORITES_LOADED':
