@@ -58,6 +58,13 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'SPOTIFY_RECOMMENDATIONS_LOADED':
+                if (action.seeds_uris){
+                    ReactGA.event({ category: 'Spotify', action: 'Recommendations', label: action.seeds_uris.join(',') })
+                }
+                next(action)
+                break
+
             case 'ALBUM_LOADED':
                 if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.album.uri })
 

@@ -659,7 +659,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
 export function getRecommendations(uris = [], limit = 20){
     return (dispatch, getState) => {
 
-        dispatch({type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: []})
+        dispatch({type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: [], artists_uris: [], albums_uris: []})
 
         // build our starting point
         var artists_ids = []
@@ -740,6 +740,7 @@ export function getRecommendations(uris = [], limit = 20){
 
                 dispatch({
                     type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
+                    seeds_uris: uris,
                     tracks: response.tracks,
                     artists_uris: artists_uris,
                     albums_uris: helpers.asURIs(albums)
