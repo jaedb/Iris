@@ -249,11 +249,8 @@
 }
 
 .list {
-	.context-menu-trigger {
-		display: none;
-	}
 
-	&.track-list.edit-mode {
+	&.track-list {
 		.context-menu-trigger {	
 			display: block;
 			position: fixed;

@@ -22,6 +22,13 @@
 			background: $yellow !important;
 		}
 
+		.state-icon {
+			position: absolute;
+			top: 15px;
+			left: 15px;
+			font-size: 10px;
+		}
+
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
 			background: rgba(150,150,150,0.1);
 			cursor: pointer;
@@ -68,35 +75,6 @@
 				}
 				&.duration {
 					width: 5%;
-				}
-			}
-
-			.select-state {
-				position: absolute;
-				top: 15px;
-				left: 15px;
-				font-size: 10px;
-			}
-
-			.play-state {
-				display: none;
-				position: absolute;
-				top: 16px;
-				left: 15px;
-				font-size: 10px;
-			}
-
-			&.playing {
-				font-weight: 600;
-				.play-state {
-					display: block;
-					opacity: 1;
-				}
-			}
-
-			&.playing.selected {
-				.play-state {
-					display: none;
 				}
 			}
 
@@ -222,11 +200,32 @@
 
 	@include responsive( $bp_medium ){
 		.list-item {
-			padding: 7px 30px 7px 16px !important;
+			padding: 7px 30px 7px 48px !important;
 
 			.source {
 				position: static;
 				float: none;
+			}
+
+			.state-icon {
+				top: 0;
+				left: 0;
+				padding: 19px 17px 15px 17px;
+
+				&:after {
+					display: block;
+					content: '';
+					border: 1px solid $darkest_grey;
+					width: 15px;
+					height: 15px;
+					position: absolute;
+					top: 15px;
+					left: 15px;
+				}
+
+				.playing {
+					display: none !important;
+				}
 			}
 
 			.col {
@@ -275,13 +274,6 @@
 			&.header { 
 				display: none; 
 			}
-
-			&.track {
-				.select-state,
-				.play-state {
-					display: none !important;
-				}
-			}
 		}
 
 		&.queue-track-list {
@@ -297,18 +289,6 @@
 				.source,
 				.added {
 					display: none !important;
-				}
-			}
-		}
-
-		&.edit-mode {
-			.list-item {
-				padding-left: 40px !important;
-
-				&.track {
-					.select-state {
-						display: block !important;
-					}
 				}
 			}
 		}

@@ -14,16 +14,11 @@ import * as uiActions from '../services/ui/actions'
 class TrackList extends React.Component{
 
 	constructor(props) {
-		super(props);
-
-		this._touch_threshold = 10
-		this._touch_x = null
-		this._touch_y = null
+		super(props)
 
 		this.state = {
 			tracks: [],
-			last_selected_track: false,
-			edit_mode: false
+			last_selected_track: false
 		}
 
 		this.handleKeyUp = this.handleKeyUp.bind(this)
@@ -45,6 +40,25 @@ class TrackList extends React.Component{
 		this.setState({ tracks: this.keyifyTracks(nextProps.tracks) });
 	}
 
+	/**
+	 * Figure out if our click/touch event is valid and we can act accordingly
+	 *
+	 * @param e = event obj
+	 * @return string
+	 **/
+	triggerType(e){
+		var target = $(e.target)
+
+		// Wide screen, so no worries
+		if ($(window).width() > 800){
+			return 'default'
+		} else if (target.is('.state-icon') || target.closest('.state-icon').length > 0){
+			return 'mobile'
+		}
+
+		return false
+	}
+
 	handleKeyUp(e){
 		if( this.selectedTracks().length <= 0 ) return;
 
@@ -61,29 +75,9 @@ class TrackList extends React.Component{
 	}
 
 	handleTouchStart(e,index){
-		this._touch_x = Math.round(e.changedTouches[0].pageX)
-		this._touch_y = Math.round(e.changedTouches[0].pageY)
 	}
 
 	handleTouchEnd(e,index){
-		var pageX = Math.round(e.changedTouches[0].pageX)
-		var pageY = Math.round(e.changedTouches[0].pageY)
-		clearTimeout(this._touch_hold_timer)
-
-		// make sure our touch was within the threshold of the touch start
-		// this helps us differentiate between taps and drags but doesn't consider
-		// multi-finger touches
-		if( this.state.edit_mode &&
-			this._touch_x < ( pageX + this._touch_threshold ) &&
-			this._touch_x > ( pageX - this._touch_threshold ) &&
-			this._touch_y < ( pageY + this._touch_threshold ) &&
-			this._touch_y > ( pageY - this._touch_threshold ) ){
-				var tracks = this.state.tracks
-				tracks[index].selected = !tracks[index].selected
-				this.setState({ tracks: tracks, last_selected_track: index })
-		}
-
-		e.preventDefault()
 	}
 
 	handleDoubleClick(e,index){
@@ -92,53 +86,57 @@ class TrackList extends React.Component{
 	}
 
 	handleMouseDown(e,index){
-		if (this.props.emulate_touch){
-			this.handleTouchContextMenu(e,index)
-		}else{
-			if (this.props.context_menu) this.props.uiActions.hideContextMenu()
-			if (!this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey) this.toggleTrackSelections(e, index)
+		if (this.props.context_menu) this.props.uiActions.hideContextMenu()
 
-			var selected_tracks = this.selectedTracks()
-			this.props.uiActions.dragStart( e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks) )
+		// Regular clicking an un-selected element
+		// This selects the track before we potentially drag
+		switch (this.triggerType(e)){
+
+			case 'mobile':
+				// simple toggle
+				var tracks = this.state.tracks
+				tracks[index].selected = !tracks[index].selected
+				this.setState({tracks: tracks, last_selected_track: index})
+				break
+
+			case 'default':
+				if (!this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey){
+					this.toggleTrackSelections(e, index)
+				}
+				break
 		}
+
+		var selected_tracks = this.selectedTracks()
+		this.props.uiActions.dragStart( e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks) )
 	}
 
 	handleMouseUp(e,index){
+		if (this.triggerType(e) == 'default'){
+			// right-clicking on an un-highlighted track
+			if (!this.state.tracks[index].selected && this.isRightClick(e)){
+				this.toggleTrackSelections(e, index)
 
-		// right-clicking on an un-highlighted track
-		if( !this.state.tracks[index].selected && this.isRightClick(e) ){
-			this.toggleTrackSelections(e, index)
+			// selected track, regular click
+			}else if (this.state.tracks[index].selected && !this.isRightClick(e)){
+				this.toggleTrackSelections(e, index)
 
-		// selected track, regular click
-		}else if( this.state.tracks[index].selected && !this.isRightClick(e) ){
-			this.toggleTrackSelections(e, index)
+			// ctrl key
+			} else if(e.ctrlKey){
+				this.toggleTrackSelections(e, index)
+			}
 
-		// ctrl key
-		}else if( e.ctrlKey ){
-			this.toggleTrackSelections(e, index)
-		}
-
-		if( this.props.dragger && this.props.dragger.active ){
-		
-			// if this tracklist handles sorting, handle it
-			if( typeof(this.props.reorderTracks) !== 'undefined' ){
-				var indexes = this.props.dragger.victims_indexes
-				return this.props.reorderTracks( indexes, index );
+			if (this.props.dragger && this.props.dragger.active){
+			
+				// if this tracklist handles sorting, handle it
+				if (typeof(this.props.reorderTracks) !== 'undefined'){
+					var indexes = this.props.dragger.victims_indexes
+					return this.props.reorderTracks( indexes, index )
+				}
 			}
 		}
 	}
 
 	handleContextMenu(e, native_event = true){
-
-		// touch events fired? we assume the user is primarily touching,
-		// so for touch devices we disable direct context menus
-		// hybrid devices will only work with touch OR mouse, not both in this case
-		if (this._touch_x && this._touch_y && native_event){
-			this.setState({edit_mode: true})
-			e.preventDefault()
-			return false
-		}
-
 		var selected_tracks = this.selectedTracks()
 		var data = {
 			e: e,
@@ -327,9 +325,6 @@ class TrackList extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
-		if (this.state.edit_mode){
-			className += ' edit-mode'
-		}
 
 		return (
 			<div className={className}>
@@ -342,12 +337,12 @@ class TrackList extends React.Component{
 									key={track.key} 
 									track={track} 
 									context={this.props.context} 
-									handleDoubleClick={ e => self.handleDoubleClick(e, index)}
-									handleMouseUp={ e => self.handleMouseUp(e, index)}
-									handleMouseDown={ e => self.handleMouseDown(e, index)}
-									handleTouchStart={ e => self.handleTouchStart(e, index)}
-									handleTouchEnd={ e => self.handleTouchEnd(e, index)}
-									handleContextMenu={ e => self.handleContextMenu(e)} />
+									handleDoubleClick={e => self.handleDoubleClick(e, index)}
+									handleMouseUp={e => self.handleMouseUp(e, index)}
+									handleMouseDown={e => self.handleMouseDown(e, index)}
+									handleTouchStart={e => self.handleTouchStart(e, index)}
+									handleTouchEnd={e => self.handleTouchEnd(e, index)}
+									handleContextMenu={e => self.handleContextMenu(e)} />
 						}
 					)
 				}
