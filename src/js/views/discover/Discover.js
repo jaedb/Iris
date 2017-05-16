@@ -30,10 +30,7 @@ class Discover extends React.Component{
 				}
 			],
 			add_seed: '',
-			adding_seed: false,
-			artists: [],
-			albums: [],
-			tracks: []
+			adding_seed: false
 		}
 	}
 
@@ -60,7 +57,7 @@ class Discover extends React.Component{
 	}
 
 	getRecommendations(seeds = this.state.seeds){
-		if (seeds){
+		if (seeds.length > 0){
 			var uris = helpers.asURIs(seeds)
 			this.props.spotifyActions.getRecommendations(uris, 50)
 		}

@@ -718,10 +718,17 @@ export function getRecommendations(uris = [], limit = 20){
 
                 // Copy already loaded albums into array
                 var albums = []
+                var albums_uris = []
                 if (response.tracks.length > 10){
-                    for (var i = 0; i < 5; i++){
+                    while (albums.length < 5){
                         var random_index = Math.round(Math.random() * (response.tracks.length - 1))
-                        albums.push(response.tracks[random_index].album)
+                        var album = response.tracks[random_index].album
+
+                        // Make sure this album is not already in our sample
+                        if (!albums_uris.includes(album.uri)){
+                            albums_uris.push(album.uri)
+                            albums.push(album)
+                        }
                     }
                 }
 
