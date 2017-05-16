@@ -49,7 +49,8 @@ var initialState = {
 	},
 	spotify: {
 		connected: false,
-		me: false
+		me: false,
+		autocomplete_results: {}
 	},
 	ui: {
 		current_tracklist: [],

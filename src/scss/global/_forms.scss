@@ -80,16 +80,30 @@ input[type="submit"] {
 	}
 
 	&.secondary {
-		color: #000000;
-		border-color: #000000;
+		color: $black;
+		border-color: $black;
 		&:hover {
-			color: lighten( #000000, 40% );
-			border-color: lighten( #000000, 40% );
+			color: lighten( $black, 40% );
+			border-color: lighten( $black, 40% );
 		}
 		&:active {
-			color: #FFFFFF;
-			background: #000000;
-			border-color: #000000;
+			color: $white;
+			background: $black;
+			border-color: $black;
+		}
+	}
+
+	&.alternative {
+		color: $blue;
+		border-color: $blue;
+		&:hover {
+			color: darken($blue, 10%);
+			border-color: darken($blue, 10%);
+		}
+		&:active {
+			color: $white;
+			background: $blue;
+			border-color: $blue;
 		}
 	}
 

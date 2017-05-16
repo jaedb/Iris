@@ -1,6 +1,6 @@
 
 .search-form {
-	z-index: 2;
+	z-index: 3;
 	position: relative;
 
 	input {
@@ -18,6 +18,18 @@
 
 	&.sidebar {
 		padding: 10px 15px 0 15px;
+
+		.autocomplete-field {
+			.results {
+				top: 42px;
+			}
+
+			&.loading {
+				.input:after {
+					background: $turquoise;
+				}
+			}
+		}
 	}
 
 }

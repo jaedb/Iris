@@ -39,6 +39,17 @@
 				opacity: 0.75;
 			}
 		}
+
+		&:active,
+		&:focus {
+			.thumbnail {
+				.image {
+					margin: 2%;
+					padding-bottom: 96%;
+					width: 96%;
+				}
+			}
+		}
 	}
 
 	&.category-grid {

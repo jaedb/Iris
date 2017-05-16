@@ -39,7 +39,7 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>Discover</title>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"discover" : null}>
+							<Link activeClassName="active" to={global.baseURL+"discover"}>
 								<Icon name="compass" className="white" />
 								Discover
 							</Link>

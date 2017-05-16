@@ -1,7 +1,101 @@
 
 .discover-view {
-	section {
-		padding: 40px;
+	
+	.intro {
+		position: relative;
+		padding: 60px 40px;
+		z-index: 1;
+
+		.parallax {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+		}
+
+		.liner {
+			z-index: 2;
+			position: relative;
+			color: $white;
+
+			h1 {
+				padding-bottom: 8px;
+			}
+
+			h3 {
+				padding-bottom: 40px;
+				opacity: 0.5;
+			}
+		}
+	}
+
+	section.grid-wrapper {
+		padding-bottom: 10px;
+		
+		&:not(:first-child){
+			padding-top: 0;
+		}
+	}
+
+	.seeds {
+
+		.seed {
+			display: inline-block;
+			background: $blue;
+			color: $white;
+			padding: 8px 26px 8px 14px;
+			font-size: 16px;
+			position: relative;
+			vertical-align: top;
+			margin: 0 10px 10px 0;
+
+			.type {
+				display: inline-block;
+				font-size: 12px;
+				opacity: 0.5;
+				padding: 0 10px 0 5px;
+			}
+
+			.remove {
+				font-size: 10px;
+				padding: 12px;
+				position: absolute;
+				top: 0;
+				right: 0;
+				cursor: pointer;
+			}
+		}
+	}
+
+	.autocomplete-field {
+		width: 250px;
+		display: inline-block;
+		vertical-align: top;
+		padding: 0;
+
+		.input {
+			float: none;
+			margin: 0 10px 10px 0;
+
+			input {
+				background: rgba(100,100,100,0.5);
+				color: $white;
+				padding: 7px 13px;
+				font-size: 16px;
+				border: 1px solid transparent;
+
+				&:focus,
+				&:active {
+					border-color: $blue;
+				}
+			}
+
+			&:after {
+				background: $blue;
+			}
+		}
 	}
 
 	@include responsive( $bp_medium ){
