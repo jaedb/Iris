@@ -21,6 +21,7 @@ class TrackList extends React.Component{
 			last_selected_track: false
 		}
 
+		this._touching = false
 		this.handleKeyUp = this.handleKeyUp.bind(this)
 	}
 
@@ -75,11 +76,15 @@ class TrackList extends React.Component{
 	}
 
 	handleTouchStart(e,index){
+		this._touching = true
 	}
 
 	handleTouchEnd(e,index){
-		// TODO: if touchend AND mouseup then only use one (preferrably touch as mouse has 300ms lag)
+		this._touching = false
 		this.handleMouseDown(e,index)
+
+		// Prevent any event bubbling. This prevents clicks and mouse events
+		// from also being fired
 		e.preventDefault()
 	}
 
@@ -115,6 +120,7 @@ class TrackList extends React.Component{
 
 	handleMouseUp(e,index){
 		if (this.triggerType(e) == 'default'){
+			
 			// right-clicking on an un-highlighted track
 			if (!this.state.tracks[index].selected && this.isRightClick(e)){
 				this.toggleTrackSelections(e, index)
@@ -140,6 +146,13 @@ class TrackList extends React.Component{
 	}
 
 	handleContextMenu(e, native_event = true){
+
+		// disable context menu events in mobile view
+		if (this.triggerType(e) == 'mobile'){
+			e.preventDefault()
+			return false
+		}
+
 		var selected_tracks = this.selectedTracks()
 		var data = {
 			e: e,
