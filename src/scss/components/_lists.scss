@@ -1,7 +1,8 @@
 
 .list {
-
 	.list-item {
+		@include clearfix;
+		@include animate(0.1s);
 
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -16,17 +17,27 @@
 		border-top: 1px solid $faint_grey;
 		border-bottom: 1px solid $faint_grey;
 		margin-bottom: -1px;
-		@include clearfix;
+		cursor: pointer;
 
 		&.selected {
 			background: $yellow !important;
 		}
 
+		&.playing {
+			font-weight: bold;
+		}
+
 		.state-icon {
 			position: absolute;
-			top: 15px;
-			left: 15px;
+			top: 0;
+			left: 0;
 			font-size: 10px;
+
+			.fa {
+				position: absolute;
+				top: 15px;
+				left: 15px;
+			}
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
@@ -210,7 +221,13 @@
 			.state-icon {
 				top: 0;
 				left: 0;
-				padding: 19px 17px 15px 17px;
+				height: 100%;
+				width: 48px;
+				
+				.fa {
+					top: 19px;
+					left: 17px;
+				}
 
 				&:after {
 					display: block;

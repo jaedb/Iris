@@ -78,6 +78,9 @@ class TrackList extends React.Component{
 	}
 
 	handleTouchEnd(e,index){
+		// TODO: if touchend AND mouseup then only use one (preferrably touch as mouse has 300ms lag)
+		this.handleMouseDown(e,index)
+		e.preventDefault()
 	}
 
 	handleDoubleClick(e,index){
