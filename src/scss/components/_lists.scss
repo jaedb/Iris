@@ -2,7 +2,6 @@
 .list {
 	.list-item {
 		@include clearfix;
-		@include animate(0.1s);
 
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
