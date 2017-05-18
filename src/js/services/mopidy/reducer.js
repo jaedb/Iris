@@ -58,6 +58,11 @@ export default function reducer(mopidy = {}, action){
                 volume: action.data   
             });
 
+        case 'MOPIDY_MUTE':
+            return Object.assign({}, mopidy, {
+                mute: action.data
+            });
+
         case 'MOPIDY_TIMEPOSITION':
             return Object.assign({}, mopidy, {
                 time_position: action.data

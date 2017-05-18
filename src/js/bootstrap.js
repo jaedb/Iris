@@ -29,6 +29,7 @@ var initialState = {
 		connected: false,
 		host: window.location.hostname,
 		port: (window.location.port ? window.location.port : '80'),
+		mute: false,
 		volume: 0,
 		progress: 0,
 		play_state: false

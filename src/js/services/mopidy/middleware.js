@@ -29,6 +29,7 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_CONNECTED' });
                 instruct( ws, store, 'playback.getState' );
                 instruct( ws, store, 'playback.getVolume' );
+                instruct( ws, store, 'mixer.getMute' );
                 instruct( ws, store, 'tracklist.getConsume' );
                 instruct( ws, store, 'tracklist.getRandom' );
                 instruct( ws, store, 'tracklist.getRepeat' );
@@ -89,6 +90,10 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_VOLUME', data: data.volume });
                 break;
 
+            case 'event:muteChanged':
+                store.dispatch({ type: 'MOPIDY_MUTE', data: data.mute });
+                break;
+
             case 'event:optionsChanged':
                 instruct( ws, store, 'tracklist.getConsume' );
                 instruct( ws, store, 'tracklist.getRandom' );
@@ -111,7 +116,7 @@ const MopidyMiddleware = (function(){
      * @param string value (optional) = value of the property to pass
      * @return promise
      **/
-    const instruct = ( ws, store, call, value = {} ) => {
+    const instruct = (ws, store, call, value = {}) => {
 
         if( !store.getState().mopidy.connected ) return false
 
@@ -131,7 +136,7 @@ const MopidyMiddleware = (function(){
                 }
             }else{
                 var error = {
-                    message: 'Call to an invalid object. Check your are calling a valid Mopidy endpoint.',
+                    message: 'Call to an invalid object. Check you are calling a valid Mopidy object.',
                     call: call,
                     value: value
                 }

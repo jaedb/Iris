@@ -1,7 +1,7 @@
 
 import * as helpers from '../../helpers'
 
-export function setConfig( config ){
+export function setConfig(config){
 	return {
 		type: 'MOPIDY_SET_CONFIG',
 		config: config
@@ -20,7 +20,7 @@ export function disconnect(){
 	}
 }
 
-export function instruct( call, value ){
+export function instruct(call, value){
 	return {
 		type: 'MOPIDY_INSTRUCT',
 		call: call,
@@ -28,7 +28,7 @@ export function instruct( call, value ){
 	}
 }
 
-export function debug( call, value ){
+export function debug(call, value){
 	return {
 		type: 'MOPIDY_DEBUG',
 		call: call,
@@ -42,11 +42,7 @@ export function debug( call, value ){
  **/
 
 export function changeTrack( tlid ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'playback.play',
-		value: { tlid: tlid }
-	}
+	return instruct('playback.play', {tlid: tlid})
 }
 
 export function playURIs(uris, from_uri = null){
@@ -101,11 +97,7 @@ export function playAlbum(uri){
 }
 
 export function removeTracks( tlids ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'tracklist.remove',
-		value: { tlid: tlids }
-	}
+	return instruct('tracklist.remove', {tlid: tlids})
 }
 
 export function reorderTracklist( indexes, insert_before ){
@@ -120,53 +112,46 @@ export function reorderTracklist( indexes, insert_before ){
 }
 
 export function clearTracklist(){
-	return instruct('tracklist.clear');
+	return instruct('tracklist.clear')
 }
 
 export function play(){
-	return instruct('playback.play');
+	return instruct('playback.play')
 }
 
 export function pause(){
-	return instruct('playback.pause');
+	return instruct('playback.pause')
 }
 
 export function stop(){
-	return instruct('playback.stop');
+	return instruct('playback.stop')
 }
 
 export function next(){
-	return instruct('playback.next');
+	return instruct('playback.next')
 }
 
 export function previous(){
-	return instruct('playback.previous');
+	return instruct('playback.previous')
 }
 
-export function setVolume( volume ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'playback.setVolume',
-		value: { volume: volume }
-	}
+export function setMute(mute){
+	return instruct('mixer.setMute', {mute: mute})
 }
 
-export function seek( time_position ){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'playback.seek',
-		value: { time_position: parseInt(time_position) }
-	}
+export function setVolume(volume){
+	return instruct('playback.setVolume', {volume: volume})
+}
+
+export function seek(time_position){
+	return instruct('playback.seek', {time_position: parseInt(time_position)})
 }
 
 export function getTimePosition(){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'playback.getTimePosition'
-	}
+	return instruct('playback.getTimePosition')
 }
 
-export function setTimePosition( time_position ){
+export function setTimePosition(time_position){
 	return {
 		type: 'MOPIDY_TIMEPOSITION',
 		data: time_position
@@ -284,9 +269,6 @@ export function getPlaylistSearchResults(query, limit = 100, uri_scheme){
  **/
 
 export function getQueueHistory(){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: 'history.getHistory'
-	}
+	return instruct('history.getHistory')
 }
  

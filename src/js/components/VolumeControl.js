@@ -26,7 +26,9 @@ class VolumeControl extends React.Component{
 	render(){
 		return (
 			<span className="volume-control">
-				<a onClick={() => this.props.mopidyActions.toggleMute()}><FontAwesome name="volume-off" /> </a>
+				<a onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
+					{this.props.mute ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-down" />}
+				</a>
 				<div className="slider-wrapper">
 					<div className="slider vertical" onClick={ (e) => this.handleClick(e) } >
 						<div className="track">
@@ -41,7 +43,8 @@ class VolumeControl extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		volume: state.mopidy.volume
+		volume: state.mopidy.volume,
+		mute: state.mopidy.mute
 	}
 }
 
