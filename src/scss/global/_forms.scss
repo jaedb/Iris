@@ -1,4 +1,12 @@
 
+:focus {
+	outline: none;
+}
+
+::-moz-focus-inner {
+	border: 0;
+}
+
 button,
 textarea,
 input[type="text"],
@@ -156,6 +164,36 @@ input[type="submit"] {
 		&[disabled],
 		&[disabled="disabled"] {
 			border-color: $light_grey !important;
+		}
+	}
+
+	&.working {
+		position: relative;
+
+		&:after {
+			position: absolute;
+			display: block;
+			content: '';
+			background: $mid_grey;
+			opacity: 1;
+		    animation: slideloader 1s infinite;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 4px;
+			z-index: 1;
+		}
+
+		&.destructive:after {
+			background: $red;
+		}
+
+		&.primary:after {
+			background: $turquoise;
+		}
+
+		&.alternative:after {
+			background: $blue;
 		}
 	}
 

@@ -66,20 +66,18 @@ class SpotifyAuthenticationFrame extends React.Component{
 	renderAuthorizeButton(){
 		if( this.state.authorizing ){
 			return (
-				<button disabled>
-					<FontAwesome name="circle-o-notch" spin />
-					&nbsp;
+				<button className="working">
 					Authorizing...
 				</button>
-			);
+			)
 		}else if( this.props.authorized ){
 			return (
 				<button className="destructive" onClick={() => this.props.spotifyActions.authorizationRevoked()}>Log out</button>
-			);
+			)
 		}else{
 			return (
 				<button className="primary" onClick={() => this.startAuthorization()}>Log in</button>
-			);
+			)
 		}
 	}
 
@@ -88,9 +86,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 		if (this.props.refreshing_token){
 			return (
-				<button disabled>
-					<FontAwesome name="circle-o-notch" spin />
-					&nbsp;
+				<button className="working">
 					Refreshing...
 				</button>
 			);
