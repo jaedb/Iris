@@ -28,14 +28,13 @@ var initialState = {
 	mopidy: {
 		connected: false,
 		host: window.location.hostname,
-		port: 6680,
+		port: (window.location.port ? window.location.port : '80'),
 		volume: 0,
 		progress: 0,
 		play_state: false
 	},
 	pusher: {
 		connected: false,
-		port: 6681,
 		username: 'Anonymous',
 		connections: {},
 		version: {

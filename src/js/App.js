@@ -119,7 +119,7 @@ class App extends React.Component{
 				if (this.props.dragger && this.props.dragger.dragging){
 					this.props.uiActions.dragCancel()
 				}
-				if (this.props.modal){';'
+				if (this.props.modal){
 					this.props.uiActions.closeModal()
 				}
 				break
@@ -180,7 +180,7 @@ class App extends React.Component{
 		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
 		if (this.props.sidebar_open) className += ' sidebar-open'
 		if (this.props.modal) className += ' modal-open'
-		if (helpers.isTouchDevice() || this.props.emulate_touch){
+		if (helpers.isTouchDevice()){
 			className += ' touch'
 		} else {
 			className += ' notouch'

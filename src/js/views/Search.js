@@ -139,7 +139,7 @@ class Search extends React.Component{
 					var artists_section = (					
 						<section>
 							<div className="inner">
-								<h4><Link to={global.baseURL+'search/artists/'+this.props.params.query}>Artists</Link></h4>
+								<h4><Link to={global.baseURL+'search/iris:search:artists:'+this.props.params.query}>Artists</Link></h4>
 								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
 							</div>
 						</section>
@@ -152,7 +152,7 @@ class Search extends React.Component{
 					var albums_section = (					
 						<section>
 							<div className="inner">
-								<h4><Link to={global.baseURL+'search/albums/'+this.props.params.query}>Albums</Link></h4>
+								<h4><Link to={global.baseURL+'search/iris:search:albums:'+this.props.params.query}>Albums</Link></h4>
 								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
 							</div>
 						</section>
@@ -165,7 +165,7 @@ class Search extends React.Component{
 					var playlists_section = (					
 						<section>
 							<div className="inner">
-								<h4><Link to={global.baseURL+'search/playlists/'+this.props.params.query}>Playlists</Link></h4>
+								<h4><Link to={global.baseURL+'search/iris:search:playlists:'+this.props.params.query}>Playlists</Link></h4>
 								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
 							</div>
 						</section>

@@ -1,7 +1,7 @@
 
 .list {
-
 	.list-item {
+		@include clearfix;
 
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -16,10 +16,27 @@
 		border-top: 1px solid $faint_grey;
 		border-bottom: 1px solid $faint_grey;
 		margin-bottom: -1px;
-		@include clearfix;
+		cursor: pointer;
 
 		&.selected {
 			background: $yellow !important;
+		}
+
+		&.playing {
+			font-weight: bold;
+		}
+
+		.state-icon {
+			position: absolute;
+			top: 0;
+			left: 0;
+			font-size: 10px;
+
+			.fa {
+				position: absolute;
+				top: 15px;
+				left: 15px;
+			}
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
@@ -68,35 +85,6 @@
 				}
 				&.duration {
 					width: 5%;
-				}
-			}
-
-			.select-state {
-				position: absolute;
-				top: 15px;
-				left: 15px;
-				font-size: 10px;
-			}
-
-			.play-state {
-				display: none;
-				position: absolute;
-				top: 16px;
-				left: 15px;
-				font-size: 10px;
-			}
-
-			&.playing {
-				font-weight: 600;
-				.play-state {
-					display: block;
-					opacity: 1;
-				}
-			}
-
-			&.playing.selected {
-				.play-state {
-					display: none;
 				}
 			}
 
@@ -222,11 +210,38 @@
 
 	@include responsive( $bp_medium ){
 		.list-item {
-			padding: 7px 30px 7px 16px !important;
+			padding: 7px 30px 7px 48px !important;
 
 			.source {
 				position: static;
 				float: none;
+			}
+
+			.state-icon {
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 48px;
+				
+				.fa {
+					top: 19px;
+					left: 17px;
+				}
+
+				&:after {
+					display: block;
+					content: '';
+					border: 1px solid $darkest_grey;
+					width: 15px;
+					height: 15px;
+					position: absolute;
+					top: 15px;
+					left: 15px;
+				}
+
+				.playing {
+					display: none !important;
+				}
 			}
 
 			.col {
@@ -275,13 +290,6 @@
 			&.header { 
 				display: none; 
 			}
-
-			&.track {
-				.select-state,
-				.play-state {
-					display: none !important;
-				}
-			}
 		}
 
 		&.queue-track-list {
@@ -297,18 +305,6 @@
 				.source,
 				.added {
 					display: none !important;
-				}
-			}
-		}
-
-		&.edit-mode {
-			.list-item {
-				padding-left: 40px !important;
-
-				&.track {
-					.select-state {
-						display: block !important;
-					}
 				}
 			}
 		}

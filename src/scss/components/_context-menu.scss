@@ -248,28 +248,32 @@
 	}
 }
 
-.list {
-	.context-menu-trigger {
-		display: none;
-	}
+.list {	
+	&.track-list {
 
-	&.track-list.edit-mode {
 		.context-menu-trigger {	
-			display: block;
-			position: fixed;
-			bottom: 50px;
-			right: 5px;
-			width: 50px;
-			height: 50px;
-			overflow: hidden;
-			z-index: 97;
-			border-radius: 50%;
-			background: $blue;
-			color: #FFFFFF;
-			
-			&:focus,
-			&:active {
-				background: darken($blue, 10%);
+			display: none;
+		}
+		
+		@include responsive( $bp_medium ){
+
+			.context-menu-trigger {	
+				display: block;
+				position: fixed;
+				bottom: 50px;
+				right: 5px;
+				width: 50px;
+				height: 50px;
+				overflow: hidden;
+				z-index: 97;
+				border-radius: 50%;
+				background: $blue;
+				color: #FFFFFF;
+				
+				&:focus,
+				&:active {
+					background: darken($blue, 10%);
+				}
 			}
 		}
 	}
