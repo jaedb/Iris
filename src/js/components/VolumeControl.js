@@ -25,7 +25,7 @@ class VolumeControl extends React.Component{
 
 	render(){
 		return (
-			<span className="volume-control">
+			<span className={this.props.mute ? "volume-control muted" : "volume-control"}>
 				<a onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
 					{this.props.mute ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-down" />}
 				</a>

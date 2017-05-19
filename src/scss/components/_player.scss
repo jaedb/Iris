@@ -151,16 +151,12 @@
 	a {
 		position: relative;
 		z-index: 99;
-	}
-
-	&:hover {
-		.slider-wrapper {
-			display: block;
-		}
+		padding: 0 !important;
 	}
 
 	.fa {
 		width: 6px;
+		padding: 12px;
 	}
 
 	.slider-wrapper {
@@ -172,5 +168,23 @@
 		padding: 10px 5px 35px 5px;
 		background: rgba(0,0,0,0.8);
 		z-index: 98;
+	}
+
+	&.muted {
+		.fa {
+			color: $red;
+		}
+
+		.slider {
+			.progress {
+				background: rgba(255,255,255,0.25);
+			}
+		}
+	}
+
+	&:hover {
+		.slider-wrapper {
+			display: block;
+		}
 	}
 }
