@@ -42,13 +42,9 @@
 
 		&:active,
 		&:focus {
-			.thumbnail {
-				.image {
-					margin: 2%;
-					padding-bottom: 96%;
-					width: 96%;
-				}
-			}
+			-moz-transform: scale(0.98);
+			-webkit-transform: scale(0.98);
+			transform: scale(0.98);
 		}
 	}
 
