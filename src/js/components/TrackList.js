@@ -147,9 +147,9 @@ class TrackList extends React.Component{
 
 	handleContextMenu(e, native_event = true){
 
-		// disable context menu events in mobile view
-		if (this.triggerType(e) == 'mobile'){
-			e.preventDefault()
+		// Only enable direct context menu events in default (desktop) view
+		// This prevents tap-and-hold functionality
+		if (native_event && this.triggerType(e) != 'default'){
 			return false
 		}
 

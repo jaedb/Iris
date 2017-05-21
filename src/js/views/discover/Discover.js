@@ -100,7 +100,7 @@ class Discover extends React.Component{
 	}
 
 	renderResults(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_browse/recommendations'])){
+		if (helpers.isLoading(this.props.load_queue,['spotify_recommendations'])){
 			return (
 				<div className="body-loader">
 					<div className="loader"></div>
