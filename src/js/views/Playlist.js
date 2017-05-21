@@ -145,18 +145,19 @@ class Playlist extends React.Component{
 	}
 
 	render(){
-		/*
-		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+ helpers.getFromUri('userid',this.props.params.uri)+'/playlists?'])){
+
+		var scheme = helpers.uriSource( this.props.params.uri )
+		var context = 'playlist'
+		var user_id = helpers.getFromUri('userid',this.props.params.uri)
+		var playlist_id = helpers.getFromUri('playlistid',this.props.params.uri)
+
+		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id+'?'])){
 			return (
 				<div className="body-loader">
 					<div className="loader"></div>
 				</div>
 			)
 		}
-		*/
-
-		var scheme = helpers.uriSource( this.props.params.uri )
-		var context = 'playlist'
 
 		if (this.props.playlist){
 			if (this.props.playlist.can_edit) context = 'editable-playlist'
