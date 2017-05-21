@@ -3,18 +3,18 @@
 // allow cross-domain requests
 header("Access-Control-Allow-Origin: *");
 
-$url = 'http://jamesbarnsley.co.nz/auth.php';
+$url = 'https://jamesbarnsley.co.nz/auth.php';
 
-if( isset($_GET['app']) )
+if (isset($_GET['app'])){
 	setcookie( 'mopidy_iris', $_GET['app'], time()+3600 );
-
+}
 
 
 /* ================================================================================= INIT ================ */
 /* ======================================================================================================= */
 
 // we've just completed authorization, now create credentials (access_token, etc)
-if( isset($_GET['code']) ){
+if (isset($_GET['code'])){
 	
 	// go get our credentials
 	$response = getToken( $_GET['code'], $url );	
@@ -30,7 +30,7 @@ if( isset($_GET['code']) ){
 		die();
 	}
 	
-	// send our data back to Spotmop
+	// send our data back to Iris
 	?>	
 		<script type="text/javascript">
 			window.opener.postMessage( '<?php echo $response ?>', "*");
@@ -38,8 +38,19 @@ if( isset($_GET['code']) ){
 		</script>
 	<?php
 
+// authorization error
+} else if (isset($_GET['error'])){
+
+        // Pass our error back to Iris
+        ?>
+                <script type="text/javascript">
+                        window.opener.postMessage("{\"error\": \"<?php echo $_GET['error'] ?>\"}", "*");
+                        window.close();
+                </script>
+        <?php
+
 // refresh existing token
-}else if( isset($_GET['action']) && $_GET['action'] == 'refresh' && $_GET['refresh_token'] ){
+} else if (isset($_GET['action']) && $_GET['action'] == 'refresh' && $_GET['refresh_token']){
 	header('Content-Type: application/json');
 	$response = refreshToken( $_GET['refresh_token'] );
 	
@@ -51,7 +62,7 @@ if( isset($_GET['code']) ){
 	die();
 
 // fresh authentication, so let's get one
-}else if( isset($_GET['action']) && $_GET['action'] == 'authorize' ){
+} else if (isset($_GET['action']) && $_GET['action'] == 'authorize'){
 	getAuthorizationCode( $url );
 }
 
@@ -73,8 +84,8 @@ if( isset($_GET['code']) ){
 */
 function getAuthorizationCode( $url ){
 
-	$popup = 'https://accounts.spotify.com/authorize?client_id=01d4ca2e9f4f415c80502431a6aa4200&redirect_uri='.$url.'&scope=playlist-modify-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-library-read%20user-library-modify%20user-follow-modify%20user-follow-read%20user-top-read&response_type=code&show_dialog=true';
-	
+	$popup = 'https://accounts.spotify.com/authorize?client_id=01d4ca2e9f4f415c80502431a6aa4200&redirect_uri='.$url.'&scope=playlist-modify-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-library-read%20user-library-modify%20user-follow-modify%20user-follow-read%20user-top-read%20user-read-currently-playing%20user-read-playback-state&response_type=code&show_dialog=true';
+
 	?>
 		<script tye="text/javascript">
 		
@@ -191,6 +202,7 @@ function refreshToken($refresh_token){
 	
 	return $response;
 }
+
 
 
 

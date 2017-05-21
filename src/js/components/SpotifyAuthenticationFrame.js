@@ -30,27 +30,45 @@ class SpotifyAuthenticationFrame extends React.Component{
 		// this is triggered when authentication is granted from the popup
 		window.addEventListener('message', function(event){
 			
-			if(event.data == 'closed'){
+			// Window prematurely closed
+			if (event.data == 'closed'){
+				self.setState({
+					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+					authorizing: false
+				})
+
+			// Popup was blocked by the browser
+			} else if (event.data == 'blocked'){
+				self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.','bad')
+				self.setState({
+					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+					authorizing: false
+				})
+
+			} else {
+				
+				// only allow incoming data from our authorized authenticator proxy
+				if (!/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin)){
+					return false
+				}
+
+				var data = JSON.parse(event.data);
+
+				// Spotify bounced with an error
+				if (typeof(data.error) !== 'undefined'){
+					self.props.uiActions.createNotification(data.error,'bad')
+
+				// No errors? We're in!
+				} else {
+					self.props.spotifyActions.authorizationGranted(data);
+					self.props.spotifyActions.getMe();			
+				}
+
+				// Turn off our authorizing switch
 				self.setState({
 					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
 					authorizing: false
 				})	
-			}else if(event.data == 'blocked'){
-				self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.','bad')
-			}else{
-				
-				// only allow incoming data from our authorized authenticator proxy
-				if( !/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin) ) return false;
-				
-				var data = JSON.parse(event.data);
-				self.props.spotifyActions.authorizationGranted( data );
-				self.props.spotifyActions.getMe();
-
-				// and turn off our authorizing switch
-				self.setState({
-					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
-					authorizing: false
-				})				
 			}
 
 		}, false);
