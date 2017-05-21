@@ -145,6 +145,16 @@ class Playlist extends React.Component{
 	}
 
 	render(){
+		/*
+		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+ helpers.getFromUri('userid',this.props.params.uri)+'/playlists?'])){
+			return (
+				<div className="body-loader">
+					<div className="loader"></div>
+				</div>
+			)
+		}
+		*/
+
 		var scheme = helpers.uriSource( this.props.params.uri )
 		var context = 'playlist'
 
@@ -224,6 +234,7 @@ const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri
 	uri = uri.replace(' ','%20')
 	return {
+		load_queue: state.ui.load_queue,
 		playlist: (state.ui.playlists && typeof(state.ui.playlists[uri]) !== 'undefined' ? state.ui.playlists[uri] : false ),
 		library_playlists: state.ui.library_playlists,
 		mopidy_connected: state.mopidy.connected,

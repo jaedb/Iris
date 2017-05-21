@@ -102,6 +102,7 @@ class LibraryLocalDirectory extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
 		directory: state.mopidy.directory
 	}

@@ -80,6 +80,7 @@ class LibraryLocalArtists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
 		local_artists: state.ui.local_artists,
 		artists: state.ui.artists

@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import Header from '../../components/Header'
 import AlbumGrid from '../../components/AlbumGrid'
 import LazyLoadListener from '../../components/LazyLoadListener'
-
+import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -25,6 +25,16 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	render(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_browse/new-releases'])){
+			return (
+				<div className="view discover-new-releases-view">
+					<Header icon="leaf" title="New Releases" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
 
 		var albums = []
 		if (this.props.new_releases){
@@ -57,6 +67,7 @@ class DiscoverNewReleases extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		albums: state.ui.albums,
 		new_releases: state.ui.new_releases,
 		new_releases_more: state.ui.new_releases_more,

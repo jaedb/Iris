@@ -11,7 +11,6 @@ import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
 import AddSeedField from '../../components/AddSeedField'
-
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -100,8 +99,8 @@ class Discover extends React.Component{
 		)
 	}
 
-	renderResults(){		
-		if (helpers.isLoading(this.props.load_queue, 'spotify_recommendations')){
+	renderResults(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_browse/recommendations'])){
 			return (
 				<div className="body-loader">
 					<div className="loader"></div>

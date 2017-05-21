@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import Header from '../../components/Header'
 import PlaylistGrid from '../../components/PlaylistGrid'
 import LazyLoadListener from '../../components/LazyLoadListener'
-
+import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategory extends React.Component{
@@ -34,7 +34,20 @@ class DiscoverCategory extends React.Component{
 	}
 
 	render(){
-		if (!this.props.category) return null
+		if (helpers.isLoading(this.props.load_queue,['spotify_browse/categories/'])){
+			return (
+				<div className="view discover-categories-view">
+					<Header icon="grid" title={(this.props.category ? this.props.category.name : 'Category')} />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
+		if (!this.props.category){
+			return null
+		}
 
 		var playlists = []
 		if (this.props.category.playlists_uris){
@@ -67,6 +80,7 @@ class DiscoverCategory extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		playlists: state.ui.playlists,
 		category: (state.ui.categories && typeof(state.ui.categories['category:'+ownProps.params.id]) !== 'undefined' ? state.ui.categories['category:'+ownProps.params.id] : false )
 	}

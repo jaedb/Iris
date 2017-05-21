@@ -128,6 +128,17 @@ class LibraryAlbums extends React.Component{
 	}
 
 	render(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_me/albums'])){
+			return (
+				<div className="view library-albums-view">
+					<Header icon="cd" title="My albums" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
 		var albums = []
 
 		if (this.props.library_albums && this.props.albums){
@@ -207,6 +218,7 @@ class LibraryAlbums extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		view: state.ui.library_albums_view,
 		albums: state.ui.albums,
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),

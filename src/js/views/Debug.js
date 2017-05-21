@@ -77,7 +77,7 @@ class Debug extends React.Component{
 								<label>
 									<input 
 										type="checkbox"
-										name="emulate_touch"
+										name="log_actions"
 										checked={ this.props.log_actions }
 										onChange={ e => this.props.uiActions.set({ log_actions: !this.props.log_actions })} />
 									<span className="label">Log actions</span>
@@ -85,7 +85,7 @@ class Debug extends React.Component{
 								<label>
 									<input 
 										type="checkbox"
-										name="emulate_touch"
+										name="log_mopidy"
 										checked={ this.props.log_mopidy }
 										onChange={ e => this.props.uiActions.set({ log_mopidy: !this.props.log_mopidy })} />
 									<span className="label">Log Mopidy</span>
@@ -93,7 +93,7 @@ class Debug extends React.Component{
 								<label>
 									<input 
 										type="checkbox"
-										name="emulate_touch"
+										name="log_pusher"
 										checked={ this.props.log_pusher }
 										onChange={ e => this.props.uiActions.set({ log_pusher: !this.props.log_pusher })} />
 									<span className="label">Log Pusher</span>
@@ -109,6 +109,17 @@ class Debug extends React.Component{
 							</div>
 						</div>
 					</form>
+
+					<h4 className="underline">Spotify</h4>
+					<div className="field">
+						<div className="name">Access token</div>
+						<div className="input">
+							<input
+								type="text"
+								readOnly
+								value={ this.props.access_token } />
+						</div>
+					</div>
 
 					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.callMopidy(e)}>
@@ -178,7 +189,7 @@ class Debug extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		connection_id: state.pusher.connection_id,
-		emulate_touch: (state.ui.emulate_touch ? state.ui.emulate_touch : false),
+		access_token: (state.spotify.access_token ? state.spotify.access_token : ''),
 		log_actions: (state.ui.log_actions ? state.ui.log_actions : false),
 		log_pusher: (state.ui.log_pusher ? state.ui.log_pusher : false),
 		log_mopidy: (state.ui.log_mopidy ? state.ui.log_mopidy : false),

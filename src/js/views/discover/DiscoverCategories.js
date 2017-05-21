@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
 import CategoryGrid from '../../components/CategoryGrid'
-
+import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategories extends React.Component{
@@ -19,13 +19,24 @@ class DiscoverCategories extends React.Component{
 	}
 
 	render(){
-		if (!this.props.categories) return null
+		if (helpers.isLoading(this.props.load_queue,['spotify_browse/categories'])){
+			return (
+				<div className="view discover-categories-view">
+					<Header icon="grid" title="Genre / Mood" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
 
 		// convert categories object into simple array
 		var categories = []
-		for (var key in this.props.categories){	
-			if (this.props.categories.hasOwnProperty(key)){
-				categories.push(this.props.categories[key])
+		if (this.props.categories){
+			for (var key in this.props.categories){	
+				if (this.props.categories.hasOwnProperty(key)){
+					categories.push(this.props.categories[key])
+				}
 			}
 		}
 
@@ -49,7 +60,8 @@ class DiscoverCategories extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		categories: state.ui.categories
+		categories: state.ui.categories,
+		load_queue: state.ui.load_queue
 	}
 }
 

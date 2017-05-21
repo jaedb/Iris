@@ -96,6 +96,14 @@ class Artist extends React.Component{
 	}
 
 	renderBody(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
+			return (
+				<div className="body-loader">
+					<div className="loader"></div>
+				</div>
+			)
+		}
+		
 		var scheme = helpers.uriSource( this.props.params.uri );
 
 		var related_artists = []
@@ -179,7 +187,8 @@ class Artist extends React.Component{
 	}
 
 	render(){
-		var scheme = helpers.uriSource( this.props.params.uri );
+
+		var scheme = helpers.uriSource( this.props.params.uri )
 
 		if ( this.props.artist && this.props.artist.images ){
 			var image = helpers.sizedImages( this.props.artist.images ).huge
@@ -211,9 +220,7 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
-
-					{this.props.artist ? this.renderBody() : null}
-
+					{this.renderBody()}
 				</div>
 			);
 
@@ -235,6 +242,7 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
+					{this.renderBody()}
 				</div>
 			);
 		}
@@ -250,6 +258,7 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
 		artists: (state.ui.artists ? state.ui.artists : []),
 		library_artists: (state.ui.library_artists ? state.ui.library_artists : []),

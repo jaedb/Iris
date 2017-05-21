@@ -8,6 +8,7 @@ import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
+import * as helpers from '../../helpers'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -27,6 +28,17 @@ class LibraryTracks extends React.Component{
 	}
 
 	render(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_me/tracks'])){
+			return (
+				<div className="view library-tracks-view">
+					<Header icon="music" title="My tracks" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
 		return (
 			<div className="view library-tracks-view">
 				<Header icon="music" title="My tracks" />
@@ -48,6 +60,7 @@ class LibraryTracks extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		tracks: state.spotify.library_tracks,
 		tracks_more: state.spotify.library_tracks_more
 	}

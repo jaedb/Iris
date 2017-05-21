@@ -53,10 +53,17 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         (xhr, status, error) => {
                             dispatch(uiActions.stopLoading(loader_key))
+
+                            // TODO: Catch 403 token_expired and force renewal
+                            // Android Chrome mini-app doesn't seem to check date properly
+                            // alert(error)
                             
+                            // Get the error message, jsson decode if necessary
                             var message = xhr.responseText
                             var response = JSON.parse(xhr.responseText)                            
-                            if (response.error && response.error.message) message = response.error.message
+                            if (response.error && response.error.message){
+                                message = response.error.message
+                            }
 
                             dispatch(uiActions.createNotification('Spotify: '+message,'bad'))
                             console.error( endpoint+' failed', response)
@@ -78,15 +85,17 @@ function getToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
         // token is okay for now, so just resolve with the current token
-        if( getState().spotify.token_expiry && new Date().getTime() < getState().spotify.token_expiry ){
+        if (getState().spotify.token_expiry && new Date().getTime() < getState().spotify.token_expiry){
             resolve(getState().spotify.access_token)
             return
         }
 
         // token is expiring/expired, so go get a new one and resolve that
-        refreshToken( dispatch, getState )
+        refreshToken(dispatch, getState)
             .then(
-                response => resolve(response.access_token),
+                response => {
+                    resolve(response.access_token)
+                },
                 error => {
                     dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                     reject(error)
@@ -98,7 +107,7 @@ function getToken( dispatch, getState ){
 function refreshToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
-        if( getState().spotify.authorized ){
+        if (getState().spotify.authorized){
 
             $.ajax({
                     method: 'GET',
@@ -690,12 +699,13 @@ export function getRecommendations(uris = [], limit = 20){
         }
 
         // construct our endpoint URL with all the appropriate arguments
-        var data = 'seed_artists='+artists_ids.join(',')
-        data += '&seed_tracks='+tracks_ids.join(',')
-        data += '&seed_genres='+genres.join(',')
-        data += '&limit='+limit
+        var endpoint = 'recommendations'
+        endpoint += '?seed_artists='+artists_ids.join(',')
+        endpoint += '&seed_tracks='+tracks_ids.join(',')
+        endpoint += '&seed_genres='+genres.join(',')
+        endpoint += '&limit='+limit
 
-        sendRequest(dispatch, getState, 'recommendations', 'GET', data)
+        sendRequest(dispatch, getState, endpoint)
             .then( response => {
 
                 // We only get simple artist objects, so we need to

@@ -455,11 +455,19 @@ export let setWindowTitle = function (track = false, play_state = false){
  * @param key = string (the string to lookup)
  * @return boolean
  **/
-export let isLoading = function(load_queue = [], key = ''){
+export let isLoading = function(load_queue = [], keys = []){
+
+	// Loop all of our load queue items
 	for (var load_queue_key in load_queue) {
+
+		// Make sure it's not a root object method
 		if (load_queue.hasOwnProperty(load_queue_key)){
-			if (load_queue[load_queue_key] == key){
-				return true
+
+			// Loop all the keys we're looking for
+			for (var i = 0; i < keys.length; i++){
+				if (load_queue[load_queue_key].startsWith(keys[i])){
+					return true
+				}
 			}
 		}
 	}

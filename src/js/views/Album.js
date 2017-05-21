@@ -96,81 +96,66 @@ class Album extends React.Component{
 	}
 
 	render(){
-		if (this.props.album){
-			var artists = []
-			if (this.props.album.artists_uris && this.props.artists){
-				for (var i = 0; i < this.props.album.artists_uris.length; i++){
-					var uri = this.props.album.artists_uris[i]
-					if (this.props.artists.hasOwnProperty(uri)){
-						artists.push(this.props.artists[uri])
-					}
+		if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+			return (
+				<div className="body-loader">
+					<div className="loader"></div>
+				</div>
+			)
+		}
+
+		if (!this.props.album){
+			return null
+		}
+
+		var artists = []
+		if (this.props.album.artists_uris && this.props.artists){
+			for (var i = 0; i < this.props.album.artists_uris.length; i++){
+				var uri = this.props.album.artists_uris[i]
+				if (this.props.artists.hasOwnProperty(uri)){
+					artists.push(this.props.artists[uri])
 				}
 			}
-
-			return (
-				<div className="view album-view">
-			        <SidebarToggleButton />
-
-					<Thumbnail size="large" canZoom images={ this.props.album.images } />
-
-					<div className="title">
-						<div className="source grey-text">
-							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />&nbsp;
-							{helpers.uriSource( this.props.params.uri )}&nbsp;
-							{this.props.album.album_type ? this.props.album.album_type : 'album'}
-						</div>
-
-						<h1>{ this.props.album.name }</h1>
-
-						<ul className="details">
-							{ artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
-							{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
-							<li>
-								{ this.props.album.tracks_total ? this.props.album.tracks_total : '0' } tracks,&nbsp;
-								{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : '0 mins' }
-							</li>
-						</ul>
-					</div>
-
-					<div className="actions">
-						<button className="primary" onClick={e => this.play()}>Play</button>
-						{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
-						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
-					</div>
-
-					<section className="list-wrapper">
-						{ this.props.album.tracks ? <TrackList className="album-track-list" tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
-						<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
-					</section>
-
-				</div>
-			);
-
-		} else {
-			return (
-				<div className="view album-view">
-			        <SidebarToggleButton />
-					<Thumbnail size="large" />
-					<div className="title">
-						<div className="source grey-text">
-							Album
-						</div>
-						<h1>
-							<span className="placeholder"></span>
-						</h1>
-						<ul className="details">
-							<li>
-								<span className="placeholder"></span>
-							</li>
-						</ul>
-					</div>
-					<div className="actions">
-						<button className="placeholder">&nbsp;</button>
-					</div>
-				</div>
-			);
-
 		}
+
+		return (
+			<div className="view album-view">
+		        <SidebarToggleButton />
+
+				<Thumbnail size="large" canZoom images={ this.props.album.images } />
+
+				<div className="title">
+					<div className="source grey-text">
+						<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />&nbsp;
+						{helpers.uriSource( this.props.params.uri )}&nbsp;
+						{this.props.album.album_type ? this.props.album.album_type : 'album'}
+					</div>
+
+					<h1>{ this.props.album.name }</h1>
+
+					<ul className="details">
+						{ artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
+						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
+						<li>
+							{ this.props.album.tracks_total ? this.props.album.tracks_total : '0' } tracks,&nbsp;
+							{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : '0 mins' }
+						</li>
+					</ul>
+				</div>
+
+				<div className="actions">
+					<button className="primary" onClick={e => this.play()}>Play</button>
+					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
+					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+				</div>
+
+				<section className="list-wrapper">
+					{ this.props.album.tracks ? <TrackList className="album-track-list" tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
+					<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
+				</section>
+
+			</div>
+		)
 	}
 }
 
@@ -183,6 +168,7 @@ class Album extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		artists: state.ui.artists,
 		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
 		albums: state.ui.albums,

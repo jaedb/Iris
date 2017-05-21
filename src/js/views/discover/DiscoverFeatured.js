@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
 import PlaylistGrid from '../../components/PlaylistGrid'
-
+import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverFeatured extends React.Component{
@@ -20,6 +20,16 @@ class DiscoverFeatured extends React.Component{
 	}
 
 	render(){
+		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
+			return (
+				<div className="view discover-featured-view">
+					<Header icon="star" title="Featured playlists" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
 
 		var playlists = []
 		if (this.props.featured_playlists){
@@ -51,6 +61,7 @@ class DiscoverFeatured extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,
 		playlists: state.ui.playlists
 	}
