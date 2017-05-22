@@ -13,6 +13,7 @@ import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
 import SearchSettingsModal from './SearchSettingsModal'
+import VolumeModal from './VolumeModal'
 import AuthorizationModal_Send from './AuthorizationModal_Send'
 import AuthorizationModal_Receive from './AuthorizationModal_Receive'
 
@@ -55,6 +56,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'search_settings' ? <SearchSettingsModal uiActions={this.props.uiActions} search_settings={this.props.search_settings} uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'volume' ? <VolumeModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} volume={this.props.volume} mute={this.props.mute} /> : null }
 
 				</div>
 			</div>
@@ -66,6 +68,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : null),
 		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
+		volume: state.mopidy.volume,
+		mute: state.mopidy.mute,
 		modal: state.ui.modal,
 		radio: state.ui.radio,
 		tracks: state.ui.tracks,
