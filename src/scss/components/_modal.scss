@@ -202,6 +202,19 @@
 		}
 	}
 
+	&.volume {
+		.slider-wrapper {
+			position: absolute;
+			top: 10vh;
+			left: 45vw;
+			height: 80vh;
+
+			.track {
+				width: 10vw;
+			}
+		}
+	}
+
 	.actions {
 		padding-top: 50px;
 		text-align: center;
