@@ -10,7 +10,10 @@ import * as mopidyActions from '../services/mopidy/actions'
 class VolumeControl extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+		this.state = {
+			expanded: false
+		}
 	}
 
 	handleClick(e){
