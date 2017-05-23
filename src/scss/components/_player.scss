@@ -24,16 +24,9 @@
 		z-index: 98;
 	}
 
-	&.muted {
-		.fa {
-			color: $red;
-		}
-
-		.slider {
-			.progress {
-				background: rgba(255,255,255,0.25);
-			}
-		}
+	.fa.muted {
+		color: $red;
+		position: relative;
 	}
 
 	.modal-trigger {

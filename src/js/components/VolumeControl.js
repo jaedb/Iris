@@ -26,22 +26,19 @@ class VolumeControl extends React.Component{
 
 	render(){
 		var className = "volume-control"
-		if (this.props.mute){
-			className += " muted"
-		}
 		return (
 			<span className={className}>
 
 				<a className="modal-trigger" onClick={() => this.props.uiActions.openModal('volume')}>
-					{this.props.mute ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-down" />}
+					{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
 				</a>
 
 				<span className="hover-trigger">
 					<a onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
-						{this.props.mute ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-down" />}
+						{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
 					</a>
 					<div className="slider-wrapper">
-						<div className="slider vertical" onClick={ (e) => this.handleClick(e) } >
+						<div className={this.props.mute ? "slider vertical disabled" : "slider vertical"} onClick={ (e) => this.handleClick(e) } >
 							<div className="track">
 								<div className="progress" style={{ height: this.props.volume+'%' }}></div>
 							</div>
