@@ -203,14 +203,15 @@
 	}
 
 	&.volume {
-		.slider-wrapper {
+		.slider {
 			position: absolute;
 			top: 10vh;
 			left: 45vw;
 			height: 80vh;
+			width: 10vw;
 
 			.track {
-				width: 10vw;
+				width: 100%;
 			}
 		}
 	}

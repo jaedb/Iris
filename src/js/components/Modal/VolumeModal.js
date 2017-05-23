@@ -23,11 +23,9 @@ export default class VolumeModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<div className="slider-wrapper">
-					<div className="slider vertical" onClick={ (e) => this.handleClick(e) } >
-						<div className="track">
-							<div className="progress" style={{ height: this.props.volume+'%' }}></div>
-						</div>
+				<div className="slider vertical" onClick={ (e) => this.handleClick(e) } >
+					<div className="track">
+						<div className="progress" style={{ height: this.props.volume+'%' }}></div>
 					</div>
 				</div>
 			</div>
