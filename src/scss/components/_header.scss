@@ -4,6 +4,7 @@ main {
 		padding: 14px 20px;
 		background: #EEEEEE;
 		line-height: 24px;
+		box-sizing: border-box;
 
 		h1 {
 			font-size: 22px;
@@ -15,12 +16,6 @@ main {
 			display: inline-block;
 			padding-right: 14px;
 			height: 16px;
-		}
-
-		@include responsive( $bp_medium ){
-			.icon {
-				visibility: hidden;
-			}
 		}
 
 		.options {
@@ -53,7 +48,27 @@ main {
 			}
 		}
 
+		&.overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			background: rgba(0,0,0,0.1);
+			color: $white;
+			z-index: 95;
+
+			.icon {
+				-webkit-filter: invert(1);
+				-moz-filter: invert(1);
+				filter: invert(1);
+			}
+		}
+
 		@include responsive( $bp_medium ){
+			.icon {
+				visibility: hidden;
+			}
+
 			.options {
 				right: 0;
 

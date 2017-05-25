@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import SidebarToggleButton from '../../components/SidebarToggleButton'
+import Header from '../../components/Header'
 import ArtistSentence from '../../components/ArtistSentence'
 import ArtistGrid from '../../components/ArtistGrid'
 import AlbumGrid from '../../components/AlbumGrid'
@@ -153,11 +153,11 @@ class Discover extends React.Component{
 	render(){
 		return (
 			<div className="view discover-view">
-				<SidebarToggleButton />
+				<Header icon="compass" title="Discover" className="overlay" />
 				<div className="intro">
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
 					<div className="liner">
-						<h1>Discover new music</h1>
+						<h1>Explore new music</h1>
 						<h3>
 							Add seeds below to build your sound. Let's start with 
 							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.

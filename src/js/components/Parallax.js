@@ -92,8 +92,9 @@ export default class Parallax extends React.Component{
 	loadImage( url ){
 		return new Promise( (resolve, reject) => {
 
-			var imageObject = new Image();
-			imageObject.src = url;
+			var imageObject = new Image()
+			imageObject.src = url
+			imageObject.crossOrigin = 'anonymous'
 
 			imageObject.onload = function(){
 				var image = {
@@ -161,10 +162,11 @@ export default class Parallax extends React.Component{
 
 	render(){
 		return (
-			<div className="parallax">
+			<div className={this.props.blur ? "parallax blur" : "parallax"}>
+
 				<canvas 
 					id="parallax-canvas" 
-					className={ !this.state.loading ? 'loaded' : null } 
+					className={!this.state.loading ? 'loaded' : null} 
 					width={this.state.canvas.width} 
 					height={this.state.canvas.height}>
 				</canvas>
@@ -172,3 +174,6 @@ export default class Parallax extends React.Component{
 		);
 	}
 }
+
+
+

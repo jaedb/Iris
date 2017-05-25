@@ -2,12 +2,15 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
-import SidebarToggleButton from '../../components/SidebarToggleButton'
+import Header from '../../components/Header'
 import Parallax from '../../components/Parallax'
 import Thumbnail from '../../components/Thumbnail'
+
 import * as helpers from '../../helpers'
+import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverFeatured extends React.Component{
@@ -16,20 +19,30 @@ class DiscoverFeatured extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.props.spotifyActions.getFeaturedPlaylists();
+	}
+
+	playPlaylist(e,playlist){
+        this.props.mopidyActions.playPlaylist(playlist.uri)
 	}
 
 	renderIntro(playlist = null){
 		if (playlist){
 			return (
 				<div className="intro">
-					<Parallax image={helpers.sizedImages(playlist.images).huge} />
+					<Parallax image={helpers.sizedImages(playlist.images).huge} blur="25"/>
 					<div className="content cf">
-						<Thumbnail images={playlist.images} />
-						<h1>{playlist.name}</h1>
-						<h3>{playlist.tracks_total} tracks</h3>
+						<Link to={global.baseURL+'playlist/'+playlist.uri}>
+							<Thumbnail images={playlist.images} />
+						</Link>
+						<Link to={global.baseURL+'playlist/'+playlist.uri}>
+							<h1>{playlist.name}</h1>
+						</Link>
+						{playlist.description ? <h3 dangerouslySetInnerHTML={{__html: playlist.description}}></h3> : null}
+						<div className="actions">
+							<button className="primary" onClick={e => this.playPlaylist(e,playlist)}>Play</button>
+						</div>
 					</div>
 				</div>
 			)
@@ -46,6 +59,7 @@ class DiscoverFeatured extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
 			return (
 				<div className="view discover-featured-view">
+					<Header icon="star" title="Featured playlists" />
 					<div className="body-loader">
 						<div className="loader"></div>
 					</div>
@@ -71,7 +85,7 @@ class DiscoverFeatured extends React.Component{
 
 		return (
 			<div className="view discover-featured-view">
-				<SidebarToggleButton />
+				<Header className="overlay" icon="star" title="Featured playlists" />
 				{this.renderIntro(first_playlist)}
 				<section className="grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }
@@ -98,6 +112,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

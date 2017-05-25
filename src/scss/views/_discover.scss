@@ -3,7 +3,7 @@
 	
 	.intro {
 		position: relative;
-		padding: 60px 40px;
+		padding: 100px 40px 60px 40px;
 		z-index: 1;
 
 		.parallax {
@@ -108,6 +108,7 @@
 .discover-featured-view {
 	.intro {
 		position: relative;
+		padding-top: 50px;
 
 		.parallax {
 			position: absolute;
@@ -127,7 +128,24 @@
 			.thumbnail {
 				float: left;
 				max-width: 200px;
-				margin-right: 40px;
+			}
+
+			h1,
+			h3,
+			.actions {
+				padding-left: 240px;
+			}
+
+			h1 {
+				padding-top: 20px;
+			}
+
+			h3 {
+				opacity: 0.5;
+			}
+
+			.actions {
+				padding-top: 40px;
 			}
 		}
 	}

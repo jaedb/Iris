@@ -316,10 +316,15 @@ export function getFeaturedPlaylists(){
                     ))
                 }
 
+                // Pick the first playlist, and get the full playlist object
+                // We use this as in our introduction parallax panel, and need the full playlist
+                dispatch(getPlaylist(playlists[0].uri))
+
                 dispatch({
                     type: 'PLAYLISTS_LOADED',
                     playlists: playlists
-                });  
+                });
+
                 dispatch({
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                     data: {

@@ -116,6 +116,11 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'MOPIDY_PLAY_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
+                next(action)
+                break
+
             case 'MOPIDY_SAVE_PLAYLIST':
             case 'SPOTIFY_SAVE_PLAYLIST':
                 ReactGA.event({ category: 'Playlist', action: 'Save', label: action.key })
@@ -147,6 +152,11 @@ const UIMiddleware = (function(){
             case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri })
+                next(action)
+                break
+
+            case 'MOPIDY_DELETE_PLAYLIST':
+                ReactGA.event({ category: 'Playlist', action: 'Delete', label: action.uri })
                 next(action)
                 break
 
