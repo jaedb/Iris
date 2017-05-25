@@ -104,3 +104,31 @@
 		}
 	}
 }
+
+.discover-featured-view {
+	.intro {
+		position: relative;
+
+		.parallax {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+		}
+
+		.content {
+			padding: 40px;
+			color: $white;
+			position: relative;
+			z-index: 2;
+
+			.thumbnail {
+				float: left;
+				max-width: 200px;
+				margin-right: 40px;
+			}
+		}
+	}
+}
