@@ -718,7 +718,7 @@ export default function reducer(ui = {}, action){
             var notifications = Object.assign([], ui.notifications)
             
             if( action.index > -1 ){
-                notifications.splice(index, 1)
+                notifications.splice(action.index, 1)
             }
 
             return Object.assign({}, ui, {notifications: notifications})
