@@ -2,10 +2,15 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
 
 import Header from '../../components/Header'
 import AlbumGrid from '../../components/AlbumGrid'
+import Parallax from '../../components/Parallax'
+import Thumbnail from '../../components/Thumbnail'
+import ArtistSentence from '../../components/ArtistSentence'
 import LazyLoadListener from '../../components/LazyLoadListener'
+
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -22,6 +27,40 @@ class DiscoverNewReleases extends React.Component{
 
 	loadMore(){
 		this.props.spotifyActions.getURL(this.props.new_releases_more, 'SPOTIFY_NEW_RELEASES_LOADED');
+	}
+
+	playAlbum(e,album){
+        this.props.mopidyActions.playURIs([album.uri],album.uri)
+	}
+
+	renderIntro(album = null){
+		if (album){
+			return (
+				<div className="intro">
+					<Parallax image={helpers.sizedImages(album.images).huge} blur />
+					<div className="content cf">
+						<Link to={global.baseURL+'album/'+album.uri}>
+							<Thumbnail images={album.images} />
+						</Link>
+						<Link to={global.baseURL+'album/'+album.uri}>
+							<h1>{album.name}</h1>
+						</Link>
+						<h3>
+							<ArtistSentence artists={album.artists} />
+						</h3>
+						<div className="actions">
+							<button className="primary" onClick={e => this.playAlbum(e,album)}>Play</button>
+						</div>
+					</div>
+				</div>
+			)
+		} else {
+			return (
+				<div className="intro">
+					<Parallax />
+				</div>
+			)
+		}
 	}
 
 	render(){
@@ -46,9 +85,16 @@ class DiscoverNewReleases extends React.Component{
 			}
 		}
 
+		// Pull the first playlist out and we'll use this as a banner
+		var first_album = albums.splice(0,1)
+		if (first_album){
+			first_album = first_album[0]
+		}
+
 		return (
 			<div className="view discover-new-releases-view">
-				<Header icon="leaf" title="New Releases" />
+				<Header className="overlay" icon="leaf" title="New Releases" />
+				{this.renderIntro(first_album)}
 				<section className="grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>

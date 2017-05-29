@@ -326,7 +326,7 @@ const UIMiddleware = (function(){
                 action.index = index
 
                 // If a broadcast, add to suppressed_broadcasts
-                if (notifications[index].type == 'broadcast'){
+                if (index > -1 && typeof(notifications[index]) !== 'undefined' && notifications[index].type == 'broadcast'){
                     store.dispatch({
                         type: 'SUPPRESS_BROADCAST',
                         key: notifications[index].key
@@ -345,15 +345,17 @@ const UIMiddleware = (function(){
                 for (var i = 0; i < action.broadcasts.length; i++){
                     var broadcast = action.broadcasts[i]
 
-                    if (!suppressed_broadcasts.includes(broadcast.id)){
-                        store.dispatch(uiActions.createNotification(
-                            broadcast.message,
-                            'broadcast',
-                            broadcast.id,
-                            broadcast.title,
-                            true
-                        )) 
-                    }     
+                    if (!suppressed_broadcasts.includes(broadcast.key)){
+                        if (broadcast.message){
+                            store.dispatch(uiActions.createNotification(
+                                broadcast.message,
+                                'broadcast',
+                                (broadcast.key ? broadcast.key : null),
+                                (broadcast.title ? broadcast.title : null),
+                                true
+                            )) 
+                        }
+                    }
                 }
 
                 next(action)

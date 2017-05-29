@@ -723,11 +723,6 @@ export default function reducer(ui = {}, action){
 
             return Object.assign({}, ui, {notifications: notifications})
 
-        case 'SUPPRESS_BROADCAST':
-            var suppressed_broadcasts = (typeof(ui.suppressed_broadcasts) !== 'undefined' ? ui.suppressed_broadcasts : [])
-            suppressed_broadcasts.push(action.key)
-            return Object.assign({}, ui, {suppressed_broadcasts: suppressed_broadcasts})
-
 
 
 

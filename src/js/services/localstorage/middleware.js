@@ -139,7 +139,7 @@ const localstorageMiddleware = (function(){
                     ui,
                     { suppressed_broadcasts: suppressed_broadcasts }
                 );
-                localStorage.setItem('ui', JSON.stringify(ui));
+                localStorage.setItem('ui', JSON.stringify(ui))
                 break
         }
     }
