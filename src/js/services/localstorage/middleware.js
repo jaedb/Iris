@@ -126,7 +126,21 @@ const localstorageMiddleware = (function(){
                 if( !ui ) ui = {};
                 Object.assign( ui, action.data );
                 localStorage.setItem('ui', JSON.stringify(ui));
-                break;
+                break
+
+            case 'SUPPRESS_BROADCAST':
+                var ui = JSON.parse(localStorage.getItem('ui'))
+                if (!ui) ui = {}
+
+                var suppressed_broadcasts = (typeof(ui.suppressed_broadcasts) !== 'undefined' ? ui.suppressed_broadcasts : [])
+                suppressed_broadcasts.push(action.key)
+
+                Object.assign(
+                    ui,
+                    { suppressed_broadcasts: suppressed_broadcasts }
+                );
+                localStorage.setItem('ui', JSON.stringify(ui));
+                break
         }
     }
 

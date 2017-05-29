@@ -4,9 +4,6 @@ import * as helpers from '../../helpers'
 export default function reducer(ui = {}, action){
     switch (action.type) {
 
-        case 'BROADCASTS_LOADED':
-            return Object.assign({}, ui, {broadcasts: action.broadcasts});
-
         case 'LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
 
@@ -719,14 +716,18 @@ export default function reducer(ui = {}, action){
 
         case 'REMOVE_NOTIFICATION':
             var notifications = Object.assign([], ui.notifications)
-
-            function getByKey( notification ){
-                return notification.key === action.key
+            
+            if( action.index > -1 ){
+                notifications.splice(index, 1)
             }
-            var index = notifications.findIndex(getByKey)
-            if( index > -1 ) notifications.splice(index, 1)
 
-            return Object.assign({}, ui, { notifications: notifications })
+            return Object.assign({}, ui, {notifications: notifications})
+
+        case 'SUPPRESS_BROADCAST':
+            var suppressed_broadcasts = (typeof(ui.suppressed_broadcasts) !== 'undefined' ? ui.suppressed_broadcasts : [])
+            suppressed_broadcasts.push(action.key)
+            return Object.assign({}, ui, {suppressed_broadcasts: suppressed_broadcasts})
+
 
 
 

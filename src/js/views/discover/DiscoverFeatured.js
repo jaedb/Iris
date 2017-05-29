@@ -31,7 +31,7 @@ class DiscoverFeatured extends React.Component{
 		if (playlist){
 			return (
 				<div className="intro">
-					<Parallax image={helpers.sizedImages(playlist.images).huge} blur="25"/>
+					<Parallax image={helpers.sizedImages(playlist.images).huge} blur />
 					<div className="content cf">
 						<Link to={global.baseURL+'playlist/'+playlist.uri}>
 							<Thumbnail images={playlist.images} />

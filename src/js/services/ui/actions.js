@@ -244,13 +244,18 @@ export function createBrowserNotification( data ){
     }
 }
 
-export function createNotification(content, type = 'default', key = helpers.generateGuid()){
+export function createNotification(content, type = 'default', key = null, title = null, sticky = false){
+    if (!key){
+        key = helpers.generateGuid()
+    }
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: {
             key: key,
             type: type,
-            content: content
+            title: title,
+            content: content,
+            sticky: sticky
         }
     }
 }

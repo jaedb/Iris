@@ -6,23 +6,34 @@
 	right: 30px;
 	z-index: 97;
 	pointer-events: none;
-	width: 200px;
+	width: 300px;
 
 	.notification {
+		@include fadein();
 		display: block;
 		position: relative;
-		background: $blue;
-		padding: 12px 32px 12px 18px;
+		background: $darkest_grey;
+		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
-		color: #FFFFFF;
+		color: $white;
 		pointer-events: all;
+		
+		h4 {
+			padding-top: 0;
+		}
+
+		p a {
+			color: inherit;
+			text-decoration: none;
+			border-bottom: 1px dotted $black;
+		}
 
 		.close-button {
 			position: absolute;
-			top: 10px;
-			right: 11px;
-			font-size: 11px;
-			padding: 4px;
+			top: 4px;
+			right: 0;
+			font-size: 12px;
+			padding: 14px;
 			cursor: pointer;
 			opacity: 0.5;
 
@@ -35,9 +46,9 @@
 			background: $green;
 		}
 
-		&.info {
+		&.broadcast {
 			background: $yellow;
-			color: #000000;
+			color: $black;
 		}
 
 		&.bad {
@@ -56,7 +67,7 @@
 				position: absolute;
 				display: block;
 				content: '';
-				background: rgba(0,0,0,0.35);
+				background: $blue;
 				opacity: 1;
 			    animation: slideloader 1s infinite;
 				bottom: 0;

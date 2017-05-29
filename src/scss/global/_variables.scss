@@ -100,6 +100,18 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
+@keyframes fadein {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@mixin fadein( $duration: 0.2s ){
+    animation-name: fadein;
+    animation-duration: $duration;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
 @mixin blur( $size: 10px ) {
 	-webkit-filter: blur( $size );
 	filter: blur( $size );

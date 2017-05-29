@@ -79,7 +79,7 @@
 
 	&.blur {
 		canvas {
-			filter: blur(15px);
+			@include blur();
 		}
 	}
 }

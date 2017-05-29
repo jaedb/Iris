@@ -302,12 +302,59 @@ const UIMiddleware = (function(){
             case 'CREATE_NOTIFICATION':
 
                 // start a timeout to remove this notification
-                var timeout = setTimeout(
-                    function(){
-                        store.dispatch(uiActions.removeNotification(action.notification.key))
-                    },
-                    (action.notification.type == 'shortcut' ? 1000 : 3000)
-                )
+                if (!action.notification.sticky){
+                    var timeout = setTimeout(
+                        function(){
+                            store.dispatch(uiActions.removeNotification(action.notification.key))
+                        },
+                        (action.notification.type == 'shortcut' ? 1000 : 3000)
+                    )
+                }
+
+                next(action)
+                break
+
+            case 'REMOVE_NOTIFICATION':
+                var notifications = Object.assign([], store.getState().ui.notifications)
+
+                function getByKey( notification ){
+                    return notification.key === action.key
+                }
+                var index = notifications.findIndex(getByKey)
+
+                // Save our index for the reducer to use. Saves us from re-finding by key
+                action.index = index
+
+                // If a broadcast, add to suppressed_broadcasts
+                if (notifications[index].type == 'broadcast'){
+                    store.dispatch({
+                        type: 'SUPPRESS_BROADCAST',
+                        key: notifications[index].key
+                    })
+                }
+
+                next(action)
+                break
+
+            case 'BROADCASTS_LOADED':
+                var suppressed_broadcasts = []
+                if (typeof(store.getState().ui.suppressed_broadcasts) !== 'undefined'){
+                    suppressed_broadcasts = store.getState().ui.suppressed_broadcasts
+                }
+
+                for (var i = 0; i < action.broadcasts.length; i++){
+                    var broadcast = action.broadcasts[i]
+
+                    if (!suppressed_broadcasts.includes(broadcast.id)){
+                        store.dispatch(uiActions.createNotification(
+                            broadcast.message,
+                            'broadcast',
+                            broadcast.id,
+                            broadcast.title,
+                            true
+                        )) 
+                    }     
+                }
 
                 next(action)
                 break
