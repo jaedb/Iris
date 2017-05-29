@@ -13,6 +13,7 @@ import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverNewReleases extends React.Component{
@@ -124,6 +125,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }
