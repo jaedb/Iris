@@ -4,6 +4,9 @@ import * as helpers from '../../helpers'
 export default function reducer(ui = {}, action){
     switch (action.type) {
 
+        case 'BROADCASTS_LOADED':
+            return Object.assign({}, ui, {broadcasts: action.broadcasts});
+
         case 'LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
 

@@ -1,6 +1,26 @@
 
 import * as helpers from '../../helpers'
 
+export function getBroadcasts(){
+    return (dispatch, getState) => {
+        var config = {
+            method: 'GET',
+            url: 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
+        }
+        $.ajax(config).then( 
+                response => {
+                    dispatch({
+                        type: 'BROADCASTS_LOADED',
+                        broadcasts: JSON.parse(response)
+                    })
+                },
+                (xhr, status, error) => {
+                    console.error('Could not fetch broadcasts from GitHub')
+                }
+            )
+    }
+}
+
 export function showContextMenu(data){
     data.position_x = data.e.clientX
     data.position_y = data.e.clientY

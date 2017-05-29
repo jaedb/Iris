@@ -38,9 +38,10 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.pusherActions.connect();
-		this.props.mopidyActions.connect();
-		this.props.spotifyActions.connect();
+		this.props.pusherActions.connect()
+		this.props.mopidyActions.connect()
+		this.props.spotifyActions.connect()
+		this.props.uiActions.getBroadcasts()
 
 		if (this.props.spotify_authorized){
 
@@ -199,8 +200,8 @@ class App extends React.Component{
 		        <Notifications 
 		        	uiActions={this.props.uiActions} 
 		        	notifications={this.props.notifications} 
-		        	processes={this.props.processes} 
-		        	load_queue={this.props.load_queue} />
+		        	processes={this.props.processes}
+		        	broadcasts={this.props.broadcasts} />
 		        {this.props.debug_info ? <DebugInfo /> : null}
 	        </div>
 		);
@@ -215,6 +216,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
 		volume: (state.mopidy.volume ? state.mopidy.volume : false),
 		notifications: (state.ui.notifications ? state.ui.notifications : []),
 		processes: (state.ui.processes ? state.ui.processes : {}),
