@@ -10,6 +10,7 @@ import Parallax from '../../components/Parallax'
 import Thumbnail from '../../components/Thumbnail'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -27,14 +28,27 @@ class DiscoverFeatured extends React.Component{
         this.props.mopidyActions.playPlaylist(playlist.uri)
 	}
 
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			e: e,
+			context: 'playlist',
+			uris: [item.uri],
+			items: [item]
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	renderIntro(playlist = null){
 		if (playlist){
 			return (
 				<div className="intro">
 					<Parallax image={helpers.sizedImages(playlist.images).huge} blur />
 					<div className="content cf">
-						<Link to={global.baseURL+'playlist/'+playlist.uri}>
-							<Thumbnail images={playlist.images} />
+						<Link 
+							to={global.baseURL+'playlist/'+playlist.uri}
+							onContextMenu={e => this.handleContextMenu(e,playlist)}>
+								<Thumbnail images={playlist.images} />
 						</Link>
 						<Link to={global.baseURL+'playlist/'+playlist.uri}>
 							<h1>{playlist.name}</h1>
@@ -112,6 +126,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

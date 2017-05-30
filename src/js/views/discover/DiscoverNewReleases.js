@@ -34,14 +34,27 @@ class DiscoverNewReleases extends React.Component{
         this.props.mopidyActions.playURIs([album.uri],album.uri)
 	}
 
+	handleContextMenu(e,item){
+		e.preventDefault()
+		var data = { 
+			e: e,
+			context: 'album',
+			uris: [item.uri],
+			items: [item]
+		}
+		this.props.uiActions.showContextMenu(data)
+	}
+
 	renderIntro(album = null){
 		if (album){
 			return (
 				<div className="intro">
 					<Parallax image={helpers.sizedImages(album.images).huge} blur />
 					<div className="content cf">
-						<Link to={global.baseURL+'album/'+album.uri}>
-							<Thumbnail images={album.images} />
+						<Link 
+							to={global.baseURL+'album/'+album.uri}
+							onContextMenu={e => this.handleContextMenu(e,album)}>
+								<Thumbnail images={album.images} />
 						</Link>
 						<Link to={global.baseURL+'album/'+album.uri}>
 							<h1>{album.name}</h1>
