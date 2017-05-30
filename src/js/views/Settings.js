@@ -165,7 +165,7 @@ class Settings extends React.Component{
 
 		var options = (
 			<span>
-				<button onClick={e => hashHistory.push(global.baseURL+'debug')}>
+				<button onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
 					<FontAwesome name="flask" />&nbsp;
 					Debug
 				</button>

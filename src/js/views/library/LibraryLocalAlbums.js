@@ -152,6 +152,17 @@ class LibraryLocalAlbums extends React.Component{
 			</span>
 		)
 
+		if (albums.length <= 0 && helpers.isLoading(this.props.load_queue,['mopidy_lookup','mopidy_browse'])){
+			return (
+				<div className="view library-local-view">
+					<Header icon="music" title="Local albums" options={options} uiActions={this.props.uiActions} />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local albums" options={options} uiActions={this.props.uiActions} />

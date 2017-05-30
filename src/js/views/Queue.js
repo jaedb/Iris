@@ -64,7 +64,7 @@ class Queue extends React.Component{
 					Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
 				</button>
-				<button onClick={e => hashHistory.push(global.baseURL+'queue-history')}>
+				<button onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
 					<FontAwesome name="history" />&nbsp;
 					History
 				</button>

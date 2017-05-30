@@ -9,6 +9,7 @@ import Header from '../../components/Header'
 import List from '../../components/List'
 import TrackList from '../../components/TrackList'
 
+import * as helpers from '../../helpers'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -67,10 +68,6 @@ class LibraryLocalDirectory extends React.Component{
 	}
 
 	render(){
-		if( !this.props.directory ) return null
-
-		var items = this.arrange_directory( this.props.directory )
-
 		var options = null
 		if (this.props.params.uri != 'local:directory' ){
 			options = (
@@ -80,6 +77,19 @@ class LibraryLocalDirectory extends React.Component{
 				</button>
 			)
 		}
+
+		if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
+			return (
+				<div className="view library-local-view">
+					<Header icon="music" title="Local files" options={options} uiActions={this.props.uiActions} />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
+		var items = this.arrange_directory( this.props.directory )
 
 		return (
 			<div className="view library-local-view">

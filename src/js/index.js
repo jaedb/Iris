@@ -56,9 +56,9 @@ ReactDOM.render(
 
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
-				<Route path="queue-history" component={QueueHistory} />
+				<Route path="queue/history" component={QueueHistory} />
 				<Route path="settings" component={Settings} />
-				<Route path="debug" component={Debug} />
+				<Route path="settings/debug" component={Debug} />
 				
 				<Route path="search/iris::search::type::query" component={Search} />
 				<Route path="album/:uri" component={Album} />

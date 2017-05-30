@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import Header from '../../components/Header'
 import List from '../../components/List'
 
+import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -52,6 +53,17 @@ class LibraryLocalArtists extends React.Component{
 					artists.push(this.props.artists[uri])
 				}
 			}
+		}
+
+		if (artists.length <= 0 && helpers.isLoading(this.props.load_queue,['mopidy_lookup','mopidy_browse'])){
+			return (
+				<div className="view library-local-view">
+					<Header icon="music" title="Local artists" />
+					<div className="body-loader">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
 		}
 
 		return (
