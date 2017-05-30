@@ -150,4 +150,30 @@
 			}
 		}
 	}
+
+	@include responsive( $bp_medium ){
+		.intro {
+			.content {
+				padding: 20px;
+
+				h1 {
+					padding-top: 0;
+				}
+
+				h1,
+				h3,
+				.actions {
+					padding-left: 120px;
+				}
+
+				.actions {
+					padding-top: 15px;
+				}
+
+				.thumbnail {
+					max-width: 100px;
+				}
+			}
+		}
+	}
 }

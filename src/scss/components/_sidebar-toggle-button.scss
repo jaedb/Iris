@@ -19,6 +19,10 @@
 		color: $dark_grey;
 	}
 
+	header.overlay & {
+		color: $white;
+	}
+
 	&.open {
 		position: fixed;
 		top: 0;
