@@ -1,4 +1,6 @@
 
+import * as helpers from '../../helpers'
+
 export default function reducer(spotify = {}, action){
     switch (action.type) {
 
@@ -179,9 +181,6 @@ export default function reducer(spotify = {}, action){
             if( !action.data ) return Object.assign({}, spotify, { discover: [] })
             return Object.assign({}, spotify, { discover: [...spotify.discover, ...[action.data]] })
 
-        case 'SPOTIFY_GENRES_LOADED':
-            return Object.assign({}, spotify, {genres: action.genres})
-
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':
             return Object.assign(
                 {}, 
@@ -199,8 +198,8 @@ export default function reducer(spotify = {}, action){
                 {}, 
                 spotify, 
                 {
-                    favorite_artists: action.artists,
-                    favorite_tracks: action.tracks
+                    favorite_artists: action.artists_uris,
+                    favorite_tracks: action.tracks_uris
                 })
 
         case 'SPOTIFY_AUTOCOMPLETE_LOADING':

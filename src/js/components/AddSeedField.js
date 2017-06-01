@@ -6,6 +6,7 @@ import { Link, hashHistory } from 'react-router'
 
 import ArtistSentence from './ArtistSentence'
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class AddSeedField extends React.Component{
@@ -59,8 +60,20 @@ class AddSeedField extends React.Component{
 
 	handleSelect(e,item){
 		this.setState({value: ''})
-		this.props.onSelect(e,item)
+		this.props.onSelect(e,item.uri)
 		this.props.spotifyActions.clearAutocompleteResults(this.id)
+
+		// Add our selected item to our global index
+		switch (helpers.uriType(item.uri)){
+
+			case 'artist':
+				this.props.uiActions.albumLoaded(item.uri,item)
+				break
+
+			case 'track':
+				this.props.uiActions.trackLoaded(item.uri,item)
+				break
+		}
 	}
 
 	results(){
@@ -123,13 +136,14 @@ class AddSeedField extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		genres: (state.spotify.genres ? state.spotify.genres : null),
+		genres: (state.ui.genres ? state.ui.genres : null),
 		results: (state.spotify.autocomplete_results ? state.spotify.autocomplete_results : {})
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

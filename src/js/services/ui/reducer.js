@@ -105,12 +105,6 @@ export default function reducer(ui = {}, action){
 
             return Object.assign({}, ui, { current_tracklist: tracklist });
 
-        case 'SPOTIFY_TRACK_LOADED':
-            if( !action.data ) return ui
-                
-            var current_track = Object.assign({}, ui.current_track, action.data)
-            return Object.assign({}, ui, { current_track: current_track });
-
         case 'MOPIDY_CURRENTTLTRACK':
             if( !action.data ) return ui
 
@@ -603,6 +597,14 @@ export default function reducer(ui = {}, action){
             }
 
             return Object.assign({}, ui, { library_playlists: items });
+
+
+        /**
+         * Genres
+         **/
+
+        case 'SPOTIFY_GENRES_LOADED':
+            return Object.assign({}, ui, {genres: action.genres})
 
 
         /**

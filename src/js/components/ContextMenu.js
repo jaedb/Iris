@@ -194,6 +194,11 @@ class ContextMenu extends React.Component{
 		this.props.pusherActions.startRadio(this.props.menu.uris)
 	}
 
+	goToRecommendations(e){
+		this.props.uiActions.hideContextMenu()
+		hashHistory.push( global.baseURL +'discover/recommendations/'+ this.props.menu.items[0].uri )
+	}
+
 	goToArtist(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0){
 			return null
@@ -399,6 +404,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var go_to_recommendations = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.goToRecommendations(e)}>
+					<span className="label">More like this</span>
+				</a>
+			</span>
+		)
+
 		var start_radio = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.startRadio(e)}>
@@ -451,6 +464,7 @@ class ContextMenu extends React.Component{
 					<div>
 						{start_radio}
 						{this.canBeInLibrary() ? toggle_in_library : null}
+						{go_to_recommendations}
 						{copy_uris}
 					</div>
 				)

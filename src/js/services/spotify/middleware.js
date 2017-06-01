@@ -273,6 +273,32 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+            case 'SPOTIFY_FAVORITES_LOADED':
+                if (action.artists.length > 0){
+                    store.dispatch({
+                        type: 'ARTISTS_LOADED',
+                        artists: action.artists
+                    })
+                    action.artists_uris = helpers.asURIs(action.artists)
+                }
+                if (action.tracks.length > 0){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.tracks
+                    })
+                    action.tracks_uris = helpers.asURIs(action.tracks)
+                }
+                next(action)
+                break
+
+            case 'SPOTIFY_TRACK_LOADED':
+                store.dispatch({
+                    type: 'TRACK_LOADED',
+                    key: action.data.uri,
+                    track: action.data
+                });
+                break
+
             case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
                 store.dispatch({
                     type: 'SEARCH_RESULTS_LOADED',

@@ -498,14 +498,16 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
         .then(response => {
             var genres = []
             if (genre_included){
-                var available_genres = getState().spotify.genres
-                for (var i = 0; i < available_genres.length; i++){
-                    if (available_genres[i].includes(query)){
-                        var genre = available_genres[i]
-                        genres.push({
-                            name: (genre.charAt(0).toUpperCase()+genre.slice(1)).replace('-',' '),
-                            uri: 'spotify:genre:'+genre
-                        })
+                var available_genres = getState().ui.genres
+                if (available_genres){
+                    for (var i = 0; i < available_genres.length; i++){
+                        if (available_genres[i].includes(query)){
+                            var genre = available_genres[i]
+                            genres.push({
+                                name: (genre.charAt(0).toUpperCase()+genre.slice(1)).replace('-',' '),
+                                uri: 'spotify:genre:'+genre
+                            })
+                        }
                     }
                 }
             }

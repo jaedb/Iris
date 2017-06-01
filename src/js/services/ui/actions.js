@@ -211,6 +211,57 @@ export function addTracksToPlaylist( uri, tracks_uris ){
 
 
 /**
+ * Assets loaded
+ **/
+
+export function albumLoaded(key,album){
+    return {
+        type: 'ALBUM_LOADED',
+        key: key,
+        album: album
+    }
+}
+
+export function albumsLoaded(albums){
+    return {
+        type: 'ALBUMS_LOADED',
+        albums: albums
+    }
+}
+
+export function artistLoaded(key,artist){
+    return {
+        type: 'ARTIST_LOADED',
+        key: key,
+        artist: artist
+    }
+}
+
+export function artistsLoaded(artists){
+    return {
+        type: 'ALBUMS_LOADED',
+        artists: artists
+    }
+}
+
+export function trackLoaded(key,track){
+    return {
+        type: 'TRACK_LOADED',
+        key: key,
+        track: track
+    }
+}
+
+export function tracksLoaded(tracks){
+    return {
+        type: 'TRACKS_LOADED',
+        tracks: tracks
+    }
+}
+
+
+
+/**
  * Modal
  *
  * Immersive full-screen dialog
@@ -266,6 +317,7 @@ export function removeNotification(key){
         key: key
     }
 }
+
 
 
 /**

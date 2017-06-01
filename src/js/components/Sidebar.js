@@ -39,7 +39,7 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>Discover</title>
-							<Link activeClassName="active" to={global.baseURL+"discover"}>
+							<Link activeClassName="active" to={global.baseURL+"discover/recommendations"}>
 								<Icon name="compass" className="white" />
 								Discover
 							</Link>

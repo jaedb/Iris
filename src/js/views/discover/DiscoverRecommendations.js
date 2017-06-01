@@ -23,10 +23,7 @@ class Discover extends React.Component{
 
 		this.state = {
 			seeds: [
-				{
-					uri: 'spotify:genre:chill',
-					name: 'Chill'
-				}
+				'spotify:genre:chill'
 			],
 			add_seed: '',
 			adding_seed: false
@@ -34,10 +31,36 @@ class Discover extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.authorized){
-			this.props.spotifyActions.getFavorites()
+
+		// We have seeds provided in the URL
+		if (this.props.params.seeds){
+
+			var seeds = this.props.params.seeds.split(',')
+			// TODO: lookup these seeds
+
+			for (var i = 0; i < seeds.length; i++){
+				switch (helpers.uriType(seeds[i])){
+					
+					case 'artist':
+						this.props.spotifyActions.getArtist(seeds[i])
+						break
+
+					case 'track':
+						this.props.spotifyActions.getTrack(seeds[i])
+						break
+				}
+			}
+			
+			this.setState({seeds: seeds})
+			this.getRecommendations(seeds)
+
+		// BAU
 		} else {
-			this.getRecommendations()
+			if (this.props.authorized){
+				this.props.spotifyActions.getFavorites()
+			} else {
+				this.getRecommendations()
+			}
 		}
 	}
 
@@ -57,8 +80,7 @@ class Discover extends React.Component{
 
 	getRecommendations(seeds = this.state.seeds){
 		if (seeds.length > 0){
-			var uris = helpers.asURIs(seeds)
-			this.props.spotifyActions.getRecommendations(uris, 50)
+			this.props.spotifyActions.getRecommendations(seeds, 50)
 		}
 	}
 
@@ -69,32 +91,70 @@ class Discover extends React.Component{
 		this.getRecommendations(seeds)
 	}
 
-	handleSelect(e,item){
+	handleSelect(e,uri){
 		var seeds = this.state.seeds
-		seeds.push(item)
+		seeds.push(uri)
 		this.setState({seeds: seeds})
 		this.getRecommendations(seeds)
 	}
 
 	renderSeeds(){
+		var seeds_objects = []
+
+		if (this.state.seeds.length > 0){
+			for (var i = 0; i < this.state.seeds.length; i++){
+				var uri = this.state.seeds[i]
+
+				switch (helpers.uriType(uri)){
+
+					case 'track':
+						if (typeof(this.props.tracks[uri]) !== 'undefined'){
+							seeds_objects.push(this.props.tracks[uri])
+						} else {
+							seeds_objects.push({
+								name: 'Loading...',
+								uri: uri
+							})
+						}
+						break
+
+					case 'artist':
+						if (typeof(this.props.artists[uri]) !== 'undefined'){
+							seeds_objects.push(this.props.artists[uri])
+						} else {
+							seeds_objects.push({
+								name: 'Loading...',
+								uri: uri
+							})
+						}
+						break
+
+					case 'genre':
+						var name = helpers.getFromUri('genreid',uri)
+						seeds_objects.push({
+							name: (name.charAt(0).toUpperCase() + name.slice(1)).replace('-',' '),
+							uri: uri
+						})
+						break
+				}
+			}
+		}
+
 		return (
 			<div className="seeds">
 				{
-					this.state.seeds.map((seed,index) => {
+					seeds_objects.map((seed,index) => {
 						var type = helpers.uriType(seed.uri)
-						if (!type){
-							type = 'genre'
-						}
 						return (
 							<span className="seed" key={seed.uri}>
 								{seed.name}
 								<span className="type">({type})</span>
-								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
+								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(seed.uri)} />
 							</span>
 						)
 					})
 				}
-				<AddSeedField onSelect={(e,item) => this.handleSelect(e,item)} />
+				<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
 			</div>
 		)
 	}
@@ -180,8 +240,10 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		albums: state.ui.albums,
-		artists: state.ui.artists,
+		albums: (state.ui.albums ? state.ui.albums : []),
+		artists: (state.ui.artists ? state.ui.artists : []),
+		tracks: (state.ui.tracks ? state.ui.tracks : []),
+		genres: (state.ui.genres ? state.ui.genres : []),
 		authorized: state.spotify.authorized,
 		load_queue: state.ui.load_queue,
 		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),

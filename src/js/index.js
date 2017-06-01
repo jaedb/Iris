@@ -23,7 +23,7 @@ import Settings from './views/Settings'
 import Debug from './views/Debug'
 import Search from './views/Search'
 
-import Discover from './views/discover/Discover'
+import DiscoverRecommendations from './views/discover/DiscoverRecommendations'
 import DiscoverFeatured from './views/discover/DiscoverFeatured'
 import DiscoverCategories from './views/discover/DiscoverCategories'
 import DiscoverCategory from './views/discover/DiscoverCategory'
@@ -66,7 +66,7 @@ ReactDOM.render(
 				<Route path="playlist/:uri" component={Playlist} />
 				<Route path="user/:uri" component={User} />
 	
-				<Route path="discover" component={Discover} />
+				<Route path="discover/recommendations(/:seeds)" component={DiscoverRecommendations} />
 				<Route path="discover/featured" component={DiscoverFeatured} />
 				<Route path="discover/categories" component={DiscoverCategories} />
 				<Route path="discover/categories/:id" component={DiscoverCategory} />
