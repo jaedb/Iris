@@ -34,25 +34,7 @@ class Discover extends React.Component{
 
 		// We have seeds provided in the URL
 		if (this.props.params.seeds){
-
-			var seeds = this.props.params.seeds.split(',')
-			// TODO: lookup these seeds
-
-			for (var i = 0; i < seeds.length; i++){
-				switch (helpers.uriType(seeds[i])){
-					
-					case 'artist':
-						this.props.spotifyActions.getArtist(seeds[i])
-						break
-
-					case 'track':
-						this.props.spotifyActions.getTrack(seeds[i])
-						break
-				}
-			}
-			
-			this.setState({seeds: seeds})
-			this.getRecommendations(seeds)
+			this.handleURLSeeds(this.props.params.seeds)
 
 		// BAU
 		} else {
@@ -66,6 +48,11 @@ class Discover extends React.Component{
 
 	componentWillReceiveProps(newProps, newState){
 
+		// New seeds via URL
+		if (newProps.params.seeds != this.props.params.seeds){
+			this.handleURLSeeds(newProps.params.seeds)
+		}
+
 		// When we've loaded favorite_artists.
 		// This indirectly listens for when the action has
 		// loaded new data.
@@ -76,6 +63,26 @@ class Discover extends React.Component{
 			this.setState({seeds: initial_seeds})
 			this.getRecommendations(initial_seeds)
 		}
+	}
+
+	handleURLSeeds(seeds_string = this.props.params.seeds){
+		var seeds = seeds_string.split(',')
+
+		for (var i = 0; i < seeds.length; i++){
+			switch (helpers.uriType(seeds[i])){
+				
+				case 'artist':
+					this.props.spotifyActions.getArtist(seeds[i])
+					break
+
+				case 'track':
+					this.props.spotifyActions.getTrack(seeds[i])
+					break
+			}
+		}
+		
+		this.setState({seeds: seeds})
+		this.getRecommendations(seeds)
 	}
 
 	getRecommendations(seeds = this.state.seeds){
