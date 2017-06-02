@@ -410,7 +410,7 @@ export default function reducer(ui = {}, action){
          **/
 
         case 'TRACK_LOADED':
-            var tracks = Object.assign([], ui.tracks)
+            var tracks = Object.assign({}, ui.tracks)
 
             if (tracks[action.key]){
                 var track = Object.assign({}, tracks[action.key], action.track)
@@ -422,7 +422,7 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { tracks: tracks });
 
         case 'TRACKS_LOADED':
-            var tracks = Object.assign([], ui.tracks)
+            var tracks = Object.assign({}, ui.tracks)
 
             for (var i = 0; i < action.tracks.length; i++){
                 var track = action.tracks[i]

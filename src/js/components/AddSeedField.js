@@ -67,7 +67,7 @@ class AddSeedField extends React.Component{
 		switch (helpers.uriType(item.uri)){
 
 			case 'artist':
-				this.props.uiActions.albumLoaded(item.uri,item)
+				this.props.uiActions.artistLoaded(item.uri,item)
 				break
 
 			case 'track':

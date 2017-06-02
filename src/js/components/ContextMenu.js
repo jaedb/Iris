@@ -407,7 +407,7 @@ class ContextMenu extends React.Component{
 		var go_to_recommendations = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.goToRecommendations(e)}>
-					<span className="label">More like this</span>
+					<span className="label">Discover similar</span>
 				</a>
 			</span>
 		)
@@ -464,7 +464,7 @@ class ContextMenu extends React.Component{
 					<div>
 						{start_radio}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						{go_to_recommendations}
+						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
 					</div>
 				)
@@ -513,7 +513,8 @@ class ContextMenu extends React.Component{
 						{play_uris_next}
 						{add_to_queue}
 						{add_to_playlist}
-						{start_radio}
+						{context.source == 'spotify' ? start_radio : null}
+						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
 					</div>
 				)

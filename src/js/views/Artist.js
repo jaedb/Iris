@@ -61,7 +61,7 @@ class Artist extends React.Component{
 				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
 					console.info('Loading spotify artist from index')
 				}else{
-					this.props.spotifyActions.getArtist( props.params.uri );
+					this.props.spotifyActions.getArtist(props.params.uri, true);
 				}
 				break
 
@@ -70,7 +70,7 @@ class Artist extends React.Component{
 					if (props.artist && props.artist.images){
 						console.info('Loading local artist from index')
 					} else {
-						this.props.mopidyActions.getArtist( props.params.uri );
+						this.props.mopidyActions.getArtist(props.params.uri);
 					}
 				}
 				break

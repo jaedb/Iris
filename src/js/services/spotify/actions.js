@@ -796,26 +796,33 @@ export function getGenres(){
  * Get a single artist
  *
  * @param uri string
+ * @param full boolean (whether we want a full artist object)
  **/
-export function getArtist( uri ){
+export function getArtist(uri, full = false){
     return (dispatch, getState) => {
 
-        var artist = {};
+        // Start with an empty object
+        // As each requests completes, they'll add to this object
+        var artist = {}
 
-        // get both the artist and the top tracks
-        $.when(
-
+        // We need our artist, obviously
+        var requests = [        
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) )
+            .then( response => {
+                Object.assign(artist, response);
+            })
+        ]
+
+        // Do we want a full artist, with all supporting material?
+        if (full){
+            requests.push(
+                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
                 .then( response => {
                     Object.assign(artist, response);
-                }),
-
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
-                .then( response => {
-                    Object.assign(artist, response);
-                }),
-
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
+                })
+            )
+            requests.push(
+                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then( response => {
                     dispatch({
                         type: 'ARTISTS_LOADED',
@@ -823,8 +830,11 @@ export function getArtist( uri ){
                     }); 
                     Object.assign(artist, { related_artists_uris: helpers.asURIs(response.artists) });
                 })
+            )
+        }
 
-        ).then(() => {
+        // Run our requests
+        $.when.apply($, requests).then(() => {
 
             if (artist.musicbrainz_id){
                 dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
@@ -836,18 +846,20 @@ export function getArtist( uri ){
                 type: 'ARTIST_LOADED',
                 key: artist.uri,
                 artist: artist
-            });
+            })
 
-            // now go get our artist albums
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().spotify.country )
+            // Now go get our artist albums
+            if (full){
+                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().spotify.country )
                 .then( response => {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
                         data: response,
                         key: uri
-                    });
+                    })
                 })
-        });
+            }
+        })
     }
 }
 

@@ -75,12 +75,17 @@ class FullPlayer extends React.Component{
 				)
 		}
 
+		var images = this.props.current_track.album.images
+		if (typeof(this.props.tracks[this.props.current_track.uri]) !== 'undefined'){
+			images = this.props.tracks[this.props.current_track.uri].album.images
+		}
+
 		var link = null
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail size="huge" images={this.props.current_track.album.images} canZoom />
+				<Thumbnail size="huge" images={images} canZoom />
 			</Link>
 		)
 	}
@@ -140,6 +145,7 @@ class FullPlayer extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
+		tracks: state.ui.tracks,
 		current_track: state.ui.current_track,
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,
