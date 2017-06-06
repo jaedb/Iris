@@ -112,8 +112,8 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_connected: state.spotify.connected,
-		spotify_authorized: state.spotify.authorized,
-		current_track: state.ui.current_track,
+		spotify_authorized: state.spotify.authorized,		
+		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track]) !== 'undefined' ? state.ui.tracks[state.ui.current_track] : null),
 		dragger: state.ui.dragger
 	}
 }

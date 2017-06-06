@@ -14,7 +14,18 @@ const localstorageMiddleware = (function(){
         window._store = store
 
         // if debug enabled
-        if (store.getState().ui.log_actions) console.log(action)
+        if (store.getState().ui.log_actions){
+
+            var ignored_actions = [
+                'START_LOADING',
+                'STOP_LOADING'
+            ]
+
+            // Show non-ignored actions
+            if (!ignored_actions.includes(action.type)){
+                console.log(action)
+            }
+        }
 
         switch( action.type ){
 

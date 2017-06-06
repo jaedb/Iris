@@ -118,8 +118,7 @@ export default function reducer(ui = {}, action){
                 )
             }
 
-            var current_track = action.data.track
-            Object.assign(current_track, { tlid: action.data.tlid })
+            var current_track = action.data.track.uri
 
             return Object.assign({}, ui, {
                 current_track: current_track
@@ -410,6 +409,8 @@ export default function reducer(ui = {}, action){
          **/
 
         case 'TRACK_LOADED':
+            if (!action.key || !action.track) return ui
+
             var tracks = Object.assign({}, ui.tracks)
 
             if (tracks[action.key]){
