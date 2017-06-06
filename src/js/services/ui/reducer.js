@@ -106,23 +106,56 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { current_tracklist: tracklist });
 
         case 'MOPIDY_CURRENTTLTRACK':
-            if( !action.data ) return ui
+            if (!action.data) return ui
 
             var current_tracklist = []
             Object.assign(current_tracklist, ui.current_tracklist)
 
-            for( var i = 0; i < current_tracklist.length; i++ ){
+            for (var i = 0; i < current_tracklist.length; i++){
                 Object.assign(
                     current_tracklist[i], 
                     { playing: ( current_tracklist[i].tlid == action.data.tlid ) }
                 )
             }
 
-            var current_track = action.data.track.uri
+            var current_track = Object.assign(
+                {},
+                action.data.track,
+                {
+                    tlid: action.data.tlid
+                }
+            )
 
             return Object.assign({}, ui, {
+                current_tracklist: current_tracklist,
                 current_track: current_track
             });
+
+        case 'TRACK_LOADED':
+            if (!action.key || !action.track) return ui
+
+            var tracks = Object.assign({}, ui.tracks)
+            if (tracks[action.key]){
+                var track = Object.assign({}, tracks[action.key], action.track)
+            }else{
+                var track = Object.assign({}, action.track)
+            }
+
+            tracks[action.key] = track
+            return Object.assign({}, ui, { tracks: tracks });
+
+        case 'TRACKS_LOADED':
+            var tracks = Object.assign({}, ui.tracks)
+
+            for (var i = 0; i < action.tracks.length; i++){
+                var track = action.tracks[i]
+                if (typeof(tracks[track.uri]) !== 'undefined'){
+                    track = Object.assign({}, tracks[track.uri], track)
+                }
+                tracks[track.uri] = track
+            }
+
+            return Object.assign({}, ui, { tracks: tracks });
 
         case 'PUSHER_QUEUE_METADATA':
         case 'PUSHER_QUEUE_METADATA_CHANGED':
@@ -400,40 +433,6 @@ export default function reducer(ui = {}, action){
             )
             users[action.key] = artist
             return Object.assign({}, ui, { users: users });
-
-
-
-
-        /**
-         * Tracks
-         **/
-
-        case 'TRACK_LOADED':
-            if (!action.key || !action.track) return ui
-
-            var tracks = Object.assign({}, ui.tracks)
-
-            if (tracks[action.key]){
-                var track = Object.assign({}, tracks[action.key], action.track)
-            }else{
-                var track = Object.assign({}, action.track)
-            }
-
-            tracks[action.key] = track
-            return Object.assign({}, ui, { tracks: tracks });
-
-        case 'TRACKS_LOADED':
-            var tracks = Object.assign({}, ui.tracks)
-
-            for (var i = 0; i < action.tracks.length; i++){
-                var track = action.tracks[i]
-                if (typeof(tracks[track.uri]) !== 'undefined'){
-                    track = Object.assign({}, tracks[track.uri], track)
-                }
-                tracks[track.uri] = track
-            }
-
-            return Object.assign({}, ui, { tracks: tracks });
 
 
 

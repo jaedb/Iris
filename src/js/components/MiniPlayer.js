@@ -59,7 +59,7 @@ class MiniPlayer extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track]) !== 'undefined' ? state.ui.tracks[state.ui.current_track] : null),
+		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
 		play_state: state.mopidy.play_state
 	}
 }

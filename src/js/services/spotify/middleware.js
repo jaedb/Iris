@@ -74,18 +74,6 @@ const SpotifyMiddleware = (function(){
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.is_public ))
                 break
 
-            // when our mopidy server current track changes
-            case 'MOPIDY_CURRENTTLTRACK':
-
-                // proceed as usual so we don't inhibit default functionality
-                next(action)
-
-                // if the current track is a spotify track
-                if( action.data && action.data.track.uri.substring(0,14) == 'spotify:track:' ){
-                    store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
-                }
-                break
-
             // when radio returns
             case 'PUSHER_RADIO_STARTED':
             case 'PUSHER_RADIO_CHANGED':

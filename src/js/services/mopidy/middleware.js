@@ -996,6 +996,29 @@ const MopidyMiddleware = (function(){
                 
 
             /**
+             * =============================================================== TRACKS ================
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_CURRENTTLTRACK':
+                if (!action.data || !action.data.track){
+                    return mopidy
+                }
+
+                // Fire off our universal track index loader
+                store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
+
+                // When current track is Spotify track, go get the full object
+                // This is because Mopidy doesn't give us full artist/album objects, without artwork
+                if (action.data.track.uri.substring(0,14) == 'spotify:track:'){
+                    store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
+                }
+
+                next(action)
+                break
+                
+
+            /**
              * =============================================================== LOCAL ================
              * ======================================================================================
              **/
