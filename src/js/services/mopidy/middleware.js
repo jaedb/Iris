@@ -179,36 +179,35 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CONNECT':
 
-                if(socket != null) socket.close();
-                store.dispatch({ type: 'MOPIDY_CONNECTING' });
-                var state = store.getState();
+                if(socket != null) socket.close()
+                store.dispatch({ type: 'MOPIDY_CONNECTING' })
+                var state = store.getState()
 
                 socket = new Mopidy({
                     webSocketUrl: 'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
                     callingConvention: 'by-position-or-by-name'
-                });
+                })
 
-                socket.on( (type, data) => handleMessage( socket, store, type, data ) );
-
-                break;
+                socket.on( (type, data) => handleMessage( socket, store, type, data ) )
+                break
 
             case 'MOPIDY_DISCONNECT':
-                if(socket != null) socket.close();
-                socket = null;                
-                store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
-                break;
+                if(socket != null) socket.close()
+                socket = null
+                store.dispatch({ type: 'MOPIDY_DISCONNECTED' })
+                break
 
             // send an instruction to the websocket
             case 'MOPIDY_INSTRUCT':
                 instruct( socket, store, action.call, action.value )
-                break;
+                break
 
             case 'MOPIDY_DEBUG':
                 instruct( socket, store, action.call, action.value )
                     .then( response => {
                         store.dispatch({ type: 'DEBUG', response: response })
                     })
-                break;
+                break
 
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
@@ -226,7 +225,7 @@ const MopidyMiddleware = (function(){
                 }
 
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
-                break;
+                break
 
 
             /**
@@ -241,7 +240,7 @@ const MopidyMiddleware = (function(){
                     icon: (store.getState().ui.current_track ? helpers.getTrackIcon( store.getState().ui.current_track ) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
-                break;
+                break
 
             case 'MOPIDY_STOP':
                 var data = {
@@ -285,7 +284,6 @@ const MopidyMiddleware = (function(){
                         store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
                     }
                 })
-
                 break
 
             case 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING':
@@ -535,7 +533,7 @@ const MopidyMiddleware = (function(){
                         // and plug in their URIs
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', albums_uris: albums_uris })
                     })
-                break;
+                break
 
             case 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS':
                 instruct( socket, store, 'playlists.asList')
@@ -560,7 +558,7 @@ const MopidyMiddleware = (function(){
                         // and plug in their URIs
                         store.dispatch({ type: 'SEARCH_RESULTS_LOADED', playlists_uris: playlists_uris })
                     })
-                break;
+                break
 
 
             /**
@@ -1001,17 +999,16 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_CURRENTTLTRACK':
-                if (!action.data || !action.data.track){
-                    return mopidy
-                }
+                if (action.data && action.data.track){
 
-                // Fire off our universal track index loader
-                store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
+                    // Fire off our universal track index loader
+                    store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
 
-                // When current track is Spotify track, go get the full object
-                // This is because Mopidy doesn't give us full artist/album objects, without artwork
-                if (action.data.track.uri.substring(0,14) == 'spotify:track:'){
-                    store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
+                    // When current track is Spotify track, go get the full object
+                    // This is because Mopidy doesn't give us full artist/album objects, without artwork
+                    if (action.data.track.uri.substring(0,14) == 'spotify:track:'){
+                        store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
+                    }
                 }
 
                 next(action)
@@ -1024,7 +1021,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_DIRECTORY':
-                store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false });
+                store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false })
                 instruct( socket, store, 'library.browse', action.data )
                     .then( response => {                    
                         store.dispatch({ 
@@ -1032,11 +1029,11 @@ const MopidyMiddleware = (function(){
                             data: response
                         });
                     })
-                break;
+                break
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:
-                return next(action);
+                return next(action)
         }
     }
 
