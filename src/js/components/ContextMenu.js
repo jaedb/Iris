@@ -196,7 +196,8 @@ class ContextMenu extends React.Component{
 
 	goToRecommendations(e){
 		this.props.uiActions.hideContextMenu()
-		hashHistory.push( global.baseURL +'discover/recommendations/'+ this.props.menu.items[0].uri )
+		var uris_string = helpers.asURIs(this.props.menu.items).join(',')
+		hashHistory.push( global.baseURL +'discover/recommendations/'+ uris_string )
 	}
 
 	goToArtist(e){
