@@ -32,7 +32,6 @@ class Extension( ext.Extension ):
     def get_config_schema(self):
         schema = config.ConfigSchema(self.ext_name)
         schema['enabled'] = config.Boolean()
-        schema['pusherport'] = config.String()
         schema['country'] = config.String()
         schema['locale'] = config.String()
         return schema
