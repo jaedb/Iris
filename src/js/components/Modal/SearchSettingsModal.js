@@ -18,11 +18,11 @@ export default class SearchSettingsModal extends React.Component{
 
 	componentDidMount(){
 		if (this.props.search_settings){
-			this.setState(this.props.search_settings)
+			this.setState(Object.assign({},this.props.search_settings))
 		} else {
 			this.setState({
 				spotify: true,
-				uri_schemes: this.props.uri_schemes
+				uri_schemes: Object.assign([],this.props.uri_schemes)
 			})
 		}
 	}
