@@ -28,7 +28,7 @@ var initialState = {
 	mopidy: {
 		connected: false,
 		host: window.location.hostname,
-		port: (window.location.port ? window.location.port : '80'),
+		port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
 		mute: false,
 		volume: 0,
 		progress: 0,
