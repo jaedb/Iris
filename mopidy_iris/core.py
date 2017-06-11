@@ -194,7 +194,8 @@ class IrisCore(object):
         config = {
             "spotify_username": spotify_username,
             "country": self.config['iris']['country'],
-            "locale": self.config['iris']['locale']
+            "locale": self.config['iris']['locale'],
+            "authorization_url": self.config['iris']['authorization_url']
         }
         return {
             'config': config

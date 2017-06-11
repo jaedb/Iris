@@ -17,7 +17,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 		super(props);
 
 		this.state = {
-			frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+			frameUrl: this.props.authorization_url+'?action=frame',
 			authorizing: false
 		}
 	}
@@ -26,14 +26,22 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 		let self = this;
 
-		// listen for incoming messages from the authorization iframe
-		// this is triggered when authentication is granted from the popup
+		// Listen for incoming messages from the authorization iframe
+		// This is triggered when the popup posts a message, which is then passed to
+		// the iframe, and then passed on to the parent frame (our application)
 		window.addEventListener('message', function(event){
+				
+			// only allow incoming data from our authorized authenticator proxy
+			var authorization_domain = self.props.authorization_url.substring(0,self.props.authorization_url.indexOf('/',8))
+			if (event.origin != authorization_domain){
+				self.props.uiActions.createNotification('Authorization failed. '+event.origin+' is not the configured authorization_url.','bad')
+				return false
+			}
 			
 			// Window prematurely closed
 			if (event.data == 'closed'){
 				self.setState({
-					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+					frameUrl: self.props.authorization_url+'?action=frame',
 					authorizing: false
 				})
 
@@ -41,17 +49,11 @@ class SpotifyAuthenticationFrame extends React.Component{
 			} else if (event.data == 'blocked'){
 				self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.','bad')
 				self.setState({
-					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+					frameUrl: self.props.authorization_url+'?action=frame',
 					authorizing: false
 				})
 
 			} else {
-				
-				// only allow incoming data from our authorized authenticator proxy
-				if (!/^https?:\/\/jamesbarnsley\.co\.nz/.test(event.origin)){
-					return false
-				}
-
 				var data = JSON.parse(event.data);
 
 				// Spotify bounced with an error
@@ -66,7 +68,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 				// Turn off our authorizing switch
 				self.setState({
-					frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=frame',
+					frameUrl: self.props.authorization_url+'?action=frame',
 					authorizing: false
 				})	
 			}
@@ -76,7 +78,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 	startAuthorization(){
 		this.setState({
-			frameUrl: 'https://jamesbarnsley.co.nz/auth.php?action=authorize&app='+location.protocol+'//'+window.location.host,
+			frameUrl: this.props.authorization_url+'?action=authorize&app='+location.protocol+'//'+window.location.host,
 			authorizing: true
 		})
 	}
@@ -128,6 +130,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		authorization_url: (state.ui.config && state.ui.config.authorization_url ? state.ui.config.authorization_url : 'https://jamesbarnsley.co.nz/auth.php'),
 		authorized: state.spotify.authorized,
 		authorizing: state.spotify.authorizing,
 		refreshing_token: state.spotify.refreshing_token

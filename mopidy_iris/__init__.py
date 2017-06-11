@@ -34,6 +34,7 @@ class Extension( ext.Extension ):
         schema['enabled'] = config.Boolean()
         schema['country'] = config.String()
         schema['locale'] = config.String()
+        schema['authorization_url'] = config.String()
         return schema
 
     def setup(self, registry):
