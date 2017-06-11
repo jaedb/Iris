@@ -111,7 +111,7 @@ function refreshToken( dispatch, getState ){
 
             $.ajax({
                     method: 'GET',
-                    url: '//jamesbarnsley.co.nz/auth.php?action=refresh&refresh_token='+getState().spotify.refresh_token,
+                    url: getState().config.authorization_url+'?action=refresh&refresh_token='+getState().spotify.refresh_token,
                     dataType: "json",
                     timeout: 10000
                 })
