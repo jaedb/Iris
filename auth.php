@@ -1,11 +1,15 @@
 <?php
 
-// Authorization script (PHP)
-define('URL','https://jamesbarnsley.co.nz/auth.php');
-
 // Spotify app credentials
-define('CLIENT_ID','01d4ca2e9f4f415c80502431a6aa4200');
-define('CLIENT_SECRET','7352c9c74791478ab02be0f004ec9541');
+// Create your application here: https://developer.spotify.com/my-applications
+define('CLIENT_ID','YOUR_ID_HERE');
+define('CLIENT_SECRET','YOUR_SECRET_HERE');
+
+// Identify this script's URL
+$url = (isset($_SERVER['HTTPS']) ? "https" : "http");
+$url.= '://'.$_SERVER[HTTP_HOST];
+$url.= explode('?',$_SERVER['REQUEST_URI'])[0];
+define('URL',$url);
 
 // Allow cross-domain requests
 header("Access-Control-Allow-Origin: *");
@@ -139,8 +143,8 @@ function refreshToken($refresh_token){
 	$ch = curl_init();
 
 	$post_data = array(
-			'client_id' => '01d4ca2e9f4f415c80502431a6aa4200',
-			'client_secret' => '7352c9c74791478ab02be0f004ec9541',
+			'client_id' => CLIENT_ID,
+			'client_secret' => CLIENT_SECRET,
 			'grant_type' => 'refresh_token',
 			'refresh_token' => $refresh_token
 		);
