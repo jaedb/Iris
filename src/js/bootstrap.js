@@ -55,7 +55,10 @@ var initialState = {
 	ui: {
 		current_tracklist: [],
 		current_tltrack: false,
-		notifications: []
+		notifications: [],
+		config: {
+			authorization_url: 'https://jamesbarnsley.co.nz/auth.php'
+		}
 	}
 };
 
