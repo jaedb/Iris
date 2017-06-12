@@ -450,6 +450,7 @@ export let setWindowTitle = function (track = false, play_state = false){
  * see if any items contain our searched key.
  *
  * TODO: Explore performance of this
+ * TODO: Allow wildcards
  *
  * @param load_queue = obj (passed from store)
  * @param key = string (the string to lookup)

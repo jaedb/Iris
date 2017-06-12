@@ -11,11 +11,11 @@ import * as spotifyActions from '../services/spotify/actions'
 class FollowButton extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	componentDidMount(){
-		if( this.props.spotify_authorized && this.props.uri ){
+		if (this.props.spotify_authorized && this.props.uri){
 			this.props.spotifyActions.following(this.props.uri)			
 		}
 	}
@@ -29,21 +29,33 @@ class FollowButton extends React.Component{
 	}
 
 	render(){
-		if( !this.props.spotify_authorized || !this.props.uri ) return false
+		if (!this.props.spotify_authorized || !this.props.uri){
+			return false
+		}
 
 		var className = ''
-		if (this.props.className) className += ' '+this.props.className
 
-		if( this.props.is_following === true ){
-			return <button className={className+' destructive'} onClick={ () => this.remove() }>{ this.props.removeText }</button>
-		}else{
-			return <button className={className} onClick={ () => this.add() }>{ this.props.addText }</button>
+		// Inherit passed-down classes
+		if (this.props.className){
+			className += ' '+this.props.className
+		}
+
+		// Loader
+		if (helpers.isLoading(this.props.load_queue,['*/following*','/followers*','*/contains*'])){
+			className += ' working'
+		}
+
+		if (this.props.is_following === true){
+			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
+		} else {
+			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
 		}
 	}
 }
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorized
 	}
 }

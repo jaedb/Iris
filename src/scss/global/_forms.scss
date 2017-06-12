@@ -174,26 +174,14 @@ input[type="submit"] {
 			position: absolute;
 			display: block;
 			content: '';
-			background: $mid_grey;
+			background: rgba(175,175,175,0.2);
 			opacity: 1;
 		    animation: slideloader 1s infinite;
+			top: 0;
+			right: 0;
 			bottom: 0;
 			left: 0;
-			right: 0;
-			height: 4px;
 			z-index: 1;
-		}
-
-		&.destructive:after {
-			background: $red;
-		}
-
-		&.primary:after {
-			background: $turquoise;
-		}
-
-		&.alternative:after {
-			background: $blue;
 		}
 	}
 
