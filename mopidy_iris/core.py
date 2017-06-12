@@ -445,12 +445,25 @@ class IrisCore(object):
         }
 
     def refresh_spotify_token(self, data):
-    
-        url = 'https://accounts.spotify.com/api/token'
-        authorization = 'YTg3ZmI0ZGJlZDMwNDc1YjhjZWMzODUyM2RmZjUzZTI6ZDdjODlkMDc1M2VmNDA2OGJiYTE2NzhjNmNmMjZlZDY='
 
+        ## TODO: See if we can use the credentials used by Mopidy-Spotify 3.1.0
+        # Currently this returns 'invalid_client' error
+        
+        # Use client_id and client_secret from config
+        # This was introduced in Mopidy-Spotify 3.1.0
+        #if 'spotify' in self.config and 'client_id' in self.config['spotify']:
+        #    authorization = str(self.config['spotify']['client_id']+':'+self.config['spotify']['client_secret'])
+        #    authorization = authorization.encode('base64').replace('\n', '')
+
+        # Mopidy-Spotify is old version, so just use basic authorization code
+        #else:
+        #    authorization = 'YTg3ZmI0ZGJlZDMwNDc1YjhjZWMzODUyM2RmZjUzZTI6ZDdjODlkMDc1M2VmNDA2OGJiYTE2NzhjNmNmMjZlZDY='
+
+        authorization = 'YTg3ZmI0ZGJlZDMwNDc1YjhjZWMzODUyM2RmZjUzZTI6ZDdjODlkMDc1M2VmNDA2OGJiYTE2NzhjNmNmMjZlZDY='
+        url = 'https://accounts.spotify.com/api/token'
         headers = {'Authorization' : 'Basic ' + authorization}
         data = {'grant_type': 'client_credentials'}
+
         data_encoded = urllib.urlencode( data )
         req = urllib2.Request(url, data_encoded, headers)
 
@@ -465,5 +478,12 @@ class IrisCore(object):
             })
 
             return self.get_spotify_token({})
+
         except urllib2.HTTPError as e:
-            return e
+            error = json.loads(e.read())
+
+            return {
+                'type': 'error',
+                'message': 'Could not refresh token: '+error['error'],
+                'source': 'refresh_spotify_token'
+            }

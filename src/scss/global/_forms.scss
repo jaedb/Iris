@@ -13,7 +13,8 @@ input[type="text"],
 input[type="email"],
 input[type="number"],
 input[type="email"],
-input[type="date"] {
+input[type="date"],
+select {
 	padding: 10px 14px;
 	background: #FFFFFF;
 	color: #000000;
@@ -304,7 +305,6 @@ input[type="submit"] {
 
 	&.radio,
 	&.checkbox {
-
 		input{
 			display: none;
 		}
@@ -324,7 +324,6 @@ input[type="submit"] {
 	}
 
 	&.radio {
-
 		input + .label:before {
 			content: ' ';
 			display: inline-block;
@@ -355,7 +354,6 @@ input[type="submit"] {
 	}
 
 	&.checkbox {
-
 		input + .label:before {
 			font-family: FontAwesome;
 			font-size: 8px;

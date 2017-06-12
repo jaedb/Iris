@@ -25,7 +25,7 @@ class Debug extends React.Component{
 		this.state = {
 			mopidy_call: 'playlists.asList',
 			mopidy_data: '{}',
-			pusher_data: '{"method":"broadcast","data":{"type":"browser_notification","title":"Testing","body":"This is my message"}}'
+			pusher_data: '{"method":"get_config"}'
 		}
 	}
 
@@ -151,6 +151,22 @@ class Debug extends React.Component{
 
 					<h4 className="underline">Pusher</h4>
 					<form onSubmit={(e) => this.callPusher(e)}>
+						<div className="field">
+							<div className="name">Examples</div>
+							<div className="input">
+								<select onChange={ e => this.setState({ pusher_data: e.target.value })}>
+									<option value='{"method":"get_config"}'>Get config</option>
+									<option value='{"method":"get_version"}'>Get version</option>
+									<option value='{"method":"get_connections"}'>Get connections</option>
+									<option value='{"method":"get_radio"}'>Get radio</option>
+									<option value='{"method":"get_queue_metadata"}'>Get queue metadata</option>
+									<option value='{"method":"broadcast","data":{"type":"browser_notification","title":"Testing","body":"This is my message"}}'>Broadcast to all clients</option>
+									<option value='{"method":"deliver_message","data":{"to":"CONNECTION_ID_HERE","message":{"type":"browser_notification","title":"Testing","body":"This is my message"}}}'>Broadcast to one client</option>
+									<option value='{"method":"refresh_spotify_token"}'>Refresh Spotify token</option>
+									<option value='{"method":"perform_upgrade"}'>Perform upgrade (beta)</option>
+								</select>
+							</div>
+						</div>
 						<div className="field">
 							<div className="name">Data</div>
 							<div className="input">
