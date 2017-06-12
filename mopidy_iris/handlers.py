@@ -71,7 +71,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         else:
             data = {}
 
-        data['connection_id'] = self.connection_id
+        # Handle hard-coded connection_id in messages
+        # Otherwise include the origin connection of this message
+        if 'connection_id' not in data:
+            data['connection_id'] = self.connection_id
 
         if 'request_id' in message:
             request_id = message['request_id']

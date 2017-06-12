@@ -144,6 +144,7 @@ class IrisCore(object):
             })
             return {
                 'status': 1,
+                'connection_id': connection_id,
                 'username': data['username']
             }
 
