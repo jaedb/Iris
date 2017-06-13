@@ -133,7 +133,7 @@ input[type="submit"] {
 
 	&.timing-out {
 		position: relative;
-		&::before {
+		&:before {
 			@include animate_timeout(2s);
 			content: '';
 			position: absolute;
@@ -175,19 +175,37 @@ input[type="submit"] {
 			position: absolute;
 			display: block;
 			content: '';
-			background: rgba(0,0,0,0.15);
+			background: $mid_grey;
 			opacity: 1;
 		    animation: slideloader 1s infinite;
-			top: 0;
 			right: 0;
 			bottom: 0;
 			left: 0;
+			height: 3px;
 			z-index: 1;
+		}
+
+		&.primary {
+			&:after {
+				background: $turquoise;
+			}
+		}
+
+		&.secondary {
+			&:after {
+				background: $black;
+			}
+		}
+
+		&.destructive {
+			&:after {
+				background: $red;
+			}
 		}
 
 		&.white {
 			&:after {
-				background: rgba(255,255,255,0.5);
+				background: $white;
 			}
 		}
 	}

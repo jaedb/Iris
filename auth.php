@@ -4,12 +4,7 @@
 // Create your application here: https://developer.spotify.com/my-applications
 define('CLIENT_ID','YOUR_ID_HERE');
 define('CLIENT_SECRET','YOUR_SECRET_HERE');
-
-// Identify this script's URL
-$url = (isset($_SERVER['HTTPS']) ? "https" : "http");
-$url.= '://'.$_SERVER[HTTP_HOST];
-$url.= explode('?',$_SERVER['REQUEST_URI'])[0];
-define('URL',$url);
+define('REDIRECT_URI','YOUR_REDIRECT_URI_HERE (to this file)');
 
 // Allow cross-domain requests
 header("Access-Control-Allow-Origin: *");
@@ -75,7 +70,7 @@ if (isset($_GET['code'])){
 } else if (isset($_GET['action']) && $_GET['action'] == 'authorize'){
 
 	// Simply redirect to the authorization panel
-	header('Location: https://accounts.spotify.com/authorize?client_id='.CLIENT_ID.'&redirect_uri='.URL.'&scope='.$_GET['scope'].'&response_type=code&show_dialog=true');
+	header('Location: https://accounts.spotify.com/authorize?client_id='.CLIENT_ID.'&redirect_uri='.REDIRECT_URI.'&scope='.$_GET['scope'].'&response_type=code&show_dialog=true');
 
 	exit;
 }
@@ -92,7 +87,6 @@ if (isset($_GET['code'])){
  * Get a new access token
  * Creates a request to Spotify, which returns a new access_token, refresh_token and token_expiry object
  * @param $code = string
- * @param $url = redirect url (this script)
 */
 function getToken($code){
 	
@@ -106,7 +100,7 @@ function getToken($code){
 			'client_secret' => CLIENT_SECRET,
 			'grant_type' => 'authorization_code',
 			'code' => $code,
-			'redirect_uri' => URL
+			'redirect_uri' => REDIRECT_URI
 		);
 	
 	curl_setopt($ch, CURLOPT_URL,"https://accounts.spotify.com/api/token");
@@ -170,12 +164,3 @@ function refreshToken($refresh_token){
 	
 	return $response;
 }
-
-
-
-
-
-
-
-
-

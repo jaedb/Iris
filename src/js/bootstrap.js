@@ -57,7 +57,7 @@ var initialState = {
 		current_tltrack: false,
 		notifications: [],
 		config: {
-			authorization_url: 'https://jamesbarnsley.co.nz/auth.php'
+			authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
 		}
 	}
 };
