@@ -66,7 +66,11 @@ class Discover extends React.Component{
 	}
 
 	handleURLSeeds(seeds_string = this.props.params.seeds){
-		var seeds = seeds_string.split(',')
+
+		// Rejoin if we've had to uri-encode these as strings
+		// We'd need to do this if our URL has been encoded so the whole URL can become
+		// it's own URI (eg iris:discover:spotify_artist_1234) where we can't use ":"
+		var seeds = seeds_string.split('_').join(':').split(',')
 
 		for (var i = 0; i < seeds.length; i++){
 			switch (helpers.uriType(seeds[i])){
@@ -198,6 +202,11 @@ class Discover extends React.Component{
 				}
 			}
 		}
+
+		var uri = 'iris:discover'
+		if (this.props.params.seeds){
+			uri += ':'+this.props.params.seeds.split(':').join('_')
+		}
 		
 		return (
 			<div className="recommendations-results">
@@ -211,7 +220,7 @@ class Discover extends React.Component{
 				</section>
 				<section className="list-wrapper">
 					<h4 className="left-padding">Tracks</h4>
-					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations.tracks} /> : null}
+					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri={uri} tracks={this.props.recommendations.tracks} /> : null}
 				</section>
 			</div>
 		)

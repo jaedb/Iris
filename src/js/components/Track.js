@@ -67,13 +67,15 @@ export default class Track extends React.Component{
 			)
 
 		} else if (this.props.context == 'queue'){
-				var type = (track.added_from ? helpers.uriType(track.added_from) : null)
 
 				if (track.added_from && track.added_by){
-					var added = <span>{track.added_by} <span className="grey-text"> (from <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>)</span></span>
-
-				} else if (track.added_from){
-					var added = <span className="grey-text"> (from <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>)</span>
+					var type = (track.added_from ? helpers.uriType(track.added_from) : null)
+					if (type == 'discover'){
+						var link = <Link to={global.baseURL+'discover/recommendations/'+helpers.getFromUri('seeds',track.added_from)}>discover</Link>
+					} else {
+						var link = <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>
+					}
+					var added = <span>{track.added_by} <span className="grey-text"> (from {link})</span></span>
 
 				} else if (track.added_by){
 					var added = track.added_by
