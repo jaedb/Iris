@@ -11,7 +11,7 @@ import Icon from '../Icon'
 import Thumbnail from '../Thumbnail'
 import ArtistSentence from '../ArtistSentence'
 
-class KioskModeModal extends React.Component{
+export default class KioskModeModal extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -46,17 +46,3 @@ class KioskModeModal extends React.Component{
 		)
 	}
 }
-
-const mapStateToProps = (state, ownProps) => {
-	return {
-		current_track: state.ui.current_track
-	}
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(KioskModeModal)

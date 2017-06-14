@@ -54,7 +54,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'receive_authorization' ? <AuthorizationModal_Receive uiActions={this.props.uiActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} current_track={this.props.current_track} /> : null }
 					{ this.props.modal.name == 'search_settings' ? <SearchSettingsModal uiActions={this.props.uiActions} search_settings={this.props.search_settings} uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'volume' ? <VolumeModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} volume={this.props.volume} mute={this.props.mute} /> : null }
 
@@ -66,6 +66,7 @@ class Modal extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : null),
 		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		volume: state.mopidy.volume,
