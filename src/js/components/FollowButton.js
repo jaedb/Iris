@@ -41,7 +41,7 @@ class FollowButton extends React.Component{
 		}
 
 		// Loader
-		if (helpers.isLoading(this.props.load_queue,['*/following*','/followers*','*/contains*'])){
+		if (helpers.isLoading(this.props.load_queue,['/following','/followers','me/albums/contains/?ids=','me/albums/?ids='])){
 			className += ' working'
 		}
 

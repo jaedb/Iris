@@ -466,7 +466,7 @@ export let isLoading = function(load_queue = [], keys = []){
 
 			// Loop all the keys we're looking for
 			for (var i = 0; i < keys.length; i++){
-				if (load_queue[load_queue_key].startsWith(keys[i])){
+				if (load_queue[load_queue_key].includes(keys[i])){
 					return true
 				}
 			}
