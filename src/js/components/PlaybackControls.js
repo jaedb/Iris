@@ -59,15 +59,15 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className="playback-controls">
 				
-				<div className="current-track">
+				<a className="current-track">
 					<Thumbnail size="small" images={images} />
 					<div className="title">
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>
 					<div className="artist">
-						{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
+						{ this.props.current_track ? <ArtistSentence nolinks artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 					</div>
-				</div>
+				</a>
 
 				<section className="playback">
 					<a className="control" onClick={() => this.props.mopidyActions.previous()}>
