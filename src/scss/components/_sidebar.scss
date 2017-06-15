@@ -7,7 +7,7 @@ aside{
 	z-index: 96;
 	width: 220px;
 	overflow: hidden;
-	border-right: 2px solid $light_grey;
+	border-right: 1px solid $light_grey;
 
 	.liner {
 		overflow-y: auto;
@@ -57,6 +57,8 @@ aside{
 			display: block;
 			padding: 6px 18px 6px 6px;
 			border-left: 4px solid transparent;
+			font-family: "Raleway";
+			font-weight: 700;
 
 			.icon {
 				height: 14px;

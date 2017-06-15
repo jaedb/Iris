@@ -20,7 +20,7 @@
 			position: relative;
 			color: $white;
 
-			h1 {
+			h2 {
 				padding-bottom: 8px;
 			}
 
@@ -109,7 +109,7 @@
 .discover-new-releases-view {
 	.intro {
 		position: relative;
-		padding-top: 50px;
+		padding-top: 120px;
 
 		.parallax {
 			position: absolute;
@@ -132,12 +132,13 @@
 			}
 
 			h1,
+			h2,
 			h3,
 			.actions {
 				padding-left: 240px;
 			}
 
-			h1 {
+			h2 {
 				padding-top: 20px;
 			}
 
@@ -160,7 +161,7 @@
 					padding-top: 0;
 				}
 
-				h1,
+				h2,
 				h3,
 				.actions {
 					padding-left: 120px;

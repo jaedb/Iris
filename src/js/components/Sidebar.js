@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Icon from './Icon'
-import Thumbnail from './Thumbnail'
 import SearchForm from './SearchForm'
 import Dropzones from './Dropzones'
 
@@ -21,8 +20,6 @@ class Sidebar extends React.Component{
 	render(){
 		return (
 			<aside>
-					
-				{ this.props.current_track && this.props.current_track.album && this.props.current_track.album.images ? <Thumbnail size="large" images={this.props.current_track.album.images} /> : null }
 
 				<div className="liner">
 
@@ -113,7 +110,6 @@ const mapStateToProps = (state, ownProps) => {
 		pusher_connected: state.pusher.connected,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorized,
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
 		dragger: state.ui.dragger
 	}
 }

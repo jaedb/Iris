@@ -1,0 +1,118 @@
+
+.playback-controls {
+	position: fixed;
+	z-index: 99;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	height: 50px;
+	background: $white;
+	color: $black;
+	border-top: 1px solid $light_grey;
+
+	.current-track {
+		position: absolute;
+		bottom: 51px;
+		background: $white;
+		height: 100px;
+		width: 220px;
+		border-top: 1px solid $light_grey;
+	}
+
+	.control {
+		@include animate();
+		font-size: 16px;
+		color: $dark_grey;
+		cursor: pointer;
+		padding: 8px;
+		display: inline-block;
+		vertical-align: top;
+
+		&.play {
+			font-size: 24px;
+			margin-top: -4px;
+		}
+
+		&.active {
+			color: $turquoise;
+		}
+
+		&:hover {
+			color: $blue;
+		}
+	}
+
+	section {
+		position: absolute;
+		top: 10px;
+
+		&.playback {
+			left: 20px;
+			top: 11px;
+			width: 120px;
+			text-align: center;
+		}
+
+		&.progress {
+			top: 12px;
+			left: 140px;
+			right: 280px;
+			padding-left: 20px;
+			padding-right: 20px;
+			color: $mid_grey;
+
+			.slider {
+				position: absolute;
+				top: 0;
+				left: 50px;
+				right: 50px;
+			}
+
+			.current {
+				position: absolute;
+				top: 5px;
+				left: 0;
+				width: 45px;
+				text-align: right;
+			}
+
+			.total {
+				position: absolute;
+				top: 5px;
+				right: 0;
+				width: 45px;
+			}
+		}
+
+		&.settings {
+			top: 11px;
+			right: 170px;
+			width: 120px;
+			text-align: center;
+		}
+
+		&.volume {
+			top: 12px;
+			right: 20px;
+			width: 150px;
+
+			.modal-trigger {
+				display: none;
+			}
+
+			.control {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+
+			.slider-wrapper {
+				position: absolute;
+				top: 0;
+				right: 0;
+				left: 30px;
+			}
+		}
+	}
+}
+

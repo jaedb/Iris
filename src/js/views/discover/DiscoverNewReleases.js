@@ -57,7 +57,7 @@ class DiscoverNewReleases extends React.Component{
 								<Thumbnail images={album.images} />
 						</Link>
 						<Link to={global.baseURL+'album/'+album.uri}>
-							<h1>{album.name}</h1>
+							<h2>{album.name}</h2>
 						</Link>
 						<h3>
 							<ArtistSentence artists={album.artists} />

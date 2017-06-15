@@ -51,7 +51,7 @@ class DiscoverFeatured extends React.Component{
 								<Thumbnail images={playlist.images} />
 						</Link>
 						<Link to={global.baseURL+'playlist/'+playlist.uri}>
-							<h1>{playlist.name}</h1>
+							<h2>{playlist.name}</h2>
 						</Link>
 						{playlist.description ? <h3 dangerouslySetInnerHTML={{__html: playlist.description}}></h3> : null}
 						<div className="actions">

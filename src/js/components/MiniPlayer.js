@@ -27,8 +27,15 @@ class MiniPlayer extends React.Component{
 	}
 
 	render(){
+		var images = []
+		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
+			images = this.props.current_track.album.images
+		}
+
 		return (
 			<div className="player mini-player">
+					
+				<Thumbnail size="small" images={images} />
 
 				<div className="current-track">
 					<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>

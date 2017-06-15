@@ -224,7 +224,7 @@ class Discover extends React.Component{
 				<div className="intro">
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
 					<div className="liner">
-						<h1>Explore new music</h1>
+						<h2>Explore new music</h2>
 						<h3>
 							Add seeds below to build your sound. Let's start with 
 							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.

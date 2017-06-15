@@ -18,8 +18,8 @@ class VolumeControl extends React.Component{
 		var slider = e.target;
 
 		var sliderY = e.clientY - slider.getBoundingClientRect().top;
-		var sliderHeight = slider.getBoundingClientRect().height;
-		var percent = 100 - parseInt( sliderY / sliderHeight * 100 );
+		var sliderWidth = slider.getBoundingClientRect().width;
+		var percent = 100 - parseInt( sliderY / sliderWidth * 100 );
 
 		this.props.mopidyActions.setVolume( percent )
 	}
@@ -33,14 +33,14 @@ class VolumeControl extends React.Component{
 					{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
 				</a>
 
-				<span className="hover-trigger">
-					<a onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
+				<span className="default">
+					<a className="control" onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
 						{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
 					</a>
 					<div className="slider-wrapper">
-						<div className={this.props.mute ? "slider vertical disabled" : "slider vertical"} onClick={ (e) => this.handleClick(e) } >
+						<div className={this.props.mute ? "slider horizontal disabled" : "slider horizontal"} onClick={ (e) => this.handleClick(e) } >
 							<div className="track">
-								<div className="progress" style={{ height: this.props.volume+'%' }}></div>
+								<div className="progress" style={{ width: this.props.volume+'%' }}></div>
 							</div>
 						</div>
 					</div>

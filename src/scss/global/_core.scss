@@ -3,8 +3,8 @@
 body,
 html {
 	background: $off_white;
-	color: #000000;
-	font-family: "Roboto Condensed", Helvetica, Arial, sans-serif;
+	color: $black;
+	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	touch-action: manipulation;
 }
@@ -40,6 +40,7 @@ footer {
 main {
 	position: relative;
 	min-height: 100vh;
+	padding-bottom: 50px;
 
 	a {
 		color: inherit;
@@ -90,13 +91,13 @@ main {
 h1 {
 	font-weight: 700;
 	font-size: 3rem;
-	font-family: "Montserrat";
+	font-family: "Raleway";
 }
 
 h2 {
 	font-size: 2.5rem;
 	font-weight: 500;
-	font-family: "Montserrat";
+	font-family: "Raleway";
 }
 
 h3 {

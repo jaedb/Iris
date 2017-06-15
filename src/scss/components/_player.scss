@@ -111,16 +111,18 @@
 	&.mini-player {
 		position: fixed;
 		bottom: 0;
+		right: 0;
 		left: 0;
-		width: 220px;
+		height: 50px;
+		background: $white;
+		border-top: 1px solid $light_grey;
 		box-sizing: border-box;
 		z-index: 97;
-		padding: 14px;
-		color: #FFFFFF;
+		color: $black;
 
 		.artist-sentence {
 			.artist:hover {
-				border-color: #FFFFFF !important;
+				border-color: $black !important;
 			}
 		}
 
@@ -194,3 +196,9 @@
 		}
 	}
 }
+
+
+.playback-controls {
+
+}
+
