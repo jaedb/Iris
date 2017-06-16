@@ -7,7 +7,8 @@ aside{
 	z-index: 96;
 	width: 220px;
 	overflow: hidden;
-	border-right: 1px solid $light_grey;
+	background: $darkest_grey;
+	color: $white;
 
 	.liner {
 		overflow-y: auto;
@@ -44,6 +45,25 @@ aside{
 			bottom: 60px;
 		}
 	}
+	
+	.thumbnail {
+		position: absolute;
+		top: -30px;
+		right: -30px;
+		bottom: -30px;
+		left: -30px;
+		height: auto;
+		width: auto;
+		max-width: none;
+		z-index: 1;
+		opacity: 0.2;
+
+		.image {
+			@include blur();
+			padding-bottom: 0;
+			height: 100%;
+		}
+	}
 
 	nav {
 		z-index: 2;
@@ -52,7 +72,7 @@ aside{
 
 		a {
 			font-size: 16px;
-			color: $black;
+			color: $white;
 			text-decoration: none;
 			display: block;
 			padding: 6px 18px 6px 6px;

@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -59,7 +60,7 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className="playback-controls">
 				
-				<a className="current-track">
+				<Link className="current-track" to={(this.props.current_track && this.props.current_track.album ? global.baseURL+'album/'+this.props.current_track.album.uri : null)}>
 					<Thumbnail size="small" images={images} />
 					<div className="title">
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
@@ -67,7 +68,7 @@ class PlaybackControls extends React.Component{
 					<div className="artist">
 						{ this.props.current_track ? <ArtistSentence nolinks artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 					</div>
-				</a>
+				</Link>
 
 				<section className="playback">
 					<a className="control" onClick={() => this.props.mopidyActions.previous()}>

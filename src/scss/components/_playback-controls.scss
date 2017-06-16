@@ -8,17 +8,16 @@
 	height: 50px;
 	background: $white;
 	color: $black;
-	border-top: 1px solid $light_grey;
 
 	.current-track {
 		@include animate();
 		cursor: pointer;
 		position: absolute;
-		bottom: 51px;
-		background: $white;
+		bottom: 50px;
 		width: 220px;
-		border-top: 1px solid $light_grey;
 		font-size: 16px;
+		color: $white;
+		text-decoration: none;
 
 		.thumbnail {
 			float: left;
@@ -43,7 +42,7 @@
 		}
 
 		&:hover {
-			background: $faint_grey;
+			background: rgba(255,255,255,0.1);
 		}
 	}
 

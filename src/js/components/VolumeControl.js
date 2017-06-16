@@ -16,10 +16,17 @@ class VolumeControl extends React.Component{
 
 	handleClick(e){
 		var slider = e.target;
+		if( slider.className != 'slider' ) slider = slider.parentElement;
 
-		var sliderY = e.clientY - slider.getBoundingClientRect().top;
+		var sliderX = e.clientX - slider.getBoundingClientRect().left;
 		var sliderWidth = slider.getBoundingClientRect().width;
-		var percent = 100 - parseInt( sliderY / sliderWidth * 100 );
+		var percent = Math.round(( sliderX / sliderWidth ) * 100);
+
+		if (percent > 100){
+			percent = 100
+		} else if (percent < 0 ){
+			percent = 0
+		}
 
 		this.props.mopidyActions.setVolume( percent )
 	}
