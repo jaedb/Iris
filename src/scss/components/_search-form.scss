@@ -5,10 +5,10 @@
 
 	input {
 		background: transparent;
-		border-bottom: 1px solid #FFFFFF;
+		border-bottom: 1px solid $light_grey;
 		padding: 16px 0 8px;
 		width: 100%;
-		color: #FFFFFF;
+		color: $black;
 
 		&:focus,
 		&:active {

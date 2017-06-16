@@ -5,10 +5,9 @@ aside{
 	left: 0;
 	bottom: 0;
 	z-index: 96;
-	background: $darkest_grey;
 	width: 220px;
 	overflow: hidden;
-	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
+	border-right: 2px solid $light_grey;
 
 	.liner {
 		overflow-y: auto;
@@ -45,25 +44,6 @@ aside{
 			bottom: 60px;
 		}
 	}
-	
-	.thumbnail {
-		position: absolute;
-		top: -30px;
-		right: -30px;
-		bottom: -30px;
-		left: -30px;
-		height: auto;
-		width: auto;
-		max-width: none;
-		z-index: 1;
-		opacity: 0.2;
-
-		.image {
-			@include blur();
-			padding-bottom: 0;
-			height: 100%;
-		}
-	}
 
 	nav {
 		z-index: 2;
@@ -72,10 +52,10 @@ aside{
 
 		a {
 			font-size: 16px;
-			color: #FFFFFF;
+			color: $black;
 			text-decoration: none;
 			display: block;
-			padding: 6px 18px 6px 14px;
+			padding: 6px 18px 6px 6px;
 			border-left: 4px solid transparent;
 
 			.icon {
@@ -86,8 +66,7 @@ aside{
 			}
 
 			&.active {
-				border-color: $turquoise;
-				background: rgba( 0, 0, 0, 0.5 );
+				color: $turquoise;
 			}
 
 			&[disabled] {
@@ -96,7 +75,7 @@ aside{
 			}
 
 			&:hover:not([disabled]) {
-				background: rgba( 255, 255, 255, 0.1 );
+				color: $secondary_grey;
 			}
 		}
 
@@ -105,11 +84,11 @@ aside{
 
 			title {
 				display: block;
-				padding: 0 18px 2px;
+				padding: 0 18px 2px 6px;
 				font-size: 11px;
 				text-transform: uppercase;
 				opacity: 0.5;
-				color: #FFFFFF;
+				color: $mid_grey;
 			}
 		}
 
