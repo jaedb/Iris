@@ -21,8 +21,8 @@ class List extends React.Component{
 
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if( e.target.tagName.toLowerCase() !== 'a' ){
-			hashHistory.push( this.props.link_prefix + uri );
-		}		
+			hashHistory.push( this.props.link_prefix + encodeURIComponent(uri) );
+		}
 	}
 
 	handleContextMenu(e,item){
@@ -87,10 +87,10 @@ class List extends React.Component{
 						if( row.type ) class_name += ' '+row.type
 
 						return (
-							<div 
-								onClick={e => this.handleClick(e, row.uri)} 
+							<div
+								onClick={e => this.handleClick(e, row.uri)}
 								onContextMenu={e => this.handleContextMenu(e,row)}
-								className={class_name} 
+								className={class_name}
 								key={row_index}>
 								{
 									this.props.columns.map( (col, col_index) => {
