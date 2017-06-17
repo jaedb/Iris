@@ -54,7 +54,7 @@ class Debug extends React.Component{
 			<div className="view debugger-view">
 				<Header icon="cog" title="Debugger" options={options} uiActions={this.props.uiActions} />
 
-				<section>
+				<div className="content-wrapper">
 
 					<h4 className="underline">User interface</h4>
 					<form>
@@ -190,7 +190,7 @@ class Debug extends React.Component{
 						{ this.props.debug_response ? JSON.stringify(this.props.debug_response, null, 2) : null }
 					</pre>
 					
-		        </section>
+		        </div>
 			</div>
 		);
 	}

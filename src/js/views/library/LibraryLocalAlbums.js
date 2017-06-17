@@ -91,7 +91,7 @@ class LibraryLocalAlbums extends React.Component{
 			]
 
 			return (
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List 
 						columns={columns} 
 						rows={albums} 
@@ -101,7 +101,7 @@ class LibraryLocalAlbums extends React.Component{
 			)
 		}else{
 			return (
-				<section className="grid-wrapper">
+				<section className="content-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
 			)

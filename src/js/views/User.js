@@ -58,29 +58,31 @@ class User extends React.Component{
 				<div className="view user-view">
 				
 					<Header icon="play" title="User" />
+					
+					<div className="content-wrapper">
+						<div className="intro">
+							<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
 
-					<div className="intro">
-						<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
+							<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
 
-						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
+							<ul className="details">
+								{this.isMe() ? <li>You</li> : null}
+								<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
+								<li>{this.props.user.followers.total.toLocaleString()} followers</li>
+							</ul>
 
-						<ul className="details">
-							{this.isMe() ? <li>You</li> : null}
-							<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
-							<li>{this.props.user.followers.total.toLocaleString()} followers</li>
-						</ul>
-
-						<div className="actions">
-							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							<div className="actions">
+								<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							</div>
 						</div>
-					</div>
-					<div className="main">
+						<div className="main">
 
-						<section className="grid-wrapper">
-							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
-						</section>
-						
+							<section className="grid-wrapper">
+								<PlaylistGrid playlists={playlists} />
+								<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
+							</section>
+							
+						</div>
 					</div>
 				</div>
 			)

@@ -164,7 +164,7 @@ class Artist extends React.Component{
 				return (
 					<div className="body overview">
 						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
-							<h4 className="left-padding">Top tracks</h4>
+							<h4>Top tracks</h4>
 							<div className="list-wrapper">
 								{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
 							</div>
@@ -176,7 +176,7 @@ class Artist extends React.Component{
 
 						<div className="cf"></div>
 
-						<h4 className="left-padding">Albums</h4>
+						<h4>Albums</h4>
 						<section className="grid-wrapper no-top-padding">
 							<AlbumGrid albums={albums} />
 							<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
@@ -220,7 +220,9 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
-					{this.renderBody()}
+					<div className="content-wrapper">
+						{this.renderBody()}
+					</div>
 				</div>
 			);
 
@@ -242,7 +244,9 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
-					{this.renderBody()}
+					<div className="content-wrapper">
+						{this.renderBody()}
+					</div>
 				</div>
 			);
 		}

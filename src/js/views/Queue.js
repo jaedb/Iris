@@ -112,27 +112,29 @@ class Queue extends React.Component{
 			<div className="view queue-view">			
 				<Header icon="play" title="Now playing" options={options} uiActions={this.props.uiActions} />
 
-				{ this.renderArtwork() }
-
-				<div className="current-track">
-					<div className="title">
-						{this.props.current_track ? this.props.current_track.name : <span>-</span>}
-					</div>
-					{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
-				</div>
-
-				<section className="list-wrapper">
-					<TrackList
-						show_source_icon={true}
-						context="queue"
-						className="queue-track-list"
-						tracks={this.props.current_tracklist}
-						removeTracks={ tracks => this.removeTracks( tracks ) }
-						playTracks={ tracks => this.playTracks( tracks ) }
-						playTrack={ track => this.playTrack( track ) }
-						reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
-				</section>
+				<div className="content-wrapper">
 				
+					<div className="current-track">
+						{ this.renderArtwork() }
+						<div className="title">
+							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
+						</div>
+						{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
+					</div>
+
+					<section className="list-wrapper">
+						<TrackList
+							show_source_icon={true}
+							context="queue"
+							className="queue-track-list"
+							tracks={this.props.current_tracklist}
+							removeTracks={ tracks => this.removeTracks( tracks ) }
+							playTracks={ tracks => this.playTracks( tracks ) }
+							playTrack={ track => this.playTrack( track ) }
+							reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
+					</section>
+				
+				</div>
 			</div>
 		);
 	}

@@ -12,14 +12,16 @@
 
 		display: block;
 		position: relative;
-		padding: 12px 10px 12px 20px;
-		border-top: 1px solid $light_grey;
-		border-bottom: 1px solid $light_grey;
-		margin-bottom: -1px;
+		padding: 12px 10px;
+		margin: 0 -10px -1px -10px;
 		cursor: pointer;
+		border-radius: 3px;
+		border-bottom: 1px solid #FAFAFA;
+		border-top: 1px solid #FAFAFA;
 
 		&.selected {
 			background: $yellow !important;
+			border-color: darken($yellow,10%);
 		}
 
 		&.playing {
@@ -31,6 +33,7 @@
 			top: 0;
 			left: 0;
 			font-size: 10px;
+			display: none;
 
 			.fa {
 				position: absolute;
@@ -73,8 +76,6 @@
 
 	&.track-list {
 		.list-item {
-			padding-left: 40px;
-
 			.col {
 				&.name { 
 					width: 40%;

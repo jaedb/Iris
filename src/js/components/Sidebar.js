@@ -21,9 +21,6 @@ class Sidebar extends React.Component{
 	render(){
 		return (
 			<aside>
-					
-				{ this.props.current_track && this.props.current_track.album && this.props.current_track.album.images ? <Thumbnail size="large" images={this.props.current_track.album.images} /> : null }
-
 				<div className="liner">
 
 		        	<SearchForm context="sidebar" />
@@ -32,7 +29,7 @@ class Sidebar extends React.Component{
 
 		        		<section>
 							<Link activeClassName="active" to={global.baseURL+"queue"}>
-								<Icon className="white" name="play" />
+								<Icon name="play" />
 								Now playing
 							</Link>
 						</section>
@@ -40,19 +37,19 @@ class Sidebar extends React.Component{
 						<section>
 							<title>Discover</title>
 							<Link activeClassName="active" to={global.baseURL+"discover/recommendations"}>
-								<Icon className="white" name="compass" />
+								<Icon name="compass" />
 								Discover
 							</Link>
 							<Link activeClassName="active" to={global.baseURL+"discover/categories"}>
-								<Icon className="white" name="grid" />
+								<Icon name="grid" />
 								Genre / Mood
 							</Link>
 							<Link activeClassName="active" to={global.baseURL+"discover/featured"}>
-								<Icon className="white" name="star" />
+								<Icon name="star" />
 								Featured playlists
 							</Link>
 							<Link activeClassName="active" to={global.baseURL+"discover/new-releases"}>
-								<Icon className="white" name="leaf" />
+								<Icon name="leaf" />
 								New releases
 							</Link>
 						</section>
@@ -60,30 +57,30 @@ class Sidebar extends React.Component{
 						<section>
 							<title>My Music</title>
 							<Link activeClassName="active" to={global.baseURL+"library/playlists"}>
-								<Icon className="white" name="playlist" />
+								<Icon name="playlist" />
 								Playlists
 							</Link>
 							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
-								<Icon className="white" name="mic" />
+								<Icon name="mic" />
 								Artists
 							</Link>
 							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
-								<Icon className="white" name="cd" />
+								<Icon name="cd" />
 								Albums
 							</Link>
 							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
-								<Icon className="white" name="music" />
+								<Icon name="music" />
 								Tracks
 							</Link>
 							<Link activeClassName="active" to={global.baseURL+"library/local"}>
-								<Icon className="white" name="folder" />
+								<Icon name="folder" />
 								Local
 							</Link>
 						</section>
 
 						<section>
 							<Link activeClassName="active" to={global.baseURL+"settings"}>
-								<Icon className="white" name="cog" />
+								<Icon name="cog" />
 								Settings
 								{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 							</Link>
@@ -94,7 +91,6 @@ class Sidebar extends React.Component{
 			    </div>
 
 		       	<Dropzones />
-
 			</aside>
 		);
 	}
@@ -113,7 +109,6 @@ const mapStateToProps = (state, ownProps) => {
 		pusher_connected: state.pusher.connected,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorized,
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
 		dragger: state.ui.dragger
 	}
 }

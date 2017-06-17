@@ -2,11 +2,12 @@
 
 body,
 html {
-	background: $off_white;
-	color: $black;
+	background: $white;
+	color: $darkest_grey;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	touch-action: manipulation;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
 
 body {
@@ -40,7 +41,10 @@ footer {
 main {
 	position: relative;
 	min-height: 100vh;
-	padding-bottom: 50px;
+
+	.content-wrapper {
+		padding: 40px 40px 50px;
+	}
 
 	a {
 		color: inherit;
@@ -57,15 +61,6 @@ main {
 		font-size: 18px;
 		line-height: 1.5em;
 		white-space: pre-wrap;
-	}
-
-	section.grid-wrapper,
-	section.text-wrapper {
-		padding: 40px;
-	}
-
-	section.list-wrapper {
-		padding: 20px 0;
 	}
 
 	@include responsive( $bp_medium ){
@@ -90,14 +85,14 @@ main {
 
 h1 {
 	font-weight: 700;
-	font-size: 3rem;
-	font-family: "Raleway";
+	font-size: 2.8rem;
+	font-family: "Overpass";
 }
 
 h2 {
-	font-size: 2.5rem;
-	font-weight: 500;
-	font-family: "Raleway";
+	font-size: 2rem;
+	font-weight: 700;
+	font-family: "Overpass";
 }
 
 h3 {
@@ -298,8 +293,8 @@ footer {
 		color: $white;
 		font-size: 11px;
 		line-height: 11px;
-		top: -16px;
-		left: 4px;
+		top: -22px;
+		left: 1px;
 		z-index: 97;
 
 		&::before {

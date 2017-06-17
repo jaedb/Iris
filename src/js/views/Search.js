@@ -235,7 +235,9 @@ class Search extends React.Component{
 		return (
 			<div className="view search-view">			
 				<Header icon="search" title="Search results" options={options} uiActions={this.props.uiActions} />
-				{ this.renderResults() }
+				<div className="content-wrapper">
+					{ this.renderResults() }
+				</div>
 			</div>
 		);
 	}

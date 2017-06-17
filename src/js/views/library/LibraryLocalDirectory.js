@@ -94,7 +94,7 @@ class LibraryLocalDirectory extends React.Component{
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local files" options={options} uiActions={this.props.uiActions} />
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List
 						columns={[{ name: 'name', width: '100'}]} 
 						rows={items.folders} 

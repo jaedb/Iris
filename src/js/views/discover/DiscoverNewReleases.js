@@ -109,7 +109,7 @@ class DiscoverNewReleases extends React.Component{
 			<div className="view discover-new-releases-view">
 				<Header className="overlay" icon="leaf" title="New Releases" />
 				{this.renderIntro(first_album)}
-				<section className="grid-wrapper">
+				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
 				<LazyLoadListener enabled={this.props.new_releases_more} loadMore={ () => this.loadMore() }/>

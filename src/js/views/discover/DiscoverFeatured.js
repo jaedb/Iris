@@ -101,7 +101,7 @@ class DiscoverFeatured extends React.Component{
 			<div className="view discover-featured-view">
 				<Header className="overlay" icon="star" title="Featured playlists" />
 				{this.renderIntro(first_playlist)}
-				<section className="grid-wrapper">
+				<section className="content-wrapper grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }
 				</section>
 			</div>

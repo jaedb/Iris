@@ -159,7 +159,7 @@ class Playlist extends React.Component{
 			if (this.props.playlist.can_edit) context = 'editable-playlist'
 
 			return (
-				<div className="view playlist-view">
+				<div className="view playlist-view content-wrapper">
 				
 					<SidebarToggleButton />
 

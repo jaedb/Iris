@@ -31,8 +31,29 @@ class VolumeControl extends React.Component{
 		this.props.mopidyActions.setVolume( percent )
 	}
 
+	renderMuteButton(){
+		if (this.props.mute){
+			return (
+				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(false)}>
+					<FontAwesome className="red-text" name="volume-down" />
+					<span className="tooltip">Unmute</span>
+				</a>
+			)
+		} else {
+			return (
+				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(true)}>
+					<FontAwesome className="muted" name="volume-off" />
+					<span className="tooltip">Mute</span>
+				</a>
+			)
+		}
+	}
+
 	render(){
 		var className = "volume-control"
+		if (this.props.mute){
+			className += " muted"
+		}
 		return (
 			<span className={className}>
 
@@ -41,11 +62,9 @@ class VolumeControl extends React.Component{
 				</a>
 
 				<span className="default">
-					<a className="control" onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
-						{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
-					</a>
+					{this.renderMuteButton()}
 					<div className="slider-wrapper">
-						<div className={this.props.mute ? "slider horizontal disabled" : "slider horizontal"} onClick={ (e) => this.handleClick(e) } >
+						<div className="slider horizontal" onClick={e => this.handleClick(e)}>
 							<div className="track">
 								<div className="progress" style={{ width: this.props.volume+'%' }}></div>
 							</div>

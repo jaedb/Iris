@@ -16,8 +16,8 @@ input[type="email"],
 input[type="date"],
 select {
 	padding: 10px 14px;
-	background: #FFFFFF;
-	color: #000000;
+	background: $faint_grey;
+	color: $darkest_grey;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 }

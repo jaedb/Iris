@@ -47,7 +47,7 @@ export default class Header extends React.Component{
 			<header className={(this.props.className ? this.props.className : null)}>
 				<Icon name={ this.props.icon } />
 				<SidebarToggleButton />
-				<h1>{ this.props.title }</h1>
+				<h2>{ this.props.title }</h2>
 				{this.renderOptions()}
 			</header>
 		);

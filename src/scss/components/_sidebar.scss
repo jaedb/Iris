@@ -7,8 +7,8 @@ aside{
 	z-index: 96;
 	width: 220px;
 	overflow: hidden;
-	background: $darkest_grey;
-	color: $white;
+	background: $off_white;
+	color: $darkest_grey;
 
 	.liner {
 		overflow-y: auto;
@@ -69,22 +69,22 @@ aside{
 		z-index: 2;
 		position: relative;
 		padding-top: 8px;
+		font-family: "Overpass";
 
 		a {
-			font-size: 16px;
-			color: $white;
+			font-size: 15px;
+			color: $black;
 			text-decoration: none;
 			display: block;
-			padding: 6px 18px 6px 6px;
+			padding: 4px 18px 4px 14px;
 			border-left: 4px solid transparent;
-			font-family: "Raleway";
-			font-weight: 700;
+			font-weight: 600;
 
 			.icon {
 				height: 14px;
 				padding-right: 8px;
 				vertical-align: top;
-				margin-top: 4px;
+				margin-top: 1px;
 			}
 
 			&.active {
@@ -106,8 +106,8 @@ aside{
 
 			title {
 				display: block;
-				padding: 0 18px 2px 6px;
-				font-size: 11px;
+				padding: 0 18px 2px 14px;
+				font-size: 10px;
 				text-transform: uppercase;
 				opacity: 0.5;
 				color: $mid_grey;
