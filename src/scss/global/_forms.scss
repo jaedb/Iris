@@ -122,11 +122,12 @@ input[type="submit"] {
 			@include animate_timeout(2s);
 			content: '';
 			position: absolute;
+			top: 0;
 			left: 0;
 			bottom: 0;
 			width: 0;
-			height: 3px;
-			background: $red;
+			background: $black;
+			opacity: 0.25;
 		}
 	}
 
@@ -148,37 +149,13 @@ input[type="submit"] {
 			display: block;
 			content: '';
 		    animation: slideloader 1s infinite;
-			background: $white;
+			background: $mid_grey;
 			opacity: 0.5;
 			top: 0;
 			left: 0;
 			bottom: 0;
 			right: 0;
 			z-index: 1;
-		}
-
-		&.primary {
-			&:after {
-				background: $turquoise;
-			}
-		}
-
-		&.secondary {
-			&:after {
-				background: $black;
-			}
-		}
-
-		&.destructive {
-			&:after {
-				background: $red;
-			}
-		}
-
-		&.white {
-			&:after {
-				background: $white;
-			}
 		}
 	}
 
