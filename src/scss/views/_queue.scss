@@ -8,9 +8,14 @@
 		.artwork {
 			position: relative;
 			margin: 0 auto;
+			width: 60%;
+			max-width: 400px;
+			display: block;
+			border: 0 !important;
 
 			.thumbnail {
 				margin: 0 auto;
+				max-width: 100%;
 			}
 
 			&.radio-enabled {

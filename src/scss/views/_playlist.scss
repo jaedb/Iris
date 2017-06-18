@@ -2,7 +2,7 @@
 .playlist-view {
 
 	.title {
-		padding: 30px 40px;
+		padding: 0 40px 30px;
 
 		h3 {
 			color: $mid_grey;
@@ -27,7 +27,7 @@
 
 	.thumbnail {
 		float: left;
-		max-width: 230px;
+		max-width: 200px;
 		margin: 0 30px 30px 0;
 	}
 

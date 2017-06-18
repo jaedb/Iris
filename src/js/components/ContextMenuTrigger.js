@@ -14,11 +14,9 @@ export default class ContextMenuTrigger extends React.Component{
 			className += ' '+this.props.className
 		}
 		return (
-			<button
-				className={className}
-				onClick={e => this.props.onTrigger(e)}>
-				<FontAwesome name="ellipsis-v" />
-			</button>
+			<span className={className} onClick={e => this.props.onTrigger(e)}>
+				<FontAwesome name="ellipsis-h" />
+			</span>
 		);
 	}
 }

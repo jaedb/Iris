@@ -200,7 +200,7 @@ class Discover extends React.Component{
 		}
 		
 		return (
-			<div className="recommendations-results">
+			<div className="content-wrapper recommendations-results">
 				<section className="grid-wrapper">
 					<h4>Artists</h4>
 					<ArtistGrid artists={artists} />
@@ -210,7 +210,7 @@ class Discover extends React.Component{
 					<AlbumGrid albums={albums} />
 				</section>
 				<section className="list-wrapper">
-					<h4 className="left-padding">Tracks</h4>
+					<h4>Tracks</h4>
 					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri="iris:discover" tracks={this.props.recommendations.tracks} /> : null}
 				</section>
 			</div>

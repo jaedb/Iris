@@ -248,6 +248,18 @@
 	}
 }
 
+.context-menu-trigger {
+	padding: 8px 12px;
+	font-size: 18px;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 10px;
+
+	&:hover {
+		color: $turquoise;
+	}
+}
+
 .list {	
 	&.track-list {
 

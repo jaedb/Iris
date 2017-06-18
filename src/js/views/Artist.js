@@ -131,7 +131,6 @@ class Artist extends React.Component{
 			case 'related-artists':
 				return (
 					<div className="body related-artists">
-						<h4 className="left-padding">Related artists</h4>
 						<section className="grid-wrapper no-top-padding">
 							<ArtistGrid artists={related_artists} />
 						</section>
@@ -172,7 +171,7 @@ class Artist extends React.Component{
 
 						<div className="col w5"></div>
 
-						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div></div> : null}
+						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} className="button">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 

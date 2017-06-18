@@ -18,7 +18,7 @@ main {
 
 		.options {
 			position: absolute;
-			top: 0;
+			top: 10px;
 			right: 10px;
 
 			.context-menu-trigger {
@@ -30,18 +30,18 @@ main {
 			.button,
 			button {
 				background: transparent;
-				font-size: 14px;
-				font-weight: 600;
+				text-transform: none;
 				padding: 13px 10px;
 				margin: 0;
-				line-height: 24px;
-				text-transform: uppercase;
 				min-width: 0;
 				border: 0;
-				color: #000000;
+				color: $black;
+				font-size: 13px;
+				font-weight: 600;
+				font-family: "Overpass";
 
 				&:active {
-					background: rgba(0,0,0,0.15);
+					color: $blue;
 				}
 			}
 		}

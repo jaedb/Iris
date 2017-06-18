@@ -17,6 +17,7 @@
 		margin: 10px 0 0 0;
 		color: $white;
 		pointer-events: all;
+		border-radius: 3px;
 		
 		h4 {
 			padding-top: 0;
@@ -64,17 +65,19 @@
 			}
 
 			&:after {
+				pointer-events: none;
 				position: absolute;
 				display: block;
 				content: '';
-				background: $blue;
-				opacity: 1;
+				background: $white;
+				opacity: 0.1;
 			    animation: slideloader 1s infinite;
+				top: 0;
+				right: 0;
 				bottom: 0;
 				left: 0;
-				right: 0;
-				height: 4px;
 				z-index: 1;
+				border-radius: 0 0 3px 3px;
 			}
 		}
 	}
