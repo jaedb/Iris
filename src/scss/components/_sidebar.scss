@@ -89,6 +89,11 @@ aside{
 
 			&.active {
 				color: $turquoise;
+				opacity: 1 !important;
+
+				.icon {
+
+				}
 			}
 
 			&[disabled] {
@@ -97,7 +102,7 @@ aside{
 			}
 
 			&:hover:not([disabled]) {
-				color: $secondary_grey;
+				opacity: 0.75;
 			}
 		}
 
