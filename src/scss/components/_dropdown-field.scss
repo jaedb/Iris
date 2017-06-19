@@ -21,7 +21,7 @@
 	}
 
 	.options {
-		color: $grey;
+		color: $black;
 		position: absolute;
 		top: 46px;
 		right: 10px;
@@ -42,7 +42,7 @@
 			height: 0;
 			border-left: 5px solid transparent;
 			border-right: 5px solid transparent;
-			border-bottom: 6px solid $light_grey;
+			border-bottom: 6px solid $mid_grey;
 		}
 
 		.option {

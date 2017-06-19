@@ -84,15 +84,15 @@ main {
 }
 
 h1 {
+	@include feature_font();
 	font-weight: 700;
 	font-size: 2.8rem;
-	font-family: "Overpass";
 }
 
 h2 {
+	@include feature_font();
 	font-size: 2rem;
 	font-weight: 700;
-	font-family: "Overpass";
 }
 
 h3 {

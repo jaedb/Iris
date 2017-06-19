@@ -69,16 +69,16 @@ aside{
 		z-index: 2;
 		position: relative;
 		padding-top: 8px;
-		font-family: "Overpass";
 
 		a {
-			font-size: 15px;
+			@include animate();
+			@include feature_font();
+			font-weight: 800;
+			font-size: 16px;
 			color: $black;
 			text-decoration: none;
 			display: block;
-			padding: 4px 18px 4px 14px;
-			border-left: 4px solid transparent;
-			font-weight: 600;
+			padding: 6px 25px;
 
 			.icon {
 				height: 14px;
@@ -102,16 +102,16 @@ aside{
 			}
 
 			&:hover:not([disabled]) {
-				opacity: 0.75;
+				opacity: 0.65;
 			}
 		}
 
 		section {
-			padding: 10px 0;
+			padding: 15px 0;
 
 			title {
 				display: block;
-				padding: 0 18px 2px 14px;
+				padding: 0 26px 5px 26px;
 				font-size: 10px;
 				text-transform: uppercase;
 				opacity: 0.5;

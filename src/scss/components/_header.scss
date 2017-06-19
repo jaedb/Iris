@@ -29,20 +29,15 @@ main {
 
 			.button,
 			button {
+				font-size: 13px;
+				font-weight: 600;
+				font-family: "Overpass";
 				background: transparent;
 				text-transform: none;
 				padding: 13px 10px;
 				margin: 0;
 				min-width: 0;
-				border: 0;
 				color: $black;
-				font-size: 13px;
-				font-weight: 600;
-				font-family: "Overpass";
-
-				&:active {
-					color: $blue;
-				}
 			}
 		}
 

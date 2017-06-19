@@ -5,16 +5,20 @@
 	bottom: 0;
 	right: 0;
 	left: 0;
-	height: 40px;
-	background: $faint_grey;
+	height: 50px;
+	background: $light_grey;
 	color: $black;
-	border-top: 1px solid $light_grey;
+
+	background: -webkit-linear-gradient(to bottom left, $faint_grey, $light_grey);
+	background: -moz-linear-gradient(to bottom left, $faint_grey, $light_grey);
+	background: -o-linear-gradient(to bottom left, $faint_grey, $light_grey);
+	background: linear-gradient(to bottom left, $faint_grey, $light_grey);
 
 	.current-track {
 		@include animate();
 		cursor: pointer;
 		position: absolute;
-		bottom: 41px;
+		bottom: 50px;
 		width: 220px;
 		font-size: 14px;
 		color: $black;
@@ -43,14 +47,14 @@
 		}
 
 		&:hover {
-			background: $light_grey;
+			background: darken($light_grey, 5%);
 		}
 	}
 
 	.control {
 		@include animate();
 		font-size: 12px;
-		color: $mid_grey;
+		color: $dark_grey;
 		cursor: pointer;
 		padding: 8px;
 		display: inline-block;
@@ -66,13 +70,13 @@
 		}
 
 		&:hover {
-			color: $dark_grey;
+			color: $black;
 		}
 	}
 
 	section {
 		position: absolute;
-		top: 6px;
+		top: 11px;
 
 		&.playback {
 			left: 20px;
@@ -81,7 +85,7 @@
 		}
 
 		&.progress {
-			top: 7px;
+			top: 12px;
 			left: 140px;
 			right: 280px;
 			padding-left: 20px;
@@ -120,7 +124,7 @@
 		}
 
 		&.volume {
-			top: 7px;
+			top: 12px;
 			right: 20px;
 			width: 150px;
 

@@ -262,14 +262,39 @@
 }
 
 .context-menu-trigger {
-	padding: 8px 12px;
+	display: inline-block;
+	padding: 9px 10px 7px;
 	font-size: 18px;
 	cursor: pointer;
-	vertical-align: middle;
+	vertical-align: top;
 	margin-left: 10px;
+	position: relative;
+	border-radius: 3px;
 
-	&:hover {
-		color: $turquoise;
+	&:before {
+		@include animate();
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		z-index: 9;
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+	}
+
+	&:hover{
+		cursor: pointer;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+
+		&:before {
+			opacity: 0.15;
+		}
 	}
 }
 

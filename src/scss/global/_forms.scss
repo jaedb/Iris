@@ -44,15 +44,14 @@ button,
 input[type="button"],
 input[type="submit"] {
 	@include animate();
+	@include feature_font();
 	display: inline-block;
-	padding: 9px 20px 7px;
+	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
 	color: $white;
 	background: $dark_grey;
 	font-size: 14px;
-	font-weight: 700;
 	box-sizing: border-box;
-	font-family: "Overpass";
 	border-radius: 3px;
 	vertical-align: middle;
 	position: relative;
