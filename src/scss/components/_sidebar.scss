@@ -71,14 +71,16 @@ aside{
 		padding-top: 8px;
 
 		a {
-			@include animate();
 			@include feature_font();
+			@include gradient_overlay();
 			font-weight: 800;
 			font-size: 15px;
-			color: $black;
+			color: $darkest_grey;
 			text-decoration: none;
 			display: block;
-			padding: 6px 25px;
+			padding: 8px 10px 6px;
+			margin: 0 15px;
+			border-radius: 3px;
 
 			.icon {
 				height: 14px;
@@ -88,11 +90,16 @@ aside{
 			}
 
 			&.active {
-				color: $turquoise;
+				background: $turquoise;
+				color: $white;
 				opacity: 1 !important;
 
-				.icon {
+				&:before {
+					opacity: 0.15;
+				}
 
+				.icon {
+					@include invert();
 				}
 			}
 
@@ -101,8 +108,10 @@ aside{
 				cursor: not-allowed;
 			}
 
-			&:hover:not([disabled]) {
-				opacity: 0.65;
+			&:hover:not([disabled]){
+				&:before {
+					opacity: 0.15;
+				}
 			}
 		}
 

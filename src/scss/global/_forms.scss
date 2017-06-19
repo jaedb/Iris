@@ -45,6 +45,7 @@ input[type="button"],
 input[type="submit"] {
 	@include animate();
 	@include feature_font();
+	@include gradient_overlay();
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
@@ -56,23 +57,6 @@ input[type="submit"] {
 	vertical-align: middle;
 	position: relative;
 	border: 0 !important;
-
-	&:before {
-		@include animate();
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		opacity: 0;
-		z-index: 9;
-		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-	}
 
 	&:hover{
 		cursor: pointer;

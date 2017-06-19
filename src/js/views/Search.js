@@ -183,7 +183,7 @@ class Search extends React.Component{
 						</div>
 
 						<section className="list-wrapper">
-							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
+							<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.type+':'+this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>

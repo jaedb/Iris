@@ -113,11 +113,6 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
-@mixin blur( $size: 10px ) {
-	-webkit-filter: blur( $size );
-	filter: blur( $size );
-}
-
 @keyframes slideloader {
     0% { left: 0%; right: 100%; }
     50% { left: 0%; right: 0%; }
@@ -179,8 +174,39 @@ $bp_shallow: 650px;
 	}
 }
 
+@mixin blur( $size: 10px ) {
+	-webkit-filter: blur( $size );
+	filter: blur( $size );
+}
+
 @mixin feature_font(){
 	font-family: "Overpass";
 	letter-spacing: -0.04em;
 	font-weight: 600;
+}
+
+@mixin invert(){
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+
+@mixin gradient_overlay(){
+	position: relative;
+	
+	&:before {
+		@include animate();
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		z-index: 9;
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+	}
 }

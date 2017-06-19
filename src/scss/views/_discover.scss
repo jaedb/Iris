@@ -3,7 +3,7 @@
 	
 	.intro {
 		position: relative;
-		padding: 100px 40px 60px 40px;
+		padding: 160px 40px 80px 40px;
 		z-index: 1;
 
 		.parallax {
@@ -50,6 +50,7 @@
 			position: relative;
 			vertical-align: top;
 			margin: 0 10px 10px 0;
+			border-radius: 3px;
 
 			.type {
 				display: inline-block;

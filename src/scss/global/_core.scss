@@ -65,11 +65,6 @@ main {
 
 	@include responsive( $bp_medium ){
 
-		section.grid-wrapper,
-		section.text-wrapper {
-			padding: 20px;
-		}
-
 		section.list-wrapper {
 			padding: 10px 0;
 		}
