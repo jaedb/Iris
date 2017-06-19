@@ -74,7 +74,7 @@ aside{
 			@include animate();
 			@include feature_font();
 			font-weight: 800;
-			font-size: 16px;
+			font-size: 15px;
 			color: $black;
 			text-decoration: none;
 			display: block;
@@ -107,7 +107,7 @@ aside{
 		}
 
 		section {
-			padding: 15px 0;
+			padding-bottom: 20px;
 
 			title {
 				display: block;

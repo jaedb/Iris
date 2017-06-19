@@ -123,7 +123,9 @@ class Album extends React.Component{
 
 		        <SidebarToggleButton />
 
-				<Thumbnail size="large" canZoom images={ this.props.album.images } />
+				<div className="thumbnail-wrapper">
+					<Thumbnail size="large" canZoom images={ this.props.album.images } />
+				</div>
 
 				<div className="title">
 					<div className="source grey-text">

@@ -1,6 +1,7 @@
 
 main .album-view {
-	padding-left: 400px;
+	padding-left: 30%;
+	position: relative;
 
 	.title {
 		padding-bottom: 30px;
@@ -26,11 +27,17 @@ main .album-view {
 		padding-bottom: 5px;
 	}
 
-	.thumbnail {
+	.thumbnail-wrapper {
 		position: absolute;
-		max-width: 320px;
-		top: 40px;
-		left: 40px;
+		padding: 40px;
+		width: 30%;
+		top: 0;
+		left: 0;
+		box-sizing: border-box;
+
+		.thumbnail {
+			max-width: 100%;
+		}
 	}
 
 	@include responsive( $bp_medium ){

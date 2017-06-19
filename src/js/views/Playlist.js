@@ -163,7 +163,9 @@ class Playlist extends React.Component{
 				
 					<SidebarToggleButton />
 
-					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
+					<div className="thumbnail-wrapper">
+						<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
+					</div>
 
 					<div className="title">
 						<div className="source grey-text">

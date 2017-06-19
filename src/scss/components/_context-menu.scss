@@ -262,14 +262,29 @@
 }
 
 .context-menu-trigger {
+	@include animate();
 	display: inline-block;
-	padding: 9px 10px 7px;
-	font-size: 18px;
+	padding: 14px 12px;
 	cursor: pointer;
 	vertical-align: top;
-	margin-left: 10px;
+	margin-top: -1px;
 	position: relative;
 	border-radius: 3px;
+
+	.dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 5px;
+		background: $black;
+		display: inline-block;
+		margin: 1px;
+	}
+
+	&.white {
+		.dot {
+			background: $white;
+		}
+	}
 
 	&:before {
 		@include animate();

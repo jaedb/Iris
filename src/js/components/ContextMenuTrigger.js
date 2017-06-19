@@ -15,7 +15,9 @@ export default class ContextMenuTrigger extends React.Component{
 		}
 		return (
 			<span className={className} onClick={e => this.props.onTrigger(e)}>
-				<FontAwesome name="ellipsis-h" />
+				<span className="dot"></span>
+				<span className="dot"></span>
+				<span className="dot"></span>
 			</span>
 		);
 	}
