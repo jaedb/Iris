@@ -3,7 +3,7 @@
 	
 	.intro {
 		position: relative;
-		padding: 160px 40px 80px 40px;
+		padding: 200px 40px 80px 40px;
 		z-index: 1;
 
 		.parallax {
@@ -110,7 +110,11 @@
 .discover-new-releases-view {
 	.intro {
 		position: relative;
-		padding-top: 80px;
+		padding-top: 130px;
+
+		header {
+			margin-bottom: 0;
+		}
 
 		.parallax {
 			position: absolute;

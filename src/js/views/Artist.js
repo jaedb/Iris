@@ -149,7 +149,6 @@ class Artist extends React.Component{
 						</div>
 
 						<div className="col w60 biography">
-							<h4>Biography</h4>
 							<section>
 								{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
 								<div className="grey-text">Published: { this.props.artist.bio.published }</div>

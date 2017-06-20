@@ -55,13 +55,13 @@ export default class Track extends React.Component{
 			var track_columns = (
 				<span>
 					<span className="col name">
-						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+						{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
 					</span>
 					<span className="col source">
 						{helpers.uriSource(track.uri)}
 					</span>
 					<span className="col played_at">
-						{ track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null }
+						{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null}
 					</span>
 				</span>
 			)
@@ -87,11 +87,12 @@ export default class Track extends React.Component{
 				var track_columns = (
 					<span>
 						<span className="col name">
-							{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+							{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+							{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 						</span>
 						{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null}
 						<span className="col artists">
-							{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
+							{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
 						</span>
 						<span className="col album">
 							{album}
@@ -100,8 +101,8 @@ export default class Track extends React.Component{
 							{added}
 						</span>
 						<span className="col duration">
-							{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
-							{ track.length ? <Dater type="length" data={track.length} /> : null }
+							{track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null}
+							{track.length ? <Dater type="length" data={track.length} /> : null}
 						</span>
 					</span>
 				)
@@ -111,18 +112,19 @@ export default class Track extends React.Component{
 			var track_columns = (
 				<span>
 					<span className="col name">
-						{ track.name ? track.name : <span className="grey-text">{track.uri}</span> }
+						{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+						{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 					</span>
 					{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(track.uri)} className="source" fixedWidth /> : null}
 					<span className="col artists">
-						{ track.artists ? <ArtistSentence artists={track.artists} /> : '-' }
+						{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
 					</span>
 					<span className="col album">
 						{album}
 					</span>
 					<span className="col duration">
-						{ track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null }
-						{ track.length ? <Dater type="length" data={track.length} /> : null }
+						{track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null}
+						{track.length ? <Dater type="length" data={track.length} /> : null}
 					</span>
 				</span>
 			)

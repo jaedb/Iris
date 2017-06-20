@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 
 import Icon from './Icon'
 import Dropzones from './Dropzones'
@@ -17,6 +17,14 @@ class Sidebar extends React.Component{
 		super(props)
 	}
 
+	linkClassName(link){
+		if (this.props.location.pathname.startsWith('/'+link)){
+			return 'active'
+		} else {
+			return null
+		}
+	}
+
 	render(){
 		return (
 			<aside>
@@ -24,11 +32,11 @@ class Sidebar extends React.Component{
 		        	<nav>
 
 		        		<section>
-							<Link activeClassName="active" to={global.baseURL+"queue"}>
+							<Link className={this.linkClassName('queue')} to={global.baseURL+"queue"}>
 								<Icon name="play" />
 								Now playing
 							</Link>
-							<Link activeClassName="active" to={global.baseURL+"search"}>
+							<Link className={this.linkClassName('search')} to={global.baseURL+"search"}>
 								<Icon name="search" />
 								Search
 							</Link>
@@ -36,19 +44,19 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>Discover</title>
-							<Link activeClassName="active" to={global.baseURL+"discover/recommendations"}>
+							<Link className={this.linkClassName('discover/recommendations')} to={global.baseURL+"discover/recommendations"}>
 								<Icon name="compass" />
 								Discover
 							</Link>
-							<Link activeClassName="active" to={global.baseURL+"discover/categories"}>
+							<Link className={this.linkClassName('discover/categories')} to={global.baseURL+"discover/categories"}>
 								<Icon name="grid" />
 								Genre / Mood
 							</Link>
-							<Link activeClassName="active" to={global.baseURL+"discover/featured"}>
+							<Link className={this.linkClassName('discover/featured')} to={global.baseURL+"discover/featured"}>
 								<Icon name="star" />
 								Featured playlists
 							</Link>
-							<Link activeClassName="active" to={global.baseURL+"discover/new-releases"}>
+							<Link className={this.linkClassName('discover/new-releases')} to={global.baseURL+"discover/new-releases"}>
 								<Icon name="leaf" />
 								New releases
 							</Link>
@@ -56,30 +64,30 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>My Music</title>
-							<Link activeClassName="active" to={global.baseURL+"library/playlists"}>
+							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
 								<Icon name="playlist" />
 								Playlists
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
+							<Link className={this.linkClassName('library/artists')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
 								<Icon name="mic" />
 								Artists
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
+							<Link className={this.linkClassName('library/albums')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
 								<Icon name="cd" />
 								Albums
 							</Link>
-							<Link activeClassName="active" disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
+							<Link className={this.linkClassName('library/tracks')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
 								<Icon name="music" />
 								Tracks
 							</Link>
-							<Link activeClassName="active" to={global.baseURL+"library/local"}>
+							<Link className={this.linkClassName('library/local')} to={global.baseURL+"library/local"}>
 								<Icon name="folder" />
 								Local
 							</Link>
 						</section>
 
 						<section>
-							<Link activeClassName="active" to={global.baseURL+"settings"}>
+							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="cog" />
 								Settings
 								{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
@@ -119,4 +127,5 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)
+// We wrap our Sidebar with the Router, and then to the redux store
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Sidebar))

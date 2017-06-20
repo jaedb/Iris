@@ -81,8 +81,8 @@ main {
 h1 {
 	@include feature_font();
 	font-weight: 800;
-	font-size: 4rem;
-	line-height: 4rem;
+	font-size: 3rem;
+	line-height: 3rem;
 }
 
 h2 {
@@ -263,15 +263,24 @@ footer {
 }
 
 .flag {
-	font-size: 12px;
+	font-size: 9px;
+	font-weight: bold;
 	display: inline-block;
-	padding: 2px 4px;
+	padding: 2px 5px;
 	background: $light_grey;
 	color: $dark_grey;
+	border-radius: 3px;
+	vertical-align: bottom;
+	margin: 0 8px 1px;
 
 	&.blue {
 		background: $blue;
-		color: #FFFFFF;
+		color: $white;
+	}
+
+	&.dark {
+		background: $dark_grey;
+		color: $white;
 	}
 }
 

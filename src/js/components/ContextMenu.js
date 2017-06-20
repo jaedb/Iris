@@ -453,9 +453,9 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 						{go_to_artist}
 						{copy_uris}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -464,9 +464,9 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{start_radio}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -475,9 +475,9 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -487,6 +487,7 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_queue_item}
 						{add_to_playlist}
+						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
 						{remove_from_queue}
 					</div>
