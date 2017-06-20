@@ -190,8 +190,9 @@ $bp_shallow: 650px;
 	filter: invert(1);
 }
 
-@mixin gradient_overlay(){
+@mixin gradient_overlay($radius: 0){
 	position: relative;
+	border-radius: $radius;
 	
 	&:before {
 		@include animate();

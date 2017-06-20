@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Icon from './Icon'
-import SearchForm from './SearchForm'
 import Dropzones from './Dropzones'
 import Thumbnail from './Thumbnail'
 
@@ -22,15 +21,16 @@ class Sidebar extends React.Component{
 		return (
 			<aside>
 				<div className="liner">
-
-		        	<SearchForm context="sidebar" />
-
 		        	<nav>
 
 		        		<section>
 							<Link activeClassName="active" to={global.baseURL+"queue"}>
 								<Icon name="play" />
 								Now playing
+							</Link>
+							<Link activeClassName="active" to={global.baseURL+"search"}>
+								<Icon name="search" />
+								Search
 							</Link>
 						</section>
 
@@ -87,10 +87,10 @@ class Sidebar extends React.Component{
 						</section>
 
 			        </nav>
-
 			    </div>
 
 		       	<Dropzones />
+
 			</aside>
 		);
 	}

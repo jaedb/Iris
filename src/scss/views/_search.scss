@@ -1,6 +1,18 @@
 
 .search-view {
 
+	.search-form {
+		display: inline-block;
+
+		input {
+			@include feature_font();
+			padding: 0;
+			font-size: 2rem;
+			font-weight: 700;
+			background: transparent;
+		}
+	}
+
 	.search-result-sections {
 		section {
 			.inner {

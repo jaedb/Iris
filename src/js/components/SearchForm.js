@@ -49,7 +49,7 @@ class SearchForm extends React.Component{
 			<form className={this.props.context+' search-form'} onSubmit={ e => this.handleSubmit(e) }>
 				<input					
 					type="text"
-					placeholder="Search"
+					placeholder="Start typing..."
 					onChange={ e => this.setState({ query: e.target.value }) } 
 					value={ this.state.query } />
 			</form>

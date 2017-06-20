@@ -68,18 +68,18 @@ aside{
 	nav {
 		z-index: 2;
 		position: relative;
-		padding-top: 8px;
+		padding-top: 25px;
 
 		a {
 			@include feature_font();
-			@include gradient_overlay();
+			@include gradient_overlay(3px);
 			font-weight: 800;
 			font-size: 15px;
 			color: $darkest_grey;
 			text-decoration: none;
 			display: block;
 			padding: 8px 10px 6px;
-			margin: 0 15px;
+			margin: 0 20px;
 			border-radius: 3px;
 
 			.icon {
@@ -116,7 +116,7 @@ aside{
 		}
 
 		section {
-			padding-bottom: 20px;
+			padding-bottom: 25px;
 
 			title {
 				display: block;
