@@ -18,6 +18,16 @@ class SearchForm extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.setState({query: this.props.query})
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.query && newProps.query != this.state.query){
+			this.setState({query: newProps.query})
+		}
+	}
+
 	handleSubmit(e){
 		e.preventDefault()
 

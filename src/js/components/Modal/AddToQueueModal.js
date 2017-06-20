@@ -25,7 +25,7 @@ export default class AddToQueueModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4>Add URI(s) to queue</h4>
+				<h1>Add URI(s) to queue</h1>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field text">

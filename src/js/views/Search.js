@@ -23,7 +23,7 @@ import * as spotifyActions from '../services/spotify/actions'
 class Search extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	componentDidMount(){
@@ -243,7 +243,7 @@ class Search extends React.Component{
 
 		return (
 			<div className="view search-view">			
-				<Header search options={options} uiActions={this.props.uiActions} />
+				<Header search={(this.props.params && this.props.params.query ? this.props.params.query : null)} options={options} uiActions={this.props.uiActions} />
 				<div className="content-wrapper">
 					{ this.renderResults() }
 				</div>

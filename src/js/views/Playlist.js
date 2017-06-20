@@ -168,19 +168,19 @@ class Playlist extends React.Component{
 					</div>
 
 					<div className="title">
-						<div className="source grey-text">
-							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /> {helpers.uriSource( this.props.params.uri )} playlist
-						</div>
 						<h1>{ this.props.playlist.name }</h1>
-						{ this.props.playlist.description ? <div className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></div> : null }
+						{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
 
 						<ul className="details">
+							<li className="has-tooltip">
+								<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />
+								<span className="tooltip">
+									{helpers.uriSource( this.props.params.uri )} playlist
+								</span>
+							</li>
 							{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
-
 							{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-
 							{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
-
 							<li>
 								{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
 								{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }

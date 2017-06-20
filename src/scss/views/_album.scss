@@ -4,27 +4,19 @@ main .album-view {
 	position: relative;
 
 	.title {
-		padding-bottom: 30px;
-
-		h3 {
-			color: $mid_grey;
+		h2 {
 			a:hover {
 				color: darken($mid_grey, 20%);
 			}
 		}
-	}
 
-	.source {
-		text-transform: uppercase;
-		padding-bottom: 15px;
+		.details {
+			padding: 25px 0 30px;
+		}
 	}
 
 	.actions {
 		padding-bottom: 30px;
-	}
-
-	.description {
-		padding-bottom: 5px;
 	}
 
 	.thumbnail-wrapper {

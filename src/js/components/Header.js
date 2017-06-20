@@ -44,21 +44,21 @@ export default class Header extends React.Component{
 	}
 
 	render(){
-		if (this.props.search){
+		if (typeof(this.props.search) !== 'undefined'){
 			return (
 				<header className={(this.props.className ? this.props.className : null)}>
 					<Icon name="search" />
 					<SidebarToggleButton />
-					<SearchForm />
+					<SearchForm query={this.props.search} />
 					{this.renderOptions()}
 				</header>
 			)
 		} else {
 			return (
 				<header className={(this.props.className ? this.props.className : null)}>
-					<Icon name={this.props.icon} />
+					{this.props.icon ? <Icon name={this.props.icon} /> : null}
 					<SidebarToggleButton />
-					<h2>{ this.props.title }</h2>
+					<h1>{ this.props.title }</h1>
 					{this.renderOptions()}
 				</header>
 			)

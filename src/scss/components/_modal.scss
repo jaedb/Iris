@@ -75,18 +75,18 @@
 				box-sizing: border-box;
 				display: block;
 				padding: 16px 18px;
-				border-bottom: 1px solid $mid_grey;
-				border-top: 0;
 				position: relative;
-
-				&:nth-child(1){
-					border-top: 1px solid $mid_grey;
-				}
+				border: 0;
 
 				.source {
 					position: absolute;
 					top: 18px;
 					left: 10px;
+				}
+
+				&:hover {
+					background: transparent !important;
+					opacity: 0.75;
 				}
 			}
 
@@ -101,10 +101,6 @@
 			&.small .list-item {
 				width: 49%;
 				float: left;
-
-				&:nth-child(2){
-					border-top: 1px solid $mid_grey;
-				}
 
 				&:nth-child(2n){
 					margin-left: 2%;

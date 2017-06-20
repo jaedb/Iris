@@ -128,15 +128,16 @@ class Album extends React.Component{
 				</div>
 
 				<div className="title">
-					<div className="source grey-text">
-						<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />&nbsp;
-						{helpers.uriSource( this.props.params.uri )}&nbsp;
-						{this.props.album.album_type ? this.props.album.album_type : 'album'}
-					</div>
 
 					<h1>{ this.props.album.name }</h1>
 
 					<ul className="details">
+						<li className="has-tooltip">
+							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />
+							<span className="tooltip">
+								{helpers.uriSource( this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}
+							</span>
+						</li>
 						{ artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
 						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li>
