@@ -11,6 +11,7 @@ import Dater from './Dater'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
 
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
 class PlaybackControls extends React.Component{
@@ -51,6 +52,11 @@ class PlaybackControls extends React.Component{
 		return button;
 	}
 
+	handleThumbnailClick(e){
+		e.preventDefault();
+		this.props.uiActions.openModal('kiosk_mode')
+	}
+
 	render(){
 		var images = []
 		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
@@ -61,7 +67,9 @@ class PlaybackControls extends React.Component{
 			<div className="playback-controls">
 				
 				<Link className="current-track" to={(this.props.current_track && this.props.current_track.album ? global.baseURL+'album/'+this.props.current_track.album.uri : null)}>
-					<Thumbnail size="small" images={images} />
+					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
+						<Thumbnail size="small" images={images} />
+					</div>
 					<div className="title">
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>
@@ -125,6 +133,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
