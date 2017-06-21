@@ -17,7 +17,11 @@ import * as mopidyActions from '../services/mopidy/actions'
 class PlaybackControls extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this.state = {
+			expanded: false
+		}
 	}
 
 	renderPlayButton(){
@@ -64,7 +68,7 @@ class PlaybackControls extends React.Component{
 		}
 
 		return (
-			<div className="playback-controls">
+			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 				
 				<Link className="current-track" to={(this.props.current_track && this.props.current_track.album ? global.baseURL+'album/'+this.props.current_track.album.uri : null)}>
 					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
@@ -79,14 +83,14 @@ class PlaybackControls extends React.Component{
 				</Link>
 
 				<section className="playback">
-					<a className="control" onClick={() => this.props.mopidyActions.previous()}>
+					<a className="control previous" onClick={() => this.props.mopidyActions.previous()}>
 						<FontAwesome name="step-backward" />
 					</a>
 					{ this.renderPlayButton() }
-					<a className="control" onClick={() => this.props.mopidyActions.stop()}>
+					<a className="control stop" onClick={() => this.props.mopidyActions.stop()}>
 						<FontAwesome name="stop" />
 					</a>
-					<a className="control" onClick={() => this.props.mopidyActions.next()}>
+					<a className="control next" onClick={() => this.props.mopidyActions.next()}>
 						<FontAwesome name="step-forward" />
 					</a>
 				</section>
@@ -105,6 +109,12 @@ class PlaybackControls extends React.Component{
 
 				<section className="volume">
 					<VolumeControl />
+				</section>
+
+				<section className="triggers">
+					<a className="control next" onClick={() => this.setState({expanded: !this.state.expanded})}>
+						{this.state.expanded ? <FontAwesome name="chevron-down" /> : <FontAwesome name="chevron-up" />}
+					</a>
 				</section>
 				
 			</div>

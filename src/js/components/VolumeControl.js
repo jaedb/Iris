@@ -56,22 +56,14 @@ class VolumeControl extends React.Component{
 		}
 		return (
 			<span className={className}>
-
-				<a className="modal-trigger" onClick={() => this.props.uiActions.openModal('volume')}>
-					{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
-				</a>
-
-				<span className="default">
-					{this.renderMuteButton()}
-					<div className="slider-wrapper">
-						<div className="slider horizontal" onClick={e => this.handleClick(e)}>
-							<div className="track">
-								<div className="progress" style={{ width: this.props.volume+'%' }}></div>
-							</div>
+				{this.renderMuteButton()}
+				<div className="slider-wrapper">
+					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
+						<div className="track">
+							<div className="progress" style={{ width: this.props.volume+'%' }}></div>
 						</div>
 					</div>
-				</span>
-
+				</div>
 			</span>
 		);
 	}

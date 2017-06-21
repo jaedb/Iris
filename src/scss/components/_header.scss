@@ -68,11 +68,15 @@ main {
 		}
 
 		@include responsive( $bp_medium ){
+
+			padding: 10px 10px 10px 0;
+
 			.icon {
 				visibility: hidden;
 			}
 
 			.options {
+				top: 10px;
 				right: 0;
 
 				.context-menu-trigger {

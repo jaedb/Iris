@@ -65,6 +65,10 @@ main {
 
 	@include responsive( $bp_medium ){
 
+		.content-wrapper {
+			padding: 40px 10px 40px;
+		}
+
 		section.list-wrapper {
 			padding: 10px 0;
 		}
@@ -329,6 +333,18 @@ footer {
 
 @include responsive( $bp_medium ){
 	
+	h1 {
+		font-size: 1.8rem;
+	}
+	
+	h2 {
+		font-size: 1.2rem;
+	}
+	
+	h3 {
+		font-size: 1rem;
+	}
+	
 	.right-padding {
 		padding-right: 20px;
 	}
@@ -336,17 +352,4 @@ footer {
 	.left-padding {
 		padding-left: 20px;
 	}
-
-	h1 {
-		font-size: 30px;
-	}
-
-	h2 {
-		font-size: 24px;
-	}
-
-	h3 {
-		font-size: 18px;
-	}
-
 }

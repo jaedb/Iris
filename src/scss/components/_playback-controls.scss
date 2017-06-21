@@ -45,10 +45,6 @@
 				border-bottom: 1px dotted transparent;
 			}
 		}
-
-		&:hover {
-			background: darken($light_grey, 5%);
-		}
 	}
 
 	.control {
@@ -58,11 +54,11 @@
 		cursor: pointer;
 		padding: 8px;
 		display: inline-block;
-		vertical-align: top;
+		vertical-align: bottom;
 
 		&.play {
 			font-size: 24px;
-			margin-top: -6px;
+			margin-bottom: -6px;
 		}
 
 		&.active {
@@ -76,7 +72,7 @@
 
 	section {
 		position: absolute;
-		top: 11px;
+		bottom: 11px;
 
 		&.playback {
 			left: 20px;
@@ -85,7 +81,7 @@
 		}
 
 		&.progress {
-			top: 12px;
+			bottom: 12px;
 			left: 140px;
 			right: 280px;
 			padding-left: 20px;
@@ -94,7 +90,7 @@
 
 			.slider {
 				position: absolute;
-				top: 0;
+				bottom: 0;
 				left: 50px;
 				right: 50px;
 			}
@@ -102,7 +98,7 @@
 			.current {
 				font-size: 11px;
 				position: absolute;
-				top: 6px;
+				bottom: 6px;
 				left: 0;
 				width: 45px;
 				text-align: right;
@@ -111,7 +107,7 @@
 			.total {
 				font-size: 11px;
 				position: absolute;
-				top: 6px;
+				bottom: 6px;
 				right: 0;
 				width: 45px;
 			}
@@ -124,7 +120,7 @@
 		}
 
 		&.volume {
-			top: 12px;
+			bottom: 10px;
 			right: 20px;
 			width: 150px;
 
@@ -134,13 +130,13 @@
 
 			.control {
 				position: absolute;
-				top: 0;
+				bottom: 0;
 				left: 0;
 			}
 
 			.slider-wrapper {
 				position: absolute;
-				top: 0;
+				bottom: 2px;
 				right: 0;
 				left: 30px;
 			}
@@ -148,6 +144,97 @@
 			.muted {
 				.slider .progress {
 					background: $mid_grey;
+				}
+			}
+		}
+
+		&.triggers {
+			display: none;
+		}
+	}
+
+	@include responsive($bp_medium){
+
+		.current-track {
+			width: auto;
+			bottom: auto;
+			bottom: 8px;
+			left: 60px;
+			right: 60px;
+			text-align: center;
+
+			.title {
+				padding-top: 0;
+			}
+
+			.thumbnail {
+				display: none;
+			}
+		}
+
+		section {
+
+			&.playback {
+				left: 0;
+				width: 60px;
+
+				.control {
+					&.play {
+						font-size: 12px;
+						margin-bottom: 0;
+					}
+					&.previous {
+						display: none;
+					}
+					&.stop {
+						display: none;
+					}
+				}
+			}
+
+			&.settings {
+				display: none;
+			}
+
+			&.volume {
+				display: none;
+			}
+
+			&.progress {
+				display: none;
+			}
+
+			&.triggers {
+				display: block;
+				right: 10px;
+			}
+		}
+
+		&.expanded {
+			height: 150px;
+
+			section {
+
+				&.settings {
+					display: block;
+					right: 20px;
+					bottom: 60px;
+					text-align: right;
+				}
+
+				&.volume {
+					width: auto;
+					display: block;
+					right: 130px;
+					left: 22px;
+					bottom: 60px;
+				}
+
+				&.progress {
+					display: block;
+					bottom: 110px;
+					left: 0;
+					right: 0;
 				}
 			}
 		}
