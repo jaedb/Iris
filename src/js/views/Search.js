@@ -32,6 +32,9 @@ class Search extends React.Component{
 		if (this.props.params && this.props.params.type && this.props.params.query){
 			this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
 		}
+
+		// Auto-focus on the input field
+		$(document).find('.search-form input').focus();
 	}
 
 	componentWillReceiveProps(newProps){
@@ -243,7 +246,8 @@ class Search extends React.Component{
 
 		return (
 			<div className="view search-view">			
-				<Header search={(this.props.params && this.props.params.query ? this.props.params.query : null)} options={options} uiActions={this.props.uiActions} />
+				<Header icon="search" options={options} uiActions={this.props.uiActions} />
+				<SearchForm query={this.props.params.query} />
 				<div className="content-wrapper">
 					{ this.renderResults() }
 				</div>

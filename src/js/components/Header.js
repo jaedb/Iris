@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import FontAwesome from 'react-fontawesome'
 
 import Icon from './Icon'
-import SearchForm from './SearchForm'
 import SidebarToggleButton from './SidebarToggleButton'
 import ContextMenuTrigger from './ContextMenuTrigger'
 
@@ -44,24 +43,13 @@ export default class Header extends React.Component{
 	}
 
 	render(){
-		if (typeof(this.props.search) !== 'undefined'){
-			return (
-				<header className={(this.props.className ? this.props.className : null)}>
-					<Icon name="search" />
-					<SidebarToggleButton />
-					<SearchForm query={this.props.search} />
-					{this.renderOptions()}
-				</header>
-			)
-		} else {
-			return (
-				<header className={(this.props.className ? this.props.className : null)}>
-					{this.props.icon ? <Icon name={this.props.icon} /> : null}
-					<SidebarToggleButton />
-					<h1>{ this.props.title }</h1>
-					{this.renderOptions()}
-				</header>
-			)
-		}
+		return (
+			<header className={(this.props.className ? this.props.className : null)}>
+				{this.props.icon ? <Icon name={this.props.icon} /> : null}
+				<SidebarToggleButton />
+				{this.props.title ? <h1>{ this.props.title }</h1> : null}
+				{this.renderOptions()}
+			</header>
+		)
 	}
 }

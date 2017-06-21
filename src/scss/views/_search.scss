@@ -2,7 +2,9 @@
 .search-view {
 
 	.search-form {
-		display: inline-block;
+		position: absolute;
+		top: 40px;
+		left: 90px;
 
 		input {
 			@include feature_font();
@@ -11,6 +13,12 @@
 			font-weight: 700;
 			height: 3rem;
 			background: transparent;
+			border-bottom: 2px solid transparent;
+
+			&:focus,
+			&:active {
+				border-color: $turquoise;
+			}
 		}
 	}
 

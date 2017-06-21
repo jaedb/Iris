@@ -1,7 +1,7 @@
 
 .dropdown-field {
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 800;
 	font-family: "Overpass";
 	position: relative;
 	display: inline-block;
@@ -9,6 +9,10 @@
 	.label {
 		padding: 14px 10px;		
 		cursor: pointer;
+
+		&:hover {
+			color: $blue;
+		}
 	}
 
 	&.expanded {

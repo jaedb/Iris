@@ -19,8 +19,8 @@ main {
 
 		.options {
 			position: absolute;
-			top: 10px;
-			right: 10px;
+			top: 2.6rem;
+			right: 40px;
 
 			.context-menu-trigger {
 				display: none;
@@ -31,7 +31,7 @@ main {
 			.button,
 			button {
 				font-size: 13px;
-				font-weight: 600;
+				font-weight: 800;
 				font-family: "Overpass";
 				background: transparent;
 				text-transform: none;
@@ -39,6 +39,15 @@ main {
 				margin: 0;
 				min-width: 0;
 				color: $black;
+
+				&:hover {
+					color: $blue;
+					box-shadow: none;
+
+					&:before {
+						display: none;
+					}
+				}
 			}
 		}
 
