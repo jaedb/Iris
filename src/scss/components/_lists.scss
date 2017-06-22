@@ -29,17 +29,7 @@
 		}
 
 		.state-icon {
-			position: absolute;
-			top: 0;
-			left: 0;
-			font-size: 10px;
 			display: none;
-
-			.fa {
-				position: absolute;
-				top: 15px;
-				left: 15px;
-			}
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
@@ -221,12 +211,16 @@
 			}
 
 			.state-icon {
+				position: absolute;
 				top: 0;
 				left: 0;
 				height: 100%;
 				width: 48px;
+				font-size: 10px;
+				display: block;
 				
 				.fa {
+					position: absolute;
 					top: 19px;
 					left: 17px;
 				}
@@ -240,10 +234,6 @@
 					position: absolute;
 					top: 15px;
 					left: 15px;
-				}
-
-				.playing {
-					display: none !important;
 				}
 			}
 

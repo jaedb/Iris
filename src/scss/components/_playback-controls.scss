@@ -9,10 +9,10 @@
 	background: $light_grey;
 	color: $black;
 
-	background: -webkit-linear-gradient(to bottom left, $faint_grey, $light_grey);
-	background: -moz-linear-gradient(to bottom left, $faint_grey, $light_grey);
-	background: -o-linear-gradient(to bottom left, $faint_grey, $light_grey);
-	background: linear-gradient(to bottom left, $faint_grey, $light_grey);
+	background: -webkit-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: -moz-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: -o-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
 
 	.current-track {
 		@include animate();

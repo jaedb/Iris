@@ -140,8 +140,7 @@ export default class Track extends React.Component{
 				onDoubleClick={ e => this.props.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>
 					<span className="state-icon">
-						{ this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null }
-						{ this.props.track.playing && !this.props.track.selected ? <FontAwesome name="play" className="playing" fixedWidth /> : null }
+						{this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
 					</span>
 					{ track_columns }
 			</div>
