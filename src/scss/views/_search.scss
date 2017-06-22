@@ -9,6 +9,7 @@
 		input {
 			@include feature_font();
 			padding: 0;
+			width: 100%;
 			font-size: 3rem;
 			font-weight: 700;
 			height: 3rem;
@@ -30,6 +31,17 @@
 	}
 
 	@include responsive( $bp_medium ){
+
+		.search-form {
+			top: 18px;
+			left: 50px;
+
+			input {
+				font-size: 1.8rem;
+				height: 1.8rem;
+			}
+		}
+
 		.search-result-sections {
 			padding: 10px 10px 0;
 			

@@ -166,12 +166,12 @@ input[type="submit"] {
 	}
 
 	@include responsive( $bp_medium ){
-		min-width: 120px;
 		margin-right: 10px;
 	}
 
 	@include responsive( $bp_narrow ){
-		min-width: 0;
+		padding-left: 20px;
+		padding-right: 20px;
 	}
 }
 

@@ -33,23 +33,32 @@ main .album-view {
 	}
 
 	@include responsive( $bp_medium ){
-		.title {
-			padding: 0 20px 20px;
+		padding-top: 0;
+		padding-left: 10px;
+
+		.thumbnail-wrapper {
+			width: 40%;
+			padding: 10px 20px 10px 10px;
+
+			.thumbnail {
+				float: none;
+				max-width: none;
+				margin: 0 0 0 0;
+			}
 		}
 
-		.thumbnail {
-			float: none;
-			max-width: none;
-			margin: 0 0 0 0;
+		.title {
+			padding: 20px 20px 20px 40%;
+			min-height: 30vw;
 
-			.image {
-				padding-bottom: 70%;
+			.details {
+				padding: 5px 0;
 			}
 		}
 
 		.actions {
 			text-align: center;
-			padding-bottom: 20px;
+			padding: 20px 5px;
 		}
 	}
 }
