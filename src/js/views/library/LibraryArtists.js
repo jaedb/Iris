@@ -69,7 +69,7 @@ class LibraryArtists extends React.Component{
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
@@ -80,7 +80,7 @@ class LibraryArtists extends React.Component{
 			)
 		}else{
 			return (
-				<section className="grid-wrapper">
+				<section className="content-wrapper">
 					<ArtistGrid 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />

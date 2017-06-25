@@ -69,7 +69,7 @@ class LibraryLocalArtists extends React.Component{
 		return (
 			<div className="view library-local-view">
 				<Header icon="music" title="Local artists" />
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List 
 						columns={[{ name: 'name', width: '100'}]} 
 						rows={artists} 

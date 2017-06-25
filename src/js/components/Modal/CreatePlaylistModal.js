@@ -35,7 +35,7 @@ export default class CreatePlaylistModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4>Create playlist</h4>
+				<h1>Create playlist</h1>
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 					<div className="field">
 						<input 

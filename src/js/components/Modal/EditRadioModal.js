@@ -146,7 +146,7 @@ export default class EditRadioModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4>Manage radio</h4>
+				<h1>Manage radio</h1>
 
 				<form>
 					{this.renderSeeds()}

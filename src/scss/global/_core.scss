@@ -2,11 +2,12 @@
 
 body,
 html {
-	background: $off_white;
-	color: #000000;
+	background: $white;
+	color: $darkest_grey;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	touch-action: manipulation;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
 
 body {
@@ -41,6 +42,10 @@ main {
 	position: relative;
 	min-height: 100vh;
 
+	.content-wrapper {
+		padding: 40px 40px 80px;
+	}
+
 	a {
 		color: inherit;
 		text-decoration: none;
@@ -58,20 +63,10 @@ main {
 		white-space: pre-wrap;
 	}
 
-	section.grid-wrapper,
-	section.text-wrapper {
-		padding: 40px;
-	}
-
-	section.list-wrapper {
-		padding: 20px 0;
-	}
-
 	@include responsive( $bp_medium ){
 
-		section.grid-wrapper,
-		section.text-wrapper {
-			padding: 20px;
+		.content-wrapper {
+			padding: 20px 10px 40px;
 		}
 
 		section.list-wrapper {
@@ -88,13 +83,17 @@ main {
 }
 
 h1 {
-	font-weight: 500;
-	font-size: 40px;
+	@include feature_font();
+	font-weight: 800;
+	font-size: 3rem;
+	line-height: 3rem;
 }
 
 h2 {
-	font-weight: 500;
-	font-size: 30px;
+	@include feature_font();
+	font-size: 1.8rem;
+	font-weight: 400;
+	line-height: 2rem;
 }
 
 h3 {
@@ -108,9 +107,10 @@ h3 {
 }
 
 h4 {
-	font-size: 14px;
+	@include feature_font();
+	font-size: 1.3rem;
 	margin-bottom: 14px;
-	text-transform: uppercase;
+	font-weight: 800;
 
 	&.underline {
 		padding-bottom: 4px;
@@ -268,15 +268,24 @@ footer {
 }
 
 .flag {
-	font-size: 12px;
+	font-size: 9px;
+	font-weight: bold;
 	display: inline-block;
-	padding: 2px 4px;
+	padding: 2px 5px;
 	background: $light_grey;
 	color: $dark_grey;
+	border-radius: 3px;
+	vertical-align: bottom;
+	margin: 0 8px 1px;
 
 	&.blue {
 		background: $blue;
-		color: #FFFFFF;
+		color: $white;
+	}
+
+	&.dark {
+		background: $dark_grey;
+		color: $white;
 	}
 }
 
@@ -295,8 +304,8 @@ footer {
 		color: $white;
 		font-size: 11px;
 		line-height: 11px;
-		top: -16px;
-		left: 4px;
+		top: -22px;
+		left: 1px;
 		z-index: 97;
 
 		&::before {
@@ -325,6 +334,20 @@ footer {
 
 @include responsive( $bp_medium ){
 	
+	h1 {
+		font-size: 1.8rem;
+		line-height: 1.8rem;
+	}
+	
+	h2 {
+		font-size: 1.2rem;
+		line-height: 1.3rem;
+	}
+	
+	h3 {
+		font-size: 1rem;
+	}
+	
 	.right-padding {
 		padding-right: 20px;
 	}
@@ -332,17 +355,4 @@ footer {
 	.left-padding {
 		padding-left: 20px;
 	}
-
-	h1 {
-		font-size: 30px;
-	}
-
-	h2 {
-		font-size: 24px;
-	}
-
-	h3 {
-		font-size: 18px;
-	}
-
 }

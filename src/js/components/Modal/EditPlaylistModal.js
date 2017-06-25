@@ -34,7 +34,7 @@ export default class EditPlaylistModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4>Edit playlist</h4>
+				<h1>Edit playlist</h1>
 				<form onSubmit={(e) => this.savePlaylist(e)}>
 					<div className="field">
 						<input 

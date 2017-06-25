@@ -1,17 +1,48 @@
 
 .search-view {
 
-	.search-result-sections {
-		padding: 20px 20px 0;
+	.search-form {
+		position: absolute;
+		top: 40px;
+		left: 90px;
 
+		input {
+			@include feature_font();
+			padding: 0;
+			width: 100%;
+			font-size: 3rem;
+			font-weight: 700;
+			height: 3rem;
+			background: transparent;
+			border-bottom: 2px solid transparent;
+
+			&:focus,
+			&:active {
+				border-color: $turquoise;
+			}
+		}
+	}
+
+	.search-result-sections {
 		section {
 			.inner {
-				padding: 10px 20px 0 20px;
 			}
 		}
 	}
 
 	@include responsive( $bp_medium ){
+
+		.search-form {
+			top: 18px;
+			left: 50px;
+			right: 60px;
+
+			input {
+				font-size: 1.8rem;
+				height: 1.8rem;
+			}
+		}
+
 		.search-result-sections {
 			padding: 10px 10px 0;
 			

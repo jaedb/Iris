@@ -209,7 +209,7 @@ class Discover extends React.Component{
 		}
 		
 		return (
-			<div className="recommendations-results">
+			<div className="content-wrapper recommendations-results">
 				<section className="grid-wrapper">
 					<h4>Artists</h4>
 					<ArtistGrid artists={artists} />
@@ -219,7 +219,7 @@ class Discover extends React.Component{
 					<AlbumGrid albums={albums} />
 				</section>
 				<section className="list-wrapper">
-					<h4 className="left-padding">Tracks</h4>
+					<h4>Tracks</h4>
 					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri={uri} tracks={this.props.recommendations.tracks} /> : null}
 				</section>
 			</div>
@@ -229,15 +229,14 @@ class Discover extends React.Component{
 	render(){
 		return (
 			<div className="view discover-view">
-				<Header icon="compass" title="Discover" className="overlay" />
 				<div className="intro">
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
 					<div className="liner">
 						<h1>Explore new music</h1>
-						<h3>
+						<h2 className="grey-text">
 							Add seeds below to build your sound. Let's start with 
 							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.
-						</h3>
+						</h2>
 						{this.renderSeeds()}
 					</div>
 				</div>

@@ -30,8 +30,8 @@ export default class extends React.Component{
 
 		return (
 			<div>
-				<h4 className="no-bottom-padding">Spotify authorization received</h4>
-				<h3 className="grey-text">{user.display_name ? user.display_name : user.id} has shared their Spotify authorization with you. Importing this will overwrite your existing Spotify Authorization.</h3>
+				<h1>Spotify authorization received</h1>
+				<h2 className="grey-text">{user.display_name ? user.display_name : user.id} has shared their Spotify authorization with you. Importing this will overwrite your existing Spotify Authorization.</h2>
 				
 				<div className="user-view">
 					<div className="intro">

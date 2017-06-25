@@ -16,8 +16,8 @@ input[type="email"],
 input[type="date"],
 select {
 	padding: 10px 14px;
-	background: #FFFFFF;
-	color: #000000;
+	background: $faint_grey;
+	color: $darkest_grey;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 }
@@ -44,91 +44,59 @@ button,
 input[type="button"],
 input[type="submit"] {
 	@include animate();
+	@include feature_font();
+	@include gradient_overlay();
 	display: inline-block;
-	padding: 6px 20px;
-	min-width: 160px;
-	border: 0;
+	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	text-align: center;
-	border: 2px solid $mid_grey;
-	color: $mid_grey;
-	background: transparent;
-	text-transform: uppercase;
-	font-size: 12px;
-	font-weight: 800;
+	color: $white;
+	background: $dark_grey;
+	font-size: 14px;
 	box-sizing: border-box;
-
-	&.wide {
-		min-width: 200px;
-	}
+	border-radius: 3px;
+	vertical-align: middle;
+	position: relative;
+	border: 0 !important;
 
 	&:hover{
 		cursor: pointer;
-		border-color: darken( $mid_grey, 10%);
+		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
+
+		&:before {
+			opacity: 0.15;
+		}
 	}
 
 	&:active {
 		@include noanimate();
-		background: $mid_grey;
-		color: #FFFFFF;
-		border-color: $mid_grey;
+		background: $black;
+		color: $white;
+		margin-top: 1px;
+		margin-bottom: 9px;
 	}
 
 	&.primary {
-		border-color: $turquoise;
-		color: $turquoise;
-		&:hover {
-			color: darken( $turquoise, 10% );
-			border-color: darken( $turquoise, 10% );
-		}
+		background: $turquoise;
+		color: $white;
 		&:active {
-			color: #FFFFFF;
-			background: $turquoise;
-			border-color: $turquoise;
-		}
-	}
-
-	&.secondary {
-		color: $black;
-		border-color: $black;
-		&:hover {
-			color: lighten( $black, 40% );
-			border-color: lighten( $black, 40% );
-		}
-		&:active {
-			color: $white;
 			background: $black;
-			border-color: $black;
 		}
 	}
 
-	&.alternative {
-		color: $blue;
-		border-color: $blue;
-		&:hover {
-			color: darken($blue, 10%);
-			border-color: darken($blue, 10%);
-		}
-		&:active {
-			color: $white;
-			background: $blue;
-			border-color: $blue;
-		}
+	&.white {
+		color: $black;
+		background: $white;
 	}
 
 	&.confirming,
 	&.destructive {
-		border-color: $red;
-		color: $red;
-		&:hover {
-			color: darken( $red, 6% );
-			border-color: darken( $red, 6% );
-		}
-		&:active {
-			color: #FFFFFF;
-			background: $red;
-			border-color: $red;
-		}
+		background: $red;
+		color: $white;
+	}
+
+	&.alternative {
+		background: $blue;
+		color: $white;
 	}
 
 	&.timing-out {
@@ -137,25 +105,12 @@ input[type="submit"] {
 			@include animate_timeout(2s);
 			content: '';
 			position: absolute;
+			top: 0;
 			left: 0;
 			bottom: 0;
 			width: 0;
-			height: 3px;
-			background: $red;
-		}
-	}
-
-	&.white {
-		color: #FFFFFF;
-		border-color: #FFFFFF;
-		&:hover {
-			color: rgba(255,255,255,0.8);
-			border-color: rgba(255,255,255,0.8);
-		}
-		&:active {
-			color: #000000;
-			background: #FFFFFF;
-			border-color: #FFFFFF;
+			background: $black;
+			opacity: 0.25;
 		}
 	}
 
@@ -172,80 +127,18 @@ input[type="submit"] {
 		position: relative;
 
 		&:after {
+			pointer-events: none;
 			position: absolute;
 			display: block;
 			content: '';
-			background: $mid_grey;
-			opacity: 1;
 		    animation: slideloader 1s infinite;
-			right: 0;
-			bottom: 0;
+			background: $mid_grey;
+			opacity: 0.5;
+			top: 0;
 			left: 0;
-			height: 3px;
+			bottom: 0;
+			right: 0;
 			z-index: 1;
-		}
-
-		&.primary {
-			&:after {
-				background: $turquoise;
-			}
-		}
-
-		&.secondary {
-			&:after {
-				background: $black;
-			}
-		}
-
-		&.destructive {
-			&:after {
-				background: $red;
-			}
-		}
-
-		&.white {
-			&:after {
-				background: $white;
-			}
-		}
-	}
-
-	&.context-menu-trigger {
-		border-color: transparent;
-		padding: 6px;
-		margin-bottom: 8px;
-		font-size: 20px;
-		min-width: 0;
-		line-height: 20px;
-		color: #000000;
-		vertical-align: bottom;
-
-		.fa {
-			pointer-events: none;
-		}
-
-		&:hover {
-			border-color: transparent;
-			background: rgba(0,0,0,0.1);
-		}
-
-		&:active {
-			color: #FFFFFF;
-			background: #000000;
-		}
-
-		&.white {
-			color: #FFFFFF;
-
-			&:hover {
-				border-color: transparent;
-				background: rgba(255,255,255,0.1);
-			}
-
-			&:active {
-				color: #000000;
-				background: #FFFFFF;
-			}
 		}
 	}
 
@@ -273,20 +166,12 @@ input[type="submit"] {
 	}
 
 	@include responsive( $bp_medium ){
-		min-width: 120px;
 		margin-right: 10px;
+		padding-left: 20px;
+		padding-right: 20px;
 	}
 
 	@include responsive( $bp_narrow ){
-		min-width: 0;
-	}
-}
-
-.actions {
-
-	.button:last-of-type,
-	button:last-of-type {
-		margin-right: 0;
 	}
 }
 

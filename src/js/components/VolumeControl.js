@@ -16,36 +16,54 @@ class VolumeControl extends React.Component{
 
 	handleClick(e){
 		var slider = e.target;
+		if( slider.className != 'slider' ) slider = slider.parentElement;
 
-		var sliderY = e.clientY - slider.getBoundingClientRect().top;
-		var sliderHeight = slider.getBoundingClientRect().height;
-		var percent = 100 - parseInt( sliderY / sliderHeight * 100 );
+		var sliderX = e.clientX - slider.getBoundingClientRect().left;
+		var sliderWidth = slider.getBoundingClientRect().width;
+		var percent = Math.round(( sliderX / sliderWidth ) * 100);
+
+		if (percent > 100){
+			percent = 100
+		} else if (percent < 0 ){
+			percent = 0
+		}
 
 		this.props.mopidyActions.setVolume( percent )
 	}
 
+	renderMuteButton(){
+		if (this.props.mute){
+			return (
+				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(false)}>
+					<FontAwesome className="red-text" name="volume-down" />
+					<span className="tooltip">Unmute</span>
+				</a>
+			)
+		} else {
+			return (
+				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(true)}>
+					<FontAwesome className="muted" name="volume-off" />
+					<span className="tooltip">Mute</span>
+				</a>
+			)
+		}
+	}
+
 	render(){
 		var className = "volume-control"
+		if (this.props.mute){
+			className += " muted"
+		}
 		return (
 			<span className={className}>
-
-				<a className="modal-trigger" onClick={() => this.props.uiActions.openModal('volume')}>
-					{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
-				</a>
-
-				<span className="hover-trigger">
-					<a onClick={() => this.props.mopidyActions.setMute(!this.props.mute)}>
-						{this.props.mute ? <FontAwesome className="muted" name="volume-off" /> : <FontAwesome name="volume-down" />}
-					</a>
-					<div className="slider-wrapper">
-						<div className={this.props.mute ? "slider vertical disabled" : "slider vertical"} onClick={ (e) => this.handleClick(e) } >
-							<div className="track">
-								<div className="progress" style={{ height: this.props.volume+'%' }}></div>
-							</div>
+				{this.renderMuteButton()}
+				<div className="slider-wrapper">
+					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
+						<div className="track">
+							<div className="progress" style={{ width: this.props.volume+'%' }}></div>
 						</div>
 					</div>
-				</span>
-
+				</div>
 			</span>
 		);
 	}

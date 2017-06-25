@@ -91,7 +91,7 @@ class LibraryPlaylists extends React.Component{
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
@@ -102,7 +102,7 @@ class LibraryPlaylists extends React.Component{
 			)
 		}else{
 			return (
-				<section className="grid-wrapper">
+				<section className="content-wrapper">
 					<PlaylistGrid
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						playlists={playlists} />

@@ -6,7 +6,7 @@ import { hashHistory, Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
-import MiniPlayer from './components/MiniPlayer'
+import PlaybackControls from './components/PlaybackControls'
 import SidebarToggleButton from './components/SidebarToggleButton'
 import ContextMenu from './components/ContextMenu'
 import Dragger from './components/Dragger'
@@ -190,7 +190,7 @@ class App extends React.Component{
 		return (
 			<div className={className}>
 		        <Sidebar />		        
-		        <MiniPlayer />
+		        <PlaybackControls />
 		        <main>
 		      		{this.props.children}
 		        </main>

@@ -8,7 +8,8 @@ import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
 import FollowButton from '../components/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
-import Header from '../components/Header'
+import SidebarToggleButton from '../components/SidebarToggleButton'
+import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
@@ -54,41 +55,48 @@ class User extends React.Component{
 				}
 			}
 
+			if (this.props.user && this.props.user.images ){
+				var image = helpers.sizedImages(this.props.user.images).huge
+			} else {
+				var image = null
+			}
+
 			return (
 				<div className="view user-view">
-				
-					<Header icon="play" title="User" />
+
+					<SidebarToggleButton />
 
 					<div className="intro">
-						<Thumbnail circle={true} size="medium" images={ this.props.user.images } />
-
-						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
-
-						<ul className="details">
-							{this.isMe() ? <li>You</li> : null}
-							<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
-							<li>{this.props.user.followers.total.toLocaleString()} followers</li>
-						</ul>
-
-						<div className="actions">
-							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+						<Parallax image={image} />
+						<div className="liner">
+							<Thumbnail image={image} canZoom circle />
+							<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
+							<h2>
+								<ul className="details">
+									<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
+									<li>{this.props.user.followers.total.toLocaleString()} followers</li>
+									{this.isMe() ? <li>You</li> : null}
+								</ul>
+							</h2>
+							<div className="actions">
+								<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							</div>
 						</div>
 					</div>
-					<div className="main">
-
+					
+					<div className="content-wrapper">
 						<section className="grid-wrapper">
+							<h4>Playlists</h4>
 							<PlaylistGrid playlists={playlists} />
 							<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
 						</section>
-						
 					</div>
 				</div>
 			)
 		} else {
 
 			return (
-				<div className="view user-view">				
-					<Header icon="play" title="User" />
+				<div className="view user-view">
 					<div className="intro">
 						<Thumbnail circle size="medium" images={[]} />
 						<h1><span className="placeholder"></span></h1>

@@ -1,27 +1,26 @@
 
 main {
 	header {
-		padding: 14px 20px;
-		background: #EEEEEE;
-		line-height: 24px;
 		box-sizing: border-box;
+		padding: 40px;
+		margin-bottom: -40px;
 
 		h1 {
-			font-size: 22px;
-			font-weight: 100;
 			display: inline-block;
 		}
 
 		.icon {
 			display: inline-block;
 			padding-right: 14px;
-			height: 16px;
+			height: 2.6rem;
+			vertical-align: bottom;
+			margin-bottom: 5px;
 		}
 
 		.options {
 			position: absolute;
-			top: 0;
-			right: 10px;
+			top: 2.6rem;
+			right: 40px;
 
 			.context-menu-trigger {
 				display: none;
@@ -31,19 +30,23 @@ main {
 
 			.button,
 			button {
+				font-size: 13px;
+				font-weight: 800;
+				font-family: "Overpass";
 				background: transparent;
-				font-size: 14px;
-				font-weight: 600;
+				text-transform: none;
 				padding: 13px 10px;
 				margin: 0;
-				line-height: 24px;
-				text-transform: uppercase;
 				min-width: 0;
-				border: 0;
-				color: #000000;
+				color: $black;
 
-				&:active {
-					background: rgba(0,0,0,0.15);
+				&:hover {
+					color: $blue;
+					box-shadow: none;
+
+					&:before {
+						display: none;
+					}
 				}
 			}
 		}
@@ -53,7 +56,6 @@ main {
 			top: 0;
 			left: 0;
 			width: 100%;
-			background: rgba(0,0,0,0.1);
 			color: $white;
 			z-index: 95;
 
@@ -65,11 +67,20 @@ main {
 		}
 
 		@include responsive( $bp_medium ){
+			padding: 10px 10px 10px 0;
+			margin-bottom: -20px;
+
 			.icon {
 				visibility: hidden;
 			}
 
+			h1 {
+				vertical-align: top;
+				padding-top: 6px;
+			}
+
 			.options {
+				top: 8px;
 				right: 0;
 
 				.context-menu-trigger {

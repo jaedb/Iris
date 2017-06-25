@@ -5,7 +5,7 @@
 	left: 0;
 	bottom: 0;
 	right: 0;
-	z-index: 99;
+	z-index: 999;
 	background: $overlay_dark;
 	overflow-y: scroll;
 
@@ -75,18 +75,18 @@
 				box-sizing: border-box;
 				display: block;
 				padding: 16px 18px;
-				border-bottom: 1px solid $mid_grey;
-				border-top: 0;
 				position: relative;
-
-				&:nth-child(1){
-					border-top: 1px solid $mid_grey;
-				}
+				border: 0;
 
 				.source {
 					position: absolute;
 					top: 18px;
 					left: 10px;
+				}
+
+				&:hover {
+					background: transparent !important;
+					opacity: 0.75;
 				}
 			}
 
@@ -102,10 +102,6 @@
 				width: 49%;
 				float: left;
 
-				&:nth-child(2){
-					border-top: 1px solid $mid_grey;
-				}
-
 				&:nth-child(2n){
 					margin-left: 2%;
 				}
@@ -113,6 +109,12 @@
 		}
 	}
 
+	&.add_to_queue,
+	&.create_playlist {
+		h1 {
+			padding-bottom: 50px;
+		}
+	}
 
 	&.image_zoom {
 		.content {
@@ -188,6 +190,10 @@
 			.current-track {
 				padding-top: 50px;
 				font-size: 30px;
+
+				.artist-sentence {
+					opacity: 0.5;
+				}
 			}
 		}
 	}

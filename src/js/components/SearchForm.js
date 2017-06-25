@@ -14,7 +14,21 @@ class SearchForm extends React.Component{
 		super(props);
 
 		this.state = {
-			query: ''
+			query: '',
+			in_focus: false
+		}
+	}
+
+	componentDidMount(){
+		if (this.props.query){
+			this.setState({query: this.props.query})
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.query && newProps.query != this.state.query && newProps.query != this.props.query && !this.state.in_focus){
+			console.log('changing',newProps.query,this.props.query)
+			this.setState({query: newProps.query})
 		}
 	}
 
@@ -46,12 +60,16 @@ class SearchForm extends React.Component{
 
 	render(){
 		return (
-			<form className={this.props.context+' search-form'} onSubmit={ e => this.handleSubmit(e) }>
-				<input					
-					type="text"
-					placeholder="Search"
-					onChange={ e => this.setState({ query: e.target.value }) } 
-					value={ this.state.query } />
+			<form className="search-form" onSubmit={e => this.handleSubmit(e)}>
+				<label>
+					<input					
+						type="text"
+						placeholder="Search..."
+						onChange={ e => this.setState({ query: e.target.value }) }
+						onFocus={e => this.setState({in_focus: true})}
+						onBlur={e => this.setState({in_focus: false})}
+						value={ this.state.query } />
+					</label>
 			</form>
 		)
 	}

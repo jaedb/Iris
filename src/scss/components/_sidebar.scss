@@ -5,10 +5,10 @@ aside{
 	left: 0;
 	bottom: 0;
 	z-index: 96;
-	background: $darkest_grey;
 	width: 220px;
 	overflow: hidden;
-	box-shadow: inset -20px 0px 30px -20px rgba(0, 0, 0, 0.5);
+	background: $off_white;
+	color: $darkest_grey;
 
 	.liner {
 		overflow-y: auto;
@@ -16,16 +16,83 @@ aside{
 		top: 0;
 		left: 0;
 		right: 0;
-		bottom: 0;
+		bottom: 120px;
 		box-sizing: border-box;
 		z-index: 2;
+		overflow-y: auto;
+	}
+
+	nav {
+		z-index: 2;
+		position: relative;
+		padding-top: 20px;
+		line-height: 1em;
+
+		a {
+			@include feature_font();
+			@include gradient_overlay(3px);
+			font-weight: 800;
+			font-size: 15px;
+			color: $darkest_grey;
+			text-decoration: none;
+			display: block;
+			padding: 9px 10px 5px;
+			margin: 0 20px;
+			border-radius: 3px;
+			line-height: 18px;
+
+			.icon {
+				height: 14px;
+				padding-right: 8px;
+				vertical-align: top;
+			}
+
+			&.active {
+				background: $turquoise;
+				color: $white;
+				opacity: 1 !important;
+
+				&:before {
+					opacity: 0.15;
+				}
+
+				.icon {
+					@include invert();
+				}
+			}
+
+			&[disabled] {
+				opacity: 0.3;
+				cursor: not-allowed;
+			}
+
+			&:hover:not([disabled]){
+				&:before {
+					opacity: 0.15;
+				}
+			}
+		}
+
+		section {
+			padding-bottom: 25px;
+
+			title {
+				display: block;
+				padding: 0 26px 5px 26px;
+				font-size: 10px;
+				text-transform: uppercase;
+				opacity: 0.5;
+				color: $mid_grey;
+			}
+		}
 	}
 
 	@include responsive( $bp_medium ){
 		width: 220px;
 		left: -220px;
+		padding-bottom: 0;
 		position: fixed;
-		z-index: 98;
+		z-index: 100;
 
 		.sidebar-open & {
 			left: 0px;
@@ -38,83 +105,5 @@ aside{
 		.thumbnail {
 			display: none;
 		}
-	}
-
-	@include responsive( null, null, $bp_shallow ){
-		.liner {
-			bottom: 60px;
-		}
-	}
-	
-	.thumbnail {
-		position: absolute;
-		top: -30px;
-		right: -30px;
-		bottom: -30px;
-		left: -30px;
-		height: auto;
-		width: auto;
-		max-width: none;
-		z-index: 1;
-		opacity: 0.2;
-
-		.image {
-			@include blur();
-			padding-bottom: 0;
-			height: 100%;
-		}
-	}
-
-	nav {
-		z-index: 2;
-		position: relative;
-		padding-top: 8px;
-
-		a {
-			font-size: 16px;
-			color: #FFFFFF;
-			text-decoration: none;
-			display: block;
-			padding: 6px 18px 6px 14px;
-			border-left: 4px solid transparent;
-
-			.icon {
-				height: 14px;
-				padding-right: 8px;
-				vertical-align: top;
-				margin-top: 4px;
-			}
-
-			&.active {
-				border-color: $turquoise;
-				background: rgba( 0, 0, 0, 0.5 );
-			}
-
-			&[disabled] {
-				opacity: 0.3;
-				cursor: not-allowed;
-			}
-
-			&:hover:not([disabled]) {
-				background: rgba( 255, 255, 255, 0.1 );
-			}
-		}
-
-		section {
-			padding: 10px 0;
-
-			title {
-				display: block;
-				padding: 0 18px 2px;
-				font-size: 11px;
-				text-transform: uppercase;
-				opacity: 0.5;
-				color: #FFFFFF;
-			}
-		}
-
-	}
-
-	@include responsive( $bp_medium ){
 	}
 }

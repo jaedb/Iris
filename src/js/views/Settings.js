@@ -180,7 +180,7 @@ class Settings extends React.Component{
 			<div className="view settings-view">
 				<Header icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
 
-				<section>
+				<section className="content-wrapper">
 
 					<div className="status">
 					

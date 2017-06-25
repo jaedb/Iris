@@ -1,0 +1,282 @@
+
+.playback-controls {
+	position: fixed;
+	z-index: 99;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	height: 50px;
+	background: $light_grey;
+	color: $black;
+
+	background: -webkit-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: -moz-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: -o-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+
+	.current-track {
+		@include animate();
+		cursor: pointer;
+		position: absolute;
+		bottom: 50px;
+		width: 220px;
+		font-size: 14px;
+		color: $black;
+		text-decoration: none;
+
+		.thumbnail {
+			float: left;
+			margin: 12px;
+
+			&:before {
+				@include animate();
+				display: block;
+				content: "\f065";
+				font-family: "FontAwesome";
+				position: absolute;
+				top: 50%;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				margin-top: -9px;
+				text-align: center;
+				font-size: 18px;
+				color: $white;
+				z-index: 1;
+				opacity: 0;
+			}
+
+			&:after {
+				@include animate();
+				content: '';
+				display: block;
+				background: rgba(0,0,0,0.75);
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				border-radius: 3px;
+				opacity: 0;
+			}
+
+			&:hover{
+				&:after,
+				&:before {
+					opacity: 1;
+				}
+			}
+		}
+
+		.title {
+			padding-top: 20px;
+			@include one_line_text;
+		}
+
+		.artist-sentence {
+			opacity: 0.5;
+			display: block;
+			@include one_line_text;
+
+			.artist {
+				color: inherit;
+				text-decoration: none;
+				border-bottom: 1px dotted transparent;
+			}
+		}
+	}
+
+	.control {
+		@include animate();
+		font-size: 12px;
+		color: $dark_grey;
+		cursor: pointer;
+		padding: 8px;
+		display: inline-block;
+		vertical-align: bottom;
+
+		&.play {
+			font-size: 24px;
+			margin-bottom: -6px;
+		}
+
+		&.active {
+			color: $turquoise !important;
+		}
+
+		&:hover {
+			color: $black;
+		}
+	}
+
+	section {
+		position: absolute;
+		bottom: 11px;
+
+		&.playback {
+			left: 20px;
+			width: 120px;
+			text-align: center;
+		}
+
+		&.progress {
+			bottom: 12px;
+			left: 140px;
+			right: 280px;
+			padding-left: 20px;
+			padding-right: 20px;
+			color: $mid_grey;
+
+			.slider {
+				position: absolute;
+				bottom: 0;
+				left: 50px;
+				right: 50px;
+			}
+
+			.current {
+				font-size: 11px;
+				position: absolute;
+				bottom: 6px;
+				left: 0;
+				width: 45px;
+				text-align: right;
+			}
+
+			.total {
+				font-size: 11px;
+				position: absolute;
+				bottom: 6px;
+				right: 0;
+				width: 45px;
+			}
+		}
+
+		&.settings {
+			right: 170px;
+			width: 120px;
+			text-align: center;
+		}
+
+		&.volume {
+			bottom: 10px;
+			right: 20px;
+			width: 150px;
+
+			.modal-trigger {
+				display: none;
+			}
+
+			.control {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+			}
+
+			.slider-wrapper {
+				position: absolute;
+				bottom: 2px;
+				right: 0;
+				left: 30px;
+			}
+
+			.muted {
+				.slider .progress {
+					background: $mid_grey;
+				}
+			}
+		}
+
+		&.triggers {
+			display: none;
+		}
+	}
+
+	@include responsive($bp_medium){
+
+		.current-track {
+			width: auto;
+			bottom: auto;
+			bottom: 8px;
+			left: 60px;
+			right: 60px;
+			text-align: center;
+
+			.title {
+				padding-top: 0;
+			}
+
+			.thumbnail {
+				display: none;
+			}
+		}
+
+		section {
+
+			&.playback {
+				left: 0;
+				width: 60px;
+
+				.control {
+					&.play {
+						font-size: 12px;
+						margin-bottom: 0;
+					}
+					&.previous {
+						display: none;
+					}
+					&.stop {
+						display: none;
+					}
+				}
+			}
+
+			&.settings {
+				display: none;
+			}
+
+			&.volume {
+				display: none;
+			}
+
+			&.progress {
+				display: none;
+			}
+
+			&.triggers {
+				display: block;
+				right: 10px;
+			}
+		}
+
+		&.expanded {
+			height: 150px;
+
+			section {
+
+				&.settings {
+					display: block;
+					right: 20px;
+					bottom: 60px;
+					text-align: right;
+				}
+
+				&.volume {
+					width: auto;
+					display: block;
+					right: 130px;
+					left: 22px;
+					bottom: 60px;
+				}
+
+				&.progress {
+					display: block;
+					bottom: 110px;
+					left: 0;
+					right: 0;
+				}
+			}
+		}
+	}
+}
+

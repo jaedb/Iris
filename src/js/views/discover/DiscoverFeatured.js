@@ -51,7 +51,7 @@ class DiscoverFeatured extends React.Component{
 								<Thumbnail images={playlist.images} />
 						</Link>
 						<Link to={global.baseURL+'playlist/'+playlist.uri}>
-							<h1>{playlist.name}</h1>
+							<h2>{playlist.name}</h2>
 						</Link>
 						{playlist.description ? <h3 dangerouslySetInnerHTML={{__html: playlist.description}}></h3> : null}
 						<div className="actions">
@@ -101,7 +101,7 @@ class DiscoverFeatured extends React.Component{
 			<div className="view discover-featured-view">
 				<Header className="overlay" icon="star" title="Featured playlists" />
 				{this.renderIntro(first_playlist)}
-				<section className="grid-wrapper">
+				<section className="content-wrapper grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }
 				</section>
 			</div>

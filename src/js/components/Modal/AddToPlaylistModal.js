@@ -26,7 +26,7 @@ export default class AddToPlaylistModal extends React.Component{
 
 		return (
 			<div>
-				<h4>Add to playlist</h4>
+				<h1>Add to playlist</h1>
 				<div className="list small playlists">
 					{
 						playlists.map( playlist => {

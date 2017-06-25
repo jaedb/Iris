@@ -4,9 +4,13 @@
 	z-index: 99;
 
 	.liner {
-		background: $dark_grey;
-		color: #FFFFFF;
 		width: 160px;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+		border-radius: 3px;
+		background: $dark_grey;
+		font-size: 13px;
+		font-weight: 600;
+		font-family: "Overpass";
 
 		.title {
 			display: block;
@@ -58,12 +62,6 @@
 				font-weight: 200;
 				text-transform: capitalize;
 			}
-
-			.notouch &:hover{
-				.background {
-					opacity: 0.7;
-				}
-			}
 		}
 
 		.menu-item-wrapper {
@@ -73,11 +71,38 @@
 			.menu-item {
 				cursor: pointer;
 				display: block;
-				padding: 12px 14px;
+				padding: 9px 12px 8px;
 				box-sizing: border-box;
+				position: relative;
+				color: $white;
+				border-radius: 3px;
+			
+				&:before {
+					@include animate();
+					content: '';
+					display: block;
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: 0;
+					opacity: 0;
+					z-index: 9;
+					background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				}
 
 				.notouch &:hover {
-					background: lighten($dark_grey, 5%);
+					&:before {
+						opacity: 0.15;
+					}
+				}
+
+				&:active {
+					background: $black;
+					color: $white;
 				}
 			}
 
@@ -104,7 +129,7 @@
 				width: 0;
 				height: 100%;
 				overflow-y: scroll;			
-				background: lighten($dark_grey, 15%);
+				background: $faint_grey;
 				z-index: 3;
 
 				&.expanded {
@@ -116,20 +141,8 @@
 					width: 100%;
 
 					&.close-submenu {
-						background: $dark_grey;
-						border-top: 0;
 						color: $mid_grey;
 					}
-
-					.notouch &:hover {
-						background: lighten($dark_grey, 15%);
-					}
-				}
-			}
-
-			&:not(:first-child){
-				.menu-item {
-					border-top: 1px solid lighten($dark_grey, 8%);
 				}
 			}
 		}
@@ -232,10 +245,25 @@
 			max-width: 90vw;
 			position: relative;
 			z-index: 2;
+			border-radius: 3px;
 
 			.title {				
 				padding: 16px 20px;
 				box-sizing: border-box;
+				border-radius: 3px 3px 0 0;
+			}
+
+			& > span {
+
+				button,
+				.button {
+					color: $white;
+					font-weight: 800;
+				}
+
+				.dropdown-field {
+					color: $white;
+				}
 			}
 
 			.menu-item-wrapper {
@@ -244,6 +272,59 @@
 					box-sizing: border-box;
 				}
 			}
+		}
+	}
+}
+
+.context-menu-trigger {
+	@include animate();
+	display: inline-block;
+	padding: 14px 12px;
+	cursor: pointer;
+	vertical-align: top;
+	margin-top: -1px;
+	position: relative;
+	border-radius: 3px;
+	text-align: center;
+
+	.dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 5px;
+		background: $black;
+		display: inline-block;
+		margin: 1px;
+	}
+
+	&.white {
+		.dot {
+			background: $white;
+		}
+	}
+
+	&:before {
+		@include animate();
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		z-index: 9;
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+	}
+
+	&:hover{
+		cursor: pointer;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+
+		&:before {
+			opacity: 0.15;
 		}
 	}
 }
@@ -258,17 +339,21 @@
 		@include responsive( $bp_medium ){
 
 			.context-menu-trigger {	
+				@include gradient_overlay(50%, 0.15);
 				display: block;
 				position: fixed;
-				bottom: 50px;
+				bottom: 55px;
 				right: 5px;
-				width: 50px;
-				height: 50px;
+				width: 48px;
+				height: 8px;
+				padding: 20px 0;
 				overflow: hidden;
 				z-index: 97;
-				border-radius: 50%;
 				background: $blue;
-				color: #FFFFFF;
+
+				.dot {
+					background: $white;
+				}
 				
 				&:focus,
 				&:active {

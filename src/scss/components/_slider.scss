@@ -5,13 +5,15 @@
 
 	.track {
 		position: absolute;
-		background: rgba(255,255,255,0.3);
+		background: darken($light_grey, 6%);
+		border-radius: 2px;
 
 		.progress {
 			position: absolute;
 			background: $turquoise;
 			pointer-events: none;
 			left: 0;
+			border-radius: 2px;
 		}
 	}
 
@@ -22,14 +24,14 @@
 	}
 
 	&.horizontal {
-		margin: 10px 0;
 		height: 20px;
 
 		.track {
-			height: 2px;
-			top: 9px;
+			height: 5px;
+			top: 50%;
 			right: 0;
 			left: 0;
+			margin-top: -3px;
 
 			.progress {
 				top: 0;
@@ -43,10 +45,10 @@
 		height: 100%;
 
 		.track {
-			width: 2px;
+			width: 5px;
 			top: 0;
 			bottom: 0;
-			left: 9px;
+			left: 12px;
 
 			.progress {
 				bottom: 0;

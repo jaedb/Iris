@@ -1,11 +1,12 @@
 
 $turquoise: #08d58f;
 $off_white: #F5F5F5;
-$faint_grey: #EEEEEE;
-$light_grey: #DDDDDD;
-$mid_grey: #AAAAAA;
-$dark_grey: #333333;
-$darkest_grey: #111111;
+$faint_grey: #f4f2f0;
+$light_grey: #edeae7;
+$mid_grey: #a3a19f;
+$grey: #888888;
+$dark_grey: #232221;
+$darkest_grey: #1b1a19;
 $secondary_grey: #888888;
 $white: #FFFFFF;
 $black: #000000;
@@ -18,6 +19,7 @@ $overlay_dark: rgba(10, 10, 10, 0.95);
 
 $bp_wide: 1000px;
 $bp_medium: 800px;
+$bp_small: 500px;
 $bp_narrow: 350px;
 $bp_shallow: 650px;
 
@@ -112,11 +114,6 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
-@mixin blur( $size: 10px ) {
-	-webkit-filter: blur( $size );
-	filter: blur( $size );
-}
-
 @keyframes slideloader {
     0% { left: 0%; right: 100%; }
     50% { left: 0%; right: 0%; }
@@ -175,5 +172,43 @@ $bp_shallow: 650px;
 		@media( min-height: $min_height ){ 
 			@content;
 		}
+	}
+}
+
+@mixin blur( $size: 10px ) {
+	-webkit-filter: blur( $size );
+	filter: blur( $size );
+}
+
+@mixin feature_font(){
+	font-family: "Overpass";
+	letter-spacing: -0.04em;
+	font-weight: 600;
+}
+
+@mixin invert(){
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+
+@mixin gradient_overlay($radius: 0, $opacity: 0){
+	position: relative;
+	border-radius: $radius;
+	
+	&:before {
+		@include animate();
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: $opacity;
+		z-index: 9;
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
 	}
 }

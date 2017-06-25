@@ -1,54 +1,77 @@
 
-.playlist-view {
+main .playlist-view {
+	padding-left: 30%;
+	position: relative;
 
 	.title {
-		padding: 30px 40px;
-
-		h3 {
-			color: $mid_grey;
+		h2 {
 			a:hover {
 				color: darken($mid_grey, 20%);
 			}
 		}
-	}
 
-	.source {
-		text-transform: uppercase;
-		padding-bottom: 15px;
+		.details {
+			padding: 25px 0 30px;
+		}
 	}
 
 	.actions {
-		@include clearfix();
+		padding-bottom: 30px;
 	}
 
-	.description {
-		padding-bottom: 5px;
-	}
+	.thumbnail-wrapper {
+		position: absolute;
+		padding: 40px;
+		width: 30%;
+		top: 0;
+		left: 0;
+		box-sizing: border-box;
 
-	.thumbnail {
-		float: left;
-		max-width: 230px;
-		margin: 0 30px 30px 0;
+		.thumbnail {
+			max-width: 100%;
+		}
 	}
 
 	@include responsive( $bp_medium ){
-		.title {
-			padding: 20px 20px;
+		padding-top: 0;
+		padding-left: 10px;
+
+		.thumbnail-wrapper {
+			width: 40%;
+			padding: 10px 20px 10px 0;
+			float: left;
+			position: static;
+
+			.thumbnail {
+				float: none;
+				max-width: none;
+				margin: 0 0 0 0;
+			}
 		}
 
-		.thumbnail {
-			float: none;
-			max-width: none;
-			margin: 0 0 0 0;
+		.title {
+			padding: 30px 0 20px 40%;
 
-			.image {
-				padding-bottom: 70%;
+			.details {
+				padding: 5px 0;
 			}
 		}
 
 		.actions {
-			text-align: center;
-			padding-bottom: 20px;
+			@include clearfix();
+			padding: 10px 0 20px 40%;
+		}
+	}
+
+	@include responsive( $bp_small ){
+		.title {
+			@include clearfix();
+			padding: 20px 20px 10px 40%;
+			min-height: 20vw;
+		}
+
+		.actions {
+			padding: 0;
 		}
 	}
 }

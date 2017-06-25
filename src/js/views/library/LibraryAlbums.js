@@ -82,7 +82,7 @@ class LibraryAlbums extends React.Component{
 				}
 			]
 			return (
-				<section className="list-wrapper">
+				<section className="content-wrapper">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={albums} 
@@ -93,7 +93,7 @@ class LibraryAlbums extends React.Component{
 			)
 		}else if( this.props.view == 'thumbnails' ){
 			return (
-				<section className="grid-wrapper">
+				<section className="content-wrapper">
 					<AlbumGrid 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						albums={albums} />
@@ -101,7 +101,7 @@ class LibraryAlbums extends React.Component{
 			)
 		}else{
 			return (
-				<section className="grid-wrapper albums-detail-subview">
+				<section className="content-wrapper albums-detail-subview">
 					{
 						albums.map( album => {
 							return (
@@ -111,9 +111,9 @@ class LibraryAlbums extends React.Component{
 									</Link>
 									<div className="detail">
 										<Link to={global.baseURL+'album/'+album.uri}>
-											<h3>{ album.name }</h3>
+											<h2>{ album.name }</h2>
 										</Link>
-										<h4><ArtistSentence className="grey-text" artists={album.artists} /></h4>
+										<h3><ArtistSentence className="grey-text" artists={album.artists} /></h3>
 									</div>
 									<div className="list-wrapper">
 										<TrackList tracks={album.tracks} />

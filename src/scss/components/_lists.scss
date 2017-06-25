@@ -12,14 +12,16 @@
 
 		display: block;
 		position: relative;
-		padding: 12px 10px 12px 20px;
-		border-top: 1px solid $faint_grey;
-		border-bottom: 1px solid $faint_grey;
-		margin-bottom: -1px;
+		padding: 12px 10px;
+		margin: 0 -10px -1px -10px;
 		cursor: pointer;
+		border-radius: 3px;
+		border-bottom: 1px solid #FAFAFA;
+		border-top: 1px solid #FAFAFA;
 
 		&.selected {
 			background: $yellow !important;
+			border-color: darken($yellow,10%);
 		}
 
 		&.playing {
@@ -27,20 +29,11 @@
 		}
 
 		.state-icon {
-			position: absolute;
-			top: 0;
-			left: 0;
-			font-size: 10px;
-
-			.fa {
-				position: absolute;
-				top: 15px;
-				left: 15px;
-			}
+			display: none;
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
-			background: rgba(150,150,150,0.1);
+			background: lighten($yellow, 10%);
 			cursor: pointer;
 		}
 
@@ -73,8 +66,6 @@
 
 	&.track-list {
 		.list-item {
-			padding-left: 40px;
-
 			.col {
 				&.name { 
 					width: 40%;
@@ -179,6 +170,8 @@
 	}
 
 	&.related-artist-list {
+		padding-bottom: 20px;
+		
 		.artist {
 			display: block;
 			border: 0;
@@ -209,8 +202,9 @@
 	}
 
 	@include responsive( $bp_medium ){
+
 		.list-item {
-			padding: 7px 30px 7px 48px !important;
+			padding: 12px !important;
 
 			.source {
 				position: static;
@@ -218,12 +212,16 @@
 			}
 
 			.state-icon {
+				position: absolute;
 				top: 0;
 				left: 0;
 				height: 100%;
 				width: 48px;
+				font-size: 10px;
+				display: block;
 				
 				.fa {
+					position: absolute;
 					top: 19px;
 					left: 17px;
 				}
@@ -237,10 +235,6 @@
 					position: absolute;
 					top: 15px;
 					left: 15px;
-				}
-
-				.playing {
-					display: none !important;
 				}
 			}
 
@@ -308,6 +302,12 @@
 				.added {
 					display: none !important;
 				}
+			}
+		}
+
+		&.track-list {
+			.list-item {
+				padding: 7px 30px 7px 48px !important;
 			}
 		}
 	}

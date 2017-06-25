@@ -3,7 +3,7 @@
 	
 	.intro {
 		position: relative;
-		padding: 100px 40px 60px 40px;
+		padding: 90px 40px 70px;
 		z-index: 1;
 
 		.parallax {
@@ -20,7 +20,7 @@
 			position: relative;
 			color: $white;
 
-			h1 {
+			h2 {
 				padding-bottom: 8px;
 			}
 
@@ -40,6 +40,7 @@
 	}
 
 	.seeds {
+		padding-top: 40px;
 
 		.seed {
 			display: inline-block;
@@ -50,6 +51,7 @@
 			position: relative;
 			vertical-align: top;
 			margin: 0 10px 10px 0;
+			border-radius: 3px;
 
 			.type {
 				display: inline-block;
@@ -109,7 +111,11 @@
 .discover-new-releases-view {
 	.intro {
 		position: relative;
-		padding-top: 50px;
+		padding-top: 80px;
+
+		header {
+			margin-bottom: 0;
+		}
 
 		.parallax {
 			position: absolute;
@@ -132,12 +138,13 @@
 			}
 
 			h1,
+			h2,
 			h3,
 			.actions {
 				padding-left: 240px;
 			}
 
-			h1 {
+			h2 {
 				padding-top: 20px;
 			}
 
@@ -160,7 +167,7 @@
 					padding-top: 0;
 				}
 
-				h1,
+				h2,
 				h3,
 				.actions {
 					padding-left: 120px;

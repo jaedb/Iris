@@ -13,6 +13,7 @@ import ArtistGrid from '../components/ArtistGrid'
 import AlbumGrid from '../components/AlbumGrid'
 import PlaylistGrid from '../components/PlaylistGrid'
 import LazyLoadListener from '../components/LazyLoadListener'
+import SearchForm from '../components/SearchForm'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -22,22 +23,33 @@ import * as spotifyActions from '../services/spotify/actions'
 class Search extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
 	}
 
 	componentDidMount(){
-		this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
+
+		// Make sure we have search parameters to start with
+		if (this.props.params && this.props.params.type && this.props.params.query){
+			this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
+		}
+
+		// Auto-focus on the input field
+		$(document).find('.search-form input').focus();
 	}
 
 	componentWillReceiveProps(newProps){
+		
+		// Make sure we have some search parameters
+		if (newProps.params && newProps.params.type && newProps.params.query){
 
-		if (this.props.params.query != newProps.params.query || this.props.params.type != newProps.params.type){
-			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
-		}
+			if (this.props.params.query != newProps.params.query || this.props.params.type != newProps.params.type){
+				this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
+			}
 
-		// mopidy comes online
-		if (!this.props.mopidy_connected && newProps.mopidy_connected){
-			this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
+			// mopidy comes online
+			if (!this.props.mopidy_connected && newProps.mopidy_connected){
+				this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
+			}
 		}
 	}
 
@@ -183,7 +195,7 @@ class Search extends React.Component{
 						</div>
 
 						<section className="list-wrapper">
-							<h4 className="left-padding"><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
+							<h4><Link to={global.baseURL+'search/'+this.props.params.query+'/tracks'}>Tracks</Link></h4>
 							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.type+':'+this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
@@ -234,8 +246,11 @@ class Search extends React.Component{
 
 		return (
 			<div className="view search-view">			
-				<Header icon="search" title="Search results" options={options} uiActions={this.props.uiActions} />
-				{ this.renderResults() }
+				<Header icon="search" options={options} uiActions={this.props.uiActions} />
+				<SearchForm query={this.props.params.query} />
+				<div className="content-wrapper">
+					{ this.renderResults() }
+				</div>
 			</div>
 		);
 	}

@@ -43,7 +43,7 @@ class DiscoverCategories extends React.Component{
 		return (
 			<div className="view discover-categories-view">
 				<Header icon="grid" title="Genre / Mood" />
-				<section className="grid-wrapper">
+				<section className="content-wrapper grid-wrapper">
 					<CategoryGrid categories={categories} />
 				</section>
 			</div>

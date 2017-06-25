@@ -49,8 +49,8 @@ export default class SearchSettingsModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4 className="no-bottom-padding">Search sourced</h4>
-				<h3 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches. Please note that not all backends support searching by artist, album or playlist.</h3>
+				<h1 className="no-bottom-padding">Search sources</h1>
+				<h2 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches. Please note that not all backends support searching by artist, album or playlist.</h2>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="list small">

@@ -1,20 +1,23 @@
 
 .dropdown-field {
-	font-size: 14px;
-	font-weight: 600;
-	text-transform: uppercase;
+	font-size: 13px;
+	font-weight: 800;
+	font-family: "Overpass";
 	position: relative;
 	display: inline-block;
 
 	.label {
 		padding: 14px 10px;		
 		cursor: pointer;
+
+		&:hover {
+			color: $blue;
+		}
 	}
 
 	&.expanded {
 		.label {
-			background: $dark_grey;
-			color: #FFFFFF;
+			color: $blue;
 		}
 		.options {
 			display: block;
@@ -22,29 +25,66 @@
 	}
 
 	.options {
-		color: #FFFFFF;
+		color: $black;
 		position: absolute;
-		top: 52px;
-		right: 0px;
+		top: 46px;
+		right: 10px;
 		z-index: 97;
-		background: $dark_grey;
+		background: $white;
 		display: none;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+		border-radius: 3px;
+
+		&:before {
+			content: '';
+			display: block;
+			position: absolute;
+			top: -6px;
+			right: 10px;
+			background: $white;
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-bottom: 6px solid $mid_grey;
+		}
 
 		.option {
+			@include animate();
 			position: relative;
-			padding: 6px 14px 6px 30px;
-			border-top: 1px solid lighten($dark_grey, 10%);
+			padding: 9px 12px 8px 24px;
 			cursor: pointer;
+			
+			&:before {
+				@include animate();
+				content: '';
+				display: block;
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				opacity: 0;
+				z-index: 9;
+				background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+			}
 
 			.fa {
 				position: absolute;
-				top: 12px;
-				left: 10px;
-				font-size: 12px;
+				top: 9px;
+				left: 8px;
+				font-size: 10px;
 			}
 
 			&:hover {
-				background: lighten($dark_grey, 10%);
+				color: $black;
+
+				&:before {
+					opacity: 0.15;
+				}
 			}
 		}
 	}

@@ -131,7 +131,6 @@ class Artist extends React.Component{
 			case 'related-artists':
 				return (
 					<div className="body related-artists">
-						<h4 className="left-padding">Related artists</h4>
 						<section className="grid-wrapper no-top-padding">
 							<ArtistGrid artists={related_artists} />
 						</section>
@@ -150,7 +149,6 @@ class Artist extends React.Component{
 						</div>
 
 						<div className="col w60 biography">
-							<h4>Biography</h4>
 							<section>
 								{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
 								<div className="grey-text">Published: { this.props.artist.bio.published }</div>
@@ -164,7 +162,7 @@ class Artist extends React.Component{
 				return (
 					<div className="body overview">
 						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
-							<h4 className="left-padding">Top tracks</h4>
+							<h4>Top tracks</h4>
 							<div className="list-wrapper">
 								{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
 							</div>
@@ -172,11 +170,11 @@ class Artist extends React.Component{
 
 						<div className="col w5"></div>
 
-						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div></div> : null}
+						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} className="button">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 
-						<h4 className="left-padding">Albums</h4>
+						<h4>Albums</h4>
 						<section className="grid-wrapper no-top-padding">
 							<AlbumGrid albums={albums} />
 							<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
@@ -220,7 +218,9 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
-					{this.renderBody()}
+					<div className="content-wrapper">
+						{this.renderBody()}
+					</div>
 				</div>
 			);
 
@@ -242,7 +242,9 @@ class Artist extends React.Component{
 							{ this.renderSubViewMenu() }
 						</div>
 					</div>
-					{this.renderBody()}
+					<div className="content-wrapper">
+						{this.renderBody()}
+					</div>
 				</div>
 			);
 		}

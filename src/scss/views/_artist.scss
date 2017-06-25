@@ -3,7 +3,6 @@
 	.intro {
 		position: relative;
 		@include clearfix();
-		margin-bottom: 40px;
 
 		.parallax {
 			position: absolute;
@@ -18,7 +17,7 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 20vh 40px 0 260px;
+			padding: 30vh 40px 0 260px;
 
 			.thumbnail {
 				position: absolute;
@@ -33,12 +32,16 @@
 			}
 
 			h1 {
-				color: #FFFFFF;
+				color: $white;
 				padding-bottom: 25px;
 			}
 
 			.actions {
 				padding-bottom: 15px;
+
+				.context-menu-trigger {
+					color: $white;
+				}
 			}
 
 			.sub-views {
@@ -68,7 +71,6 @@
 
 	.body.about {		
 		@include clearfix();
-		padding: 0 40px 40px 40px;
 
 		.biography {
 			padding-left: 40px;
@@ -82,7 +84,7 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
-			margin-bottom: 20px;
+			margin-bottom: 0;
 
 			.parallax {
 				canvas {
@@ -91,20 +93,28 @@
 			}
 
 			.liner {
-				text-align: center;
-				padding-left: 20px;
-				padding-right: 20px;
+				padding-left: 0;
+				padding-right: 0;
 				padding-top: 10vh;
 
 				.thumbnail {
 					position: static;
-					float: none;
-					margin: 0 auto 20px;
-					max-width: 65%;
+					float: left;
+					margin: 0 20px 0 20px;
+					width: 30%;
+				}
+
+				h1 {
+					@include clearfix();
+					padding: 12vw 10px 0 0;
+				}
+
+				.actions {
+					padding: 30px 10px 10px;
 				}
 
 				.sub-views {
-					margin-left: 0;
+					margin-left: 5px;
 
 					.option {
 						margin: 0 8px;
