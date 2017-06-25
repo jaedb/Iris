@@ -56,7 +56,6 @@ main {
 			top: 0;
 			left: 0;
 			width: 100%;
-			background: rgba(0,0,0,0.1);
 			color: $white;
 			z-index: 95;
 
@@ -69,6 +68,7 @@ main {
 
 		@include responsive( $bp_medium ){
 			padding: 10px 10px 10px 0;
+			margin-bottom: -20px;
 
 			.icon {
 				visibility: hidden;
@@ -76,11 +76,11 @@ main {
 
 			h1 {
 				vertical-align: top;
-				padding-top: 8px;
+				padding-top: 6px;
 			}
 
 			.options {
-				top: 10px;
+				top: 8px;
 				right: 0;
 
 				.context-menu-trigger {

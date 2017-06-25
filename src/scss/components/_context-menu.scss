@@ -245,10 +245,25 @@
 			max-width: 90vw;
 			position: relative;
 			z-index: 2;
+			border-radius: 3px;
 
 			.title {				
 				padding: 16px 20px;
 				box-sizing: border-box;
+				border-radius: 3px 3px 0 0;
+			}
+
+			& > span {
+
+				button,
+				.button {
+					color: $white;
+					font-weight: 800;
+				}
+
+				.dropdown-field {
+					color: $white;
+				}
 			}
 
 			.menu-item-wrapper {

@@ -84,7 +84,7 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
-			margin-bottom: 20px;
+			margin-bottom: 0;
 
 			.parallax {
 				canvas {
@@ -93,20 +93,28 @@
 			}
 
 			.liner {
-				text-align: center;
-				padding-left: 20px;
-				padding-right: 20px;
+				padding-left: 0;
+				padding-right: 0;
 				padding-top: 10vh;
 
 				.thumbnail {
 					position: static;
-					float: none;
-					margin: 0 auto 20px;
-					max-width: 65%;
+					float: left;
+					margin: 0 20px 0 20px;
+					width: 30%;
+				}
+
+				h1 {
+					@include clearfix();
+					padding: 12vw 10px 0 0;
+				}
+
+				.actions {
+					padding: 30px 10px 10px;
 				}
 
 				.sub-views {
-					margin-left: 0;
+					margin-left: 5px;
 
 					.option {
 						margin: 0 8px;

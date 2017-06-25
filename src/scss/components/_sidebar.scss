@@ -16,59 +16,17 @@ aside{
 		top: 0;
 		left: 0;
 		right: 0;
-		bottom: 0;
+		bottom: 120px;
 		box-sizing: border-box;
 		z-index: 2;
-	}
-
-	@include responsive( $bp_medium ){
-		width: 220px;
-		left: -220px;
-		position: fixed;
-		z-index: 98;
-
-		.sidebar-open & {
-			left: 0px;
-		}
-
-		.liner {
-			bottom: 0 !important;
-		}
-
-		.thumbnail {
-			display: none;
-		}
-	}
-
-	@include responsive( null, null, $bp_shallow ){
-		.liner {
-			bottom: 60px;
-		}
-	}
-	
-	.thumbnail {
-		position: absolute;
-		top: -30px;
-		right: -30px;
-		bottom: -30px;
-		left: -30px;
-		height: auto;
-		width: auto;
-		max-width: none;
-		z-index: 1;
-		opacity: 0.2;
-
-		.image {
-			@include blur();
-			padding-bottom: 0;
-			height: 100%;
-		}
+		overflow-y: auto;
 	}
 
 	nav {
 		z-index: 2;
 		position: relative;
-		padding-top: 25px;
+		padding-top: 20px;
+		line-height: 1em;
 
 		a {
 			@include feature_font();
@@ -78,15 +36,15 @@ aside{
 			color: $darkest_grey;
 			text-decoration: none;
 			display: block;
-			padding: 8px 10px 6px;
+			padding: 9px 10px 5px;
 			margin: 0 20px;
 			border-radius: 3px;
+			line-height: 18px;
 
 			.icon {
 				height: 14px;
 				padding-right: 8px;
 				vertical-align: top;
-				margin-top: 1px;
 			}
 
 			&.active {
@@ -127,9 +85,25 @@ aside{
 				color: $mid_grey;
 			}
 		}
-
 	}
 
 	@include responsive( $bp_medium ){
+		width: 220px;
+		left: -220px;
+		padding-bottom: 0;
+		position: fixed;
+		z-index: 100;
+
+		.sidebar-open & {
+			left: 0px;
+		}
+
+		.liner {
+			bottom: 0 !important;
+		}
+
+		.thumbnail {
+			display: none;
+		}
 	}
 }

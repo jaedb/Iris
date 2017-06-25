@@ -5,7 +5,7 @@
 	left: 0;
 	bottom: 0;
 	right: 0;
-	z-index: 99;
+	z-index: 999;
 	background: $overlay_dark;
 	overflow-y: scroll;
 
@@ -109,6 +109,12 @@
 		}
 	}
 
+	&.add_to_queue,
+	&.create_playlist {
+		h1 {
+			padding-bottom: 50px;
+		}
+	}
 
 	&.image_zoom {
 		.content {
@@ -184,6 +190,10 @@
 			.current-track {
 				padding-top: 50px;
 				font-size: 30px;
+
+				.artist-sentence {
+					opacity: 0.5;
+				}
 			}
 		}
 	}

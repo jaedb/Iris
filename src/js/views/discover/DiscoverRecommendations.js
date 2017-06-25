@@ -229,15 +229,14 @@ class Discover extends React.Component{
 	render(){
 		return (
 			<div className="view discover-view">
-				<Header icon="compass" title="Discover" className="overlay" />
 				<div className="intro">
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
 					<div className="liner">
-						<h2>Explore new music</h2>
-						<h3>
+						<h1>Explore new music</h1>
+						<h2 className="grey-text">
 							Add seeds below to build your sound. Let's start with 
 							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.
-						</h3>
+						</h2>
 						{this.renderSeeds()}
 					</div>
 				</div>

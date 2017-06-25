@@ -38,7 +38,9 @@ main .album-view {
 
 		.thumbnail-wrapper {
 			width: 40%;
-			padding: 10px 20px 10px 10px;
+			padding: 10px 20px 10px 0;
+			float: left;
+			position: static;
 
 			.thumbnail {
 				float: none;
@@ -48,8 +50,7 @@ main .album-view {
 		}
 
 		.title {
-			padding: 20px 20px 20px 40%;
-			min-height: 30vw;
+			padding: 30px 0 20px 40%;
 
 			.details {
 				padding: 5px 0;
@@ -57,8 +58,20 @@ main .album-view {
 		}
 
 		.actions {
-			text-align: center;
-			padding: 20px 5px;
+			@include clearfix();
+			padding: 10px 0 20px 40%;
+		}
+	}
+
+	@include responsive( $bp_small ){
+		.title {
+			@include clearfix();
+			padding: 20px 20px 10px 40%;
+			min-height: 20vw;
+		}
+
+		.actions {
+			padding: 0;
 		}
 	}
 }

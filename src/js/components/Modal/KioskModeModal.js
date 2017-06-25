@@ -39,7 +39,7 @@ export default class KioskModeModal extends React.Component{
 				<div className="player">
 					<div className="current-track">
 						<div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
-						{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
+						{ this.props.current_track ? <ArtistSentence nolinks artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 					</div>
 				</div>
 			</div>

@@ -202,8 +202,9 @@
 	}
 
 	@include responsive( $bp_medium ){
+
 		.list-item {
-			padding: 7px 30px 7px 48px !important;
+			padding: 12px !important;
 
 			.source {
 				position: static;
@@ -301,6 +302,12 @@
 				.added {
 					display: none !important;
 				}
+			}
+		}
+
+		&.track-list {
+			.list-item {
+				padding: 7px 30px 7px 48px !important;
 			}
 		}
 	}

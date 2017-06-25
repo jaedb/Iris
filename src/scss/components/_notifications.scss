@@ -124,9 +124,9 @@
 	}
 
 	@include responsive( $bp_medium ){
-		bottom: 48px;
-		left: 0;
-		right: 0;
+		bottom: 60px;
+		left: 10px;
+		right: 10px;
 		width: auto;
 
 		.loading {
