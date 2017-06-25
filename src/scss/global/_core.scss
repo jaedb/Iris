@@ -107,9 +107,10 @@ h3 {
 }
 
 h4 {
-	font-size: 14px;
+	@include feature_font();
+	font-size: 1.3rem;
 	margin-bottom: 14px;
-	text-transform: uppercase;
+	font-weight: 800;
 
 	&.underline {
 		padding-bottom: 4px;
