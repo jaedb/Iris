@@ -150,15 +150,31 @@ class Settings extends React.Component{
 	}
 
 	serviceStatus(service){
+
+		var icon = null
+		var status = 'Unknown'
+
 		if (this.props[service].connecting){
-			return <span className="grey-text">Connecting</span>
+			icon = <span className="icon connecting"><FontAwesome name="plug" /></span>
+			status = 'Connecting'
 		} else if (service == 'spotify' && !this.props[service].authorized){
-			return <span className="orange-text">Not authorized</span>
+			icon = <span className="icon warning"><FontAwesome name="check" /></span>
+			status = 'Connected (not authorized)'
 		} else if (this.props[service].connected){
-			return <span className="green-text">Connected</span>
+			icon = <span className="icon connected"><FontAwesome name="check" /></span>
+			status = 'Connected'
 		} else {
-			return <span className="red-text">Disconnected</span>
+			icon = <span className="icon disconnected"><FontAwesome name="close" /></span>
+			status = 'Disconnected'
 		}
+
+		return (
+			<div className="service">
+				<h4>{service}</h4>
+				{icon}
+				<span className="text">{status}</span>
+			</div>
+		)
 	}
 
 	render(){
@@ -182,26 +198,10 @@ class Settings extends React.Component{
 
 				<section className="content-wrapper">
 
-					<div className="status">
-					
-						<div className="item">
-							<Icon name="server" />
-							<h4>Mopidy</h4>
-							{this.serviceStatus('mopidy')}
-						</div>
-					
-						<div className="item">
-							<Icon name="connection" />
-							<h4>Pusher</h4>
-							{this.serviceStatus('pusher')}
-						</div>
-
-						<div className="item">
-							<Icon name="spotify" />
-							<h4>Spotify</h4>
-							{this.serviceStatus('spotify')}
-						</div>
-
+					<div className="services">					
+						{this.serviceStatus('mopidy')}
+						{this.serviceStatus('pusher')}
+						{this.serviceStatus('spotify')}
 					</div>
 
 					<h4 className="underline">System</h4>

@@ -1,25 +1,49 @@
 
 .settings-view {
-	
-	.status {
-		.item {
+	.services {
+		.service {
 			position: relative;
 			display: inline-block;
 			padding: 0 0 0 45px;
 			margin: 0 20px 10px 0;
 			min-width: 80px;
 
-			.icon {
-				width: 35px;
-				height: 35px;
-				position: absolute;
-				top: 0;
-				left: 0;
-			}
-
 			h4 {
 				padding: 0;
-				margin: 0;
+				margin: 0 0 -3px 0;
+				text-transform: capitalize;
+			}
+
+			.icon {
+				width: 35px;
+				height: 25px;
+				position: absolute;
+				top: 2px;
+				left: 0;
+				border-radius: 50%;
+				color: $white;
+				text-align: center;
+				padding-top: 10px;
+
+				&.connecting {
+					background: $mid_grey;
+				}
+
+				&.connected {
+					background: $green;
+				}
+
+				&.warning {
+					background: $orange;
+				}
+
+				&.disconnected {
+					background: $red;
+				}
+			}
+
+			.text {
+
 			}
 		}
 	}
@@ -64,6 +88,29 @@
 	}
 
 	@include responsive( $bp_medium ){
+		.services {
+			.service {
+				padding: 0 0 0 30px;
+				margin-bottom: 0;
+				min-width: 0px;
+
+				h4 {
+					padding-top: 1px;
+				}
+
+				.icon {
+					height: 15px;
+					width: 20px;
+					padding-top: 5px;
+					font-size: 10px;
+				}
+
+				.text {
+					display: none;
+				}
+			}
+		}
+
 		section {
 			padding: 20px;
 		}
