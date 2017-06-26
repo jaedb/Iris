@@ -141,9 +141,11 @@ class Playlist extends React.Component{
 	}
 
 	render(){
+		if (!this.props.playlist) return null
 
 		var scheme = helpers.uriSource( this.props.params.uri )
 		var context = 'playlist'
+		if (this.props.playlist.can_edit) context = 'editable-playlist'
 		var user_id = helpers.getFromUri('userid',this.props.params.uri)
 		var playlist_id = helpers.getFromUri('playlistid',this.props.params.uri)
 
@@ -155,70 +157,44 @@ class Playlist extends React.Component{
 			)
 		}
 
-		if (this.props.playlist){
-			if (this.props.playlist.can_edit) context = 'editable-playlist'
+		return (
+			<div className="view playlist-view content-wrapper">
+			
+				<SidebarToggleButton />
 
-			return (
-				<div className="view playlist-view content-wrapper">
-				
-					<SidebarToggleButton />
-
-					<div className="thumbnail-wrapper">
-						<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
-					</div>
-
-					<div className="title">
-						<h1>{ this.props.playlist.name }</h1>
-						{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
-
-						<ul className="details">
-							<li className="has-tooltip">
-								<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />
-								<span className="tooltip">
-									{helpers.uriSource( this.props.params.uri )} playlist
-								</span>
-							</li>
-							{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
-							{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-							{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
-							<li>
-								{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
-								{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
-							</li>
-						</ul>
-					</div>
-
-					{ this.renderActions() }
-
-					<section className="list-wrapper">
-						{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
-						<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
-					</section>
+				<div className="thumbnail-wrapper">
+					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
 				</div>
-			)
 
-		} else {
-			return (
-				<div className="view playlist-view">				
-					<SidebarToggleButton />
-					<Thumbnail size="large" />
-					<div className="title">
-						<div className="source grey-text">
-							Playlist
-						</div>
-						<h1><span className="placeholder"></span></h1>
-						<ul className="details">
-							<li>
-								<span className="placeholder"></span>
-							</li>
-						</ul>
-					</div>					
-					<div className="actions">
-						<button className="placeholder">&nbsp;</button>
-					</div>
+				<div className="title">
+					<h1>{ this.props.playlist.name }</h1>
+					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
+
+					<ul className="details">
+						<li className="has-tooltip">
+							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />
+							<span className="tooltip">
+								{helpers.uriSource( this.props.params.uri )} playlist
+							</span>
+						</li>
+						{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
+						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
+						<li>
+							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
+							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
+						</li>
+					</ul>
 				</div>
-			)
-		}
+
+				{ this.renderActions() }
+
+				<section className="list-wrapper">
+					{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+					<LazyLoadListener enabled={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
+				</section>
+			</div>
+		)
 	}
 }
 

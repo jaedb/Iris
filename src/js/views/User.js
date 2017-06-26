@@ -44,75 +44,71 @@ class User extends React.Component{
 	}
 
 	render(){
-		if (this.props.user){
-			var playlists = []
-			if (this.props.user.playlists_uris){
-				for (var i = 0; i < this.props.user.playlists_uris.length; i++){
-					var uri = this.props.user.playlists_uris[i]
-					if (this.props.playlists.hasOwnProperty(uri)){
-						playlists.push(this.props.playlists[uri])
-					}
-				}
-			}
-
-			if (this.props.user && this.props.user.images ){
-				var image = helpers.sizedImages(this.props.user.images).huge
-			} else {
-				var image = null
-			}
-
+		var user_id = helpers.getFromUri('userid',this.props.params.uri)
+		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
 			return (
-				<div className="view user-view">
-
-					<SidebarToggleButton />
-
-					<div className="intro">
-						<Parallax image={image} />
-						<div className="liner">
-							<Thumbnail image={image} canZoom circle />
-							<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
-							<h2>
-								<ul className="details">
-									<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
-									<li>{this.props.user.followers.total.toLocaleString()} followers</li>
-									{this.isMe() ? <li>You</li> : null}
-								</ul>
-							</h2>
-							<div className="actions">
-								<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
-							</div>
-						</div>
-					</div>
-					
-					<div className="content-wrapper">
-						<section className="grid-wrapper">
-							<h4>Playlists</h4>
-							<PlaylistGrid playlists={playlists} />
-							<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
-						</section>
-					</div>
+				<div className="body-loader">
+					<div className="loader"></div>
 				</div>
 			)
-		} else {
+		}
 
-			return (
-				<div className="view user-view">
-					<div className="intro">
-						<Thumbnail circle size="medium" images={[]} />
-						<h1><span className="placeholder"></span></h1>
+		if (!this.props.user) return null
+
+		var playlists = []
+		if (this.props.user.playlists_uris){
+			for (var i = 0; i < this.props.user.playlists_uris.length; i++){
+				var uri = this.props.user.playlists_uris[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
+		}
+
+		if (this.props.user && this.props.user.images ){
+			var image = helpers.sizedImages(this.props.user.images).huge
+		} else {
+			var image = null
+		}
+
+		return (
+			<div className="view user-view">
+
+				<SidebarToggleButton />
+
+				<div className="intro">
+					<Parallax image={image} />
+					<div className="liner">
+						<Thumbnail image={image} canZoom circle />
+						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
+						<h2>
+							<ul className="details">
+								<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
+								<li>{this.props.user.followers.total.toLocaleString()} followers</li>
+								{this.isMe() ? <li>You</li> : null}
+							</ul>
+						</h2>
 						<div className="actions">
-							<button className="placeholder"></button>
+							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
 						</div>
 					</div>
 				</div>
-			);
-		}
-
+				
+				<div className="content-wrapper">
+					<section className="grid-wrapper">
+						<h4>Playlists</h4>
+						<PlaylistGrid playlists={playlists} />
+						<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
+					</section>
+				</div>
+			</div>
+		)
 	}
 }
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorized,
 		me: state.spotify.me,
 		playlists: state.ui.playlists,
