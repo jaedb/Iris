@@ -69,30 +69,13 @@
 			overflow-x: hidden;
 
 			.menu-item {
+				@include gradient_overlay(3px);
 				cursor: pointer;
 				display: block;
 				padding: 9px 12px 8px;
 				box-sizing: border-box;
 				position: relative;
 				color: $white;
-				border-radius: 3px;
-			
-				&:before {
-					@include animate();
-					content: '';
-					display: block;
-					position: absolute;
-					top: 0;
-					right: 0;
-					bottom: 0;
-					left: 0;
-					opacity: 0;
-					z-index: 9;
-					background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				}
 
 				.notouch &:hover {
 					&:before {
@@ -124,13 +107,15 @@
 				position: absolute;
 				top: 0;
 				right: 0;
-				bottom: 0;
 				left: 100%;
+				height: 100%;
+				min-height: 200px;
 				width: 0;
 				height: 100%;
 				overflow-y: scroll;			
-				background: $faint_grey;
+				background: $darkest_grey;
 				z-index: 3;
+				border-radius: 3px;
 
 				&.expanded {
 					width: 100%;
@@ -166,7 +151,7 @@
 				font-weight: 300;
 				color: inherit;
 
-				&:not(:first-child){
+				&:not(:first-child):not(.dropdown-field){
 					border-top: 1px solid lighten($dark_grey, 8%);
 				}
 
@@ -188,6 +173,7 @@
 
 			.dropdown-field {
 				padding: 0;
+				box-shadow: none;
 
 				.label {
 					padding: 16px 20px;
@@ -196,17 +182,24 @@
 				.options {
 					display: block;
 					position: static;
-					background: darken($dark_grey, 5%);
+					background: $darkest_grey;
+					border-radius: 0;
+					border: 0;
+					color: $white !important;
 
 					.option {
 						padding: 12px 20px 12px 50px;
-						border-top: 1px solid $dark_grey;
+						border-radius: 0;
 
 						.fa {
 							display: inline-block;
 							left: 25px;
 							top: 14px;
 						}
+					}
+
+					&:before {
+						display: none;
 					}
 				}
 			}			
@@ -254,7 +247,6 @@
 			}
 
 			& > span {
-
 				button,
 				.button {
 					color: $white;

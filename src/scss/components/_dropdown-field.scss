@@ -10,7 +10,7 @@
 		padding: 14px 10px;		
 		cursor: pointer;
 
-		&:hover {
+		.notouch &:hover {
 			color: $blue;
 		}
 	}
@@ -79,7 +79,7 @@
 				font-size: 10px;
 			}
 
-			&:hover {
+			.notouch &:hover {
 				color: $black;
 
 				&:before {

@@ -206,6 +206,7 @@ $bp_shallow: 650px;
 		left: 0;
 		opacity: $opacity;
 		z-index: 9;
+		pointer-events: none;
 		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
 		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
 		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));

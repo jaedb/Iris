@@ -57,9 +57,9 @@ input[type="submit"] {
 	vertical-align: middle;
 	position: relative;
 	border: 0 !important;
+	cursor: pointer;
 
-	&:hover{
-		cursor: pointer;
+	.notouch &:hover{
 		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
 
 		&:before {
@@ -148,7 +148,7 @@ input[type="submit"] {
 		cursor: not-allowed !important;
 
 		&,
-		&:hover,
+		.notouch &:hover,
 		&:active {
 			color: $mid_grey;
 			border-color: $mid_grey;
