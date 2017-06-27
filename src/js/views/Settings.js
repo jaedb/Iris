@@ -278,6 +278,20 @@ class Settings extends React.Component{
 
 					<h4 className="underline">Advanced</h4>
 
+					<div className="field checkbox">
+						<div className="name">Customise behavior</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="log_actions"
+									checked={ this.props.ui.clear_tracklist_on_play }
+									onChange={ e => this.props.uiActions.set({ clear_tracklist_on_play: !this.props.ui.clear_tracklist_on_play })} />
+								<span className="label">Clear tracklist on play of URI(s)</span>
+							</label>
+						</div>
+					</div>
+
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>
 						<div className="input">

@@ -254,6 +254,11 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_PLAYLIST':
 
+                // Clear tracklist (if set)
+                if (store.getState().ui.clear_tracklist_on_play){
+                    store.dispatch(mopidyActions.clearTracklist())
+                }
+
                 // playlist already in index
                 if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
                     
@@ -403,9 +408,14 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_URIS':
 
-                // stop the radio
+                // Stop the radio
                 if (store.getState().ui.radio && store.getState().ui.radio.enabled){
-                    store.dispatch( pusherActions.stopRadio() )
+                    store.dispatch(pusherActions.stopRadio())
+                }
+
+                // Clear tracklist (if set)
+                if (store.getState().ui.clear_tracklist_on_play){
+                    store.dispatch(mopidyActions.clearTracklist())
                 }
 
                 var first_uri = action.uris[0]
