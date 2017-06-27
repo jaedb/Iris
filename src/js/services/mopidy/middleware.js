@@ -302,7 +302,7 @@ const MopidyMiddleware = (function(){
                 var batch_size = 5
                 while (uris.length > 0){
                     batches.push({
-                        uris: uris.splice(0,batch_size-1),
+                        uris: uris.splice(0,batch_size),
                         at_position: action.at_position,
                         next: action.next,
                         offset: action.offset + (batch_size * batches.length),
