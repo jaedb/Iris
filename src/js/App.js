@@ -82,21 +82,21 @@ class App extends React.Component{
 	}
 
 	shouldTriggerShortcut(e){
-		var ignoreNodes = ['INPUT', 'TEXTAREA'];
-		var keyCodes = [32,27,59,186,188,190,191,222];
+		var ignoreNodes = ['INPUT', 'TEXTAREA']
+		var keyCodes = [32,27,191,37,38,39,40,70]
 
 		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
-			return false;
+			return false
 		}
 
 		if( keyCodes.indexOf(e.keyCode) > -1 ){
-			e.preventDefault();
-			return true;
+			e.preventDefault()
+			return true
 		}
 	}
 
 	handleKeyDown(e){
-		this.shouldTriggerShortcut(e);
+		this.shouldTriggerShortcut(e)
 	}
 
 	handleKeyUp(e){
@@ -104,7 +104,7 @@ class App extends React.Component{
 			return
 		}
 
-		switch(e.keyCode){	
+		switch(e.keyCode){
 
 			case 32: // spacebar
 				if (this.props.play_state == 'playing'){
@@ -125,47 +125,63 @@ class App extends React.Component{
 				}
 				break
 
-			case 59: // ";" in Firefox
-			case 186: // ";"
-				if (e.ctrlKey){
+			case 40: // down
+				if (e.ctrlKey && e.shiftKey){
+					this.props.mopidyActions.setMute(true)
+					this.props.uiActions.createNotification('volume-off', 'shortcut', 'shortcut')
+				} else if (e.ctrlKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
 						volume -= 10
 						if (volume < 0) volume = 0
 						this.props.mopidyActions.setVolume(volume)
+						if (this.props.mute) this.props.mopidyActions.setMute(false)
 						this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut')
 					}
 				}
 				break
 
-			case 222: // "'"
-				if (e.ctrlKey){
+			case 38: // up
+				if (e.ctrlKey && e.shiftKey){
+					this.props.mopidyActions.setVolume(100)
+					if (this.props.mute) this.props.mopidyActions.setMute(false)
+					this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut')
+				} else if (e.ctrlKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
 						volume += 10
 						if (volume > 100) volume = 100
 						this.props.mopidyActions.setVolume(volume)
+						if (this.props.mute) this.props.mopidyActions.setMute(false)
 						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut')
 					}
 				}
 				break
 
-			case 188: // ","
-				if (e.ctrlKey){
+			case 37: // left
+				if (e.ctrlKey && e.shiftKey){
+					var new_position = this.props.play_time_position - 30000
+					if (new_position < 0) new_position = 0
+					this.props.mopidyActions.seek(new_position)
+					this.props.uiActions.createNotification('fast-backward', 'shortcut', 'shortcut')
+				} else if (e.ctrlKey){
 					this.props.mopidyActions.previous()
 					this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut')
 				}
 				break
 
-			case 190: // "."
-				if (e.ctrlKey){
+			case 39: // right
+				if (e.ctrlKey && e.shiftKey){
+					this.props.mopidyActions.seek(this.props.play_time_position + 30000)
+					this.props.uiActions.createNotification('fast-forward', 'shortcut', 'shortcut')
+				} else if (e.ctrlKey){
 					this.props.mopidyActions.next()
 					this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut')
 				}
 				break
 
-			case 191: // "/"
-				if (e.ctrlKey){
+			case 70: // F
+				if (e.ctrlKey && e.shiftKey){
 					if (this.props.modal){
 						this.props.uiActions.closeModal()
 					} else {
@@ -224,6 +240,8 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		play_state: state.mopidy.play_state,
+		play_time_position: parseInt(state.mopidy.time_position),
+		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
 		dragger: state.ui.dragger,
 		modal: state.ui.modal,
