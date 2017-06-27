@@ -165,10 +165,11 @@
 
 			.background {
 				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
+				top: -5vh;
+				right: -5vw;
+				bottom: -5vh;
+				left: -5vw;
+				width: auto;
 				opacity: 0.2;
 				max-width: none;
 
