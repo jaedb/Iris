@@ -162,7 +162,7 @@ class Debug extends React.Component{
 									<option value='{"method":"get_queue_metadata"}'>Get queue metadata</option>
 									<option value='{"method":"broadcast","data":{"type":"browser_notification","title":"Testing","body":"This is my message"}}'>Broadcast to all clients</option>
 									<option value='{"method":"deliver_message","data":{"to":"CONNECTION_ID_HERE","message":{"type":"browser_notification","title":"Testing","body":"This is my message"}}}'>Broadcast to one client</option>
-									<option value='{"method":"set_username","data":{"connection_id":"CONNECTION_ID_HERE","username":"NewUsername"}}}'>Change username</option>
+									<option value='{"method":"set_username","data":{"connection_id":"CONNECTION_ID_HERE","username":"NewUsername"}}'>Change username</option>
 									<option value='{"method":"refresh_spotify_token"}'>Refresh Spotify token</option>
 									<option value='{"method":"perform_upgrade"}'>Perform upgrade (beta)</option>
 								</select>
