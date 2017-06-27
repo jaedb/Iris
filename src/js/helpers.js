@@ -93,11 +93,15 @@ export let getCurrentPusherConnection = function( connections, connectionid ){
  * @param track object
  * @return string
  **/
-export let getTrackIcon = function( track = false ){
-	if( !track ) return false
-	if( !track.album ) return false
-	if( !track.album.images ) return false
-	return sizedImages( track.album.images ).small
+export let getTrackIcon = function(current_track = false, ui = false){
+	if (!ui) return false
+	if (!current_track) return false
+	if (typeof(current_track.uri) == 'undefined') return false
+	if (typeof(ui.tracks[current_track.uri]) === 'undefined') return false
+	var track = ui.tracks[current_track.uri]
+	if (!track.album) return false
+	if (!track.album.images) return false
+	return sizedImages(track.album.images).small
 }
 
 
