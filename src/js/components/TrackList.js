@@ -115,7 +115,7 @@ class TrackList extends React.Component{
 		}
 
 		var selected_tracks = this.selectedTracks()
-		this.props.uiActions.dragStart( e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks) )
+		this.props.uiActions.dragStart(e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks))
 	}
 
 	handleMouseUp(e,index){
