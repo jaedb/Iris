@@ -32,7 +32,7 @@
 			display: none;
 		}
 
-		:root .notouch:not(.dragging) &:not(.header):not(.no-click):hover {
+		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
 			background: lighten($yellow, 10%);
 			cursor: pointer;
 		}
@@ -79,7 +79,7 @@
 				}
 			}
 
-			:root .dragging &:hover {
+			:root .dragging &.hover {
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;

@@ -10,7 +10,11 @@ import * as helpers from '../helpers'
 export default class Track extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this.state = {
+			hover: false
+		}
 	}
 
 	handleMouseDown(e){
@@ -35,11 +39,12 @@ export default class Track extends React.Component{
 	render(){
 		if( !this.props.track ) return null
 
-		var track = this.props.track;
-		var className = 'list-item track';
-		if( typeof(track.selected) !== 'undefined' && track.selected ) className += ' selected';
-		if( typeof(track.type) !== 'undefined' ) className += ' '+track.type;
-		if( track.playing ) className += ' playing';
+		var track = this.props.track
+		var className = 'list-item track'
+		if (typeof(track.selected) !== 'undefined' && track.selected) className += ' selected'
+		if (typeof(track.type) !== 'undefined') className += ' '+track.type
+		if (track.playing) className += ' playing'
+		if (this.state.hover) className += ' hover'
 		
 		var album = '-'
 		if( track.album ){
@@ -133,6 +138,8 @@ export default class Track extends React.Component{
 		return (
 			<div
 				className={className}
+				onMouseEnter={e => this.setState({hover: true})}
+				onMouseLeave={e => this.setState({hover: false})}
 				onTouchStart={ e => this.props.handleTouchStart(e) }
 				onTouchEnd={ e => this.handleTouchEnd(e) }
 				onMouseDown={ e => this.handleMouseDown(e) }

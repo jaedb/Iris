@@ -16,7 +16,7 @@
 	top: 0;
 	z-index: 97;
 	background: $blue;
-	color: #FFFFFF;
+	color: $white;
 	padding: 12px 20px;
 	pointer-events: none;
 }
@@ -28,14 +28,17 @@
 	width: 100%;
 	height: 100%;
 	z-index: 98;
-	background: rgba(25, 25, 25, 0.9);
+	background: $off_white;
 
 	.dropzone {
 		@include animate();
+		@include gradient_overlay(3px,0);
 		margin: 15px;
 		padding: 40px 20px;
-		background: $dark_grey;
-		color: #FFFFFF;
+		background: $darkest_grey;
+		border: 5px solid transparent;
+		border-radius: 3px;
+		color: $white;
 		font-size: 18px;
 		text-align: center;
 
@@ -50,7 +53,11 @@
 		}
 
 		&.hover {
-			background: $turquoise;
+			border-color: $blue;
+
+			&:before {
+				opacity: 0.15;
+			}
 		}
 	}
 }
