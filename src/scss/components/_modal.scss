@@ -69,7 +69,7 @@
 
 		.list {
 			@include clearfix();
-			padding-top: 30px;
+			padding-top: 50px;
 
 			.list-item {
 				box-sizing: border-box;
@@ -77,6 +77,8 @@
 				padding: 16px 18px;
 				position: relative;
 				border: 0;
+				border-radius: 3px;
+				padding: 5px;
 
 				.source {
 					position: absolute;
@@ -85,16 +87,24 @@
 				}
 
 				&:hover {
-					background: transparent !important;
-					opacity: 0.75;
+					background: rgba(255,255,255,0.1);
 				}
 			}
 
 			&.playlists {
-				padding-top: 0;
-
 				.list-item {
-					padding-left: 30px;
+					margin: 0 0 20px 0;
+
+					.thumbnail {
+						float: left;
+						margin-right: 20px;
+					}
+
+					.source {
+						position: static;
+						top: auto;
+						left: auto;
+					}
 				}
 			}
 
@@ -259,10 +269,7 @@
 					margin-left: 0 !important;
 					border-top: 0;
 					width: auto !important;
-
-					&:nth-child(1){
-						border-top: 1px solid $mid_grey;
-					}
+					margin: 0;
 				}
 			}
 
