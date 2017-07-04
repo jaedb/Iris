@@ -53,16 +53,20 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         (xhr, status, error) => {
                             dispatch(uiActions.stopLoading(loader_key))
-
-                            // TODO: Catch 403 token_expired and force renewal
-                            // Android Chrome mini-app doesn't seem to check date properly
-                            // alert(error)
                             
                             // Get the error message, jsson decode if necessary
                             var message = xhr.responseText
+                            var status = null
                             var response = JSON.parse(xhr.responseText)                            
                             if (response.error && response.error.message){
                                 message = response.error.message
+                                status = response.error.status
+                            }
+
+                            // TODO: Instead of allowing request to fail before renewing the token, once refreshed
+                            // we should retry the original request(s)
+                            if (message == 'The access token expired'){
+                                dispatch(refreshToken(dispatch, getState))
                             }
 
                             dispatch(uiActions.createNotification('Spotify: '+message,'bad'))
