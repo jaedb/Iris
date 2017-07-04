@@ -210,11 +210,17 @@
 	}
 
 	&.receive_authorization {
-		.user-view {
-			padding-top: 40px;
+		.user-details {
+			@include clearfix();
+			padding: 70px 0 0 120px;
+			min-height: 100px;
+			position: relative;
 
 			.thumbnail {
-				max-width: 150px;
+				max-width: 100px;
+				position: absolute;
+				top: 50px;
+				left: 0;
 			}
 		}
 	}
