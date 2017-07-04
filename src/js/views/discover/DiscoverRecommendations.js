@@ -211,15 +211,15 @@ class Discover extends React.Component{
 		
 		return (
 			<div className="content-wrapper recommendations-results">
-				<section className="grid-wrapper">
+				<section>
 					<h4>Artists</h4>
 					<ArtistGrid artists={artists} />
 				</section>
-				<section className="grid-wrapper">
+				<section>
 					<h4>Albums</h4>
 					<AlbumGrid albums={albums} />
 				</section>
-				<section className="list-wrapper">
+				<section>
 					<h4>Tracks</h4>
 					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri={uri} tracks={this.props.recommendations.tracks} /> : null}
 				</section>

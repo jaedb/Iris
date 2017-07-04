@@ -31,14 +31,6 @@
 		}
 	}
 
-	section.grid-wrapper {
-		padding-bottom: 10px;
-		
-		&:not(:first-child){
-			padding-top: 0;
-		}
-	}
-
 	.seeds {
 		padding-top: 40px;
 
@@ -99,11 +91,14 @@
 			}
 		}
 	}
+	
+	section {
+		.grid {
+			padding-bottom: 20px;
+		}
+	}
 
 	@include responsive( $bp_medium ){
-		section {
-			padding: 20px;
-		}
 	}
 }
 
