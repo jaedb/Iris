@@ -47,16 +47,6 @@ class Settings extends React.Component{
 			changed = true
 		}
 		
-		if (newProps.mopidy.host != this.state.mopidy_host && this.state.input_in_focus != 'mopidy_host'){
-			state.mopidy_host = newProps.mopidy.host
-			changed = true
-		}
-		
-		if (newProps.mopidy.port != this.state.mopidy_port && this.state.input_in_focus != 'mopidy_port'){
-			state.mopidy_port = newProps.mopidy.port
-			changed = true
-		}
-		
 		if (newProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
 			state.pusher_username = newProps.pusher.username
 			changed = true

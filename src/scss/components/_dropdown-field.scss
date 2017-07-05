@@ -34,6 +34,7 @@
 		display: none;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		border-radius: 3px;
+		min-width: 120px;
 
 		&:before {
 			content: '';

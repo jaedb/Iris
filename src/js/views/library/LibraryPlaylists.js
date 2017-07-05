@@ -58,8 +58,28 @@ class LibraryPlaylists extends React.Component{
 		var playlists = []
 		for (var i = 0; i < this.props.library_playlists.length; i++){
 			var uri = this.props.library_playlists[i]
+			var owner_id = helpers.getFromUri('playlistowner',uri)
+
 			if (this.props.playlists.hasOwnProperty(uri)){
-				playlists.push(this.props.playlists[uri])
+
+				switch (this.props.filter){
+
+					case 'only_mine':
+						if (this.props.me_id && owner_id == this.props.me_id){
+							playlists.push(this.props.playlists[uri])
+						}
+						break
+
+					case 'only_others':
+						if (!this.props.me_id || owner_id != this.props.me_id){
+							playlists.push(this.props.playlists[uri])
+						}
+						break
+
+					default:
+						playlists.push(this.props.playlists[uri])
+						break
+				}
 			}
 		}
 
@@ -113,6 +133,21 @@ class LibraryPlaylists extends React.Component{
 
 	render(){
 
+		var filter_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'only_mine',
+				label: 'Owned by me'
+			},
+			{
+				value: 'only_others',
+				label: 'I\'m following'
+			}
+		]
+
 		var view_options = [
 			{
 				value: 'thumbnails',
@@ -149,6 +184,7 @@ class LibraryPlaylists extends React.Component{
 
 		var options = (
 			<span>
+				<DropdownField icon="filter" name="Filter" value={this.props.filter} options={filter_options} handleChange={val => {this.props.uiActions.set({ library_playlists_filter: val}); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_playlists_view: val}); this.props.uiActions.hideContextMenu() }} />
 				<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
@@ -177,7 +213,9 @@ class LibraryPlaylists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
+		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
 		view: state.ui.library_playlists_view,
+		filter: (state.ui.library_playlists_filter ? state.ui.library_playlists_filter : 'all'),
 		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
 		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
 		library_playlists: state.ui.library_playlists,
