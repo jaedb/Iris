@@ -2,6 +2,7 @@
 var helpers = require('./../../helpers')
 var spotifyActions = require('./actions')
 var uiActions = require('../ui/actions')
+var pusherActions = require('../pusher/actions')
 
 const SpotifyMiddleware = (function(){
 
@@ -347,6 +348,22 @@ const SpotifyMiddleware = (function(){
                     playlists_more: action.data.playlists.next
                 });
                 break
+
+            case 'SPOTIFY_ME_LOADED':
+
+                // We've loaded 'me' and we are Anonymous currently
+                if (action.data && store.getState().pusher.username == 'Anonymous'){
+                    if (typeof(action.data.display_name) !== 'undefined'){
+                        var name = action.data.display_name
+                    } else {
+                        var name = action.data.id
+                    }
+
+                    // Use 'me' name as my Pusher username
+                    store.dispatch(pusherActions.setUsername(name))
+                }
+                next(action)
+                break;
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

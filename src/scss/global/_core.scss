@@ -304,9 +304,10 @@ footer {
 		color: $white;
 		font-size: 11px;
 		line-height: 11px;
-		top: -22px;
+		top: -24px;
 		left: 1px;
 		z-index: 97;
+		border-radius: 3px;
 
 		&::before {
 			content: '';
@@ -326,7 +327,7 @@ footer {
 	&:hover {
 		.tooltip {
 			opacity: 1;
-			top: -18px;
+			top: -22px;
 		}
 	}
 }

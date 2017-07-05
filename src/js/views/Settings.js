@@ -26,10 +26,45 @@ class Settings extends React.Component{
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
-			pusher_username: this.props.pusher.username,
 			spotify_country: this.props.spotify.country,
-			spotify_locale: this.props.spotify.locale
-		};
+			spotify_locale: this.props.spotify.locale,
+			pusher_username: this.props.pusher.username,
+			input_in_focus: null
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		var changed = false
+		var state = this.state
+		
+		if (newProps.spotify.country != this.state.spotify_country && this.state.input_in_focus != 'spotify_country'){
+			state.spotify_country = newProps.spotify.country
+			changed = true
+		}
+		
+		if (newProps.spotify.locale != this.state.spotify_locale && this.state.input_in_focus != 'spotify_locale'){
+			state.spotify_locale = newProps.spotify.locale
+			changed = true
+		}
+		
+		if (newProps.mopidy.host != this.state.mopidy_host && this.state.input_in_focus != 'mopidy_host'){
+			state.mopidy_host = newProps.mopidy.host
+			changed = true
+		}
+		
+		if (newProps.mopidy.port != this.state.mopidy_port && this.state.input_in_focus != 'mopidy_port'){
+			state.mopidy_port = newProps.mopidy.port
+			changed = true
+		}
+		
+		if (newProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
+			state.pusher_username = newProps.pusher.username
+			changed = true
+		}
+
+		if (changed){
+			this.setState(state)
+		}
 	}
 
 	resetAllSettings(){
@@ -40,6 +75,7 @@ class Settings extends React.Component{
 	}
 
 	setMopidyConfig(e){
+		this.setState({input_in_focus: null})
 		e.preventDefault();
 		this.props.mopidyActions.setConfig({ host: this.state.mopidy_host, port: this.state.mopidy_port });
 		window.location.reload(true);
@@ -47,6 +83,7 @@ class Settings extends React.Component{
 	}
 
 	setSpotifyConfig(e){
+		this.setState({input_in_focus: null})
 		e.preventDefault();
 		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
 		return false;
@@ -54,6 +91,11 @@ class Settings extends React.Component{
 
 	handleUsernameChange(username){
 		this.setState({pusher_username: username.replace(/\W/g, '')})
+	}
+
+	handleUsernameBlur(e){
+		this.setState({input_in_focus: null})
+		this.props.pusherActions.setUsername(this.state.pusher_username)
 	}
 
 	renderConnectionStatus(service){
@@ -212,8 +254,9 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={e => this.handleUsernameChange(e.target.value)} 
-									onBlur={ e => this.props.pusherActions.setUsername(this.state.pusher_username) } 
-									value={ this.state.pusher_username } />
+									onFocus={e => this.setState({input_in_focus: 'pusher_username'})}
+									onBlur={e => this.handleUsernameBlur(e)}
+									value={this.state.pusher_username } />
 							</div>
 						</div>
 						<div className="field">
@@ -222,6 +265,8 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ mopidy_host: e.target.value })} 
+									onFocus={e => this.setState({input_in_focus: 'mopidy_host'})}
+									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_host } />
 							</div>
 						</div>
@@ -231,6 +276,8 @@ class Settings extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
+									onFocus={e => this.setState({input_in_focus: 'mopidy_port'})} 
+									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_port } />
 							</div>
 						</div>
@@ -244,8 +291,9 @@ class Settings extends React.Component{
 							<div className="input">
 								<input 
 									type="text"
-									onChange={ e => this.setState({ spotify_country: e.target.value })} 
-									onBlur={ e => this.setSpotifyConfig(e) } 
+									onChange={e => this.setState({ spotify_country: e.target.value })} 
+									onFocus={e => this.setState({input_in_focus: 'spotify_country'})} 
+									onBlur={e => this.setSpotifyConfig(e) } 
 									value={ this.state.spotify_country } />
 							</div>
 						</div>
@@ -254,9 +302,10 @@ class Settings extends React.Component{
 							<div className="input">
 								<input 
 									type="text"
-									onChange={ e => this.setState({ spotify_locale: e.target.value })} 
-									onBlur={ e => this.setSpotifyConfig(e) } 
-									value={ this.state.spotify_locale } />
+									onChange={e => this.setState({ spotify_locale: e.target.value })}
+									onFocus={e => this.setState({input_in_focus: 'spotify_locale'})} 
+									onBlur={e => this.setSpotifyConfig(e) } 
+									value={this.state.spotify_locale} />
 							</div>
 						</div>
 					</form>

@@ -37,20 +37,20 @@ aside{
 			text-decoration: none;
 			display: block;
 			padding: 9px 10px 5px;
-			margin: 0 20px;
+			margin: 0 16px;
 			border-radius: 3px;
 			line-height: 18px;
 
 			.icon {
 				height: 14px;
-				padding-right: 8px;
+				padding-right: 12px;
 				vertical-align: top;
+				margin-top: 0;
 			}
 
 			&.active {
 				background: $turquoise;
 				color: $white;
-				opacity: 1 !important;
 
 				&:before {
 					opacity: 0.15;
