@@ -29,8 +29,9 @@
 		right: 0;
 		bottom: 0;
 		left: 220px;
-		background: rgba(0,0,0,0.2);
-		color: #FFFFFF;
+		background: $overlay_dark;
+		color: $white;
+		z-index: 99;
 
 		.open {
 			display: none;
