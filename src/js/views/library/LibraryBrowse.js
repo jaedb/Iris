@@ -42,7 +42,7 @@ class LibraryBrowse extends React.Component{
 		if (props.mopidy_connected){
 			var uri = null
 			if (typeof(props.params.uri) !== 'undefined'){
-				uri = props.params.uri.replace('|','?')
+				uri = decodeURIComponent(props.params.uri)
 			}
 			this.props.mopidyActions.getDirectory(uri)
 		}
@@ -70,9 +70,6 @@ class LibraryBrowse extends React.Component{
 			folders: folders,
 			tracks: tracks
 		}
-	}
-
-	render(){
 	}
 
 	render(){
