@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import Header from '../../components/Header'
@@ -44,6 +44,7 @@ class LibraryBrowse extends React.Component{
 			if (typeof(props.params.uri) !== 'undefined'){
 				uri = decodeURIComponent(props.params.uri)
 			}
+
 			this.props.mopidyActions.getDirectory(uri)
 		}
 	}
@@ -56,11 +57,31 @@ class LibraryBrowse extends React.Component{
 			if (directory[i].type && directory[i].type == 'track') {
 				tracks.push( directory[i] )
 			} else {
+				var uri = directory[i].uri
+
+				// If we've navigated to a handled asset type, use our standard views
+				switch (helpers.uriType(uri)){
+					case 'album':
+						uri = global.baseURL+'album/'+uri
+						break
+
+					case 'artist':
+						uri = global.baseURL+'artist/'+uri
+						break
+
+					case 'playlist':
+						uri = global.baseURL+'playlist/'+uri
+						break
+
+					default:
+						uri = global.baseURL+"library/browse/"+encodeURIComponent(uri)
+				}
+
 				folders.push(Object.assign(
 					{},
 					directory[i],
 					{
-						uri: encodeURIComponent(directory[i].uri)
+						uri: uri
 					}
 				))
 			}
@@ -105,8 +126,7 @@ class LibraryBrowse extends React.Component{
 						<List
 							columns={[{ name: 'name', width: '100'}]} 
 							rows={items.folders} 
-							className="library-local-directory-list"
-							link_prefix={global.baseURL+"library/browse/"} />
+							className="library-local-directory-list" />
 						<TrackList 
 							tracks={items.tracks} 
 							className="library-local-track-list" 
