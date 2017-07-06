@@ -80,9 +80,9 @@ class Sidebar extends React.Component{
 								<Icon name="music" />
 								Tracks
 							</Link>
-							<Link className={this.linkClassName('library/local')} to={global.baseURL+"library/local"}>
+							<Link className={this.linkClassName('library/local')} to={global.baseURL+"library/browse"}>
 								<Icon name="folder" />
-								Local
+								Browse
 							</Link>
 						</section>
 

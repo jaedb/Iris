@@ -33,10 +33,9 @@ import LibraryArtists from './views/library/LibraryArtists'
 import LibraryAlbums from './views/library/LibraryAlbums'
 import LibraryTracks from './views/library/LibraryTracks'
 import LibraryPlaylists from './views/library/LibraryPlaylists'
-import LibraryLocal from './views/library/LibraryLocal'
+import LibraryBrowse from './views/library/LibraryBrowse'
 import LibraryLocalArtists from './views/library/LibraryLocalArtists'
 import LibraryLocalAlbums from './views/library/LibraryLocalAlbums'
-import LibraryLocalDirectory from './views/library/LibraryLocalDirectory'
 
 // setup our analytics tracking
 ReactGA.initialize('UA-64701652-3');
@@ -76,10 +75,9 @@ ReactDOM.render(
 				<Route path="library/albums" component={LibraryAlbums} />
 				<Route path="library/tracks" component={LibraryTracks} />
 				<Route path="library/playlists" component={LibraryPlaylists} />
-				<Route path="library/local" component={LibraryLocal} />
+				<Route path="library/browse(/:uri)" component={LibraryBrowse} />
 				<Route path="library/local/artists" component={LibraryLocalArtists} />
 				<Route path="library/local/albums" component={LibraryLocalAlbums} />
-				<Route path="library/local/directory/:uri" component={LibraryLocalDirectory} />
 
 			</Route>
 		</Router>
