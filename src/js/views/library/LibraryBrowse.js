@@ -147,16 +147,16 @@ class LibraryBrowse extends React.Component{
 							break
 
 						case 'Spotify':
-						case 'Spotify browse':
+						case 'Spotify Browse':
 							directory.icons = ['assets/backgrounds/browse-spotify.jpg']
 							break
 
-						case 'Spotify tunigo':
+						case 'Spotify Tunigo':
 						case 'Tunigo':
 							directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
 							break
 
-						case 'Tunein':
+						case 'TuneIn':
 							directory.icons = ['assets/backgrounds/browse-tunein.jpg']
 							break
 
