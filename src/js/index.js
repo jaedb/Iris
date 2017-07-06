@@ -75,9 +75,9 @@ ReactDOM.render(
 				<Route path="library/albums" component={LibraryAlbums} />
 				<Route path="library/tracks" component={LibraryTracks} />
 				<Route path="library/playlists" component={LibraryPlaylists} />
+				<Route path="library/browse/local-artists" component={LibraryLocalArtists} />
+				<Route path="library/browse/local-albums" component={LibraryLocalAlbums} />
 				<Route path="library/browse(/:uri)" component={LibraryBrowse} />
-				<Route path="library/local/artists" component={LibraryLocalArtists} />
-				<Route path="library/local/albums" component={LibraryLocalAlbums} />
 
 			</Route>
 		</Router>

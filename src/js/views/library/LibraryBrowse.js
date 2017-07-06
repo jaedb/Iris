@@ -60,7 +60,7 @@ class LibraryBrowse extends React.Component{
 					{},
 					directory[i],
 					{
-						uri: directory[i].uri.replace('?','|')
+						uri: encodeURIComponent(directory[i].uri)
 					}
 				))
 			}
@@ -123,12 +123,12 @@ class LibraryBrowse extends React.Component{
 			var grid_items = [
 				{
 					name: 'Local artists',
-					link: global.baseURL+'library/local/artists',
+					link: global.baseURL+'library/browse/local-artists',
 					icons: ['assets/backgrounds/browse-artists.jpg']
 				},
 				{
 					name: 'Local albums',
-					link: global.baseURL+'library/local/albums',
+					link: global.baseURL+'library/browse/local-albums',
 					icons: ['assets/backgrounds/browse-albums.jpg']
 				}
 			]
@@ -156,13 +156,17 @@ class LibraryBrowse extends React.Component{
 							directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
 							break
 
+						case 'Tunein':
+							directory.icons = ['assets/backgrounds/browse-tunein.jpg']
+							break
+
 						default:
-							directory.icons = ['assets/backgrounds/browse-albums.jpg']
+							directory.icons = ['assets/backgrounds/browse-default.jpg']
 					}
 
 					grid_items.push({
 						name: directory.name,
-						link: global.baseURL+'library/browse/'+directory.uri.replace('?','|').replace('/','%2F'),
+						link: global.baseURL+'library/browse/'+encodeURIComponent(directory.uri),
 						icons: directory.icons
 					})
 				}

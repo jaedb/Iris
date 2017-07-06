@@ -185,7 +185,7 @@ export function getPlaylist( uri ){
 export function getDirectory( uri ){
 	return { 
 		type: 'MOPIDY_GET_DIRECTORY', 
-		data: { uri: uri } 
+		data: { uri: (uri ? decodeURIComponent(uri) : null) } 
 	}
 }
 
