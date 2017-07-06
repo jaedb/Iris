@@ -2,12 +2,13 @@
 .debug-info {
 	font-size: 10px;
 	position: fixed;
-	top: 0;
-	right: 0;
+	top: 10px;
+	right: 10px;
+	border-radius: 3px;
 	z-index: 96;
 	padding: 10px;
-	background: rgba(0,0,0,0.5);
-	color: #FFFFFF;
+	background: rgba(10, 10, 10, 0.7);
+	color: $white;
 	pointer-events: none;
 	width: 200px;
 }

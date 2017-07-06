@@ -124,12 +124,12 @@ class LibraryBrowse extends React.Component{
 				{
 					name: 'Local artists',
 					link: global.baseURL+'library/local/artists',
-					icons: ['assets/backgrounds/category-artists.jpg']
+					icons: ['assets/backgrounds/browse-artists.jpg']
 				},
 				{
 					name: 'Local albums',
 					link: global.baseURL+'library/local/albums',
-					icons: ['assets/backgrounds/category-albums.jpg']
+					icons: ['assets/backgrounds/browse-albums.jpg']
 				}
 			]
 
@@ -139,16 +139,28 @@ class LibraryBrowse extends React.Component{
 
 					switch (directory.name){
 						case 'Files':
-							directory.icons = ['assets/backgrounds/category-folders.jpg']
+							directory.icons = ['assets/backgrounds/browse-folders.jpg']
+							break
+
+						case 'Local media':
+							directory.icons = ['assets/backgrounds/browse-folders.jpg']
+							break
+
+						case 'Spotify':
+							directory.icons = ['assets/backgrounds/browse-spotify.jpg']
+							break
+
+						case 'Tunigo':
+							directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
 							break
 
 						default:
-							directory.icons = ['assets/backgrounds/category-albums.jpg']
+							directory.icons = ['assets/backgrounds/browse-albums.jpg']
 					}
 
 					grid_items.push({
 						name: directory.name,
-						link: global.baseURL+'library/browse/'+directory.uri,
+						link: global.baseURL+'library/browse/'+directory.uri.replace('?','|').replace('/','%2F'),
 						icons: directory.icons
 					})
 				}
