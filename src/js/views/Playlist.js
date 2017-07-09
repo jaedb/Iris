@@ -50,17 +50,24 @@ class Playlist extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadPlaylist( props = this.props ){
-		switch( helpers.uriSource( props.params.uri ) ){
+	loadPlaylist(props = this.props){
 
-			case 'spotify':
-				this.props.spotifyActions.getPlaylist( props.params.uri );
-				break
+		if (props.playlist && props.playlist.tracks && (props.playlist.tracks_total == 0 || props.playlist.tracks.length > 0)){
+			console.info('Loading playlist from index')
 
-			default:
-				if( props.mopidy_connected ) this.props.mopidyActions.getPlaylist( props.params.uri );
-				break
+		} else {
+			switch (helpers.uriSource( props.params.uri)){
 
+				case 'spotify':
+					this.props.spotifyActions.getPlaylist( props.params.uri )
+					break
+
+				default:
+					if (props.mopidy_connected){
+						this.props.mopidyActions.getPlaylist( props.params.uri )
+					}
+					break
+			}
 		}
 	}
 
