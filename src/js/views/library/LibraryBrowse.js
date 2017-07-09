@@ -96,6 +96,13 @@ class LibraryBrowse extends React.Component{
 	render(){
 		if (typeof(this.props.params.uri) !== 'undefined' && this.props.params.uri){
 			
+			var title = 'Browse'
+			var uri_exploded = this.props.params.uri.split(':')
+			if (uri_exploded.length > 0){
+				title = uri_exploded[0]
+				title = title.charAt(0).toUpperCase() + title.slice(1)
+			}
+
 			var options = null
 			if (this.props.params.uri != 'local:directory' ){
 				options = (
@@ -109,7 +116,7 @@ class LibraryBrowse extends React.Component{
 			if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
 				return (
 					<div className="view library-local-view">
-						<Header icon="music" title="Browse" options={options} uiActions={this.props.uiActions} />
+						<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
 						<div className="body-loader">
 							<div className="loader"></div>
 						</div>
@@ -121,7 +128,7 @@ class LibraryBrowse extends React.Component{
 
 			return (
 				<div className="view library-local-view">
-					<Header icon="music" title={this.props.params.uri} options={options} uiActions={this.props.uiActions} />
+					<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
 					<section className="content-wrapper">
 						<List
 							columns={[{ name: 'name', width: '100'}]} 
