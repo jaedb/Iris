@@ -471,7 +471,22 @@ export default function reducer(ui = {}, action){
             }
 
             playlists[action.key] = merged_playlist
-            return Object.assign({}, ui, { playlists: playlists });
+            return Object.assign({}, ui, { playlists: playlists })
+
+        case 'PLAYLIST_KEY_UPDATED':
+            var playlists = Object.assign([], ui.playlists)
+
+            // URI not in our index? No change needed then
+            if (typeof(playlists[action.key]) === 'undefined'){
+                return ui
+            }
+
+            // Delete our old playlist by key, and add by new key
+            var playlist = Object.assign({}, playlists[action.key])
+            delete playlists[action.key]
+            playlists[playlist.uri] = playlist
+
+            return Object.assign({}, ui, { playlists: playlists })
 
         case 'PLAYLISTS_LOADED':
             var playlists = Object.assign([], ui.playlists)

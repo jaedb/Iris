@@ -1,5 +1,6 @@
 
 import Mopidy from 'mopidy'
+import { hashHistory } from 'react-router'
 import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
@@ -733,17 +734,33 @@ const MopidyMiddleware = (function(){
                     });
                 break
 
-            case 'MOPIDY_SAVE_PLAYLIST':                
+            case 'MOPIDY_SAVE_PLAYLIST':
+                var uri = action.key
+
                 instruct( socket, store, 'playlists.lookup', { uri: action.key })
                     .then( response => {
                         var playlist = Object.assign({}, response, { name: action.name })
                         instruct( socket, store, 'playlists.save', { playlist: playlist } )
                             .then( response => {
+
                                 store.dispatch({ 
                                     type: 'PLAYLIST_UPDATED', 
-                                    key: action.key, 
+                                    key: action.key,
                                     playlist: playlist
                                 })
+
+                                // When we rename a playlist, the URI also changes to reflect the name change
+                                // We need to update our index, as well as redirect our current page URL
+                                if (action.key != response.key){
+                                    store.dispatch({ 
+                                        type: 'PLAYLIST_KEY_UPDATED', 
+                                        key: action.key,
+                                        new_key: response.uri
+                                    })
+                                    hashHistory.push(global.baseURL+'playlist/'+response.uri)
+                                }
+
+                                store.dispatch(uiActions.createNotification('Saved'))
                             })
                     });
                 break
@@ -793,7 +810,8 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CREATE_PLAYLIST':
                 instruct( socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
-                    .then( response => {
+                    .then( response => {            
+                        store.dispatch(uiActions.createNotification('Created playlist'))
 
                         // re-load our global playlists
                         //store.dispatch({ type: 'MOPIDY_GET_PLAYLISTS' });
@@ -803,6 +821,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_DELETE_PLAYLIST':
                 instruct( socket, store, 'playlists.delete', { uri: action.key })
                     .then( response => {
+                        store.dispatch(uiActions.createNotification('Deleted playlist'))
 
                         // re-load our global playlists
                         // store.dispatch({ type: 'MOPIDY_PLAYLISTS' });

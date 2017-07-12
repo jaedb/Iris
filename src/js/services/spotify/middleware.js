@@ -72,7 +72,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.is_public ))
+                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.is_public, action.description ))
                 break
 
             // when radio returns

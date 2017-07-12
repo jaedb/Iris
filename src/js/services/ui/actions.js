@@ -130,7 +130,7 @@ export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id 
     }
 }
 
-export function savePlaylist( uri, name, is_public = false ){
+export function savePlaylist(uri, name, is_public = false, description = ''){
     switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
@@ -138,7 +138,8 @@ export function savePlaylist( uri, name, is_public = false ){
                 type: 'SPOTIFY_SAVE_PLAYLIST',
                 key: uri,
                 name: name,
-                is_public: is_public
+                is_public: is_public,
+                description: (description == '' ? null : description)
             }
 
         case 'm3u':

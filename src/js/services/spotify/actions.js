@@ -1095,23 +1095,34 @@ export function createPlaylist( name, is_public ){
             dispatch({
                 type: 'LIBRARY_PLAYLISTS_LOADED',
                 uris: [response.uri]
-            });
+            })
+
+            dispatch(uiActions.createNotification('Created playlist'))
         })
     }
 }
 
-export function savePlaylist(uri, name, is_public){
+export function savePlaylist(uri, name, is_public, description){
     return (dispatch, getState) => {
 
-        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', { name: name, public: is_public } )
+        var data = {
+            name: name, 
+            public: is_public,
+            description: description
+        }
+
+        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', data)
         .then( response => {
             dispatch({
                 type: 'PLAYLIST_UPDATED',
+                key: uri,
                 playlist: {
                     name: name,
-                    public: is_public
+                    public: is_public,
+                    description: description
                 }
-            });
+            })
+            dispatch(uiActions.createNotification('Saved'))
         })
     }
 }
