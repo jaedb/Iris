@@ -1,5 +1,10 @@
 
 .artist-view {
+
+	.body-loader {
+		padding: 15vh 0;
+	}
+
 	.intro {
 		position: relative;
 		@include clearfix();
