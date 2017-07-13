@@ -23,7 +23,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.createPlaylist( action.name, action.is_private ))
+                store.dispatch( spotifyActions.createPlaylist( action.name, action.description, action.is_private, action.is_collaborative ))
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
@@ -72,7 +72,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
-                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.is_public, action.description ))
+                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
                 break
 
             // when radio returns

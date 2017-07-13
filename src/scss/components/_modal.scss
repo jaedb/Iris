@@ -1,4 +1,10 @@
 
+.modal-open {
+	.body {
+		@include blur(10px);
+	}
+}
+
 .modal {
 	position: fixed;
 	top: 0;
@@ -32,30 +38,54 @@
 		padding: 100px 25%;
 		margin: 0 auto;
 		width: 50%;
-		color: #FFFFFF;
-
-		h4 {
-			padding-bottom: 40px;
-		}
+		color: $white;
 
 		form {
+			padding-top: 50px;
+
 			.field {
-				padding-bottom: 20px;
-
-				input[type="text"]{
-					background: $dark_grey;
-					font-size: 18px;
-					width: 100%;
-					color: $white;
-
-					&:focus,
-					&:active {
-						border-color: $turquoise;
-					}
-				}
+				padding-bottom: 40px;
+				position: relative;
 
 				.label {
 					font-size: 16px;
+				}
+
+				&.text,
+				&.radio,
+				&.checkbox {
+					& > .label {
+						opacity: 0.5;
+						width: 100px;
+						position: absolute;
+						top: 12px;
+						left: 0;
+						pointer-events: none;
+						padding: 0;
+					}
+				}
+
+				&.text {
+					input {
+						background: transparent;
+						font-size: 18px;
+						padding-left: 100px;
+						padding-right: 0;
+						width: 100%;
+						color: $white;
+						border-bottom: 2px solid $white;
+
+						&:focus,
+						&:active {
+							border-color: $turquoise;
+						}
+					}
+				}
+
+				&.radio,
+				&.checkbox {
+					padding-left: 100px;
+					padding-top: 8px;
 				}
 			}
 
@@ -66,7 +96,6 @@
 
 		.list {
 			@include clearfix();
-			padding-top: 50px;
 
 			.list-item {
 				box-sizing: border-box;

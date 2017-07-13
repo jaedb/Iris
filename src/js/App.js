@@ -205,11 +205,15 @@ class App extends React.Component{
 
 		return (
 			<div className={className}>
-		        <Sidebar />		        
-		        <PlaybackControls />
-		        <main>
-		      		{this.props.children}
-		        </main>
+			
+				<div className="body">
+			        <Sidebar />		        
+			        <PlaybackControls />
+			        <main>
+			      		{this.props.children}
+			        </main>
+		        </div>
+
 		        <ContextMenu />
 		        <Dragger />
 		        <Modal />

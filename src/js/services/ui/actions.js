@@ -130,7 +130,7 @@ export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id 
     }
 }
 
-export function savePlaylist(uri, name, is_public = false, description = ''){
+export function savePlaylist(uri, name, description = '', is_public = false, is_collaborative = false){
     switch( helpers.uriSource( uri ) ){
 
         case 'spotify':
@@ -138,8 +138,9 @@ export function savePlaylist(uri, name, is_public = false, description = ''){
                 type: 'SPOTIFY_SAVE_PLAYLIST',
                 key: uri,
                 name: name,
+                description: (description == '' ? null : description),
                 is_public: is_public,
-                description: (description == '' ? null : description)
+                is_collaborative: is_collaborative
             }
 
         case 'm3u':
@@ -152,14 +153,16 @@ export function savePlaylist(uri, name, is_public = false, description = ''){
     return false
 }
 
-export function createPlaylist( scheme, name, is_public = false ){
+export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false){
     switch( scheme ){
 
         case 'spotify':
             return { 
                 type: 'SPOTIFY_CREATE_PLAYLIST',
                 name: name,
-                is_public: is_public
+                description: (description == '' ? null : description),
+                is_public: is_public,
+                is_collaborative: is_collaborative
             }
 
         case 'm3u':

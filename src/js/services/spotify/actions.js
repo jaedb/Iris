@@ -1072,10 +1072,17 @@ export function toggleAlbumInLibrary( uri, method ){
  * ======================================================================================
  **/
 
-export function createPlaylist( name, is_public ){
+export function createPlaylist( name, description, is_public, is_collaborative ){
     return (dispatch, getState) => {
 
-        sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', { name: name, public: is_public } )
+        var data = {
+            name: name,
+            description: description, 
+            public: is_public,
+            collaborative: is_collaborative
+        }
+
+        sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/', 'POST', data)
         .then( response => {
 
             dispatch({
@@ -1102,13 +1109,14 @@ export function createPlaylist( name, is_public ){
     }
 }
 
-export function savePlaylist(uri, name, is_public, description){
+export function savePlaylist(uri, name, description, is_public, is_collaborative){
     return (dispatch, getState) => {
 
         var data = {
-            name: name, 
+            name: name,
+            description: description, 
             public: is_public,
-            description: description
+            collaborative: is_collaborative
         }
 
         sendRequest( dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', data)
@@ -1119,6 +1127,7 @@ export function savePlaylist(uri, name, is_public, description){
                 playlist: {
                     name: name,
                     public: is_public,
+                    collaborative: is_collaborative,
                     description: description
                 }
             })
