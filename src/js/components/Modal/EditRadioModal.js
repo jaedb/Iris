@@ -120,7 +120,7 @@ export default class EditRadioModal extends React.Component{
 									<div className="list-item" key={seed.uri}>
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										<span className="grey-text">&nbsp;({seed.type})</span>
-										<button className="discrete remove-uri"  onClick={e => this.removeSeed(seed.uri)}>
+										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
 											<FontAwesome name="close" />&nbsp;Remove
 										</button>
 									</div>
@@ -151,18 +151,20 @@ export default class EditRadioModal extends React.Component{
 				<form>
 					{this.renderSeeds()}
 
-					<div className="field">
+					<div className="field text">
+						<span className="label">URI(s)</span>
 						<input 
 							type="text"
-							placeholder="Comma-separated URIs"
 							onChange={e => this.setState({uri: e.target.value, error_message: null})} 
 							value={this.state.uri} />
-						<button className="discrete add-uri" onClick={e => this.addSeed()}>
+						<button className="discrete add-uri no-hover" onClick={e => this.addSeed()}>
 							<FontAwesome name="plus" />&nbsp; Add
 						</button>
 						{this.state.error_message ? <span className="error">{this.state.error_message}</span> : null}
 					</div>
+				</form>
 
+				<form>
 					<div className="actions centered-text">
 						{this.state.enabled ? <button className="destructive wide" onClick={e => this.handleStop(e)}>Stop</button> : null}
 						{this.state.enabled ? <button className="primary wide" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary wide" onClick={e => this.handleStart(e)}>Start</button>}

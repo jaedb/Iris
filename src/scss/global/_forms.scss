@@ -59,7 +59,7 @@ input[type="submit"] {
 	border: 0 !important;
 	cursor: pointer;
 
-	.notouch &:hover{
+	.notouch &:not(.no-hover):hover {
 		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
 
 		&:before {

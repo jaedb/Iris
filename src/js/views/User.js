@@ -89,7 +89,7 @@ class User extends React.Component{
 							</ul>
 						</h2>
 						<div className="actions">
-							<FollowButton className="secondary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							<FollowButton className="primary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
 						</div>
 					</div>
 				</div>

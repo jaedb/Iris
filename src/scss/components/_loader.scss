@@ -1,22 +1,52 @@
 
 .body-loader {
-	padding: 50px 0;
+	padding: 35vh 0;
 
 	.loader {
-		@include spin();
+		height: 120px;
+		width: 120px;
 		margin: 0 auto;
-		width: 30px;
-		height: 30px;
-		border: {
-			radius: 100%;
-			style: solid;
-			color: $mid_grey;
-			width: 2px;
+		position: relative;
+
+		&:before,
+		&:after {
+			content: '';
+			display: block;
+			margin: 0 auto;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			border: {
+				radius: 100%;
+				style: solid;
+				width: 2px;
+			}
 		}
-		border-top-color: transparent;
+
+		&:before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: {
+				color: $light_grey;
+			}
+		}
+		
+		&:after {
+			@include spin();
+			border-top-color: transparent;
+			border-left-color: transparent;
+			border-bottom-color: transparent;
+			border-right-color: $mid_grey;
+		}
 	}
 
 	&.lazy-loader {
 		padding: 20px 0 40px;
+
+		.loader {			
+			height: 40px;
+			width: 40px;
+		}
 	}
 }

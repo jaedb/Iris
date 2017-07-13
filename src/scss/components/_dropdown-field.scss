@@ -7,6 +7,7 @@
 	display: inline-block;
 
 	.label {
+		@include animate();
 		padding: 14px 10px;		
 		cursor: pointer;
 

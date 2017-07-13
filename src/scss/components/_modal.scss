@@ -98,13 +98,15 @@
 			@include clearfix();
 
 			.list-item {
+				@include animate();
 				box-sizing: border-box;
 				display: block;
-				padding: 16px 18px;
+				padding: 14px 12px;
 				position: relative;
 				border: 0;
 				border-radius: 3px;
-				padding: 5px;
+				margin-left: -12px;
+				margin-right: -12px;
 
 				.source {
 					position: absolute;
@@ -118,8 +120,11 @@
 			}
 
 			&.playlists {
+				padding-top: 40px;
+
 				.list-item {
 					margin: 0 0 20px 0;
+					padding: 5px;
 
 					.thumbnail {
 						float: left;
@@ -173,12 +178,25 @@
 		button.add-uri,
 		button.remove-uri {
 			position: absolute;
-			top: 3px;
+			top: 5px;
 			right: 0;
-			padding: 14px;
+			padding: 8px;
 			margin: 0;
 			min-width: 0;
 			color: #FFFFFF;
+			background: transparent;
+
+			&:before {
+				display: none !important;
+			}
+
+			&:hover {
+				color: $turquoise;
+
+				&.remove-uri {
+					color: $red;
+				}
+			}
 		}
 	}
 

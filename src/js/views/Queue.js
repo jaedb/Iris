@@ -88,20 +88,20 @@ class Queue extends React.Component{
 	render(){
 		var options = (
 			<span>
-				<button onClick={e => this.props.uiActions.openModal('edit_radio')}>
+				<button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
 					<FontAwesome name="podcast" />&nbsp;
 					Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
 				</button>
-				<button onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
+				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
 					<FontAwesome name="history" />&nbsp;
 					History
 				</button>
-				<button onClick={e => this.props.mopidyActions.clearTracklist()}>
+				<button className="no-hover" onClick={e => this.props.mopidyActions.clearTracklist()}>
 					<FontAwesome name="trash" />&nbsp;
 					Clear
 				</button>
-				<button onClick={e => this.props.uiActions.openModal('add_to_queue', {})}>
+				<button className="no-hover" onClick={e => this.props.uiActions.openModal('add_to_queue', {})}>
 					<FontAwesome name="plus" />&nbsp;
 					Add URI
 				</button>

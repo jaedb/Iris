@@ -187,7 +187,7 @@ class LibraryPlaylists extends React.Component{
 				<DropdownField icon="filter" name="Filter" value={this.props.filter} options={filter_options} handleChange={val => {this.props.uiActions.set({ library_playlists_filter: val}); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_playlists_view: val}); this.props.uiActions.hideContextMenu() }} />
-				<button onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
+				<button className="no-hover" onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
 					<FontAwesome name="plus" />&nbsp;
 					New
 				</button>
