@@ -31,28 +31,72 @@ export default class CreatePlaylistModal extends React.Component{
 		return false
 	}
 
+	renderFields(){
+		switch (this.state.scheme){
+
+			case 'spotify':
+				return (
+					<div>
+						<div className="field text">
+							<span className="label">Name</span>
+							<input 
+								type="text"
+								onChange={ e => this.setState({ name: e.target.value })} 
+								value={ this.state.name } />
+						</div>
+
+						<div className="field text">
+							<span className="label">Description</span>
+							<input 
+								type="text"
+								onChange={ e => this.setState({ description: e.target.value })} 
+								
+								value={ this.state.description } />
+						</div>
+
+						<div className="field checkbox white">
+							<span className="label">Options</span>
+							<label>
+								<input 
+									type="checkbox"
+									name="is_public"
+									checked={ this.state.is_public }
+									onChange={ e => this.setState({ is_public: !this.state.is_public })} />
+								<span className="label">Public</span>
+							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="is_collaborative"
+									checked={ this.state.is_collaborative }
+									onChange={ e => this.setState({ is_collaborative: !this.state.is_collaborative })} />
+								<span className="label">Collaborative</span>
+							</label>
+						</div>
+					</div>
+				)
+
+			default:
+				return (
+					<div>
+						<div className="field text">
+							<span className="label">Name</span>
+							<input 
+								type="text"
+								onChange={ e => this.setState({ name: e.target.value })} 
+								value={ this.state.name } />
+						</div>
+					</div>
+				)
+		}
+	}
+
 	render(){
 		return (
 			<div>
 				<h1>Create playlist</h1>
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 
-					<div className="field text">
-						<span className="label">Name</span>
-						<input 
-							type="text"
-							onChange={ e => this.setState({ name: e.target.value })} 
-							value={ this.state.name } />
-					</div>
-
-					<div className="field text">
-						<span className="label">Description</span>
-						<input 
-							type="text"
-							onChange={ e => this.setState({ description: e.target.value })} 
-							
-							value={ this.state.description } />
-					</div>
 					<div className="field radio white">
 						<span className="label">Provider</span>
 						<label>
@@ -74,28 +118,13 @@ export default class CreatePlaylistModal extends React.Component{
 							<span className="label">Mopidy</span>
 						</label>
 					</div>
-					<div className="field checkbox white">
-						<span className="label">Options</span>
-						<label>
-							<input 
-								type="checkbox"
-								name="is_public"
-								checked={ this.state.is_public }
-								onChange={ e => this.setState({ is_public: !this.state.is_public })} />
-							<span className="label">Public</span>
-						</label>
-						<label>
-							<input 
-								type="checkbox"
-								name="is_collaborative"
-								checked={ this.state.is_collaborative }
-								onChange={ e => this.setState({ is_collaborative: !this.state.is_collaborative })} />
-							<span className="label">Collaborative</span>
-						</label>
-					</div>
+					
+					{this.renderFields()}
+
 					<div className="actions centered-text">
 						<button type="submit" className="primary wide">Create</button>
 					</div>
+
 				</form>
 			</div>
 		)

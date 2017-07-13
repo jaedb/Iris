@@ -25,25 +25,27 @@ export default class AddToQueueModal extends React.Component{
 	render(){
 		return (
 			<div>
-				<h1>Add URI(s) to queue</h1>
+				<h1>Add to queue</h1>
+				<h2 className="grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field text">
+						<span className="label">URI(s)</span>
 						<input 
 							type="text"
-							placeholder="Comma-separated URIs"
 							onChange={e => this.setState({uris: e.target.value})} 
 							value={this.state.uris} />
 					</div>
 
 					<div className="field radio white">
+						<span className="label">Position</span>
 						<label>
 							<input 
 								type="radio"
 								name="next"
 								checked={!this.state.next}
 								onChange={e => this.setState({next: false})} />
-							<span className="label">Add to end</span>
+							<span className="label">End</span>
 						</label>
 						<label>
 							<input 
@@ -51,7 +53,7 @@ export default class AddToQueueModal extends React.Component{
 								name="next"
 								checked={this.state.next}
 								onChange={e => this.setState({next: true})} />
-							<span className="label">Add after current track</span>
+							<span className="label">After current track</span>
 						</label>
 					</div>
 

@@ -7,3 +7,5 @@ public_html
 *.orig
 Thumbs.db
 *.pyc
+package-lock.json
+

@@ -35,7 +35,7 @@
 	}
 
 	.content {
-		padding: 100px 25%;
+		padding: 10vh 25%;
 		margin: 0 auto;
 		width: 50%;
 		color: $white;
@@ -44,7 +44,7 @@
 			padding-top: 50px;
 
 			.field {
-				padding-bottom: 40px;
+				padding-bottom: 30px;
 				position: relative;
 
 				.label {
@@ -142,13 +142,6 @@
 					margin-left: 2%;
 				}
 			}
-		}
-	}
-
-	&.add_to_queue,
-	&.create_playlist {
-		h1 {
-			padding-bottom: 50px;
 		}
 	}
 
