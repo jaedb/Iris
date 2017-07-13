@@ -244,33 +244,6 @@
 		}
 	}
 
-	&.volume {
-		.slider {
-			position: absolute;
-			top: 10vh;
-			left: 55vw;
-			height: 80vh;
-			width: 20vw;
-
-			.track {
-				width: auto;
-				left: 25%;
-				right: 25%;
-			}
-		}
-
-		.toggle-mute {
-			position: absolute;
-			font-size: 16vh;
-			top: 42vh;
-			left: 20vw;
-
-			.fa.muted {
-				color: $red;
-			}
-		}
-	}
-
 	.actions {
 		padding-top: 50px;
 		text-align: center;
