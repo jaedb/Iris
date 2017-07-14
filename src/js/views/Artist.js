@@ -205,7 +205,7 @@ class Artist extends React.Component{
 
 					<div className="intro">
 
-						<Parallax image={image} />
+						<Parallax blur image={image} />
 
 						<div className="liner">
 							<Thumbnail image={image} canZoom circle />
