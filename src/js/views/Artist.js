@@ -201,7 +201,7 @@ class Artist extends React.Component{
 			return (
 				<div className="view artist-view">
 
-					<SidebarToggleButton />
+					{this.props.slim_mode ? <Header className="overlay" icon="mic" title="Artist" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
 
 					<div className="intro">
 
@@ -213,7 +213,7 @@ class Artist extends React.Component{
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : <button className="primary" onClick={e => this.props.mopidyActions.playURIs(this.props.artist.albums_uris, this.props.artist.uri)}>Play all</button>}
 								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
-								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
+								{this.props.slim_mode ? null : <ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />}
 							</div>
 							{ this.renderSubViewMenu() }
 						</div>
@@ -260,6 +260,7 @@ class Artist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
 		artists: (state.ui.artists ? state.ui.artists : []),

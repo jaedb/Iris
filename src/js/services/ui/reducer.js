@@ -7,6 +7,9 @@ export default function reducer(ui = {}, action){
         case 'LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
 
+        case 'SET_SLIM_MODE':
+            return Object.assign({}, ui, { slim_mode: action.slim_mode });
+
         case 'DEBUG':
             return Object.assign({}, ui, { debug_response: action.response })
 

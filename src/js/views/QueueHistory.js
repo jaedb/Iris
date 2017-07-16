@@ -47,7 +47,7 @@ class QueueHistory extends React.Component{
 		)
 
 		return (
-			<div className="view queue-history-view">			
+			<div className="view queue-history-view">
 				<Header icon="play" title="Playback history" options={options} uiActions={this.props.uiActions} />
 
 				<section className="content-wrapper list-wrapper">

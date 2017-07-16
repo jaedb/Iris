@@ -64,6 +64,12 @@ main {
 				-moz-filter: invert(1);
 				filter: invert(1);
 			}
+
+			.context-menu-trigger {
+				.dot {
+					background: $white;
+				}
+			}
 		}
 
 		@include responsive( $bp_medium ){

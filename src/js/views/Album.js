@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
@@ -12,7 +13,6 @@ import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
-import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
@@ -121,7 +121,7 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper">
 
-		        <SidebarToggleButton />
+				{this.props.slim_mode ? <Header icon="cd" title="Album" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={ this.props.album.images } />
@@ -150,7 +150,7 @@ class Album extends React.Component{
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
 					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
-					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+					{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 				</div>
 
 				<section className="list-wrapper">
@@ -172,6 +172,7 @@ class Album extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		artists: state.ui.artists,
 		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
