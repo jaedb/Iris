@@ -22,13 +22,21 @@
 		&.selected {
 			background: $yellow !important;
 			border-color: darken($yellow,10%);
+
+			.select-zone {
+				&::after {
+					background: $dark_grey;
+					border-color: $dark_grey;
+				}
+			}
 		}
 
 		&.playing {
 			font-weight: bold;
 		}
 
-		.state-icon {
+		.select-zone,
+		.drag-zone {
 			display: none;
 		}
 
@@ -211,30 +219,51 @@
 				float: none;
 			}
 
-			.state-icon {
+			.select-zone {
 				position: absolute;
 				top: 0;
 				left: 0;
 				height: 100%;
-				width: 48px;
-				font-size: 10px;
+				width: 38px;
+				font-size: 8px;
 				display: block;
 				
 				.fa {
 					position: absolute;
-					top: 19px;
-					left: 17px;
+					top: 20px;
+					left: 13px;
+					pointer-events: none;
+					color: $white;
+					z-index: 1;
 				}
 
 				&:after {
 					display: block;
 					content: '';
 					border: 1px solid $darkest_grey;
-					width: 15px;
-					height: 15px;
+					border-radius: 50%;
+					width: 14px;
+					height: 14px;
 					position: absolute;
-					top: 15px;
-					left: 15px;
+					top: 16px;
+					left: 10px;
+				}
+			}
+
+			.drag-zone {
+				position: absolute;
+				top: 0;
+				left: 38px;
+				height: 100%;
+				width: 38px;
+				font-size: 14px;
+				display: block;
+				
+				.fa {
+					position: absolute;
+					top: 17px;
+					left: 8px;
+					pointer-events: none;
 				}
 			}
 
@@ -307,8 +336,11 @@
 		}
 
 		&.track-list {
-			.list-item {
-				padding: 7px 30px 7px 48px !important;
+			.list-item.has-drag-zone {
+				padding: 8px 30px 8px 78px !important;
+			}
+			.list-item:not(.has-drag-zone){
+				padding: 8px 30px 8px 38px !important;
 			}
 		}
 	}

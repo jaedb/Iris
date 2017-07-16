@@ -21,16 +21,19 @@ class TrackList extends React.Component{
 			last_selected_track: false
 		}
 
-		this._touching = false
+		this.touch_dragging = false
 		this.handleKeyUp = this.handleKeyUp.bind(this)
+		this.handleTouchMove = this.handleTouchMove.bind(this)
 	}
 
 	componentWillMount(){
-		window.addEventListener("keyup", this.handleKeyUp, false);
+		window.addEventListener("keyup", this.handleKeyUp, false)
+		window.addEventListener("touchmove", this.handleTouchMove, false)
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false);
+		window.removeEventListener("keyup", this.handleKeyUp, false)
+		window.removeEventListener("touchmove", this.handleTouchMove, false)
 	}
 
 	componentDidMount(){
@@ -51,9 +54,9 @@ class TrackList extends React.Component{
 		var target = $(e.target)
 
 		// Wide screen, so no worries
-		if ($(window).width() > 800){
+		if (!this.props.slim_mode){
 			return 'default'
-		} else if (target.is('.state-icon') || target.closest('.state-icon').length > 0){
+		} else if (target.is('.select-zone') || target.closest('.select-zone').length > 0){
 			return 'mobile'
 		}
 
@@ -76,12 +79,28 @@ class TrackList extends React.Component{
 	}
 
 	handleTouchStart(e,index){
-		this._touching = true
+		var target = $(e.target)
+		if (target.hasClass('drag-zone')){
+			$('body').addClass('touch-dragging')
+			this.touch_dragging = true
+			e.preventDefault()
+		}
+	}
+
+	handleTouchMove(e){
+		if (this.touch_dragging){
+			e.preventDefault()
+			console.log('dragging')
+		}
 	}
 
 	handleTouchEnd(e,index){
-		this._touching = false
-		this.handleMouseDown(e,index)
+		if (this.touch_dragging){
+			$('body').removeClass('touch-dragging')
+			this.touch_dragging = false
+		} else {
+			this.handleMouseDown(e,index)
+		}
 
 		// Prevent any event bubbling. This prevents clicks and mouse events
 		// from also being fired
@@ -348,7 +367,8 @@ class TrackList extends React.Component{
 				{
 					this.state.tracks.map(
 						(track, index) => {
-							return <Track
+							return (
+								<Track
 									show_source_icon={this.props.show_source_icon}
 									key={track.key} 
 									track={track} 
@@ -358,7 +378,9 @@ class TrackList extends React.Component{
 									handleMouseDown={e => self.handleMouseDown(e, index)}
 									handleTouchStart={e => self.handleTouchStart(e, index)}
 									handleTouchEnd={e => self.handleTouchEnd(e, index)}
-									handleContextMenu={e => self.handleContextMenu(e)} />
+									handleContextMenu={e => self.handleContextMenu(e)}
+								/>
+							)
 						}
 					)
 				}
@@ -377,8 +399,8 @@ class TrackList extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		dragger: state.ui.dragger,
-		emulate_touch: state.ui.emulate_touch,
 		current_track: state.ui.current_track,
 		context_menu: state.ui.context_menu
 	}

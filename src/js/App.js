@@ -218,6 +218,7 @@ class App extends React.Component{
 		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
 		if (this.props.sidebar_open) className += ' sidebar-open'
 		if (this.props.modal) className += ' modal-open'
+		if (this.props.touch_dragging) className += ' touch-dragging'
 		if (this.props.slim_mode) className += ' slim-mode'
 		if (helpers.isTouchDevice()){
 			className += ' touch'
@@ -258,6 +259,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		touch_dragging: state.ui.touch_dragging,
 		slim_mode: state.ui.slim_mode,
 		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
 		volume: (state.mopidy.volume ? state.mopidy.volume : false),
