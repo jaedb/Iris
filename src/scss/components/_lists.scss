@@ -253,7 +253,7 @@
 					text-align: right;
 				}
 
-				&:not(.name):not(.duration){
+				&:not(.name):not(.duration):not(.album){
 					color: $mid_grey;
 					display: inline;
 					width: auto !important;
@@ -261,7 +261,7 @@
 					word-wrap: break-word;
 				}
 
-				&:not(.name):not(.duration):not(:nth-child(2)){
+				&:not(.name):not(.duration):not(.album):not(:nth-child(2)){
 					@include bullet();
 				}
 
@@ -277,6 +277,7 @@
 					content: '% popularity';
 				}
 
+				&.album,
 				&.can_edit,
 				&.release_date {
 					display: none;
