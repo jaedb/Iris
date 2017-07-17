@@ -291,10 +291,6 @@
 					word-wrap: break-word;
 				}
 
-				&:not(.name):not(.duration):not(.album):not(:nth-child(2)){
-					@include bullet();
-				}
-
 				&.followers_total:after {
 					content: ' followers';
 				}

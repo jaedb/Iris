@@ -115,6 +115,7 @@ class TrackList extends React.Component{
 
 				if (typeof(this.props.reorderTracks) !== 'undefined'){
 					this.props.reorderTracks([index],dropped_at)
+					this.render()
 				}
 			}
 
