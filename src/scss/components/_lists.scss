@@ -87,7 +87,8 @@
 				}
 			}
 
-			:root .dragging &.hover {
+			:root .dragging &.hover,
+			&.touch-drag-hover {
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;

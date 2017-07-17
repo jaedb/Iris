@@ -90,12 +90,35 @@ class TrackList extends React.Component{
 	handleTouchMove(e){
 		if (this.touch_dragging){
 			e.preventDefault()
-			console.log('dragging')
+			let touch = e.touches[0]
+			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
+			if (!over.is('.track')){
+				over = over.closest('.track')
+			}
+			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover')
+			if (over.length > 0){
+				over.addClass('touch-drag-hover')
+			}
 		}
 	}
 
 	handleTouchEnd(e,index){
 		if (this.touch_dragging){
+			let touch = e.changedTouches[0]
+			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
+			if (!over.is('.track')){
+				over = over.closest('.track')
+			}
+			if (over.length > 0){
+				let siblings = over.parent().children('.track')
+				let dropped_at = siblings.index(over) - 1
+
+				if (typeof(this.props.reorderTracks) !== 'undefined'){
+					this.props.reorderTracks([index],dropped_at)
+				}
+			}
+
+			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover')
 			$('body').removeClass('touch-dragging')
 			this.touch_dragging = false
 		} else {
