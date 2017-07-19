@@ -263,6 +263,8 @@ const UIMiddleware = (function(){
             case 'OPEN_MODAL':
                 ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name })
                 $('body').addClass('modal-open')
+                store.dispatch(uiActions.hideContextMenu())
+                store.dispatch(uiActions.hideTouchContextMenu())
                 next(action)
                 break
 

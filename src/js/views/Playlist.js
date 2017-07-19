@@ -178,13 +178,8 @@ class Playlist extends React.Component{
 					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
 
 					<ul className="details">
-						<li className="has-tooltip">
-							<FontAwesome name={helpers.sourceIcon( this.props.params.uri )} />
-							<span className="tooltip">
-								{helpers.uriSource( this.props.params.uri )} playlist
-							</span>
-						</li>
-						{ this.props.playlist.owner ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} playlist</span></li> : null }
+						{ this.props.playlist.owner && !this.props.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
 						<li>

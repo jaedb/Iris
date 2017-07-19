@@ -1,4 +1,12 @@
 
+@include responsive( $bp_medium ){
+	body.context-menu-open {
+		.body {
+			@include blur(10px);
+		}
+	}
+}
+
 #context-menu {
 	position: fixed;
 	z-index: 99;
@@ -228,7 +236,7 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background: $overlay_dark;
+			background: $overlay_light;
 			z-index: 1;
 		}
 
