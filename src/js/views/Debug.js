@@ -43,7 +43,7 @@ class Debug extends React.Component{
 
 		var options = (
 			<span>
-				<button onClick={e => hashHistory.push(global.baseURL+'settings')}>
+				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
 					<FontAwesome name="reply" />&nbsp;
 					Back
 				</button>

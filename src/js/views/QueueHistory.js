@@ -39,7 +39,7 @@ class QueueHistory extends React.Component{
 	render(){
 		var options = (
 			<span>
-				<button onClick={e => hashHistory.push(global.baseURL+'queue')}>
+				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
 					<FontAwesome name="reply" />&nbsp;
 					Back
 				</button>
