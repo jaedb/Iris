@@ -56,6 +56,7 @@ var initialState = {
 		slim_mode: false,
 		current_tracklist: [],
 		current_tltrack: false,
+		selected_tracks: [],
 		notifications: [],
 		config: {
 			authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'

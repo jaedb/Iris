@@ -41,8 +41,8 @@ export default class Track extends React.Component{
 
 		var track = this.props.track
 		var className = 'list-item track'
-		if (typeof(track.selected) !== 'undefined' && track.selected) className += ' selected'
-		if (typeof(track.type) !== 'undefined') className += ' '+track.type
+		if (this.props.selected) className += ' selected'
+		if (track.type !== undefined) className += ' '+track.type
 		if (track.playing) className += ' playing'
 		if (this.state.hover) className += ' hover'
 		

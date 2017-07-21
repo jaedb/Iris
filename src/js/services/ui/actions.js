@@ -21,6 +21,16 @@ export function getBroadcasts(){
     }
 }
 
+export function setSelectedTracks(keys = []){
+    if (typeof(keys) === 'string'){
+        keys = [keys]
+    }
+    return {
+        type: 'SET_SELECTED_TRACKS',
+        keys: keys
+    }
+}
+
 export function showContextMenu(data){
     data.position_x = data.e.clientX
     data.position_y = data.e.clientY
