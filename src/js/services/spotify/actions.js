@@ -1,5 +1,6 @@
 
 var uiActions = require('../../services/ui/actions')
+var mopidyActions = require('../../services/mopidy/actions')
 var lastfmActions = require('../../services/lastfm/actions')
 var helpers = require('../../helpers')
 
@@ -908,6 +909,27 @@ export function getLibraryArtists(){
                     data: response
                 })
             });
+    }
+}
+
+
+export function playArtistTopTracks(uri){
+    return (dispatch, getState) => {
+        const artists = getState().ui.artists
+
+        // Do we have this artist (and their tracks) in our index already?
+        if (typeof(artists[uri]) !== 'undefined' && typeof(artists[uri].tracks) !== 'undefined'){
+            const uris = helpers.asURIs(artists[uri].tracks)
+            dispatch(mopidyActions.playURIs(uris, uri))
+
+        // We need to load the artist's top tracks first
+        } else {
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+            .then( response => {
+                const uris = helpers.asURIs(response.tracks)
+                dispatch(mopidyActions.playURIs(uris, uri))
+            })
+        }
     }
 }
 

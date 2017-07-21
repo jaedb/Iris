@@ -39,7 +39,7 @@ class QueueHistory extends React.Component{
 	render(){
 		var options = (
 			<span>
-				<button onClick={e => hashHistory.push(global.baseURL+'queue')}>
+				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
 					<FontAwesome name="reply" />&nbsp;
 					Back
 				</button>
@@ -47,7 +47,7 @@ class QueueHistory extends React.Component{
 		)
 
 		return (
-			<div className="view queue-history-view">			
+			<div className="view queue-history-view">
 				<Header icon="play" title="Playback history" options={options} uiActions={this.props.uiActions} />
 
 				<section className="content-wrapper list-wrapper">

@@ -59,6 +59,9 @@ export default class Track extends React.Component{
 
 			var track_columns = (
 				<span>
+					<span className="select-zone">
+						{this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
+					</span>
 					<span className="col name">
 						{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
 					</span>
@@ -89,8 +92,16 @@ export default class Track extends React.Component{
 					var added = '-'
 				}
 
+				className+= ' has-drag-zone'
+
 				var track_columns = (
 					<span>
+						<span className="select-zone">
+							{this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
+						</span>
+						<span className="drag-zone">
+							<FontAwesome name="bars" />
+						</span>
 						<span className="col name">
 							{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
 							{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
@@ -116,6 +127,9 @@ export default class Track extends React.Component{
 
 			var track_columns = (
 				<span>
+					<span className="select-zone">
+						{this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
+					</span>
 					<span className="col name">
 						{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
 						{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
@@ -146,9 +160,6 @@ export default class Track extends React.Component{
 				onMouseUp={ e => this.props.handleMouseUp(e) }
 				onDoubleClick={ e => this.props.handleDoubleClick(e) }
 				onContextMenu={ e => this.handleContextMenu(e) }>
-					<span className="state-icon">
-						{this.props.track.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
-					</span>
 					{ track_columns }
 			</div>
 		);

@@ -88,28 +88,44 @@ class LibraryPlaylists extends React.Component{
 		}
 
 		if( this.props.view == 'list' ){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Owner',
-					name: 'owner'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Editable',
-					name: 'can_edit'
-				}
-			]
+			if (this.props.slim_mode){
+				var columns = [
+					{
+						label: 'Name',
+						name: 'name'
+					},
+					{
+						label: 'Tracks',
+						name: 'tracks_total'
+					}
+				]
+			} else {
+				var columns = [
+					{
+						label: 'Name',
+						name: 'name'
+					},
+					{
+						label: 'Owner',
+						name: 'owner'
+					},
+					{
+						label: 'Source',
+						name: 'source'
+					},
+					{
+						label: 'Tracks',
+						name: 'tracks_total'
+					},
+					{
+						label: 'Editable',
+						name: 'can_edit'
+					}
+				]
+			}
+
+			console.log(columns)
+
 			return (
 				<section className="content-wrapper">
 					<List
@@ -212,6 +228,7 @@ class LibraryPlaylists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
 		view: state.ui.library_playlists_view,

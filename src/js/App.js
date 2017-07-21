@@ -30,11 +30,19 @@ class App extends React.Component{
 		super(props);
 		this.handleKeyUp = this.handleKeyUp.bind(this);
 		this.handleKeyDown = this.handleKeyDown.bind(this);
+		this.handleWindowResize = this.handleWindowResize.bind(this);
 	}
 
 	componentWillMount(){
 		window.addEventListener("keyup", this.handleKeyUp, false);
 		window.addEventListener("keydown", this.handleKeyDown, false);
+		window.addEventListener("resize", this.handleWindowResize, false);
+	}
+
+	componentWillUnmount(){
+		window.removeEventListener("keyup", this.handleKeyUp, false);
+		window.removeEventListener("keydown", this.handleKeyDown, false);
+		window.removeEventListener("resize", this.handleWindowResize, false);
 	}
 
 	componentDidMount(){
@@ -56,6 +64,9 @@ class App extends React.Component{
 			// hide our sidebar
 			this.props.uiActions.toggleSidebar( false )
 		});
+
+		// Check our slim_mode
+		this.handleWindowResize(null)
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -76,11 +87,6 @@ class App extends React.Component{
 		}
 	}
 
-	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false);
-		window.removeEventListener("keydown", this.handleKeyDown, false);
-	}
-
 	shouldTriggerShortcut(e){
 		var ignoreNodes = ['INPUT', 'TEXTAREA']
 		var keyCodes = [32,27,191,37,38,39,40,70]
@@ -92,6 +98,21 @@ class App extends React.Component{
 		if( keyCodes.indexOf(e.keyCode) > -1 ){
 			e.preventDefault()
 			return true
+		}
+	}
+
+	handleWindowResize(e){
+		var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+		var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+
+		if (width <= 800){
+			if (!this.props.slim_mode){
+				this.props.uiActions.setSlimMode(true)
+			}
+		} else {
+			if (this.props.slim_mode){
+				this.props.uiActions.setSlimMode(false)
+			}
 		}
 	}
 
@@ -197,6 +218,8 @@ class App extends React.Component{
 		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
 		if (this.props.sidebar_open) className += ' sidebar-open'
 		if (this.props.modal) className += ' modal-open'
+		if (this.props.touch_dragging) className += ' touch-dragging'
+		if (this.props.slim_mode) className += ' slim-mode'
 		if (helpers.isTouchDevice()){
 			className += ' touch'
 		} else {
@@ -236,6 +259,8 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		touch_dragging: state.ui.touch_dragging,
+		slim_mode: state.ui.slim_mode,
 		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
 		volume: (state.mopidy.volume ? state.mopidy.volume : false),
 		notifications: (state.ui.notifications ? state.ui.notifications : []),

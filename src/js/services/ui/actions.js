@@ -30,6 +30,13 @@ export function showContextMenu(data){
     }
 }
 
+export function setSlimMode(slim_mode){
+    return {
+        type: 'SET_SLIM_MODE',
+        slim_mode: slim_mode
+    }
+}
+
 export function hideContextMenu(){
     return {
         type: 'HIDE_CONTEXT_MENU'

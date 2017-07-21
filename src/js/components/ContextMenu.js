@@ -174,6 +174,11 @@ class ContextMenu extends React.Component{
 		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0])
 	}
 
+	playArtistTopTracks(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0])
+	}
+
 	addToQueue(e, next = false){
 		this.props.uiActions.hideContextMenu()
 		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, next)
@@ -361,6 +366,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var play_artist_top_tracks = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.playArtistTopTracks(e)}>
+					<span className="label">Play top tracks</span>
+				</a>
+			</span>
+		)
+
 		var add_to_queue = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.addToQueue(e)}>
@@ -463,6 +476,7 @@ class ContextMenu extends React.Component{
 			case 'artist':
 				return (
 					<div>
+						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{start_radio}
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}

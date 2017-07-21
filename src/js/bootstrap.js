@@ -53,6 +53,7 @@ var initialState = {
 		autocomplete_results: {}
 	},
 	ui: {
+		slim_mode: false,
 		current_tracklist: [],
 		current_tltrack: false,
 		notifications: [],

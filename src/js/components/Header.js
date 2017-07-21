@@ -16,26 +16,32 @@ export default class Header extends React.Component{
 		}
 	}
 
-	handleContextMenuTrigger(e,options){		
-		e.preventDefault()
-		var data = {
-			e: e,
-			context: 'custom',
-			title: this.props.title,
-			options: options
+	handleContextMenuTrigger(e,options){
+
+		// We have an override trigger (eg Album, Playlist)
+		if (this.props.handleContextMenuTrigger){
+			return this.props.handleContextMenuTrigger(e)
+		} else {
+			e.preventDefault()
+			var data = {
+				e: e,
+				context: 'custom',
+				title: this.props.title,
+				options: options
+			}
+			this.props.uiActions.showContextMenu(data)
 		}
-		this.props.uiActions.showContextMenu(data)
 	}
 
 	renderOptions(){
-		if (!this.props.options) return null
+		if (!this.props.options && !this.props.handleContextMenuTrigger) return null
 
 		return (
 			<div className='options'>
 				<ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
 				<span className="items">
 					<span className="liner">
-						{ this.props.options }
+						{this.props.options ? this.props.options : null}
 					</span>
 				</span>
 			</div>
