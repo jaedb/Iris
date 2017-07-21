@@ -334,7 +334,7 @@ export function getFeaturedPlaylists(){
                     type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                     data: {
                         message: response.message,
-                        playlists: helpers.asURIs(response.playlists.items)
+                        playlists: helpers.arrayOf('uri',response.playlists.items)
                     }
                 });
             });
@@ -471,11 +471,11 @@ export function getSearchResults(query, type = 'album,artist,playlist,track', li
 
                 dispatch({
                     type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.asURIs(playlists),
+                    playlists_uris: helpers.arrayOf('uri',playlists),
                     playlists_more: response.playlists.next,
-                    artists_uris: helpers.asURIs(response.artists.items),
+                    artists_uris: helpers.arrayOf('uri',response.artists.items),
                     artists_more: response.artists.next,
-                    albums_uris: helpers.asURIs(response.albums.items),
+                    albums_uris: helpers.arrayOf('uri',response.albums.items),
                     albums_more: response.albums.next,
                     tracks: response.tracks.items,
                     tracks_more: response.tracks.next
@@ -765,7 +765,7 @@ export function getRecommendations(uris = [], limit = 20){
                     seeds_uris: uris,
                     tracks: response.tracks,
                     artists_uris: artists_uris,
-                    albums_uris: helpers.asURIs(albums)
+                    albums_uris: helpers.arrayOf('uri',albums)
                 })
             })
     }
@@ -833,7 +833,7 @@ export function getArtist(uri, full = false){
                         type: 'ARTISTS_LOADED',
                         artists: response.artists
                     }); 
-                    Object.assign(artist, { related_artists_uris: helpers.asURIs(response.artists) });
+                    Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri',response.artists) });
                 })
             )
         }
@@ -888,7 +888,7 @@ export function getArtists( uris ){
                             album: artist.albums[i]
                         }); 
                     }
-                    artist.albums = helpers.asURIs(artist.albums)
+                    artist.albums = helpers.arrayOf('uri',artist.albums)
                     artist.albums_more = artist.albums.next
                     dispatch({
                         type: 'ARTIST_LOADED',
@@ -919,14 +919,14 @@ export function playArtistTopTracks(uri){
 
         // Do we have this artist (and their tracks) in our index already?
         if (typeof(artists[uri]) !== 'undefined' && typeof(artists[uri].tracks) !== 'undefined'){
-            const uris = helpers.asURIs(artists[uri].tracks)
+            const uris = helpers.arrayOf('uri',artists[uri].tracks)
             dispatch(mopidyActions.playURIs(uris, uri))
 
         // We need to load the artist's top tracks first
         } else {
             sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
             .then( response => {
-                const uris = helpers.asURIs(response.tracks)
+                const uris = helpers.arrayOf('uri',response.tracks)
                 dispatch(mopidyActions.playURIs(uris, uri))
             })
         }
@@ -1013,7 +1013,7 @@ export function getAlbum( uri ){
                     {},
                     response,
                     {
-                        artists_uris: helpers.asURIs(response.artists),
+                        artists_uris: helpers.arrayOf('uri',response.artists),
                         tracks: response.tracks.items,
                         tracks_more: response.tracks.next,
                         tracks_total: response.tracks.total

@@ -16,19 +16,23 @@ class TrackList extends React.Component{
 	constructor(props) {
 		super(props)
 
-		this.touch_dragging = false
+		this.touch_dragging_tracks_keys = false
+
 		this.handleKeyUp = this.handleKeyUp.bind(this)
 		this.handleTouchMove = this.handleTouchMove.bind(this)
+		this.handleTouchEnd = this.handleTouchEnd.bind(this)
 	}
 
 	componentWillMount(){
 		window.addEventListener("keyup", this.handleKeyUp, false)
 		window.addEventListener("touchmove", this.handleTouchMove, false)
+		window.addEventListener("touchend", this.handleTouchEnd, false)
 	}
 
 	componentWillUnmount(){
 		window.removeEventListener("keyup", this.handleKeyUp, false)
 		window.removeEventListener("touchmove", this.handleTouchMove, false)
+		window.removeEventListener("touchend", this.handleTouchEnd, false)
 	}
 
 	/**
@@ -68,7 +72,7 @@ class TrackList extends React.Component{
 	}
 
 	handleKeyUp(e){
-		if (!this.selectedTracks()) return
+		if (!this.digestTracksKeys()) return
 
 		switch(e.keyCode){
 			
@@ -82,18 +86,62 @@ class TrackList extends React.Component{
 		}
 	}
 
-	handleTouchStart(e,index){
-		var target = $(e.target)
-		if (target.hasClass('drag-zone')){
-			$('body').addClass('touch-dragging')
-			this.touch_dragging = true
-			e.preventDefault()
+	handleDrag(e,track_key){
+
+		let selected_tracks = []
+
+		// Dragging a non-selected track. We need to deselect everything
+		// else and select only this track
+		if (!this.props.selected_tracks.includes(track_key)){
+			this.props.uiActions.setSelectedTracks([track_key])
+			selected_tracks = this.digestTracksKeys([track_key])
+		} else {
+			selected_tracks = this.digestTracksKeys()
+		}
+
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+
+		this.props.uiActions.dragStart(
+			e, 
+			this.props.context, 
+			this.props.uri, 
+			selected_tracks, 
+			selected_tracks_indexes
+		)
+	}
+
+	handleDrop(e,track_key){
+		if (this.props.dragger && this.props.dragger.active){
+		
+			// if this tracklist handles sorting, handle it
+			if (this.props.reorderTracks !== undefined){
+				let indexes = this.props.dragger.victims_indexes
+				let tracks = this.digestTracksKeys([track_key])
+				return this.props.reorderTracks(indexes, tracks[0].index)
+			}
+		}
+		this.touch_dragging_tracks_keys = false
+	}
+
+	handleTouchDrag(e,track_key){
+		let selected_tracks = []
+
+		// Drag initiated on a selected track
+		if (this.props.selected_tracks.includes(track_key)){
+
+			// They're all dragging
+			this.touch_dragging_tracks_keys = this.props.selected_tracks
+
+		// Not already selected
+		} else {
+			this.touch_dragging_tracks_keys = [track_key]
+			this.props.uiActions.setSelectedTracks([track_key])
 		}
 	}
 
 	handleTouchMove(e){
-		if (this.touch_dragging){
-			e.preventDefault()
+		if (this.touch_dragging_tracks_keys){
+			
 			let touch = e.touches[0]
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
 			if (!over.is('.track')){
@@ -103,11 +151,17 @@ class TrackList extends React.Component{
 			if (over.length > 0){
 				over.addClass('touch-drag-hover')
 			}
+
+	        e.returnValue = false
+	        e.cancelBubble = true
+            e.preventDefault()
+            e.stopPropagation()
+	        return false
 		}
 	}
 
-	handleTouchEnd(e,index){
-		if (this.touch_dragging){
+	handleTouchEnd(e){
+		if (this.touch_dragging_tracks_keys){
 			let touch = e.changedTouches[0]
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
 			if (!over.is('.track')){
@@ -117,22 +171,16 @@ class TrackList extends React.Component{
 				let siblings = over.parent().children('.track')
 				let dropped_at = siblings.index(over) - 1
 
-				if (typeof(this.props.reorderTracks) !== 'undefined'){
-					this.props.reorderTracks([index],dropped_at)
-					this.render()
+				if (this.props.reorderTracks !== undefined){
+					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at)
 				}
 			}
 
 			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover')
 			$('body').removeClass('touch-dragging')
-			this.touch_dragging = false
-		} else {
-			this.handleMouseDown(e,index)
 		}
-
-		// Prevent any event bubbling. This prevents clicks and mouse events
-		// from also being fired
-		e.preventDefault()
+		
+		this.touch_dragging_tracks_keys = false
 	}
 
 	handleDoubleClick(e,track_key){
@@ -140,76 +188,29 @@ class TrackList extends React.Component{
 		this.playTracks()
 	}
 
-	handleMouseDown(e,track_key){
-		if (this.props.context_menu) this.props.uiActions.hideContextMenu()
-
-			
-		this.toggleTrackSelections(e, track_key)
-
-		if (this.props.dragger && this.props.dragger.active){
-		
-			// if this tracklist handles sorting, handle it
-			if (typeof(this.props.reorderTracks) !== 'undefined'){
-				var indexes = this.props.dragger.victims_indexes
-				return this.props.reorderTracks( indexes, index )
-			}
-		}
-/*
-		// Regular clicking an un-selected element
-		// This selects the track before we potentially drag
-		switch (this.triggerType(e)){
-
-			case 'mobile':
-				// simple toggle
-				var tracks = this.state.tracks
-				tracks[index].selected = !tracks[index].selected
-				this.setState({tracks: tracks, last_selected_track: index})
-				break
-
-			case 'default':
-				if (!this.state.tracks[index].selected && !this.isRightClick(e) && !e.ctrlKey){
-					this.toggleTrackSelections(e, index)
-				}
-				break
-		}
-		*/
-
-		//this.props.uiActions.dragStart(e, this.props.context, this.props.uri, selected_tracks, this.tracksIndexes(selected_tracks))
-	}
-
-	handleMouseUp(e,track_key){
-	}
-
 	handleContextMenu(e, native_event = true){
+		let selected_tracks = this.digestTracksKeys()
+		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
 
-		// Only enable direct context menu events in default (desktop) view
-		// This prevents tap-and-hold functionality
-		if (native_event && this.triggerType(e) != 'default'){
-			return false
-		}
-
-		var selected_tracks = this.selectedTracks()
-		var data = {
+		let data = {
 			e: e,
 			context: (this.props.context ? this.props.context+'-track' : 'track'),
 			tracklist_uri: (this.props.uri ? this.props.uri : null),
 			items: selected_tracks,
-			uris: helpers.asURIs(selected_tracks),
-			indexes: this.tracksIndexes(selected_tracks)
+			uris: selected_tracks_uris,
+			indexes: selected_tracks_indexes
 		}
 		this.props.uiActions.showContextMenu(data)
 
-		if (!native_event){
-
-			// Deselect all tracks
-			this.props.uiActions.setSelectedTracks([])
-		}
+		// Deselect all tracks
+		this.props.uiActions.setSelectedTracks([])
 	}
 
-	toggleTrackSelections(e,track_key){
+	handleSelection(e,track_key){
 		let selected_tracks = this.props.selected_tracks
 
-		if (e.ctrlKey){
+		if (e.ctrlKey || this.props.slim_mode){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
@@ -261,67 +262,63 @@ class TrackList extends React.Component{
 		return false
 	}
 
-	keyifyTracks(tracks, deselect = false){
-		for( var i = 0; i < tracks.length; i++ ){
-			var new_properties = {
-				key: i+'_'+tracks[i].uri
-			}
-			if (deselect){
-				new_properties.selected = false
-			}
-			tracks[i] = Object.assign(
-				{}, 
-				tracks[i], 
-				new_properties
-			)
-		}
-		return tracks
-	}
 
-	selectedTracks(indexes_only = false){
-		if (!this.props.selected_tracks){
+	/**
+	 * Digest our selected tracks
+	 *
+	 * @param tracks = array (defaults to stored value)
+	 * @param indexex_only = boolean (do we just want an array of indexes)
+	 * @return mixed
+	 **/
+	digestTracksKeys(keys = this.props.selected_tracks, indexes_only = false){
+		if (!keys || keys.length <= 0){
 			return false
 		}
 
 		// Construct a basic track object, based on our unique track key
 		// This is enough to perform interactions (dragging, selecting, etc)
-		let response = []
-		for (let i = 0; i < this.props.selected_tracks.length; i++){
-			let track = this.props.selected_tracks[i].split('_')
+		let array = []
+		for (let i = 0; i < keys.length; i++){
+			let key = keys[i].split('_')
 
 			if (indexes_only){
-				response.push(track[0])
+				array.push(key[0])
 
 			} else {
-				response.push({
-					index: track[0],
-					uri: track[1],
-					context: track[2],
-					context_uri: track[3]
+				array.push({
+					index: parseInt(key[0]),
+					uri: key[1],
+					context: key[2],
+					context_uri: key[3]
 				})				
 			}
 		}
 
-		return response
+		return array
 	}
 
 	playTracks(){
-		let selected_tracks = this.selectedTracks()
+		let selected_tracks = this.digestTracksKeys()
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
 
 		// Our parent handles playing
 		if (this.props.playTracks !== undefined){
-			return this.props.playTracks( selected_tracks );
-		}
+			return this.props.playTracks( selected_tracks )
 
 		// Default to playing the URIs
-		return this.props.mopidyActions.playURIs(helpers.asURIs(selected_tracks), this.props.uri )
+		} else {
+			let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
+			return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri)
+		}
 	}
 
 	removeTracks(){
 		
 		// Our parent handles removal
 		if (this.props.removeTracks !== undefined){
-			return this.props.removeTracks(this.selectedTracks(true))
+			let selected_tracks = this.digestTracksKeys()
+			let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+			return this.props.removeTracks(selected_tracks_indexes)
 		}
 
 		// By default, do nothing
@@ -387,19 +384,23 @@ class TrackList extends React.Component{
 									key={track_key} 
 									track={track} 
 									context={this.props.context} 
+									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
+									slim_mode={this.props.slim_mode} 
 									selected={this.props.selected_tracks.includes(track_key)} 
+									dragger={this.props.dragger} 
+									handleSelection={e => this.handleSelection(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
-									handleMouseUp={e => this.handleMouseUp(e, track_key)}
-									handleMouseDown={e => this.handleMouseDown(e, track_key)}
-									handleTouchStart={e => this.handleTouchStart(e, track_key)}
-									handleTouchEnd={e => this.handleTouchEnd(e, track_key)}
 									handleContextMenu={e => this.handleContextMenu(e)}
+									handleDrag={e => this.handleDrag(e, track_key)}
+									handleDrop={e => this.handleDrop(e, track_key)}
+									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
+									handleTouchDrop={e => this.handleTouchDrop(e, track_key)}
 								/>
 							)
 						}
 					)
 				}
-				{this.selectedTracks() ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
+				{this.digestTracksKeys() ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
 			</div>
 		);
 	}

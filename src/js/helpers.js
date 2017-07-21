@@ -271,17 +271,18 @@ export let indexFriendlyUri = function (uri){
 
 
 /**
- * Digest an array of objects, and pull into simple array of uris
+ * Digest an array of objects and pull into simple array of one property
  * 
- * @param items Array
+ * @param property = string
+ * @param items = Array
  * @return Array
  **/
-export let asURIs = function(items){
-	var uris = []
-	for( var i = 0; i < items.length; i++ ){
-		uris.push( items[i].uri )
+export let arrayOf = function(property, items){
+	let array = []
+	for (let i = 0; i < items.length; i++){
+		array.push(items[i][property])
 	}
-	return uris
+	return array
 }
 
 

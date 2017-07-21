@@ -286,7 +286,7 @@ const MopidyMiddleware = (function(){
                     if (typeof(response.tracks) === 'undefined'){
                         store.dispatch(uiActions.createNotification('Failed to load playlist tracks','bad'))
                     } else {
-                        var tracks_uris = helpers.asURIs(response.tracks)
+                        var tracks_uris = helpers.arrayOf('uri',response.tracks)
                         store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
                     }
                 })
@@ -582,7 +582,7 @@ const MopidyMiddleware = (function(){
                     .then( response => {
 
                         // drop in our URI list
-                        var playlist_uris = helpers.asURIs(response)
+                        var playlist_uris = helpers.arrayOf('uri',response)
 
                         store.dispatch({ type: 'LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris });
 
@@ -645,7 +645,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
                 var tracks = Object.assign([], action.tracks)
-                var uris = helpers.asURIs(tracks)
+                var uris = helpers.arrayOf('uri',tracks)
 
                 instruct( socket, store, 'library.lookup', { uris: uris } )
                     .then( response => {
@@ -839,7 +839,7 @@ const MopidyMiddleware = (function(){
                     .then( response => {
                         if (response.length <= 0) return
 
-                        var uris = helpers.asURIs(response)
+                        var uris = helpers.arrayOf('uri',response)
 
                         store.dispatch({ 
                             type: 'MOPIDY_GET_ALBUMS',
@@ -964,7 +964,7 @@ const MopidyMiddleware = (function(){
                         });               
                         store.dispatch({ 
                             type: 'LOCAL_ARTISTS_LOADED', 
-                            uris: helpers.asURIs(response)
+                            uris: helpers.arrayOf('uri',response)
                         });
                     })
                 break;
@@ -999,7 +999,7 @@ const MopidyMiddleware = (function(){
                             (response ? response[0].artists[0] : {}),
                             {
                                 is_mopidy: true,
-                                albums_uris: helpers.asURIs(albums),
+                                albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
                         )
