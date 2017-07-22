@@ -15,7 +15,7 @@
 		width: 160px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		border-radius: 3px;
-		background: $dark_grey;
+		background: $darkest_grey;
 		font-size: 13px;
 		font-weight: 600;
 		font-family: "Overpass";
@@ -236,7 +236,7 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background: $overlay_light;
+			background: $overlay_dark;
 			z-index: 1;
 		}
 
@@ -291,15 +291,9 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 5px;
-		background: $black;
+		background: $white;
 		display: inline-block;
 		margin: 1px;
-	}
-
-	&.white {
-		.dot {
-			background: $white;
-		}
 	}
 
 	&:before {

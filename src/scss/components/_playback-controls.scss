@@ -6,13 +6,8 @@
 	right: 0;
 	left: 0;
 	height: 50px;
-	background: $light_grey;
-	color: $black;
-
-	background: -webkit-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
-	background: -moz-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
-	background: -o-linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
-	background: linear-gradient(to bottom left, $light_grey, darken($light_grey,5%));
+	background: darken($darkest_grey, 5%);
+	color: $white;
 
 	.current-track {
 		@include animate();
@@ -21,7 +16,7 @@
 		bottom: 50px;
 		width: 220px;
 		font-size: 14px;
-		color: $black;
+		color: $white;
 		text-decoration: none;
 
 		.thumbnail {
@@ -89,11 +84,12 @@
 	.control {
 		@include animate();
 		font-size: 12px;
-		color: $dark_grey;
+		color: $white;
 		cursor: pointer;
 		padding: 8px;
 		display: inline-block;
 		vertical-align: bottom;
+		opacity: 0.8;
 
 		&.play {
 			font-size: 24px;
@@ -105,7 +101,7 @@
 		}
 
 		&:hover {
-			color: $black;
+			opacity: 1;
 		}
 	}
 

@@ -10,6 +10,7 @@ main {
 		}
 
 		.icon {
+			@include invert();
 			display: inline-block;
 			padding-right: 14px;
 			height: 2.6rem;
