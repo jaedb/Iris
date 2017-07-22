@@ -228,7 +228,7 @@ export default class Track extends React.Component{
 					className={className}
 					onMouseEnter={e => this.setState({hover: true})}
 					onMouseLeave={e => this.setState({hover: false})}
-					onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
+					//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
 					onMouseDown={e => this.handleMouseDown(e)}			// Click (or potentially a mouse drag start)
 					onMouseMove={e => this.handleMouseMove(e)}			// Any movement over me
 					onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event

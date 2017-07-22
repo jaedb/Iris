@@ -171,8 +171,11 @@ class TrackList extends React.Component{
 				let siblings = over.parent().children('.track')
 				let dropped_at = siblings.index(over) - 1
 
+				console.log('touchend',helpers.arrayOf('index',this.digestTracksKeys()),'to',dropped_at)
+
 				if (this.props.reorderTracks !== undefined){
 					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at)
+					this.props.uiActions.setSelectedTracks([])
 				}
 			}
 
@@ -394,7 +397,6 @@ class TrackList extends React.Component{
 									handleDrag={e => this.handleDrag(e, track_key)}
 									handleDrop={e => this.handleDrop(e, track_key)}
 									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
-									handleTouchDrop={e => this.handleTouchDrop(e, track_key)}
 								/>
 							)
 						}
