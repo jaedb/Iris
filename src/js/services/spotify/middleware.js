@@ -94,7 +94,7 @@ const SpotifyMiddleware = (function(){
                 });
                 store.dispatch({
                     type: 'NEW_RELEASES_LOADED',
-                    uris: helpers.asURIs(action.data.albums.items),
+                    uris: helpers.arrayOf('uri',action.data.albums.items),
                     more: action.data.albums.next,
                     total: action.data.albums.total
                 });
@@ -108,7 +108,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({
                     type: 'ARTIST_ALBUMS_LOADED',
                     key: action.key,
-                    uris: helpers.asURIs(action.data.items),
+                    uris: helpers.arrayOf('uri',action.data.items),
                     more: action.data.next,
                     total: action.data.total
                 });
@@ -139,7 +139,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({
                     type: 'USER_PLAYLISTS_LOADED',
                     key: action.key,
-                    uris: helpers.asURIs(playlists),
+                    uris: helpers.arrayOf('uri',playlists),
                     more: action.data.next,
                     total: action.data.total
                 });
@@ -170,7 +170,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({
                     type: 'CATEGORY_PLAYLISTS_LOADED',
                     key: action.key,
-                    uris: helpers.asURIs(playlists),
+                    uris: helpers.arrayOf('uri',playlists),
                     more: action.data.playlists.next,
                     total: action.data.playlists.total
                 });
@@ -202,7 +202,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'LIBRARY_PLAYLISTS_LOADED',
-                    uris: helpers.asURIs(playlists)
+                    uris: helpers.arrayOf('uri',playlists)
                 });
                 break
 
@@ -225,7 +225,7 @@ const SpotifyMiddleware = (function(){
                 });
                 store.dispatch({
                     type: 'LIBRARY_ARTISTS_LOADED',
-                    uris: helpers.asURIs(artists),
+                    uris: helpers.arrayOf('uri',artists),
                     more: action.data.artists.next,
                     total: action.data.artists.total
                 });
@@ -256,7 +256,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'LIBRARY_ALBUMS_LOADED',
-                    uris: helpers.asURIs(albums),
+                    uris: helpers.arrayOf('uri',albums),
                     more: action.data.next,
                     total: action.data.total
                 });
@@ -268,14 +268,14 @@ const SpotifyMiddleware = (function(){
                         type: 'ARTISTS_LOADED',
                         artists: action.artists
                     })
-                    action.artists_uris = helpers.asURIs(action.artists)
+                    action.artists_uris = helpers.arrayOf('uri',action.artists)
                 }
                 if (action.tracks.length > 0){
                     store.dispatch({
                         type: 'TRACKS_LOADED',
                         tracks: action.tracks
                     })
-                    action.tracks_uris = helpers.asURIs(action.tracks)
+                    action.tracks_uris = helpers.arrayOf('uri',action.tracks)
                 }
                 next(action)
                 break
@@ -305,7 +305,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.asURIs(action.data.playlists.items),
+                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
                     playlists_more: action.data.playlists.next
                 });
                 break
@@ -319,7 +319,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'SEARCH_RESULTS_LOADED',
-                    albums_uris: helpers.asURIs(action.data.albums.items),
+                    albums_uris: helpers.arrayOf('uri',action.data.albums.items),
                     albums_more: action.data.albums.next
                 });
                 break
@@ -344,7 +344,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.asURIs(action.data.playlists.items),
+                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
                     playlists_more: action.data.playlists.next
                 });
                 break

@@ -232,7 +232,7 @@
 				.fa {
 					position: absolute;
 					top: 20px;
-					left: 13px;
+					left: 19px;
 					pointer-events: none;
 					color: $white;
 					z-index: 1;
@@ -247,7 +247,7 @@
 					height: 14px;
 					position: absolute;
 					top: 16px;
-					left: 10px;
+					left: 16px;
 				}
 			}
 
@@ -333,10 +333,10 @@
 		}
 
 		&.track-list {
-			.list-item.has-drag-zone {
+			.list-item.can-sort {
 				padding: 8px 30px 8px 78px !important;
 			}
-			.list-item:not(.has-drag-zone){
+			.list-item:not(.can-sort){
 				padding: 8px 30px 8px 38px !important;
 			}
 		}

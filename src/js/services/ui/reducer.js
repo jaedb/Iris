@@ -24,6 +24,9 @@ export default function reducer(ui = {}, action){
             if( typeof(action.new_state) !== 'undefined' ) new_state = action.new_state
             return Object.assign({}, ui, { sidebar_open : new_state })
 
+        case 'SET_SELECTED_TRACKS':
+            return Object.assign({}, ui, { selected_tracks : Object.assign([],action.keys) })
+
 
         /**
          * Context menu
