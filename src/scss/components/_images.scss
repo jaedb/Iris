@@ -76,9 +76,9 @@
 		z-index: 9;
 		pointer-events: none;
 		background: -webkit-linear-gradient(rgba(38,39,40,0), rgba(38,39,40,1));
-		background: -moz-linear-gradient(rgba(38,39,40,0), rgba(38,39,40,1));
-		background: -o-linear-gradient(rgba(38,39,40,0), rgba(38,39,40,1));
-		background: linear-gradient(rgba(38,39,40,0), rgba(38,39,40,1));
+		background: -moz-linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
+		background: -o-linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
+		background: linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
 	}
 
 	canvas {
@@ -90,7 +90,7 @@
 		left: -5%;
 
 		&.loaded {
-			opacity: 0.4;
+			opacity: 0.8;
 		}
 	}
 
@@ -105,7 +105,7 @@
 	padding-bottom: 60px;
 
 	.tile {
-		color: $dark_grey;
+		color: $white;
 		text-align: center;
 		position: relative;
 		z-index: 1;
@@ -133,7 +133,7 @@
 				margin-top: -27px;
 				font-size: 60px;
 				z-index: -1;
-				color: $faint_grey;
+				opacity: 0.1;
 			}
 		}
 
@@ -142,7 +142,7 @@
 			display: block;
 			width: 100%;
 			padding-bottom: 100%;
-			background: $light_grey;
+			background: lighten($dark_grey,2%);
 			z-index: -2;
 		}
 

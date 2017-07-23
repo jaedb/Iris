@@ -22,27 +22,16 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 30vh 40px 0 350px;
-
-			.thumbnail {
-				position: absolute;
-				z-index: 2;
-				left: 40px;
-				bottom: 40px;
-				max-width: 264px;
-
-				.image {
-					background-color: $darkest_grey;
-				}
-			}
+			padding: 35vh 40px 0;
 
 			h1 {
 				color: $white;
 				padding-bottom: 25px;
+				font-size: 4rem;
 			}
 
 			.actions {
-				padding-bottom: 60px;
+				padding-bottom: 20px;
 
 				.context-menu-trigger {
 					color: $white;
@@ -50,19 +39,19 @@
 			}
 
 			.sub-views {
-				color: #FFFFFF;
-
 				.option {
+					@include feature_font();
+					color: $white;
 					display: inline-block;
 					padding: 8px 0;
 					margin-right: 25px;
-					font-size: 18px;
-					font-weight: 400;
-					border-bottom: 4px solid transparent;
+					font-size: 15px;
+					font-weight: 500;
+					border-bottom: 1px solid transparent;
 					cursor: pointer;
 
 					&.active {
-						border-color: $off_white;
+						border-color: $white;
 					}
 
 					&:not(.active):hover {

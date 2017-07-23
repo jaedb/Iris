@@ -6,21 +6,13 @@
 	left: 0;
 	padding: 18px;
 	z-index: 98;
-	color: #FFFFFF;
+	color: $white;
 	font-size: 18px;
 	cursor: pointer;
 	display: none;
 
 	@include responsive( $bp_medium ){
 		display: block;
-	}
-
-	header & {
-		color: $dark_grey;
-	}
-
-	header.overlay & {
-		color: $white;
 	}
 
 	&.open {

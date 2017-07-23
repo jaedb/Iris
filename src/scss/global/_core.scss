@@ -3,7 +3,7 @@
 body,
 html {
 	background: $dark_grey;
-	color: $white;
+	color: $light_grey;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	touch-action: manipulation;
@@ -51,9 +51,10 @@ main {
 		color: inherit;
 		text-decoration: none;
 		cursor: pointer;
+		border-bottom: 1px solid transparent;
 
 		&:hover {
-			opacity: 0.7;
+			border-color: $mid_grey;
 		}
 	}
 
@@ -84,6 +85,7 @@ main {
 
 h1 {
 	@include feature_font();
+	color: $white;
 	font-weight: 800;
 	font-size: 3rem;
 	line-height: 3.2rem;
@@ -114,7 +116,7 @@ h4 {
 
 	&.underline {
 		padding-bottom: 4px;
-		border-bottom: 1px solid #000000;
+		border-bottom: 1px solid $grey;
 	}
 
 	&:not(:first-child){

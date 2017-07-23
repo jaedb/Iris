@@ -28,7 +28,7 @@
 	width: 100%;
 	height: 100%;
 	z-index: 98;
-	background: $off_white;
+	background: darken($dark_grey, 1%);
 
 	.dropzone {
 		@include animate();

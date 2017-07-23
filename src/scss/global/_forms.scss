@@ -16,10 +16,15 @@ input[type="email"],
 input[type="date"],
 select {
 	padding: 10px 14px;
-	background: $faint_grey;
-	color: $darkest_grey;
+	background: rgba(255,255,255,0.1);
+	color: $white;
 	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
 	font-size: 14px;
+
+	&:focus,
+	&:active {
+		background: rgba(255,255,255,0.2);
+	}
 }
 
 .button-wrapper {	
@@ -49,8 +54,8 @@ input[type="submit"] {
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	color: $white;
-	background: $black;
+	color: $black;
+	background: $white;
 	font-size: 14px;
 	box-sizing: border-box;
 	border-radius: 3px;
@@ -69,8 +74,7 @@ input[type="submit"] {
 
 	&:active {
 		@include noanimate();
-		background: $black;
-		color: $white;
+		background: darken($white,5%);
 		margin-top: 1px;
 		margin-bottom: 9px;
 	}
@@ -170,9 +174,6 @@ input[type="submit"] {
 		padding-left: 20px;
 		padding-right: 20px;
 	}
-
-	@include responsive( $bp_narrow ){
-	}
 }
 
 .field {
@@ -239,26 +240,15 @@ input[type="submit"] {
 			width: 14px;
 			height: 14px;
 		    border-radius: 50%;
-			border: 2px solid #000000;
+			border: 2px solid $mid_grey;
 			position: absolute;
 			top: 4px;
 			left: 0;
 		}
 
 		input:checked + .label:before {
-		    background: #000000;
-		    box-shadow: inset 0px 0px 0px 4px #f5f5f5;
-		}
-
-		&.white {
-			input + .label:before {
-				border-color: #FFFFFF;
-			}
-
-			input:checked + .label:before {
-			    background: #FFFFFF;
-			    box-shadow: inset 0px 0px 0px 4px #222222;
-			}
+		    background: $mid_grey;
+		    box-shadow: inset 0px 0px 0px 4px #222222;
 		}
 	}
 
@@ -267,12 +257,12 @@ input[type="submit"] {
 			font-family: FontAwesome;
 			font-size: 8px;
 			content: ' ';
-			color: #000000;
+			color: $mid_grey;
 			display: inline-block;
 			width: 11px;
 			height: 11px;
 			padding: 3px 0 0 3px;
-			border: 2px solid #000000;
+			border: 2px solid $mid_grey;
 			position: absolute;
 			top: 5px;
 			left: 0;
@@ -280,16 +270,6 @@ input[type="submit"] {
 
 		input:checked + .label:before {
 			content: '\f00c';
-		}
-
-		&.white {
-			input + .label:before {
-				border-color: #FFFFFF;
-			}
-
-			input:checked + .label:before {
-			    color: #FFFFFF;
-			}
 		}
 	}
 

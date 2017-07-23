@@ -5,8 +5,9 @@
 	bottom: 0;
 	right: 0;
 	left: 0;
-	height: 50px;
-	background: darken($darkest_grey, 5%);
+	height: 49px;
+	background: lighten($dark_grey, 3%);
+	border-top: 1px solid lighten($dark_grey, 8%);
 	color: $white;
 
 	.current-track {

@@ -205,10 +205,9 @@ class Artist extends React.Component{
 
 					<div className="intro">
 
-						<Parallax blur image={image} />
+						<Parallax image={image} />
 
 						<div className="liner">
-							<Thumbnail image={image} canZoom circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : <button className="primary" onClick={e => this.props.mopidyActions.playURIs(this.props.artist.albums_uris, this.props.artist.uri)}>Play all</button>}
@@ -231,7 +230,6 @@ class Artist extends React.Component{
 					<div className="intro">
 						<Parallax />
 						<div className="liner">
-							<Thumbnail circle />
 							<h1>
 								<span className="placeholder"></span>
 							</h1>
