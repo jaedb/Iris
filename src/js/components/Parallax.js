@@ -32,7 +32,7 @@ export default class Parallax extends React.Component{
         window.addEventListener("resize", this.handleResize);
         window.addEventListener("scroll", this.handleScroll);
 
-        if( this.props.image ){
+        if (this.props.image){
 			this._loading = true
 			this.setState({ url: this.props.image, image: false, loading: true })
 			this.loadImage( this.props.image )
@@ -46,6 +46,10 @@ export default class Parallax extends React.Component{
 						}
 					}
 				)
+		} else {
+			this._loaded = true
+			this.state.image = false
+			this.updateCanvas()
 		}
 	}
 
@@ -66,7 +70,7 @@ export default class Parallax extends React.Component{
 							this._loading = false
 							this._loaded = true
 							this.setState({ url: nextProps.image, image: response, loading: false })
-							this.updateCanvas( response )
+							this.updateCanvas(response)
 						}
 					}
 				)
@@ -74,22 +78,22 @@ export default class Parallax extends React.Component{
 	}
 
     handleResize(e){
-    	if( this._loaded ){
-	    	this.updateCanvas( this.state.image );
+    	if (this._loaded){
+	    	this.updateCanvas(this.state.image)
 	    }
     }
 
     handleScroll(e){
     	// this DOES work, but is in no way high-performing and only on Firefox
-    	if( this._loaded ){
+    	if (this._loaded){
 			this.setState(
 				{ scrollTop: window.scrollY }, 
-				this.updateCanvas( this.state.image )
+				this.updateCanvas(this.state.image)
 			)
 	    }
     }
 
-	loadImage( url ){
+	loadImage(url){
 		return new Promise( (resolve, reject) => {
 
 			var imageObject = new Image()
@@ -109,11 +113,11 @@ export default class Parallax extends React.Component{
 		})
 	}
 
-	updateCanvas( image ){
-
+	updateCanvas(image = false){
+		console.log(image)
 		var canvasWidth = $('.parallax').outerWidth();
 		var canvasHeight = $('.parallax').outerHeight();
-		if( this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight ){
+		if (this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight){
 			this.setState({
 				canvas: {
 					width: canvasWidth,
@@ -124,40 +128,56 @@ export default class Parallax extends React.Component{
 		this.renderCanvas( image );
 	}
 
-	renderCanvas( image = false ){
-
-		if (!image) return null
-
+	renderCanvas(image = false){
 		let self = this;
-		var canvasDOM = document.getElementById('parallax-canvas');
-		var context = canvasDOM.getContext('2d');
-		
-		// zoom image to fill canvas, widthwise
-		if( image.width < this.state.canvas.width || image.width > this.state.canvas.width ){
-			var scale = this.state.canvas.width / image.width;
-			image.width = image.width * scale;
-			image.height = image.height * scale;
-		}
-		
-		// now check for fill heightwise, and zoom in if necessary
-		if( image.height < this.state.canvas.height ){
-			var scale = this.state.canvas.height / image.height;
-			image.width = image.width * scale;
-			image.height = image.height * scale;
-		}
-		
-		// figure out where we want the image to be, based on scroll position
-		var percent = Math.round( self.state.scrollTop / this.state.canvas.height * 100 );
-		var position = Math.round( (this.state.canvas.height / 2) * (percent/100) ) - 100;
-		
-		image.x = ( this.state.canvas.width / 2 ) - ( image.width / 2 );
-		image.y = ( ( this.state.canvas.height / 2 ) - ( image.height / 2 ) ) + ( ( percent / 100 ) * 100);
+		var canvasDOM = document.getElementById('parallax-canvas')
+		var context = canvasDOM.getContext('2d')
 
-		// actually draw the image on the canvas
-		context.drawImage(image.object, image.x, image.y, image.width, image.height)
+		// Fill the background with mid-gret
+		context.beginPath()
+		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
+		context.fillStyle = "#a3a19f"
+		context.fill()
 
-		// now update our component
-		self.setState({ image: image });
+		if (image){
+		
+			// zoom image to fill canvas, widthwise
+			if( image.width < this.state.canvas.width || image.width > this.state.canvas.width ){
+				var scale = this.state.canvas.width / image.width;
+				image.width = image.width * scale;
+				image.height = image.height * scale;
+			}
+			
+			// now check for fill heightwise, and zoom in if necessary
+			if( image.height < this.state.canvas.height ){
+				var scale = this.state.canvas.height / image.height;
+				image.width = image.width * scale;
+				image.height = image.height * scale;
+			}
+			
+			// figure out where we want the image to be, based on scroll position
+			var percent = Math.round( self.state.scrollTop / this.state.canvas.height * 100 );
+			var position = Math.round( (this.state.canvas.height / 2) * (percent/100) ) - 100;
+			
+			image.x = ( this.state.canvas.width / 2 ) - ( image.width / 2 );
+			image.y = ( ( this.state.canvas.height / 2 ) - ( image.height / 2 ) ) + ( ( percent / 100 ) * 100);
+
+			// Actually draw the image on the canvas
+			context.drawImage(image.object, image.x, image.y, image.width, image.height)
+
+			// now update our component
+			self.setState({ image: image });
+		}
+
+		// Construct a gradient overlay
+		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
+		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height)
+		gradient.addColorStop(0, 'rgba(38,39,40,0)')
+		gradient.addColorStop(0.9, 'rgba(38,39,40,1)')
+		context.fillStyle = gradient
+
+		// And now drop it into place
+		context.fill()
 	}
 
 	render(){

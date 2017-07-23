@@ -47,7 +47,7 @@
 					margin-right: 25px;
 					font-size: 15px;
 					font-weight: 500;
-					border-bottom: 1px solid transparent;
+					border-bottom: 2px solid transparent;
 					cursor: pointer;
 
 					&.active {
@@ -100,7 +100,9 @@
 
 				h1 {
 					@include clearfix();
-					padding: 12vw 10px 0 0;
+					padding: 15vw 10px 0;
+					font-size: 3rem;
+					line-height: 3rem;
 				}
 
 				.actions {

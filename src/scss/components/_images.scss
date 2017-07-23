@@ -62,24 +62,8 @@
 	height: 50vh;
 	width: 100%;
 	overflow: hidden;
-	background: $darkest_grey;
+	background: $dark_grey;
 	position: relative;
-
-	&:before {
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		z-index: 9;
-		pointer-events: none;
-		background: -webkit-linear-gradient(rgba(38,39,40,0), rgba(38,39,40,1));
-		background: -moz-linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
-		background: -o-linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
-		background: linear-gradient(rgba(38,39,40,0),rgba(38,39,40,1));
-	}
 
 	canvas {
 		width: 110%;
@@ -90,7 +74,7 @@
 		left: -5%;
 
 		&.loaded {
-			opacity: 0.8;
+			opacity: 1;
 		}
 	}
 
