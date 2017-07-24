@@ -286,8 +286,8 @@ footer {
 	}
 
 	&.dark {
-		background: $dark_grey;
-		color: $white;
+		background: lighten($dark_grey,10%);
+		color: $mid_grey;
 	}
 }
 

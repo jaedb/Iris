@@ -73,7 +73,7 @@
 		}
 	}
 
-	@include responsive( null, 2400px ){
+	@include responsive( null, 1900px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 3 )
@@ -86,7 +86,7 @@
 		}
 	}
 
-	@include responsive( 2399px, 1200px ){
+	@include responsive( 1899px, 1200px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
