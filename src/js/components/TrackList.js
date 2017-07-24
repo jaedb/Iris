@@ -191,23 +191,28 @@ class TrackList extends React.Component{
 		this.playTracks()
 	}
 
-	handleContextMenu(e, native_event = true){
-		let selected_tracks = this.digestTracksKeys()
-		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+	handleContextMenu(e,track_key){
+		let selected_tracks = this.props.selected_tracks
+
+		// Not already selected, so select it prior to triggering menu
+		if (!selected_tracks.includes(track_key)){
+			selected_tracks = [track_key]
+			this.props.uiActions.setSelectedTracks(selected_tracks)
+		}
+
+		let selected_tracks_digested = this.digestTracksKeys(selected_tracks)
+		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks_digested)
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks_digested)
 
 		let data = {
 			e: e,
 			context: (this.props.context ? this.props.context+'-track' : 'track'),
 			tracklist_uri: (this.props.uri ? this.props.uri : null),
-			items: selected_tracks,
+			items: selected_tracks_digested,
 			uris: selected_tracks_uris,
 			indexes: selected_tracks_indexes
 		}
 		this.props.uiActions.showContextMenu(data)
-
-		// Deselect all tracks
-		this.props.uiActions.setSelectedTracks([])
 	}
 
 	handleSelection(e,track_key){
@@ -393,7 +398,7 @@ class TrackList extends React.Component{
 									dragger={this.props.dragger} 
 									handleSelection={e => this.handleSelection(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
-									handleContextMenu={e => this.handleContextMenu(e)}
+									handleContextMenu={e => this.handleContextMenu(e, track_key)}
 									handleDrag={e => this.handleDrag(e, track_key)}
 									handleDrop={e => this.handleDrop(e, track_key)}
 									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
