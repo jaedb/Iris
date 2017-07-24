@@ -114,7 +114,6 @@ export default class Parallax extends React.Component{
 	}
 
 	updateCanvas(image = false){
-		console.log(image)
 		var canvasWidth = $('.parallax').outerWidth();
 		var canvasHeight = $('.parallax').outerHeight();
 		if (this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight){
@@ -133,10 +132,10 @@ export default class Parallax extends React.Component{
 		var canvasDOM = document.getElementById('parallax-canvas')
 		var context = canvasDOM.getContext('2d')
 
-		// Fill the background with mid-gret
+		// Fill the background with mid-grey
 		context.beginPath()
 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
-		context.fillStyle = "#a3a19f"
+		context.fillStyle = "#121212"
 		context.fill()
 
 		if (image){
@@ -172,8 +171,8 @@ export default class Parallax extends React.Component{
 		// Construct a gradient overlay
 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
 		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height)
-		gradient.addColorStop(0, 'rgba(38,39,40,0)')
-		gradient.addColorStop(0.9, 'rgba(38,39,40,1)')
+		gradient.addColorStop(0, 'rgba(24,24,24,0)')
+		gradient.addColorStop(0.9, 'rgba(24,24,24,1)')
 		context.fillStyle = gradient
 
 		// And now drop it into place

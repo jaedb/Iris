@@ -7,8 +7,8 @@ aside{
 	z-index: 96;
 	width: 219px;
 	overflow: hidden;
-	background: darken($dark_grey, 1%);
-	border-right: 1px solid lighten($dark_grey, 5%);
+	background: $darkest_grey;
+	border-right: 1px solid lighten($dark_grey, 2%);
 	color: $white;
 
 	.liner {

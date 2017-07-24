@@ -77,9 +77,8 @@ class User extends React.Component{
 				<SidebarToggleButton />
 
 				<div className="intro">
-					<Parallax blur image={image} />
+					<Parallax image={image} />
 					<div className="liner">
-						<Thumbnail image={image} canZoom circle />
 						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
 						<h2>
 							<ul className="details">
