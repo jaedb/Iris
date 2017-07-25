@@ -88,9 +88,9 @@ class Artist extends React.Component{
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}>Overview</Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}>Related artists</Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}>About</Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
 			</div>
 		)
 	}

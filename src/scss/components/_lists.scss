@@ -31,7 +31,7 @@
 		}
 
 		&.playing {
-			font-weight: bold;
+			color: $turquoise;
 		}
 
 		.select-zone,
@@ -183,7 +183,7 @@
 		.artist {
 			display: block;
 			border: 0;
-			margin-bottom: 5px;
+			margin: 10px 0;
 			@include clearfix;
 
 			.thumbnail {

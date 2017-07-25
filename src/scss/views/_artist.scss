@@ -26,11 +26,12 @@
 
 			h1 {
 				padding-bottom: 25px;
-				font-size: 4rem;
+				font-size: 5rem;
+				line-height: 5rem;
 			}
 
 			.actions {
-				padding-bottom: 20px;
+				padding-bottom: 25px;
 
 				.context-menu-trigger {
 					color: $white;
@@ -42,12 +43,15 @@
 					@include feature_font();
 					color: $white;
 					display: inline-block;
-					padding: 8px 0;
 					margin-right: 25px;
 					font-size: 15px;
 					font-weight: 500;
-					border-bottom: 2px solid transparent;
+					border-bottom: 3px solid transparent;
 					cursor: pointer;
+
+					h4 {
+						margin: 8px 0 4px;
+					}
 
 					&.active {
 						border-color: $white;
@@ -72,6 +76,17 @@
 			.biography-text {
 				overflow-wrap: break-word;
 			}			
+		}
+	}
+
+	@include responsive( $bp_wide ){
+		.intro {
+			.liner {
+				h1 {
+					font-size: 4rem;
+					line-height: 4rem;
+				}
+			}
 		}
 	}
 
