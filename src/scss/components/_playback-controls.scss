@@ -137,8 +137,8 @@
 			.slider {
 				position: absolute;
 				bottom: 0;
-				left: 50px;
-				right: 50px;
+				left: 60px;
+				right: 60px;
 			}
 
 			.current {
@@ -146,7 +146,7 @@
 				position: absolute;
 				bottom: 6px;
 				left: 0;
-				width: 45px;
+				width: 50px;
 				text-align: right;
 			}
 
@@ -155,7 +155,7 @@
 				position: absolute;
 				bottom: 6px;
 				right: 0;
-				width: 45px;
+				width: 50px;
 			}
 		}
 
@@ -226,8 +226,12 @@
 
 				.control {
 					&.play {
-						font-size: 12px;
 						margin-bottom: 0;
+
+						.icon {
+							width: 12px;
+							height: 12px;
+						}
 					}
 					&.previous {
 						display: none;

@@ -180,7 +180,6 @@ class TrackList extends React.Component{
 	}
 
 	handleSelection(e,track_key){
-		console.log('handleSelection',track_key)
 		let selected_tracks = this.props.selected_tracks
 
 		if (e.ctrlKey || this.props.slim_mode){
