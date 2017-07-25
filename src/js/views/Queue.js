@@ -25,10 +25,10 @@ class Queue extends React.Component{
 		super(props)
 	}
 
-	removeTracks( tracks_indexes ){
-		var tlids = [];
-		for( var i = 0; i < tracks_indexes.length; i++ ){
-			tlids.push( this.props.current_tracklist[tracks_indexes[i]].tlid )
+	removeTracks(track_indexes){
+		var tlids = []
+		for (var i = 0; i < track_indexes.length; i++){
+			tlids.push( this.props.current_tracklist[track_indexes[i]].tlid )
 		}
 		this.props.mopidyActions.removeTracks( tlids )
 	}
@@ -128,10 +128,10 @@ class Queue extends React.Component{
 							context="queue"
 							className="queue-track-list"
 							tracks={this.props.current_tracklist}
-							removeTracks={ tracks => this.removeTracks( tracks ) }
-							playTracks={ tracks => this.playTracks( tracks ) }
-							playTrack={ track => this.playTrack( track ) }
-							reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
+							removeTracks={tracks => this.removeTracks( tracks )}
+							playTracks={tracks => this.playTracks( tracks )}
+							playTrack={track => this.playTrack( track )}
+							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index) } />
 					</section>
 				
 				</div>

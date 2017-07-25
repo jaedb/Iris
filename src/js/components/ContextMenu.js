@@ -161,7 +161,7 @@ class ContextMenu extends React.Component{
 		for( var i = 0; i < tracks.length; i++ ){
 			tracks_tlids.push( tracks[i].tlid );
 		}
-		this.props.mopidyActions.removeTracks( tracks_tlids );
+		this.props.mopidyActions.removeTracks( tracks_tlids )
 	}
 
 	playURIs(e){

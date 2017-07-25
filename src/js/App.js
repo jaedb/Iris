@@ -61,8 +61,11 @@ class App extends React.Component{
 		// when we navigate to a new route
 		hashHistory.listen( location => {
 
-			// hide our sidebar
+			// Hide our sidebar
 			this.props.uiActions.toggleSidebar( false )
+
+			// Unselect any tracks
+			this.props.uiActions.setSelectedTracks([])
 		});
 
 		// Check our slim_mode
