@@ -71,7 +71,7 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 				
-				<Link className="current-track" to={(this.props.current_track && this.props.current_track.album ? global.baseURL+'album/'+this.props.current_track.album.uri : null)}>
+				<div className="current-track">
 					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
 						<Thumbnail size="small" images={images} />
 					</div>
@@ -79,9 +79,9 @@ class PlaybackControls extends React.Component{
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>
 					<div className="artist">
-						{ this.props.current_track ? <ArtistSentence nolinks artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
+						{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 					</div>
-				</Link>
+				</div>
 
 				<section className="playback">
 					<a className="control previous" onClick={() => this.props.mopidyActions.previous()}>

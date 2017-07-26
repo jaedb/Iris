@@ -155,11 +155,11 @@ class TrackList extends React.Component{
 		this.playTracks()
 	}
 
-	handleContextMenu(e,track_key){
+	handleContextMenu(e,track_key = null){
 		let selected_tracks = this.props.selected_tracks
 
 		// Not already selected, so select it prior to triggering menu
-		if (!selected_tracks.includes(track_key)){
+		if (track_key && !selected_tracks.includes(track_key)){
 			selected_tracks = [track_key]
 			this.props.uiActions.setSelectedTracks(selected_tracks)
 		}
@@ -204,14 +204,14 @@ class TrackList extends React.Component{
 			// We've selected a track further down the list, 
 			// so proceed normally
 			if (last_selected_track_index < newly_selected_track_index){
-				var start = last_selected_track_index
+				var start = last_selected_track_index+1
 				var end = newly_selected_track_index
 
 			// Selected a track up the list, so 
 			// our last selected is the END of our range
 			} else {
 				var start = newly_selected_track_index
-				var end = last_selected_track_index
+				var end = last_selected_track_index-1
 			}
 
 			if (start !== false && start >= 0 && end !== false && end >= 0){
@@ -403,7 +403,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.digestTracksKeys() ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
+				{this.props.selected_tracks.length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
 			</div>
 		);
 	}

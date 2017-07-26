@@ -1,15 +1,20 @@
 
 .queue-view {
 
+	.parallax {
+		opacity: 0.5;
+		margin-bottom: -45vh;
+	}
+
 	.current-track {
 		text-align: center;
-		padding-bottom: 40px;
+		padding: 60px 0;
 
 		.artwork {
 			position: relative;
 			margin: 0 auto;
 			width: 60%;
-			max-width: 400px;
+			max-width: 600px;
 			display: block;
 			border: 0 !important;
 

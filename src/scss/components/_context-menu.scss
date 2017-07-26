@@ -12,17 +12,17 @@
 	z-index: 99;
 
 	.liner {
-		width: 160px;
+		width: 190px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		border-radius: 3px;
-		background: $darkest_grey;
-		font-size: 13px;
-		font-weight: 600;
+		background: $grey;
+		font-size: 14px;
+		font-weight: 500;
 		font-family: "Overpass";
 
 		.title {
 			display: block;
-			padding: 8px 12px;
+			padding: 10px 14px;
 			font-weight: bold;
 			box-sizing: border-box;
 			position: relative;
@@ -121,7 +121,7 @@
 				width: 0;
 				height: 100%;
 				overflow-y: scroll;			
-				background: $darkest_grey;
+				background: lighten($grey, 10%);
 				z-index: 3;
 				border-radius: 3px;
 

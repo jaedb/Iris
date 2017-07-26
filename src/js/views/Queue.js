@@ -5,6 +5,7 @@ import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import Parallax from '../components/Parallax'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import Dater from '../components/Dater'
@@ -14,6 +15,7 @@ import ArtistSentence from '../components/ArtistSentence'
 import Thumbnail from '../components/Thumbnail'
 import Header from '../components/Header'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -57,11 +59,8 @@ class Queue extends React.Component{
 		)
 	}
 
-	renderArtwork(){
-		if( 
-			!this.props.current_track || 
-			!this.props.current_track.album || 
-			!this.props.current_track.album.images ){
+	renderArtwork(image){
+		if (!image){
 				return (
 					<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
 						{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
@@ -70,22 +69,22 @@ class Queue extends React.Component{
 				)
 		}
 
-		var images = []
-		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
-			images = this.props.current_track.album.images
-		}
-
 		var link = null
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail size="huge" images={images} canZoom />
+				<Thumbnail size="huge" image={image} canZoom />
 			</Link>
 		)
 	}
 
 	render(){
+		var image = null
+		if (this.props.current_track && this.props.current_track.album !== undefined && this.props.current_track.album.images){
+			image = helpers.sizedImages(this.props.current_track.album.images).huge
+		}
+
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
@@ -110,12 +109,14 @@ class Queue extends React.Component{
 
 		return (
 			<div className="view queue-view">			
-				<Header icon="play" title="Now playing" options={options} uiActions={this.props.uiActions} />
+				<Header icon="play" className="overlay" title="Now playing" options={options} uiActions={this.props.uiActions} />
+
+				<Parallax blur image={image} />
 
 				<div className="content-wrapper">
 				
 					<div className="current-track">
-						{ this.renderArtwork() }
+						{ this.renderArtwork(image) }
 						<div className="title">
 							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
 						</div>
@@ -152,7 +153,7 @@ const mapStateToProps = (state, ownProps) => {
 		radio: state.ui.radio,
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
 		current_tracklist: state.ui.current_tracklist,
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
+		current_track: (state.ui.current_track !== undefined && state.ui.tracks !== undefined && state.ui.tracks[state.ui.current_track.uri] !== undefined ? state.ui.tracks[state.ui.current_track.uri] : null)
 	}
 }
 

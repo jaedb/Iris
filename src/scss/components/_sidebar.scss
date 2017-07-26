@@ -5,11 +5,12 @@ aside{
 	left: 0;
 	bottom: 0;
 	z-index: 96;
-	width: 219px;
+	width: 220px;
 	overflow: hidden;
 	background: $darkest_grey;
 	border-right: 1px solid lighten($dark_grey, 2%);
 	color: $white;
+	box-sizing: border-box;
 
 	.liner {
 		overflow-y: auto;

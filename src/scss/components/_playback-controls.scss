@@ -12,7 +12,6 @@
 
 	.current-track {
 		@include animate();
-		cursor: pointer;
 		position: absolute;
 		bottom: 50px;
 		width: 220px;
@@ -23,6 +22,7 @@
 		.thumbnail {
 			float: left;
 			margin: 12px;
+			cursor: pointer;
 
 			&:before {
 				@include animate();
@@ -127,7 +127,7 @@
 		}
 
 		&.progress {
-			bottom: 12px;
+			bottom: 10px;
 			left: 140px;
 			right: 280px;
 			padding-left: 20px;
@@ -136,7 +136,7 @@
 
 			.slider {
 				position: absolute;
-				bottom: 0;
+				bottom: 2px;
 				left: 60px;
 				right: 60px;
 			}
@@ -208,6 +208,7 @@
 			left: 60px;
 			right: 60px;
 			text-align: center;
+			font-size: 12px;
 
 			.title {
 				padding-top: 0;
