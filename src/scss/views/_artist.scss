@@ -95,15 +95,13 @@
 			margin-bottom: 0;
 
 			.parallax {
-				canvas {
-					@include blur(5px);
-				}
+				height: 60vh;
 			}
 
 			.liner {
 				padding-left: 0;
 				padding-right: 0;
-				padding-top: 10vh;
+				padding-top: 30vh;
 
 				.thumbnail {
 					position: static;
@@ -133,13 +131,20 @@
 			}
 		}
 		.body {
+
 			&.overview {
+				h4 {
+					display: none;
+				}
 				.col.w70 {
 					width: 100%;
 				}
 				.col.w5,
 				.related-artists {
 					display: none;
+				}
+				.grid-wrapper {
+					padding-top: 40px !important;
 				}
 			}
 

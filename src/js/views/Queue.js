@@ -72,9 +72,9 @@ class Queue extends React.Component{
 		var link = null
 		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
-			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
+			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail size="huge" image={image} canZoom />
+				<Thumbnail size="huge" image={image} />
 			</Link>
 		)
 	}

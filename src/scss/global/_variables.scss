@@ -127,10 +127,10 @@ $bp_shallow: 650px;
  * Produces most album/playlist/artist grids
  **/
 
-@mixin grid_item( $cols, $gap: 2% ){
+@mixin grid_item( $cols, $gap: 2%, $bottom_margin: 3% ){
 	width: ( 0% + ( 100 / $cols ) - ( $gap * 2 ) + ( ( $gap * 2 ) / $cols ) );
 	box-sizing: border-box;
-	margin: 0 $gap 3%;
+	margin: 0 $gap $bottom_margin;
 
 	&:nth-child(#{$cols}n-#{$cols}) {
 		margin-right: 0;
