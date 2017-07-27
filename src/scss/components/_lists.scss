@@ -332,6 +332,14 @@
 			}
 		}
 
+		&.queue-history-track-list {
+			.list-item {
+				.source {
+					display: none !important;
+				}
+			}
+		}
+
 		&.track-list {
 			.list-item.can-sort {
 				padding-left: 78px !important;

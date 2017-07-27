@@ -115,12 +115,12 @@
 	@include responsive( 799px, 500px ){
 		&.mini{
 			.grid-item {
-				@include grid_item( 6, 3%, 5% )
+				@include grid_item( 6, 2%, 4% )
 			}	
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 3, 3%, 5% )
+				@include grid_item( 3, 2%, 4% )
 			}	
 		}
 	}
@@ -128,12 +128,12 @@
 	@include responsive( 499px ){
 		&.mini{
 			.grid-item {
-				@include grid_item( 3, 4%, 5% )
+				@include grid_item( 3, 2%, 4% )
 			}	
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 2, 4%, 5% )
+				@include grid_item( 2, 2%, 4% )
 			}	
 		}
 	}
