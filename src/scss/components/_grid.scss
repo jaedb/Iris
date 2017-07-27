@@ -73,7 +73,7 @@
 		}
 	}
 
-	@include responsive( null, 2400px ){
+	@include responsive( null, 1900px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 3 )
@@ -86,7 +86,7 @@
 		}
 	}
 
-	@include responsive( 2399px, 1200px ){
+	@include responsive( 1899px, 1200px ){
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
@@ -94,7 +94,7 @@
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 5 )
+				@include grid_item( 4 )
 			}	
 		}
 	}
@@ -115,12 +115,12 @@
 	@include responsive( 799px, 500px ){
 		&.mini{
 			.grid-item {
-				@include grid_item( 6 )
+				@include grid_item( 6, 2%, 4% )
 			}	
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 3 )
+				@include grid_item( 3, 2%, 4% )
 			}	
 		}
 	}
@@ -128,12 +128,12 @@
 	@include responsive( 499px ){
 		&.mini{
 			.grid-item {
-				@include grid_item( 3 )
+				@include grid_item( 3, 2%, 4% )
 			}	
 		}
 		&:not(.mini){
 			.grid-item {
-				@include grid_item( 2 )
+				@include grid_item( 2, 2%, 4% )
 			}	
 		}
 	}

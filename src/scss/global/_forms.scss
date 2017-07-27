@@ -7,7 +7,6 @@
 	border: 0;
 }
 
-button,
 textarea,
 input[type="text"],
 input[type="email"],
@@ -16,10 +15,23 @@ input[type="email"],
 input[type="date"],
 select {
 	padding: 10px 14px;
-	background: $faint_grey;
-	color: $darkest_grey;
-	font-family: "Archivo Narrow", Helvetica, Arial, sans-serif;
+	background: rgba(255,255,255,0.1);
+	color: $white;
+	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
+	border-radius: 3px;
+	letter-spacing: -0.01rem;
+
+	&:focus,
+	&:active {
+		background: rgba(255,255,255,0.2);
+	}
+}
+
+select {
+	option {
+		color: $darkest_grey;
+	}
 }
 
 .button-wrapper {	
@@ -45,32 +57,35 @@ input[type="button"],
 input[type="submit"] {
 	@include animate();
 	@include feature_font();
-	@include gradient_overlay();
+	font-size: 14px;
+	color: $black;
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	color: $white;
-	background: $dark_grey;
-	font-size: 14px;
+	background: $white;
 	box-sizing: border-box;
 	border-radius: 3px;
 	vertical-align: middle;
 	position: relative;
 	border: 0 !important;
 	cursor: pointer;
+	letter-spacing: -0.01rem;
+
+	&:not(.no-hover){
+		@include gradient_overlay(3px, 0.05);
+	}
 
 	.notouch &:not(.no-hover):hover {
 		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
 
 		&:before {
-			opacity: 0.15;
+			opacity: 0.2;
 		}
 	}
 
 	&:active {
 		@include noanimate();
-		background: $black;
-		color: $white;
+		background: darken($white,5%);
 		margin-top: 1px;
 		margin-bottom: 9px;
 	}
@@ -146,13 +161,12 @@ input[type="submit"] {
 	&[disabled="disabled"]{
 		opacity: 0.5;
 		cursor: not-allowed !important;
+		color: $mid_grey;
+		border-color: $mid_grey;
+		background: transparent;
 
-		&,
-		.notouch &:hover,
-		&:active {
-			color: $mid_grey;
-			border-color: $mid_grey;
-			background: transparent;
+		&:before {
+			opacity: 0.15;
 		}
 	}
 
@@ -170,14 +184,11 @@ input[type="submit"] {
 		padding-left: 20px;
 		padding-right: 20px;
 	}
-
-	@include responsive( $bp_narrow ){
-	}
 }
 
 .field {
 	display: block;
-	padding-bottom: 8px;
+	padding-bottom: 12px;
 	@include clearfix;
 
 	.name {
@@ -239,26 +250,15 @@ input[type="submit"] {
 			width: 14px;
 			height: 14px;
 		    border-radius: 50%;
-			border: 2px solid #000000;
+			border: 2px solid $mid_grey;
 			position: absolute;
 			top: 4px;
 			left: 0;
 		}
 
 		input:checked + .label:before {
-		    background: #000000;
-		    box-shadow: inset 0px 0px 0px 4px #f5f5f5;
-		}
-
-		&.white {
-			input + .label:before {
-				border-color: #FFFFFF;
-			}
-
-			input:checked + .label:before {
-			    background: #FFFFFF;
-			    box-shadow: inset 0px 0px 0px 4px #222222;
-			}
+		    background: $mid_grey;
+		    box-shadow: inset 0px 0px 0px 4px #222222;
 		}
 	}
 
@@ -267,12 +267,12 @@ input[type="submit"] {
 			font-family: FontAwesome;
 			font-size: 8px;
 			content: ' ';
-			color: #000000;
+			color: $mid_grey;
 			display: inline-block;
 			width: 11px;
 			height: 11px;
 			padding: 3px 0 0 3px;
-			border: 2px solid #000000;
+			border: 2px solid $mid_grey;
 			position: absolute;
 			top: 5px;
 			left: 0;
@@ -280,16 +280,6 @@ input[type="submit"] {
 
 		input:checked + .label:before {
 			content: '\f00c';
-		}
-
-		&.white {
-			input + .label:before {
-				border-color: #FFFFFF;
-			}
-
-			input:checked + .label:before {
-			    color: #FFFFFF;
-			}
 		}
 	}
 

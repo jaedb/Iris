@@ -12,7 +12,7 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		background: $darkest_grey;
+		background: $blue;
 		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
 		color: $white;
@@ -70,7 +70,7 @@
 				display: block;
 				content: '';
 				background: $white;
-				opacity: 0.1;
+				opacity: 0.15;
 			    animation: slideloader 1s infinite;
 				top: 0;
 				right: 0;

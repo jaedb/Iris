@@ -246,6 +246,12 @@
 		}
 	}
 
+	&.send_authorization {
+		.list {
+			padding-top: 40px;
+		}
+	}
+
 	&.receive_authorization {
 		.user-details {
 			@include clearfix();

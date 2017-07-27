@@ -2,11 +2,11 @@
 $turquoise: #08d58f;
 $off_white: #F5F5F5;
 $faint_grey: #f4f2f0;
-$light_grey: #edeae7;
+$light_grey: #cecac4;
 $mid_grey: #a3a19f;
-$grey: #888888;
-$dark_grey: #232221;
-$darkest_grey: #1b1a19;
+$grey: #383734;
+$dark_grey: #181818;
+$darkest_grey: #121212;
 $secondary_grey: #888888;
 $white: #FFFFFF;
 $black: #000000;
@@ -127,10 +127,10 @@ $bp_shallow: 650px;
  * Produces most album/playlist/artist grids
  **/
 
-@mixin grid_item( $cols, $gap: 2% ){
+@mixin grid_item( $cols, $gap: 2%, $bottom_margin: 3% ){
 	width: ( 0% + ( 100 / $cols ) - ( $gap * 2 ) + ( ( $gap * 2 ) / $cols ) );
 	box-sizing: border-box;
-	margin: 0 $gap 3%;
+	margin: 0 $gap $bottom_margin;
 
 	&:nth-child(#{$cols}n-#{$cols}) {
 		margin-right: 0;
@@ -208,9 +208,9 @@ $bp_shallow: 650px;
 		opacity: $opacity;
 		z-index: 9;
 		pointer-events: none;
-		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
 	}
 }

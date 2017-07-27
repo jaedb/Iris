@@ -12,27 +12,26 @@
 
 		display: block;
 		position: relative;
-		padding: 12px 10px;
+		padding: 14px 10px 13px;
 		margin: 0 -10px -1px -10px;
 		cursor: pointer;
 		border-radius: 3px;
-		border-bottom: 1px solid #FAFAFA;
-		border-top: 1px solid #FAFAFA;
+		border-bottom: 1px solid rgba(255,255,255,0.05);
+		border-top: 1px solid rgba(255,255,255,0.05);
 
 		&.selected {
-			background: $yellow !important;
-			border-color: darken($yellow,10%);
+			background: rgba(255,255,255,0.08) !important;
 
 			.select-zone {
 				&::after {
-					background: $dark_grey;
-					border-color: $dark_grey;
+					background: $blue;
+					border-color: $blue;
 				}
 			}
 		}
 
 		&.playing {
-			font-weight: bold;
+			color: $turquoise;
 		}
 
 		.select-zone,
@@ -41,13 +40,13 @@
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
-			background: lighten($yellow, 10%);
+			background: rgba(255,255,255,0.03);
 			cursor: pointer;
 		}
 
 		&.header {
 			font-size: 10px;
-			color: #CCCCCC;
+			color: $grey;
 			text-transform: uppercase;
 			border-top: 0;
 			padding-bottom: 2px;
@@ -184,7 +183,7 @@
 		.artist {
 			display: block;
 			border: 0;
-			margin-bottom: 5px;
+			margin: 10px 0;
 			@include clearfix;
 
 			.thumbnail {
@@ -205,7 +204,7 @@
 		a.artist:hover {
 			.thumbnail {
 				border-color: $turquoise;
-				opacity: 0.8;
+				opacity: 1;
 			}
 		}
 	}
@@ -241,7 +240,7 @@
 				&:after {
 					display: block;
 					content: '';
-					border: 1px solid $darkest_grey;
+					border: 1px solid $mid_grey;
 					border-radius: 50%;
 					width: 14px;
 					height: 14px;
@@ -259,6 +258,7 @@
 				width: 38px;
 				font-size: 14px;
 				display: block;
+				color: $mid_grey;
 				
 				.fa {
 					position: absolute;
@@ -332,12 +332,20 @@
 			}
 		}
 
+		&.queue-history-track-list {
+			.list-item {
+				.source {
+					display: none !important;
+				}
+			}
+		}
+
 		&.track-list {
 			.list-item.can-sort {
-				padding: 8px 30px 8px 78px !important;
+				padding-left: 78px !important;
 			}
 			.list-item:not(.can-sort){
-				padding: 8px 30px 8px 38px !important;
+				padding-left: 46px !important;
 			}
 		}
 	}

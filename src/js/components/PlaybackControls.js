@@ -10,6 +10,7 @@ import VolumeControl from './VolumeControl'
 import Dater from './Dater'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
+import Icon from './Icon'
 
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -25,9 +26,9 @@ class PlaybackControls extends React.Component{
 	}
 
 	renderPlayButton(){
-		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
+		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play" /></a>
 		if( this.props.play_state == 'playing' ){
-			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
+			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause" /></a>
 		}
 		return button;
 	}
@@ -70,7 +71,7 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 				
-				<Link className="current-track" to={(this.props.current_track && this.props.current_track.album ? global.baseURL+'album/'+this.props.current_track.album.uri : null)}>
+				<div className="current-track">
 					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
 						<Thumbnail size="small" images={images} />
 					</div>
@@ -78,20 +79,20 @@ class PlaybackControls extends React.Component{
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>
 					<div className="artist">
-						{ this.props.current_track ? <ArtistSentence nolinks artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
+						{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
 					</div>
-				</Link>
+				</div>
 
 				<section className="playback">
 					<a className="control previous" onClick={() => this.props.mopidyActions.previous()}>
-						<FontAwesome name="step-backward" />
+						<Icon name="back" />
 					</a>
 					{ this.renderPlayButton() }
 					<a className="control stop" onClick={() => this.props.mopidyActions.stop()}>
-						<FontAwesome name="stop" />
+						<Icon name="stop" />
 					</a>
 					<a className="control next" onClick={() => this.props.mopidyActions.next()}>
-						<FontAwesome name="step-forward" />
+						<Icon name="skip" />
 					</a>
 				</section>
 

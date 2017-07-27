@@ -16,7 +16,6 @@ export default class Track extends React.Component{
 			hover: false
 		}
 
-		this.drag_threshold = 5
 		this.start_position = false
 	}
 
@@ -29,7 +28,7 @@ export default class Track extends React.Component{
 
 	handleMouseMove(e){
 
-		// No drag handling means no
+		// No drag handling means NO
 		if (this.props.handleDrag === undefined){
 			return false
 		}
@@ -50,6 +49,13 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseUp(e){
+
+		// Make sure it's not a right-click
+		if (e.button === 2){
+			this.start_position = false
+			return false
+		}
+
 		if (this.props.dragger){
 			e.preventDefault()
 
@@ -58,7 +64,7 @@ export default class Track extends React.Component{
 			}
 		} else {
 			var target = $(e.target);
-			if( !target.is('a') && target.closest('a').length <= 0 ){
+			if (!target.is('a') && target.closest('a').length <= 0){
 				this.props.handleSelection(e)
 				this.start_position = false
 			}

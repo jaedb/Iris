@@ -11,7 +11,7 @@
 		padding-bottom: 100%;
 		position: relative;
 		background-repeat: no-repeat;
-		background-color: $light_grey;
+		background-color: $grey;
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
@@ -62,7 +62,7 @@
 	height: 50vh;
 	width: 100%;
 	overflow: hidden;
-	background: #111111;
+	background: $dark_grey;
 	position: relative;
 
 	canvas {
@@ -74,7 +74,7 @@
 		left: -5%;
 
 		&.loaded {
-			opacity: 0.4;
+			opacity: 1;
 		}
 	}
 
@@ -89,7 +89,7 @@
 	padding-bottom: 60px;
 
 	.tile {
-		color: $dark_grey;
+		color: $white;
 		text-align: center;
 		position: relative;
 		z-index: 1;
@@ -117,7 +117,7 @@
 				margin-top: -27px;
 				font-size: 60px;
 				z-index: -1;
-				color: $faint_grey;
+				opacity: 0.1;
 			}
 		}
 
@@ -126,7 +126,7 @@
 			display: block;
 			width: 100%;
 			padding-bottom: 100%;
-			background: $light_grey;
+			background: lighten($dark_grey,2%);
 			z-index: -2;
 		}
 

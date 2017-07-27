@@ -88,9 +88,9 @@ class Artist extends React.Component{
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}>Overview</Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}>Related artists</Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}>About</Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
 			</div>
 		)
 	}
@@ -142,6 +142,7 @@ class Artist extends React.Component{
 					<div className="body about">
 
 						<div className="col w40 tiles">
+							{this.props.artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images} /></div> : null}
 							{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images_additional} /></div> : null}
 							{this.props.artist.followers ? <div className="tile"><span className="text"><FontAwesome name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
 							{this.props.artist.popularity ? <div className="tile"><span className="text"><FontAwesome name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
@@ -205,10 +206,9 @@ class Artist extends React.Component{
 
 					<div className="intro">
 
-						<Parallax blur image={image} />
+						<Parallax image={image} />
 
 						<div className="liner">
-							<Thumbnail image={image} canZoom circle />
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
 								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : <button className="primary" onClick={e => this.props.mopidyActions.playURIs(this.props.artist.albums_uris, this.props.artist.uri)}>Play all</button>}
@@ -231,7 +231,6 @@ class Artist extends React.Component{
 					<div className="intro">
 						<Parallax />
 						<div className="liner">
-							<Thumbnail circle />
 							<h1>
 								<span className="placeholder"></span>
 							</h1>

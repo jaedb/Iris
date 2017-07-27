@@ -17,22 +17,11 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 30vh 40px 90px 350px;
-
-			.thumbnail {
-				position: absolute;
-				z-index: 2;
-				left: 40px;
-				bottom: 40px;
-				max-width: 264px;
-
-				.image {
-					background-color: $darkest_grey;
-				}
-			}
+			padding: 35vh 40px 0;
 
 			h1 {
-				color: $white;
+				padding-bottom: 15px;
+				font-size: 4rem;
 			}
 
 			h2 {

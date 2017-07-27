@@ -35,42 +35,6 @@ class TrackList extends React.Component{
 		window.removeEventListener("touchend", this.handleTouchEnd, false)
 	}
 
-	/**
-	 * Figure out if our click/touch event is valid and we can act accordingly
-	 *
-	 * @param e = event obj
-	 * @return string
-	 **/
-	triggerType(e){
-		var target = $(e.target)
-
-		// Wide screen, so no worries
-		if (!this.props.slim_mode){
-			return 'default'
-		} else if (target.is('.select-zone') || target.closest('.select-zone').length > 0){
-			return 'mobile'
-		}
-
-		return false
-	}
-
-
-	/**
-	 * Build the track key
-	 * This is our unique reference to a track in a particular tracklist
-	 *
-	 * @param track = Track obj
-	 * @param index = int (position of track in tracklist)
-	 * @return string
-	 **/
-	buildTrackKey(track, index){
-		let key = index
-		key += '_'+track.uri
-		key += '_'+(this.props.uri ? this.props.uri : 'none')
-		key += '_'+(this.props.context ? this.props.context : 'none')
-		return key
-	}
-
 	handleKeyUp(e){
 		if (!this.digestTracksKeys()) return
 
@@ -191,23 +155,28 @@ class TrackList extends React.Component{
 		this.playTracks()
 	}
 
-	handleContextMenu(e, native_event = true){
-		let selected_tracks = this.digestTracksKeys()
-		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+	handleContextMenu(e,track_key = null){
+		let selected_tracks = this.props.selected_tracks
+
+		// Not already selected, so select it prior to triggering menu
+		if (track_key && !selected_tracks.includes(track_key)){
+			selected_tracks = [track_key]
+			this.props.uiActions.setSelectedTracks(selected_tracks)
+		}
+
+		let selected_tracks_digested = this.digestTracksKeys(selected_tracks)
+		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks_digested)
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks_digested)
 
 		let data = {
 			e: e,
 			context: (this.props.context ? this.props.context+'-track' : 'track'),
 			tracklist_uri: (this.props.uri ? this.props.uri : null),
-			items: selected_tracks,
+			items: selected_tracks_digested,
 			uris: selected_tracks_uris,
 			indexes: selected_tracks_indexes
 		}
 		this.props.uiActions.showContextMenu(data)
-
-		// Deselect all tracks
-		this.props.uiActions.setSelectedTracks([])
 	}
 
 	handleSelection(e,track_key){
@@ -227,20 +196,22 @@ class TrackList extends React.Component{
 
 		} else if (e.shiftKey){
 
-			let last_selected_track_index = selected_tracks[selected_tracks.length-1].split('_')[0]
-			let newly_selected_track_index = track_key.split('_')[0]
+			let last_selected_track = this.digestTracksKeys(selected_tracks[selected_tracks.length-1])
+			let last_selected_track_index = last_selected_track.index
+			let newly_selected_track = this.digestTracksKeys(track_key)
+			let newly_selected_track_index = newly_selected_track.index
 
 			// We've selected a track further down the list, 
 			// so proceed normally
 			if (last_selected_track_index < newly_selected_track_index){
-				var start = last_selected_track_index
+				var start = last_selected_track_index+1
 				var end = newly_selected_track_index
 
 			// Selected a track up the list, so 
 			// our last selected is the END of our range
 			} else {
 				var start = newly_selected_track_index
-				var end = last_selected_track_index
+				var end = last_selected_track_index-1
 			}
 
 			if (start !== false && start >= 0 && end !== false && end >= 0){
@@ -265,48 +236,13 @@ class TrackList extends React.Component{
 		return false
 	}
 
-
-	/**
-	 * Digest our selected tracks
-	 *
-	 * @param tracks = array (defaults to stored value)
-	 * @param indexex_only = boolean (do we just want an array of indexes)
-	 * @return mixed
-	 **/
-	digestTracksKeys(keys = this.props.selected_tracks, indexes_only = false){
-		if (!keys || keys.length <= 0){
-			return false
-		}
-
-		// Construct a basic track object, based on our unique track key
-		// This is enough to perform interactions (dragging, selecting, etc)
-		let array = []
-		for (let i = 0; i < keys.length; i++){
-			let key = keys[i].split('_')
-
-			if (indexes_only){
-				array.push(key[0])
-
-			} else {
-				array.push({
-					index: parseInt(key[0]),
-					uri: key[1],
-					context: key[2],
-					context_uri: key[3]
-				})				
-			}
-		}
-
-		return array
-	}
-
 	playTracks(){
 		let selected_tracks = this.digestTracksKeys()
 		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
 
 		// Our parent handles playing
 		if (this.props.playTracks !== undefined){
-			return this.props.playTracks( selected_tracks )
+			return this.props.playTracks(selected_tracks)
 
 		// Default to playing the URIs
 		} else {
@@ -325,6 +261,71 @@ class TrackList extends React.Component{
 		}
 
 		// By default, do nothing
+	}
+
+
+	/**
+	 * Build the track key
+	 * This is our unique reference to a track in a particular tracklist
+	 *
+	 * @param track = Track obj
+	 * @param index = int (position of track in tracklist)
+	 * @return string
+	 **/
+	buildTrackKey(track, index){
+		let key = index
+		key += '_'+(track.tlid ? track.tlid : 'none')
+		key += '_'+track.uri
+		key += '_'+(this.props.uri ? this.props.uri : 'none')
+		key += '_'+(this.props.context ? this.props.context : 'none')
+		return key
+	}
+
+
+	/**
+	 * Digest our selected tracks
+	 *
+	 * @param tracks = mixed (defaults to stored value)
+	 * @param indexex_only = boolean (do we just want an array of indexes)
+	 * @return mixed
+	 **/
+	digestTracksKeys(keys = this.props.selected_tracks, indexes_only = false){
+		if (!keys){
+			return false
+		}
+
+		// Accommodate a single key
+		let singleton = false
+		if (!(keys instanceof Array)){
+			singleton = true
+			keys = [keys]
+		}
+
+		// Construct a basic track object, based on our unique track key
+		// This is enough to perform interactions (dragging, selecting, etc)
+		let array = []
+		for (let i = 0; i < keys.length; i++){
+			let key = keys[i].split('_')
+
+			if (indexes_only){
+				array.push(key[0])
+
+			} else {
+				array.push({
+					index: parseInt(key[0]),
+					tlid: parseInt(key[1]),
+					uri: key[2],
+					context: key[3],
+					context_uri: key[4]
+				})				
+			}
+		}
+
+		if (singleton && array.length > 0){
+			return array[0]
+		} else {
+			return array
+		}
 	}
 
 	renderHeader(){
@@ -393,7 +394,7 @@ class TrackList extends React.Component{
 									dragger={this.props.dragger} 
 									handleSelection={e => this.handleSelection(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
-									handleContextMenu={e => this.handleContextMenu(e)}
+									handleContextMenu={e => this.handleContextMenu(e, track_key)}
 									handleDrag={e => this.handleDrag(e, track_key)}
 									handleDrop={e => this.handleDrop(e, track_key)}
 									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
@@ -402,7 +403,7 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.digestTracksKeys() ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
+				{this.props.selected_tracks.length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
 			</div>
 		);
 	}

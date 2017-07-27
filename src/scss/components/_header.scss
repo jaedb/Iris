@@ -10,6 +10,7 @@ main {
 		}
 
 		.icon {
+			@include invert();
 			display: inline-block;
 			padding-right: 14px;
 			height: 2.6rem;
@@ -38,7 +39,7 @@ main {
 				padding: 13px 10px;
 				margin: 0;
 				min-width: 0;
-				color: $black;
+				color: $white;
 
 				&:hover {
 					color: $blue;
@@ -56,20 +57,7 @@ main {
 			top: 0;
 			left: 0;
 			width: 100%;
-			color: $white;
 			z-index: 95;
-
-			.icon {
-				-webkit-filter: invert(1);
-				-moz-filter: invert(1);
-				filter: invert(1);
-			}
-
-			.context-menu-trigger {
-				.dot {
-					background: $white;
-				}
-			}
 		}
 
 		@include responsive( $bp_medium ){

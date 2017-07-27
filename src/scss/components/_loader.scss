@@ -28,7 +28,7 @@
 			top: 0;
 			left: 0;
 			border: {
-				color: $light_grey;
+				color: lighten($dark_grey, 5%);
 			}
 		}
 		
@@ -37,12 +37,12 @@
 			border-top-color: transparent;
 			border-left-color: transparent;
 			border-bottom-color: transparent;
-			border-right-color: $mid_grey;
+			border-right-color: $blue;
 		}
 	}
 
 	&.lazy-loader {
-		padding: 20px 0 40px;
+		padding: 0;
 
 		.loader {			
 			height: 40px;

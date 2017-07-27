@@ -66,7 +66,7 @@ class DebugInfo extends React.Component{
 					Playlists: {this.props.ui.playlists ? Object.keys(this.props.ui.playlists).length : '0'}
 				</div>
 				<div className="item">
-					Tracks: {this.props.ui.tracks ? Object.keys(this.props.ui.tracks).length : '0'} ({this.props.ui.selected_tracks.length} selected)
+					Tracks: {this.props.ui.tracks ? Object.keys(this.props.ui.tracks).length : '0'}
 				</div>
 				<div className="item">
 					Users: {this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}
@@ -89,6 +89,16 @@ class DebugInfo extends React.Component{
 				</div>
 				<div className="item">
 					Touch: {helpers.isTouchDevice() ? 'on' : 'off'}
+				</div>
+				<div className="item">
+					Selected tracks: {this.props.ui.selected_tracks.length}<br />
+					{
+						this.props.ui.selected_tracks.map((track_key, index) => {
+							return (
+								<div key={track_key+'_'+index}>{track_key}</div>
+							)
+						})
+					}
 				</div>
 				{this.renderLoadQueue()}
 			</div>

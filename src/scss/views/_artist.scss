@@ -22,27 +22,16 @@
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 30vh 40px 0 350px;
-
-			.thumbnail {
-				position: absolute;
-				z-index: 2;
-				left: 40px;
-				bottom: 40px;
-				max-width: 264px;
-
-				.image {
-					background-color: $darkest_grey;
-				}
-			}
+			padding: 35vh 40px 0;
 
 			h1 {
-				color: $white;
 				padding-bottom: 25px;
+				font-size: 5rem;
+				line-height: 5rem;
 			}
 
 			.actions {
-				padding-bottom: 60px;
+				padding-bottom: 25px;
 
 				.context-menu-trigger {
 					color: $white;
@@ -50,19 +39,22 @@
 			}
 
 			.sub-views {
-				color: #FFFFFF;
-
 				.option {
+					@include feature_font();
+					color: $white;
 					display: inline-block;
-					padding: 8px 0;
 					margin-right: 25px;
-					font-size: 18px;
-					font-weight: 400;
-					border-bottom: 4px solid transparent;
+					font-size: 15px;
+					font-weight: 500;
+					border-bottom: 3px solid transparent;
 					cursor: pointer;
 
+					h4 {
+						margin: 8px 0 4px;
+					}
+
 					&.active {
-						border-color: $off_white;
+						border-color: $white;
 					}
 
 					&:not(.active):hover {
@@ -87,20 +79,29 @@
 		}
 	}
 
+	@include responsive( $bp_wide ){
+		.intro {
+			.liner {
+				h1 {
+					font-size: 4rem;
+					line-height: 4rem;
+				}
+			}
+		}
+	}
+
 	@include responsive( $bp_medium ){
 		.intro {
 			margin-bottom: 0;
 
 			.parallax {
-				canvas {
-					@include blur(5px);
-				}
+				height: 60vh;
 			}
 
 			.liner {
 				padding-left: 0;
 				padding-right: 0;
-				padding-top: 10vh;
+				padding-top: 30vh;
 
 				.thumbnail {
 					position: static;
@@ -111,7 +112,9 @@
 
 				h1 {
 					@include clearfix();
-					padding: 12vw 10px 0 0;
+					padding: 15vw 10px 0;
+					font-size: 3rem;
+					line-height: 3rem;
 				}
 
 				.actions {
@@ -128,13 +131,20 @@
 			}
 		}
 		.body {
+
 			&.overview {
+				h4 {
+					display: none;
+				}
 				.col.w70 {
 					width: 100%;
 				}
 				.col.w5,
 				.related-artists {
 					display: none;
+				}
+				.grid-wrapper {
+					padding-top: 40px !important;
 				}
 			}
 
