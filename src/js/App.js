@@ -142,7 +142,7 @@ class App extends React.Component{
 
 			case 27: // esc
 				if (this.props.dragger && this.props.dragger.dragging){
-					this.props.uiActions.dragCancel()
+					this.props.uiActions.dragEnd()
 				}
 				if (this.props.modal){
 					this.props.uiActions.closeModal()

@@ -20,9 +20,17 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseDown(e){
-		this.start_position = {
-			x: e.pageX,
-			y: e.pageY
+
+		// Only listen for left mouse clicks
+		if (e.button === 0){
+			this.start_position = {
+				x: e.pageX,
+				y: e.pageY
+			}
+
+		// Not left click, then ensure no dragging
+		} else {
+			this.start_position = false
 		}
 	}
 
@@ -50,29 +58,38 @@ export default class Track extends React.Component{
 
 	handleMouseUp(e){
 
-		// Make sure it's not a right-click
-		if (e.button === 2){
+		// Only listen for left clicks
+		if (e.button === 0){
+			if (this.props.dragger){
+				e.preventDefault()
+
+				if (this.props.handleDrop !== undefined){
+					this.props.handleDrop(e)
+				}
+			} else {
+				var target = $(e.target);
+				if (!target.is('a') && target.closest('a').length <= 0){
+					this.props.handleSelection(e)
+					this.start_position = false
+				}
+			}
+
+		// Not left click, then ensure no dragging
+		} else {			
 			this.start_position = false
 			return false
-		}
-
-		if (this.props.dragger){
-			e.preventDefault()
-
-			if (this.props.handleDrop !== undefined){
-				this.props.handleDrop(e)
-			}
-		} else {
-			var target = $(e.target);
-			if (!target.is('a') && target.closest('a').length <= 0){
-				this.props.handleSelection(e)
-				this.start_position = false
-			}
 		}
 	}
 
 	handleTouchStart(e){
 		this.props.handleTouchDrag(e)
+	}
+
+	handleContextMenu(e){
+		e.preventDefault()
+		e.stopPropagation()
+		e.cancelBubble = true
+		this.props.handleContextMenu(e)
 	}
 
 	render(){
@@ -239,7 +256,7 @@ export default class Track extends React.Component{
 					onMouseMove={e => this.handleMouseMove(e)}			// Any movement over me
 					onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event
 					onDoubleClick={e => this.props.handleDoubleClick(e)}
-					onContextMenu={e => {e.preventDefault(); this.props.handleContextMenu(e)}}>
+					onContextMenu={e => {this.handleContextMenu(e)}}>
 						{ track_columns }
 				</div>
 			)
