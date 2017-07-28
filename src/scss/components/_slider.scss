@@ -5,7 +5,7 @@
 
 	.track {
 		position: absolute;
-		background: $grey;
+		background: lighten($dark_grey, 10%);
 		border-radius: 2px;
 
 		.progress {
