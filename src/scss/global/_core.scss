@@ -15,6 +15,25 @@ body {
 	overflow-y: scroll;
 	overflow-x: hidden;
 
+	&::-webkit-scrollbar{
+		width: 8px;
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: $dark_grey;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		@include animate();
+		background: $grey;
+		border-radius: 3px;
+
+		&:hover {
+			background: $mid_grey;
+		}
+	}
+
 	&.touch-dragging,
 	&.modal-open {
 		overflow-y: hidden;

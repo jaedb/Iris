@@ -60,6 +60,17 @@ class PlaybackControls extends React.Component{
 	handleThumbnailClick(e){
 		e.preventDefault();
 		this.props.uiActions.openModal('kiosk_mode')
+
+		let app = document.documentElement
+		if (app.requestFullscreen){
+			app.requestFullscreen()
+		} else if (app.webkitRequestFullscreen){
+			app.webkitRequestFullscreen()
+		} else if (app.mozRequestFullScreen){
+			app.mozRequestFullScreen()
+		} else if (app.msRequestFullscreen){
+			app.msRequestFullscreen()
+		}
 	}
 
 	render(){

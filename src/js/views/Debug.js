@@ -25,7 +25,8 @@ class Debug extends React.Component{
 		this.state = {
 			mopidy_call: 'playlists.asList',
 			mopidy_data: '{}',
-			pusher_data: '{"method":"get_config"}'
+			pusher_data: '{"method":"get_config"}',
+			access_token: this.props.access_token
 		}
 	}
 
@@ -116,8 +117,8 @@ class Debug extends React.Component{
 						<div className="input">
 							<input
 								type="text"
-								readOnly
-								value={ this.props.access_token } />
+								onBlur={e => this.props.spotifyActions.authorizationGranted({access_token: e.target.value})}
+								value={this.state.access_token} />
 						</div>
 					</div>
 

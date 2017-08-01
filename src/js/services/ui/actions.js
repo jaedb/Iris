@@ -299,7 +299,9 @@ export function openModal( name, data ){
 }
 
 export function closeModal(){
-    return { type: 'CLOSE_MODAL' }
+    return { 
+        type: 'CLOSE_MODAL' 
+    }
 }
 
 
