@@ -238,7 +238,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Track skipped',
                     body: store.getState().pusher.username +' skipped this track',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon(store.getState().ui.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().ui) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -248,7 +248,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Playback stopped',
                     body: store.getState().pusher.username +' stopped playback',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon(store.getState().ui.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().ui) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -343,8 +343,8 @@ const MopidyMiddleware = (function(){
                     break
                 }
 
-                var current_track = store.getState().ui.current_track
-                var current_tracklist = store.getState().ui.current_tracklist
+                var current_track = store.getState().core.current_track
+                var current_tracklist = store.getState().core.current_tracklist
                 var current_track_index = -1
 
                 if (typeof(current_track) !== 'undefined'){

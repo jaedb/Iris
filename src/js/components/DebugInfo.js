@@ -66,7 +66,7 @@ class DebugInfo extends React.Component{
 					Playlists: {this.props.ui.playlists ? Object.keys(this.props.ui.playlists).length : '0'}
 				</div>
 				<div className="item">
-					Tracks: {this.props.ui.tracks ? Object.keys(this.props.ui.tracks).length : '0'}
+					Tracks: {this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'}
 				</div>
 				<div className="item">
 					Users: {this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}

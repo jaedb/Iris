@@ -1,4 +1,6 @@
 
+import ReactGA from 'react-ga'
+
 var helpers = require('./../../helpers')
 var spotifyActions = require('./actions')
 var uiActions = require('../ui/actions')
@@ -13,6 +15,46 @@ const SpotifyMiddleware = (function(){
         var state = store.getState();
 
         switch(action.type){
+
+            case 'SPOTIFY_CONNECTED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Connected', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_GRANTED':
+                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' })
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_REVOKED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_IMPORT_AUTHORIZATION':
+                var label = null
+                if (action.me && action.me.id){
+                    label = action.me.id
+                }
+                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_RECOMMENDATIONS_LOADED':
+                if (action.seeds_uris){
+                    ReactGA.event({ category: 'Spotify', action: 'Recommendations', label: action.seeds_uris.join(',') })
+                }
+                next(action)
+                break
+
+            case 'SPOTIFY_USER_LOADED':
+                if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
+                next(action)
+                break
 
             case 'SPOTIFY_CONNECT':
                 store.dispatch( spotifyActions.getMe() )
@@ -73,18 +115,6 @@ const SpotifyMiddleware = (function(){
                     return
                 }
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
-                break
-
-            // when radio returns
-            case 'PUSHER_RADIO_STARTED':
-            case 'PUSHER_RADIO_CHANGED':
-
-                next(action)
-
-                // only resolve if radio is enabled
-                if( action.radio.enabled ){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
-                }
                 break
 
             case 'SPOTIFY_NEW_RELEASES_LOADED':
@@ -362,6 +392,7 @@ const SpotifyMiddleware = (function(){
                     // Use 'me' name as my Pusher username
                     store.dispatch(pusherActions.setUsername(name))
                 }
+                ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id })
                 next(action)
                 break;
 

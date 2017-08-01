@@ -219,13 +219,13 @@ class LibraryAlbums extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
+		albums: state.core.albums,
 		view: state.ui.library_albums_view,
-		albums: state.ui.albums,
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
 		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false),
-		library_albums: state.ui.library_albums,
-		library_albums_started: state.ui.library_albums_started,
-		library_albums_more: state.ui.library_albums_more
+		library_albums: state.core.library_albums,
+		library_albums_started: state.core.library_albums_started,
+		library_albums_more: state.core.library_albums_more
 	}
 }
 

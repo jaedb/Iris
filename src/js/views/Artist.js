@@ -261,10 +261,10 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		artist: (state.ui.artists && typeof(state.ui.artists[ownProps.params.uri]) !== 'undefined' ? state.ui.artists[ownProps.params.uri] : false ),
-		artists: (state.ui.artists ? state.ui.artists : []),
-		library_artists: (state.ui.library_artists ? state.ui.library_artists : []),
-		albums: (state.ui.albums ? state.ui.albums : []),
+		artist: (state.core.artists && typeof(state.core.artists[ownProps.params.uri]) !== 'undefined' ? state.core.artists[ownProps.params.uri] : false ),
+		artists: (state.core.artists ? state.core.artists : []),
+		library_artists: (state.core.library_artists ? state.core.library_artists : []),
+		albums: (state.core.albums ? state.core.albums : []),
 		spotify_authorized: state.spotify.authorized,
 		mopidy_connected: state.mopidy.connected
 	}

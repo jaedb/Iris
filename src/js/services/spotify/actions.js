@@ -116,7 +116,7 @@ function refreshToken( dispatch, getState ){
 
             $.ajax({
                     method: 'GET',
-                    url: getState().ui.config.authorization_url+'?action=refresh&refresh_token='+getState().spotify.refresh_token,
+                    url: getState().spotify.authorization_url+'?action=refresh&refresh_token='+getState().spotify.refresh_token,
                     dataType: "json",
                     timeout: 10000
                 })

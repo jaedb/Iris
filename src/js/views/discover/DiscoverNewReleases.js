@@ -128,7 +128,7 @@ class DiscoverNewReleases extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		albums: state.ui.albums,
+		albums: state.core.albums,
 		new_releases: state.ui.new_releases,
 		new_releases_more: state.ui.new_releases_more,
 		new_releases_total: state.ui.new_releases_total

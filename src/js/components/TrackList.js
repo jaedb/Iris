@@ -421,7 +421,7 @@ const mapStateToProps = (state, ownProps) => {
 		selected_tracks: state.ui.selected_tracks,
 		slim_mode: state.ui.slim_mode,
 		dragger: state.ui.dragger,
-		current_track: state.ui.current_track,
+		current_track: state.core.current_track,
 		context_menu: state.ui.context_menu
 	}
 }

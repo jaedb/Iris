@@ -213,8 +213,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		playlist: (state.ui.playlists && typeof(state.ui.playlists[uri]) !== 'undefined' ? state.ui.playlists[uri] : false ),
-		library_playlists: state.ui.library_playlists,
+		playlist: (state.core.playlists && typeof(state.core.playlists[uri]) !== 'undefined' ? state.core.playlists[uri] : false ),
+		library_playlists: state.core.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorized,
 		spotify_userid: state.spotify.me.id

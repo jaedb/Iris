@@ -262,13 +262,13 @@ const mapStateToProps = (state, ownProps) => {
 		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
 		tracks_more: (state.ui.search_results && state.ui.search_results.tracks_more ? state.ui.search_results.tracks_more : null),
-		artists: (state.ui.artists ? state.ui.artists : []),
+		artists: (state.core.artists ? state.core.artists : []),
 		artists_uris: (state.ui.search_results ? state.ui.search_results.artists_uris : []),
 		artists_more: (state.ui.search_results ? state.ui.search_results.artists_more : null),
-		albums: (state.ui.albums ? state.ui.albums : []),
+		albums: (state.core.albums ? state.core.albums : []),
 		albums_uris: (state.ui.search_results ? state.ui.search_results.albums_uris : []),
 		albums_more: (state.ui.search_results ? state.ui.search_results.albums_more : null),
-		playlists: (state.ui.playlists ? state.ui.playlists : []),
+		playlists: (state.core.playlists ? state.core.playlists : []),
 		playlists_uris: (state.ui.search_results ? state.ui.search_results.playlists_uris : []),
 		playlists_more: (state.ui.search_results ? state.ui.search_results.playlists_more : null)
 	}

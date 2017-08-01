@@ -264,9 +264,9 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		albums: (state.ui.albums ? state.ui.albums : []),
-		artists: (state.ui.artists ? state.ui.artists : []),
-		tracks: (state.ui.tracks ? state.ui.tracks : []),
+		albums: (state.core.albums ? state.core.albums : []),
+		artists: (state.core.artists ? state.core.artists : []),
+		tracks: (state.core.tracks ? state.core.tracks : []),
 		genres: (state.ui.genres ? state.ui.genres : []),
 		authorized: state.spotify.authorized,
 		load_queue: state.ui.load_queue,

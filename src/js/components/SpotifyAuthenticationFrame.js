@@ -146,7 +146,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		authorization_url: state.ui.config.authorization_url,
+		authorization_url: state.spotify.authorization_url,
 		authorized: state.spotify.authorized,
 		authorizing: state.spotify.authorizing,
 		refreshing_token: state.spotify.refreshing_token

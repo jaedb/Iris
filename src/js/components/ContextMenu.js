@@ -575,12 +575,12 @@ class ContextMenu extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		menu: state.ui.context_menu,
-		current_track: state.ui.current_track,
-		current_tracklist: state.ui.current_tracklist,
-		library_artists: state.ui.library_artists,
-		library_albums: state.ui.library_albums,
-		library_playlists: state.ui.library_playlists,
-		playlists: state.ui.playlists,
+		current_track: state.core.current_track,
+		current_tracklist: state.core.current_tracklist,
+		library_artists: state.core.library_artists,
+		library_albums: state.core.library_albums,
+		library_playlists: state.core.library_playlists,
+		playlists: state.core.playlists,
 		spotify_authorized: state.spotify.authorized
 	}
 }

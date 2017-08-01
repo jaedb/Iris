@@ -152,8 +152,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		radio: state.ui.radio,
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
-		current_tracklist: state.ui.current_tracklist,
-		current_track: (state.ui.current_track !== undefined && state.ui.tracks !== undefined && state.ui.tracks[state.ui.current_track.uri] !== undefined ? state.ui.tracks[state.ui.current_track.uri] : null)
+		current_tracklist: state.core.current_tracklist,
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null)
 	}
 }
 

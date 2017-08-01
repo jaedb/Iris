@@ -83,7 +83,7 @@ class DiscoverCategory extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		playlists: state.ui.playlists,
+		playlists: state.core.playlists,
 		category: (state.ui.categories && typeof(state.ui.categories['category:'+ownProps.params.id]) !== 'undefined' ? state.ui.categories['category:'+ownProps.params.id] : false )
 	}
 }

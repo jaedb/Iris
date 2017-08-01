@@ -1,4 +1,6 @@
 
+import ReactGA from 'react-ga'
+
 var helpers = require('../../helpers.js')
 var uiActions = require('../ui/actions.js')
 var pusherActions = require('./actions.js')
@@ -185,6 +187,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_START_UPGRADE':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
                 request(store, 'upgrade')
                 .then(
                     response => {
@@ -244,6 +247,7 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_START_RADIO':
             case 'PUSHER_UPDATE_RADIO':
+                ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() })
 
                 // start our UI process notification  
                 if (action.type == 'PUSHER_UPDATE_RADIO'){
@@ -284,6 +288,7 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_STOP_RADIO':
                 store.dispatch(uiActions.createNotification('Stopping radio'))
+                ReactGA.event({ category: 'Pusher', action: 'Stop radio' })
 
                 var data = {
                     seed_artists: [],
@@ -295,6 +300,14 @@ const PusherMiddleware = (function(){
                 request(store, 'stop_radio', data)
                 break
 
+            case 'PUSHER_RADIO_STARTED':
+            case 'PUSHER_RADIO_CHANGED':
+                if (action.radio.enabled){
+                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
+                }
+                next(action)
+                break
+
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
@@ -303,6 +316,15 @@ const PusherMiddleware = (function(){
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
                 window.location.reload(true);
+                break
+
+            case 'PUSHER_VERSION':
+                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
+
+                if (action.version.upgrade_available){
+                    store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+                }
+                next( action )
                 break
 
             case 'PUSHER_DEBUG':
@@ -316,7 +338,8 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_ERROR':
                 store.dispatch(uiActions.createNotification(action.message, 'bad'))
-                break;
+                ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message })
+                break
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

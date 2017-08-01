@@ -110,9 +110,9 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorized,
 		me: state.spotify.me,
-		playlists: state.ui.playlists,
-		user: (state.ui.users && typeof(state.ui.users[ownProps.params.uri]) !== 'undefined' ? state.ui.users[ownProps.params.uri] : false ),
-		users: state.ui.users
+		playlists: state.core.playlists,
+		user: (state.core.users && state.core.users[ownProps.params.uri] !== undefined ? state.core.users[ownProps.params.uri] : false),
+		users: state.core.users
 	};
 }
 

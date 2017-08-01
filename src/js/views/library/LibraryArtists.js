@@ -168,14 +168,14 @@ class LibraryArtists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		artists: state.ui.artists,
+		artists: state.core.artists,
+		library_artists: state.core.library_artists,
+		library_artists_started: state.core.library_artists_started,
+		library_artists_more: state.core.library_artists_more,
+		library_artists_started: state.core.library_artists_started,
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name'),
 		sort_reverse: (state.ui.library_artists_sort_reverse ? true : false),
-		library_artists: state.ui.library_artists,
-		library_artists_started: state.ui.library_artists_started,
-		library_artists_more: state.ui.library_artists_more,
-		library_artists_started: state.ui.library_artists_started,
-		view: state.ui.library_artists_view
+		view: state.core.library_artists_view
 	}
 }
 

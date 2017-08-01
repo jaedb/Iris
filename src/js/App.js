@@ -15,6 +15,7 @@ import Notifications from './components/Notifications'
 import DebugInfo from './components/DebugInfo'
 
 import * as helpers from './helpers'
+import * as coreActions from './services/core/actions'
 import * as uiActions from './services/ui/actions'
 import * as pusherActions from './services/pusher/actions'
 import * as mopidyActions from './services/mopidy/actions'
@@ -46,10 +47,8 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.pusherActions.connect()
-		this.props.mopidyActions.connect()
-		this.props.spotifyActions.connect()
-		this.props.uiActions.getBroadcasts()
+		this.props.coreActions.startServices()
+		this.props.coreActions.getBroadcasts()
 
 		if (this.props.spotify_authorized){
 
@@ -295,6 +294,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
