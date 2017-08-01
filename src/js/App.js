@@ -91,14 +91,25 @@ class App extends React.Component{
 	}
 
 	shouldTriggerShortcut(e){
-		var ignoreNodes = ['INPUT', 'TEXTAREA']
-		var keyCodes = [32,27,191,37,38,39,40,70]
 
-		if( ignoreNodes.indexOf(e.target.nodeName) > -1 ){
+		// When we're focussed on certian elements, don't fire any shortcuts
+		// Typically form inputs
+		var ignoreNodes = ['INPUT', 'TEXTAREA']
+		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
 			return false
 		}
 
-		if( keyCodes.indexOf(e.keyCode) > -1 ){
+		// Listen for standalone key codes
+		let keyCodes = [27,32,191]
+		if (keyCodes.indexOf(e.keyCode) > -1){
+			if (keyCode == 37)
+			e.preventDefault()
+			return true
+		}
+
+		// Listen for key codes that require ctrl to be held		
+		let keyCodesWithCtrl = [37,38,39,40,70]
+		if (e.ctrlKey && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
 			e.preventDefault()
 			return true
 		}
