@@ -261,11 +261,11 @@ const MopidyMiddleware = (function(){
                 }
 
                 // playlist already in index
-                if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
+                if (store.getState().core.playlists.hasOwnProperty(action.uri)){
                     
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
-                    if (!store.getState().ui.playlists[action.uri].is_mopidy){
+                    if (!store.getState().core.playlists[action.uri].is_mopidy){
                         store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
@@ -410,7 +410,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_PLAY_URIS':
 
                 // Stop the radio
-                if (store.getState().ui.radio && store.getState().ui.radio.enabled){
+                if (store.getState().core.radio && store.getState().core.radio.enabled){
                     store.dispatch(pusherActions.stopRadio())
                 }
 

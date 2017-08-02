@@ -231,10 +231,10 @@ const mapStateToProps = (state, ownProps) => {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
-		view: state.core.library_playlists_view,
-		filter: (state.core.library_playlists_filter ? state.core.library_playlists_filter : 'all'),
-		sort: (state.core.library_playlists_sort ? state.core.library_playlists_sort : 'name'),
-		sort_reverse: (state.core.library_playlists_sort_reverse ? true : false),
+		view: state.ui.library_playlists_view,
+		filter: (state.ui.library_playlists_filter ? state.ui.library_playlists_filter : 'all'),
+		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
+		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
 		library_playlists: state.core.library_playlists,
 		playlists: state.core.playlists
 	}

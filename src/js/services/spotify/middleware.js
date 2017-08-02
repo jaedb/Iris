@@ -69,7 +69,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = state.ui.playlists[action.key]
+                var playlist = state.core.playlists[action.key]
 
                 if( !store.getState().spotify.authorized ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )

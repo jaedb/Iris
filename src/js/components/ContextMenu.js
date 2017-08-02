@@ -5,12 +5,13 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import TrackList from './TrackList'
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
+import TrackList from './TrackList'
 
 class ContextMenu extends React.Component{
 
@@ -186,12 +187,12 @@ class ContextMenu extends React.Component{
 
 	addTracksToPlaylist(e, playlist_uri){
 		this.props.uiActions.hideContextMenu()
-		this.props.uiActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
+		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
 	}
 
 	removeFromPlaylist(e){
 		this.props.uiActions.hideContextMenu()
-		this.props.uiActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
+		this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
 	}
 
 	startRadio(e){
@@ -587,6 +588,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),

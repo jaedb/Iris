@@ -129,9 +129,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
-		new_releases: state.ui.new_releases,
-		new_releases_more: state.ui.new_releases_more,
-		new_releases_total: state.ui.new_releases_total
+		new_releases: state.core.new_releases,
+		new_releases_more: state.core.new_releases_more,
+		new_releases_total: state.core.new_releases_total
 	}
 }
 

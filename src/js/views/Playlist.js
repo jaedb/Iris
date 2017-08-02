@@ -16,6 +16,7 @@ import Header from '../components/Header'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -96,11 +97,11 @@ class Playlist extends React.Component{
 	}
 
 	reorderTracks( indexes, index ){
-		this.props.uiActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
+		this.props.coreActions.reorderPlaylistTracks( this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
 	}
 
 	removeTracks( tracks_indexes ){
-		this.props.uiActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
+		this.props.coreActions.removeTracksFromPlaylist( this.props.playlist.uri, tracks_indexes )
 	}
 
 	inLibrary(){
@@ -223,6 +224,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
