@@ -3,7 +3,6 @@ import ReactGA from 'react-ga'
 
 var uiActions = require('./actions.js')
 var mopidyActions = require('../mopidy/actions.js')
-var spotifyActions = require('../spotify/actions.js')
 var helpers = require('../../helpers.js')
 
 const UIMiddleware = (function(){

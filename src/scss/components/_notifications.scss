@@ -47,9 +47,14 @@
 			background: $green;
 		}
 
-		&.broadcast {
+		&.broadcast,
+		&.info {
 			background: $yellow;
 			color: $black;
+		}
+
+		&.warning {
+			background: $orange;
 		}
 
 		&.bad {

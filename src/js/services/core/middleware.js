@@ -20,7 +20,11 @@ const CoreMiddleware = (function(){
             case 'CORE_START_SERVICES':
                 store.dispatch(mopidyActions.connect())
                 store.dispatch(pusherActions.connect())
-                store.dispatch(spotifyActions.connect())
+
+                if (store.getState().spotify.enabled){
+                    store.dispatch(spotifyActions.connect())
+                }
+                
                 next(action)
                 break
 

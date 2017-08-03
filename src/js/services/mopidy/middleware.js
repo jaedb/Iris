@@ -218,7 +218,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
+                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc']
 
                 // remove all our ignored types
                 for( var i = 0; i < remove.length; i++ ){
@@ -279,10 +279,12 @@ const MopidyMiddleware = (function(){
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
-                } else if (helpers.uriSource(action.uri) == 'spotify'){
+                } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
                     store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                     store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                     break
+
+                // Not in index, and Spotify HTTP not enabled, so just play it as-is
                 }
 
                 // fetch the playlist tracks via backend

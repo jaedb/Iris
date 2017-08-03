@@ -1,53 +1,56 @@
 
 .settings-view {
+
 	.services {
+		@include clearfix();
+
 		.service {
-			position: relative;
-			display: inline-block;
-			padding: 0 0 0 45px;
-			margin: 0 20px 10px 0;
-			min-width: 80px;
+			background: lighten($dark_grey,2%);
+			padding: 12px 15px;
+			width: 24%;
+			margin-right: 2%;
+			float: left;
+			border-radius: 3px;
+			box-sizing: border-box;
 
-			h4 {
-				padding: 0;
-				margin: 0 0 -3px 0;
+			&:nth-child(4n){
+				margin-right: 0;
+			}
+
+			&.disabled {
+				color: $grey;
+			}
+
+			&.connecting {
+				.status {
+					color: $grey;
+				}
+			}
+
+			&.connected {
+				.status {
+					color: $green;
+				}
+			}
+
+			&.disconnected {
+				.status {
+					color: $red;
+				}
+			}
+
+			.title {
 				text-transform: capitalize;
+				margin: 2px 0 5px 0;
 			}
 
-			.icon {
-				width: 35px;
-				height: 25px;
-				position: absolute;
-				top: 2px;
-				left: 0;
-				border-radius: 50%;
-				color: $white;
-				text-align: center;
-				padding-top: 10px;
-
-				&.connecting {
-					background: $mid_grey;
-				}
-
-				&.connected {
-					background: $green;
-				}
-
-				&.warning {
-					background: $orange;
-				}
-
-				&.disconnected {
-					background: $red;
-				}
-			}
-
-			.text {
-
+			.status {
+				text-transform: capitalize;
+				font-size: 14px;
 			}
 		}
 	}
-
+	
 	.field.current-user {
 		.text {
 			padding: 14px 14px 14px 0px;

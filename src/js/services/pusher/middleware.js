@@ -109,7 +109,7 @@ const PusherMiddleware = (function(){
 
                             response.type = 'PUSHER_CONFIG'
                             store.dispatch(response)
-                            if (response.config.spotify_username){
+                            if (response.config.spotify_username && store.getState().spotify.enabled){
                                 store.dispatch(spotifyActions.getUser('spotify:user:'+response.config.spotify_username))
                             }
                             var spotify = store.getState().spotify
@@ -303,7 +303,7 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_RADIO_STARTED':
             case 'PUSHER_RADIO_CHANGED':
-                if (action.radio.enabled){
+                if (action.radio.enabled && store.getState().spotify.enabled){
                     store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
                 }
                 next(action)

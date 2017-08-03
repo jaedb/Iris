@@ -171,11 +171,6 @@ function refreshToken( dispatch, getState ){
     })
 }
 
-
-/**
- * Actions and Action Creators
- **/
-
 export function setConfig( config ){
     return {
         type: 'SPOTIFY_SET_CONFIG',

@@ -88,42 +88,6 @@ class Settings extends React.Component{
 		this.props.pusherActions.setUsername(this.state.pusher_username)
 	}
 
-	renderConnectionStatus(service){
-		if (service == 'Spotify' && !this.props[service.toLowerCase()].authorized){			
-			return (
-				<span className="red-text connection-status">
-					<FontAwesome name="exclamation-triangle" />
-					&nbsp;
-					Not connected
-				</span>
-			)
-		} else if (this.props[service.toLowerCase()].connected){
-			return (
-				<span className="green-text connection-status">
-					<FontAwesome name="check" />
-					&nbsp;
-					{service}
-				</span>
-			)
-		} else if (this.props[service.toLowerCase()].connecting){			
-			return (
-				<span className="grey-text connection-status">
-					<FontAwesome name="circle-o-notch" spin />
-					&nbsp;
-					Connecting
-				</span>
-			)
-		} else {			
-			return (
-				<span className="red-text connection-status">
-					<FontAwesome name="exclamation-triangle" />
-					&nbsp;
-					Not connected
-				</span>
-			)
-		}
-	}
-
 	renderSpotifyUser(){
 
 		var user = null
@@ -186,25 +150,26 @@ class Settings extends React.Component{
 		var icon = null
 		var status = 'Unknown'
 
-		if (this.props[service].connecting){
-			icon = <span className="icon connecting"><FontAwesome name="plug" /></span>
-			status = 'Connecting'
-		} else if (service == 'spotify' && !this.props[service].authorized){
-			icon = <span className="icon warning"><FontAwesome name="check" /></span>
-			status = 'Connected (not authorized)'
+		if (this.props[service].enabled !== undefined && !this.props[service].enabled){
+			icon = <span className="icon"><FontAwesome fixedWidth name="power-off" /></span>
+			status = 'disabled'
+		} else if (this.props[service].connecting){
+			icon = <span className="icon"><FontAwesome fixedWidth name="plug" /></span>
+			status = 'connecting'
 		} else if (this.props[service].connected){
-			icon = <span className="icon connected"><FontAwesome name="check" /></span>
-			status = 'Connected'
+			icon = <span className="icon"><FontAwesome fixedWidth name="check" /></span>
+			status = 'connected'
 		} else {
-			icon = <span className="icon disconnected"><FontAwesome name="close" /></span>
-			status = 'Disconnected'
+			icon = <span className="icon disconnected"><FontAwesome fixedWidth name="close" /></span>
+			status = 'disconnected'
 		}
 
 		return (
-			<div className="service">
-				<h4>{service}</h4>
-				{icon}
-				<span className="text">{status}</span>
+			<div className={'service '+status}>
+				<span className="content">
+					<h4 className="title">{service}</h4>
+					<div className="status">{icon}&nbsp; {status}</div>
+				</span>
 			</div>
 		)
 	}
@@ -276,6 +241,19 @@ class Settings extends React.Component{
 
 					<h4 className="underline">Spotify</h4>
 					<form>
+						<div className="field checkbox">
+							<div className="input">
+								<label>
+									<input 
+										type="checkbox"
+										name="spotify_enabled"
+										checked={ this.props.spotify.enabled }
+										onChange={e => this.props.spotifyActions.setConfig({enabled: !this.props.spotify.enabled})} 
+									/>
+									<span className="label">Enabled</span>
+								</label>
+							</div>
+						</div>
 						<div className="field">
 							<div className="name">Country</div>
 							<div className="input">

@@ -90,7 +90,7 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="cog" />
 								Settings
-								{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
+								{ !this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 							</Link>
 						</section>
 
@@ -115,6 +115,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
+		spotify_enabled: state.spotify.enabled,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorized,
 		dragger: state.ui.dragger

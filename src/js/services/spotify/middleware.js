@@ -16,10 +16,21 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
+            case 'SPOTIFY_CONNECT':
+                store.dispatch( spotifyActions.getMe() )
+                break
+
             case 'SPOTIFY_CONNECTED':
                 var label = null
                 if (store.getState().spotify.me) label = store.getState().spotify.me.id
                 ReactGA.event({ category: 'Spotify', action: 'Connected', label: label })
+
+                // TODO: remove this so we don't tap out our API limits before we even get started
+                // Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
+                if (store.getState().spotify_authorized){
+                    store.dispatch(spotifyActions.getAllLibraryPlaylists())
+                }
+
                 next(action)
                 break
 
@@ -54,10 +65,6 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_USER_LOADED':
                 if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
                 next(action)
-                break
-
-            case 'SPOTIFY_CONNECT':
-                store.dispatch( spotifyActions.getMe() )
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':

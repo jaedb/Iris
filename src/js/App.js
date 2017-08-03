@@ -50,13 +50,6 @@ class App extends React.Component{
 		this.props.coreActions.startServices()
 		this.props.coreActions.getBroadcasts()
 
-		if (this.props.spotify_authorized){
-
-			// TODO: remove this so we don't tap out our API limits before we even get started
-			// Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
-			this.props.spotifyActions.getAllLibraryPlaylists();
-		}
-
 		// when we navigate to a new route
 		hashHistory.listen( location => {
 

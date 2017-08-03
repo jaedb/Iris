@@ -60,6 +60,7 @@ var initialState = {
 		track: {}
 	},
 	spotify: {
+		enabled: true,
 		connected: false,
 		me: false,
 		autocomplete_results: {},
