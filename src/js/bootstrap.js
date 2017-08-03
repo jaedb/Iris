@@ -55,6 +55,7 @@ var initialState = {
 		}
 	},
 	lastfm: {
+		connected: false,
 		album: {},
 		artist: {},
 		track: {}
@@ -62,6 +63,7 @@ var initialState = {
 	spotify: {
 		enabled: true,
 		connected: false,
+		authentication_provider: 'backend',
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'

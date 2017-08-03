@@ -1,6 +1,10 @@
 
 .settings-view {
 
+	.sub-views {
+		padding-bottom: 40px;
+	}
+
 	.services {
 		@include clearfix();
 
@@ -8,7 +12,7 @@
 			background: lighten($dark_grey,2%);
 			padding: 12px 15px;
 			width: 24%;
-			margin-right: 2%;
+			margin-right: 1.3334%;
 			float: left;
 			border-radius: 3px;
 			box-sizing: border-box;
@@ -27,13 +31,15 @@
 				}
 			}
 
-			&.connected {
+			&.connected,
+			&.available {
 				.status {
 					color: $green;
 				}
 			}
 
-			&.disconnected {
+			&.disconnected,
+			&.unavailable {
 				.status {
 					color: $red;
 				}

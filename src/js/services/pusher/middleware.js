@@ -328,6 +328,16 @@ const PusherMiddleware = (function(){
                 next( action )
                 break
 
+            case 'PUSHER_CONFIG':
+                store.dispatch(spotifyActions.setConfig({
+                    locale: (action.config.locale ? action.config.locale : null),
+                    country: (action.config.country ? action.config.country : null),
+                    authorization_url: (action.config.authorization_url ? action.config.authorization_url : null),
+                    backend_username: (action.config.backend_username ? action.config.backend_username : null)
+                }))
+                next( action )
+                break
+
             case 'PUSHER_DEBUG':
                 request(store, action.message.method, action.message.data )
                 .then(

@@ -6,6 +6,7 @@ var uiActions = require('../ui/actions.js')
 var pusherActions = require('../pusher/actions.js')
 var mopidyActions = require('../mopidy/actions.js')
 var spotifyActions = require('../spotify/actions.js')
+var lastfmActions = require('../lastfm/actions.js')
 var helpers = require('../../helpers.js')
 
 const CoreMiddleware = (function(){
@@ -20,6 +21,7 @@ const CoreMiddleware = (function(){
             case 'CORE_START_SERVICES':
                 store.dispatch(mopidyActions.connect())
                 store.dispatch(pusherActions.connect())
+                store.dispatch(lastfmActions.connect())
 
                 if (store.getState().spotify.enabled){
                     store.dispatch(spotifyActions.connect())

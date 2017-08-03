@@ -1,0 +1,26 @@
+
+
+.sub-views {
+	.option {
+		@include feature_font();
+		color: $white;
+		display: inline-block;
+		margin-right: 25px;
+		font-size: 15px;
+		font-weight: 500;
+		border-bottom: 3px solid transparent;
+		cursor: pointer;
+
+		h4 {
+			margin: 8px 0 4px;
+		}
+
+		&.active {
+			border-color: $white;
+		}
+
+		&:not(.active):hover {
+			border-color: rgba(255,255,255,0.2);
+		}
+	}
+}

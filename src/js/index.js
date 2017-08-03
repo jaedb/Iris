@@ -20,7 +20,6 @@ import User from './views/User'
 import Queue from './views/Queue'
 import QueueHistory from './views/QueueHistory'
 import Settings from './views/Settings'
-import Debug from './views/Debug'
 import Search from './views/Search'
 
 import DiscoverRecommendations from './views/discover/DiscoverRecommendations'
@@ -56,8 +55,7 @@ ReactDOM.render(
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
-				<Route path="settings" component={Settings} />
-				<Route path="settings/debug" component={Debug} />
+				<Route path="settings(/:sub_view)(/:section)" component={Settings} />
 				
 				<Route path="search(/iris::search::type::query)" component={Search} />
 				<Route path="album/:uri" component={Album} />

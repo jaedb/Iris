@@ -73,6 +73,7 @@ const localstorageMiddleware = (function(){
                 if( !spotify ) spotify = {};
                 Object.assign(
                     spotify,{
+                        authentication_provider: action.config.authentication_provider, 
                         country: action.config.country, 
                         locale: action.config.locale
                     }
