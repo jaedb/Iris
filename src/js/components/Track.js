@@ -117,17 +117,17 @@ export default class Track extends React.Component{
 		if (track.type == 'history'){
 
 			track_columns.push(
-				<span className="col name">
+				<span className="col name" key="name">
 					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
 				</span>
 			)
 			track_columns.push(
-				<span className="col source">
+				<span className="col source" key="source">
 					{helpers.uriSource(track.uri)}
 				</span>
 			)
 			track_columns.push(
-				<span className="col played_at">
+				<span className="col played_at" key="played_at">
 					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null}
 				</span>
 			)
