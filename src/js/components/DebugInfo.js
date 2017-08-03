@@ -57,19 +57,19 @@ class DebugInfo extends React.Component{
 		return (
 			<div className="debug-info">
 				<div className="item">
-					Albums: {this.props.ui.albums ? Object.keys(this.props.ui.albums).length : '0'}
+					Albums: {this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'}
 				</div>
 				<div className="item">
-					Artists: {this.props.ui.artists ? Object.keys(this.props.ui.artists).length : '0'}
+					Artists: {this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'}
 				</div>
 				<div className="item">
-					Playlists: {this.props.ui.playlists ? Object.keys(this.props.ui.playlists).length : '0'}
+					Playlists: {this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'}
 				</div>
 				<div className="item">
 					Tracks: {this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'}
 				</div>
 				<div className="item">
-					Users: {this.props.ui.users ? Object.keys(this.props.ui.users).length : '0'}
+					Users: {this.props.core.users ? Object.keys(this.props.core.users).length : '0'}
 				</div>
 				<div className="item">
 					Notifications: {this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}
@@ -108,6 +108,7 @@ class DebugInfo extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		core: state.core,
 		ui: state.ui,
 		mopidy: state.mopidy
 	}
