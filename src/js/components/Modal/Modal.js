@@ -17,6 +17,7 @@ import VolumeModal from './VolumeModal'
 import AuthorizationModal_Send from './AuthorizationModal_Send'
 import AuthorizationModal_Receive from './AuthorizationModal_Receive'
 
+import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -55,7 +56,7 @@ class Modal extends React.Component{
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} current_track={this.props.current_track} /> : null }
-					{ this.props.modal.name == 'search_settings' ? <SearchSettingsModal uiActions={this.props.uiActions} search_settings={this.props.search_settings} uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'search_settings' ? <SearchSettingsModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} search_settings={this.props.search_settings} uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'volume' ? <VolumeModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} volume={this.props.volume} mute={this.props.mute} /> : null }
 
 				</div>
@@ -84,6 +85,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
