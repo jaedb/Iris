@@ -24,8 +24,8 @@ export default class KioskModeModal extends React.Component{
 	}
 
 	render(){
-		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
-			var images = this.props.current_track.album.images
+		if (this.props.current_track && this.props.current_track.images){
+			var images = this.props.current_track.images
 		} else {
 			var images = []
 		}

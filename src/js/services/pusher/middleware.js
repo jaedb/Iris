@@ -98,6 +98,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username })
                 request(store, 'get_config')
                     .then(
                         response => {

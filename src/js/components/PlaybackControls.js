@@ -75,8 +75,8 @@ class PlaybackControls extends React.Component{
 
 	render(){
 		var images = false
-		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
-			images = this.props.current_track.album.images
+		if (this.props.current_track && this.props.current_track.images){
+			images = this.props.current_track.images
 		}
 
 		return (

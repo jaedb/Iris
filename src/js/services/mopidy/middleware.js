@@ -1,4 +1,5 @@
 
+import ReactGA from 'react-ga'
 import Mopidy from 'mopidy'
 import { hashHistory } from 'react-router'
 import * as helpers from '../../helpers'
@@ -192,6 +193,11 @@ const MopidyMiddleware = (function(){
                 socket.on( (type, data) => handleMessage( socket, store, type, data ) )
                 break
 
+            case 'MOPIDY_CONNECTED':
+                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname })
+                next(action)
+                break
+
             case 'MOPIDY_DISCONNECT':
                 if(socket != null) socket.close()
                 socket = null
@@ -238,7 +244,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Track skipped',
                     body: store.getState().pusher.username +' skipped this track',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -248,7 +254,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Playback stopped',
                     body: store.getState().pusher.username +' stopped playback',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -398,13 +404,6 @@ const MopidyMiddleware = (function(){
                         )
                     })
 
-                break
-
-            case 'CANCEL_PROCESS':
-                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
-                    store.dispatch(mopidyActions.enqueueURIsCancel())
-                }
-                next(action)
                 break
 
             case 'MOPIDY_PLAY_URIS':
@@ -1033,12 +1032,44 @@ const MopidyMiddleware = (function(){
                     // Fire off our universal track index loader
                     store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
 
-                    // When current track is Spotify track, go get the full object
-                    // This is because Mopidy doesn't give us full artist/album objects, without artwork
-                    if (action.data.track.uri.substring(0,14) == 'spotify:track:'){
-                        store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
-                    }
+                    // Get me some images
+                    store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
                 }
+
+                next(action)
+                break
+                
+
+            /**
+             * =============================================================== IMAGES ===============
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_GET_IMAGES':
+
+                instruct( socket, store, 'library.getImages', {uris: action.uris})
+                    .then( response => {
+
+                        let records = []
+                        for (var uri in response){
+                            if (response.hasOwnProperty(uri)){
+
+                                let images = response[uri]
+                                images = helpers.digestMopidyImages(store.getState().mopidy, images)
+
+                                records.push({
+                                    uri: uri,
+                                    images: images
+                                })
+                            }
+                        }
+                        
+                        let action_data = {
+                            type: (action.context+'_LOADED').toUpperCase()
+                        }
+                        action_data[action.context] = records
+                        store.dispatch(action_data)
+                    })
 
                 next(action)
                 break
@@ -1058,6 +1089,11 @@ const MopidyMiddleware = (function(){
                             data: response
                         });
                     })
+                break
+
+            case 'MOPIDY_DIRECTORY':
+                if (action.data) ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri })
+                next(action)
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

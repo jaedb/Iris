@@ -24,16 +24,6 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
-            case 'MOPIDY_CONNECTED':
-                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname })
-                next(action)
-                break
-
-            case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username })
-                next(action)
-                break
-
             case 'ALBUM_LOADED':
                 if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.album.uri })
 
@@ -72,11 +62,6 @@ const CoreMiddleware = (function(){
 
             case 'ARTIST_LOADED':
                 if (action.data) ReactGA.event({ category: 'Artist', action: 'Load', label: action.artist.uri })
-                next(action)
-                break
-
-            case 'MOPIDY_DIRECTORY':
-                if (action.data) ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri })
                 next(action)
                 break
 

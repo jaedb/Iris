@@ -101,7 +101,6 @@ class App extends React.Component{
 		// Listen for standalone key codes
 		let keyCodes = [27,32,191]
 		if (keyCodes.indexOf(e.keyCode) > -1){
-			if (keyCode == 37)
 			e.preventDefault()
 			return true
 		}

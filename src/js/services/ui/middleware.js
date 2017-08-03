@@ -123,6 +123,13 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'CANCEL_PROCESS':
+                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
+                    store.dispatch(mopidyActions.enqueueURIsCancel())
+                }
+                next(action)
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action)
