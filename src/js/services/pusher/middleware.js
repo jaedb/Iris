@@ -333,7 +333,7 @@ const PusherMiddleware = (function(){
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
                     authorization_url: (action.config.authorization_url ? action.config.authorization_url : null),
-                    backend_username: (action.config.backend_username ? action.config.backend_username : null)
+                    backend_username: (action.config.spotify_username ? action.config.spotify_username : null)
                 }))
                 next( action )
                 break

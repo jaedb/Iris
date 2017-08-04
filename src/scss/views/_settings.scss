@@ -1,8 +1,29 @@
 
 .settings-view {
 
-	.sub-views {
-		padding-bottom: 40px;
+	.intro {
+		position: relative;
+		@include clearfix();
+
+		.parallax {
+			position: absolute;
+			z-index: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			height: auto;
+		}
+
+		.liner {
+			position: relative;
+			z-index: 1;
+			padding: 20vh 40px 0;
+
+			.sub-views {
+				position: relative;
+			}
+		}
 	}
 
 	.services {

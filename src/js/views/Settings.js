@@ -4,6 +4,7 @@ import FontAwesome from 'react-fontawesome'
 import { Link } from 'react-router'
 
 import Header from '../components/Header'
+import Parallax from '../components/Parallax'
 import System from '../components/Settings/System'
 import Services from '../components/Settings/Services'
 import Debug from '../components/Settings/Debug'
@@ -77,13 +78,17 @@ export default class Settings extends React.Component {
 	render(){
 		return (
 			<div className="view settings-view">
-				<Header icon="cog" title="Settings" />
+				<Header className="overlay" icon="cog" title="Settings" />
+
+				<div className="intro">
+					<div className="liner">
+						<Parallax image="/iris/assets/backgrounds/settings.jpg" />
+						{this.renderSubViewMenu()}
+					</div>
+				</div>
 
 				<section className="content-wrapper">
-
-					{this.renderSubViewMenu()}
 					{this.renderSubView()}
-
 		        </section>
 
 			</div>

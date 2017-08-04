@@ -107,7 +107,7 @@ class Services extends React.Component{
 	}
 
 	renderSendAuthorizationButton(){
-		if( !this.props.spotify.authorized ) return null
+		if (!this.props.spotify.authorized) return null
 
 		return (
 			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
@@ -197,6 +197,7 @@ class Services extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		core: state.core,
 		spotify: state.spotify
 	}
 }
