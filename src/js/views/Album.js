@@ -173,7 +173,7 @@ const mapStateToProps = (state, ownProps) => {
 		album: (state.core.albums && typeof(state.core.albums[ownProps.params.uri]) !== 'undefined' ? state.core.albums[ownProps.params.uri] : false ),
 		albums: state.core.albums,
 		library_albums: state.core.library_albums,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	};
 }

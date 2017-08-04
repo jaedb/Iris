@@ -68,7 +68,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -78,7 +78,7 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = state.core.playlists[action.key]
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -92,7 +92,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -102,7 +102,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -117,7 +117,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_SAVE_PLAYLIST':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }

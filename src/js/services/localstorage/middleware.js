@@ -83,10 +83,10 @@ const localstorageMiddleware = (function(){
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
-                Object.assign(
-                    spotify,{
-                        authorized: true, 
+                spotify = Object.assign(
+                    {},
+                    (spotify ? spotify : {}),
+                    {
                         authorization: action.data,
                         access_token: action.data.access_token, 
                         refresh_token: action.data.refresh_token, 
@@ -97,16 +97,19 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
+                console.log('local',action)
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
-                Object.assign(
-                    spotify,{
-                        authorized: false, 
+                spotify = Object.assign(
+                    {},
+                    (spotify ? spotify : {}),
+                    {
+                        authorization: false, 
                         access_token: false, 
                         refresh_token: false, 
                         token_expiry: false
                     }
                 );
+                console.log(spotify)
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 

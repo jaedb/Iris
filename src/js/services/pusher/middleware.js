@@ -335,6 +335,12 @@ const PusherMiddleware = (function(){
                     authorization_url: (action.config.authorization_url ? action.config.authorization_url : null),
                     backend_username: (action.config.spotify_username ? action.config.spotify_username : null)
                 }))
+
+                // Get our backend_username user
+                if (store.getState().spotify.access !== 'none' && (!store.getState().core.users || !store.getState().core.users[action.config.spotify_username])){
+                    store.dispatch(spotifyActions.getUser(action.config.spotify_username))
+                }
+
                 next( action )
                 break
 

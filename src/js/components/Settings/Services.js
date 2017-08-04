@@ -77,7 +77,7 @@ class Services extends React.Component{
 		var user = null
 		if (this.props.spotify.me && this.props.spotify.authorization && this.props.spotify.authentication_provider == 'http_api'){
 			user = this.props.spotify.me
-		} else if (this.props.spotify.backend_username && this.props.spotify.backend_username){
+		} else if (this.props.spotify.backend_username){
 			if (this.props.core.users && this.props.core.users['spotify:user:'+this.props.spotify.backend_username] !== undefined){
 				user = this.props.core.users['spotify:user:'+this.props.spotify.backend_username]
 			}
@@ -114,7 +114,7 @@ class Services extends React.Component{
 	}
 
 	renderSendAuthorizationButton(){
-		if (!this.props.spotify.authorized) return null
+		if (!this.props.spotify.authorization) return null
 
 		return (
 			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
@@ -128,72 +128,70 @@ class Services extends React.Component{
 			<div>
 				<h4 className="underline">Spotify (access {this.props.spotify.access})</h4>
 				{!this.props.uri_schemes.includes('spotify:') ? <span className="red-text">Mopidy-Spotify not running</span> : null}
-				<form>
 
-					<div className="field">
-						<div className="name">Country</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.setState({ spotify_country: e.target.value })} 
-								onFocus={e => this.setState({input_in_focus: 'spotify_country'})} 
-								onBlur={e => this.setSpotifyConfig() } 
-								value={ this.state.spotify_country } />
-						</div>
+				<div className="field">
+					<div className="name">Country</div>
+					<div className="input">
+						<input 
+							type="text"
+							onChange={e => this.setState({ spotify_country: e.target.value })} 
+							onFocus={e => this.setState({input_in_focus: 'spotify_country'})} 
+							onBlur={e => this.setSpotifyConfig() } 
+							value={ this.state.spotify_country } />
 					</div>
-					<div className="field">
-						<div className="name">Locale</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.setState({ spotify_locale: e.target.value })}
-								onFocus={e => this.setState({input_in_focus: 'spotify_locale'})} 
-								onBlur={e => this.setSpotifyConfig() } 
-								value={this.state.spotify_locale} />
-						</div>
+				</div>
+				<div className="field">
+					<div className="name">Locale</div>
+					<div className="input">
+						<input 
+							type="text"
+							onChange={e => this.setState({ spotify_locale: e.target.value })}
+							onFocus={e => this.setState({input_in_focus: 'spotify_locale'})} 
+							onBlur={e => this.setSpotifyConfig() } 
+							value={this.state.spotify_locale} />
 					</div>
+				</div>
 
-					<div className="field radio">
-						<span className="name">Authentication provider</span>
-						<div className="input">
-							<label>
-								<input 
-									type="radio"
-									name="spotify_authentication_provider"
-									value="backend"
-									checked={this.props.spotify.authentication_provider == 'backend'}
-									onChange={e => this.setProvider(e.target.value)}
-								/>
-								<span className="label">Mopidy-Spotify</span>
-							</label>
-							<label>
-								<input 
-									type="radio"
-									name="spotify_authentication_provider"
-									value="http_api"
-									checked={this.props.spotify.authentication_provider == 'http_api' }
-									onChange={e => this.setProvider(e.target.value)}
-								/>
-								<span className="label">HTTP API</span>
-							</label>
+				<div className="field radio">
+					<span className="name">Authentication provider</span>
+					<div className="input">
+						<label>
+							<input 
+								type="radio"
+								name="spotify_authentication_provider"
+								value="backend"
+								checked={this.props.spotify.authentication_provider == 'backend'}
+								onChange={e => this.setProvider(e.target.value)}
+							/>
+							<span className="label">Mopidy-Spotify</span>
+						</label>
+						<label>
+							<input 
+								type="radio"
+								name="spotify_authentication_provider"
+								value="http_api"
+								checked={this.props.spotify.authentication_provider == 'http_api' }
+								onChange={e => this.setProvider(e.target.value)}
+							/>
+							<span className="label">HTTP API</span>
+						</label>
+					</div>
+				</div>
+				{this.props.spotify.authentication_provider == 'http_api' ? <div className="field">
+					<div className="name">Authentication</div>
+					<div className="input">
+						<SpotifyAuthenticationFrame />
+						{ this.renderSendAuthorizationButton() }
+					</div>
+				</div> : null}
+				<div className="field current-user">
+					<div className="name">Current user</div>
+					<div className="input">
+						<div className="text">
+							{ this.renderSpotifyUser() }
 						</div>
 					</div>
-					{this.props.spotify.authentication_provider == 'http_api' ? <div className="field">
-						<div className="name">Authentication</div>
-						<div className="input">
-							<SpotifyAuthenticationFrame />
-							{ this.renderSendAuthorizationButton() }
-						</div>
-					</div> : null}
-					<div className="field current-user">
-						<div className="name">Current user</div>
-						<div className="input">
-							<div className="text">
-								{ this.renderSpotifyUser() }
-							</div>
-						</div>
-					</div>
-				</form>
+				</div>
 			</div>
 		);
 	}

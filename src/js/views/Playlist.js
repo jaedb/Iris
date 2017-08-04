@@ -217,7 +217,7 @@ const mapStateToProps = (state, ownProps) => {
 		playlist: (state.core.playlists && typeof(state.core.playlists[uri]) !== 'undefined' ? state.core.playlists[uri] : false ),
 		library_playlists: state.core.library_playlists,
 		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		spotify_userid: state.spotify.me.id
 	}
 }

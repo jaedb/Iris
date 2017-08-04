@@ -18,7 +18,7 @@ export default function reducer(spotify = {}, action){
             var spotify = Object.assign({},spotify,action.config)
 
             let access = 'none'
-            if (spotify.authentication_provider == 'http_api' && spotify.authorized){
+            if (spotify.authentication_provider == 'http_api' && spotify.authorization){
                 access = 'full'
             } else if (spotify.authentication_provider == 'backend' && spotify.backend_username){
                 access = 'limited'
@@ -27,7 +27,7 @@ export default function reducer(spotify = {}, action){
             return spotify
 
         case 'PUSHER_SPOTIFY_TOKEN':
-            if( spotify.authorized ) return spotify;
+            if( spotify.authorization ) return spotify;
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorization: false,

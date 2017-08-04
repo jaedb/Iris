@@ -201,7 +201,7 @@ const CoreMiddleware = (function(){
                         break
 
                     case 'spotify':
-                        if (store.getState().spotify.authorized && store.getState().spotify.me){
+                        if (store.getState().spotify.authorization && store.getState().spotify.me){
                             playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
                         }
                 }
@@ -225,7 +225,7 @@ const CoreMiddleware = (function(){
                             break
 
                         case 'spotify':
-                            if (store.getState().spotify.authorized && store.getState().spotify.me){
+                            if (store.getState().spotify.authorization && store.getState().spotify.me){
                                 playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
                             }
                     }

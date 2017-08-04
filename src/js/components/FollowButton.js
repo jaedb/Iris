@@ -15,7 +15,7 @@ class FollowButton extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.spotify_authorized && this.props.uri){
+		if (this.props.spotify_access == 'full' && this.props.uri){
 			this.props.spotifyActions.following(this.props.uri)			
 		}
 	}
@@ -29,7 +29,7 @@ class FollowButton extends React.Component{
 	}
 
 	render(){
-		if (!this.props.spotify_authorized || !this.props.uri){
+		if (this.props.spotify_access !== 'full' || !this.props.uri){
 			return false
 		}
 
@@ -56,7 +56,8 @@ class FollowButton extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		spotify_authorized: state.spotify.authorized
+		spotify_access: state.spotify.access,
+		spotify_authorized: state.spotify.authorization
 	}
 }
 

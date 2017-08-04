@@ -112,7 +112,7 @@ function getToken( dispatch, getState ){
 function refreshToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
-        if (getState().spotify.authorized){
+        if (getState().spotify.authorization && getState().spotify.authentication_provider == 'http_api'){
 
             $.ajax({
                     method: 'GET',
@@ -204,7 +204,7 @@ export function authorizationGranted( data ){
     return { type: 'SPOTIFY_AUTHORIZATION_GRANTED', data: data }
 }
 
-export function authorizationRevoked(){
+export function revokeAuthorization(){
     return { type: 'SPOTIFY_AUTHORIZATION_REVOKED' }
 }
 

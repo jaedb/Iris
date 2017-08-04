@@ -265,7 +265,7 @@ const mapStateToProps = (state, ownProps) => {
 		artists: (state.core.artists ? state.core.artists : []),
 		library_artists: (state.core.library_artists ? state.core.library_artists : []),
 		albums: (state.core.albums ? state.core.albums : []),
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	}
 }

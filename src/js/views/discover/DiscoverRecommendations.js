@@ -268,7 +268,7 @@ const mapStateToProps = (state, ownProps) => {
 		artists: (state.core.artists ? state.core.artists : []),
 		tracks: (state.core.tracks ? state.core.tracks : []),
 		genres: (state.core.genres ? state.core.genres : []),
-		authorized: state.spotify.authorized,
+		authorized: state.spotify.authorization,
 		load_queue: state.ui.load_queue,
 		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),
 		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : {}),

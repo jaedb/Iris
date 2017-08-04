@@ -121,7 +121,7 @@ class User extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		spotify_authentication_provider: state.spotify.authentication_provider,
 		spotify_backend_username: state.spotify.backend_username,
 		me: state.spotify.me,

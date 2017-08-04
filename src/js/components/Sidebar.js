@@ -114,7 +114,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_enabled: state.spotify.enabled,
 		spotify_access: state.spotify.access,
 		spotify_connected: state.spotify.connected,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		dragger: state.ui.dragger
 	}
 }

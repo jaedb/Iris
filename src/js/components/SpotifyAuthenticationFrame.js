@@ -109,7 +109,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			)
 		} else if (this.props.authorized){
 			return (
-				<button className="destructive" onClick={() => this.props.spotifyActions.authorizationRevoked()}>Log out</button>
+				<button className="destructive" onClick={() => this.props.spotifyActions.revokeAuthorization()}>Log out</button>
 			)
 		} else {
 			return (
@@ -147,7 +147,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorization_url: state.spotify.authorization_url,
-		authorized: state.spotify.authorized,
+		authorized: state.spotify.authorization,
 		authorizing: state.spotify.authorizing,
 		refreshing_token: state.spotify.refreshing_token
 	}
