@@ -1034,8 +1034,14 @@ const MopidyMiddleware = (function(){
                     // Fire off our universal track index loader
                     store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
 
-                    // Get me some images
-                    store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
+                    // We've got Spotify running, and it's a spotify track - go straight to the source!
+                    if (helpers.uriSource(action.data.track.uri) == 'spotify' && store.getState().spotify.access != 'none'){
+                        store.dispatch(spotifyActions.getTrack(action.data.track.uri))
+
+                    // Some other source, rely on Mopidy backends to do their work
+                    } else {
+                        store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
+                    }
                 }
 
                 next(action)

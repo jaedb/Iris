@@ -75,10 +75,10 @@ class Services extends React.Component{
 	renderSpotifyUser(){
 
 		var user = null
-		if (this.props.spotify.me && this.props.spotify.authorized){
+		if (this.props.spotify.me && this.props.spotify.authorization && this.props.spotify.authentication_provider == 'http_api'){
 			user = this.props.spotify.me
 		} else if (this.props.spotify.backend_username && this.props.spotify.backend_username){
-			if (this.props.core.users && typeof(this.props.core.users['spotify:user:'+this.props.spotify.backend_username]) !== 'undefined'){
+			if (this.props.core.users && this.props.core.users['spotify:user:'+this.props.spotify.backend_username] !== undefined){
 				user = this.props.core.users['spotify:user:'+this.props.spotify.backend_username]
 			}
 		}
@@ -89,7 +89,15 @@ class Services extends React.Component{
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.id}
-						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(limited access)</span> : null}
+					</span>
+				</Link>
+			)
+		} else if (this.props.spotify.backend_username){
+			return (
+				<Link className="user" to={global.baseURL+'user/spotify:user:'+this.props.spotify.backend_username}>
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						{this.props.spotify.backend_username}
 					</span>
 				</Link>
 			)
@@ -98,8 +106,7 @@ class Services extends React.Component{
 				<Link className="user">
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
-						Default user
-						<span className="grey-text">&nbsp;(limited access)</span>
+						Unknown
 					</span>
 				</Link>
 			)
@@ -119,32 +126,10 @@ class Services extends React.Component{
 	render(){
 		return (
 			<div>
-				<h4 className="underline">Spotify</h4>
+				<h4 className="underline">Spotify (access {this.props.spotify.access})</h4>
+				{!this.props.uri_schemes.includes('spotify:') ? <span className="red-text">Mopidy-Spotify not running</span> : null}
 				<form>
 
-					<div className="field radio">
-						<span className="name">Authentication provider</span>
-						<label>
-							<input 
-								type="radio"
-								name="spotify_authentication_provider"
-								value="backend"
-								checked={this.props.spotify.authentication_provider == 'backend'}
-								onChange={e => this.setProvider(e.target.value)}
-							/>
-							<span className="label">Mopidy-Spotify</span>
-						</label>
-						<label>
-							<input 
-								type="radio"
-								name="spotify_authentication_provider"
-								value="http_api"
-								checked={this.props.spotify.authentication_provider == 'http_api' }
-								onChange={e => this.setProvider(e.target.value)}
-							/>
-							<span className="label">HTTP API</span>
-						</label>
-					</div>
 					<div className="field">
 						<div className="name">Country</div>
 						<div className="input">
@@ -167,22 +152,48 @@ class Services extends React.Component{
 								value={this.state.spotify_locale} />
 						</div>
 					</div>
-				</form>
-				<div className="field current-user">
-					<div className="name">Current user</div>
-					<div className="input">
-						<div className="text">
-							{ this.renderSpotifyUser() }
+
+					<div className="field radio">
+						<span className="name">Authentication provider</span>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="spotify_authentication_provider"
+									value="backend"
+									checked={this.props.spotify.authentication_provider == 'backend'}
+									onChange={e => this.setProvider(e.target.value)}
+								/>
+								<span className="label">Mopidy-Spotify</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="spotify_authentication_provider"
+									value="http_api"
+									checked={this.props.spotify.authentication_provider == 'http_api' }
+									onChange={e => this.setProvider(e.target.value)}
+								/>
+								<span className="label">HTTP API</span>
+							</label>
 						</div>
 					</div>
-				</div>
-				<div className="field">
-					<div className="name">Authentication</div>
-					<div className="input">
-						<SpotifyAuthenticationFrame />
-						{ this.renderSendAuthorizationButton() }
+					{this.props.spotify.authentication_provider == 'http_api' ? <div className="field">
+						<div className="name">Authentication</div>
+						<div className="input">
+							<SpotifyAuthenticationFrame />
+							{ this.renderSendAuthorizationButton() }
+						</div>
+					</div> : null}
+					<div className="field current-user">
+						<div className="name">Current user</div>
+						<div className="input">
+							<div className="text">
+								{ this.renderSpotifyUser() }
+							</div>
+						</div>
 					</div>
-				</div>
+				</form>
 			</div>
 		);
 	}
@@ -197,6 +208,7 @@ class Services extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		core: state.core,
 		spotify: state.spotify
 	}

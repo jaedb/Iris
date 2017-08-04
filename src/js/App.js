@@ -272,7 +272,7 @@ const mapStateToProps = (state, ownProps) => {
 		processes: (state.ui.processes ? state.ui.processes : {}),
 		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		play_state: state.mopidy.play_state,
 		play_time_position: parseInt(state.mopidy.time_position),
 		mute: state.mopidy.mute,

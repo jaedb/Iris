@@ -61,8 +61,8 @@ var initialState = {
 		track: {}
 	},
 	spotify: {
-		enabled: true,
 		connected: false,
+		access: 'none',
 		authentication_provider: 'backend',
 		me: false,
 		autocomplete_results: {},

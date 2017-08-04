@@ -582,7 +582,7 @@ const mapStateToProps = (state, ownProps) => {
 		library_albums: state.core.library_albums,
 		library_playlists: state.core.library_playlists,
 		playlists: state.core.playlists,
-		spotify_authorized: state.spotify.authorized
+		spotify_authorized: state.spotify.authorization
 	}
 }
 

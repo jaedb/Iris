@@ -126,7 +126,7 @@ function refreshToken( dispatch, getState ){
                         response.source = 'spotify'
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
-                            provider: 'spotify-http-api',
+                            access_token_provider: 'http_api',
                             data: response
                         })
                         resolve(response)
@@ -154,7 +154,7 @@ function refreshToken( dispatch, getState ){
                         token.source = 'mopidy';
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
-                            provider: 'mopidy-spotify',
+                            access_token_provider: 'backend',
                             data: token
                         });
                         resolve(token);
@@ -257,9 +257,17 @@ export function getTrack( uri ){
 
         sendRequest( dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri) )
             .then( response => {
+                    let track = Object.assign(
+                        {},
+                        response,
+                        {
+                            images: response.album.images
+                        }
+                    )
                     dispatch({
-                        type: 'SPOTIFY_TRACK_LOADED',
-                        data: response
+                        type: 'TRACK_LOADED',
+                        key: uri,
+                        track: track
                     });
                 }
             );

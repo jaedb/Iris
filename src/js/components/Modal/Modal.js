@@ -79,7 +79,7 @@ const mapStateToProps = (state, ownProps) => {
 		playlists: state.ui.playlists,
 		context_menu: state.ui.context_menu,
 		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorized
+		spotify_authorized: state.spotify.authorization
 	}
 }
 

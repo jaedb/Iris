@@ -68,17 +68,13 @@ class Sidebar extends React.Component{
 								<Icon name="playlist" />
 								Playlists
 							</Link>
-							<Link className={this.linkClassName('library/artists')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
+							<Link className={this.linkClassName('library/artists')} disabled={this.props.spotify_access != 'full'} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
 								<Icon name="mic" />
 								Artists
 							</Link>
-							<Link className={this.linkClassName('library/albums')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
+							<Link className={this.linkClassName('library/albums')} disabled={this.props.spotify_access != 'full'} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
 								<Icon name="cd" />
 								Albums
-							</Link>
-							<Link className={this.linkClassName('library/tracks')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
-								<Icon name="music" />
-								Tracks
 							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
 								<Icon name="folder" />
@@ -116,6 +112,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
+		spotify_access: state.spotify.access,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorized,
 		dragger: state.ui.dragger
