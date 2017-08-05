@@ -186,17 +186,19 @@
 	&.artist-stats {
 
 		.tile {
-			.fa {
-				display: block;
-				position: absolute;
-				top: 50%;
-				left: 10%;
-				right: 10%;
-				text-align: center;
-				margin-top: -27px;
-				font-size: 60px;
-				z-index: -1;
-				opacity: 0.1;
+			.content {
+				.fa {
+					display: block;
+					position: absolute;
+					top: 50%;
+					left: 10%;
+					right: 10%;
+					text-align: center;
+					margin-top: -27px;
+					font-size: 60px;
+					z-index: -1;
+					opacity: 0.1;
+				}
 			}
 		}
 

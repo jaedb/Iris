@@ -4,6 +4,9 @@ import * as helpers from '../../helpers'
 export default function reducer(core = {}, action){
     switch (action.type) {
 
+        case 'CORE_SET':
+            return Object.assign({}, core, action.data)
+
         /**
          * Current track and tracklist
          **/

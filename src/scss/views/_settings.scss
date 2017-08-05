@@ -26,58 +26,30 @@
 		}
 	}
 
+	.content-wrapper {
+		padding-top: 0;
+	}
+	
 	.services {
 		@include clearfix();
 
 		.service {
-			background: lighten($dark_grey,2%);
-			padding: 12px 15px;
 			width: 24%;
 			margin-right: 1.3334%;
-			float: left;
 			border-radius: 3px;
+			padding: 16px;
 			box-sizing: border-box;
-
-			&:nth-child(4n){
-				margin-right: 0;
-			}
-
-			&.disabled {
-				color: $grey;
-			}
-
-			&.connecting {
-				.status {
-					color: $grey;
-				}
-			}
-
-			&.connected,
-			&.available {
-				.status {
-					color: $green;
-				}
-			}
-
-			&.disconnected,
-			&.unavailable {
-				.status {
-					color: $red;
-				}
-			}
+			background: lighten($dark_grey, 5%);
+			position: relative;
+			float: left;
 
 			.title {
-				text-transform: capitalize;
-				margin: 2px 0 5px 0;
-			}
-
-			.status {
-				text-transform: capitalize;
-				font-size: 14px;
+				margin: 0;
+				padding: 0 0 4px 0;
 			}
 		}
 	}
-	
+
 	.field.current-user {
 		.text {
 			padding: 14px 14px 14px 0px;
@@ -113,30 +85,22 @@
 
 	.field.pusher-connections {
 		.connection.me {
-			font-weight: bold;
+			color: $turquoise;
 		}
 	}
 
 	@include responsive( $bp_medium ){
-		.services {
-			.service {
-				padding: 0 0 0 30px;
-				margin-bottom: 0;
-				min-width: 0px;
+		.intro {
+			.liner {
+				padding: 10vh 20px 0;
+			}
+		}
 
-				h4 {
-					padding-top: 1px;
-				}
-
-				.icon {
-					height: 15px;
-					width: 20px;
-					padding-top: 5px;
-					font-size: 10px;
-				}
-
-				.text {
-					display: none;
+		.field.pusher-connections {
+			.connection {
+				.col {
+					float: none;
+					width: 100%;
 				}
 			}
 		}

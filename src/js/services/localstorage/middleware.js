@@ -136,6 +136,13 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
+            case 'CORE_SET':
+                var core = JSON.parse( localStorage.getItem('core') );
+                if( !core ) core = {};
+                Object.assign( core, action.data );
+                localStorage.setItem('core', JSON.stringify(core));
+                break
+
             case 'UI_SET':
                 var ui = JSON.parse( localStorage.getItem('ui') );
                 if( !ui ) ui = {};

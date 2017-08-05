@@ -1,5 +1,4 @@
 
-
 .sub-views {
 	.option {
 		@include feature_font();
@@ -21,6 +20,12 @@
 
 		&:not(.active):hover {
 			border-color: rgba(255,255,255,0.2);
+		}
+	}
+
+	@include responsive( $bp_medium ){
+		.option {
+			margin-right: 15px;
 		}
 	}
 }

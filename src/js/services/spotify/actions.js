@@ -112,7 +112,7 @@ function getToken( dispatch, getState ){
 function refreshToken( dispatch, getState ){
     return new Promise( (resolve, reject) => {
 
-        if (getState().spotify.authorization && getState().spotify.authentication_provider == 'http_api'){
+        if (getState().spotify.authorization){
 
             $.ajax({
                     method: 'GET',
@@ -309,7 +309,7 @@ export function getFeaturedPlaylists(){
 
         var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
 
-        sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().spotify.country+'&limit=50&locale='+getState().spotify.locale )
+        sendRequest( dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().core.country+'&limit=50&locale='+getState().core.locale )
             .then( response => {
 
                 var playlists = []
@@ -346,7 +346,7 @@ export function getFeaturedPlaylists(){
 
 export function getCategories(){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'browse/categories?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+        sendRequest( dispatch, getState, 'browse/categories?limit=50&country='+getState().core.country+'&locale='+getState().core.locale )
             .then( response => {
                 dispatch({
                     type: 'CATEGORIES_LOADED',
@@ -368,7 +368,7 @@ export function getCategory( id ){
         });
 
         // get the category
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'?country='+getState().core.country+'&locale='+getState().core.locale )
             .then( response => {
                 var category = Object.assign({}, response)
                 dispatch({
@@ -379,7 +379,7 @@ export function getCategory( id ){
             })
 
         // and the category's playlists
-        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
+        sendRequest( dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().core.country+'&locale='+getState().core.locale )
             .then( response => {
 
                 var playlists = []
@@ -411,7 +411,7 @@ export function getCategory( id ){
 
 export function getNewReleases(){
     return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().spotify.country+'&limit=50' )
+        sendRequest( dispatch, getState, 'browse/new-releases?country='+getState().core.country+'&limit=50' )
             .then( response => {
                 dispatch({
                     type: 'SPOTIFY_NEW_RELEASES_LOADED',
@@ -439,7 +439,7 @@ export function getSearchResults(query, type = 'album,artist,playlist,track', li
 
         var url = 'search?q='+query
         url += '&type='+type
-        url += '&country='+getState().spotify.country
+        url += '&country='+getState().core.country
         url += '&limit='+limit
         url += '&offset='+offset
 
@@ -500,7 +500,7 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
 
         var endpoint = 'search?q='+query
         endpoint += '&type='+types.join(',')
-        endpoint += '&country='+getState().spotify.country
+        endpoint += '&country='+getState().core.country
 
         sendRequest(dispatch, getState, endpoint)
         .then(response => {
@@ -824,7 +824,7 @@ export function getArtist(uri, full = false){
         // Do we want a full artist, with all supporting material?
         if (full){
             requests.push(
-                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().core.country )
                 .then( response => {
                     Object.assign(artist, response);
                 })
@@ -858,7 +858,7 @@ export function getArtist(uri, full = false){
 
             // Now go get our artist albums
             if (full){
-                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().spotify.country )
+                sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().core.country )
                 .then( response => {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
@@ -927,7 +927,7 @@ export function playArtistTopTracks(uri){
 
         // We need to load the artist's top tracks first
         } else {
-            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
+            sendRequest( dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().core.country )
             .then( response => {
                 const uris = helpers.arrayOf('uri',response.tracks)
                 dispatch(mopidyActions.playURIs(uris, uri))
@@ -1165,7 +1165,7 @@ export function getPlaylist(uri){
     return (dispatch, getState) => {
 
         // get the main playlist object
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().core.country )
         .then( response => {
 
             // convert links in description
@@ -1221,7 +1221,7 @@ function loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, lastRespon
 
 export function getAllPlaylistTracks(uri){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country)
+        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().core.country)
             .then( response => {
                 loadNextPlaylistTracksBatch(dispatch, getState, uri, response.items, response)
             });

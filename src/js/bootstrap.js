@@ -61,9 +61,8 @@ var initialState = {
 		track: {}
 	},
 	spotify: {
+		enabled: true,
 		connected: false,
-		access: 'none',
-		authentication_provider: 'backend',
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'

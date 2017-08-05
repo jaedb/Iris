@@ -2,6 +2,7 @@
 import ReactGA from 'react-ga'
 
 var helpers = require('../../helpers.js')
+var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
 var pusherActions = require('./actions.js')
 var spotifyActions = require('../spotify/actions.js')
@@ -112,9 +113,12 @@ const PusherMiddleware = (function(){
                             if (response.config.spotify_username && store.getState().spotify.enabled){
                                 store.dispatch(spotifyActions.getUser('spotify:user:'+response.config.spotify_username))
                             }
-                            var spotify = store.getState().spotify
-                            if (!spotify.country || !spotify.locale){
-                                store.dispatch({ type: 'SPOTIFY_SET_CONFIG', config: response.config })
+                            var core = store.getState().core
+                            if (!core.country || !core.locale){
+                                store.dispatch(coreActions.set({
+                                    country: response.config.country,
+                                    locale: response.config.locale
+                                }))
                             }
                         }
                     )

@@ -44,6 +44,13 @@ export function startServices(){
     }
 }
 
+export function set( data ){
+    return {
+        type: 'CORE_SET',
+        data: data
+    }
+}
+
 
 
 

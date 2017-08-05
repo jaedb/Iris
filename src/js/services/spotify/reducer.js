@@ -15,19 +15,10 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, { connected: false, connecting: false })
 
         case 'SPOTIFY_SET_CONFIG':
-            var spotify = Object.assign({},spotify,action.config)
-
-            let access = 'none'
-            if (spotify.authentication_provider == 'http_api' && spotify.authorization){
-                access = 'full'
-            } else if (spotify.authentication_provider == 'backend' && spotify.backend_username){
-                access = 'limited'
-            }
-            spotify.access = access
-            return spotify
+            return Object.assign({},spotify,action.config)
 
         case 'PUSHER_SPOTIFY_TOKEN':
-            if( spotify.authorization ) return spotify;
+            if (spotify.authorization) return spotify;
             return Object.assign({}, spotify, { 
                 authorizing: false, 
                 authorization: false,
@@ -37,7 +28,7 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_AUTHORIZATION_GRANTED':
             return Object.assign({}, spotify, { 
-                access: (spotify.authentication_provider == 'http_api' ? 'full' : 'limited'), 
+                enabled: true, 
                 authorizing: false, 
                 authorization: action.data,
                 access_token: action.data.access_token,
@@ -47,7 +38,6 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_AUTHORIZATION_REVOKED':
             return Object.assign({}, spotify, { 
-                access: (spotify.authentication_provider == 'http_api' ? 'none' : 'limited'), 
                 authorizing: false, 
                 authorization: false,
                 access_token: false,
@@ -57,9 +47,7 @@ export default function reducer(spotify = {}, action){
             })
 
         case 'SPOTIFY_IMPORT_AUTHORIZATION':
-            return Object.assign({}, spotify, { 
-                authentication_provider: 'http_api',
-                access: 'full',
+            return Object.assign({}, spotify, {
                 authorizing: false, 
                 authorization: action.authorization,
                 access_token: action.authorization.access_token,
@@ -76,8 +64,7 @@ export default function reducer(spotify = {}, action){
                 connected: true,
                 refreshing_token: false,
                 access_token: action.data.access_token,
-                token_expiry: action.data.token_expiry,
-                access_token_provider: action.access_token_provider
+                token_expiry: action.data.token_expiry
             })
 
         case 'SPOTIFY_DISCONNECTED':
