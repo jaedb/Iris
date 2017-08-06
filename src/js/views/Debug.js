@@ -117,7 +117,7 @@ class Debug extends React.Component{
 						<div className="input">
 							<input
 								type="text"
-								onBlur={e => this.props.spotifyActions.authorizationGranted({access_token: e.target.value})}
+								onChange={e => this.props.spotifyActions.authorizationGranted({access_token: e.target.value})}
 								value={this.state.access_token} />
 						</div>
 					</div>

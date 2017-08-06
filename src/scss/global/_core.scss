@@ -264,12 +264,17 @@ button.placeholder {
 
 .pulse { @include pulse(); }
 .one-liner { @include one_line_text; }
+.centred-text { text-align: center; }
 .grey-text { color: $mid_grey !important; }
 .red-text { color: $red !important; }
 .green-text { color: $green !important; }
 .orange-text { color: $orange !important; }
 .dark-text { color: $dark_grey !important; }
-.centred-text { text-align: center; }
+.grey-border { border-color: $mid_grey !important; }
+.red-border { border-color: $red !important; }
+.green-border { border-color: $green !important; }
+.orange-border { border-color: $orange !important; }
+.dark-border { border-color: $dark_grey !important; }
 
 footer {
 	display: block;

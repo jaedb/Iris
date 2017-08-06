@@ -68,14 +68,14 @@ class Sidebar extends React.Component{
 								<Icon name="playlist" />
 								Playlists
 							</Link>
-							{this.props.spotify_enabled && this.props.spotify_authorized ? <Link className={this.linkClassName('library/artists')} to={global.baseURL+"library/artists"}>
+							<Link className={this.linkClassName('library/artists')} to={global.baseURL+"library/artists"}>
 								<Icon name="mic" />
 								Artists
-							</Link> : null}
-							{this.props.spotify_enabled && this.props.spotify_authorized ? <Link className={this.linkClassName('library/albums')} to={global.baseURL+"library/albums"}>
+							</Link>
+							<Link className={this.linkClassName('library/albums')} to={global.baseURL+"library/albums"}>
 								<Icon name="cd" />
 								Albums
-							</Link> : null}
+							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
 								<Icon name="folder" />
 								Browse
