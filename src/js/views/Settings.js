@@ -337,27 +337,29 @@ class Settings extends React.Component {
 							</label>
 						</div>
 					</div>
-					
-					<div className="field">
-						<div className="name">Version</div>
-						<div className="input">
-				        	<VersionManager />
-				        </div>
-			        </div>
 
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>
 						<div className="input">
-							<span className="text">
+							<div className="text">
 			        			<PusherConnectionList />
-			        		</span>
+			        		</div>
 			        	</div>
 			        </div>
 					
 					<div className="field">
 						<div className="name">Extensions</div>
 						<div className="input">
-				        	<URISchemesList />
+				        	<div className="text">
+				        		<URISchemesList />
+				        	</div>
+				        </div>
+			        </div>
+					
+					<div className="field">
+						<div className="name">Version</div>
+						<div className="input">
+				        	<VersionManager />
 				        </div>
 			        </div>
 					
