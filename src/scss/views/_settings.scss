@@ -32,20 +32,36 @@
 	
 	.services {
 		@include clearfix();
+		margin-bottom: -20px;
 
 		.service {
-			width: 24%;
-			margin-right: 1.3334%;
-			border-radius: 3px;
-			padding: 16px;
+			margin-right: 20px;
+			margin-bottom: 20px;
+			padding-left: 46px;
 			box-sizing: border-box;
-			background: lighten($dark_grey, 5%);
 			position: relative;
 			float: left;
+			min-width: 150px;
 
 			.title {
 				margin: 0;
-				padding: 0 0 4px 0;
+				padding: 0;
+			}
+
+			.icon {
+				position: absolute;
+				top: 2px;
+				left: 0;
+				width: 34px;
+				height: 26px;
+				padding-top: 8px;
+				border: 2px solid $grey;
+				text-align: center;
+				border-radius: 50%;
+
+				.fa {
+					font-size: 16px;
+				}
 			}
 		}
 	}
@@ -92,7 +108,26 @@
 	@include responsive( $bp_medium ){
 		.intro {
 			.liner {
-				padding: 10vh 20px 0;
+				padding: 15vh 20px 0;
+			}
+		}
+
+		.services {
+			text-align: center;
+
+			.service {
+				padding: 40px 0 0 0;
+				text-align: center;
+				min-width: 100px;
+				display: inline-block;
+				margin-right: 0;
+				float: none;
+
+				.icon {
+					top: 0;
+					left: 50%;
+					margin-left: -18px;
+				}
 			}
 		}
 

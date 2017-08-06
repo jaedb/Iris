@@ -154,16 +154,45 @@ class Settings extends React.Component {
 		)
 	}
 
-	renderStatus(server){
-		if (this.props[server].connecting){
-			return <span className="status grey-text pulse"><FontAwesome name="plug" />&nbsp; Connecting</span>
-		} else if (server == 'spotify' && !this.props[server].authorization){
-			return <span className="status orange-text"><FontAwesome name="lock" />&nbsp; Limited access</span>
-		} else if (this.props[server].connected){
-			return <span className="status green-text"><FontAwesome name="check" />&nbsp; Connected</span>
-		} else {
-			return <span className="status red-text"><FontAwesome name="exclamation-triangle" />&nbsp; Disconnected</span>
+	renderServiceStatus(service){
+
+		let colour = 'grey'
+		let icon = 'close'
+		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
+		let text = 'Disconnected'
+
+		service = this.props[service]
+
+		if (service.connecting){
+			icon = 'plug'
+			text = 'Connecting'
+		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
+			icon = 'exclamation-triangle'
+			colour = 'orange'
+			text = 'Mopidy-Spotify not detected'
+		} else if (name == 'Spotify' && !service.authorization){
+			icon = 'lock'
+			colour = 'orange'
+			text = 'Limited access'
+		} else if (service.connected){
+			icon = 'check'
+			colour = 'green'
+			text = 'Connected'
 		}
+
+		return (
+			<div className="service">
+				<h4 className="title">
+					{name}
+				</h4>
+				<div className={colour+'-text icon'}>
+					<FontAwesome name={icon} />
+				</div>
+				<div className={"status "+colour+'-text'}>					
+					{text}
+				</div>
+			</div>
+		)
 	}
 
 	render(){
@@ -194,18 +223,9 @@ class Settings extends React.Component {
 				<section className="content-wrapper">
 
 					<div className="services">
-						<div className="service">
-							<h4 className="title">Mopidy</h4>
-							{this.renderStatus('mopidy')}
-						</div>
-						<div className="service">
-							<h4 className="title">Pusher</h4>
-							{this.renderStatus('pusher')}
-						</div>
-						<div className="service">
-							<h4 className="title">Spotify</h4>
-							{this.renderStatus('spotify')}
-						</div>
+						{this.renderServiceStatus('mopidy')}
+						{this.renderServiceStatus('pusher')}
+						{this.renderServiceStatus('spotify')}
 					</div>
 
 					<h4 className="underline">System</h4>

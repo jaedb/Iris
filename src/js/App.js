@@ -99,8 +99,15 @@ class App extends React.Component{
 		}
 
 		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrl = [37,38,39,40,70]
+		let keyCodesWithCtrl = [37,38,39,40]
 		if (e.ctrlKey && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
+			e.preventDefault()
+			return true
+		}
+
+		// Listen for key codes that require ctrl to be held		
+		let keyCodesWithCtrlShift = [70]
+		if (e.ctrlKey && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1){
 			e.preventDefault()
 			return true
 		}
