@@ -89,6 +89,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
                 # make the call, and return it's response
                 response = getattr(mem.iris, message['method'])(data)
+
                 if response:
                     response['request_id'] = request_id
                     mem.iris.send_message(self.connection_id, response)

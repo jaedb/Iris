@@ -476,6 +476,6 @@ class IrisCore(object):
 
             return {
                 'type': 'error',
-                'message': 'Could not refresh token: '+error['error'],
+                'message': 'Could not refresh token: '+error['error_description'],
                 'source': 'refresh_spotify_token'
             }
