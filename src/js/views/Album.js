@@ -169,11 +169,11 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		artists: state.ui.artists,
-		album: (state.ui.albums && typeof(state.ui.albums[ownProps.params.uri]) !== 'undefined' ? state.ui.albums[ownProps.params.uri] : false ),
-		albums: state.ui.albums,
-		library_albums: state.ui.library_albums,
-		spotify_authorized: state.spotify.authorized,
+		artists: state.core.artists,
+		album: (state.core.albums && typeof(state.core.albums[ownProps.params.uri]) !== 'undefined' ? state.core.albums[ownProps.params.uri] : false ),
+		albums: state.core.albums,
+		library_albums: state.core.library_albums,
+		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	};
 }

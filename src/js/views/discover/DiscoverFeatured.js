@@ -120,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,
-		playlists: state.ui.playlists
+		playlists: state.core.playlists
 	}
 }
 

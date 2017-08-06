@@ -75,8 +75,8 @@ class PlaybackControls extends React.Component{
 
 	render(){
 		var images = false
-		if (this.props.current_track && this.props.current_track.album && this.props.current_track.album.images){
-			images = this.props.current_track.album.images
+		if (this.props.current_track && this.props.current_track.images){
+			images = this.props.current_track.images
 		}
 
 		return (
@@ -143,7 +143,7 @@ class PlaybackControls extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,

@@ -56,7 +56,7 @@ class FollowButton extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		spotify_authorized: state.spotify.authorized
+		spotify_authorized: state.spotify.authorization
 	}
 }
 

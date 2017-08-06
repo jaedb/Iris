@@ -68,17 +68,13 @@ class Sidebar extends React.Component{
 								<Icon name="playlist" />
 								Playlists
 							</Link>
-							<Link className={this.linkClassName('library/artists')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/artists" : null}>
+							<Link className={this.linkClassName('library/artists')} to={global.baseURL+"library/artists"}>
 								<Icon name="mic" />
 								Artists
 							</Link>
-							<Link className={this.linkClassName('library/albums')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/albums" : null}>
+							<Link className={this.linkClassName('library/albums')} to={global.baseURL+"library/albums"}>
 								<Icon name="cd" />
 								Albums
-							</Link>
-							<Link className={this.linkClassName('library/tracks')} disabled={!this.props.spotify_authorized} to={this.props.spotify_authorized ? global.baseURL+"library/tracks" : null}>
-								<Icon name="music" />
-								Tracks
 							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
 								<Icon name="folder" />
@@ -90,7 +86,7 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="cog" />
 								Settings
-								{ !this.props.mopidy_connected || !this.props.spotify_connected || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
+								{ !this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 							</Link>
 						</section>
 
@@ -115,8 +111,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
+		spotify_enabled: state.spotify.enabled,
 		spotify_connected: state.spotify.connected,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		dragger: state.ui.dragger
 	}
 }

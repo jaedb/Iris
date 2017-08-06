@@ -73,6 +73,7 @@ const localstorageMiddleware = (function(){
                 if( !spotify ) spotify = {};
                 Object.assign(
                     spotify,{
+                        authentication_provider: action.config.authentication_provider, 
                         country: action.config.country, 
                         locale: action.config.locale
                     }
@@ -82,10 +83,10 @@ const localstorageMiddleware = (function(){
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
-                Object.assign(
-                    spotify,{
-                        authorized: true, 
+                spotify = Object.assign(
+                    {},
+                    (spotify ? spotify : {}),
+                    {
                         authorization: action.data,
                         access_token: action.data.access_token, 
                         refresh_token: action.data.refresh_token, 
@@ -96,16 +97,19 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
+                console.log('local',action)
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
-                Object.assign(
-                    spotify,{
-                        authorized: false, 
+                spotify = Object.assign(
+                    {},
+                    (spotify ? spotify : {}),
+                    {
+                        authorization: false, 
                         access_token: false, 
                         refresh_token: false, 
                         token_expiry: false
                     }
                 );
+                console.log(spotify)
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
@@ -131,6 +135,13 @@ const localstorageMiddleware = (function(){
                 );
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
+
+            case 'CORE_SET':
+                var core = JSON.parse( localStorage.getItem('core') );
+                if( !core ) core = {};
+                Object.assign( core, action.data );
+                localStorage.setItem('core', JSON.stringify(core));
+                break
 
             case 'UI_SET':
                 var ui = JSON.parse( localStorage.getItem('ui') );

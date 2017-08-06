@@ -16,6 +16,7 @@ import LazyLoadListener from '../components/LazyLoadListener'
 import SearchForm from '../components/SearchForm'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -30,7 +31,7 @@ class Search extends React.Component{
 
 		// Make sure we have search parameters to start with
 		if (this.props.params && this.props.params.type && this.props.params.query){
-			this.props.uiActions.startSearch(this.props.params.type, this.props.params.query)
+			this.props.coreActions.startSearch(this.props.params.type, this.props.params.query)
 		}
 
 		// Auto-focus on the input field
@@ -43,12 +44,12 @@ class Search extends React.Component{
 		if (newProps.params && newProps.params.type && newProps.params.query){
 
 			if (this.props.params.query != newProps.params.query || this.props.params.type != newProps.params.type){
-				this.props.uiActions.startSearch(newProps.params.type, newProps.params.query)
+				this.props.coreActions.startSearch(newProps.params.type, newProps.params.query)
 			}
 
 			// mopidy comes online
 			if (!this.props.mopidy_connected && newProps.mopidy_connected){
-				this.props.uiActions.startSearch(newProps.params.type, newProps.params.query, true)
+				this.props.coreActions.startSearch(newProps.params.type, newProps.params.query, true)
 			}
 		}
 	}
@@ -260,22 +261,23 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
-		tracks: (state.ui.search_results ? state.ui.search_results.tracks : []),
-		tracks_more: (state.ui.search_results && state.ui.search_results.tracks_more ? state.ui.search_results.tracks_more : null),
-		artists: (state.ui.artists ? state.ui.artists : []),
-		artists_uris: (state.ui.search_results ? state.ui.search_results.artists_uris : []),
-		artists_more: (state.ui.search_results ? state.ui.search_results.artists_more : null),
-		albums: (state.ui.albums ? state.ui.albums : []),
-		albums_uris: (state.ui.search_results ? state.ui.search_results.albums_uris : []),
-		albums_more: (state.ui.search_results ? state.ui.search_results.albums_more : null),
-		playlists: (state.ui.playlists ? state.ui.playlists : []),
-		playlists_uris: (state.ui.search_results ? state.ui.search_results.playlists_uris : []),
-		playlists_more: (state.ui.search_results ? state.ui.search_results.playlists_more : null)
+		tracks: (state.core.search_results ? state.core.search_results.tracks : []),
+		tracks_more: (state.core.search_results && state.core.search_results.tracks_more ? state.core.search_results.tracks_more : null),
+		artists: (state.core.artists ? state.core.artists : []),
+		artists_uris: (state.core.search_results ? state.core.search_results.artists_uris : []),
+		artists_more: (state.core.search_results ? state.core.search_results.artists_more : null),
+		albums: (state.core.albums ? state.core.albums : []),
+		albums_uris: (state.core.search_results ? state.core.search_results.albums_uris : []),
+		albums_more: (state.core.search_results ? state.core.search_results.albums_more : null),
+		playlists: (state.core.playlists ? state.core.playlists : []),
+		playlists_uris: (state.core.search_results ? state.core.search_results.playlists_uris : []),
+		playlists_more: (state.core.search_results ? state.core.search_results.playlists_more : null)
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

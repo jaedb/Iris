@@ -1,6 +1,7 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
+import core from './services/core/reducer'
 import ui from './services/ui/reducer'
 import pusher from './services/pusher/reducer'
 import mopidy from './services/mopidy/reducer'
@@ -8,6 +9,7 @@ import lastfm from './services/lastfm/reducer'
 import spotify from './services/spotify/reducer'
 
 import thunk from 'redux-thunk'
+import coreMiddleware from './services/core/middleware'
 import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
@@ -15,6 +17,7 @@ import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
 let reducers = combineReducers({
+    core,
     ui,
     pusher,
     mopidy,
@@ -25,6 +28,15 @@ let reducers = combineReducers({
 // set application defaults
 // TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
+	core: {
+		current_tracklist: [],
+		current_tltrack: false
+	},
+	ui: {
+		slim_mode: false,
+		selected_tracks: [],
+		notifications: []
+	},
 	mopidy: {
 		connected: false,
 		host: window.location.hostname,
@@ -43,6 +55,7 @@ var initialState = {
 		}
 	},
 	lastfm: {
+		connected: false,
 		album: {},
 		artist: {},
 		track: {}
@@ -50,19 +63,22 @@ var initialState = {
 	spotify: {
 		connected: false,
 		me: false,
-		autocomplete_results: {}
-	},
-	ui: {
-		slim_mode: false,
-		current_tracklist: [],
-		current_tltrack: false,
-		selected_tracks: [],
-		notifications: [],
-		config: {
-			authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
-		}
+		autocomplete_results: {},
+		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
 	}
 };
+
+// if we've got a stored version of spotify state, load and merge
+if( localStorage.getItem('core') ){
+	var storedCore = JSON.parse( localStorage.getItem('core') );
+	initialState.core = Object.assign(initialState.core, storedCore );
+}
+
+// if we've got a stored version of spotify state, load and merge
+if( localStorage.getItem('ui') ){
+	var storedUi = JSON.parse( localStorage.getItem('ui') );
+	initialState.ui = Object.assign(initialState.ui, storedUi );
+}
 
 // if we've got a stored version of mopidy state, load and merge
 if( localStorage.getItem('mopidy') ){
@@ -82,18 +98,12 @@ if( localStorage.getItem('spotify') ){
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
-// if we've got a stored version of spotify state, load and merge
-if( localStorage.getItem('ui') ){
-	var storedUi = JSON.parse( localStorage.getItem('ui') );
-	initialState.ui = Object.assign(initialState.ui, storedUi );
-}
-
 console.log('Bootstrapping', initialState)
 
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware( thunk, localstorageMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
+	applyMiddleware( thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
 );
 
 export default store;

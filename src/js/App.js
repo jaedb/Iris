@@ -15,6 +15,7 @@ import Notifications from './components/Notifications'
 import DebugInfo from './components/DebugInfo'
 
 import * as helpers from './helpers'
+import * as coreActions from './services/core/actions'
 import * as uiActions from './services/ui/actions'
 import * as pusherActions from './services/pusher/actions'
 import * as mopidyActions from './services/mopidy/actions'
@@ -46,17 +47,8 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.pusherActions.connect()
-		this.props.mopidyActions.connect()
-		this.props.spotifyActions.connect()
-		this.props.uiActions.getBroadcasts()
-
-		if (this.props.spotify_authorized){
-
-			// TODO: remove this so we don't tap out our API limits before we even get started
-			// Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
-			this.props.spotifyActions.getAllLibraryPlaylists();
-		}
+		this.props.coreActions.startServices()
+		this.props.coreActions.getBroadcasts()
 
 		// when we navigate to a new route
 		hashHistory.listen( location => {
@@ -102,14 +94,20 @@ class App extends React.Component{
 		// Listen for standalone key codes
 		let keyCodes = [27,32,191]
 		if (keyCodes.indexOf(e.keyCode) > -1){
-			if (keyCode == 37)
 			e.preventDefault()
 			return true
 		}
 
 		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrl = [37,38,39,40,70]
+		let keyCodesWithCtrl = [37,38,39,40]
 		if (e.ctrlKey && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
+			e.preventDefault()
+			return true
+		}
+
+		// Listen for key codes that require ctrl to be held		
+		let keyCodesWithCtrlShift = [70]
+		if (e.ctrlKey && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1){
 			e.preventDefault()
 			return true
 		}
@@ -281,7 +279,7 @@ const mapStateToProps = (state, ownProps) => {
 		processes: (state.ui.processes ? state.ui.processes : {}),
 		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
 		play_state: state.mopidy.play_state,
 		play_time_position: parseInt(state.mopidy.time_position),
 		mute: state.mopidy.mute,
@@ -295,6 +293,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),

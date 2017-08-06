@@ -1,4 +1,6 @@
 
+import ReactGA from 'react-ga'
+
 var helpers = require('./../../helpers')
 var spotifyActions = require('./actions')
 var uiActions = require('../ui/actions')
@@ -14,12 +16,58 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
-            case 'SPOTIFY_CONNECT':
-                store.dispatch( spotifyActions.getMe() )
+            case 'SPOTIFY_CONNECTED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Connected', label: label })
+
+                // TODO: remove this so we don't tap out our API limits before we even get started
+                // Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
+                if (store.getState().spotify_authorized){
+                    store.dispatch(spotifyActions.getAllLibraryPlaylists())
+                }
+
+                // Get the current logged-in user
+                store.dispatch(spotifyActions.getMe())
+
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_GRANTED':
+                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' })
+                next(action)
+                break
+
+            case 'SPOTIFY_AUTHORIZATION_REVOKED':
+                var label = null
+                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_IMPORT_AUTHORIZATION':
+                var label = null
+                if (action.me && action.me.id){
+                    label = action.me.id
+                }
+                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label })
+                next(action)
+                break
+
+            case 'SPOTIFY_RECOMMENDATIONS_LOADED':
+                if (action.seeds_uris){
+                    ReactGA.event({ category: 'Spotify', action: 'Recommendations', label: action.seeds_uris.join(',') })
+                }
+                next(action)
+                break
+
+            case 'SPOTIFY_USER_LOADED':
+                if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
+                next(action)
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -27,9 +75,9 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = state.ui.playlists[action.key]
+                var playlist = state.core.playlists[action.key]
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -43,7 +91,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -53,7 +101,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
@@ -68,23 +116,11 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_SAVE_PLAYLIST':
 
-                if( !store.getState().spotify.authorized ){
+                if( !store.getState().spotify.authorization ){
                     store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
                     return
                 }
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
-                break
-
-            // when radio returns
-            case 'PUSHER_RADIO_STARTED':
-            case 'PUSHER_RADIO_CHANGED':
-
-                next(action)
-
-                // only resolve if radio is enabled
-                if( action.radio.enabled ){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
-                }
                 break
 
             case 'SPOTIFY_NEW_RELEASES_LOADED':
@@ -362,6 +398,14 @@ const SpotifyMiddleware = (function(){
                     // Use 'me' name as my Pusher username
                     store.dispatch(pusherActions.setUsername(name))
                 }
+                ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id })
+
+                store.dispatch({
+                    type: 'USER_LOADED',
+                    key: action.data.uri,
+                    user: action.data
+                })
+
                 next(action)
                 break;
 

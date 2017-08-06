@@ -35,6 +35,20 @@ const sendRequest = ( dispatch, getState, params ) => {
     })
 }
 
+export function connect(){
+    return (dispatch, getState) => {
+
+        dispatch({ type: 'LASTFM_CONNECTING' })
+
+        sendRequest(dispatch, getState, 'method=artist.getInfo&artist=')
+            .then(
+                response => {
+                    dispatch({ type: 'LASTFM_CONNECTED' })
+                }
+            )
+    }
+}
+
 export function getArtist( uri, artist, mbid = false ){
     return (dispatch, getState) => {
         if( mbid ){

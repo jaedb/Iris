@@ -11,23 +11,25 @@ import PusherConnectionList from '../components/PusherConnectionList'
 import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
+import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
-class Settings extends React.Component{
+class Settings extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			country: this.props.core.country,
+			locale: this.props.core.locale,
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
-			spotify_country: this.props.spotify.country,
-			spotify_locale: this.props.spotify.locale,
 			pusher_username: this.props.pusher.username,
 			input_in_focus: null
 		}
@@ -72,11 +74,11 @@ class Settings extends React.Component{
 		return false;
 	}
 
-	setSpotifyConfig(e){
+	handleBlur(name, value){
 		this.setState({input_in_focus: null})
-		e.preventDefault();
-		this.props.spotifyActions.setConfig({ country: this.state.spotify_country, locale: this.state.spotify_locale });
-		return false;
+		var data = {}
+		data[name] = value
+		this.props.coreActions.set(data)
 	}
 
 	handleUsernameChange(username){
@@ -86,86 +88,6 @@ class Settings extends React.Component{
 	handleUsernameBlur(e){
 		this.setState({input_in_focus: null})
 		this.props.pusherActions.setUsername(this.state.pusher_username)
-	}
-
-	renderConnectionStatus(service){
-		if (service == 'Spotify' && !this.props[service.toLowerCase()].authorized){			
-			return (
-				<span className="red-text connection-status">
-					<FontAwesome name="exclamation-triangle" />
-					&nbsp;
-					Not connected
-				</span>
-			)
-		} else if (this.props[service.toLowerCase()].connected){
-			return (
-				<span className="green-text connection-status">
-					<FontAwesome name="check" />
-					&nbsp;
-					{service}
-				</span>
-			)
-		} else if (this.props[service.toLowerCase()].connecting){			
-			return (
-				<span className="grey-text connection-status">
-					<FontAwesome name="circle-o-notch" spin />
-					&nbsp;
-					Connecting
-				</span>
-			)
-		} else {			
-			return (
-				<span className="red-text connection-status">
-					<FontAwesome name="exclamation-triangle" />
-					&nbsp;
-					Not connected
-				</span>
-			)
-		}
-	}
-
-	renderSpotifyUser(){
-
-		var user = null
-		if (this.props.spotify.me && this.props.spotify.authorized){
-			user = this.props.spotify.me
-		} else if (this.props.ui.config && this.props.ui.config.spotify_username){
-			if (this.props.ui.users && typeof(this.props.ui.users['spotify:user:'+this.props.ui.config.spotify_username]) !== 'undefined'){
-				user = this.props.ui.users['spotify:user:'+this.props.ui.config.spotify_username]
-			}
-		}
-
-		if (user){
-			return (
-				<Link className="user" to={global.baseURL+'user/'+user.uri}>
-					<Thumbnail circle={true} size="small" images={user.images} />
-					<span className="user-name">
-						{user.display_name ? user.display_name : user.id}
-						{!this.props.spotify.authorized ? <span className="grey-text">&nbsp;(limited access)</span> : null}
-					</span>
-				</Link>
-			)
-		} else {
-			return (
-				<Link className="user">
-					<Thumbnail circle={true} size="small" />
-					<span className="user-name">
-						Default user
-						<span className="grey-text">&nbsp;(limited access)</span>
-					</span>
-				</Link>
-			)
-		}
-	}
-
-	renderSendAuthorizationButton(){
-		if( !this.props.spotify.authorized ) return null
-
-		return (
-			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
-				Share authentication
-			</button>
-		)
 	}
 
 	renderApplyButton(){
@@ -181,30 +103,95 @@ class Settings extends React.Component{
 		)
 	}
 
-	serviceStatus(service){
+	renderSpotifyUser(){
 
-		var icon = null
-		var status = 'Unknown'
+		var user = null
+		if (this.props.spotify.me && this.props.spotify.authorization){
+			user = this.props.spotify.me
+		} else if (this.props.spotify.backend_username){
+			if (this.props.core.users && this.props.core.users['spotify:user:'+this.props.spotify.backend_username] !== undefined){
+				user = this.props.core.users['spotify:user:'+this.props.spotify.backend_username]
+			}
+		}
 
-		if (this.props[service].connecting){
-			icon = <span className="icon connecting"><FontAwesome name="plug" /></span>
-			status = 'Connecting'
-		} else if (service == 'spotify' && !this.props[service].authorized){
-			icon = <span className="icon warning"><FontAwesome name="check" /></span>
-			status = 'Connected (not authorized)'
-		} else if (this.props[service].connected){
-			icon = <span className="icon connected"><FontAwesome name="check" /></span>
-			status = 'Connected'
+		if (user){
+			return (
+				<Link className="user" to={global.baseURL+'user/'+user.uri}>
+					<Thumbnail circle={true} size="small" images={user.images} />
+					<span className="user-name">
+						{user.display_name ? user.display_name : user.id}
+					</span>
+				</Link>
+			)
+		} else if (this.props.spotify.backend_username){
+			return (
+				<Link className="user" to={global.baseURL+'user/spotify:user:'+this.props.spotify.backend_username}>
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						{this.props.spotify.backend_username}
+					</span>
+				</Link>
+			)
 		} else {
-			icon = <span className="icon disconnected"><FontAwesome name="close" /></span>
-			status = 'Disconnected'
+			return (
+				<Link className="user">
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						Unknown
+					</span>
+				</Link>
+			)
+		}
+	}
+
+	renderSendAuthorizationButton(){
+		if (!this.props.spotify.authorization) return null
+
+		return (
+			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
+				Share authentication
+			</button>
+		)
+	}
+
+	renderServiceStatus(service){
+
+		let colour = 'red'
+		let icon = 'close'
+		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
+		let text = 'Disconnected'
+
+		service = this.props[service]
+
+		if (service.connecting){
+			icon = 'plug'
+			colour = 'grey'
+			text = 'Connecting'
+		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
+			icon = 'exclamation-triangle'
+			colour = 'orange'
+			text = 'Mopidy-Spotify not detected'
+		} else if (service.connected && name == 'Spotify' && !service.authorization){
+			icon = 'lock'
+			colour = 'orange'
+			text = 'Limited access'
+		} else if (service.connected){
+			icon = 'check'
+			colour = 'green'
+			text = 'Connected'
 		}
 
 		return (
 			<div className="service">
-				<h4>{service}</h4>
-				{icon}
-				<span className="text">{status}</span>
+				<h4 className="title">
+					{name}
+				</h4>
+				<div className={colour+'-text icon'}>
+					<FontAwesome name={icon} />
+				</div>
+				<div className={"status "+colour+'-text'}>					
+					{text}
+				</div>
 			</div>
 		)
 	}
@@ -226,35 +213,43 @@ class Settings extends React.Component{
 
 		return (
 			<div className="view settings-view">
-				<Header icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
+				<Header className="overlay" icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
+
+				<div className="intro">
+					<div className="liner">
+						<Parallax image="/iris/assets/backgrounds/settings.jpg" />
+					</div>
+				</div>
 
 				<section className="content-wrapper">
 
-					<div className="services">					
-						{this.serviceStatus('mopidy')}
-						{this.serviceStatus('pusher')}
-						{this.serviceStatus('spotify')}
+					<div className="services">
+						{this.renderServiceStatus('mopidy')}
+						{this.renderServiceStatus('pusher')}
+						{this.renderServiceStatus('spotify')}
 					</div>
 
 					<h4 className="underline">System</h4>
-					<form onSubmit={(e) => this.setMopidyConfig(e)}>
-						<div className="field">
-							<div className="name">Username</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={e => this.handleUsernameChange(e.target.value)} 
-									onFocus={e => this.setState({input_in_focus: 'pusher_username'})}
-									onBlur={e => this.handleUsernameBlur(e)}
-									value={this.state.pusher_username } />
-							</div>
+
+					<div className="field">
+						<div className="name">Username</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.handleUsernameChange(e.target.value)} 
+								onFocus={e => this.setState({input_in_focus: 'pusher_username'})}
+								onBlur={e => this.handleUsernameBlur(e)}
+								value={this.state.pusher_username } />
 						</div>
+					</div>
+
+					<form onSubmit={(e) => this.setMopidyConfig(e)}>
 						<div className="field">
 							<div className="name">Host</div>
 							<div className="input">
 								<input 
 									type="text"
-									onChange={ e => this.setState({ mopidy_host: e.target.value })} 
+									onChange={ e => this.setState({mopidy_host: e.target.value})} 
 									onFocus={e => this.setState({input_in_focus: 'mopidy_host'})}
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_host } />
@@ -265,7 +260,7 @@ class Settings extends React.Component{
 							<div className="input">
 								<input 
 									type="text"
-									onChange={ e => this.setState({ mopidy_port: e.target.value })} 
+									onChange={ e => this.setState({mopidy_port: e.target.value})} 
 									onFocus={e => this.setState({input_in_focus: 'mopidy_port'})} 
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_port } />
@@ -274,31 +269,50 @@ class Settings extends React.Component{
 						{this.renderApplyButton()}
 					</form>
 
+					<h4 className="underline">Localization</h4>
+
+					<div className="field">
+						<div className="name">Country</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({country: e.target.value})} 
+								onFocus={e => this.setState({input_in_focus: 'country'})} 
+								onBlur={e => this.handleBlur('country',e.target.value)} 
+								value={ this.state.country } />
+						</div>
+					</div>
+					<div className="field">
+						<div className="name">Locale</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({locale: e.target.value})}
+								onFocus={e => this.setState({input_in_focus: 'locale'})} 
+								onBlur={e => this.handleBlur('locale',e.target.value)} 
+								value={this.state.locale} />
+						</div>
+					</div>
+
 					<h4 className="underline">Spotify</h4>
-					<form>
-						<div className="field">
-							<div className="name">Country</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={e => this.setState({ spotify_country: e.target.value })} 
-									onFocus={e => this.setState({input_in_focus: 'spotify_country'})} 
-									onBlur={e => this.setSpotifyConfig(e) } 
-									value={ this.state.spotify_country } />
+
+					<div className="field readonly">
+						<div className="name">Status</div>
+						<div className="input">
+							<div className="text">
+								{!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:') ? <div className="red-text"><FontAwesome name="exclamation-triangle" />&nbsp; Mopidy-Spotify not available</div> : null}
+
+								{this.props.spotify.authorization ? <span><span className="green-text"><FontAwesome name="check" /> Authorized</span>&nbsp; All Spotify functionality available</span> : <span><span className="orange-text"><FontAwesome name="lock" /> Limited access</span>&nbsp; Authorize Iris for full functionality</span>}
 							</div>
 						</div>
-						<div className="field">
-							<div className="name">Locale</div>
-							<div className="input">
-								<input 
-									type="text"
-									onChange={e => this.setState({ spotify_locale: e.target.value })}
-									onFocus={e => this.setState({input_in_focus: 'spotify_locale'})} 
-									onBlur={e => this.setSpotifyConfig(e) } 
-									value={this.state.spotify_locale} />
-							</div>
+					</div>
+					<div className="field">
+						<div className="name">Authorization</div>
+						<div className="input">
+							<SpotifyAuthenticationFrame />
+							{ this.renderSendAuthorizationButton() }
 						</div>
-					</form>
+					</div>
 					<div className="field current-user">
 						<div className="name">Current user</div>
 						<div className="input">
@@ -307,18 +321,11 @@ class Settings extends React.Component{
 							</div>
 						</div>
 					</div>
-					<div className="field">
-						<div className="name">Authentication</div>
-						<div className="input">
-							<SpotifyAuthenticationFrame />
-							{ this.renderSendAuthorizationButton() }
-						</div>
-					</div>
 
 					<h4 className="underline">Advanced</h4>
 
 					<div className="field checkbox">
-						<div className="name">Customise behavior</div>
+						<div className="name">UI behavior</div>
 						<div className="input">
 							<label>
 								<input 
@@ -334,26 +341,33 @@ class Settings extends React.Component{
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>
 						<div className="input">
-							<span className="text">
+							<div className="text">
 			        			<PusherConnectionList />
-			        		</span>
+			        		</div>
 			        	</div>
 			        </div>
 					
 					<div className="field">
-						<div className="name">Backends</div>
+						<div className="name">Extensions</div>
 						<div className="input">
-							<span className="text">
+				        	<div className="text">
 				        		<URISchemesList />
-			        		</span>
-			        	</div>
+				        	</div>
+				        </div>
 			        </div>
 					
 					<div className="field">
-						<div className="name">System</div>
+						<div className="name">Version</div>
+						<div className="input">
+				        	<VersionManager />
+				        </div>
+			        </div>
+					
+					<div className="field">
+						<div className="name">Reset</div>
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-				        	<VersionManager />
+					        <button onClick={e => this.props.spotifyActions.refreshingToken()}>Refresh Spotify token</button>
 				        </div>
 			        </div>
 
@@ -382,18 +396,10 @@ class Settings extends React.Component{
 			        </div>
 
 		        </section>
-
 			</div>
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return state;
@@ -401,6 +407,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),

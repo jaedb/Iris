@@ -27,11 +27,20 @@ class User extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.uri != this.props.params.uri ) this.loadUser( nextProps )
+		if (nextProps.params.uri != this.props.params.uri ){
+			this.loadUser( nextProps )
+		}
 	}
 
 	loadUser( props = this.props ){
-		if (!props.user) this.props.spotifyActions.getUser( props.params.uri )
+		if (!props.user){
+			this.props.spotifyActions.getUser(props.params.uri)
+		}
+
+		// We got a user, but we haven't fetched their playlists yet
+		if (props.user && !props.user.playlists_uris){
+			this.props.spotifyActions.getUserPlaylists(props.params.uri)
+		}
 	}
 
 	loadMore(){
@@ -39,8 +48,21 @@ class User extends React.Component{
 	}
 
 	isMe(){
-		if( !this.props.spotify_authorized ) return null
-		return helpers.getFromUri('userid',this.props.params.uri) == this.props.me.id
+		let userid = helpers.getFromUri('userid',this.props.params.uri)
+		switch (this.props.spotify_authentication_provider){
+			case 'backend':
+				if (this.props.spotify_authorized && this.props.me){
+					return userid == this.props.me.id
+				}
+				return false
+				break
+
+			case 'http_api':
+				return userid == this.props.spotify_backend_username
+
+			default:
+				return false
+		}
 	}
 
 	render(){
@@ -108,11 +130,13 @@ class User extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		spotify_authorized: state.spotify.authorized,
+		spotify_authorized: state.spotify.authorization,
+		spotify_authentication_provider: state.spotify.authentication_provider,
+		spotify_backend_username: state.spotify.backend_username,
 		me: state.spotify.me,
-		playlists: state.ui.playlists,
-		user: (state.ui.users && typeof(state.ui.users[ownProps.params.uri]) !== 'undefined' ? state.ui.users[ownProps.params.uri] : false ),
-		users: state.ui.users
+		playlists: state.core.playlists,
+		user: (state.core.users && state.core.users[ownProps.params.uri] !== undefined ? state.core.users[ownProps.params.uri] : false),
+		users: state.core.users
 	};
 }
 

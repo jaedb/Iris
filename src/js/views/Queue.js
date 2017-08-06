@@ -64,7 +64,7 @@ class Queue extends React.Component{
 				return (
 					<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
 						{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-						<Thumbnail size="huge" />
+						<Thumbnail />
 					</span>
 				)
 		}
@@ -74,15 +74,16 @@ class Queue extends React.Component{
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail size="huge" image={image} />
+				<Thumbnail image={image} />
 			</Link>
 		)
 	}
 
 	render(){
 		var image = null
-		if (this.props.current_track && this.props.current_track.album !== undefined && this.props.current_track.album.images){
-			image = helpers.sizedImages(this.props.current_track.album.images).huge
+		if (this.props.current_track && this.props.current_track.images !== undefined){
+			image = helpers.sizedImages(this.props.current_track.images)
+			image = image.large
 		}
 
 		var options = (
@@ -152,8 +153,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		radio: state.ui.radio,
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
-		current_tracklist: state.ui.current_tracklist,
-		current_track: (state.ui.current_track !== undefined && state.ui.tracks !== undefined && state.ui.tracks[state.ui.current_track.uri] !== undefined ? state.ui.tracks[state.ui.current_track.uri] : null)
+		current_tracklist: state.core.current_tracklist,
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null)
 	}
 }
 

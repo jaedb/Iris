@@ -235,8 +235,8 @@ const mapStateToProps = (state, ownProps) => {
 		filter: (state.ui.library_playlists_filter ? state.ui.library_playlists_filter : 'all'),
 		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
 		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
-		library_playlists: state.ui.library_playlists,
-		playlists: state.ui.playlists
+		library_playlists: state.core.library_playlists,
+		playlists: state.core.playlists
 	}
 }
 

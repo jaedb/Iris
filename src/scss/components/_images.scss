@@ -24,10 +24,10 @@
 		bottom: 5px;
 		right: 5px;
 		z-index: 1;
-		padding: 6px;
+		padding: 10px;
 		border-radius: 100%;
 		background: rgba(0,0,0,0.4);
-		font-size: 10px;
+		font-size: 12px;
 		cursor: pointer;
 		color: #FFFFFF;
 
@@ -81,85 +81,6 @@
 	&.blur {
 		canvas {
 			@include blur();
-		}
-	}
-}
-
-.tiles {
-	padding-bottom: 60px;
-
-	.tile {
-		color: $white;
-		text-align: center;
-		position: relative;
-		z-index: 1;
-		float: left;
-		overflow: hidden;
-
-		.text {
-			display: block;
-			position: absolute;
-			top: 50%;
-			left: 10%;
-			right: 10%;
-			vertical-align: top;
-			margin-top: -12px;
-			font-size: 16px;
-			z-index: 2;
-
-			.fa {
-				display: block;
-				position: absolute;
-				top: 50%;
-				left: 10%;
-				right: 10%;
-				text-align: center;
-				margin-top: -27px;
-				font-size: 60px;
-				z-index: -1;
-				opacity: 0.1;
-			}
-		}
-
-		&:before {
-			content: '';
-			display: block;
-			width: 100%;
-			padding-bottom: 100%;
-			background: lighten($dark_grey,2%);
-			z-index: -2;
-		}
-
-		&.thumbnail-wrapper {
-			&:before {
-				display: none;
-			}
-		}
-	}
-
-	@include responsive( null, $bp_medium ){
-		.tile {
-			@include grid_item( 2 );
-		}
-	}
-
-	@include responsive( $bp_medium ){
-		padding-bottom: 20px;
-		
-		.tile {
-			@include grid_item( 3 );
-		}
-	}
-
-	@include responsive( $bp_narrow ){
-		.tile {
-			.text {
-				font-size: 14px;
-				.fa {
-					font-size: 28px;
-					margin-top: -12px;
-				}
-			}
 		}
 	}
 }

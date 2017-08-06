@@ -184,8 +184,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
-		albums: state.ui.albums,
-		local_albums: state.ui.local_albums,
+		albums: state.core.albums,
+		local_albums: state.core.local_albums,
 		view: state.ui.library_local_albums_view,
 		sort: (state.ui.library_local_albums_sort ? state.ui.library_local_albums_sort : 'name'),
 		sort_reverse: (state.ui.library_local_albums_sort_reverse ? true : false)

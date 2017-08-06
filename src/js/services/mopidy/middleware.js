@@ -1,4 +1,5 @@
 
+import ReactGA from 'react-ga'
 import Mopidy from 'mopidy'
 import { hashHistory } from 'react-router'
 import * as helpers from '../../helpers'
@@ -192,6 +193,11 @@ const MopidyMiddleware = (function(){
                 socket.on( (type, data) => handleMessage( socket, store, type, data ) )
                 break
 
+            case 'MOPIDY_CONNECTED':
+                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname })
+                next(action)
+                break
+
             case 'MOPIDY_DISCONNECT':
                 if(socket != null) socket.close()
                 socket = null
@@ -212,7 +218,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','spotify']
+                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc']
 
                 // remove all our ignored types
                 for( var i = 0; i < remove.length; i++ ){
@@ -238,7 +244,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Track skipped',
                     body: store.getState().pusher.username +' skipped this track',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon(store.getState().ui.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -248,7 +254,7 @@ const MopidyMiddleware = (function(){
                     type: 'browser_notification',
                     title: 'Playback stopped',
                     body: store.getState().pusher.username +' stopped playback',
-                    icon: (store.getState().ui.current_track ? helpers.getTrackIcon(store.getState().ui.current_track, store.getState().ui) : false)
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
                 store.dispatch( pusherActions.deliverBroadcast(data) )
                 break
@@ -261,11 +267,11 @@ const MopidyMiddleware = (function(){
                 }
 
                 // playlist already in index
-                if (store.getState().ui.playlists.hasOwnProperty(action.uri)){
+                if (store.getState().core.playlists.hasOwnProperty(action.uri)){
                     
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
-                    if (!store.getState().ui.playlists[action.uri].is_mopidy){
+                    if (!store.getState().core.playlists[action.uri].is_mopidy){
                         store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
@@ -273,10 +279,12 @@ const MopidyMiddleware = (function(){
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
-                } else if (helpers.uriSource(action.uri) == 'spotify'){
+                } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
                     store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                     store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                     break
+
+                // Not in index, and Spotify HTTP not enabled, so just play it as-is
                 }
 
                 // fetch the playlist tracks via backend
@@ -343,8 +351,8 @@ const MopidyMiddleware = (function(){
                     break
                 }
 
-                var current_track = store.getState().ui.current_track
-                var current_tracklist = store.getState().ui.current_tracklist
+                var current_track = store.getState().core.current_track
+                var current_tracklist = store.getState().core.current_tracklist
                 var current_track_index = -1
 
                 if (typeof(current_track) !== 'undefined'){
@@ -400,17 +408,10 @@ const MopidyMiddleware = (function(){
 
                 break
 
-            case 'CANCEL_PROCESS':
-                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
-                    store.dispatch(mopidyActions.enqueueURIsCancel())
-                }
-                next(action)
-                break
-
             case 'MOPIDY_PLAY_URIS':
 
                 // Stop the radio
-                if (store.getState().ui.radio && store.getState().ui.radio.enabled){
+                if (store.getState().core.radio && store.getState().core.radio.enabled){
                     store.dispatch(pusherActions.stopRadio())
                 }
 
@@ -1033,12 +1034,50 @@ const MopidyMiddleware = (function(){
                     // Fire off our universal track index loader
                     store.dispatch({ type: 'TRACK_LOADED', key: action.data.track.uri, track: action.data.track })
 
-                    // When current track is Spotify track, go get the full object
-                    // This is because Mopidy doesn't give us full artist/album objects, without artwork
-                    if (action.data.track.uri.substring(0,14) == 'spotify:track:'){
-                        store.dispatch( spotifyActions.getTrack( action.data.track.uri ) )
+                    // We've got Spotify running, and it's a spotify track - go straight to the source!
+                    if (helpers.uriSource(action.data.track.uri) == 'spotify' && store.getState().spotify.access != 'none'){
+                        store.dispatch(spotifyActions.getTrack(action.data.track.uri))
+
+                    // Some other source, rely on Mopidy backends to do their work
+                    } else {
+                        store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
                     }
                 }
+
+                next(action)
+                break
+                
+
+            /**
+             * =============================================================== IMAGES ===============
+             * ======================================================================================
+             **/
+
+            case 'MOPIDY_GET_IMAGES':
+
+                instruct( socket, store, 'library.getImages', {uris: action.uris})
+                    .then( response => {
+
+                        let records = []
+                        for (var uri in response){
+                            if (response.hasOwnProperty(uri)){
+
+                                let images = response[uri]
+                                images = helpers.digestMopidyImages(store.getState().mopidy, images)
+
+                                records.push({
+                                    uri: uri,
+                                    images: images
+                                })
+                            }
+                        }
+                        
+                        let action_data = {
+                            type: (action.context+'_LOADED').toUpperCase()
+                        }
+                        action_data[action.context] = records
+                        store.dispatch(action_data)
+                    })
 
                 next(action)
                 break
@@ -1058,6 +1097,11 @@ const MopidyMiddleware = (function(){
                             data: response
                         });
                     })
+                break
+
+            case 'MOPIDY_DIRECTORY':
+                if (action.data) ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri })
+                next(action)
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

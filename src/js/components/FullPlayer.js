@@ -145,8 +145,8 @@ class FullPlayer extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
-		tracks: state.ui.tracks,
-		current_track: (typeof(state.ui.current_track) !== 'undefined' && typeof(state.ui.tracks) !== 'undefined' && typeof(state.ui.tracks[state.ui.current_track.uri]) !== 'undefined' ? state.ui.tracks[state.ui.current_track.uri] : null),
+		tracks: state.core.tracks,
+		current_track: (typeof(state.core.current_track) !== 'undefined' && typeof(state.core.tracks) !== 'undefined' && typeof(state.core.tracks[state.core.current_track.uri]) !== 'undefined' ? state.core.tracks[state.core.current_track.uri] : null),
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,
 		consume: state.mopidy.consume,

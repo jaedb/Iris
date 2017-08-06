@@ -60,7 +60,7 @@ class DiscoverCategories extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		categories: state.ui.categories,
+		categories: state.core.categories,
 		load_queue: state.ui.load_queue
 	}
 }

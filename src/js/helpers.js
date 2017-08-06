@@ -13,50 +13,67 @@ export let sizedImages = function( images ){
 		huge: false
 	}
 
-	if( images.length <= 0 ) return sizes;
+	if (images.length <= 0) return sizes;
 
-	for( var i = 0; i < images.length; i++ ){
-		
+	for (var i = 0; i < images.length; i++){
+		let image = images[i]
+
 		// Mopidy image object
-		if (typeof(images[i].__model__) !== 'undefined' && images[i].__model__ == 'Image'){
-			sizes.small = images[i].uri
+		if (image.__model__ && image.__model__ == 'Image'){
+
+			if (image.width < 400){
+				sizes.small = image.url;
+			}else if (image.width < 800){
+				sizes.medium = image.url;
+			}else if (image.width < 1000){
+				sizes.large = image.url;
+			}else{
+				sizes.huge = image.url;
+			}
 
 		// Mopidy image string
-		} else if (typeof(images[i]) == 'string'){
-			sizes.small = images[i]
-
+		} else if (typeof(image) == 'string'){
+			sizes.small = image
+		
 		// spotify-styled images
-		} else if (typeof(images[i].width) !== 'undefined'){
-			if( images[i].width < 400 ){
-				sizes.small = images[i].url;
-			}else if( images[i].width < 800 ){
-				sizes.medium = images[i].url;
-			}else if( images[i].width < 1000 ){
-				sizes.large = images[i].url;
+		} else if (image.width !== undefined){
+
+			if (image.width < 400){
+				sizes.small = image.url;
+			}else if (image.width < 800){
+				sizes.medium = image.url;
+			}else if (image.width < 1000){
+				sizes.large = image.url;
 			}else{
-				sizes.huge = images[i].url;
+				sizes.huge = image.url;
 			}
 
 		// lastfm-styled images
-		} else if (typeof(images[i].size) !== 'undefined'){
-			switch( images[i].size ){
+		} else if (image.size !== undefined){
+			switch( image.size ){
 				case 'mega':
 				case 'extralarge':
-					sizes.huge = images[i]['#text']
+					sizes.huge = image['#text']
 					break
 				case 'large':
-					sizes.large = images[i]['#text']
+					sizes.large = image['#text']
 					break
 				case 'medium':
-					sizes.medium = images[i]['#text']
+					sizes.medium = image['#text']
 					break
 				case 'small':
-					sizes.small = images[i]['#text']
+					sizes.small = image['#text']
 					break
 			}
 		}
 	}
 
+	if (!sizes.small){
+		if (sizes.medium) sizes.small = sizes.medium
+		else if (sizes.large) sizes.small = sizes.large
+		else if (sizes.huge) sizes.small = sizes.huge
+		else sizes.small = null
+	}
 	if (!sizes.medium){
 		if (sizes.large) sizes.medium = sizes.large
 		else if (sizes.huge) sizes.medium = sizes.huge
@@ -68,13 +85,47 @@ export let sizedImages = function( images ){
 	return sizes;
 }
 
+
+/**
+ * Digest an array of Mopidy image objects into a universal format
+ *
+ * @param mopidy = obj (mopidy store object)
+ * @param images = array
+ * @return array
+ **/
+export let digestMopidyImages = function(mopidy, images){
+	let digested = []
+
+	for (let i = 0; i < images.length; i++){
+
+		// Accommodate backends that provide URIs vs URLs
+		let url = images[i].url
+		if (!url && images[i].uri){
+			url = images[i].uri
+		}
+/*
+		// Replace local images to point directly to our Mopidy server
+        if (url.startsWith('/images/')){
+            url = '//'+mopidy.host+':'+mopidy.port+url
+        }
+        */
+
+        // Amend our URL
+        images[i].url = url
+
+        digested.push(images[i])
+	}
+
+	return digested
+}
+
+
 export let generateGuid = function(format = 'xxxxxxxxxxxx'){
 	return format.replace(/[xy]/g, function(c) {
 		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 		return v.toString(16);
 	});
 }
-
 
 export let getCurrentPusherConnection = function( connections, connectionid ){
 	function isCurrentConnection(connection){
@@ -93,15 +144,14 @@ export let getCurrentPusherConnection = function( connections, connectionid ){
  * @param track object
  * @return string
  **/
-export let getTrackIcon = function(current_track = false, ui = false){
-	if (!ui) return false
+export let getTrackIcon = function(current_track = false, core = false){
+	if (!core) return false
 	if (!current_track) return false
 	if (typeof(current_track.uri) == 'undefined') return false
-	if (typeof(ui.tracks[current_track.uri]) === 'undefined') return false
-	var track = ui.tracks[current_track.uri]
-	if (!track.album) return false
-	if (!track.album.images) return false
-	return sizedImages(track.album.images).small
+	if (typeof(core.tracks[current_track.uri]) === 'undefined') return false
+	var track = core.tracks[current_track.uri]
+	if (!track.images) return false
+	return sizedImages(track.images).small
 }
 
 

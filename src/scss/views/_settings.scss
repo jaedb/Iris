@@ -1,49 +1,67 @@
 
 .settings-view {
-	.services {
-		.service {
-			position: relative;
-			display: inline-block;
-			padding: 0 0 0 45px;
-			margin: 0 20px 10px 0;
-			min-width: 80px;
 
-			h4 {
+	.intro {
+		position: relative;
+		@include clearfix();
+
+		.parallax {
+			position: absolute;
+			z-index: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			height: auto;
+		}
+
+		.liner {
+			position: relative;
+			z-index: 1;
+			padding: 20vh 40px 0;
+
+			.sub-views {
+				position: relative;
+			}
+		}
+	}
+
+	.content-wrapper {
+		padding-top: 0;
+	}
+	
+	.services {
+		@include clearfix();
+		margin-bottom: -20px;
+
+		.service {
+			margin-right: 20px;
+			margin-bottom: 20px;
+			padding-left: 46px;
+			box-sizing: border-box;
+			position: relative;
+			float: left;
+			min-width: 150px;
+
+			.title {
+				margin: 0;
 				padding: 0;
-				margin: 0 0 -3px 0;
-				text-transform: capitalize;
 			}
 
 			.icon {
-				width: 35px;
-				height: 25px;
 				position: absolute;
 				top: 2px;
 				left: 0;
-				border-radius: 50%;
-				color: $white;
+				width: 34px;
+				height: 25px;
+				padding-top: 9px;
+				border: 2px solid $grey;
 				text-align: center;
-				padding-top: 10px;
+				border-radius: 50%;
 
-				&.connecting {
-					background: $mid_grey;
+				.fa {
+					font-size: 16px;
 				}
-
-				&.connected {
-					background: $green;
-				}
-
-				&.warning {
-					background: $orange;
-				}
-
-				&.disconnected {
-					background: $red;
-				}
-			}
-
-			.text {
-
 			}
 		}
 	}
@@ -83,30 +101,41 @@
 
 	.field.pusher-connections {
 		.connection.me {
-			font-weight: bold;
+			color: $turquoise;
 		}
 	}
 
 	@include responsive( $bp_medium ){
-		.services {
-			.service {
-				padding: 0 0 0 30px;
-				margin-bottom: 0;
-				min-width: 0px;
+		.intro {
+			.liner {
+				padding: 15vh 20px 0;
+			}
+		}
 
-				h4 {
-					padding-top: 1px;
-				}
+		.services {
+			text-align: center;
+
+			.service {
+				padding: 40px 0 0 0;
+				text-align: center;
+				min-width: 100px;
+				display: inline-block;
+				margin-right: 0;
+				float: none;
 
 				.icon {
-					height: 15px;
-					width: 20px;
-					padding-top: 5px;
-					font-size: 10px;
+					top: 0;
+					left: 50%;
+					margin-left: -18px;
 				}
+			}
+		}
 
-				.text {
-					display: none;
+		.field.pusher-connections {
+			.connection {
+				.col {
+					float: none;
+					width: 100%;
 				}
 			}
 		}

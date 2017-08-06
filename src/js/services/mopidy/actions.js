@@ -164,6 +164,14 @@ export function setTimePosition(time_position){
  * Asset-oriented actions
  **/
 
+export function getImages( context, uris ){
+	return { 
+		type: 'MOPIDY_GET_IMAGES',
+		context: context,
+		uris: uris
+	}
+}
+
 export function deletePlaylist( uri ){
 	return { 
 		type: 'MOPIDY_DELETE_PLAYLIST',

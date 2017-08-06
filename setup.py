@@ -22,7 +22,6 @@ setup(
     install_requires=[
         'setuptools >= 3.3',
         'pylast >= 1.6.0',
-        'spotipy >= 2.3.8',
         'Mopidy >= 2.0',
         'Mopidy-Local-Images >= 1.0',
         'ConfigObj >= 5.0.6'
