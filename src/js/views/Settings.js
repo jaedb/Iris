@@ -156,7 +156,7 @@ class Settings extends React.Component {
 
 	renderServiceStatus(service){
 
-		let colour = 'grey'
+		let colour = 'red'
 		let icon = 'close'
 		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
 		let text = 'Disconnected'
@@ -165,12 +165,13 @@ class Settings extends React.Component {
 
 		if (service.connecting){
 			icon = 'plug'
+			colour = 'grey'
 			text = 'Connecting'
 		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
 			icon = 'exclamation-triangle'
 			colour = 'orange'
 			text = 'Mopidy-Spotify not detected'
-		} else if (name == 'Spotify' && !service.authorization){
+		} else if (service.connected && name == 'Spotify' && !service.authorization){
 			icon = 'lock'
 			colour = 'orange'
 			text = 'Limited access'
@@ -364,6 +365,7 @@ class Settings extends React.Component {
 						<div className="name">Reset</div>
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+					        <button onClick={e => this.props.spotifyActions.refreshingToken()}>Refresh Spotify token</button>
 				        </div>
 			        </div>
 

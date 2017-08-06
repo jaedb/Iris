@@ -16,10 +16,6 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
-            case 'SPOTIFY_CONNECT':
-                store.dispatch( spotifyActions.getMe() )
-                break
-
             case 'SPOTIFY_CONNECTED':
                 var label = null
                 if (store.getState().spotify.me) label = store.getState().spotify.me.id
@@ -30,6 +26,9 @@ const SpotifyMiddleware = (function(){
                 if (store.getState().spotify_authorized){
                     store.dispatch(spotifyActions.getAllLibraryPlaylists())
                 }
+
+                // Get the current logged-in user
+                store.dispatch(spotifyActions.getMe())
 
                 next(action)
                 break
@@ -400,6 +399,13 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(pusherActions.setUsername(name))
                 }
                 ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id })
+
+                store.dispatch({
+                    type: 'USER_LOADED',
+                    key: action.data.uri,
+                    user: action.data
+                })
+
                 next(action)
                 break;
 

@@ -100,7 +100,7 @@ class SpotifyAuthenticationFrame extends React.Component{
         }
 	}
 
-	renderAuthorizeButton(){
+	render(){
 		if (this.state.authorizing){
 			return (
 				<button className="working">
@@ -117,39 +117,13 @@ class SpotifyAuthenticationFrame extends React.Component{
 			)
 		}
 	}
-
-	renderRefreshButton(){
-		if (!this.props.authorized) return null
-
-		if (this.props.refreshing_token){
-			return (
-				<button className="working">
-					Force token refresh
-				</button>
-			);
-		} else {
-			return (
-				<button onClick={() => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>
-			)
-		}
-	}
-
-	render(){
-		return (
-			<span>
-				{ this.renderAuthorizeButton() }
-				{ this.renderRefreshButton() }
-			</span>
-		);
-	}
 }
 
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorization_url: state.spotify.authorization_url,
 		authorized: state.spotify.authorization,
-		authorizing: state.spotify.authorizing,
-		refreshing_token: state.spotify.refreshing_token
+		authorizing: state.spotify.authorizing
 	}
 }
 

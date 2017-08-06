@@ -149,15 +149,24 @@ function refreshToken( dispatch, getState ){
                 })
                 .then(
                     response => {
-                        var token = response.spotify_token
-                        token.token_expiry = new Date().getTime() + ( token.expires_in * 1000 );
-                        token.source = 'mopidy';
-                        dispatch({
-                            type: 'SPOTIFY_TOKEN_REFRESHED',
-                            access_token_provider: 'backend',
-                            data: token
-                        });
-                        resolve(token);
+                        if (response.type == 'error'){
+                            dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                            dispatch(uiActions.createNotification(response.message,'bad'))
+                            console.error('Could not refresh token', response)
+                            reject(response)
+
+                        } else {
+                            var token = response.spotify_token
+                            token.token_expiry = new Date().getTime() + ( token.expires_in * 1000 );
+                            token.source = 'mopidy';
+                            dispatch({
+                                type: 'SPOTIFY_TOKEN_REFRESHED',
+                                access_token_provider: 'backend',
+                                data: token
+                            });
+                            resolve(token);                            
+                        }
+
                     },
                     error => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
@@ -943,7 +952,7 @@ export function playArtistTopTracks(uri){
  * ======================================================================================
  **/
 
-export function getUser( uri ){
+export function getUser(uri){
     return (dispatch, getState) => {
 
         // get the user
@@ -956,8 +965,15 @@ export function getUser( uri ){
                 });
             })
 
+        dispatch(getUserPlaylists(uri))
+    }
+}
+
+export function getUserPlaylists(user_uri){
+    return (dispatch, getState) => {
+
         // get the first page of playlists
-        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid', uri) +'/playlists?limit=40' )
+        sendRequest( dispatch, getState, 'users/'+ helpers.getFromUri('userid', user_uri) +'/playlists?limit=40' )
             .then( response => {
 
                 var playlists = []
@@ -979,7 +995,7 @@ export function getUser( uri ){
 
                 dispatch({
                     type: 'SPOTIFY_USER_PLAYLISTS_LOADED',
-                    key: uri,
+                    key: user_uri,
                     data: response
                 });
             })

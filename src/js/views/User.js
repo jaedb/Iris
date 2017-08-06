@@ -27,11 +27,20 @@ class User extends React.Component{
 	}
 
 	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.uri != this.props.params.uri ) this.loadUser( nextProps )
+		if (nextProps.params.uri != this.props.params.uri ){
+			this.loadUser( nextProps )
+		}
 	}
 
 	loadUser( props = this.props ){
-		if (!props.user) this.props.spotifyActions.getUser( props.params.uri )
+		if (!props.user){
+			this.props.spotifyActions.getUser(props.params.uri)
+		}
+
+		// We got a user, but we haven't fetched their playlists yet
+		if (props.user && !props.user.playlists_uris){
+			this.props.spotifyActions.getUserPlaylists(props.params.uri)
+		}
 	}
 
 	loadMore(){

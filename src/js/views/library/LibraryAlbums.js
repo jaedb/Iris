@@ -91,15 +91,7 @@ class LibraryAlbums extends React.Component{
 						link_prefix={global.baseURL+"album/"} />
 				</section>
 			)
-		}else if( this.props.view == 'thumbnails' ){
-			return (
-				<section className="content-wrapper">
-					<AlbumGrid 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						albums={albums} />
-				</section>			
-			)
-		}else{
+		}else if( this.props.view == 'detail' ){
 			return (
 				<section className="content-wrapper albums-detail-subview">
 					{
@@ -122,6 +114,14 @@ class LibraryAlbums extends React.Component{
 							)
 						})
 					}
+				</section>			
+			)
+		}else{
+			return (
+				<section className="content-wrapper">
+					<AlbumGrid 
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						albums={albums} />
 				</section>			
 			)
 		}
@@ -156,12 +156,12 @@ class LibraryAlbums extends React.Component{
 
 		var view_options = [
 			{
-				value: 'detail',
-				label: 'Detail'
-			},
-			{
 				value: 'thumbnails',
 				label: 'Thumbnails'
+			},
+			{
+				value: 'detail',
+				label: 'Detail'
 			},
 			{
 				value: 'list',
