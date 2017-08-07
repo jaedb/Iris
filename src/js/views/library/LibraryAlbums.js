@@ -25,8 +25,22 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.library_albums_started){
-			this.props.spotifyActions.getLibraryAlbums();
+		if (this.props.spotify_connected && !this.props.library_albums_spotify_started){
+			this.props.spotifyActions.getLibraryAlbums()
+		}
+
+		if (this.props.mopidy_connected && !this.props.local_albums){
+			this.props.mopidyActions.getLibraryAlbums()
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (!this.props.spotify_connected && newProps.spotify_connected && !this.props.library_albums_spotify_started){
+			this.props.spotifyActions.getLibraryAlbums()
+		}
+
+		if (!this.props.mopidy_connected && newProps.mopidy_connected && !newProps.local_albums){
+			this.props.mopidyActions.getLibraryAlbums()
 		}
 	}
 
@@ -40,8 +54,30 @@ class LibraryAlbums extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadMore(){
-		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+	moreURIsToLoad(){
+		var uris = []
+		if (this.props.albums && this.props.library_albums){
+			for (var i = 0; i < this.props.library_albums.length; i++){
+				var uri = this.props.library_albums[i]
+				if (!this.props.albums.hasOwnProperty(uri) && helpers.uriSource(uri) == 'local'){
+					uris.push(uri)
+				}
+
+				// limit each lookup to 50 URIs
+				if (uris.length >= 50) break
+			}
+		}
+
+		return uris
+	}
+
+	loadMoreSpotify(){
+		this.props.spotifyActions.getURL( this.props.library_albums_spotify_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+	}
+
+	loadMoreMopidy(){
+		var uris = this.moreURIsToLoad()
+		this.props.mopidyActions.getAlbums(uris)
 	}
 
 	setSort(value){
@@ -160,10 +196,6 @@ class LibraryAlbums extends React.Component{
 				label: 'Thumbnails'
 			},
 			{
-				value: 'detail',
-				label: 'Detail'
-			},
-			{
 				value: 'list',
 				label: 'List'
 			}
@@ -203,7 +235,8 @@ class LibraryAlbums extends React.Component{
 			<div className="view library-albums-view">
 				<Header icon="cd" title="My albums" options={options} uiActions={this.props.uiActions} />
 				{ this.renderView(albums) }
-				<LazyLoadListener enabled={this.props.library_albums_more} loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener enabled={this.props.library_albums_spotify_more} loadMore={() => this.loadMoreSpotify()}/>
+				<LazyLoadListener enabled={this.moreURIsToLoad().length > 0} loadMore={() => this.loadMoreMopidy()}/>
 			</div>
 		);
 	}
@@ -218,14 +251,16 @@ class LibraryAlbums extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		mopidy_connected: state.mopidy.connected,
+		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
+		library_albums: state.core.library_albums,
+		library_albums_spotify_started: state.core.library_albums_spotify_started,
+		library_albums_spotify_more: state.core.library_albums_spotify_more,
 		view: state.ui.library_albums_view,
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
-		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false),
-		library_albums: state.core.library_albums,
-		library_albums_started: state.core.library_albums_started,
-		library_albums_more: state.core.library_albums_more
+		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false)
 	}
 }
 

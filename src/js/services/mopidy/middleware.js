@@ -848,7 +848,7 @@ const MopidyMiddleware = (function(){
                         });
 
                         store.dispatch({ 
-                            type: 'LOCAL_ALBUMS_LOADED', 
+                            type: 'LIBRARY_ALBUMS_LOADED', 
                             uris: uris
                         });
                     })
