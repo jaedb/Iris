@@ -47,10 +47,10 @@ class Modal extends React.Component{
 				</div>
 				<div className="content">
 
-					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} /> : null }
+					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} /> : null }
 					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} /> : null }
-					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} /> : null }
-					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
+					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} /> : null }
+					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'send_authorization' ? <AuthorizationModal_Send uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'receive_authorization' ? <AuthorizationModal_Receive uiActions={this.props.uiActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} /> : null }
 					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }

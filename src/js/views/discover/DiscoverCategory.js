@@ -38,7 +38,7 @@ class DiscoverCategory extends React.Component{
 			return (
 				<div className="view discover-categories-view">
 					<Header icon="grid" title={(this.props.category ? this.props.category.name : 'Category')} />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>

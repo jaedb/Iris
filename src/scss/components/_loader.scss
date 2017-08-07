@@ -2,11 +2,18 @@
 .body-loader {
 	padding: 35vh 0;
 
+	&.loading {
+		.loader {
+			opacity: 1;
+		}
+	}
+
 	.loader {
 		height: 120px;
 		width: 120px;
 		margin: 0 auto;
 		position: relative;
+		opacity: 0;
 
 		&:before,
 		&:after {
@@ -42,11 +49,19 @@
 	}
 
 	&.lazy-loader {
-		padding: 0;
+		padding: 20px;
+		height: 40px;
 
 		.loader {			
 			height: 40px;
 			width: 40px;
+			opacity: 0;
+		}
+
+		&.loading {
+			.loader {
+				opacity: 1;
+			}
 		}
 	}
 }

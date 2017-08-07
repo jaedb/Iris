@@ -117,7 +117,7 @@ class LibraryBrowse extends React.Component{
 				return (
 					<div className="view library-local-view">
 						<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
-						<div className="body-loader">
+						<div className="body-loader loading">
 							<div className="loader"></div>
 						</div>
 					</div>

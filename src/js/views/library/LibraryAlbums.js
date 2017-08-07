@@ -109,27 +109,25 @@ class LibraryAlbums extends React.Component{
 					name: 'added_at'
 				},
 				{
-					label: 'Released',
-					name: 'release_date'
-				},
-				{
 					label: 'Tracks',
 					name: 'tracks_total'
+				},
+				{
+					label: 'Source',
+					name: 'source'
 				}
 			]
 			return (
-				<section className="content-wrapper">
-					<List 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						rows={albums} 
-						columns={columns} 
-						className="album-list"
-						link_prefix={global.baseURL+"album/"} />
-				</section>
+				<List 
+					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+					rows={albums} 
+					columns={columns} 
+					className="album-list"
+					link_prefix={global.baseURL+"album/"} />
 			)
 		}else if( this.props.view == 'detail' ){
 			return (
-				<section className="content-wrapper albums-detail-subview">
+				<div>
 					{
 						albums.map( album => {
 							return (
@@ -150,38 +148,42 @@ class LibraryAlbums extends React.Component{
 							)
 						})
 					}
-				</section>			
+				</div>			
 			)
 		}else{
 			return (
-				<section className="content-wrapper">
-					<AlbumGrid 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						albums={albums} />
-				</section>			
+				<AlbumGrid 
+					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+					albums={albums} />
 			)
 		}
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/albums'])){
-			return (
-				<div className="view library-albums-view">
-					<Header icon="cd" title="My albums" />
-					<div className="body-loader">
-						<div className="loader"></div>
-					</div>
-				</div>
-			)
-		}
-
 		var albums = []
-
 		if (this.props.library_albums && this.props.albums){
 			for (var i = 0; i < this.props.library_albums.length; i++){
 				var uri = this.props.library_albums[i]
+
 				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
+					switch (this.props.filter){
+
+						case 'spotify':
+							if (this.props.albums[uri].source == 'spotify'){
+								albums.push(this.props.albums[uri])
+							}
+							break
+
+						case 'local':
+							if (this.props.albums[uri].source == 'local'){
+								albums.push(this.props.albums[uri])
+							}
+							break
+
+						default:
+							albums.push(this.props.albums[uri])
+							break
+					}
 				}
 			}
 
@@ -189,6 +191,21 @@ class LibraryAlbums extends React.Component{
 				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
 			}
 		}
+
+		var filter_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'local',
+				label: 'Local'
+			},
+			{
+				value: 'spotify',
+				label: 'Spotify'
+			}
+		]
 
 		var view_options = [
 			{
@@ -215,17 +232,18 @@ class LibraryAlbums extends React.Component{
 				label: 'Added'
 			},
 			{
-				value: 'release_date',
-				label: 'Released'
-			},
-			{
 				value: 'tracks_total',
 				label: 'Tracks'
+			},
+			{
+				value: 'source',
+				label: 'Source'
 			}
 		]
 
 		var options = (
 			<span>
+				<DropdownField icon="filter" name="Filter" value={this.props.filter} options={filter_options} handleChange={val => {this.props.uiActions.set({ library_albums_filter: val}); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu() }} />
 			</span>
@@ -233,10 +251,15 @@ class LibraryAlbums extends React.Component{
 
 		return (
 			<div className="view library-albums-view">
+
 				<Header icon="cd" title="My albums" options={options} uiActions={this.props.uiActions} />
-				{ this.renderView(albums) }
-				<LazyLoadListener enabled={this.props.library_albums_spotify_more} loadMore={() => this.loadMoreSpotify()}/>
-				<LazyLoadListener enabled={this.moreURIsToLoad().length > 0} loadMore={() => this.loadMoreMopidy()}/>
+
+				<section className="content-wrapper">
+					{ this.renderView(albums) }
+					<LazyLoadListener loading={this.props.library_albums_spotify_more} loadMore={() => this.loadMoreSpotify()}/>
+					<LazyLoadListener loading={this.moreURIsToLoad().length > 0} loadMore={() => this.loadMoreMopidy()}/>
+				</section>
+
 			</div>
 		);
 	}
@@ -259,6 +282,7 @@ const mapStateToProps = (state, ownProps) => {
 		library_albums_spotify_started: state.core.library_albums_spotify_started,
 		library_albums_spotify_more: state.core.library_albums_spotify_more,
 		view: state.ui.library_albums_view,
+		filter: (state.ui.library_albums_filter ? state.ui.library_albums_filter : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
 		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false)
 	}

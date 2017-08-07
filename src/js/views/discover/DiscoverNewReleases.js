@@ -82,7 +82,7 @@ class DiscoverNewReleases extends React.Component{
 			return (
 				<div className="view discover-new-releases-view">
 					<Header icon="leaf" title="New Releases" />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>

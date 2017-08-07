@@ -32,7 +32,7 @@ class LibraryTracks extends React.Component{
 			return (
 				<div className="view library-tracks-view">
 					<Header icon="music" title="My tracks" />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>

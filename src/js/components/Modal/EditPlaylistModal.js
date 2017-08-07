@@ -24,7 +24,7 @@ export default class EditPlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.uiActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative)
+			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative)
 			this.props.uiActions.closeModal()
 			return false
 		}

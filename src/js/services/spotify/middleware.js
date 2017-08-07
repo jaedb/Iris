@@ -250,6 +250,7 @@ const SpotifyMiddleware = (function(){
                             {},
                             action.data.artists.items[i],
                             {
+                                source: 'spotify',
                                 in_library: true     // assumed because we asked for library items
                             }
                         )
@@ -276,6 +277,7 @@ const SpotifyMiddleware = (function(){
                             action.data.items[i].album,
                             {
                                 in_library: true,    // assumed because we asked for library items
+                                source: 'spotify',
                                 added_at: action.data.items[i].added_at,
                                 tracks: action.data.items[i].album.tracks.items,
                                 tracks_more: action.data.items[i].album.tracks.next,

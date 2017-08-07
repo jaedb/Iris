@@ -159,7 +159,7 @@ class Playlist extends React.Component{
 
 		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id+'?'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)

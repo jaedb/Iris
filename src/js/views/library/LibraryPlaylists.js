@@ -45,7 +45,7 @@ class LibraryPlaylists extends React.Component{
 	renderView(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_me/playlists'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)
@@ -110,21 +110,19 @@ class LibraryPlaylists extends React.Component{
 						name: 'owner'
 					},
 					{
-						label: 'Source',
-						name: 'source'
-					},
-					{
 						label: 'Tracks',
 						name: 'tracks_total'
 					},
 					{
 						label: 'Editable',
 						name: 'can_edit'
+					},
+					{
+						label: 'Source',
+						name: 'source'
 					}
 				]
 			}
-
-			console.log(columns)
 
 			return (
 				<section className="content-wrapper">

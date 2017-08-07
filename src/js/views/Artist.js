@@ -98,7 +98,7 @@ class Artist extends React.Component{
 	renderBody(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)

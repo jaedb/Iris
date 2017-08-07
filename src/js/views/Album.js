@@ -98,7 +98,7 @@ class Album extends React.Component{
 	render(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)

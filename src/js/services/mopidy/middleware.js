@@ -866,7 +866,7 @@ const MopidyMiddleware = (function(){
                                 var album = Object.assign(
                                     {},
                                     {
-                                        is_mopidy: true,
+                                        source: 'local',
                                         artists: response[uri][0].artists,
                                         tracks: response[uri],
                                         tracks_total: response[uri].length
@@ -895,7 +895,7 @@ const MopidyMiddleware = (function(){
                             { images: [] },
                             response[0].album,
                             {
-                                is_mopidy: true,
+                                source: 'local',
                                 artists: response[0].artists,
                                 tracks: response,
                                 tracks_total: response.length
