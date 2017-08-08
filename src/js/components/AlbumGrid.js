@@ -5,22 +5,14 @@ import { createStore, bindActionCreators } from 'redux'
 import { hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
-import Thumbnail from './Thumbnail'
-import ArtistSentence from './ArtistSentence'
-
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
+import GridItem from './GridItem'
 
 class AlbumGrid extends React.Component{
 
 	constructor(props) {
-		super(props);
-	}
-
-	handleClick(e,link){
-		if( e.target.tagName.toLowerCase() !== 'a' ){
-			hashHistory.push(link)
-		}
+		super(props)
 	}
 
 	handleContextMenu(e,item){
@@ -41,24 +33,16 @@ class AlbumGrid extends React.Component{
 			return (
 				<div className={className}>
 					{
-						this.props.albums.map(
-							(album, index) => {
-								return (
-									<div className="grid-item" 
-										key={index} 
-										onClick={ (e) => this.handleClick(e,global.baseURL+'album/'+album.uri) }
-										onContextMenu={e => this.handleContextMenu(e,album)}>
-											<Thumbnail size="medium" images={album.images} />
-											{album.name ? <div className="name">
-												{album.name}
-												{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(album.uri)} className="source" fixedWidth /> : null}
-											</div> : <div className="name dark-grey-text">{album.uri}</div>}
-											<div className="secondary">
-												{album.artists ? <ArtistSentence artists={album.artists} /> : null}
-											</div>
-									</div>
-								)
-							}
+						this.props.albums.map(album => {
+							return (
+								<GridItem
+									key={album.uri}
+									type="album"
+									item={album}
+									onClick={e => {hashHistory.push(global.baseURL+'album/'+album.uri)}}
+									onContextMenu={e => this.handleContextMenu(e,album)}
+								/>
+							)}
 						)
 					}
 				</div>
