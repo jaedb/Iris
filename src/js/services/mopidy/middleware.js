@@ -844,7 +844,7 @@ const MopidyMiddleware = (function(){
 
                         store.dispatch({ 
                             type: 'MOPIDY_GET_ALBUMS',
-                            uris: uris.slice(0,50)
+                            uris: uris//.slice(0,50) THIS PAGINATES REQUESTS. Slow servers might need this...
                         });
 
                         store.dispatch({ 

@@ -85,9 +85,10 @@ export default function reducer(spotify = {}, action){
                     }
                 ))
             }
+            console.log(action)
             return Object.assign({}, spotify, { 
                 library_albums: albums, 
-                library_albums_more: action.data.next 
+                library_albums_spotify_more: action.data.next 
             })
 
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE':
@@ -103,7 +104,7 @@ export default function reducer(spotify = {}, action){
             }
             return Object.assign({}, spotify, {
                 library_albums: [...spotify.library_albums, ...albums ],
-                library_albums_more: action.data.next
+                library_albums_spotify_more: action.data.next
             })
 
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':

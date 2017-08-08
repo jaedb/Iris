@@ -206,9 +206,9 @@ export default function reducer(core = {}, action){
 
             return Object.assign({}, core, { 
                 library_albums: helpers.removeDuplicates([...library_albums, ...action.uris]),
-                library_albums_spotify_more: (action.spotify_more ? action.spotify_more : null),
+                library_albums_more: (action.more ? action.more : null),
                 library_albums_total: (action.total ? action.total : null),
-                library_albums_spotify_started: (action.spotify_started ? action.spotify_started : null),
+                library_albums_started: (action.started ? action.started : null),
             });
 
         case 'ALBUM_LIBRARY_CHECK':

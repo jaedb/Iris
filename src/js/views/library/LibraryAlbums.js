@@ -35,8 +35,9 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps){
-		if (!this.props.spotify_connected && newProps.spotify_connected && !this.props.library_albums_spotify_started){
+		if (!this.props.spotify_connected && newProps.spotify_connected && !this.props.library_albums_started){
 			this.props.spotifyActions.getLibraryAlbums()
+			console.log('getting')
 		}
 
 		if (!this.props.mopidy_connected && newProps.mopidy_connected && !newProps.local_albums){
@@ -72,7 +73,7 @@ class LibraryAlbums extends React.Component{
 	}
 
 	loadMoreSpotify(){
-		this.props.spotifyActions.getURL( this.props.library_albums_spotify_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
 	}
 
 	loadMoreMopidy(){
@@ -163,27 +164,35 @@ class LibraryAlbums extends React.Component{
 		var albums = []
 		if (this.props.library_albums && this.props.albums){
 			for (var i = 0; i < this.props.library_albums.length; i++){
+
 				var uri = this.props.library_albums[i]
+				var source = helpers.uriSource(uri)
+				var album = {
+					uri: uri,
+					source: source
+				}
 
 				if (this.props.albums.hasOwnProperty(uri)){
-					switch (this.props.filter){
+					album = this.props.albums[uri]
+				}
 
-						case 'spotify':
-							if (this.props.albums[uri].source == 'spotify'){
-								albums.push(this.props.albums[uri])
-							}
-							break
+				switch (this.props.filter){
 
-						case 'local':
-							if (this.props.albums[uri].source == 'local'){
-								albums.push(this.props.albums[uri])
-							}
-							break
+					case 'spotify':
+						if (source == 'spotify'){
+							albums.push(album)
+						}
+						break
 
-						default:
-							albums.push(this.props.albums[uri])
-							break
-					}
+					case 'local':
+						if (source == 'local'){
+							albums.push(album)
+						}
+						break
+
+					default:
+						albums.push(album)
+						break
 				}
 			}
 
@@ -256,8 +265,10 @@ class LibraryAlbums extends React.Component{
 
 				<section className="content-wrapper">
 					{ this.renderView(albums) }
-					<LazyLoadListener loading={this.props.library_albums_spotify_more} loadMore={() => this.loadMoreSpotify()}/>
-					<LazyLoadListener loading={this.moreURIsToLoad().length > 0} loadMore={() => this.loadMoreMopidy()}/>
+					<LazyLoadListener 
+						loading={this.props.library_albums_more && (this.props.filter == 'all' || this.props.filter == 'spotify')} 
+						loadMore={() => this.loadMoreSpotify()}
+					/>
 				</section>
 
 			</div>
@@ -279,8 +290,8 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		library_albums: state.core.library_albums,
-		library_albums_spotify_started: state.core.library_albums_spotify_started,
-		library_albums_spotify_more: state.core.library_albums_spotify_more,
+		library_albums_started: state.core.library_albums_started,
+		library_albums_more: state.core.library_albums_more,
 		view: state.ui.library_albums_view,
 		filter: (state.ui.library_albums_filter ? state.ui.library_albums_filter : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
