@@ -149,11 +149,6 @@ class LibraryBrowse extends React.Component{
 					name: 'Local artists',
 					link: global.baseURL+'library/browse/local-artists',
 					icons: ['assets/backgrounds/browse-artists.jpg']
-				},
-				{
-					name: 'Local albums',
-					link: global.baseURL+'library/browse/local-albums',
-					icons: ['assets/backgrounds/browse-albums.jpg']
 				}
 			]
 

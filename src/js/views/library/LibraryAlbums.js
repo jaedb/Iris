@@ -37,7 +37,6 @@ class LibraryAlbums extends React.Component{
 	componentWillReceiveProps(newProps){
 		if (!this.props.spotify_connected && newProps.spotify_connected && !this.props.library_albums_started){
 			this.props.spotifyActions.getLibraryAlbums()
-			console.log('getting')
 		}
 
 		if (!this.props.mopidy_connected && newProps.mopidy_connected && !newProps.local_albums){
