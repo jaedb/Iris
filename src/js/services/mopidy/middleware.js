@@ -842,10 +842,12 @@ const MopidyMiddleware = (function(){
 
                         var uris = helpers.arrayOf('uri',response)
 
+                        /*
                         store.dispatch({ 
                             type: 'MOPIDY_GET_ALBUMS',
                             uris: uris//.slice(0,50) THIS PAGINATES REQUESTS. Slow servers might need this...
                         });
+                        */
 
                         store.dispatch({ 
                             type: 'LIBRARY_ALBUMS_LOADED', 

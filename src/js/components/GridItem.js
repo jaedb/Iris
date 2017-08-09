@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
-import LazyLoad from 'react-lazyload'
 
 import Thumbnail from './Thumbnail'
 import ArtistSentence from './ArtistSentence'
@@ -33,35 +32,35 @@ export default class GridItem extends React.Component{
 
 			case 'playlist':
 				return (
-					<span>
+					<div className="secondary">
 						{item.tracks_total ? item.tracks_total+' tracks' : null}
 						{item.can_edit ? <FontAwesome name="edit" /> : null}
-					</span>
+					</div>
 				)
 				break
 
 			case 'artist':
 				return (
-					<span>
+					<div className="secondary">
 						{item.followers ? item.followers.total.toLocaleString()+' followers' : item.albums_uris.length+' albums'}
-					</span>
+					</div>
 				)
 				break
 
 			case 'album':
 				return (
-					<span>
+					<div className="secondary">
 						{item.artists ? <ArtistSentence artists={item.artists} /> : null}
-					</span>
+					</div>
 				)
 				break
 
 			default:
 				return (
-					<span>
+					<div className="secondary">
 						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
 						{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
-					</span>
+					</div>
 				)
 		}
 
@@ -76,7 +75,7 @@ export default class GridItem extends React.Component{
 			item.album.added_at = item.added_at;
 			item = item.album;
 		}
-		var images = []		
+		var images = null
 		if (this.props.item.images) {
 			images = this.props.item.images
 		} else if (this.props.item.icons){
@@ -85,13 +84,9 @@ export default class GridItem extends React.Component{
 
 		return (
 			<div className="grid-item" onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
-				<LazyLoad height={10} placeholder={<Thumbnail size="medium" />}>
-					<Thumbnail size="medium" images={images} />
-				</LazyLoad>
-				<div className="name">{item.name ? item.name : item.uri}</div>
-				<div className="secondary">
-					{ this.renderSecondary(item) }
-				</div>
+				<Thumbnail size="medium" images={images} />
+				<div className="name">{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}</div>
+				{ this.renderSecondary(item) }
 			</div>
 		);
 	}

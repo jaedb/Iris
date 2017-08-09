@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
+import LazyLoad from 'react-lazyload'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -65,7 +66,6 @@ class Thumbnail extends React.Component{
 
 	render(){
 		var image = this.mapImageSizes()
-		var style = { backgroundImage: 'url("'+image+'")' }
 		var class_name = 'thumbnail '
 		if( this.props.size ) class_name += ' '+this.props.size
 		if( this.props.circle ) class_name += ' circle'
@@ -78,8 +78,13 @@ class Thumbnail extends React.Component{
 
 		return (
 			<div className={class_name}>
-				<div className="image" style={style}></div>
+
+				<LazyLoad height={10} placeholder={<div className="image"></div>}>
+					<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
+				</LazyLoad>
+
 				{zoom_icon}
+
 			</div>
 		);
 	}
