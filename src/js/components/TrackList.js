@@ -36,10 +36,19 @@ class TrackList extends React.Component{
 	}
 
 	handleKeyUp(e){
-		if (!this.digestTracksKeys()) return
 
-		switch(e.keyCode){
-			
+		// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
+		var ignoreNodes = ['INPUT', 'TEXTAREA']
+		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
+			return false
+		}
+
+		// No tracks selected - no action required
+		if (!this.digestTracksKeys() || this.digestTracksKeys().length <= 0){
+			return
+		}
+
+		switch(e.keyCode){			
 			case 13: // enter
 				 this.playTracks();
 				break;
