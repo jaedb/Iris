@@ -64,21 +64,9 @@ export function enqueueURIs(uris, from_uri = null, next = false, at_position = n
 	}
 }
 
-export function enqueueURIsCancel(){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_CANCEL'
-	}
-}
-
 export function enqueueURIsBatchDone(){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
-	}
-}
-
-export function enqueueUrisProcessor(){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_PROCESSOR'
 	}
 }
 

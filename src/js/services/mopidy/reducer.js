@@ -104,15 +104,16 @@ export default function reducer(mopidy = {}, action){
                 enqueue_uris_batches: batches  
             });
 
-        case 'MOPIDY_ENQUEUE_URIS_CANCEL':
+        case 'MOPIDY_ENQUEUE_URIS_PROCESSOR_CANCEL':
             return Object.assign({}, mopidy, {
                 enqueue_uris_batches: []  
             });
 
         case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
             if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
+
+                // Batches empty, so we've been cancelled
                 var batches = []
-                console.error('Cannot remove batch when queue empty',action)
             } else {
                 var batches = mopidy.enqueue_uris_batches
                 batches.shift()

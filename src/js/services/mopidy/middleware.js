@@ -272,7 +272,6 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
                     }
@@ -280,7 +279,6 @@ const MopidyMiddleware = (function(){
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                     store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                     break
 
@@ -329,7 +327,7 @@ const MopidyMiddleware = (function(){
                 next(action)
 
                 // start our processor
-                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+action.uris.length+' URI(s)'))
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
@@ -343,11 +341,11 @@ const MopidyMiddleware = (function(){
                     for (var i = 0; i < batches.length; i++){
                         total_uris += batches[i].uris.length
                     }
-                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Adding '+total_uris+' URI(s)'))
+                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)'))
 
                 // no batches means we're done here
                 } else {
-                    store.dispatch(uiActions.stopProcess('MOPIDY_ENQUEUE_URIS'))
+                    store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'))
                     break
                 }
 
@@ -400,7 +398,7 @@ const MopidyMiddleware = (function(){
                         setTimeout(
                             function(){ 
                                 store.dispatch(mopidyActions.enqueueURIsBatchDone())
-                                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                                store.dispatch(uiActions.runProcess(action.type))
                             }, 
                             100
                         )
@@ -846,7 +844,7 @@ const MopidyMiddleware = (function(){
                         });
 
                         // Start our process to load the full album objects
-                        store.dispatch(mopidyActions.runProcessor('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+                        store.dispatch(uiActions.runProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
                     })
                 break;
 
@@ -856,7 +854,7 @@ const MopidyMiddleware = (function(){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS']
 
                     if (processor.cancelling){
-                        store.dispatch(uiActions.stopProcess('MOPIDY_LIBRARY_ALBUMS'))
+                        store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS'))
                         return false
                     }
                 }
@@ -876,7 +874,7 @@ const MopidyMiddleware = (function(){
                 if (to_load.length > 0){
                     store.dispatch(mopidyActions.getAlbums(to_load, 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
                 } else {
-                    store.dispatch(uiActions.stopProcess('MOPIDY_LIBRARY_ALBUMS'))
+                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS'))
                 }
 
                 break

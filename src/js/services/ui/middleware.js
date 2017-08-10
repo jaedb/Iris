@@ -122,13 +122,17 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'START_PROCESS':
+                store.dispatch({
+                    type: action.key
+                })
+                next(action)
+                break
+
             case 'CANCEL_PROCESS':
-                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
-                    store.dispatch(mopidyActions.enqueueURIsCancel())
-                }
-                if (action.key == 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR'){
-                    store.dispatch(mopidyActions.cancelProcessor(action.key))
-                }
+                store.dispatch({
+                    type: action.key+'_CANCEL'
+                })
                 next(action)
                 break
 

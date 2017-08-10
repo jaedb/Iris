@@ -126,6 +126,7 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, {load_queue: load_queue})
 
          case 'START_PROCESS':
+         case 'UPDATE_PROCESS':
             var processes = Object.assign({}, (ui.processes ? ui.processes : []))
             processes[action.key] = {
                 key: action.key,
@@ -146,7 +147,7 @@ export default function reducer(ui = {}, action){
             }
             return Object.assign({}, ui, {processes: processes})
 
-         case 'STOP_PROCESS':
+         case 'PROCESS_FINISHED':
             var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
             if (processes[action.key]){
                 delete processes[action.key]

@@ -176,6 +176,20 @@ export function startProcess(key,content){
     }
 }
 
+export function updateProcess(key,content){
+    return { 
+        type: 'UPDATE_PROCESS',
+        key: key,
+        content: content
+    }
+}
+
+export function runProcess(key){
+    return { 
+        type: key
+    }
+}
+
 export function cancelProcess(key){
     return { 
         type: 'CANCEL_PROCESS',
@@ -183,9 +197,9 @@ export function cancelProcess(key){
     }
 }
 
-export function stopProcess(key){
+export function processFinished(key){
     return { 
-        type: 'STOP_PROCESS',
+        type: 'PROCESS_FINISHED',
         key: key
     }
 }
