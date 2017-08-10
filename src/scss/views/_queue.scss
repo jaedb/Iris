@@ -26,14 +26,14 @@
 			&.radio-enabled {
 				.thumbnail {
 					box-sizing: border-box;
-					padding: 10%;
 				}
 
 				.radio-overlay {
 					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
+					top: -15%;
+					left: -15%;
+					width: 130%;
+					height: 130%;
 					z-index: 2;
 				}
 			}
