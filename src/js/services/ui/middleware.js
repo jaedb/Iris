@@ -126,6 +126,9 @@ const UIMiddleware = (function(){
                 if (action.key == 'MOPIDY_ENQUEUE_URIS'){
                     store.dispatch(mopidyActions.enqueueURIsCancel())
                 }
+                if (action.key == 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR'){
+                    store.dispatch(mopidyActions.cancelProcessor(action.key))
+                }
                 next(action)
                 break
 

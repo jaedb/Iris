@@ -1,50 +1,50 @@
 
+.loader {
+	height: 120px;
+	width: 120px;
+	margin: 0 auto;
+	position: relative;
+	opacity: 0;
+
+	&:before,
+	&:after {
+		content: '';
+		display: block;
+		margin: 0 auto;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		border: {
+			radius: 100%;
+			style: solid;
+			width: 2px;
+		}
+	}
+
+	&:before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border: {
+			color: lighten($dark_grey, 5%);
+		}
+	}
+	
+	&:after {
+		@include spin();
+		border-top-color: transparent;
+		border-left-color: transparent;
+		border-bottom-color: transparent;
+		border-right-color: $blue;
+	}
+}
+
 .body-loader {
 	padding: 35vh 0;
 
 	&.loading {
 		.loader {
 			opacity: 1;
-		}
-	}
-
-	.loader {
-		height: 120px;
-		width: 120px;
-		margin: 0 auto;
-		position: relative;
-		opacity: 0;
-
-		&:before,
-		&:after {
-			content: '';
-			display: block;
-			margin: 0 auto;
-			width: 100%;
-			height: 100%;
-			box-sizing: border-box;
-			border: {
-				radius: 100%;
-				style: solid;
-				width: 2px;
-			}
-		}
-
-		&:before {
-			position: absolute;
-			top: 0;
-			left: 0;
-			border: {
-				color: lighten($dark_grey, 5%);
-			}
-		}
-		
-		&:after {
-			@include spin();
-			border-top-color: transparent;
-			border-left-color: transparent;
-			border-bottom-color: transparent;
-			border-right-color: $blue;
 		}
 	}
 

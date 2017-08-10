@@ -13,7 +13,7 @@ class Thumbnail extends React.Component{
 	constructor(props) {
 		super(props);
 	}
-
+/*
 	// TODO: ascertain whether this is improving or hindering performance
 	// The UI appears to work perfectly fine without this
 	shouldComponentUpdate(nextProps, nextState){
@@ -22,23 +22,24 @@ class Thumbnail extends React.Component{
 		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
 
 		// image changed
-		if( !this.props.image && nextProps.image ) return true
-		if( this.props.image && nextProps.image ) return true
-		if( this.props.image != nextProps.image ) return true
+		if (!this.props.image && nextProps.image) return true
+		if (this.props.image && nextProps.image) return true
+		if (this.props.image != nextProps.image) return true
 
 		// images array changed
-		if( typeof(this.props.images) === 'undefined' && nextProps.images ) return true
-		if( this.props.images && typeof(nextProps.images) === 'undefined' ) return true
-		if( this.props.images.length != nextProps.images.length ) return true
+		if (this.props.images === undefined && nextProps.images ) return true
+		if (this.props.images && nextProps.images === undefined) return true
+		if (this.props.images && !nextProps.images || this.props.images.length != nextProps.images.length ) return true
 
 		// image item changed	
 		var size = 'medium'
 		var images = helpers.sizedImages( nextProps.images )
-		if( this.props.size ) size = this.props.size
-		if( this.props.images[size] != images[size] ) return true
+		if (this.props.size ) size = this.props.size
+		if (this.props.images[size] != images[size]) return true
 
 		return false
 	}
+	*/
 
 	mapImageSizes( props = this.props ){
 
@@ -79,7 +80,7 @@ class Thumbnail extends React.Component{
 		return (
 			<div className={class_name}>
 
-				<LazyLoad height={10} placeholder={<div className="image"></div>}>
+				<LazyLoad height={600} placeholder={<div className="image"></div>}>
 					<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
 				</LazyLoad>
 

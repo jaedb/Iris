@@ -48,14 +48,16 @@ export default class Notifications extends React.Component{
 				if (processes[key].cancelling){
 					items.push(
 						<div className="process notification cancelling" key={key}>
+							<div className="loader"></div>
 							Cancelling
 						</div>
 					)
 				} else {
 					items.push(
 						<div className="process notification" key={key}>
-							<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelProcess(key) } />
+							<div className="loader"></div>
 							{ processes[key].content }
+							<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelProcess(key) } />
 						</div>
 					)
 				}

@@ -217,16 +217,29 @@ export function getAlbum( uri ){
 	}
 }
 
-export function getAlbums( uris ){
+export function getAlbums(uris, processor = null){
 	return { 
 		type: 'MOPIDY_GET_ALBUMS', 
-		uris: uris 
+		uris: uris,
+		processor: processor
 	}
 }
 
 export function getLibraryAlbums(){
 	return { 
 		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+	}
+}
+
+export function runProcessor(processor){
+	return {
+		type: processor
+	}
+}
+
+export function cancelProcessor(processor){
+	return {
+		type: processor+'_CANCEL'
 	}
 }
 
