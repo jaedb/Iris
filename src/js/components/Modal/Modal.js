@@ -67,16 +67,16 @@ class Modal extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		current_track: (typeof(state.core.current_track) !== 'undefined' && typeof(state.core.tracks) !== 'undefined' && typeof(state.core.tracks[state.core.current_track.uri]) !== 'undefined' ? state.core.tracks[state.core.current_track.uri] : null),
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : null),
 		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
 		modal: state.ui.modal,
-		radio: state.ui.radio,
+		radio: state.core.radio,
 		tracks: state.core.tracks,
-		artists: state.ui.artists,
-		playlists: state.ui.playlists,
+		artists: state.core.artists,
+		playlists: state.core.playlists,
 		context_menu: state.ui.context_menu,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization

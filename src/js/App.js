@@ -147,7 +147,7 @@ class App extends React.Component{
 				} else if (e.ctrlKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
-						volume -= 10
+						volume -= 5
 						if (volume < 0) volume = 0
 						this.props.mopidyActions.setVolume(volume)
 						if (this.props.mute) this.props.mopidyActions.setMute(false)
@@ -164,7 +164,7 @@ class App extends React.Component{
 				} else if (e.ctrlKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
-						volume += 10
+						volume += 5
 						if (volume > 100) volume = 100
 						this.props.mopidyActions.setVolume(volume)
 						if (this.props.mute) this.props.mopidyActions.setMute(false)

@@ -172,11 +172,11 @@ input[type="submit"] {
 
 	.flag {
 		font-size: 10px;
-		margin-left: 3px;
+		margin-left: 5px;
 		padding: 1px 4px;
 		line-height: 1.2em;
 		vertical-align: top;
-		margin-top: 6px;
+		margin-top: 1px;
 	}
 
 	@include responsive( $bp_medium ){

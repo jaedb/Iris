@@ -74,7 +74,7 @@ class Queue extends React.Component{
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail image={image} />
+				<Thumbnail image={image} circle={this.props.radio_enabled} />
 			</Link>
 		)
 	}
@@ -151,8 +151,8 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		radio: state.ui.radio,
-		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
+		radio: state.core.radio,
+		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		current_tracklist: state.core.current_tracklist,
 		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null)
 	}
