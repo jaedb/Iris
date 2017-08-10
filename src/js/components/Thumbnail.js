@@ -77,15 +77,17 @@ class Thumbnail extends React.Component{
 			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>
 		}
 
+		/*
+		// It's a great idea, but interferes with huge lists (like Albums library)
+		<LazyLoad height={600} placeholder={<div className="image"></div>}>
+			<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
+		</LazyLoad>
+		*/
+
 		return (
 			<div className={class_name}>
-
-				<LazyLoad height={600} placeholder={<div className="image"></div>}>
-					<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
-				</LazyLoad>
-
+				<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
 				{zoom_icon}
-
 			</div>
 		);
 	}

@@ -21,6 +21,27 @@ class LibraryPlaylists extends React.Component{
 		super(props);
 	}
 
+	componentDidMount(){
+		if (!this.props.local_albums){
+			if (this.props.spotify_connected){
+				this.props.spotifyActions.getAllLibraryPlaylists()
+			}
+			if (this.props.mopidy_connected){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (!this.props.spotify_connected && newProps.spotify_connected){
+			this.props.spotifyActions.getAllLibraryPlaylists()
+		}
+
+		if (!this.props.mopidy_connected && newProps.mopidy_connected){
+			this.props.mopidyActions.getLibraryPlaylists()
+		}
+	}
+
 	handleContextMenu(e,item){
 		var data = {
 			e: e,
@@ -226,6 +247,8 @@ class LibraryPlaylists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		mopidy_connected: state.mopidy.connected,
+		spotify_connected: state.spotify.connected,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),

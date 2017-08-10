@@ -199,7 +199,13 @@ class LibraryBrowse extends React.Component{
 							{
 								grid_items.map(
 									(item, index) => {
-										return <GridItem item={item} key={index} link={item.link} />
+										return (
+											<GridItem 
+												item={item} 
+												key={index} 
+												onClick={e => hashHistory.push(item.link)}
+											/>
+										)
 									}
 								)
 							}
