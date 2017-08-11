@@ -14,8 +14,8 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_DISCONNECTED':
             return Object.assign({}, spotify, { connected: false, connecting: false })
 
-        case 'SPOTIFY_SET_CONFIG':
-            return Object.assign({},spotify,action.config)
+        case 'SPOTIFY_SET':
+            return Object.assign({},spotify,action.data)
 
         case 'PUSHER_SPOTIFY_TOKEN':
             if (spotify.authorization) return spotify;

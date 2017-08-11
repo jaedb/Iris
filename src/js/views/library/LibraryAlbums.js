@@ -14,6 +14,7 @@ import DropdownField from '../../components/DropdownField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -25,21 +26,16 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.spotify_connected && !this.props.library_albums_spotify_started){
-			this.props.spotifyActions.getLibraryAlbums()
-		}
-
-		if (this.props.mopidy_connected && !this.props.local_albums){
-			this.props.mopidyActions.getLibraryAlbums()
+		if (!this.props.library_albums){
+			this.props.coreActions.getLibraryAlbums()
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (!this.props.spotify_connected && newProps.spotify_connected && !this.props.library_albums_started){
+		if (!this.props.spotify_connected && newProps.spotify_connected){
 			this.props.spotifyActions.getLibraryAlbums()
 		}
-
-		if (!this.props.mopidy_connected && newProps.mopidy_connected && !newProps.local_albums){
+		if (!this.props.mopidy_connected && newProps.mopidy_connected){
 			this.props.mopidyActions.getLibraryAlbums()
 		}
 	}
@@ -289,8 +285,6 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		library_albums: state.core.library_albums,
-		library_albums_started: state.core.library_albums_started,
-		library_albums_more: state.core.library_albums_more,
 		view: state.ui.library_albums_view,
 		filter: (state.ui.library_albums_filter ? state.ui.library_albums_filter : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
@@ -300,6 +294,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

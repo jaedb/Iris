@@ -333,7 +333,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_CONFIG':
-                store.dispatch(spotifyActions.setConfig({
+                store.dispatch(spotifyActions.set({
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
                     authorization_url: (action.config.authorization_url ? action.config.authorization_url : null),

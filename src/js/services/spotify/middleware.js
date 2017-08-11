@@ -180,6 +180,10 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+            case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data))
+                break
+
             case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                 var playlists = []
                 for( var i = 0; i < action.playlists.length; i++ ){
@@ -236,20 +240,24 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+            case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data))
+                break
+
             case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
                 var albums = []
-                for (var i = 0; i < action.data.items.length; i++){
+                for (var i = 0; i < action.albums.length; i++){
                     albums.push(
                         Object.assign(
                             {},
-                            action.data.items[i].album,
+                            action.albums[i].album,
                             {
                                 in_library: true,    // assumed because we asked for library items
                                 source: 'spotify',
-                                added_at: action.data.items[i].added_at,
-                                tracks: action.data.items[i].album.tracks.items,
-                                tracks_more: action.data.items[i].album.tracks.next,
-                                tracks_total: action.data.items[i].album.tracks.total
+                                added_at: action.albums[i].added_at,
+                                tracks: action.albums[i].album.tracks.items,
+                                tracks_more: action.albums[i].album.tracks.next,
+                                tracks_total: action.albums[i].album.tracks.total
                             }
                         )
                     )
@@ -262,9 +270,7 @@ const SpotifyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'LIBRARY_ALBUMS_LOADED',
-                    uris: helpers.arrayOf('uri',albums),
-                    more: action.data.next,
-                    total: action.data.total
+                    uris: helpers.arrayOf('uri',albums)
                 });
                 break
 

@@ -264,6 +264,26 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            case 'GET_LIBRARY_ALBUMS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryAlbums())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryAlbums())
+                }
+                next(action)
+                break
+
+            case 'GET_LIBRARY_ARTISTS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryArtists())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryArtists())
+                }
+                next(action)
+                break
+
             case 'RESTART':
                 location.reload()
                 break

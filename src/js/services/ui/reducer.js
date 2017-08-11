@@ -128,10 +128,15 @@ export default function reducer(ui = {}, action){
          case 'START_PROCESS':
          case 'UPDATE_PROCESS':
             var processes = Object.assign({}, (ui.processes ? ui.processes : []))
+            if (processes[action.key]){
+                var data = Object.assign({}, processes[action.key].data, action.data)
+            } else {
+                var data = action.data
+            }
             processes[action.key] = {
                 key: action.key,
                 message: action.message,
-                data: action.data
+                data: data
             }
             return Object.assign({}, ui, {processes: processes})
 

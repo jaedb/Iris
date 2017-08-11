@@ -42,7 +42,7 @@ class Sidebar extends React.Component{
 							</Link>
 						</section>
 
-						<section>
+						{this.props.spotify_enabled ? <section>
 							<title>Discover</title>
 							<Link className={this.linkClassName('discover/recommendations')} to={global.baseURL+"discover/recommendations"}>
 								<Icon name="compass" />
@@ -60,7 +60,7 @@ class Sidebar extends React.Component{
 								<Icon name="leaf" />
 								New releases
 							</Link>
-						</section>
+						</section> : null}
 
 						<section>
 							<title>My Music</title>

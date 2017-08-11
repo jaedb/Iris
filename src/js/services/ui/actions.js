@@ -188,7 +188,8 @@ export function updateProcess(key,message,data = {}){
 
 export function runProcess(key,data = {}){
     return { 
-        type: key
+        type: key,
+        data: data
     }
 }
 

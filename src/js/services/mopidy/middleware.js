@@ -231,6 +231,16 @@ const MopidyMiddleware = (function(){
                     uri_schemes[i] = uri_schemes[i] +':'
                 }
 
+                // Enable Iris providers when the backend is available
+                if (uri_schemes.includes('spotify:')){
+                    store.dispatch({
+                        type: 'SPOTIFY_SET',
+                        data: {
+                            enabled: true
+                        }
+                    })
+                }
+
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break
 
@@ -838,45 +848,37 @@ const MopidyMiddleware = (function(){
                     .then( response => {
                         if (response.length <= 0) return
 
+                        var uris = helpers.arrayOf('uri',response)
                         store.dispatch({ 
                             type: 'LIBRARY_ALBUMS_LOADED', 
-                            uris: helpers.arrayOf('uri',response)
+                            uris: uris
                         });
 
                         // Start our process to load the full album objects
-                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS', 'Loading album library'))
-                        store.dispatch(uiActions.runProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' library albums', {uris: uris}))
                     })
                 break;
 
             case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR':
+                console.log(action)
 
-                if (store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS'] !== undefined){
-                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS']
+                if (store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
+                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR']
 
                     if (processor.cancelling){
-                        store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS'))
+                        store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
                         return false
                     }
                 }
 
-                // Figure out the remaining items
-                var library_uris = store.getState().core.library_albums
-                var uris_not_loaded = []
-                for (var i = 0; i < library_uris.length; i++){
-                    var uri = library_uris[i]
-                    if (helpers.uriSource(uri) == 'local' && store.getState().core.albums[uri] === undefined){
-                        uris_not_loaded.push(uri)
-                    }
-                }
+                var uris = Object.assign([], action.data.uris)
+                var uris_to_load = uris.splice(0,50)
 
-                var to_load = uris_not_loaded.slice(0,50)
-
-                if (to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS', 'Loading '+uris_not_loaded.length+' library albums'))
-                    store.dispatch(mopidyActions.getAlbums(to_load, 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
+                if (uris_to_load.length > 0){
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' library albums'))
+                    store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
-                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS'))
+                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
                 }
 
                 break
@@ -915,8 +917,8 @@ const MopidyMiddleware = (function(){
                         // locked until we're completely done.
                         if (action.processor){
                             setTimeout(
-                                function(){ 
-                                    store.dispatch(mopidyActions.runProcessor(action.processor))
+                                function(){
+                                    store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data))
                                 }, 
                                 100
                             )

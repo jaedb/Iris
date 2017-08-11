@@ -177,6 +177,18 @@ export function getLibraryPlaylists(){
     }
 }
 
+export function getLibraryAlbums(){
+    return {
+        type: 'GET_LIBRARY_ALBUMS'
+    }
+}
+
+export function getLibraryArtists(){
+    return {
+        type: 'GET_LIBRARY_ARTISTS'
+    }
+}
+
 
 /**
  * Assets loaded
