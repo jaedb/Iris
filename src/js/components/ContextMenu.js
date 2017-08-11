@@ -332,6 +332,14 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	setPlaylistSubmenu(expanded = !this.state.submenu_expanded){
+		this.setState({submenu_expanded: expanded})
+
+		if (expanded && !this.props.library_playlists){
+			this.props.coreActions.getLibraryPlaylists()
+		}
+	}
+
 	renderItems(){
 		var context = this.getContext()
 
@@ -385,7 +393,7 @@ class ContextMenu extends React.Component{
 
 		var add_to_playlist = (
 			<span className="menu-item-wrapper has-submenu">
-				<a className="menu-item" onClick={e => {this.setState({ submenu_expanded: !this.state.submenu_expanded }); this.props.coreActions.getLibraryPlaylists()}}>
+				<a className="menu-item" onClick={e => this.setPlaylistSubmenu()}>
 					<span className="label">Add to playlist</span>
 					<FontAwesome className="submenu-icon" name='caret-right' />
 				</a>
