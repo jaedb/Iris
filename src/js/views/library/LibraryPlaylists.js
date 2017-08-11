@@ -11,6 +11,7 @@ import DropdownField from '../../components/DropdownField'
 import Header from '../../components/Header'
 
 import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -22,19 +23,16 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.local_albums){
+		if (!this.props.library_playlists){
 			if (this.props.spotify_connected){
-				this.props.spotifyActions.getAllLibraryPlaylists()
-			}
-			if (this.props.mopidy_connected){
-				this.props.mopidyActions.getLibraryPlaylists()
+				this.props.coreActions.getLibraryPlaylists()
 			}
 		}
 	}
 
 	componentWillReceiveProps(newProps){
 		if (!this.props.spotify_connected && newProps.spotify_connected){
-			this.props.spotifyActions.getAllLibraryPlaylists()
+			this.props.spotifyActions.getLibraryPlaylists()
 		}
 
 		if (!this.props.mopidy_connected && newProps.mopidy_connected){
@@ -64,14 +62,6 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	renderView(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/playlists'])){
-			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-
 		if (!this.props.library_playlists || !this.props.playlists ){
 			return null
 		}
@@ -263,6 +253,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

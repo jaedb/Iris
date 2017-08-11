@@ -67,59 +67,27 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.createPlaylist( action.name, action.description, action.is_private, action.is_collaborative ))
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = state.core.playlists[action.key]
 
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
-                if( !store.getState().spotify.me || store.getState().spotify.me.id != playlist.owner.id ){
-                    store.dispatch( uiActions.createNotification( "You can't edit a playlist you don't own", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break
 
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.addTracksToPlaylist( action.key, action.tracks_uris ))
                 break
 
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
-
-                if( !store.getState().spotify.me || store.getState().spotify.me.id != helpers.getFromUri('artistid',action.key) ){
-                    store.dispatch( uiActions.createNotification( "You can't edit a playlist you don't own", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break
 
 
             case 'SPOTIFY_SAVE_PLAYLIST':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
                 break
 

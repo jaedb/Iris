@@ -70,7 +70,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                                 dispatch(refreshToken(dispatch, getState))
                             }
 
-                            dispatch(uiActions.createNotification('Spotify: '+message,'bad'))
+                            dispatch(uiActions.createNotification(message,'bad'))
                             console.error( endpoint+' failed', response)
                             reject(error)
                         }
@@ -978,11 +978,19 @@ export function getUserPlaylists(user_uri){
 
                 var playlists = []
                 for (var i = 0; i < response.items.length; i++){
+
+                    var can_edit = false
+                    if (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id){
+                        can_edit = true
+                    } else if (response.items[i].owner.id == getState().backend_username){
+                        can_edit = true
+                    }
+
                     playlists.push(Object.assign(
                         {},
                         response.items[i],
                         {
-                            can_edit: (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id),
+                            can_edit: can_edit,
                             tracks_total: response.items[i].tracks.total
                         }
                     ))
@@ -1259,6 +1267,9 @@ function loadNextPlaylistsBatch(dispatch, getState, playlists, lastResponse){
                 loadNextPlaylistsBatch( dispatch, getState, playlists, response )
             });
     }else{
+
+        dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_LIBRARY_PLAYLISTS'))
+
         dispatch({
             type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
             playlists: playlists
@@ -1266,8 +1277,11 @@ function loadNextPlaylistsBatch(dispatch, getState, playlists, lastResponse){
     }
 }
 
-export function getAllLibraryPlaylists(){
+export function getLibraryPlaylists(){
     return (dispatch, getState) => {
+
+        dispatch(uiActions.startProcess('SPOTIFY_GET_ALL_LIBRARY_PLAYLISTS','Loading library playlists'))
+
         sendRequest( dispatch, getState, 'me/playlists?limit=50' )
             .then( response => {
                 loadNextPlaylistsBatch( dispatch, getState, response.items, response )

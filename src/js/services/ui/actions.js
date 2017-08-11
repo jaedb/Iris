@@ -168,23 +168,25 @@ export function stopLoading(key){
     }
 }
 
-export function startProcess(key,content){
+export function startProcess(key,message,data = {}){
     return { 
         type: 'START_PROCESS',
         key: key,
-        content: content
+        message: message,
+        data: data
     }
 }
 
-export function updateProcess(key,content){
+export function updateProcess(key,message,data = {}){
     return { 
         type: 'UPDATE_PROCESS',
         key: key,
-        content: content
+        message: message,
+        data: data
     }
 }
 
-export function runProcess(key){
+export function runProcess(key,data = {}){
     return { 
         type: key
     }

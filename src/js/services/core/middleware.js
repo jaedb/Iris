@@ -254,6 +254,16 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            case 'GET_LIBRARY_PLAYLISTS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryPlaylists())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryPlaylists())
+                }
+                next(action)
+                break
+
             case 'RESTART':
                 location.reload()
                 break

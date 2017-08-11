@@ -130,7 +130,8 @@ export default function reducer(ui = {}, action){
             var processes = Object.assign({}, (ui.processes ? ui.processes : []))
             processes[action.key] = {
                 key: action.key,
-                content: action.content
+                message: action.message,
+                data: action.data
             }
             return Object.assign({}, ui, {processes: processes})
 

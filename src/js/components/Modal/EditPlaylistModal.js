@@ -76,7 +76,7 @@ export default class EditPlaylistModal extends React.Component{
 			default:
 				return (
 					<div>
-						<div className="field">
+						<div className="field text">
 							<span className="label">Name</span>
 							<input 
 								type="text"

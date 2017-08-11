@@ -124,7 +124,8 @@ const UIMiddleware = (function(){
 
             case 'START_PROCESS':
                 store.dispatch({
-                    type: action.key
+                    type: action.key,
+                    data: action.data
                 })
                 next(action)
                 break

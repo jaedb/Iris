@@ -33,8 +33,7 @@ export default class GridItem extends React.Component{
 			case 'playlist':
 				return (
 					<div className="secondary">
-						{item.tracks_total ? item.tracks_total+' tracks' : null}
-						{item.can_edit ? <FontAwesome name="edit" /> : null}
+						{item.tracks_total ? item.tracks_total : 0} tracks
 					</div>
 				)
 				break
