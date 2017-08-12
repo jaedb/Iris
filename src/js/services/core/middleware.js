@@ -254,6 +254,7 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            // Get assets from all of our providers
             case 'GET_LIBRARY_PLAYLISTS':
                 if (store.getState().spotify.connected){
                     store.dispatch(spotifyActions.getLibraryPlaylists())
@@ -264,6 +265,7 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            // Get assets from all of our providers
             case 'GET_LIBRARY_ALBUMS':
                 if (store.getState().spotify.connected){
                     store.dispatch(spotifyActions.getLibraryAlbums())
@@ -274,6 +276,7 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            // Get assets from all of our providers
             case 'GET_LIBRARY_ARTISTS':
                 if (store.getState().spotify.connected){
                     store.dispatch(spotifyActions.getLibraryArtists())

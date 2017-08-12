@@ -208,19 +208,22 @@ const SpotifyMiddleware = (function(){
                     playlists: playlists
                 });
 
-                store.dispatch({
-                    type: 'LIBRARY_PLAYLISTS_LOADED',
-                    uris: helpers.arrayOf('uri',playlists)
-                });
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',playlists)
+                next(action)
+                break
+
+            case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data))
                 break
 
             case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
                 var artists = []
-                for (var i = 0; i < action.data.artists.items.length; i++){
+                for (var i = 0; i < action.artists.length; i++){
                     artists.push(
                         Object.assign(
                             {},
-                            action.data.artists.items[i],
+                            action.artists[i],
                             {
                                 source: 'spotify',
                                 in_library: true     // assumed because we asked for library items
@@ -232,12 +235,10 @@ const SpotifyMiddleware = (function(){
                     type: 'ARTISTS_LOADED',
                     artists: artists
                 });
-                store.dispatch({
-                    type: 'LIBRARY_ARTISTS_LOADED',
-                    uris: helpers.arrayOf('uri',artists),
-                    more: action.data.artists.next,
-                    total: action.data.artists.total
-                });
+
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',artists)
+                next(action)
                 break
 
             case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
@@ -268,10 +269,9 @@ const SpotifyMiddleware = (function(){
                     albums: albums
                 });
 
-                store.dispatch({
-                    type: 'LIBRARY_ALBUMS_LOADED',
-                    uris: helpers.arrayOf('uri',albums)
-                });
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',albums)
+                next(action)
                 break
 
             case 'SPOTIFY_FAVORITES_LOADED':

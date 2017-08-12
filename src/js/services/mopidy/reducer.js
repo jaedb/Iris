@@ -122,6 +122,35 @@ export default function reducer(mopidy = {}, action){
                 enqueue_uris_batches: batches  
             });
 
+
+        /**
+         * Library
+         **/
+
+        case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED':
+            if (mopidy.library_playlists){
+                var uris = [...mopidy.library_playlists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_playlists: uris })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_LOADED':
+            if (mopidy.library_artists){
+                var uris = [...mopidy.library_artists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_artists: uris })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
+            if (mopidy.library_albums){
+                var uris = [...mopidy.library_albums,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_albums: uris })
+
         default:
             return mopidy
     }

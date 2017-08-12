@@ -23,20 +23,40 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.library_playlists){
-			if (this.props.spotify_connected){
-				this.props.coreActions.getLibraryPlaylists()
-			}
+		if (!this.props.mopidy_library_playlists && this.props.mopidy_connected && (this.props.filter == 'all' || this.props.filter == 'local')){
+			this.props.mopidyActions.getLibraryPlaylists()
+		}
+
+		if (!this.props.spotify_library_playlists && this.props.spotify_connected && (this.props.filter == 'all' || this.props.filter == 'spotify')){
+			this.props.spotifyActions.getLibraryPlaylists()
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (!this.props.spotify_connected && newProps.spotify_connected){
-			this.props.spotifyActions.getLibraryPlaylists()
+		if (newProps.mopidy_connected && (newProps.filter == 'all' || newProps.filter == 'local')){
+
+			// We've just connected
+			if (!this.props.mopidy_connected){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.filter != 'all' && this.props.filter != 'local' && !newProps.mopidy_library_playlists){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}			
 		}
 
-		if (!this.props.mopidy_connected && newProps.mopidy_connected){
-			this.props.mopidyActions.getLibraryPlaylists()
+		if (newProps.spotify_connected && (newProps.filter == 'all' || newProps.filter == 'spotify')){
+
+			// We've just connected
+			if (!this.props.spotify_connected){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.filter != 'all' && this.props.filter != 'spotify' && !newProps.spotify_library_playlists){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}			
 		}
 	}
 
@@ -62,43 +82,32 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	renderView(){
-		if (!this.props.library_playlists || !this.props.playlists ){
-			return null
-		}
-
 		var playlists = []
-		for (var i = 0; i < this.props.library_playlists.length; i++){
-			var uri = this.props.library_playlists[i]
-			var owner_id = helpers.getFromUri('playlistowner',uri)
 
-			if (this.props.playlists.hasOwnProperty(uri)){
-
-				switch (this.props.filter){
-
-					case 'only_mine':
-						if (this.props.me_id && owner_id == this.props.me_id){
-							playlists.push(this.props.playlists[uri])
-						}
-						break
-
-					case 'only_others':
-						if (!this.props.me_id || owner_id != this.props.me_id){
-							playlists.push(this.props.playlists[uri])
-						}
-						break
-
-					default:
-						playlists.push(this.props.playlists[uri])
-						break
+		// Spotify library items
+		if (this.props.spotify_library_playlists && (this.props.filter == 'all' || this.props.filter == 'spotify')){
+			for (var i = 0; i < this.props.spotify_library_playlists.length; i++){
+				var uri = this.props.spotify_library_playlists[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
 				}
 			}
 		}
 
-		if( this.props.sort ){
-			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
+		// Mopidy library items
+		if (this.props.mopidy_library_playlists && (this.props.filter == 'all' || this.props.filter == 'local')){
+			for (var i = 0; i < this.props.mopidy_library_playlists.length; i++){
+				var uri = this.props.mopidy_library_playlists[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
 		}
 
-		if( this.props.view == 'list' ){
+		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
+		playlists = helpers.removeDuplicates(playlists)
+
+		if (this.props.view == 'list'){
 			if (this.props.slim_mode){
 				var columns = [
 					{
@@ -164,12 +173,12 @@ class LibraryPlaylists extends React.Component{
 				label: 'All'
 			},
 			{
-				value: 'only_mine',
-				label: 'Owned by me'
+				value: 'local',
+				label: 'Local'
 			},
 			{
-				value: 'only_others',
-				label: 'I\'m following'
+				value: 'spotify',
+				label: 'Spotify'
 			}
 		]
 
@@ -239,6 +248,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		spotify_library_playlists: state.spotify.library_playlists,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
@@ -246,7 +257,6 @@ const mapStateToProps = (state, ownProps) => {
 		filter: (state.ui.library_playlists_filter ? state.ui.library_playlists_filter : 'all'),
 		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
 		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
-		library_playlists: state.core.library_playlists,
 		playlists: state.core.playlists
 	}
 }

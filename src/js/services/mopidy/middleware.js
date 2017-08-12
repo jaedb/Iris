@@ -592,12 +592,20 @@ const MopidyMiddleware = (function(){
 
                         // drop in our URI list
                         var playlist_uris = helpers.arrayOf('uri',response)
+                        var playlist_uris_filtered = []
 
-                        store.dispatch({ type: 'LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris });
+                        // Remove any Spotify playlists. These will be handled by our Spotify API
+                        for (var i = 0; i < playlist_uris.length; i++){
+                            if (helpers.uriSource(playlist_uris[i]) != 'spotify'){
+                                playlist_uris_filtered.push(playlist_uris[i])
+                            }
+                        }
+
+                        store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris_filtered });
 
                         // get the full playlist objects
-                        for (var i = 0; i < response.length; i++ ){
-                            instruct( socket, store, 'playlists.lookup', { uri: response[i].uri })
+                        for (var i = 0; i < playlist_uris_filtered.length; i++ ){
+                            instruct( socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
                                 .then( response => {
                                     var source = helpers.uriSource(response.uri)
                                     var playlist = Object.assign(
@@ -850,7 +858,7 @@ const MopidyMiddleware = (function(){
 
                         var uris = helpers.arrayOf('uri',response)
                         store.dispatch({ 
-                            type: 'LIBRARY_ALBUMS_LOADED', 
+                            type: 'MOPIDY_LIBRARY_ALBUMS_LOADED', 
                             uris: uris
                         });
 
@@ -860,8 +868,6 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR':
-                console.log(action)
-
                 if (store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR']
 

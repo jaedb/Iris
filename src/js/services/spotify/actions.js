@@ -912,19 +912,6 @@ export function getArtists( uris ){
 }
 
 
-export function getLibraryArtists(){
-    return (dispatch, getState) => {
-        sendRequest( dispatch, getState, 'me/following?type=artist&limit=50' )
-            .then( response => {
-                dispatch({
-                    type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-                    data: response
-                })
-            });
-    }
-}
-
-
 export function playArtistTopTracks(uri){
     return (dispatch, getState) => {
         const artists = getState().ui.artists
@@ -1306,53 +1293,12 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
  
 
 /**
- * ALbums
- **/
-
-export function getLibraryAlbums(){
-    return (dispatch, getState) => {
-        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify library albums', {next: 'me/albums?limit=50'}))
-    }
-}
-
-export function getLibraryAlbumsProcessor(data){
-    return (dispatch, getState) => {
-        sendRequest(dispatch, getState, data.next)
-            .then( response => {
-
-                dispatch({
-                    type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
-                    albums: response.items
-                })
-
-                // Check to see if we've been cancelled
-                if (getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
-                    var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR']
-
-                    if (processor.cancelling){
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
-                        return false
-                    }
-                }
-
-                // We got a next link, so we've got more work to be done
-                if (response.next){
-                    dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
-                } else {
-                    dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
-                }
-            });
-    }
-}
- 
-
-/**
  * Playlists
  **/
 
 export function getLibraryPlaylists(){
     return (dispatch, getState) => {
-        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR','Loading Spotify library playlists', {next: 'me/playlists?limit=50'}))
+        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR','Loading Spotify playlists', {next: 'me/playlists?limit=50'}))
     }
 }
 
@@ -1381,6 +1327,88 @@ export function getLibraryPlaylistsProcessor(data){
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
+                }
+            });
+    }
+}
+ 
+
+/**
+ * Artists
+ **/
+
+export function getLibraryArtists(){
+    return (dispatch, getState) => {
+        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR','Loading Spotify artists', {next: 'me/following?type=artist&limit=50'}))
+    }
+}
+
+export function getLibraryArtistsProcessor(data){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, data.next)
+            .then( response => {
+
+                dispatch({
+                    type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
+                    artists: response.artists.items
+                })
+
+                // Check to see if we've been cancelled
+                if (getState().ui.processes['SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
+                    var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR']
+
+                    if (processor.cancelling){
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
+                        return false
+                    }
+                }
+
+                // We got a next link, so we've got more work to be done
+                if (response.artists.next){
+                    dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', {next: response.artists.next}))
+                } else {
+                    dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
+                }
+            });
+    }
+}
+ 
+
+/**
+ * ALbums
+ **/
+
+export function getLibraryAlbums(){
+    return (dispatch, getState) => {
+        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify albums', {next: 'me/albums?limit=50'}))
+    }
+}
+
+export function getLibraryAlbumsProcessor(data){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, data.next)
+            .then( response => {
+
+                dispatch({
+                    type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
+                    albums: response.items
+                })
+
+                // Check to see if we've been cancelled
+                if (getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
+                    var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR']
+
+                    if (processor.cancelling){
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
+                        return false
+                    }
+                }
+
+                // We got a next link, so we've got more work to be done
+                if (response.next){
+                    dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
+                } else {
+                    dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
                 }
             });
     }

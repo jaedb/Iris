@@ -73,73 +73,6 @@ export default function reducer(spotify = {}, action){
         case 'SPOTIFY_ME_LOADED':
             return Object.assign({}, spotify, { me: action.data })
 
-        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
-            if( !action.data ) return Object.assign({}, spotify)
-            var albums = []
-            for( var i = 0; i < action.data.items.length; i++ ){
-                albums.push( Object.assign(
-                    {},
-                    action.data.items[i].album,
-                    {
-                        added_at: action.data.items[i].added_at
-                    }
-                ))
-            }
-            console.log(action)
-            return Object.assign({}, spotify, { 
-                library_albums: albums, 
-                library_albums_spotify_more: action.data.next 
-            })
-
-        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED_MORE':
-            var albums = []
-            for( var i = 0; i < action.data.items.length; i++ ){
-                albums.push( Object.assign(
-                    {},
-                    action.data.items[i].album,
-                    {
-                        added_at: action.data.items[i].added_at
-                    }
-                ))
-            }
-            return Object.assign({}, spotify, {
-                library_albums: [...spotify.library_albums, ...albums ],
-                library_albums_spotify_more: action.data.next
-            })
-
-        case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
-            if( !action.data ) return Object.assign({}, spotify)
-            var tracks = Object.assign([], action.data.items)
-            for( var i = 0; i < tracks.length; i++ ){
-                tracks[i] = Object.assign(
-                    {},
-                    tracks[i].track,
-                    {
-                        added_at: tracks[i].added_at
-                    }
-                )
-            }
-            return Object.assign({}, spotify, { 
-                library_tracks: tracks, 
-                library_tracks_more: action.data.next 
-            })
-
-        case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
-            var tracks = Object.assign([], action.data.items)
-            for( var i = 0; i < tracks.length; i++ ){
-                tracks[i] = Object.assign(
-                    {},
-                    tracks[i].track,
-                    {
-                        added_at: tracks[i].added_at
-                    }
-                )
-            }
-            return Object.assign({}, spotify, { 
-                library_tracks: [...spotify.library_tracks, ...tracks], 
-                library_tracks_more: action.data.next 
-            })
-
         case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { featured_playlists: action.data })
 
@@ -211,6 +144,35 @@ export default function reducer(spotify = {}, action){
                 {
                     autocomplete_results: autocomplete_results
                 })
+
+
+        /**
+         * Library
+         **/
+
+        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
+            if (spotify.library_playlists){
+                var uris = [...spotify.library_playlists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, spotify, { library_playlists: uris })
+
+        case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
+            if (spotify.library_artists){
+                var uris = [...spotify.library_artists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, spotify, { library_artists: uris })
+
+        case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
+            if (spotify.library_albums){
+                var uris = [...spotify.library_albums,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, spotify, { library_albums: uris })
 
         default:
             return spotify

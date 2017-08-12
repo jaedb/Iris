@@ -21,6 +21,22 @@ class LibraryArtists extends React.Component{
 		super(props);
 	}
 
+	componentDidMount(){
+		if (!this.props.spotify_library_artists && this.props.spotify_connected){
+			this.props.spotifyActions.getLibraryArtists()
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.spotify_connected){
+
+			// We've just connected
+			if (!this.props.spotify_connected){
+				this.props.spotifyActions.getLibraryArtists()
+			}		
+		}
+	}
+
 	handleContextMenu(e,item){
 		var data = {
 			e: e,
@@ -29,16 +45,6 @@ class LibraryArtists extends React.Component{
 			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
-	}
-
-	componentDidMount(){
-		if (!this.props.library_artists_started){
-			this.props.spotifyActions.getLibraryArtists();
-		}
-	}
-
-	loadMore(){
-		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
 	setSort(value){
@@ -90,30 +96,19 @@ class LibraryArtists extends React.Component{
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/following?type=artist'])){
-			return (
-				<div className="view library-albums-view">
-					<Header icon="cd" title="My albums" />
-					<div className="body-loader">
-						<div className="loader"></div>
-					</div>
-				</div>
-			)
-		}
-
 		var artists = []
-		if (this.props.library_artists && this.props.artists){
-			for (var i = 0; i < this.props.library_artists.length; i++){
-				var uri = this.props.library_artists[i]
+
+		// Spotify library items
+		if (this.props.spotify_library_artists){
+			for (var i = 0; i < this.props.spotify_library_artists.length; i++){
+				var uri = this.props.spotify_library_artists[i]
 				if (this.props.artists.hasOwnProperty(uri)){
 					artists.push(this.props.artists[uri])
 				}
 			}
-
-			if( this.props.sort ){
-				artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse)
-			}
 		}
+
+		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse)
 
 		var view_options = [
 			{
@@ -167,12 +162,9 @@ class LibraryArtists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		load_queue: state.ui.load_queue,
+		spotify_connected: state.spotify.connected,
+		spotify_library_artists: state.spotify.library_artists,
 		artists: state.core.artists,
-		library_artists: state.core.library_artists,
-		library_artists_started: state.core.library_artists_started,
-		library_artists_more: state.core.library_artists_more,
-		library_artists_started: state.core.library_artists_started,
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name'),
 		sort_reverse: (state.ui.library_artists_sort_reverse ? true : false),
 		view: state.core.library_artists_view
