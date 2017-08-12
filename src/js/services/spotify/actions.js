@@ -1324,6 +1324,7 @@ export function getLibraryPlaylistsProcessor(data){
 
                 // We got a next link, so we've got more work to be done
                 if (response.next){
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading '+response.total+' Spotify playlists'))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
@@ -1365,6 +1366,7 @@ export function getLibraryArtistsProcessor(data){
 
                 // We got a next link, so we've got more work to be done
                 if (response.artists.next){
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+response.artists.total+' Spotify artists'))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', {next: response.artists.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
@@ -1406,6 +1408,7 @@ export function getLibraryAlbumsProcessor(data){
 
                 // We got a next link, so we've got more work to be done
                 if (response.next){
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+response.total+' Spotify albums'))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))

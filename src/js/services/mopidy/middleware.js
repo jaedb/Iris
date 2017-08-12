@@ -863,7 +863,7 @@ const MopidyMiddleware = (function(){
                         });
 
                         // Start our process to load the full album objects
-                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' library albums', {uris: uris}))
+                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' local albums', {uris: uris}))
                     })
                 break;
 
@@ -881,7 +881,7 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50)
 
                 if (uris_to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' library albums'))
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' local albums'))
                     store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
