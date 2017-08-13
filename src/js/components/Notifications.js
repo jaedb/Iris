@@ -56,8 +56,8 @@ export default class Notifications extends React.Component{
 					items.push(
 						<div className="process notification" key={key}>
 							<div className="loader"></div>
-							{ processes[key].message }
-							<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelProcess(key) } />
+							{processes[key].message}
+							<FontAwesome name="close" className="close-button" onClick={e => this.props.uiActions.cancelProcess(key)} />
 						</div>
 					)
 				}

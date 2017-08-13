@@ -20,7 +20,6 @@ class LibraryBrowse extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.loadDirectory()
 	}
@@ -144,14 +143,7 @@ class LibraryBrowse extends React.Component{
 
 		} else {				
 
-			var grid_items = [
-				{
-					name: 'Local artists',
-					link: global.baseURL+'library/browse/local-artists',
-					icons: ['assets/backgrounds/browse-artists.jpg']
-				}
-			]
-
+			var grid_items = []
 			if (this.props.directory){
 				for (var i = 0; i < this.props.directory.length; i++){
 					var directory = this.props.directory[i]

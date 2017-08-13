@@ -116,15 +116,9 @@ $bp_shallow: 650px;
 }
 
 @keyframes slideloader {
-    0% {
-	    transform: translateX(-100%);
-    }
-    50% { 
-	    transform: translateX(0);
-    }
-    100% {
-	    transform: translateX(+100%);
-    }
+    0% { left: 0%; right: 100%; }
+    50% { left: 0%; right: 0%; }
+    100% { left: 100%; right: 0%; }
 }
 
 
@@ -204,6 +198,7 @@ $bp_shallow: 650px;
 	
 	&:before {
 		@include animate();
+		border-radius: $radius;
 		content: '';
 		display: block;
 		position: absolute;
