@@ -212,9 +212,7 @@ class LibraryAlbums extends React.Component{
 			}
 		}
 
-		if (this.props.sort){
-			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
-		}
+		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
 
 		var filter_options = [
 			{

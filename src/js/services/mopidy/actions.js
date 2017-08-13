@@ -178,10 +178,24 @@ export function getPlaylist( uri ){
 	}
 }
 
+export function getPlaylists(uris, processor = null){
+	return { 
+		type: 'MOPIDY_GET_PLAYLISTS', 
+		uris: uris,
+		processor: processor
+	}
+}
+
 export function getDirectory( uri ){
 	return { 
 		type: 'MOPIDY_GET_DIRECTORY', 
 		data: { uri: uri } 
+	}
+}
+
+export function getLibraryArtists(){
+	return { 
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS' 
 	}
 }
 
@@ -192,9 +206,11 @@ export function getArtist( uri ){
 	}
 }
 
-export function getLibraryArtists(){
+export function getArtists(uris, processor = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ARTISTS'
+		type: 'MOPIDY_GET_ARTISTS', 
+		uris: uris,
+		processor: processor
 	}
 }
 
