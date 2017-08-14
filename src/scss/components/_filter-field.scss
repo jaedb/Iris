@@ -1,0 +1,29 @@
+
+.filter-field {
+	form {
+		display: inline-block;
+		position: relative;
+	}
+
+	.fa {
+		position: absolute;
+		top: 12px;
+		left: 15px;
+		pointer-events: none;
+	}
+
+	input {
+		@include animate();
+		width: 0;
+		padding-left: 25px;
+		background: transparent;
+	}
+
+	&.active {
+		input {
+			width: 180px;
+			padding-left: 35px;
+			background: $grey;
+		}
+	}
+}

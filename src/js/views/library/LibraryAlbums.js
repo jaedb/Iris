@@ -11,7 +11,7 @@ import Thumbnail from '../../components/Thumbnail'
 import TrackList from '../../components/TrackList'
 import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/DropdownField'
-import LazyLoadListener from '../../components/LazyLoadListener'
+import FilterField from '../../components/FilterField'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -23,20 +23,24 @@ class LibraryAlbums extends React.Component{
 
 	constructor(props) {
 		super(props)
+
+		this.state = {
+			filter: ''
+		}
 	}
 
 	componentDidMount(){
-		if (!this.props.mopidy_library_albums && this.props.mopidy_connected && (this.props.filter == 'all' || this.props.filter == 'local')){
+		if (!this.props.mopidy_library_albums && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryAlbums()
 		}
 
-		if (!this.props.spotify_library_albums && this.props.spotify_connected && (this.props.filter == 'all' || this.props.filter == 'spotify')){
+		if (!this.props.spotify_library_albums && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryAlbums()
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (newProps.mopidy_connected && (newProps.filter == 'all' || newProps.filter == 'local')){
+		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
 
 			// We've just connected
 			if (!this.props.mopidy_connected){
@@ -44,12 +48,12 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.filter != 'all' && this.props.filter != 'local' && !newProps.mopidy_library_albums){
+			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_albums){
 				this.props.mopidyActions.getLibraryAlbums()
 			}			
 		}
 
-		if (newProps.spotify_connected && (newProps.filter == 'all' || newProps.filter == 'spotify')){
+		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// We've just connected
 			if (!this.props.spotify_connected){
@@ -57,7 +61,7 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.filter != 'all' && this.props.filter != 'spotify' && !newProps.spotify_library_albums){
+			if (this.props.source != 'all' && this.props.source != 'spotify' && !newProps.spotify_library_albums){
 				this.props.spotifyActions.getLibraryAlbums()
 			}			
 		}
@@ -182,7 +186,7 @@ class LibraryAlbums extends React.Component{
 		var albums = []
 
 		// Spotify library items
-		if (this.props.spotify_library_albums && (this.props.filter == 'all' || this.props.filter == 'spotify')){
+		if (this.props.spotify_library_albums && (this.props.source == 'all' || this.props.source == 'spotify')){
 			for (var i = 0; i < this.props.spotify_library_albums.length; i++){
 				var uri = this.props.spotify_library_albums[i]
 				if (this.props.albums.hasOwnProperty(uri)){
@@ -192,7 +196,7 @@ class LibraryAlbums extends React.Component{
 		}
 
 		// Mopidy library items
-		if (this.props.mopidy_library_albums && (this.props.filter == 'all' || this.props.filter == 'local')){
+		if (this.props.mopidy_library_albums && (this.props.source == 'all' || this.props.source == 'local')){
 			for (var i = 0; i < this.props.mopidy_library_albums.length; i++){
 
 				// Construct item placeholder. This is used as Mopidy needs to 
@@ -214,7 +218,11 @@ class LibraryAlbums extends React.Component{
 
 		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
 
-		var filter_options = [
+		if (this.state.filter && this.state.filter !== ''){
+			albums = helpers.applyFilter('name', this.state.filter, albums)
+		}
+
+		var source_options = [
 			{
 				value: 'all',
 				label: 'All'
@@ -265,9 +273,10 @@ class LibraryAlbums extends React.Component{
 
 		var options = (
 			<span>
-				<DropdownField icon="filter" name="Filter" value={this.props.filter} options={filter_options} handleChange={val => {this.props.uiActions.set({ library_albums_filter: val}); this.props.uiActions.hideContextMenu() }} />
+				<FilterField handleChange={value => this.setState({filter: value})} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_albums_source: val}); this.props.uiActions.hideContextMenu() }} />
 			</span>
 		)
 
@@ -301,7 +310,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		view: state.ui.library_albums_view,
-		filter: (state.ui.library_albums_filter ? state.ui.library_albums_filter : 'all'),
+		source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
 		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false)
 	}

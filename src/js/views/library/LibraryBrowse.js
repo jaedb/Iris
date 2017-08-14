@@ -105,7 +105,7 @@ class LibraryBrowse extends React.Component{
 			var options = null
 			if (this.props.params.uri != 'local:directory' ){
 				options = (
-					<button onClick={ () => window.history.back() }>
+					<button className="no-hover" onClick={ () => window.history.back() }>
 						<FontAwesome name="reply" />&nbsp;
 						Back
 					</button>
