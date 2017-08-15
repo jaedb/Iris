@@ -174,6 +174,31 @@ export default function reducer(spotify = {}, action){
             }
             return Object.assign({}, spotify, { library_albums: uris })
 
+        case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
+        case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
+            var tracks = action.data.items
+
+            if (tracks){
+                for (var i = 0; i < tracks.length; i++){
+                    var track = Object.assign(
+                        {},
+                        tracks[i].track,
+                        {
+                            added_at: tracks[i].added_at
+                        }
+                    )
+                    tracks[i] = track
+                }
+                if (spotify.library_tracks){
+                    tracks = [...spotify.library_tracks,...tracks]
+                }
+            }
+
+            return Object.assign({}, spotify, { 
+                library_tracks: tracks, 
+                library_tracks_more: action.data.next
+            })
+
 
         case 'SPOTIFY_LIBRARY_PLAYLISTS_CLEAR':
             return Object.assign({}, spotify, { library_playlists: [] })

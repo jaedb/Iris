@@ -76,6 +76,10 @@ class Sidebar extends React.Component{
 								<Icon name="cd" />
 								Albums
 							</Link>
+							<Link className={this.linkClassName('library/tracks')} to={global.baseURL+"library/tracks"}>
+								<Icon name="cd" />
+								Tracks
+							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
 								<Icon name="folder" />
 								Browse
