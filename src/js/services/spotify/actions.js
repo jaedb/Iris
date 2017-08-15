@@ -597,10 +597,10 @@ export function following(uri, method = 'GET'){
                 if( typeof(is_following) === 'object' ) is_following = is_following[0]
 
                 dispatch({
-                    type: asset_name.toUpperCase()+'_LIBRARY_CHECK',
+                    type: 'SPOTIFY_LIBRARY_'+asset_name.toUpperCase()+'_CHECK',
                     key: uri,
                     in_library: is_following
-                });
+                })
             });
     }
 }
@@ -1298,6 +1298,7 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
 
 export function getLibraryPlaylists(){
     return (dispatch, getState) => {
+        dispatch({type: 'SPOTIFY_LIBRARY_PLAYLISTS_CLEAR'})
         dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR','Loading Spotify playlists', {next: 'me/playlists?limit=50'}))
     }
 }
@@ -1317,7 +1318,7 @@ export function getLibraryPlaylistsProcessor(data){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR']
 
                     if (processor.cancelling){
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
+                        dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
                         return false
                     }
                 }
@@ -1343,6 +1344,7 @@ export function getLibraryPlaylistsProcessor(data){
 
 export function getLibraryArtists(){
     return (dispatch, getState) => {
+        dispatch({type: 'SPOTIFY_LIBRARY_ARTISTS_CLEAR'})
         dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR','Loading Spotify artists', {next: 'me/following?type=artist&limit=50'}))
     }
 }
@@ -1362,7 +1364,7 @@ export function getLibraryArtistsProcessor(data){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR']
 
                     if (processor.cancelling){
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
+                        dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
                         return false
                     }
                 }
@@ -1388,6 +1390,7 @@ export function getLibraryArtistsProcessor(data){
 
 export function getLibraryAlbums(){
     return (dispatch, getState) => {
+        dispatch({type: 'SPOTIFY_LIBRARY_ALBUMS_CLEAR'})
         dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify albums', {next: 'me/albums?limit=50'}))
     }
 }
@@ -1407,7 +1410,7 @@ export function getLibraryAlbumsProcessor(data){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR']
 
                     if (processor.cancelling){
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
+                        dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
                         return false
                     }
                 }

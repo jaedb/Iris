@@ -174,6 +174,66 @@ export default function reducer(spotify = {}, action){
             }
             return Object.assign({}, spotify, { library_albums: uris })
 
+
+        case 'SPOTIFY_LIBRARY_PLAYLISTS_CLEAR':
+            return Object.assign({}, spotify, { library_playlists: [] })
+
+        case 'SPOTIFY_LIBRARY_ARTISTS_CLEAR':
+            return Object.assign({}, spotify, { library_artists: [] })
+
+        case 'SPOTIFY_LIBRARY_ALBUMS_CLEAR':
+            return Object.assign({}, spotify, { library_albums: [] })
+
+
+        case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR_CANCELLED':
+            return Object.assign({}, spotify, { library_playlists_status: 'cancelled' })
+
+        case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR_FINISHED':
+            return Object.assign({}, spotify, { library_playlists_status: 'finished' })
+
+        case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR_CANCELLED':
+            return Object.assign({}, spotify, { library_artists_status: 'cancelled' })
+
+        case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR_FINISHED':
+            return Object.assign({}, spotify, { library_artists_status: 'finished' })
+
+        case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR_CANCELLED':
+            return Object.assign({}, spotify, { library_albums_status: 'cancelled' })
+
+        case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR_FINISHED':
+            return Object.assign({}, spotify, { library_albums_status: 'finished' })
+
+
+        case 'SPOTIFY_LIBRARY_ALBUM_CHECK':
+            var items = Object.assign([], spotify.library_albums)
+            var index = items.indexOf(action.key)
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+            return Object.assign({}, spotify, { library_albums: items });
+
+        case 'SPOTIFY_LIBRARY_ARTIST_CHECK':
+            var items = Object.assign([], spotify.library_artists)
+            var index = items.indexOf(action.key)
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+            return Object.assign({}, spotify, { library_artists: items });
+
+        case 'SPOTIFY_LIBRARY_PLAYLIST_CHECK':
+            var items = Object.assign([], spotify.library_playlists)
+            var index = items.indexOf(action.key)
+            if (index > -1 && !action.in_library){
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+            return Object.assign({}, spotify, { library_playlists: items });
+
         default:
             return spotify
     }

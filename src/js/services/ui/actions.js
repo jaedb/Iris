@@ -200,6 +200,13 @@ export function cancelProcess(key){
     }
 }
 
+export function processCancelled(key){
+    return { 
+        type: 'PROCESS_CANCELLED',
+        key: key
+    }
+}
+
 export function processFinished(key){
     return { 
         type: 'PROCESS_FINISHED',

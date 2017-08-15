@@ -130,9 +130,16 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
-            case 'CANCEL_PROCESS':
+            case 'PROCESS_CANCELLED':
                 store.dispatch({
-                    type: action.key+'_CANCEL'
+                    type: action.key+'_CANCELLED'
+                })
+                next(action)
+                break
+
+            case 'PROCESS_FINISHED':
+                store.dispatch({
+                    type: action.key+'_FINISHED'
                 })
                 next(action)
                 break

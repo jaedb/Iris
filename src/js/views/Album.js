@@ -92,7 +92,8 @@ class Album extends React.Component{
 	}
 
 	inLibrary(){
-		return (this.props.library_albums && this.props.library_albums.indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_albums'
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
 	}
 
 	render(){
@@ -172,7 +173,8 @@ const mapStateToProps = (state, ownProps) => {
 		artists: state.core.artists,
 		album: (state.core.albums && typeof(state.core.albums[ownProps.params.uri]) !== 'undefined' ? state.core.albums[ownProps.params.uri] : false ),
 		albums: state.core.albums,
-		library_albums: state.core.library_albums,
+		spotify_library_albums: state.spotify.library_albums,
+		local_library_albums: state.mopidy.library_albums,
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	};

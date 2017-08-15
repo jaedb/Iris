@@ -27,11 +27,11 @@ class LibraryArtists extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.mopidy_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+		if (this.props.mopidy_library_artists_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryArtists()
 		}
 
-		if (!this.props.spotify_library_artists && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryArtists()
 		}
 	}
@@ -45,7 +45,7 @@ class LibraryArtists extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_artists){
+			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_artists_status != 'finished'){
 				this.props.mopidyActions.getLibraryArtists()
 			}			
 		}
@@ -58,9 +58,9 @@ class LibraryArtists extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'spotify' && !newProps.spotify_library_artists){
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished'){
 				this.props.spotifyActions.getLibraryArtists()
-			}			
+			}
 		}
 	}
 
@@ -233,7 +233,9 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
 		mopidy_library_artists: state.mopidy.library_artists,
+		mopidy_library_artists_status: state.mopidy.library_artists_status,
 		spotify_library_artists: state.spotify.library_artists,
+		spotify_library_artists_status: state.spotify.library_artists_status,
 		artists: state.core.artists,
 		source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name'),

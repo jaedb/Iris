@@ -82,7 +82,8 @@ class Artist extends React.Component{
 	}
 
 	inLibrary(){
-		return (this.props.library_artists && this.props.library_artists.indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_artists'
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
 	}
 
 	renderSubViewMenu(){		
@@ -263,7 +264,8 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		artist: (state.core.artists && typeof(state.core.artists[ownProps.params.uri]) !== 'undefined' ? state.core.artists[ownProps.params.uri] : false ),
 		artists: (state.core.artists ? state.core.artists : []),
-		library_artists: (state.core.library_artists ? state.core.library_artists : []),
+		spotify_library_artists: state.spotify.library_artists,
+		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected

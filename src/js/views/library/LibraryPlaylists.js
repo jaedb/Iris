@@ -32,7 +32,7 @@ class LibraryPlaylists extends React.Component{
 			this.props.mopidyActions.getLibraryPlaylists()
 		}
 
-		if (!this.props.spotify_library_playlists && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryPlaylists()
 		}
 	}
@@ -59,7 +59,7 @@ class LibraryPlaylists extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'spotify' && !newProps.spotify_library_playlists){
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_playlists_status !== 'finished'){
 				this.props.spotifyActions.getLibraryPlaylists()
 			}			
 		}
@@ -259,7 +259,9 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
 		mopidy_library_playlists: state.mopidy.library_playlists,
+		mopidy_library_playlists_status: state.mopidy.library_playlists_status,
 		spotify_library_playlists: state.spotify.library_playlists,
+		spotify_library_playlists_status: state.spotify.library_playlists_status,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),

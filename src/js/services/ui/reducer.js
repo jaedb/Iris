@@ -153,6 +153,7 @@ export default function reducer(ui = {}, action){
             }
             return Object.assign({}, ui, {processes: processes})
 
+         case 'PROCESS_CANCELLED':
          case 'PROCESS_FINISHED':
             var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
             if (processes[action.key]){

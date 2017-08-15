@@ -30,11 +30,11 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.mopidy_library_albums && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryAlbums()
 		}
 
-		if (!this.props.spotify_library_albums && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryAlbums()
 		}
 	}
@@ -48,7 +48,7 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_albums){
+			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished'){
 				this.props.mopidyActions.getLibraryAlbums()
 			}			
 		}
@@ -61,7 +61,7 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'spotify' && !newProps.spotify_library_albums){
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished'){
 				this.props.spotifyActions.getLibraryAlbums()
 			}			
 		}
@@ -307,8 +307,10 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
-		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
+		mopidy_library_albums_status: state.mopidy.library_albums_status,
+		spotify_library_albums: state.spotify.library_albums,
+		spotify_library_albums_status: state.spotify.library_albums_status,
 		view: state.ui.library_albums_view,
 		source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),

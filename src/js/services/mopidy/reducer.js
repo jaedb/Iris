@@ -151,6 +151,35 @@ export default function reducer(mopidy = {}, action){
             }
             return Object.assign({}, mopidy, { library_albums: uris })
 
+
+        case 'MOPIDY_LIBRARY_PLAYLISTS_CLEAR':
+            return Object.assign({}, mopidy, { library_playlists: [] })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_CLEAR':
+            return Object.assign({}, mopidy, { library_artists: [] })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_CLEAR':
+            return Object.assign({}, mopidy, { library_albums: [] })
+
+
+        case 'MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR_CANCELLED':
+            return Object.assign({}, mopidy, { library_playlists_status: 'cancelled' })
+
+        case 'MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR_FINISHED':
+            return Object.assign({}, mopidy, { library_playlists_status: 'finished' })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR_CANCELLED':
+            return Object.assign({}, mopidy, { library_artists_status: 'cancelled' })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR_FINISHED':
+            return Object.assign({}, mopidy, { library_artists_status: 'finished' })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR_CANCELLED':
+            return Object.assign({}, mopidy, { library_albums_status: 'cancelled' })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR_FINISHED':
+            return Object.assign({}, mopidy, { library_albums_status: 'finished' })
+
         default:
             return mopidy
     }

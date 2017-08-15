@@ -105,7 +105,8 @@ class Playlist extends React.Component{
 	}
 
 	inLibrary(){
-		return (this.props.library_playlists && this.props.library_playlists.indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists'
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
 	}
 
 	renderActions(){
@@ -115,7 +116,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name }) }>Edit</button>
+						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name }) }>Edit</button>
 						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 					</div>
 				)
@@ -125,7 +126,7 @@ class Playlist extends React.Component{
 					return (
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
-							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.playlist.uri, name: this.props.playlist.name, is_public: this.props.playlist.public, description: this.props.playlist.description }) }>Edit</button>
+							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name, is_public: this.props.playlist.public, description: this.props.playlist.description }) }>Edit</button>
 							{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 						</div>
 					)
@@ -133,7 +134,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton className="secondary" uri={this.props.playlist.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
+						<FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
 						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 					</div>
 				)
@@ -214,8 +215,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		playlist: (state.core.playlists && typeof(state.core.playlists[uri]) !== 'undefined' ? state.core.playlists[uri] : false ),
-		library_playlists: state.core.library_playlists,
+		playlist: (state.core.playlists && state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
+		spotify_library_playlists: state.spotify.library_playlists,
+		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_userid: state.spotify.me.id

@@ -852,6 +852,9 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ALBUMS':
+
+                store.dispatch({type: 'MOPIDY_LIBRARY_ALBUMS_CLEAR'})
+
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                     .then( response => {
                         if (response.length <= 0) return
@@ -872,7 +875,7 @@ const MopidyMiddleware = (function(){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR']
 
                     if (processor.cancelling){
-                        store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
+                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
                         return false
                     }
                 }
@@ -1003,6 +1006,9 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
+            
+                store.dispatch({type: 'MOPIDY_LIBRARY_ARTISTS_CLEAR'})
+
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                     .then( response => {
                         if (response.length <= 0) return
@@ -1024,7 +1030,7 @@ const MopidyMiddleware = (function(){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR']
 
                     if (processor.cancelling){
-                        store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
+                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
                         return false
                     }
                 }
