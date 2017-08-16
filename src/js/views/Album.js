@@ -151,7 +151,7 @@ class Album extends React.Component{
 
 				<section className="list-wrapper">
 					{ this.props.album.tracks ? <TrackList className="album-track-list" tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
-					<LazyLoadListener enabled={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener loading={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 
 			</div>

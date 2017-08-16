@@ -179,7 +179,7 @@ class Artist extends React.Component{
 						<h4>Albums</h4>
 						<section className="grid-wrapper no-top-padding">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
+							<LazyLoadListener loading={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
 						</section>
 					</div>
 				)

@@ -351,8 +351,8 @@ const MopidyMiddleware = (function(){
                     for (var i = 0; i < batches.length; i++){
                         total_uris += batches[i].uris.length
                     }
-                    var next_batches = batches.shift()
-                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)', {batches: next_batches}))
+                    batches.shift()
+                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)'))
 
                 // no batches means we're done here
                 } else {
@@ -408,7 +408,7 @@ const MopidyMiddleware = (function(){
                         // locked until we're completely done.
                         setTimeout(
                             function(){
-                                store.dispatch(uiActions.runProcess(action.type))
+                                store.dispatch(uiActions.runProcess(action.type, {batches: batches}))
                             }, 
                             100
                         )

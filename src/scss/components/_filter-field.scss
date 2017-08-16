@@ -19,6 +19,19 @@
 		background: transparent;
 	}
 
+	&:not(.active){
+		input {
+			cursor: pointer;
+		}
+		
+		&:hover {
+
+			.fa {
+				color: $blue;
+			}
+		}
+	}
+
 	&.active {
 		input {
 			width: 180px;
