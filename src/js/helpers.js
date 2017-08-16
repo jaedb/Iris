@@ -370,7 +370,7 @@ export let mergeDuplicates = function(list, key){
 export let removeDuplicates = function(array){
 	var unique = [];
 
-	for( var i in array ){
+	for (var i in array){
 		if (unique.indexOf(array[i]) <= -1 ){
 			unique.push(array[i])
 		}

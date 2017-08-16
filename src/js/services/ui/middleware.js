@@ -127,6 +127,18 @@ const UIMiddleware = (function(){
                     type: action.key,
                     data: action.data
                 })
+                store.dispatch({
+                    type: action.key+'_STARTED'
+                })
+                next(action)
+                break
+
+            case 'RESUME_PROCESS':
+                store.dispatch({
+                    type: action.key,
+                    data: store.getState().ui.processes[action.key].data
+                })
+                console.log('resuming',store.getState().ui.processes[action.key].data)
                 next(action)
                 break
 

@@ -1,4 +1,6 @@
 
+import * as helpers from '../../helpers'
+
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
@@ -94,34 +96,6 @@ export default function reducer(mopidy = {}, action){
                 directory: action.data   
             });
 
-        case 'MOPIDY_ENQUEUE_URIS':
-            if (mopidy.enqueue_uris_batches){
-                var batches = [...mopidy.enqueue_uris_batches, ...action.batches]
-            } else {
-                var batches = Object.assign([],action.batches)
-            }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
-
-        case 'MOPIDY_ENQUEUE_URIS_PROCESSOR_CANCEL':
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: []  
-            });
-
-        case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
-            if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
-
-                // Batches empty, so we've been cancelled
-                var batches = []
-            } else {
-                var batches = mopidy.enqueue_uris_batches
-                batches.shift()
-            }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
-
 
         /**
          * Library
@@ -133,7 +107,7 @@ export default function reducer(mopidy = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, mopidy, { library_playlists: uris })
+            return Object.assign({}, mopidy, { library_playlists: helpers.removeDuplicates(uris) })
 
         case 'MOPIDY_LIBRARY_ARTISTS_LOADED':
             if (mopidy.library_artists){
@@ -141,7 +115,7 @@ export default function reducer(mopidy = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, mopidy, { library_artists: uris })
+            return Object.assign({}, mopidy, { library_artists: helpers.removeDuplicates(uris) })
 
         case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
             if (mopidy.library_albums){
@@ -149,36 +123,7 @@ export default function reducer(mopidy = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, mopidy, { library_albums: uris })
-
-
-        case 'MOPIDY_LIBRARY_PLAYLISTS_CLEAR':
-            return Object.assign({}, mopidy, { library_playlists: [] })
-
-        case 'MOPIDY_LIBRARY_ARTISTS_CLEAR':
-            return Object.assign({}, mopidy, { library_artists: [] })
-
-        case 'MOPIDY_LIBRARY_ALBUMS_CLEAR':
-            return Object.assign({}, mopidy, { library_albums: [] })
-
-
-        case 'MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR_CANCELLED':
-            return Object.assign({}, mopidy, { library_playlists_status: 'cancelled' })
-
-        case 'MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR_FINISHED':
-            return Object.assign({}, mopidy, { library_playlists_status: 'finished' })
-
-        case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR_CANCELLED':
-            return Object.assign({}, mopidy, { library_artists_status: 'cancelled' })
-
-        case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR_FINISHED':
-            return Object.assign({}, mopidy, { library_artists_status: 'finished' })
-
-        case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR_CANCELLED':
-            return Object.assign({}, mopidy, { library_albums_status: 'cancelled' })
-
-        case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR_FINISHED':
-            return Object.assign({}, mopidy, { library_albums_status: 'finished' })
+            return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) })
 
         default:
             return mopidy

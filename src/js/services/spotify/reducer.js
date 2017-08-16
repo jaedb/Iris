@@ -156,7 +156,7 @@ export default function reducer(spotify = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, spotify, { library_playlists: uris })
+            return Object.assign({}, spotify, { library_playlists: helpers.removeDuplicates(uris) })
 
         case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
             if (spotify.library_artists){
@@ -164,7 +164,7 @@ export default function reducer(spotify = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, spotify, { library_artists: uris })
+            return Object.assign({}, spotify, { library_artists: helpers.removeDuplicates(uris) })
 
         case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
             if (spotify.library_albums){
@@ -172,7 +172,7 @@ export default function reducer(spotify = {}, action){
             } else {
                 var uris = action.uris
             }
-            return Object.assign({}, spotify, { library_albums: uris })
+            return Object.assign({}, spotify, { library_albums: helpers.removeDuplicates(uris) })
 
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
@@ -208,25 +208,6 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_LIBRARY_ALBUMS_CLEAR':
             return Object.assign({}, spotify, { library_albums: [] })
-
-
-        case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR_CANCELLED':
-            return Object.assign({}, spotify, { library_playlists_status: 'cancelled' })
-
-        case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR_FINISHED':
-            return Object.assign({}, spotify, { library_playlists_status: 'finished' })
-
-        case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR_CANCELLED':
-            return Object.assign({}, spotify, { library_artists_status: 'cancelled' })
-
-        case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR_FINISHED':
-            return Object.assign({}, spotify, { library_artists_status: 'finished' })
-
-        case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR_CANCELLED':
-            return Object.assign({}, spotify, { library_albums_status: 'cancelled' })
-
-        case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR_FINISHED':
-            return Object.assign({}, spotify, { library_albums_status: 'finished' })
 
 
         case 'SPOTIFY_LIBRARY_ALBUM_CHECK':

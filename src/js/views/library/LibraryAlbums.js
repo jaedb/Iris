@@ -30,11 +30,11 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryAlbums()
 		}
 
-		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryAlbums()
 		}
 	}
@@ -48,7 +48,7 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished'){
+			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished' && newProps.mopidy_library_albums_status != 'started'){
 				this.props.mopidyActions.getLibraryAlbums()
 			}			
 		}
@@ -61,7 +61,7 @@ class LibraryAlbums extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished'){
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started'){
 				this.props.spotifyActions.getLibraryAlbums()
 			}			
 		}

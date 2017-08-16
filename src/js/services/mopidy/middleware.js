@@ -337,21 +337,22 @@ const MopidyMiddleware = (function(){
                 next(action)
 
                 // start our processor
-                store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+action.uris.length+' URI(s)'))
+                store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+action.uris.length+' URI(s)', {batches: batches}))
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
 
                 // make sure we have some uris in the queue
-                if (store.getState().mopidy.enqueue_uris_batches && store.getState().mopidy.enqueue_uris_batches.length > 0){
+                if (action.data.batches && action.data.batches.length > 0){
 
-                    var batches = store.getState().mopidy.enqueue_uris_batches
+                    var batches = Object.assign([],action.data.batches)
                     var batch = batches[0]
                     var total_uris = 0
                     for (var i = 0; i < batches.length; i++){
                         total_uris += batches[i].uris.length
                     }
-                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)'))
+                    var next_batches = batches.shift()
+                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)', {batches: next_batches}))
 
                 // no batches means we're done here
                 } else {
@@ -406,8 +407,7 @@ const MopidyMiddleware = (function(){
                         // server requests before our next batch. It's a little crude but it means the server isn't
                         // locked until we're completely done.
                         setTimeout(
-                            function(){ 
-                                store.dispatch(mopidyActions.enqueueURIsBatchDone())
+                            function(){
                                 store.dispatch(uiActions.runProcess(action.type))
                             }, 
                             100
@@ -852,29 +852,36 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ALBUMS':
+                var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
-                store.dispatch({type: 'MOPIDY_LIBRARY_ALBUMS_CLEAR'})
+                if (!last_run){
+                    instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                        .then( response => {
+                            if (response.length <= 0) return
 
-                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
-                    .then( response => {
-                        if (response.length <= 0) return
+                            var uris = helpers.arrayOf('uri',response)
+                            store.dispatch({ 
+                                type: 'MOPIDY_LIBRARY_ALBUMS_LOADED', 
+                                uris: uris
+                            });
 
-                        var uris = helpers.arrayOf('uri',response)
-                        store.dispatch({ 
-                            type: 'MOPIDY_LIBRARY_ALBUMS_LOADED', 
-                            uris: uris
-                        });
+                            // Start our process to load the full album objects
+                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' local albums', {uris: uris}))
+                        })
 
-                        // Start our process to load the full album objects
-                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' local albums', {uris: uris}))
-                    })
+                } else if (last_run.status == 'cancelled'){
+                    store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))     
+                } else if (last_run.status == 'finished'){
+                    // TODO: do we want to force a refresh?   
+                }
+
                 break;
 
             case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR':
                 if (store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR']
 
-                    if (processor.cancelling){
+                    if (processor.status == 'cancelling'){
                         store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
                         return false
                     }
@@ -884,7 +891,7 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50)
 
                 if (uris_to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' local albums'))
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' local albums', {uris: uris}))
                     store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
@@ -1006,30 +1013,38 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
-            
-                store.dispatch({type: 'MOPIDY_LIBRARY_ARTISTS_CLEAR'})
 
-                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
-                    .then( response => {
-                        if (response.length <= 0) return
+                var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
 
-                        var uris = helpers.arrayOf('uri',response)
+                if (!last_run){
+                    instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                        .then( response => {
+                            if (response.length <= 0) return
 
-                        store.dispatch({ 
-                            type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
-                            uris: uris
-                        });
+                            var uris = helpers.arrayOf('uri',response)
 
-                        // Start our process to load the full album objects
-                        store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}))
-                    })
+                            store.dispatch({ 
+                                type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
+                                uris: uris
+                            });
+
+                            // Start our process to load the full album objects
+                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}))
+                        })
+
+                } else if (last_run.status == 'cancelled'){
+                    store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))     
+                } else if (last_run.status == 'finished'){
+                    // TODO: do we want to force a refresh?   
+                }
+
                 break;
 
             case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR':
                 if (store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
                     var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR']
 
-                    if (processor.cancelling){
+                    if (processor.status == 'cancelling'){
                         store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
                         return false
                     }
@@ -1039,7 +1054,7 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50)
 
                 if (uris_to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists'))
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}))
                     store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))

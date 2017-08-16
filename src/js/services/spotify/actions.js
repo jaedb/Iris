@@ -1298,8 +1298,15 @@ export function reorderPlaylistTracks( uri, range_start, range_length, insert_be
 
 export function getLibraryPlaylists(){
     return (dispatch, getState) => {
-        dispatch({type: 'SPOTIFY_LIBRARY_PLAYLISTS_CLEAR'})
-        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR','Loading Spotify playlists', {next: 'me/playlists?limit=50'}))
+        var last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR
+
+        if (!last_run){
+            dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR','Loading Spotify playlists', {next: 'me/playlists?limit=50'}))    
+        } else if (last_run.status == 'cancelled'){
+            dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))     
+        } else if (last_run.status == 'finished'){
+            // TODO: do we want to force a refresh?   
+        }
     }
 }
 
@@ -1317,7 +1324,7 @@ export function getLibraryPlaylistsProcessor(data){
                 if (getState().ui.processes['SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'] !== undefined){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR']
 
-                    if (processor.cancelling){
+                    if (processor.status == 'cancelling'){
                         dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
                         return false
                     }
@@ -1328,7 +1335,7 @@ export function getLibraryPlaylistsProcessor(data){
                     var total = response.total
                     var loaded = getState().spotify.library_playlists.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading '+remaining+' Spotify playlists'))
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading '+remaining+' Spotify playlists', {next: response.next}))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
@@ -1344,8 +1351,15 @@ export function getLibraryPlaylistsProcessor(data){
 
 export function getLibraryArtists(){
     return (dispatch, getState) => {
-        dispatch({type: 'SPOTIFY_LIBRARY_ARTISTS_CLEAR'})
-        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR','Loading Spotify artists', {next: 'me/following?type=artist&limit=50'}))
+        var last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR
+
+        if (!last_run){
+            dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR','Loading Spotify artists', {next: 'me/following?type=artist&limit=50'}))
+        } else if (last_run.status == 'cancelled'){
+            dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))     
+        } else if (last_run.status == 'finished'){
+            // TODO: do we want to force a refresh?   
+        }
     }
 }
 
@@ -1363,7 +1377,7 @@ export function getLibraryArtistsProcessor(data){
                 if (getState().ui.processes['SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR']
 
-                    if (processor.cancelling){
+                    if (processor.status == 'cancelling'){
                         dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
                         return false
                     }
@@ -1374,7 +1388,7 @@ export function getLibraryArtistsProcessor(data){
                     var total = response.artists.total
                     var loaded = getState().spotify.library_artists.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+remaining+' Spotify artists'))
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+remaining+' Spotify artists', {next: response.artists.next}))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', {next: response.artists.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
@@ -1390,8 +1404,15 @@ export function getLibraryArtistsProcessor(data){
 
 export function getLibraryAlbums(){
     return (dispatch, getState) => {
-        dispatch({type: 'SPOTIFY_LIBRARY_ALBUMS_CLEAR'})
-        dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify albums', {next: 'me/albums?limit=50'}))
+        var last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR
+
+        if (!last_run){
+            dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify albums', {next: 'me/albums?limit=50'}))        
+        } else if (last_run.status == 'cancelled'){
+            dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR','Loading Spotify albums', {next: 'me/albums?limit=50'}))     
+        } else if (last_run.status == 'finished'){
+            // TODO: do we want to force a refresh?   
+        }
     }
 }
 
@@ -1409,7 +1430,7 @@ export function getLibraryAlbumsProcessor(data){
                 if (getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
                     var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR']
 
-                    if (processor.cancelling){
+                    if (processor.status == 'cancelling'){
                         dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
                         return false
                     }
@@ -1420,7 +1441,7 @@ export function getLibraryAlbumsProcessor(data){
                     var total = response.total
                     var loaded = getState().spotify.library_albums.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+remaining+' Spotify albums'))
+                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+remaining+' Spotify albums', {next: response.next}))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))

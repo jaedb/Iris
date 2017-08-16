@@ -177,6 +177,13 @@ export function startProcess(key,message,data = {}){
     }
 }
 
+export function resumeProcess(key,message,data = {}){
+    return { 
+        type: 'RESUME_PROCESS',
+        key: key
+    }
+}
+
 export function updateProcess(key,message,data = {}){
     return { 
         type: 'UPDATE_PROCESS',
