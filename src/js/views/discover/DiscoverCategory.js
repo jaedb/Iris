@@ -66,7 +66,7 @@ class DiscoverCategory extends React.Component{
 					<section className="grid-wrapper">
 						<PlaylistGrid playlists={playlists} />
 					</section>
-					<LazyLoadListener enabled={this.props.category.playlists_more} loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener loading={this.props.category.playlists_more} loadMore={ () => this.loadMore() }/>
 				</div>
 			</div>
 		);

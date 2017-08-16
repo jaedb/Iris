@@ -25,6 +25,10 @@ export default class GridItem extends React.Component{
 		}
 	}
 
+	shouldComponentUpdate(nextProps, nextState){
+		return nextProps.item != this.props.item
+	}
+
 	renderSecondary(item){
 		var output = ''
 
