@@ -10,6 +10,14 @@ export default class AddToPlaylistModal extends React.Component{
 
 	constructor(props){
 		super(props)
+
+		if (!this.props.spotify_library_playlists){
+			this.props.spotifyActions.getLibraryPlaylists()
+		}
+		
+		if (!this.props.mopidy_library_playlists){
+			this.props.mopidyActions.getLibraryPlaylists()
+		}
 	}
 
 	playlistSelected( playlist_uri ){
