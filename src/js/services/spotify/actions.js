@@ -914,7 +914,7 @@ export function getArtists( uris ){
 
 export function playArtistTopTracks(uri){
     return (dispatch, getState) => {
-        const artists = getState().ui.artists
+        const artists = getState().core.artists
 
         // Do we have this artist (and their tracks) in our index already?
         if (typeof(artists[uri]) !== 'undefined' && typeof(artists[uri].tracks) !== 'undefined'){

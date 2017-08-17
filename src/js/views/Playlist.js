@@ -126,7 +126,7 @@ class Playlist extends React.Component{
 					return (
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
-							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name, is_public: this.props.playlist.public, description: this.props.playlist.description }) }>Edit</button>
+							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name, public: this.props.playlist.public, collaborative: this.props.playlist.collaborative, description: this.props.playlist.description }) }>Edit</button>
 							{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 						</div>
 					)
