@@ -43,6 +43,29 @@ class Sidebar extends React.Component{
 						</section>
 
 						<section>
+							<title>AI-Speaker</title>
+							<Link className={this.linkClassName('library/browse/ais:root:1')} to={global.baseURL+"library/browse/ais:root:1"}>
+								<Icon name="ais" />
+							</Link>
+							<Link className={this.linkClassName('library/browse/ais:root:2')} to={global.baseURL+"library/browse/ais:root:2"}>
+								<Icon name="ais" />
+								My Library
+							</Link>
+							<Link className={this.linkClassName('library/browse/ais:root:3')} to={global.baseURL+"library/browse/ais:root:3"}>
+								<Icon name="ais" />
+								My Family
+							</Link>
+							<Link className={this.linkClassName('library/browse/ais:root:4')} to={global.baseURL+"library/browse/ais:root:4"}>
+								<Icon name="ais" />
+								My Likes
+							</Link>
+							<Link className={this.linkClassName('library/browse/ais:root:5')} to={global.baseURL+"library/browse/ais:root:5"}>
+								<Icon name="ais" />
+								Pendrive
+							</Link>
+						</section>
+
+						<section>
 							<title>Discover</title>
 							<Link className={this.linkClassName('discover/recommendations')} to={global.baseURL+"discover/recommendations"}>
 								<Icon name="compass" />
