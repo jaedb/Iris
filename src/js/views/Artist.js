@@ -90,7 +90,7 @@ class Artist extends React.Component{
 		return (
 			<div className="sub-views">
 				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link>
+				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link> : null}
 				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
 			</div>
 		)
