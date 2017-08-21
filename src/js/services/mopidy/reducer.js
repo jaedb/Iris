@@ -1,4 +1,6 @@
 
+import * as helpers from '../../helpers'
+
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
@@ -94,32 +96,34 @@ export default function reducer(mopidy = {}, action){
                 directory: action.data   
             });
 
-        case 'MOPIDY_ENQUEUE_URIS':
-            if (mopidy.enqueue_uris_batches){
-                var batches = [...mopidy.enqueue_uris_batches, ...action.batches]
-            } else {
-                var batches = Object.assign([],action.batches)
-            }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
 
-        case 'MOPIDY_ENQUEUE_URIS_CANCEL':
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: []  
-            });
+        /**
+         * Library
+         **/
 
-        case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
-            if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
-                var batches = []
-                console.error('Cannot remove batch when queue empty',action)
+        case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED':
+            if (mopidy.library_playlists){
+                var uris = [...mopidy.library_playlists,...action.uris]
             } else {
-                var batches = mopidy.enqueue_uris_batches
-                batches.shift()
+                var uris = action.uris
             }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
+            return Object.assign({}, mopidy, { library_playlists: helpers.removeDuplicates(uris) })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_LOADED':
+            if (mopidy.library_artists){
+                var uris = [...mopidy.library_artists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_artists: helpers.removeDuplicates(uris) })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
+            if (mopidy.library_albums){
+                var uris = [...mopidy.library_albums,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) })
 
         default:
             return mopidy

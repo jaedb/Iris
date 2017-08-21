@@ -370,13 +370,34 @@ export let mergeDuplicates = function(list, key){
 export let removeDuplicates = function(array){
 	var unique = [];
 
-	for( var i in array ){
+	for (var i in array){
 		if (unique.indexOf(array[i]) <= -1 ){
 			unique.push(array[i])
 		}
 	}
 
 	return unique;
+}
+
+
+/**
+ * Apply a partial text search on an array of objects
+ *
+ * @param field = string (the field we're to search)
+ * @param value = string (the value to find)
+ * @param array = array of objects to search
+ * @return array
+ **/
+export let applyFilter = function(field, value, array){
+	var results = []
+
+	for (var i = 0; i < array.length; i++){
+		if (array[i][field] && array[i][field].toLowerCase().includes(value.toLowerCase())){
+			results.push(array[i])
+		}
+	}
+
+	return results
 }
 
 

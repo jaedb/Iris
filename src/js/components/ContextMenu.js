@@ -248,6 +248,17 @@ class ContextMenu extends React.Component{
 
 		playlists = helpers.sortItems(playlists, 'name')
 
+		var loader = null
+		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+			loader = (
+				<div className="menu-item-wrapper">
+					<div className="menu-item mini-loader loading">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
 		return (			
 			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
 				<span className="menu-item-wrapper">
@@ -270,6 +281,7 @@ class ContextMenu extends React.Component{
 						)
 					})
 				}
+				{loader}
 			</div>
 		)
 	}
@@ -332,6 +344,19 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	setPlaylistSubmenu(expanded = !this.state.submenu_expanded){
+		this.setState({submenu_expanded: expanded})
+
+		if (expanded){
+			if (!this.props.spotify_library_playlists){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}
+			if (!this.props.mopidy_library_playlists){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}
+		}
+	}
+
 	renderItems(){
 		var context = this.getContext()
 
@@ -385,7 +410,7 @@ class ContextMenu extends React.Component{
 
 		var add_to_playlist = (
 			<span className="menu-item-wrapper has-submenu">
-				<a className="menu-item" onClick={e => this.setState({ submenu_expanded: !this.state.submenu_expanded })}>
+				<a className="menu-item" onClick={e => this.setPlaylistSubmenu()}>
 					<span className="label">Add to playlist</span>
 					<FontAwesome className="submenu-icon" name='caret-right' />
 				</a>
@@ -576,11 +601,15 @@ class ContextMenu extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		menu: state.ui.context_menu,
+		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
-		library_artists: state.core.library_artists,
-		library_albums: state.core.library_albums,
-		library_playlists: state.core.library_playlists,
+		spotify_library_playlists: state.spotify.library_playlists,
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		spotify_library_artists: state.spotify.library_artists,
+		mopidy_library_artists: state.mopidy.library_artists,
+		spotify_library_albums: state.spotify.library_albums,
+		mopidy_library_albums: state.mopidy.library_albums,
 		playlists: state.core.playlists,
 		spotify_authorized: state.spotify.authorization
 	}

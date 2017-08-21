@@ -52,13 +52,6 @@
 			padding-bottom: 2px;
 		}
 
-		.source {
-			color: $mid_grey;
-			position: absolute;
-			top: 14px;
-			right: 12px;
-		}
-
 		&.field {
 			padding: 0 !important;
 
@@ -91,6 +84,13 @@
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;
+			}
+
+			.source {
+				color: $mid_grey;
+				position: absolute;
+				top: 14px;
+				right: 12px;
 			}
 		}
 	}

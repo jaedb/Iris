@@ -9,8 +9,10 @@ import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
 import Header from '../../components/Header'
+import FilterField from '../../components/FilterField'
 
 import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -18,7 +20,49 @@ import * as spotifyActions from '../../services/spotify/actions'
 class LibraryPlaylists extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this.state = {
+			filter: ''
+		}
+	}
+
+	componentDidMount(){
+		if (!this.props.mopidy_library_playlists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+			this.props.mopidyActions.getLibraryPlaylists()
+		}
+
+		if (this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+			this.props.spotifyActions.getLibraryPlaylists()
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
+
+			// We've just connected
+			if (!this.props.mopidy_connected){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_playlists){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}			
+		}
+
+		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+
+			// We've just connected
+			if (!this.props.spotify_connected){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_playlists_status !== 'finished'){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}			
+		}
 	}
 
 	handleContextMenu(e,item){
@@ -43,51 +87,36 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	renderView(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/playlists'])){
-			return (
-				<div className="body-loader">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-
-		if (!this.props.library_playlists || !this.props.playlists ){
-			return null
-		}
-
 		var playlists = []
-		for (var i = 0; i < this.props.library_playlists.length; i++){
-			var uri = this.props.library_playlists[i]
-			var owner_id = helpers.getFromUri('playlistowner',uri)
 
-			if (this.props.playlists.hasOwnProperty(uri)){
-
-				switch (this.props.filter){
-
-					case 'only_mine':
-						if (this.props.me_id && owner_id == this.props.me_id){
-							playlists.push(this.props.playlists[uri])
-						}
-						break
-
-					case 'only_others':
-						if (!this.props.me_id || owner_id != this.props.me_id){
-							playlists.push(this.props.playlists[uri])
-						}
-						break
-
-					default:
-						playlists.push(this.props.playlists[uri])
-						break
+		// Spotify library items
+		if (this.props.spotify_library_playlists && (this.props.source == 'all' || this.props.source == 'spotify')){
+			for (var i = 0; i < this.props.spotify_library_playlists.length; i++){
+				var uri = this.props.spotify_library_playlists[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
 				}
 			}
 		}
 
-		if( this.props.sort ){
-			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
+		// Mopidy library items
+		if (this.props.mopidy_library_playlists && (this.props.source == 'all' || this.props.source == 'local')){
+			for (var i = 0; i < this.props.mopidy_library_playlists.length; i++){
+				var uri = this.props.mopidy_library_playlists[i]
+				if (this.props.playlists.hasOwnProperty(uri)){
+					playlists.push(this.props.playlists[uri])
+				}
+			}
 		}
 
-		if( this.props.view == 'list' ){
+		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
+		playlists = helpers.removeDuplicates(playlists)
+
+		if (this.state.filter !== ''){
+			playlists = helpers.applyFilter('name', this.state.filter, playlists)
+		}
+
+		if (this.props.view == 'list'){
 			if (this.props.slim_mode){
 				var columns = [
 					{
@@ -110,21 +139,19 @@ class LibraryPlaylists extends React.Component{
 						name: 'owner'
 					},
 					{
-						label: 'Source',
-						name: 'source'
-					},
-					{
 						label: 'Tracks',
 						name: 'tracks_total'
 					},
 					{
 						label: 'Editable',
 						name: 'can_edit'
+					},
+					{
+						label: 'Source',
+						name: 'source'
 					}
 				]
 			}
-
-			console.log(columns)
 
 			return (
 				<section className="content-wrapper">
@@ -149,18 +176,18 @@ class LibraryPlaylists extends React.Component{
 
 	render(){
 
-		var filter_options = [
+		var source_options = [
 			{
 				value: 'all',
 				label: 'All'
 			},
 			{
-				value: 'only_mine',
-				label: 'Owned by me'
+				value: 'local',
+				label: 'Local'
 			},
 			{
-				value: 'only_others',
-				label: 'I\'m following'
+				value: 'spotify',
+				label: 'Spotify'
 			}
 		]
 
@@ -200,9 +227,10 @@ class LibraryPlaylists extends React.Component{
 
 		var options = (
 			<span>
-				<DropdownField icon="filter" name="Filter" value={this.props.filter} options={filter_options} handleChange={val => {this.props.uiActions.set({ library_playlists_filter: val}); this.props.uiActions.hideContextMenu() }} />
+				<FilterField handleChange={value => this.setState({filter: value})} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_playlists_view: val}); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_playlists_source: val}); this.props.uiActions.hideContextMenu() }} />
 				<button className="no-hover" onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
 					<FontAwesome name="plus" />&nbsp;
 					New
@@ -228,20 +256,26 @@ class LibraryPlaylists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		mopidy_connected: state.mopidy.connected,
+		spotify_connected: state.spotify.connected,
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		mopidy_library_playlists_status: state.mopidy.library_playlists_status,
+		spotify_library_playlists: state.spotify.library_playlists,
+		spotify_library_playlists_status: state.spotify.library_playlists_status,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
 		view: state.ui.library_playlists_view,
-		filter: (state.ui.library_playlists_filter ? state.ui.library_playlists_filter : 'all'),
+		source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
 		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
 		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
-		library_playlists: state.core.library_playlists,
 		playlists: state.core.playlists
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

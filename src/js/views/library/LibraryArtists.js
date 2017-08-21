@@ -9,6 +9,7 @@ import Header from '../../components/Header'
 import ArtistGrid from '../../components/ArtistGrid'
 import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
+import FilterField from '../../components/FilterField'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -18,7 +19,49 @@ import * as spotifyActions from '../../services/spotify/actions'
 class LibraryArtists extends React.Component{
 
 	constructor(props) {
-		super(props);
+		super(props)
+
+		this.state = {
+			filter: ''
+		}
+	}
+
+	componentDidMount(){
+		if (this.props.mopidy_library_artists_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+			this.props.mopidyActions.getLibraryArtists()
+		}
+
+		if (this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+			this.props.spotifyActions.getLibraryArtists()
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
+
+			// We've just connected
+			if (!this.props.mopidy_connected){
+				this.props.mopidyActions.getLibraryArtists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_artists_status != 'finished'){
+				this.props.mopidyActions.getLibraryArtists()
+			}			
+		}
+
+		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+
+			// We've just connected
+			if (!this.props.spotify_connected){
+				this.props.spotifyActions.getLibraryArtists()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished'){
+				this.props.spotifyActions.getLibraryArtists()
+			}
+		}
 	}
 
 	handleContextMenu(e,item){
@@ -29,16 +72,6 @@ class LibraryArtists extends React.Component{
 			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
-	}
-
-	componentDidMount(){
-		if (!this.props.library_artists_started){
-			this.props.spotifyActions.getLibraryArtists();
-		}
-	}
-
-	loadMore(){
-		this.props.spotifyActions.getURL( this.props.library_artists_more, 'SPOTIFY_LIBRARY_ARTISTS_LOADED' );
 	}
 
 	setSort(value){
@@ -90,30 +123,59 @@ class LibraryArtists extends React.Component{
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/following?type=artist'])){
-			return (
-				<div className="view library-albums-view">
-					<Header icon="cd" title="My albums" />
-					<div className="body-loader">
-						<div className="loader"></div>
-					</div>
-				</div>
-			)
+		var artists = []
+
+		// Mopidy library items
+		if (this.props.mopidy_library_artists && (this.props.source == 'all' || this.props.source == 'local')){
+			for (var i = 0; i < this.props.mopidy_library_artists.length; i++){
+
+				// Construct item placeholder. This is used as Mopidy needs to 
+				// lookup ref objects to get the full object which can take some time
+				var uri = this.props.mopidy_library_artists[i]
+				var source = helpers.uriSource(uri)
+				var artist = {
+					uri: uri,
+					source: source
+				}
+
+				if (this.props.artists.hasOwnProperty(uri)){
+					artist = this.props.artists[uri]
+				}
+
+				artists.push(artist)
+			}
 		}
 
-		var artists = []
-		if (this.props.library_artists && this.props.artists){
-			for (var i = 0; i < this.props.library_artists.length; i++){
-				var uri = this.props.library_artists[i]
+		// Spotify library items
+		if (this.props.spotify_library_artists && (this.props.source == 'all' || this.props.source == 'spotify')){
+			for (var i = 0; i < this.props.spotify_library_artists.length; i++){
+				var uri = this.props.spotify_library_artists[i]
 				if (this.props.artists.hasOwnProperty(uri)){
 					artists.push(this.props.artists[uri])
 				}
 			}
-
-			if( this.props.sort ){
-				artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse)
-			}
 		}
+
+		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse)
+
+		if (this.state.filter !== ''){
+			artists = helpers.applyFilter('name', this.state.filter, artists)
+		}
+
+		var source_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'local',
+				label: 'Local'
+			},
+			{
+				value: 'spotify',
+				label: 'Spotify'
+			}
+		]
 
 		var view_options = [
 			{
@@ -143,8 +205,10 @@ class LibraryArtists extends React.Component{
 
 		var options = (
 			<span>
+				<FilterField handleChange={value => this.setState({filter: value})} />
 				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={value => {this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu()}} />
+				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_artists_source: val}); this.props.uiActions.hideContextMenu() }} />
 			</span>
 		)
 
@@ -152,7 +216,6 @@ class LibraryArtists extends React.Component{
 			<div className="view library-artists-view">
 				<Header icon="mic" title="My artists" options={options} uiActions={this.props.uiActions} />				
 				{ this.renderView(artists) }
-				<LazyLoadListener enabled={this.props.library_artists_more} loadMore={ () => this.loadMore() }/>
 			</div>
 		);
 	}
@@ -167,15 +230,17 @@ class LibraryArtists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		load_queue: state.ui.load_queue,
+		mopidy_connected: state.mopidy.connected,
+		spotify_connected: state.spotify.connected,
+		mopidy_library_artists: state.mopidy.library_artists,
+		mopidy_library_artists_status: state.mopidy.library_artists_status,
+		spotify_library_artists: state.spotify.library_artists,
+		spotify_library_artists_status: state.spotify.library_artists_status,
 		artists: state.core.artists,
-		library_artists: state.core.library_artists,
-		library_artists_started: state.core.library_artists_started,
-		library_artists_more: state.core.library_artists_more,
-		library_artists_started: state.core.library_artists_started,
+		source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name'),
 		sort_reverse: (state.ui.library_artists_sort_reverse ? true : false),
-		view: state.core.library_artists_view
+		view: state.ui.library_artists_view
 	}
 }
 

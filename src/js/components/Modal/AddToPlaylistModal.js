@@ -10,10 +10,18 @@ export default class AddToPlaylistModal extends React.Component{
 
 	constructor(props){
 		super(props)
+
+		if (!this.props.spotify_library_playlists){
+			this.props.spotifyActions.getLibraryPlaylists()
+		}
+		
+		if (!this.props.mopidy_library_playlists){
+			this.props.mopidyActions.getLibraryPlaylists()
+		}
 	}
 
 	playlistSelected( playlist_uri ){
-		this.props.uiActions.addTracksToPlaylist( playlist_uri, this.props.tracks_uris )
+		this.props.coreActions.addTracksToPlaylist( playlist_uri, this.props.tracks_uris )
 		this.props.uiActions.closeModal()
 	}
 
@@ -25,6 +33,15 @@ export default class AddToPlaylistModal extends React.Component{
 		}
 
 		playlists = helpers.sortItems(playlists, 'name')
+
+		var loader = null
+		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+			loader = (
+				<div className='lazy-loader body-loader loading'>
+					<div className="loader"></div>
+				</div>
+			)
+		}
 
 		return (
 			<div>
@@ -46,6 +63,7 @@ export default class AddToPlaylistModal extends React.Component{
 						})
 					}
 				</div>
+				{loader}
 			</div>
 		)
 	}

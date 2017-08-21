@@ -20,7 +20,6 @@ class LibraryBrowse extends React.Component{
 		super(props);
 	}
 
-	// on render
 	componentDidMount(){
 		this.loadDirectory()
 	}
@@ -106,7 +105,7 @@ class LibraryBrowse extends React.Component{
 			var options = null
 			if (this.props.params.uri != 'local:directory' ){
 				options = (
-					<button onClick={ () => window.history.back() }>
+					<button className="no-hover" onClick={ () => window.history.back() }>
 						<FontAwesome name="reply" />&nbsp;
 						Back
 					</button>
@@ -117,7 +116,7 @@ class LibraryBrowse extends React.Component{
 				return (
 					<div className="view library-local-view">
 						<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
-						<div className="body-loader">
+						<div className="body-loader loading">
 							<div className="loader"></div>
 						</div>
 					</div>
@@ -144,19 +143,7 @@ class LibraryBrowse extends React.Component{
 
 		} else {				
 
-			var grid_items = [
-				{
-					name: 'Local artists',
-					link: global.baseURL+'library/browse/local-artists',
-					icons: ['assets/backgrounds/browse-artists.jpg']
-				},
-				{
-					name: 'Local albums',
-					link: global.baseURL+'library/browse/local-albums',
-					icons: ['assets/backgrounds/browse-albums.jpg']
-				}
-			]
-
+			var grid_items = []
 			if (this.props.directory){
 				for (var i = 0; i < this.props.directory.length; i++){
 					var directory = this.props.directory[i]
@@ -204,7 +191,13 @@ class LibraryBrowse extends React.Component{
 							{
 								grid_items.map(
 									(item, index) => {
-										return <GridItem item={item} key={index} link={item.link} />
+										return (
+											<GridItem 
+												item={item} 
+												key={index} 
+												onClick={e => hashHistory.push(item.link)}
+											/>
+										)
 									}
 								)
 							}

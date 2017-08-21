@@ -168,6 +168,29 @@ export function addTracksToPlaylist( uri, tracks_uris ){
 
 
 /**
+ * Asset libraries
+ **/
+
+export function getLibraryPlaylists(){
+    return {
+        type: 'GET_LIBRARY_PLAYLISTS'
+    }
+}
+
+export function getLibraryAlbums(){
+    return {
+        type: 'GET_LIBRARY_ALBUMS'
+    }
+}
+
+export function getLibraryArtists(){
+    return {
+        type: 'GET_LIBRARY_ARTISTS'
+    }
+}
+
+
+/**
  * Assets loaded
  **/
 

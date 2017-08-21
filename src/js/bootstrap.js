@@ -30,12 +30,17 @@ let reducers = combineReducers({
 var initialState = {
 	core: {
 		current_tracklist: [],
-		current_tltrack: false
+		current_tltrack: false,
+		albums: {},
+		users: {},
+		playlists: {},
+		artists: {}
 	},
 	ui: {
 		slim_mode: false,
 		selected_tracks: [],
-		notifications: []
+		notifications: [],
+		processes: {}
 	},
 	mopidy: {
 		connected: false,

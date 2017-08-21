@@ -74,7 +74,7 @@ class DiscoverFeatured extends React.Component{
 			return (
 				<div className="view discover-featured-view">
 					<Header icon="star" title="Featured playlists" />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>

@@ -11,9 +11,10 @@ import Thumbnail from '../../components/Thumbnail'
 import TrackList from '../../components/TrackList'
 import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/DropdownField'
-import LazyLoadListener from '../../components/LazyLoadListener'
+import FilterField from '../../components/FilterField'
 
 import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -22,11 +23,47 @@ class LibraryAlbums extends React.Component{
 
 	constructor(props) {
 		super(props)
+
+		this.state = {
+			filter: ''
+		}
 	}
 
 	componentDidMount(){
-		if (!this.props.library_albums_started){
-			this.props.spotifyActions.getLibraryAlbums();
+		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+			this.props.mopidyActions.getLibraryAlbums()
+		}
+
+		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+			this.props.spotifyActions.getLibraryAlbums()
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
+
+			// We've just connected
+			if (!this.props.mopidy_connected){
+				this.props.mopidyActions.getLibraryAlbums()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished' && newProps.mopidy_library_albums_status != 'started'){
+				this.props.mopidyActions.getLibraryAlbums()
+			}			
+		}
+
+		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+
+			// We've just connected
+			if (!this.props.spotify_connected){
+				this.props.spotifyActions.getLibraryAlbums()
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started'){
+				this.props.spotifyActions.getLibraryAlbums()
+			}			
 		}
 	}
 
@@ -40,8 +77,30 @@ class LibraryAlbums extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadMore(){
+	moreURIsToLoad(){
+		var uris = []
+		if (this.props.albums && this.props.library_albums){
+			for (var i = 0; i < this.props.library_albums.length; i++){
+				var uri = this.props.library_albums[i]
+				if (!this.props.albums.hasOwnProperty(uri) && helpers.uriSource(uri) == 'local'){
+					uris.push(uri)
+				}
+
+				// limit each lookup to 50 URIs
+				if (uris.length >= 50) break
+			}
+		}
+
+		return uris
+	}
+
+	loadMoreSpotify(){
 		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+	}
+
+	loadMoreMopidy(){
+		var uris = this.moreURIsToLoad()
+		this.props.mopidyActions.getAlbums(uris)
 	}
 
 	setSort(value){
@@ -73,27 +132,25 @@ class LibraryAlbums extends React.Component{
 					name: 'added_at'
 				},
 				{
-					label: 'Released',
-					name: 'release_date'
-				},
-				{
 					label: 'Tracks',
 					name: 'tracks_total'
+				},
+				{
+					label: 'Source',
+					name: 'source'
 				}
 			]
 			return (
-				<section className="content-wrapper">
-					<List 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						rows={albums} 
-						columns={columns} 
-						className="album-list"
-						link_prefix={global.baseURL+"album/"} />
-				</section>
+				<List 
+					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+					rows={albums} 
+					columns={columns} 
+					className="album-list"
+					link_prefix={global.baseURL+"album/"} />
 			)
 		}else if( this.props.view == 'detail' ){
 			return (
-				<section className="content-wrapper albums-detail-subview">
+				<div>
 					{
 						albums.map( album => {
 							return (
@@ -114,54 +171,76 @@ class LibraryAlbums extends React.Component{
 							)
 						})
 					}
-				</section>			
+				</div>			
 			)
 		}else{
 			return (
-				<section className="content-wrapper">
-					<AlbumGrid 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						albums={albums} />
-				</section>			
+				<AlbumGrid 
+					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+					albums={albums} />
 			)
 		}
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_me/albums'])){
-			return (
-				<div className="view library-albums-view">
-					<Header icon="cd" title="My albums" />
-					<div className="body-loader">
-						<div className="loader"></div>
-					</div>
-				</div>
-			)
-		}
-
 		var albums = []
 
-		if (this.props.library_albums && this.props.albums){
-			for (var i = 0; i < this.props.library_albums.length; i++){
-				var uri = this.props.library_albums[i]
+		// Spotify library items
+		if (this.props.spotify_library_albums && (this.props.source == 'all' || this.props.source == 'spotify')){
+			for (var i = 0; i < this.props.spotify_library_albums.length; i++){
+				var uri = this.props.spotify_library_albums[i]
 				if (this.props.albums.hasOwnProperty(uri)){
 					albums.push(this.props.albums[uri])
 				}
 			}
+		}
 
-			if( this.props.sort ){
-				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
+		// Mopidy library items
+		if (this.props.mopidy_library_albums && (this.props.source == 'all' || this.props.source == 'local')){
+			for (var i = 0; i < this.props.mopidy_library_albums.length; i++){
+
+				// Construct item placeholder. This is used as Mopidy needs to 
+				// lookup ref objects to get the full object which can take some time
+				var uri = this.props.mopidy_library_albums[i]
+				var source = helpers.uriSource(uri)
+				var album = {
+					uri: uri,
+					source: source
+				}
+
+				if (this.props.albums.hasOwnProperty(uri)){
+					album = this.props.albums[uri]
+				}
+
+				albums.push(album)
 			}
 		}
+
+		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
+
+		if (this.state.filter && this.state.filter !== ''){
+			albums = helpers.applyFilter('name', this.state.filter, albums)
+		}
+
+		var source_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'local',
+				label: 'Local'
+			},
+			{
+				value: 'spotify',
+				label: 'Spotify'
+			}
+		]
 
 		var view_options = [
 			{
 				value: 'thumbnails',
 				label: 'Thumbnails'
-			},
-			{
-				value: 'detail',
-				label: 'Detail'
 			},
 			{
 				value: 'list',
@@ -183,27 +262,33 @@ class LibraryAlbums extends React.Component{
 				label: 'Added'
 			},
 			{
-				value: 'release_date',
-				label: 'Released'
-			},
-			{
 				value: 'tracks_total',
 				label: 'Tracks'
+			},
+			{
+				value: 'source',
+				label: 'Source'
 			}
 		]
 
 		var options = (
 			<span>
+				<FilterField handleChange={value => this.setState({filter: value})} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_albums_source: val}); this.props.uiActions.hideContextMenu() }} />
 			</span>
 		)
 
 		return (
 			<div className="view library-albums-view">
+
 				<Header icon="cd" title="My albums" options={options} uiActions={this.props.uiActions} />
-				{ this.renderView(albums) }
-				<LazyLoadListener enabled={this.props.library_albums_more} loadMore={ () => this.loadMore() }/>
+
+				<section className="content-wrapper">
+					{this.renderView(albums)}
+				</section>
+
 			</div>
 		);
 	}
@@ -218,19 +303,24 @@ class LibraryAlbums extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		mopidy_connected: state.mopidy.connected,
+		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
+		mopidy_library_albums: state.mopidy.library_albums,
+		mopidy_library_albums_status: state.mopidy.library_albums_status,
+		spotify_library_albums: state.spotify.library_albums,
+		spotify_library_albums_status: state.spotify.library_albums_status,
 		view: state.ui.library_albums_view,
+		source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
-		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false),
-		library_albums: state.core.library_albums,
-		library_albums_started: state.core.library_albums_started,
-		library_albums_more: state.core.library_albums_more
+		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false)
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)

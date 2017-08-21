@@ -12,8 +12,8 @@ export default class EditPlaylistModal extends React.Component{
 			error: null,
 			name: this.props.data.name,
 			description: (this.props.data.description ? this.props.data.description : ''),
-			is_public: this.props.data.is_public,
-			is_collaborative: this.props.data.is_collaborative
+			public: this.props.data.public,
+			collaborative: this.props.data.collaborative
 		}
 	}
 
@@ -24,7 +24,7 @@ export default class EditPlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.uiActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative)
+			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative)
 			this.props.uiActions.closeModal()
 			return false
 		}
@@ -56,16 +56,16 @@ export default class EditPlaylistModal extends React.Component{
 								<input 
 									type="checkbox"
 									name="playlist_private"
-									checked={ this.state.is_public }
-									onChange={ e => this.setState({ is_public: !this.state.is_public })} />
+									checked={ this.state.public }
+									onChange={ e => this.setState({ public: !this.state.public })} />
 								<span className="label">Public</span>
 							</label>
 							<label>
 								<input 
 									type="checkbox"
-									name="is_collaborative"
-									checked={ this.state.is_collaborative }
-									onChange={ e => this.setState({ is_collaborative: !this.state.is_collaborative })} />
+									name="collaborative"
+									checked={ this.state.collaborative }
+									onChange={ e => this.setState({ collaborative: !this.state.collaborative })} />
 								<span className="label">Collaborative</span>
 							</label>
 						</div>
@@ -76,7 +76,7 @@ export default class EditPlaylistModal extends React.Component{
 			default:
 				return (
 					<div>
-						<div className="field">
+						<div className="field text">
 							<span className="label">Name</span>
 							<input 
 								type="text"

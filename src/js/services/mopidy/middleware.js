@@ -231,6 +231,16 @@ const MopidyMiddleware = (function(){
                     uri_schemes[i] = uri_schemes[i] +':'
                 }
 
+                // Enable Iris providers when the backend is available
+                if (uri_schemes.includes('spotify:')){
+                    store.dispatch({
+                        type: 'SPOTIFY_SET',
+                        data: {
+                            enabled: true
+                        }
+                    })
+                }
+
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break
 
@@ -272,7 +282,6 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                         break
                     }
@@ -280,7 +289,6 @@ const MopidyMiddleware = (function(){
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Fetching tracks'))
                     store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
                     break
 
@@ -329,25 +337,26 @@ const MopidyMiddleware = (function(){
                 next(action)
 
                 // start our processor
-                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+action.uris.length+' URI(s)', {batches: batches}))
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
 
                 // make sure we have some uris in the queue
-                if (store.getState().mopidy.enqueue_uris_batches && store.getState().mopidy.enqueue_uris_batches.length > 0){
+                if (action.data.batches && action.data.batches.length > 0){
 
-                    var batches = store.getState().mopidy.enqueue_uris_batches
+                    var batches = Object.assign([],action.data.batches)
                     var batch = batches[0]
                     var total_uris = 0
                     for (var i = 0; i < batches.length; i++){
                         total_uris += batches[i].uris.length
                     }
-                    store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS', 'Adding '+total_uris+' URI(s)'))
+                    batches.shift()
+                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)'))
 
                 // no batches means we're done here
                 } else {
-                    store.dispatch(uiActions.stopProcess('MOPIDY_ENQUEUE_URIS'))
+                    store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'))
                     break
                 }
 
@@ -398,9 +407,8 @@ const MopidyMiddleware = (function(){
                         // server requests before our next batch. It's a little crude but it means the server isn't
                         // locked until we're completely done.
                         setTimeout(
-                            function(){ 
-                                store.dispatch(mopidyActions.enqueueURIsBatchDone())
-                                store.dispatch(mopidyActions.enqueueUrisProcessor())
+                            function(){
+                                store.dispatch(uiActions.runProcess(action.type, {batches: batches}))
                             }, 
                             100
                         )
@@ -584,12 +592,20 @@ const MopidyMiddleware = (function(){
 
                         // drop in our URI list
                         var playlist_uris = helpers.arrayOf('uri',response)
+                        var playlist_uris_filtered = []
 
-                        store.dispatch({ type: 'LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris });
+                        // Remove any Spotify playlists. These will be handled by our Spotify API
+                        for (var i = 0; i < playlist_uris.length; i++){
+                            if (helpers.uriSource(playlist_uris[i]) != 'spotify'){
+                                playlist_uris_filtered.push(playlist_uris[i])
+                            }
+                        }
+
+                        store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris_filtered });
 
                         // get the full playlist objects
-                        for (var i = 0; i < response.length; i++ ){
-                            instruct( socket, store, 'playlists.lookup', { uri: response[i].uri })
+                        for (var i = 0; i < playlist_uris_filtered.length; i++ ){
+                            instruct( socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
                                 .then( response => {
                                     var source = helpers.uriSource(response.uri)
                                     var playlist = Object.assign(
@@ -836,23 +852,52 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ALBUMS':
-                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
-                    .then( response => {
-                        if (response.length <= 0) return
+                var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
-                        var uris = helpers.arrayOf('uri',response)
+                if (!last_run){
+                    instruct( socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                        .then( response => {
+                            if (response.length <= 0) return
 
-                        store.dispatch({ 
-                            type: 'MOPIDY_GET_ALBUMS',
-                            uris: uris.slice(0,50)
-                        });
+                            var uris = helpers.arrayOf('uri',response)
+                            store.dispatch({ 
+                                type: 'MOPIDY_LIBRARY_ALBUMS_LOADED', 
+                                uris: uris
+                            });
 
-                        store.dispatch({ 
-                            type: 'LOCAL_ALBUMS_LOADED', 
-                            uris: uris
-                        });
-                    })
+                            // Start our process to load the full album objects
+                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' local albums', {uris: uris}))
+                        })
+
+                } else if (last_run.status == 'cancelled'){
+                    store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))     
+                } else if (last_run.status == 'finished'){
+                    // TODO: do we want to force a refresh?   
+                }
+
                 break;
+
+            case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR':
+                if (store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR'] !== undefined){
+                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ALBUMS_PROCESSOR']
+
+                    if (processor.status == 'cancelling'){
+                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
+                        return false
+                    }
+                }
+
+                var uris = Object.assign([], action.data.uris)
+                var uris_to_load = uris.splice(0,50)
+
+                if (uris_to_load.length > 0){
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' local albums', {uris: uris}))
+                    store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
+                } else {
+                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
+                }
+
+                break
 
             case 'MOPIDY_GET_ALBUMS':
                 instruct( socket, store, 'library.lookup', { uris: action.uris } )
@@ -866,7 +911,7 @@ const MopidyMiddleware = (function(){
                                 var album = Object.assign(
                                     {},
                                     {
-                                        is_mopidy: true,
+                                        source: 'local',
                                         artists: response[uri][0].artists,
                                         tracks: response[uri],
                                         tracks_total: response[uri].length
@@ -881,7 +926,19 @@ const MopidyMiddleware = (function(){
                         store.dispatch({ 
                             type: 'ALBUMS_LOADED',
                             albums: albums
-                        });
+                        })
+
+                        // Re-run any consequential processes in 100ms. This allows a small window for other
+                        // server requests before our next batch. It's a little crude but it means the server isn't
+                        // locked until we're completely done.
+                        if (action.processor){
+                            setTimeout(
+                                function(){
+                                    store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data))
+                                }, 
+                                100
+                            )
+                        }
                     })
                 break;
 
@@ -895,7 +952,7 @@ const MopidyMiddleware = (function(){
                             { images: [] },
                             response[0].album,
                             {
-                                is_mopidy: true,
+                                source: 'local',
                                 artists: response[0].artists,
                                 tracks: response,
                                 tracks_total: response.length
@@ -956,19 +1013,83 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
-                store.dispatch({ type: 'LOCAL_ARTISTS_LOADED', data: false });
                 instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
-                    .then( response => {                    
+                    .then( response => {
+                        if (response.length <= 0) return
+
+                        var uris = helpers.arrayOf('uri',response)
+
                         store.dispatch({ 
                             type: 'ARTISTS_LOADED', 
                             artists: response
-                        });               
+                        })
+
                         store.dispatch({ 
-                            type: 'LOCAL_ARTISTS_LOADED', 
-                            uris: helpers.arrayOf('uri',response)
-                        });
+                            type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
+                            uris: uris
+                        })
+
                     })
+
                 break;
+
+            /**
+             * TODO: Fetch and process library artists
+             *
+             * We can't get specific artist artwork from Mopidy. Perhaps we fetch additional
+             * artist metadata via LastFM? Their API limits will make this quite slow. 
+             *
+            case 'MOPIDY_GET_LIBRARY_ARTISTS':
+
+                var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
+
+                if (!last_run){
+                    instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                        .then( response => {
+                            if (response.length <= 0) return
+
+                            var uris = helpers.arrayOf('uri',response)
+
+                            store.dispatch({ 
+                                type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
+                                uris: uris
+                            });
+
+                            // Start our process to load the full album objects
+                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}))
+                        })
+
+                } else if (last_run.status == 'cancelled'){
+                    store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))     
+                } else if (last_run.status == 'finished'){
+                    // TODO: do we want to force a refresh?   
+                }
+
+                break;
+
+            case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR':
+                if (store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
+                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR']
+
+                    if (processor.status == 'cancelling'){
+                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
+                        return false
+                    }
+                }
+
+                var uris = Object.assign([], action.data.uris)
+                var uris_to_load = uris.splice(0,50)
+
+                if (uris_to_load.length > 0){
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}))
+                    store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}))
+                } else {
+                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
+                }
+
+                break
+
+            */
 
             case 'MOPIDY_GET_ARTIST':
                 instruct( socket, store, 'library.lookup', action.data )
@@ -1018,6 +1139,45 @@ const MopidyMiddleware = (function(){
                             }else{
                                 store.dispatch( lastfmActions.getArtist( artist.uri, artist.name.replace('&','and') ) )
                             }
+                        }
+                    })
+                break;
+
+            case 'MOPIDY_GET_ARTISTS':
+                instruct( socket, store, 'library.lookup', {uris: action.uris})
+                    .then( response => {
+                        if (response.length <= 0) return
+
+                        var artists = []
+
+                        for (var uri in response){
+                            if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].artists){
+                                var artist = Object.assign(
+                                    {},
+                                    (response ? response[uri][0].artists[0] : {}),
+                                    {
+                                        is_mopidy: true
+                                    }
+                                )
+                                artists.push(artist)
+                            }
+                        }
+                        
+                        store.dispatch({ 
+                            type: 'ARTISTS_LOADED',
+                            artists: artists
+                        })
+
+                        // Re-run any consequential processes in 100ms. This allows a small window for other
+                        // server requests before our next batch. It's a little crude but it means the server isn't
+                        // locked until we're completely done.
+                        if (action.processor){
+                            setTimeout(
+                                function(){
+                                    store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data))
+                                }, 
+                                100
+                            )
                         }
                     })
                 break;

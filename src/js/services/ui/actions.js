@@ -168,24 +168,56 @@ export function stopLoading(key){
     }
 }
 
-export function startProcess(key,content){
+export function startProcess(key,message,data = {}){
     return { 
         type: 'START_PROCESS',
         key: key,
-        content: content
+        message: message,
+        data: data
+    }
+}
+
+export function resumeProcess(key,message,data = {}){
+    return { 
+        type: 'RESUME_PROCESS',
+        key: key
+    }
+}
+
+export function updateProcess(key,message,data = {}){
+    return { 
+        type: 'UPDATE_PROCESS',
+        key: key,
+        message: message,
+        data: data
+    }
+}
+
+export function runProcess(key,data = {}){
+    return { 
+        type: key,
+        data: data
     }
 }
 
 export function cancelProcess(key){
+    console.log('cancel process',key)
     return { 
         type: 'CANCEL_PROCESS',
         key: key
     }
 }
 
-export function stopProcess(key){
+export function processCancelled(key){
     return { 
-        type: 'STOP_PROCESS',
+        type: 'PROCESS_CANCELLED',
+        key: key
+    }
+}
+
+export function processFinished(key){
+    return { 
+        type: 'PROCESS_FINISHED',
         key: key
     }
 }

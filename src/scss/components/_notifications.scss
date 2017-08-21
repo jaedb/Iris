@@ -64,25 +64,27 @@
 		&.process {
 			position: relative;
 			padding-right: 18px;
+			padding-left: 50px;
 
 			&.cancelling {
 				color: rgba(255,255,255,0.5);
 			}
 
-			&:after {
-				pointer-events: none;
+			.loader {
+				width: 20px;
+				height: 20px;
 				position: absolute;
-				display: block;
-				content: '';
-				background: $white;
-				opacity: 0.15;
-			    animation: slideloader 1s infinite;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-				z-index: 1;
-				border-radius: 0 0 3px 3px;
+				top: 16px;
+				left: 18px;
+				opacity: 1;				
+
+				&:before {
+					border-color: transparent;
+				}
+
+				&:after {
+					border-right-color: $white;
+				}
 			}
 		}
 	}

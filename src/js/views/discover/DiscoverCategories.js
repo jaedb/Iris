@@ -23,7 +23,7 @@ class DiscoverCategories extends React.Component{
 			return (
 				<div className="view discover-categories-view">
 					<Header icon="grid" title="Genre / Mood" />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>

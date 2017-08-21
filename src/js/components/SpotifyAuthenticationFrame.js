@@ -74,9 +74,12 @@ class SpotifyAuthenticationFrame extends React.Component{
 			'user-library-modify',
 			'user-follow-modify',
 			'user-follow-read',
+			'user-read-email',
 			'user-top-read',
 			'user-read-currently-playing',
-			'user-read-playback-state'
+			'user-read-playback-state',
+			'playlist-read-collaborative',
+			'ugc-image-upload' // playlist image uploading
 		]
 		var popup = window.open(url+'&scope='+scopes.join('%20'),"popup","height=680,width=400");
 
