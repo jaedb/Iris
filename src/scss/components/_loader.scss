@@ -65,3 +65,16 @@
 		}
 	}
 }
+
+.mini-loader {
+	.loader {
+		width: 20px;
+		height: 20px;
+		opacity: 1;
+
+		&:before {
+			border-color: darken($secondary_grey, 5%);
+		}
+	}
+}
+

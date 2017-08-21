@@ -34,6 +34,15 @@ export default class AddToPlaylistModal extends React.Component{
 
 		playlists = helpers.sortItems(playlists, 'name')
 
+		var loader = null
+		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+			loader = (
+				<div className='lazy-loader body-loader loading'>
+					<div className="loader"></div>
+				</div>
+			)
+		}
+
 		return (
 			<div>
 				<h1>Add to playlist</h1>
@@ -54,6 +63,7 @@ export default class AddToPlaylistModal extends React.Component{
 						})
 					}
 				</div>
+				{loader}
 			</div>
 		)
 	}

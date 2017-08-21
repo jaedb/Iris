@@ -248,6 +248,17 @@ class ContextMenu extends React.Component{
 
 		playlists = helpers.sortItems(playlists, 'name')
 
+		var loader = null
+		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+			loader = (
+				<div className="menu-item-wrapper">
+					<div className="menu-item mini-loader loading">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
 		return (			
 			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
 				<span className="menu-item-wrapper">
@@ -270,6 +281,7 @@ class ContextMenu extends React.Component{
 						)
 					})
 				}
+				{loader}
 			</div>
 		)
 	}
@@ -589,6 +601,7 @@ class ContextMenu extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		menu: state.ui.context_menu,
+		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
 		spotify_library_playlists: state.spotify.library_playlists,

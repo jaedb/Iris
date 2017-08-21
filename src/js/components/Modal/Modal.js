@@ -47,7 +47,7 @@ class Modal extends React.Component{
 				</div>
 				<div className="content">
 
-					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} spotifyActions={this.props.spotifyActions} mopidyActions={this.props.mopidyActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} spotify_library_playlists={this.props.spotify_library_playlists} mopidy_library_playlists={this.props.mopidy_library_playlists} /> : null }
+					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} spotifyActions={this.props.spotifyActions} mopidyActions={this.props.mopidyActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} spotify_library_playlists={this.props.spotify_library_playlists} mopidy_library_playlists={this.props.mopidy_library_playlists} processes={this.props.processes} /> : null }
 					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} /> : null }
 					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} /> : null }
 					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} data={this.props.modal.data} /> : null }
@@ -78,6 +78,7 @@ const mapStateToProps = (state, ownProps) => {
 		artists: state.core.artists,
 		playlists: state.core.playlists,
 		context_menu: state.ui.context_menu,
+		processes: state.ui.processes,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_library_playlists: state.spotify.library_playlists,
