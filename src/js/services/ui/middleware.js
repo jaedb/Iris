@@ -138,7 +138,6 @@ const UIMiddleware = (function(){
                     type: action.key,
                     data: store.getState().ui.processes[action.key].data
                 })
-                console.log('resuming',store.getState().ui.processes[action.key].data)
                 next(action)
                 break
 

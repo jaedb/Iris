@@ -39,11 +39,7 @@ class Discover extends React.Component{
 
 		// BAU
 		} else {
-			if (this.props.authorized){
-				this.props.spotifyActions.getFavorites()
-			} else {
-				this.getRecommendations()
-			}
+			this.props.spotifyActions.getFavorites()
 		}
 	}
 
@@ -240,8 +236,8 @@ class Discover extends React.Component{
 					<div className="liner">
 						<h1>Explore new music</h1>
 						<h2 className="grey-text">
-							Add seeds below to build your sound. Let's start with 
-							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.
+							Add seeds below to build your sound
+							{!this.props.params.seeds ? ". Let's start with two of your favorite artists." : null}
 						</h2>
 						{this.renderSeeds()}
 					</div>

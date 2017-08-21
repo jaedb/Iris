@@ -256,9 +256,9 @@ const PusherMiddleware = (function(){
 
                 // start our UI process notification  
                 if (action.type == 'PUSHER_UPDATE_RADIO'){
-                    store.dispatch(uiActions.startProcess('PUSHER_RADIO', 'Updating radio'))
+                    store.dispatch(uiActions.startProcess('PUSHER_RADIO_PROCESS', 'Updating radio'))
                 } else {
-                    store.dispatch(uiActions.startProcess('PUSHER_RADIO', 'Starting radio'))
+                    store.dispatch(uiActions.startProcess('PUSHER_RADIO_PROCESS', 'Starting radio'))
                 }
 
                 var data = {
@@ -287,7 +287,7 @@ const PusherMiddleware = (function(){
                     if (response.status == 0){
                         store.dispatch(uiActions.createNotification(response.message, 'bad'))
                     }
-                    store.dispatch(uiActions.stopProcess('PUSHER_RADIO'))
+                    store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'))
                 })
                 break
 
@@ -307,7 +307,7 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_RADIO_STARTED':
             case 'PUSHER_RADIO_CHANGED':
-                if (action.radio.enabled && store.getState().spotify.enabled){
+                if (action.radio && action.radio.enabled && store.getState().spotify.enabled){
                     store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
                 }
                 next(action)

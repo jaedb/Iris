@@ -1013,6 +1013,33 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
+                instruct( socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                    .then( response => {
+                        if (response.length <= 0) return
+
+                        var uris = helpers.arrayOf('uri',response)
+
+                        store.dispatch({ 
+                            type: 'ARTISTS_LOADED', 
+                            artists: response
+                        })
+
+                        store.dispatch({ 
+                            type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
+                            uris: uris
+                        })
+
+                    })
+
+                break;
+
+            /**
+             * TODO: Fetch and process library artists
+             *
+             * We can't get specific artist artwork from Mopidy. Perhaps we fetch additional
+             * artist metadata via LastFM? Their API limits will make this quite slow. 
+             *
+            case 'MOPIDY_GET_LIBRARY_ARTISTS':
 
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
 
@@ -1061,6 +1088,8 @@ const MopidyMiddleware = (function(){
                 }
 
                 break
+
+            */
 
             case 'MOPIDY_GET_ARTIST':
                 instruct( socket, store, 'library.lookup', action.data )
