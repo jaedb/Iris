@@ -32,15 +32,19 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
-			text-align: center;
-
 			.thumbnail {
 				float: none;
 				margin: 0 auto 20px;
 			}
 
+			.liner {
+				padding: 15vh 10px 0;
+			}
+
 			h1 {
 				padding-top: 0;
+				font-size: 3rem;
+				line-height: 3rem;
 			}
 		}
 	}
