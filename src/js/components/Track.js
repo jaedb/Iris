@@ -214,7 +214,7 @@ export default class Track extends React.Component{
 			)
 		}
 
-		if (this.props.slim_mode){
+		if (global.slim_mode){
 
 			// Select zone handles selection events only
 			// We use onClick to capture touch as well as mouse events in one tidy parcel

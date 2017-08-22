@@ -191,7 +191,7 @@ class TrackList extends React.Component{
 	handleSelection(e,track_key){
 		let selected_tracks = this.props.selected_tracks
 
-		if (e.ctrlKey || this.props.slim_mode){
+		if (e.ctrlKey || global.slim_mode){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
@@ -398,7 +398,6 @@ class TrackList extends React.Component{
 									track={track} 
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
-									slim_mode={this.props.slim_mode} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									dragger={this.props.dragger} 
 									handleSelection={e => this.handleSelection(e, track_key)}
@@ -428,7 +427,6 @@ class TrackList extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		selected_tracks: state.ui.selected_tracks,
-		slim_mode: state.ui.slim_mode,
 		dragger: state.ui.dragger,
 		current_track: state.core.current_track,
 		context_menu: state.ui.context_menu

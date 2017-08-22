@@ -117,7 +117,7 @@ class LibraryPlaylists extends React.Component{
 		}
 
 		if (this.props.view == 'list'){
-			if (this.props.slim_mode){
+			if (global.slim_mode){
 				var columns = [
 					{
 						label: 'Name',
@@ -262,7 +262,6 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_library_playlists_status: state.mopidy.library_playlists_status,
 		spotify_library_playlists: state.spotify.library_playlists,
 		spotify_library_playlists_status: state.spotify.library_playlists_status,
-		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
 		view: state.ui.library_playlists_view,
