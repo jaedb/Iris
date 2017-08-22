@@ -18,24 +18,24 @@ class TrackList extends React.Component{
 
 		this.touch_dragging_tracks_keys = false
 
-		this.handleKeyUp = this.handleKeyUp.bind(this)
+		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.handleTouchMove = this.handleTouchMove.bind(this)
 		this.handleTouchEnd = this.handleTouchEnd.bind(this)
 	}
 
 	componentWillMount(){
-		window.addEventListener("keyup", this.handleKeyUp, false)
+		window.addEventListener("keydown", this.handleKeyDown, false)
 		window.addEventListener("touchmove", this.handleTouchMove, false)
 		window.addEventListener("touchend", this.handleTouchEnd, false)
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false)
+		window.removeEventListener("keydown", this.handleKeyDown, false)
 		window.removeEventListener("touchmove", this.handleTouchMove, false)
 		window.removeEventListener("touchend", this.handleTouchEnd, false)
 	}
 
-	handleKeyUp(e){
+	handleKeyDown(e){
 
 		// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
 		var ignoreNodes = ['INPUT', 'TEXTAREA']
@@ -43,18 +43,35 @@ class TrackList extends React.Component{
 			return false
 		}
 
-		// No tracks selected - no action required
-		if (!this.digestTracksKeys() || this.digestTracksKeys().length <= 0){
-			return
-		}
+		var tracks_keys = this.digestTracksKeys()
 
 		switch(e.keyCode){			
 			case 13: // enter
-				 this.playTracks();
+				if (tracks_keys && tracks_keys.length > 0){
+					this.playTracks();
+				}
 				break;
 			
 			case 46: // delete
-				 this.removeTracks();
+				if (tracks_keys && tracks_keys.length > 0){
+					this.removeTracks();
+				}
+				break;
+			
+			case 65: // a
+				if (e.ctrlKey){
+
+					e.preventDefault();
+
+					// Select all our tracks
+					var all_tracks = []
+					for (var i = 0; i < this.props.tracks.length; i++){
+						all_tracks.push(this.buildTrackKey(this.props.tracks[i], i))
+					}
+					this.props.uiActions.setSelectedTracks(all_tracks)
+
+					return false
+				}
 				break;
 		}
 	}
