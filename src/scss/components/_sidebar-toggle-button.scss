@@ -16,17 +16,25 @@
 	}
 
 	&.open {
+		@include animate(0.15s);
 		position: fixed;
 		top: 0;
 		right: 0;
 		bottom: 0;
-		left: 220px;
+		left: 0;
 		background: $overlay_dark;
 		color: $white;
 		z-index: 99;
 
 		.open {
 			display: none;
+		}
+
+		.open,
+		.close {
+			position: absolute;
+			top: 20px;
+			left: 235px;
 		}
 	}
 
