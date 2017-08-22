@@ -160,6 +160,14 @@ export function getImages( context, uris ){
 	}
 }
 
+export function createPlaylist(name, scheme){
+	return { 
+		type: 'MOPIDY_CREATE_PLAYLIST',
+		name: name,
+		scheme: scheme
+	}
+}
+
 export function deletePlaylist( uri ){
 	return { 
 		type: 'MOPIDY_DELETE_PLAYLIST',

@@ -830,18 +830,28 @@ const MopidyMiddleware = (function(){
                     .then( response => {            
                         store.dispatch(uiActions.createNotification('Created playlist'))
 
-                        // re-load our global playlists
-                        //store.dispatch({ type: 'MOPIDY_GET_PLAYLISTS' });
+                        store.dispatch({
+                            type: 'PLAYLIST_LOADED',
+                            key: action.uri,
+                            playlist: response
+                        })
+
+                        store.dispatch({
+                            type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
+                            key: action.uri,
+                            playlist: response
+                        })
                     });
                 break
 
             case 'MOPIDY_DELETE_PLAYLIST':
-                instruct( socket, store, 'playlists.delete', { uri: action.key })
+                instruct( socket, store, 'playlists.delete', { uri: action.uri })
                     .then( response => {
                         store.dispatch(uiActions.createNotification('Deleted playlist'))
-
-                        // re-load our global playlists
-                        // store.dispatch({ type: 'MOPIDY_PLAYLISTS' });
+                        store.dispatch({
+                            type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
+                            key: action.uri
+                        })
                     });           
                 break
                 

@@ -1,5 +1,7 @@
 
 import * as helpers from '../../helpers'
+var spotifyActions = require('../../services/spotify/actions')
+var mopidyActions = require('../../services/mopidy/actions')
 
 export function getBroadcasts(){
     return (dispatch, getState) => {
@@ -84,7 +86,7 @@ export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id 
 }
 
 export function savePlaylist(uri, name, description = '', is_public = false, is_collaborative = false){
-    switch( helpers.uriSource( uri ) ){
+    switch (helpers.uriSource(uri)){
 
         case 'spotify':
             return { 
@@ -107,23 +109,28 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
 }
 
 export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false){
-    switch( scheme ){
+    switch (scheme){
 
         case 'spotify':
-            return { 
-                type: 'SPOTIFY_CREATE_PLAYLIST',
-                name: name,
-                description: (description == '' ? null : description),
-                is_public: is_public,
-                is_collaborative: is_collaborative
+            if (description == ''){
+                description = null
             }
+            return spotifyActions.createPlaylist( name, description, is_public, is_collaborative )
 
-        case 'm3u':
-            return { 
-                type: 'MOPIDY_CREATE_PLAYLIST',
-                scheme: scheme,
-                name: name
-            }
+        default:
+            return mopidyActions.createPlaylist(name, scheme)
+    }
+    return false
+}
+
+export function deletePlaylist(uri){
+    switch (helpers.uriSource(uri)){
+
+        case 'spotify':
+            return spotifyActions.following(uri, 'DELETE')
+
+        default:
+            return mopidyActions.deletePlaylist(uri)
     }
     return false
 }

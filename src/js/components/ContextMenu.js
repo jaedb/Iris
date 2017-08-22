@@ -121,13 +121,13 @@ class ContextMenu extends React.Component{
 
 		switch (helpers.uriType(item.uri)){
 			case 'artist':
-				return (this.props.library_artists && this.props.library_artists.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1)
 				break
 			case 'album':
-				return (this.props.library_albums && this.props.library_albums.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_albums && this.props.spotify_library_albums.indexOf(item.uri) > -1)
 				break
 			case 'playlist':
-				return (this.props.library_playlists && this.props.library_playlists.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1)
 				break
 		}
 		return false
@@ -195,6 +195,11 @@ class ContextMenu extends React.Component{
 		this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
 	}
 
+	deletePlaylist(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.coreActions.deletePlaylist(this.props.menu.uris[0])
+	}
+
 	startRadio(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.pusherActions.startRadio(this.props.menu.uris)
@@ -259,6 +264,19 @@ class ContextMenu extends React.Component{
 			)
 		}
 
+		var list = <span className="menu-item-wrapper"><span className="menu-item grey-text">No writable playlists</span></span>
+		if (playlists.length > 0){
+			list = playlists.map(playlist => {
+				return (
+					<span className="menu-item-wrapper" key={playlist.uri}>
+						<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
+							<span className="label">{ playlist.name }</span>
+						</a>
+					</span>
+				)
+			})
+		}
+
 		return (			
 			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
 				<span className="menu-item-wrapper">
@@ -270,17 +288,7 @@ class ContextMenu extends React.Component{
 						</span>
 					</a>
 				</span>
-				{
-					playlists.map( playlist => {
-						return (
-							<span className="menu-item-wrapper" key={playlist.uri}>
-								<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
-									<span className="label">{ playlist.name }</span>
-								</a>
-							</span>
-						)
-					})
-				}
+				{list}
 				{loader}
 			</div>
 		)
@@ -476,6 +484,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var delete_playlist = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.deletePlaylist(e)}>
+					<span className="label">Delete</span>
+				</a>
+			</span>
+		)
+
 		var copy_uris = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.copyURIs(e)}>
@@ -518,6 +534,18 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
 						{this.canBeInLibrary() ? toggle_in_library : null}
+					</div>
+				)
+				break
+
+			case 'editable-playlist':
+				return (
+					<div>
+						{play_playlist}
+						{context.source == 'spotify' ? go_to_user : null}
+						{copy_uris}
+						{this.canBeInLibrary() ? toggle_in_library : null}
+						{delete_playlist}
 					</div>
 				)
 				break
