@@ -400,6 +400,11 @@ class TrackList extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
+		var mini_zones = false
+		if (this.props.slim_mode || helpers.isTouchDevice()){
+			mini_zones = true
+			className += ' mini-zones'
+		}
 
 		return (
 			<div className={className}>
@@ -412,7 +417,7 @@ class TrackList extends React.Component{
 								<Track
 									show_source_icon={this.props.show_source_icon}
 									key={track_key} 
-									slim_mode={this.props.slim_mode}
+									mini_zones={mini_zones}
 									track={track} 
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
