@@ -9,7 +9,7 @@ export default class FilterField extends React.Component{
 		super(props)
 		this.state = {
 			value: '',
-			active: false
+			active: (global.slim_mode ? true : false)
 		}
 
 		this.handleKeyUp = this.handleKeyUp.bind(this)
@@ -24,7 +24,7 @@ export default class FilterField extends React.Component{
 	}
 
 	handleKeyUp(e){
-		if (e.keyCode == 27){
+		if (e.keyCode == 27 && !global.slim_mode){
 			e.preventDefault()
 
 			this.setState({
@@ -43,13 +43,13 @@ export default class FilterField extends React.Component{
 	handleChange(value){
 		this.setState({
 			value: value,
-			active: (value != '')
+			active: (global.slim_mode ? true : (value != ''))
 		})
 		this.props.handleChange(value)
 	}
 
 	handleBlur(){
-		if (this.state.value == ''){
+		if (this.state.value == '' && !global.slim_mode){
 			this.setState({active: false})
 		}
 	}
@@ -58,7 +58,7 @@ export default class FilterField extends React.Component{
 		return (
 			<span className={"filter-field "+(this.state.active ? 'active' : '')} onClick={e => this.activate()}>
 				<form>
-					<FontAwesome name="search" />&nbsp;
+					<FontAwesome name="search" />
 					<input
 						type="text"
 						placeholder="Filter"

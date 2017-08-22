@@ -40,3 +40,20 @@
 		}
 	}
 }
+
+#context-menu {
+	.filter-field {
+		display: block;
+
+		.fa {
+			top: 17px;
+			left: 24px;
+		}
+
+		input {
+			padding: 14px 18px 14px 42px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+	}
+}

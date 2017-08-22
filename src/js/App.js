@@ -100,12 +100,12 @@ class App extends React.Component{
 		var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
 		if (width <= 800){
-			if (!this.props.slim_mode){
-				this.props.uiActions.setSlimMode(true)
+			if (!global.slim_mode){
+				global.slim_mode = true
 			}
 		} else {
 			if (this.props.slim_mode){
-				this.props.uiActions.setSlimMode(false)
+				global.slim_mode = false
 			}
 		}
 	}
