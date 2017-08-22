@@ -117,7 +117,7 @@ class LibraryPlaylists extends React.Component{
 		}
 
 		if (this.props.view == 'list'){
-			if (global.slim_mode){
+			if (this.props.slim_mode){
 				var columns = [
 					{
 						label: 'Name',
@@ -256,6 +256,7 @@ class LibraryPlaylists extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
 		mopidy_library_playlists: state.mopidy.library_playlists,

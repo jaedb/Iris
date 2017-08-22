@@ -45,7 +45,6 @@ function handleUpdate() {
 }
 
 global.baseURL = '/'
-global.slim_mode = false
 
 ReactDOM.render(
 	<Provider store={store}>

@@ -9,7 +9,7 @@ export default class FilterField extends React.Component{
 		super(props)
 		this.state = {
 			value: '',
-			active: (global.slim_mode ? true : false)
+			active: (this.props.slim_mode ? true : false)
 		}
 
 		this.handleKeyUp = this.handleKeyUp.bind(this)
@@ -24,7 +24,7 @@ export default class FilterField extends React.Component{
 	}
 
 	handleKeyUp(e){
-		if (e.keyCode == 27 && !global.slim_mode){
+		if (e.keyCode == 27 && !this.props.slim_mode){
 			e.preventDefault()
 
 			this.setState({
@@ -43,13 +43,13 @@ export default class FilterField extends React.Component{
 	handleChange(value){
 		this.setState({
 			value: value,
-			active: (global.slim_mode ? true : (value != ''))
+			active: (this.props.slim_mode ? true : (value != ''))
 		})
 		this.props.handleChange(value)
 	}
 
 	handleBlur(){
-		if (this.state.value == '' && !global.slim_mode){
+		if (this.state.value == '' && !this.props.slim_mode){
 			this.setState({active: false})
 		}
 	}

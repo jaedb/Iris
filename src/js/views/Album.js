@@ -122,7 +122,7 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper">
 
-				{global.slim_mode ? <Header icon="cd" title="Album" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
+				{this.props.slim_mode ? <Header icon="cd" title="Album" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={ this.props.album.images } />
@@ -133,8 +133,8 @@ class Album extends React.Component{
 					<h1>{ this.props.album.name }</h1>
 
 					<ul className="details">
-						{ !global.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
-						{ !global.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
+						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
 						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li>
 							{ this.props.album.tracks_total ? this.props.album.tracks_total : '0' } tracks,&nbsp;
@@ -146,7 +146,7 @@ class Album extends React.Component{
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
 					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
-					{global.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+					{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 				</div>
 
 				<section className="list-wrapper">
@@ -168,6 +168,7 @@ class Album extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,
 		album: (state.core.albums && typeof(state.core.albums[ownProps.params.uri]) !== 'undefined' ? state.core.albums[ownProps.params.uri] : false ),

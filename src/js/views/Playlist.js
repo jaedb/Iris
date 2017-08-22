@@ -117,7 +117,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name }) }>Edit</button>
-						{global.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 					</div>
 				)
 
@@ -127,7 +127,7 @@ class Playlist extends React.Component{
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
 							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name, public: this.props.playlist.public, collaborative: this.props.playlist.collaborative, description: this.props.playlist.description }) }>Edit</button>
-							{global.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+							{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 						</div>
 					)
 				}
@@ -135,7 +135,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
-						{global.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 					</div>
 				)
 
@@ -143,7 +143,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						{global.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 					</div>
 				)
 		}
@@ -169,7 +169,7 @@ class Playlist extends React.Component{
 		return (
 			<div className="view playlist-view content-wrapper">
 
-				{global.slim_mode ? <Header icon="playlist" title="Playlist" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
+				{this.props.slim_mode ? <Header icon="playlist" title="Playlist" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
@@ -180,8 +180,8 @@ class Playlist extends React.Component{
 					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{ !global.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} playlist</span></li> : null }
-						{ this.props.playlist.owner && !global.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} playlist</span></li> : null }
+						{ this.props.playlist.owner && !this.props.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
 						<li>
@@ -213,6 +213,7 @@ const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri
 	uri = uri.replace(' ','%20')
 	return {
+		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		playlist: (state.core.playlists && state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
 		spotify_library_playlists: state.spotify.library_playlists,
