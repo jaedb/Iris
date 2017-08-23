@@ -1,6 +1,7 @@
 
 
 .sidebar-toggle {
+	@include animate(0.15s);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -16,7 +17,6 @@
 	}
 
 	&.open {
-		@include animate(0.15s);
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -26,15 +26,12 @@
 		color: $white;
 		z-index: 99;
 
+		-ms-transform: translate(220px, 0);
+		-webkit-transform: translate(220px, 0);
+		transform: translate(220px, 0);
+
 		.open {
 			display: none;
-		}
-
-		.open,
-		.close {
-			position: absolute;
-			top: 20px;
-			left: 235px;
 		}
 	}
 
