@@ -27,7 +27,7 @@ body {
 	&::-webkit-scrollbar-thumb {
 		@include animate();
 		background: $grey;
-		border-radius: 3px;
+		border-radius: 4px;
 
 		&:hover {
 			background: $mid_grey;
