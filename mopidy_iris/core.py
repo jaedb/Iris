@@ -9,7 +9,6 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
-from spotipy import Spotify
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -350,11 +349,20 @@ class IrisCore(object):
             })
             
         try:
-            spotify = Spotify( auth = token )
-            response = spotify.recommendations(seed_artists = self.radio['seed_artists'], seed_genres = self.radio['seed_genres'], seed_tracks = self.radio['seed_tracks'], limit = 50)
+            url = 'https://api.spotify.com/v1/recommendations/'
+            url = url+'?seed_artists='+(",".join(self.radio['seed_artists'])).replace('spotify:artist:','')
+            url = url+'&seed_genres='+(",".join(self.radio['seed_genres'])).replace('spotify:genre:','')
+            url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
+            url = url+'&limit=50'
+
+            req = urllib2.Request(url)
+            req.add_header('Authorization', 'Bearer '+self.spotify_token['access_token'])
+
+            response = urllib2.urlopen(req, timeout=30).read()
+            response_dict = json.loads(response)
             
             uris = []
-            for track in response['tracks']:
+            for track in response_dict['tracks']:
                 uris.append( track['uri'] )
 
             return uris
