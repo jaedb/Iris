@@ -3,13 +3,13 @@
   "name": "Iris",
   "icons": [
     {
-      "src": "/iris/assets/logo.png",
-      "type": "image/png",
+      "src": "/iris/assets/logo.svg",
+      "type": "image/svg",
       "sizes": "256x265"
     }
   ],
   "start_url": "/iris/index.html",
   "background_color": "#08d58f",
-  "theme_color": "#222222",
+  "theme_color": "#181818",
   "display": "standalone"
 }
