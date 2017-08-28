@@ -238,7 +238,7 @@ class Search extends React.Component{
 		var options = (
 			<span>
 				<DropdownField icon="eye" name="Type" value={this.props.params.type} options={type_options} handleChange={val => this.handleTypeChange(val)} />
-				<button onClick={e => this.props.uiActions.openModal('search_settings', {type: this.props.params.type, query: this.props.params.query})}>
+				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_settings', {type: this.props.params.type, query: this.props.params.query})}>
 					<FontAwesome name="wrench" />&nbsp;
 					Sources
 				</button>
