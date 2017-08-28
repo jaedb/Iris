@@ -1,5 +1,4 @@
-Iris
-=======
+<img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="256" />
 
 Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
 
