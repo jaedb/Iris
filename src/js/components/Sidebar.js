@@ -29,9 +29,6 @@ class Sidebar extends React.Component{
 		return (
 			<aside>
 				<div className="liner">
-
-					<div className="branding"></div>
-
 		        	<nav>
 
 		        		<section>
