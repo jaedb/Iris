@@ -61,7 +61,7 @@ export default class SearchSettingsModal extends React.Component{
 									name="enabled"
 									checked={ this.state.spotify }
 									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
-								<span className="label">spotify <span className="grey-text">(http)</span></span>
+								<span className="label">spotify &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon('spotify')} /></span>
 							</label>
 						</div>
 						{
@@ -74,7 +74,7 @@ export default class SearchSettingsModal extends React.Component{
 												name={scheme}
 												checked={this.state.uri_schemes.indexOf(scheme) > -1}
 												onChange={ e => this.handleToggle(scheme)} />
-											<span className="label">{scheme.replace(':','')} <span className="grey-text">(mopidy)</span></span>
+											<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
 										</label>
 									</div>
 								)

@@ -191,13 +191,26 @@ export let uriSource = function(uri){
 export let sourceIcon = function(uri,source = null){
 	if (uri) source = uriSource(uri)
 	switch( source ){
+
 		case 'local':
 		case 'm3u':
 			return 'folder'
-			break
+
 		case 'gmusic':
 			return 'google'
-			break
+
+		case 'podcast':
+		case 'podcast+file':
+		case 'podcast+http':
+		case 'podcast+https':
+		case 'podcast+itunes':
+			return 'podcast'
+
+		case 'tunein':
+		case 'somafm':
+		case 'dirble':
+			return 'microphone'
+
 		default:
 			return source
 	}
