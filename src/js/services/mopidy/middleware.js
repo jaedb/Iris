@@ -480,6 +480,14 @@ const MopidyMiddleware = (function(){
              **/
 
 
+            case 'SEARCH_STARTED':
+                store.dispatch({ 
+                    type: 'MOPIDY_CLEAR_SEARCH_RESULTS'
+                });
+                next(action)
+                break
+
+
             case 'MOPIDY_GET_TRACK_SEARCH_RESULTS':
                 instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: [action.uri_scheme]})
                     .then( response => {
@@ -488,7 +496,11 @@ const MopidyMiddleware = (function(){
 
                         var tracks = response[0].tracks.splice(0,action.limit)
 
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
+                        store.dispatch({ 
+                            type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
+                            context: 'tracks',
+                            results: tracks
+                        });
                     })
                 break;
 
@@ -520,7 +532,11 @@ const MopidyMiddleware = (function(){
                         }
 
                         // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', artists_uris: artists_uris })
+                        store.dispatch({ 
+                            type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                            context: 'artists',
+                            results: artists_uris 
+                        })
                     })
                 break;
 
@@ -551,7 +567,11 @@ const MopidyMiddleware = (function(){
                         }
 
                         // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', albums_uris: albums_uris })
+                        store.dispatch({ 
+                            type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                            context: 'albums',
+                            results: albums_uris 
+                        })
                     })
                 break
 
@@ -576,7 +596,11 @@ const MopidyMiddleware = (function(){
                         }
 
                         // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', playlists_uris: playlists_uris })
+                        store.dispatch({
+                            type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                            context: 'playlists',
+                            results: playlists_uris
+                        })
                     })
                 break
 

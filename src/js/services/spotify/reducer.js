@@ -240,6 +240,36 @@ export default function reducer(spotify = {}, action){
             }
             return Object.assign({}, spotify, { library_playlists: items });
 
+
+        /**
+         * Searching
+         **/
+
+        case 'SPOTIFY_CLEAR_SEARCH_RESULTS':
+            return Object.assign({}, spotify, { search_results: {} });
+
+        case 'SPOTIFY_SEARCH_RESULTS_LOADED':
+
+            // Fetch or create our container
+            if (spotify.search_results){
+                var search_results = Object.assign({}, spotify.search_results)
+            } else {
+                var search_results = {}
+            }
+
+            if (search_results.results){
+                search_results[action.context] = [...search_results[action.context], ...action.results]
+            } else {
+                search_results[action.context] = action.results
+            }
+
+            if (action.more){
+                search_results[action.context+'_more'] = action.more
+            } else {
+                search_results[action.context+'_more'] = null
+            }
+            return Object.assign({}, spotify, { search_results: search_results });
+
         default:
             return spotify
     }

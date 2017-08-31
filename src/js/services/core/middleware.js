@@ -105,6 +105,7 @@ const CoreMiddleware = (function(){
 
             case 'SEARCH_STARTED':
                 ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+                next(action)
 
                 var state = store.getState()
                 if (state.ui.search_settings){
@@ -171,7 +172,6 @@ const CoreMiddleware = (function(){
                     }
                 }
 
-                next(action)
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':

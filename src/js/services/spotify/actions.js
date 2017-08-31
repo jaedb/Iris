@@ -482,15 +482,31 @@ export function getSearchResults(query, type = 'album,artist,playlist,track', li
                 });
 
                 dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.arrayOf('uri',playlists),
-                    playlists_more: response.playlists.next,
-                    artists_uris: helpers.arrayOf('uri',response.artists.items),
-                    artists_more: response.artists.next,
-                    albums_uris: helpers.arrayOf('uri',response.albums.items),
-                    albums_more: response.albums.next,
-                    tracks: response.tracks.items,
-                    tracks_more: response.tracks.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'playlists',
+                    results: helpers.arrayOf('uri',playlists),
+                    more: response.playlists.next
+                });
+
+                dispatch({
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'artists',
+                    results: helpers.arrayOf('uri',response.artists.items),
+                    more: response.artists.next,
+                });
+
+                dispatch({
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'albums',
+                    results: helpers.arrayOf('uri',response.albums.items),
+                    more: response.albums.next,
+                });
+
+                dispatch({
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'tracks',
+                    results: response.tracks.items,
+                    more: response.tracks.next,
                 });
             });
     }

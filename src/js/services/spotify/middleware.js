@@ -300,11 +300,25 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+
+            /**
+             * Searching
+             * More results are lazy-loaded on demand, based on the _more URL
+             **/
+
+            case 'SEARCH_STARTED':
+                store.dispatch({ 
+                    type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'
+                });
+                next(action)
+                break
+
             case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    tracks: action.data.tracks.items,
-                    tracks_more: action.data.tracks.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'tracks',
+                    results: action.data.tracks.items,
+                    more: action.data.tracks.next
                 });
                 break
 
@@ -316,9 +330,10 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
-                    playlists_more: action.data.playlists.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'artists',
+                    results: helpers.arrayOf('uri',action.data.playlists.items),
+                    more: action.data.playlists.next
                 });
                 break
 
@@ -330,9 +345,10 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    albums_uris: helpers.arrayOf('uri',action.data.albums.items),
-                    albums_more: action.data.albums.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'playlists',
+                    results: helpers.arrayOf('uri',action.data.albums.items),
+                    more: action.data.albums.next
                 });
                 break
 
@@ -355,11 +371,13 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
-                    playlists_more: action.data.playlists.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'playlists',
+                    results: helpers.arrayOf('uri',action.data.playlists.items),
+                    more: action.data.playlists.next
                 });
                 break
+
 
             case 'SPOTIFY_ME_LOADED':
 

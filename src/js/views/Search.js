@@ -62,42 +62,35 @@ class Search extends React.Component{
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
 
 		var artists = []
-		if (this.props.artists_uris){
-			for (var i = 0; i < this.props.artists_uris.length; i++){
-				var uri = this.props.artists_uris[i]
-				if (this.props.artists.hasOwnProperty(uri)){
-					artists.push(this.props.artists[uri])
-				}
-			}
+		if (this.props.spotify_search_results.artists){
+			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)]
+		}
+		if (this.props.mopidy_search_results.artists){
+			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.mopidy_search_results.artists)]
 		}
 
 		var albums = []
-		if (this.props.albums_uris){
-			for (var i = 0; i < this.props.albums_uris.length; i++){
-				var uri = this.props.albums_uris[i]
-				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
-				}
-			}
+		if (this.props.spotify_search_results.albums){
+			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
+		}
+		if (this.props.mopidy_search_results.albums){
+			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.mopidy_search_results.albums)]
 		}
 
 		var playlists = []
-		if (this.props.playlists_uris){
-			for (var i = 0; i < this.props.playlists_uris.length; i++){
-				var uri = this.props.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(uri)){
-					playlists.push(this.props.playlists[uri])
-				}
-			}
+		if (this.props.spotify_search_results.playlists){
+			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)]
+		}
+		if (this.props.mopidy_search_results.playlists){
+			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.mopidy_search_results.playlists)]
 		}
 
 		var tracks = []
-		if (this.props.tracks){
-			for (var i = 0; i < this.props.tracks.length; i++){
-				if (helpers.uriSource(this.props.tracks[i].uri)){
-					tracks.push(this.props.tracks[i])
-				}
-			}
+		if (this.props.spotify_search_results.tracks){
+			tracks = [...tracks, ...this.props.spotify_search_results.tracks]
+		}
+		if (this.props.mopidy_search_results.tracks){
+			tracks = [...tracks, ...this.props.mopidy_search_results.tracks]
 		}
 
 		switch (this.props.params.type){
@@ -260,18 +253,14 @@ class Search extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		search_settings: (state.ui.search_settings ? state.ui.search_settings : null),
-		tracks: (state.core.search_results ? state.core.search_results.tracks : []),
-		tracks_more: (state.core.search_results && state.core.search_results.tracks_more ? state.core.search_results.tracks_more : null),
-		artists: (state.core.artists ? state.core.artists : []),
-		artists_uris: (state.core.search_results ? state.core.search_results.artists_uris : []),
-		artists_more: (state.core.search_results ? state.core.search_results.artists_more : null),
+		spotify_connected: state.spotify.connected,
 		albums: (state.core.albums ? state.core.albums : []),
-		albums_uris: (state.core.search_results ? state.core.search_results.albums_uris : []),
-		albums_more: (state.core.search_results ? state.core.search_results.albums_more : null),
+		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),
-		playlists_uris: (state.core.search_results ? state.core.search_results.playlists_uris : []),
-		playlists_more: (state.core.search_results ? state.core.search_results.playlists_more : null)
+		tracks: (state.core.tracks ? state.core.tracks : []),
+		search_settings: (state.ui.search_settings ? state.ui.search_settings : {}),
+		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
+		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {})
 	}
 }
 

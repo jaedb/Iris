@@ -570,3 +570,28 @@ export let isLoading = function(load_queue = [], keys = []){
 	}
 	return false
 }
+
+
+/**
+ * Get indexed record(s) by URI from our asset index
+ *
+ * @param store = obj
+ * @param uris = mixed (array or string)
+ * @return array
+ **/
+export let getIndexedRecords = function(index, uris){
+	var records = []
+
+	// Wrap in array, if we've only got one URI
+	if (!uris instanceof Array){
+		uris = [uris]
+	}
+
+	for (var i = 0; i < uris.length; i++){
+		if (index.hasOwnProperty(uris[i])){
+			records.push(index[uris[i]])
+		}
+	}
+
+	return records
+}

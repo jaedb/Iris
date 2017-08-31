@@ -141,6 +141,31 @@ export default function reducer(mopidy = {}, action){
             }
             return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) })
 
+
+        /**
+         * Searching
+         **/
+
+        case 'MOPIDY_CLEAR_SEARCH_RESULTS':
+            return Object.assign({}, mopidy, { search_results: {} });
+
+        case 'MOPIDY_SEARCH_RESULTS_LOADED':
+
+            // Fetch or create our container
+            if (mopidy.search_results){
+                var search_results = Object.assign({}, mopidy.search_results)
+            } else {
+                var search_results = {}
+            }
+
+            if (search_results.results){
+                search_results[action.context] = [...search_results[action.context], ...action.results]
+            } else {
+                search_results[action.context] = action.results
+            }
+
+            return Object.assign({}, mopidy, { search_results: search_results });
+
         default:
             return mopidy
     }
