@@ -6,7 +6,7 @@
 1.
 2.
 
-## Tested environment(s)
+## Tested environment
 - **OS and version:**
 - **Browser and version:**
 - **Screen size:**
@@ -14,5 +14,5 @@
 ## Additional details, debug data, logs, etc
 
 ## Before you submit
-- Yes, I have tested this issue thoroughly
-- Yes, I have attached screenshots and/or screencast of the issue in action
+- [ ] Yes, I have tested this issue thoroughly
+- [ ] Yes, I have attached screenshots and/or screencast of the issue in action
