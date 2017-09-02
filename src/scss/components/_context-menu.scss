@@ -313,7 +313,13 @@
 	}
 }
 
-.touch .list {	
+#app > .notouch .list.track-list {	
+	.context-menu-trigger {
+		display: none;
+	}
+}
+
+.list {	
 	&.track-list {
 		.context-menu-trigger {	
 			@include gradient_overlay(50%, 0.15);
