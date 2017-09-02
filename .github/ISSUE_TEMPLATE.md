@@ -7,24 +7,12 @@
 2.
 
 ## Tested environment(s)
+- **OS and version:**
+- **Browser and version:**
+- **Screen size:**
 
-#### Operating System(s) and version
-- [ ] Windows:
-- [ ] Mac: 
-- [ ] Linux: 
-- [ ] iOS: 
-- [ ] Andriod:
-- [ ] Other: : 
-
-#### Browser(s) and version
-- [ ] Chrome: 
-- [ ] Firefox: 
-- [ ] Internet Explorer:
-- [ ] Opera: 
-- [ ] Other:
-
-## Additional details
+## Additional details, debug data, logs, etc
 
 ## Before you submit
-- [ ] I have tested this issue thoroughly
-- [ ] I have attached screenshots and/or screencast of the issue in action
+- Yes, I have tested this issue thoroughly
+- Yes, I have attached screenshots and/or screencast of the issue in action
