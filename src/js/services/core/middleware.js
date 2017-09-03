@@ -134,42 +134,7 @@ const CoreMiddleware = (function(){
 
                 // backend searching (mopidy)
                 if (state.mopidy.connected){
-                    switch (action.search_type){
-                        case 'playlists':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'artists':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'albums':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'tracks':
-                            for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,uri_schemes[i]))
-                            }
-                            break
-
-                        default:
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6,full_uri_schemes[i]))
-                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,6,full_uri_schemes[i]))
-                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6,full_uri_schemes[i]))
-                            }
-
-                            for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,20,uri_schemes[i]))
-                            }
-                    }
+                    store.dispatch(mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes))
                 }
 
                 break

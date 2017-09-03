@@ -260,39 +260,12 @@ export function cancelProcessor(processor){
  * Searching
  **/
 
-export function getTrackSearchResults(query, limit = 100, uri_scheme){
+export function getSearchResults(context, query, limit = 100){
 	return {
-		type: 'MOPIDY_GET_TRACK_SEARCH_RESULTS',
+		type: 'MOPIDY_GET_SEARCH_RESULTS',
+		context: context,
 		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
-}
-
-export function getArtistSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_ARTIST_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
-}
-
-export function getAlbumSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_ALBUM_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
-}
-
-export function getPlaylistSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
+		limit: limit
 	}
 }
 

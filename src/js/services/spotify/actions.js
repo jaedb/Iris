@@ -446,6 +446,8 @@ export function getURL( url, action_name, key = false ){
 export function getSearchResults(query, type = 'album,artist,playlist,track', limit = 50, offset = 0){
     return (dispatch, getState) => {
 
+        dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR','Searching Spotify'))
+
         var url = 'search?q='+query
         url += '&type='+type
         url += '&country='+getState().core.country
@@ -508,6 +510,8 @@ export function getSearchResults(query, type = 'album,artist,playlist,track', li
                     results: response.tracks.items,
                     more: response.tracks.next,
                 });
+
+                dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'))
             });
     }
 }
