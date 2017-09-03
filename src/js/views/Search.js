@@ -29,33 +29,31 @@ class Search extends React.Component{
 
 	componentDidMount(){
 
-		// Make sure we have search parameters to start with
-		if (this.props.params && this.props.params.query){
-			this.props.coreActions.startSearch(this.props.view, this.props.params.query)
-		}
-
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
+
+		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+			this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
+		}
+
+		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify')){
+			this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
+		}
 	}
 
 	componentWillReceiveProps(newProps){
-		
-		// Make sure we have some search parameters
-		if (newProps.params && newProps.view && newProps.params.query){
+		if (!this.props.mopidy_connected && newProps.mopidy_connected){
+			this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)		
+		}
 
-			if (this.props.params.query != newProps.params.query || this.props.view != newProps.view){
-				this.props.coreActions.startSearch(newProps.view, newProps.params.query)
-			}
-
-			// mopidy comes online
-			if (!this.props.mopidy_connected && newProps.mopidy_connected){
-				this.props.coreActions.startSearch(newProps.view, newProps.params.query, true)
-			}
+		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.search_settings.uri_schemes.includes('spotify')){		
+			this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)	
 		}
 	}
 
 	loadMore(type){
-		this.props.spotifyActions.getURL( this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
+		alert('load more: '+type)
+		//this.props.spotifyActions.getURL( this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 	}
 
 	renderResults(){

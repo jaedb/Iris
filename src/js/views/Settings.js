@@ -203,6 +203,7 @@ class Settings extends React.Component {
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
 					<FontAwesome name="flask" />&nbsp;
 					Debug
+					{this.props.ui && this.props.ui.test_mode ? <span className="flag warning">Test mode</span> : null}
 				</button>
 				<a className="no-hover button" href="https://github.com/jaedb/Iris/wiki" target="_blank">
 					<FontAwesome name="question" />&nbsp;
