@@ -383,7 +383,7 @@ const SpotifyMiddleware = (function(){
 
                 // We've loaded 'me' and we are Anonymous currently
                 if (action.data && store.getState().pusher.username == 'Anonymous'){
-                    if (typeof(action.data.display_name) !== 'undefined'){
+                    if (action.data.display_name !== null){
                         var name = action.data.display_name
                     } else {
                         var name = action.data.id
