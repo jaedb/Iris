@@ -51,7 +51,7 @@ class App extends React.Component{
 		this.props.coreActions.getBroadcasts()
 
 		if (this.props.test_mode){
-			this.props.uiActions.createNotification('Welcome to test mode! This provides you with additional debug info by using the non-minified code base. See <a href="https://github.com/jaedb/Iris/wiki/Advanced#test-mode" target="_blank">Wiki</a> for more information.','info','TEST_MODE','Test mode enabled',true)
+			this.props.uiActions.createNotification('<p>Welcome to test mode! This provides you with additional console logging by using the non-minified code base.</p><p>See <a href="https://github.com/jaedb/Iris/wiki/Advanced#test-mode" target="_blank">Wiki</a> for more information.</p>','info','TEST_MODE','Test mode enabled',true)
 		}
 
 		// when we navigate to a new route
