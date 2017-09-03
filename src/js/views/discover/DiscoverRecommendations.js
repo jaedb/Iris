@@ -209,11 +209,11 @@ class Discover extends React.Component{
 			<div className="content-wrapper recommendations-results">
 				<section>
 					<h4>Artists</h4>
-					<ArtistGrid artists={artists} />
+					<ArtistGrid single_row artists={artists} />
 				</section>
 				<section>
 					<h4>Albums</h4>
-					<AlbumGrid albums={albums} />
+					<AlbumGrid single_row albums={albums} />
 				</section>
 				<section>
 					<h4>Tracks</h4>

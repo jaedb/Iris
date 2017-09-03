@@ -77,11 +77,21 @@
 		&.mini {
 			.grid-item {
 				@include grid_item( 3 )
-			}			
+			}
+			&.single-row {
+				.grid-item:nth-child(1n+4){
+					display: none;
+				}
+			}		
 		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 5 )
+			}
+			&.single-row {
+				.grid-item:nth-child(1n+6){
+					display: none;
+				}
 			}
 		}
 	}
@@ -90,12 +100,22 @@
 		&.mini {
 			.grid-item {
 				@include grid_item( 2 )
-			}			
+			}	
+			&.single-row {
+				.grid-item:nth-child(1n+3){
+					display: none;
+				}
+			}		
 		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 4 )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+5){
+					display: none;
+				}
+			}
 		}
 	}
 
@@ -104,11 +124,21 @@
 			.grid-item {
 				@include grid_item( 2 )
 			}			
+			&.single-row {
+				.grid-item:nth-child(1n+3){
+					display: none;
+				}
+			}
 		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 4 )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+5){
+					display: none;
+				}
+			}
 		}
 	}
 
@@ -117,11 +147,21 @@
 			.grid-item {
 				@include grid_item( 6, 2%, 4% )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+7){
+					display: none;
+				}
+			}
 		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 3, 2%, 4% )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+4){
+					display: none;
+				}
+			}
 		}
 	}
 
@@ -130,11 +170,21 @@
 			.grid-item {
 				@include grid_item( 3, 2%, 4% )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+4){
+					display: none;
+				}
+			}
 		}
 		&:not(.mini){
 			.grid-item {
 				@include grid_item( 2, 2%, 4% )
 			}	
+			&.single-row {
+				.grid-item:nth-child(1n+3){
+					display: none;
+				}
+			}
 		}
 	}
 }

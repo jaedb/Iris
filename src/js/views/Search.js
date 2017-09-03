@@ -146,7 +146,7 @@ class Search extends React.Component{
 						<section>
 							<div className="inner">
 								<h4>Artists</h4>
-								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
+								<ArtistGrid show_source_icon single_row artists={artists.slice(0,5)} />
 							</div>
 						</section>
 					)
@@ -159,7 +159,7 @@ class Search extends React.Component{
 						<section>
 							<div className="inner">
 								<h4>Albums</h4>
-								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
+								<AlbumGrid show_source_icon single_row albums={albums.slice(0,5)} />
 							</div>
 						</section>
 					)
@@ -172,7 +172,7 @@ class Search extends React.Component{
 						<section>
 							<div className="inner">
 								<h4>Playlists</h4>
-								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
+								<PlaylistGrid show_source_icon single_row playlists={playlists.slice(0,5)} />
 							</div>
 						</section>
 					)
