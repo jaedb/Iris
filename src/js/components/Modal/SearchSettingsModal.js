@@ -30,7 +30,7 @@ export default class SearchSettingsModal extends React.Component{
 	handleSubmit(e){
 		this.props.uiActions.set({search_settings: this.state})
 		this.props.uiActions.closeModal()
-		this.props.coreActions.startSearch(this.props.data.type, this.props.data.query)
+		this.props.coreActions.startSearch('all', this.props.data.query)
 	}
 
 	handleToggle(scheme){
