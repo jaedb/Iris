@@ -181,7 +181,7 @@
 				@include grid_item( 2, 2%, 4% )
 			}	
 			&.single-row {
-				.grid-item:nth-child(1n+3){
+				.grid-item:nth-child(1n+5){
 					display: none;
 				}
 			}
