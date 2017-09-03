@@ -50,6 +50,10 @@ class App extends React.Component{
 		this.props.coreActions.startServices()
 		this.props.coreActions.getBroadcasts()
 
+		if (this.props.test_mode){
+			this.props.uiActions.createNotification('Welcome to test mode! This provides you with additional debug info by using the non-minified code base. See <a href="https://github.com/jaedb/Iris/wiki/Advanced#test-mode" target="_blank">Wiki</a> for more information.','info','TEST_MODE','Test mode enabled',true)
+		}
+
 		// when we navigate to a new route
 		hashHistory.listen( location => {
 
@@ -269,7 +273,8 @@ const mapStateToProps = (state, ownProps) => {
 		dragger: state.ui.dragger,
 		modal: state.ui.modal,
 		context_menu: state.ui.context_menu,
-		debug_info: state.ui.debug_info
+		debug_info: state.ui.debug_info,
+		test_mode: (state.ui.test_mode ? state.ui.test_mode : false)
 	}
 }
 
