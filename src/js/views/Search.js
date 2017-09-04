@@ -32,12 +32,14 @@ class Search extends React.Component{
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
 
-		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
-			this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
-		}
+		if (this.props.params.query && this.props.params.query !== ''){
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+				this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
+			}
 
-		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
-			this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+				this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
+			}
 		}
 	}
 
