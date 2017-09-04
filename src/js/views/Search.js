@@ -36,7 +36,7 @@ class Search extends React.Component{
 			this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
 		}
 
-		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify')){
+		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
 			this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
 		}
 	}
@@ -46,8 +46,20 @@ class Search extends React.Component{
 			this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)		
 		}
 
-		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.search_settings.uri_schemes.includes('spotify')){		
+		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.search_settings.uri_schemes.includes('spotify:')){		
 			this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)	
+		}
+
+		// Search changed 
+		if (this.props.params.query !== newProps.params.query || this.props.view !== newProps.view){
+
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+				this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)
+			}
+
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+				this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)
+			}
 		}
 	}
 
