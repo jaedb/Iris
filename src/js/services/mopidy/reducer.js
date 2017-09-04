@@ -158,7 +158,7 @@ export default function reducer(mopidy = {}, action){
                 var search_results = {}
             }
 
-            if (search_results.results){
+            if (search_results[action.context]){
                 search_results[action.context] = [...search_results[action.context], ...action.results]
             } else {
                 search_results[action.context] = action.results

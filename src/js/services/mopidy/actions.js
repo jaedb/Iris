@@ -260,6 +260,12 @@ export function cancelProcessor(processor){
  * Searching
  **/
 
+export function clearSearchResults(){
+    return {
+        type: 'MOPIDY_CLEAR_SEARCH_RESULTS'
+    }
+}
+
 export function getSearchResults(context, query, limit = 100){
 	return {
 		type: 'MOPIDY_GET_SEARCH_RESULTS',

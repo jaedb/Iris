@@ -443,10 +443,21 @@ export function getURL( url, action_name, key = false ){
     }
 }
 
-export function getSearchResults(type = 'album,artist,playlist,track', query, limit = 50, offset = 0){
+export function clearSearchResults(){
+    return {
+        type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'
+    }
+}
+
+export function getSearchResults(type, query, limit = 50, offset = 0){
     return (dispatch, getState) => {
 
         dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR','Searching Spotify'))
+
+        type = type.replace(/s+$/, "")
+        if (type == 'all'){
+            type = 'album,artist,playlist,track'
+        }
 
         var url = 'search?q='+query
         url += '&type='+type
@@ -457,59 +468,65 @@ export function getSearchResults(type = 'album,artist,playlist,track', query, li
         sendRequest( dispatch, getState, url )
             .then( response => {
                 
-                dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: response.artists.items
-                });
-
-                dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: response.albums.items
-                });
-
-                var playlists = []
-                for (var i = 0; i < response.playlists.items.length; i++){
-                    playlists.push(Object.assign(
-                        {},
-                        response.playlists.items[i],
-                        {
-                            can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
-                            tracks_total: response.playlists.items[i].tracks.total
-                        }
-                    ))
+                if (response.tracks !== undefined){
+                    dispatch({
+                        type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                        context: 'tracks',
+                        results: response.tracks.items,
+                        more: response.tracks.next,
+                    });
                 }
-                dispatch({
-                    type: 'PLAYLISTS_LOADED',
-                    playlists: playlists
-                });
+                
+                if (response.artists !== undefined){
+                    dispatch({
+                        type: 'ARTISTS_LOADED',
+                        artists: response.artists.items
+                    });
+                    dispatch({
+                        type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                        context: 'artists',
+                        results: helpers.arrayOf('uri',response.artists.items),
+                        more: response.artists.next,
+                    });
+                }
+                
+                if (response.albums !== undefined){
+                    dispatch({
+                        type: 'ALBUMS_LOADED',
+                        albums: response.albums.items
+                    });
+                    dispatch({
+                        type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                        context: 'albums',
+                        results: helpers.arrayOf('uri',response.albums.items),
+                        more: response.albums.next,
+                    });
+                }
 
-                dispatch({
-                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-                    context: 'playlists',
-                    results: helpers.arrayOf('uri',playlists),
-                    more: response.playlists.next
-                });
+                if (response.playlists !== undefined){
+                    var playlists = []
+                    for (var i = 0; i < response.playlists.items.length; i++){
+                        playlists.push(Object.assign(
+                            {},
+                            response.playlists.items[i],
+                            {
+                                can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
+                                tracks_total: response.playlists.items[i].tracks.total
+                            }
+                        ))
+                    }
+                    dispatch({
+                        type: 'PLAYLISTS_LOADED',
+                        playlists: playlists
+                    });
 
-                dispatch({
-                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-                    context: 'artists',
-                    results: helpers.arrayOf('uri',response.artists.items),
-                    more: response.artists.next,
-                });
-
-                dispatch({
-                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-                    context: 'albums',
-                    results: helpers.arrayOf('uri',response.albums.items),
-                    more: response.albums.next,
-                });
-
-                dispatch({
-                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-                    context: 'tracks',
-                    results: response.tracks.items,
-                    more: response.tracks.next,
-                });
+                    dispatch({
+                        type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                        context: 'playlists',
+                        results: helpers.arrayOf('uri',playlists),
+                        more: response.playlists.next
+                    });
+                }
 
                 dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'))
             });

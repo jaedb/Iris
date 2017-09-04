@@ -32,22 +32,39 @@ class Search extends React.Component{
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
 
-		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
-			this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
-		}
+		if (this.props.params.query && this.props.params.query !== ''){
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+				this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
+			}
 
-		if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify')){
-			this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+				this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
+			}
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (!this.props.mopidy_connected && newProps.mopidy_connected){
+		if (!this.props.mopidy_connected && newProps.mopidy_connected && newProps.params.query){
 			this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)		
 		}
 
-		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.search_settings.uri_schemes.includes('spotify')){		
+		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.params.query && newProps.search_settings.uri_schemes.includes('spotify:')){		
 			this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)	
+		}
+
+		// Search changed 
+		if (this.props.params.query !== newProps.params.query || this.props.view !== newProps.view){
+			
+			this.props.mopidyActions.clearSearchResults()
+			this.props.spotifyActions.clearSearchResults()
+
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+				this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)
+			}
+
+			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+				this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)
+			}
 		}
 	}
 
@@ -178,6 +195,18 @@ class Search extends React.Component{
 					var playlists_section = null
 				}
 
+				if (tracks.length > 0){
+					var tracks_section = (
+						<section className="list-wrapper">
+							<h4>Tracks</h4>
+							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.query} show_source_icon />
+							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
+						</section>
+					)
+				} else {
+					var tracks_section = null
+				}
+
 				return (
 					<div>
 						<div className="search-result-sections cf">
@@ -185,13 +214,7 @@ class Search extends React.Component{
 							{albums_section}
 							{playlists_section}
 						</div>
-
-						<section className="list-wrapper">
-							<h4>Tracks</h4>
-							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.query} show_source_icon />
-							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
-						</section>
-
+						{tracks_section}
 					</div>
 				)
 		}
