@@ -38,33 +38,49 @@ export default class Notifications extends React.Component{
 		)
 	}
 
+	renderProcess(process){
+
+		var progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed()
+
+		switch (process.status){
+			case 'running':
+				return(
+					<div className="process notification" key={process.key}>
+						<div className="loader"></div>
+						{process.message} {progress ? progress+'%' : null}
+						<FontAwesome name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
+					</div>
+				)
+
+			case 'cancelling':
+				return(
+					<div className="process notification cancelling" key={process.key}>
+						<div className="loader"></div>
+						Cancelling
+					</div>
+				)
+
+			case 'cancelled':
+			case 'finished':
+				return null
+		}
+	}
+
 	renderProcesses(){
 		if (!this.props.processes || this.props.processes.length <= 0) return null
-		var processes = this.props.processes
-		var items = []
 
-		for (var key in processes){
-			if (processes.hasOwnProperty(key)){
-				if (processes[key].cancelling){
-					items.push(
-						<div className="process notification cancelling" key={key}>
-							Cancelling
-						</div>
-					)
-				} else {
-					items.push(
-						<div className="process notification" key={key}>
-							<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.cancelProcess(key) } />
-							{ processes[key].content }
-						</div>
-					)
-				}
+		var processes = []
+		for (var key in this.props.processes){
+			if (this.props.processes.hasOwnProperty(key)){
+				processes.push(this.props.processes[key])
 			}
 		}
 
 		return (
 			<span>
-				{items}
+				{processes.map(process => {
+					return this.renderProcess(process)
+				})}
 			</span>
 		)
 	}

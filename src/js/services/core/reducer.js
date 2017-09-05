@@ -200,36 +200,6 @@ export default function reducer(core = {}, action){
 
             return Object.assign({}, core, { albums: albums });
 
-        case 'LIBRARY_ALBUMS_LOADED':
-            var library_albums = []
-            if (core.library_albums) library_albums = Object.assign([], core.library_albums)
-
-            return Object.assign({}, core, { 
-                library_albums: helpers.removeDuplicates([...library_albums, ...action.uris]),
-                library_albums_more: action.more,
-                library_albums_total: action.total,
-                library_albums_started: true
-            });
-
-        case 'ALBUM_LIBRARY_CHECK':
-            var items = Object.assign([], core.library_albums)
-
-            // add/remove library reference
-            var index = items.indexOf(action.key)
-
-            // removing existing
-            if (index > -1 && !action.in_library){
-                items.splice(index, 1)
-            } else if (index < 0 && action.in_library){
-                items.push(action.key)
-            }
-
-            return Object.assign({}, core, { library_albums: items });
-
-        case 'LOCAL_ALBUMS_LOADED':
-            if (!action.uris) return Object.assign({}, core, { local_albums: null });
-            return Object.assign({}, core, { local_albums: action.uris });
-
         case 'NEW_RELEASES_LOADED':
             if (!action.uris){
                 return Object.assign({}, core, { 
@@ -303,36 +273,6 @@ export default function reducer(core = {}, action){
             )
             artists[action.key] = artist
             return Object.assign({}, core, { artists: artists });
-
-        case 'LIBRARY_ARTISTS_LOADED':
-            var library_artists = []
-            if (core.library_artists) library_artists = Object.assign([], core.library_artists)
-
-            return Object.assign({}, core, { 
-                library_artists: helpers.removeDuplicates([...library_artists, ...action.uris]),
-                library_artists_more: action.more,
-                library_artists_total: action.total,
-                library_artists_started: true
-            });
-
-        case 'ARTIST_LIBRARY_CHECK':
-            var items = Object.assign([], core.library_artists)
-
-            // add/remove library reference
-            var index = items.indexOf(action.key)
-
-            // removing existing
-            if (index > -1 && !action.in_library){
-                items.splice(index, 1)
-            } else if (index < 0 && action.in_library){
-                items.push(action.key)
-            }
-
-            return Object.assign({}, core, { library_artists: items });
-
-        case 'LOCAL_ARTISTS_LOADED':
-            if (!action.uris) return Object.assign({}, core, { local_artists: null });
-            return Object.assign({}, core, { local_artists: action.uris });
 
 
         /**
@@ -532,21 +472,6 @@ export default function reducer(core = {}, action){
                 library_playlists_started: true
             });
 
-        case 'PLAYLIST_LIBRARY_CHECK':
-            var items = Object.assign([], core.library_playlists)
-
-            // add/remove library reference
-            var index = items.indexOf(action.key)
-
-            // removing existing
-            if (index > -1 && !action.in_library){
-                items.splice(index, 1)
-            } else if (index < 0 && action.in_library){
-                items.push(action.key)
-            }
-
-            return Object.assign({}, core, { library_playlists: items });
-
 
         /**
          * Genres
@@ -563,14 +488,10 @@ export default function reducer(core = {}, action){
         case 'SEARCH_STARTED':
             return Object.assign({}, core, {
                 search_results: {
-                    artists_more: null,
                     artists_uris: [],
-                    albums_more: null,
                     albums_uris: [],
-                    playlists_more: null,
                     playlists_uris: [],
                     tracks: [],
-                    tracks_more: null,
                 }
             });
 

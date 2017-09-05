@@ -64,24 +64,6 @@ class App extends React.Component{
 		this.handleWindowResize(null)
 	}
 
-	componentWillReceiveProps(nextProps){
-
-		// mopidy comes online
-		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			this.props.mopidyActions.getLibraryPlaylists();
-		}
-
-		// spotify authorized
-		if( !this.props.spotify_authorized && nextProps.spotify_authorized ){
-			this.props.spotifyActions.getAllLibraryPlaylists();
-		}
-
-		// spotify un-authorized
-		if( this.props.spotify_authorized && !nextProps.spotify_authorized ){
-			// TODO: flush out playlists and then re-fetch mopidy
-		}
-	}
-
 	shouldTriggerShortcut(e){
 
 		// When we're focussed on certian elements, don't fire any shortcuts

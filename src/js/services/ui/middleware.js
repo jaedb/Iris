@@ -122,10 +122,36 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
-            case 'CANCEL_PROCESS':
-                if (action.key == 'MOPIDY_ENQUEUE_URIS'){
-                    store.dispatch(mopidyActions.enqueueURIsCancel())
-                }
+            case 'START_PROCESS':
+                store.dispatch({
+                    type: action.key,
+                    data: action.data
+                })
+                store.dispatch({
+                    type: action.key+'_STARTED'
+                })
+                next(action)
+                break
+
+            case 'RESUME_PROCESS':
+                store.dispatch({
+                    type: action.key,
+                    data: store.getState().ui.processes[action.key].data
+                })
+                next(action)
+                break
+
+            case 'PROCESS_CANCELLED':
+                store.dispatch({
+                    type: action.key+'_CANCELLED'
+                })
+                next(action)
+                break
+
+            case 'PROCESS_FINISHED':
+                store.dispatch({
+                    type: action.key+'_FINISHED'
+                })
                 next(action)
                 break
 

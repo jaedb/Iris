@@ -66,9 +66,17 @@ class Debug extends React.Component{
 									<input 
 										type="checkbox"
 										name="debug_info"
+										checked={ this.props.test_mode }
+										onChange={ e => this.props.uiActions.set({ test_mode: !this.props.test_mode })} />
+									<span className="label">Test mode</span>
+								</label>
+								<label>
+									<input 
+										type="checkbox"
+										name="debug_info"
 										checked={ this.props.debug_info }
 										onChange={ e => this.props.uiActions.set({ debug_info: !this.props.debug_info })} />
-									<span className="label">Show debug info panel</span>
+									<span className="label">Debug info</span>
 								</label>
 							</div>
 						</div>
@@ -106,7 +114,7 @@ class Debug extends React.Component{
 							<div className="input">
 								<a className="button secondary" onClick={e => this.props.uiActions.createNotification('Test notification')}>Create notification</a>
 								<a className="button secondary" onClick={e => this.props.uiActions.startProcess('test_process', 'Test process')}>Start process</a>
-								<a className="button secondary" onClick={e => this.props.uiActions.stopProcess('test_process')}>Stop process</a>
+								<a className="button secondary" onClick={e => this.props.uiActions.processFinished('test_process')}>Stop process</a>
 							</div>
 						</div>
 					</form>
@@ -211,6 +219,7 @@ const mapStateToProps = (state, ownProps) => {
 		log_actions: (state.ui.log_actions ? state.ui.log_actions : false),
 		log_pusher: (state.ui.log_pusher ? state.ui.log_pusher : false),
 		log_mopidy: (state.ui.log_mopidy ? state.ui.log_mopidy : false),
+		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
 		debug_info: (state.ui.debug_info ? state.ui.debug_info : false),
 		debug_response: state.ui.debug_response
 	}

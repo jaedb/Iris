@@ -18,24 +18,24 @@ class TrackList extends React.Component{
 
 		this.touch_dragging_tracks_keys = false
 
-		this.handleKeyUp = this.handleKeyUp.bind(this)
+		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.handleTouchMove = this.handleTouchMove.bind(this)
 		this.handleTouchEnd = this.handleTouchEnd.bind(this)
 	}
 
 	componentWillMount(){
-		window.addEventListener("keyup", this.handleKeyUp, false)
+		window.addEventListener("keydown", this.handleKeyDown, false)
 		window.addEventListener("touchmove", this.handleTouchMove, false)
 		window.addEventListener("touchend", this.handleTouchEnd, false)
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false)
+		window.removeEventListener("keydown", this.handleKeyDown, false)
 		window.removeEventListener("touchmove", this.handleTouchMove, false)
 		window.removeEventListener("touchend", this.handleTouchEnd, false)
 	}
 
-	handleKeyUp(e){
+	handleKeyDown(e){
 
 		// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
 		var ignoreNodes = ['INPUT', 'TEXTAREA']
@@ -43,18 +43,35 @@ class TrackList extends React.Component{
 			return false
 		}
 
-		// No tracks selected - no action required
-		if (!this.digestTracksKeys() || this.digestTracksKeys().length <= 0){
-			return
-		}
+		var tracks_keys = this.digestTracksKeys()
 
 		switch(e.keyCode){			
 			case 13: // enter
-				 this.playTracks();
+				if (tracks_keys && tracks_keys.length > 0){
+					this.playTracks();
+				}
 				break;
 			
 			case 46: // delete
-				 this.removeTracks();
+				if (tracks_keys && tracks_keys.length > 0){
+					this.removeTracks();
+				}
+				break;
+			
+			case 65: // a
+				if (e.ctrlKey){
+
+					e.preventDefault();
+
+					// Select all our tracks
+					var all_tracks = []
+					for (var i = 0; i < this.props.tracks.length; i++){
+						all_tracks.push(this.buildTrackKey(this.props.tracks[i], i))
+					}
+					this.props.uiActions.setSelectedTracks(all_tracks)
+
+					return false
+				}
 				break;
 		}
 	}
@@ -191,7 +208,7 @@ class TrackList extends React.Component{
 	handleSelection(e,track_key){
 		let selected_tracks = this.props.selected_tracks
 
-		if (e.ctrlKey || this.props.slim_mode){
+		if (e.ctrlKey || this.props.slim_mode || helpers.isTouchDevice()){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
@@ -283,10 +300,10 @@ class TrackList extends React.Component{
 	 **/
 	buildTrackKey(track, index){
 		let key = index
-		key += '_'+(track.tlid ? track.tlid : 'none')
-		key += '_'+track.uri
-		key += '_'+(this.props.uri ? this.props.uri : 'none')
-		key += '_'+(this.props.context ? this.props.context : 'none')
+		key += '@@'+(track.tlid ? track.tlid : 'none')
+		key += '@@'+track.uri
+		key += '@@'+(this.props.uri ? this.props.uri : 'none')
+		key += '@@'+(this.props.context ? this.props.context : 'none')
 		return key
 	}
 
@@ -314,7 +331,7 @@ class TrackList extends React.Component{
 		// This is enough to perform interactions (dragging, selecting, etc)
 		let array = []
 		for (let i = 0; i < keys.length; i++){
-			let key = keys[i].split('_')
+			let key = keys[i].split('@@')
 
 			if (indexes_only){
 				array.push(key[0])
@@ -383,6 +400,11 @@ class TrackList extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
+		var mini_zones = false
+		if (this.props.slim_mode || helpers.isTouchDevice()){
+			mini_zones = true
+			className += ' mini-zones'
+		}
 
 		return (
 			<div className={className}>
@@ -395,10 +417,10 @@ class TrackList extends React.Component{
 								<Track
 									show_source_icon={this.props.show_source_icon}
 									key={track_key} 
+									mini_zones={mini_zones}
 									track={track} 
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
-									slim_mode={this.props.slim_mode} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									dragger={this.props.dragger} 
 									handleSelection={e => this.handleSelection(e, track_key)}
@@ -427,8 +449,8 @@ class TrackList extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		selected_tracks: state.ui.selected_tracks,
 		slim_mode: state.ui.slim_mode,
+		selected_tracks: state.ui.selected_tracks,
 		dragger: state.ui.dragger,
 		current_track: state.core.current_track,
 		context_menu: state.ui.context_menu

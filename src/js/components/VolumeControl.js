@@ -28,7 +28,28 @@ class VolumeControl extends React.Component{
 			percent = 0
 		}
 
-		this.props.mopidyActions.setVolume( percent )
+		this.props.mopidyActions.setVolume(percent)
+	}
+
+	handleWheel(e){
+
+		// Identify which direction we've scrolled (inverted)
+		// This is simplified and doesn't consider momentum as it varies wildly
+		// between browsers and devices
+		var direction = (e.deltaY > 0 ? -1 : 1)
+		var percent = this.props.volume;
+
+		percent += direction * 5
+
+		if (percent > 100){
+			percent = 100
+		} else if (percent < 0 ){
+			percent = 0
+		}
+
+		this.props.mopidyActions.setVolume(percent);
+
+		e.preventDefault();
 	}
 
 	renderMuteButton(){
@@ -55,7 +76,7 @@ class VolumeControl extends React.Component{
 			className += " muted"
 		}
 		return (
-			<span className={className}>
+			<span className={className} onWheel={e => this.handleWheel(e)}>
 				{this.renderMuteButton()}
 				<div className="slider-wrapper">
 					<div className="slider horizontal" onClick={e => this.handleClick(e)}>

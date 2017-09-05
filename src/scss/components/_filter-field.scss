@@ -1,0 +1,60 @@
+
+.filter-field {
+	form {
+		display: inline-block;
+		position: relative;
+	}
+
+	.fa {
+		position: absolute;
+		top: 12px;
+		left: 15px;
+		pointer-events: none;
+	}
+
+	input {
+		@include animate();
+		width: 0;
+		padding-left: 25px;
+		background: transparent;
+	}
+
+	&:not(.active){
+		input {
+			cursor: pointer;
+		}
+		
+		&:hover {
+
+			.fa {
+				color: $blue;
+			}
+		}
+	}
+
+	&.active {
+		input {
+			width: 180px;
+			padding-left: 35px;
+			background: $grey;
+		}
+	}
+}
+
+#context-menu {
+	.filter-field {
+		display: block;
+
+		.fa {
+			top: 17px;
+			left: 24px;
+			color: $white !important;
+		}
+
+		input {
+			padding: 14px 18px 14px 42px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+	}
+}

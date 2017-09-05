@@ -126,30 +126,46 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, {load_queue: load_queue})
 
          case 'START_PROCESS':
+         case 'UPDATE_PROCESS':
             var processes = Object.assign({}, (ui.processes ? ui.processes : []))
+            if (processes[action.key]){
+                var data = Object.assign({}, processes[action.key].data, action.data)
+            } else {
+                var data = action.data
+            }
             processes[action.key] = {
                 key: action.key,
-                content: action.content
+                message: action.message,
+                status: 'running',
+                data: data
+            }
+            return Object.assign({}, ui, {processes: processes})
+
+         case 'RESUME_PROCESS':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                processes[action.key] = Object.assign({}, processes[action.key], {status: 'running'})
             }
             return Object.assign({}, ui, {processes: processes})
 
          case 'CANCEL_PROCESS':
             var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
             if (processes[action.key]){
-                processes[action.key] = Object.assign(
-                    {},
-                    processes[action.key],
-                    {
-                        cancelling: true
-                    }
-                )
+                processes[action.key] = Object.assign({}, processes[action.key], {status: 'cancelling'})
             }
             return Object.assign({}, ui, {processes: processes})
 
-         case 'STOP_PROCESS':
+         case 'PROCESS_CANCELLED':
             var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
             if (processes[action.key]){
-                delete processes[action.key]
+                processes[action.key] = Object.assign({}, processes[action.key], {status: 'cancelled'})
+            }
+            return Object.assign({}, ui, {processes: processes})
+
+         case 'PROCESS_FINISHED':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                processes[action.key] = Object.assign({}, processes[action.key], {status: 'finished'})
             }
             return Object.assign({}, ui, {processes: processes})
 

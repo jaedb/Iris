@@ -64,21 +64,9 @@ export function enqueueURIs(uris, from_uri = null, next = false, at_position = n
 	}
 }
 
-export function enqueueURIsCancel(){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_CANCEL'
-	}
-}
-
 export function enqueueURIsBatchDone(){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
-	}
-}
-
-export function enqueueUrisProcessor(){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_PROCESSOR'
 	}
 }
 
@@ -172,6 +160,14 @@ export function getImages( context, uris ){
 	}
 }
 
+export function createPlaylist(name, scheme){
+	return { 
+		type: 'MOPIDY_CREATE_PLAYLIST',
+		name: name,
+		scheme: scheme
+	}
+}
+
 export function deletePlaylist( uri ){
 	return { 
 		type: 'MOPIDY_DELETE_PLAYLIST',
@@ -190,10 +186,24 @@ export function getPlaylist( uri ){
 	}
 }
 
+export function getPlaylists(uris, processor = null){
+	return { 
+		type: 'MOPIDY_GET_PLAYLISTS', 
+		uris: uris,
+		processor: processor
+	}
+}
+
 export function getDirectory( uri ){
 	return { 
 		type: 'MOPIDY_GET_DIRECTORY', 
 		data: { uri: uri } 
+	}
+}
+
+export function getLibraryArtists(){
+	return { 
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS' 
 	}
 }
 
@@ -204,9 +214,11 @@ export function getArtist( uri ){
 	}
 }
 
-export function getLibraryArtists(){
+export function getArtists(uris, processor = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ARTISTS'
+		type: 'MOPIDY_GET_ARTISTS', 
+		uris: uris,
+		processor: processor
 	}
 }
 
@@ -217,10 +229,11 @@ export function getAlbum( uri ){
 	}
 }
 
-export function getAlbums( uris ){
+export function getAlbums(uris, processor = null){
 	return { 
 		type: 'MOPIDY_GET_ALBUMS', 
-		uris: uris 
+		uris: uris,
+		processor: processor
 	}
 }
 
@@ -230,44 +243,35 @@ export function getLibraryAlbums(){
 	}
 }
 
+export function runProcessor(processor){
+	return {
+		type: processor
+	}
+}
+
+export function cancelProcessor(processor){
+	return {
+		type: processor+'_CANCEL'
+	}
+}
+
 
 /**
  * Searching
  **/
 
-export function getTrackSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_TRACK_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
+export function clearSearchResults(){
+    return {
+        type: 'MOPIDY_CLEAR_SEARCH_RESULTS'
+    }
 }
 
-export function getArtistSearchResults(query, limit = 100, uri_scheme){
+export function getSearchResults(context, query, limit = 100){
 	return {
-		type: 'MOPIDY_GET_ARTIST_SEARCH_RESULTS',
+		type: 'MOPIDY_GET_SEARCH_RESULTS',
+		context: context,
 		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
-}
-
-export function getAlbumSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_ALBUM_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
-	}
-}
-
-export function getPlaylistSearchResults(query, limit = 100, uri_scheme){
-	return {
-		type: 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS',
-		query: query,
-		limit: limit,
-		uri_scheme: uri_scheme
+		limit: limit
 	}
 }
 

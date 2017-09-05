@@ -1,4 +1,6 @@
 
+import * as helpers from '../../helpers'
+
 export default function reducer(mopidy = {}, action){
     switch (action.type) {
 
@@ -94,32 +96,75 @@ export default function reducer(mopidy = {}, action){
                 directory: action.data   
             });
 
-        case 'MOPIDY_ENQUEUE_URIS':
-            if (mopidy.enqueue_uris_batches){
-                var batches = [...mopidy.enqueue_uris_batches, ...action.batches]
-            } else {
-                var batches = Object.assign([],action.batches)
-            }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
 
-        case 'MOPIDY_ENQUEUE_URIS_CANCEL':
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: []  
-            });
+        /**
+         * Library
+         **/
 
-        case 'MOPIDY_ENQUEUE_URIS_BATCH_DONE':
-            if (!mopidy.enqueue_uris_batches || mopidy.enqueue_uris_batches.length <= 0){
-                var batches = []
-                console.error('Cannot remove batch when queue empty',action)
+        case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED':
+            if (mopidy.library_playlists){
+                var uris = [...mopidy.library_playlists,...action.uris]
             } else {
-                var batches = mopidy.enqueue_uris_batches
-                batches.shift()
+                var uris = action.uris
             }
-            return Object.assign({}, mopidy, {
-                enqueue_uris_batches: batches  
-            });
+            return Object.assign({}, mopidy, { library_playlists: helpers.removeDuplicates(uris) })
+
+        case 'MOPIDY_LIBRARY_PLAYLIST_CREATED':
+            var library_playlists = []
+            if (mopidy.library_playlists){
+                library_playlists = Object.assign([], mopidy.library_playlists)
+                library_playlists.push(action.key)
+            }
+            return Object.assign({}, mopidy, { library_playlists: library_playlists })
+
+        case 'MOPIDY_LIBRARY_PLAYLIST_DELETED':
+            var library_playlists = []
+            if (mopidy.library_playlists){
+                library_playlists = Object.assign([], mopidy.library_playlists)
+                library_playlists.splice(library_playlists.indexOf(action.uri), 1)
+            }
+            return Object.assign({}, mopidy, { library_playlists: library_playlists })
+
+        case 'MOPIDY_LIBRARY_ARTISTS_LOADED':
+            if (mopidy.library_artists){
+                var uris = [...mopidy.library_artists,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_artists: helpers.removeDuplicates(uris) })
+
+        case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
+            if (mopidy.library_albums){
+                var uris = [...mopidy.library_albums,...action.uris]
+            } else {
+                var uris = action.uris
+            }
+            return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) })
+
+
+        /**
+         * Searching
+         **/
+
+        case 'MOPIDY_CLEAR_SEARCH_RESULTS':
+            return Object.assign({}, mopidy, { search_results: {} });
+
+        case 'MOPIDY_SEARCH_RESULTS_LOADED':
+
+            // Fetch or create our container
+            if (mopidy.search_results){
+                var search_results = Object.assign({}, mopidy.search_results)
+            } else {
+                var search_results = {}
+            }
+
+            if (search_results[action.context]){
+                search_results[action.context] = [...search_results[action.context], ...action.results]
+            } else {
+                search_results[action.context] = action.results
+            }
+
+            return Object.assign({}, mopidy, { search_results: search_results });
 
         default:
             return mopidy

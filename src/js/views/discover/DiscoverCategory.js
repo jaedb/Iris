@@ -38,7 +38,7 @@ class DiscoverCategory extends React.Component{
 			return (
 				<div className="view discover-categories-view">
 					<Header icon="grid" title={(this.props.category ? this.props.category.name : 'Category')} />
-					<div className="body-loader">
+					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
 				</div>
@@ -66,7 +66,7 @@ class DiscoverCategory extends React.Component{
 					<section className="grid-wrapper">
 						<PlaylistGrid playlists={playlists} />
 					</section>
-					<LazyLoadListener enabled={this.props.category.playlists_more} loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener loading={this.props.category.playlists_more} loadMore={ () => this.loadMore() }/>
 				</div>
 			</div>
 		);

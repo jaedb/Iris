@@ -27,7 +27,7 @@ body {
 	&::-webkit-scrollbar-thumb {
 		@include animate();
 		background: $grey;
-		border-radius: 3px;
+		border-radius: 4px;
 
 		&:hover {
 			background: $mid_grey;
@@ -266,7 +266,9 @@ button.placeholder {
 .one-liner { @include one_line_text; }
 .centred-text { text-align: center; }
 .grey-text { color: $mid_grey !important; }
+.dark-grey-text { color: lighten($dark_grey, 8%) !important; }
 .red-text { color: $red !important; }
+.blue-text { color: $blue !important; }
 .green-text { color: $green !important; }
 .orange-text { color: $orange !important; }
 .dark-text { color: $dark_grey !important; }
@@ -310,6 +312,20 @@ footer {
 
 	&.blue {
 		background: $blue;
+		color: $white;
+	}
+
+	&.info {
+		background: $yellow;
+	}
+
+	&.warning {
+		background: $orange;
+		color: $white;
+	}
+
+	&.bad {
+		background: $red;
 		color: $white;
 	}
 

@@ -1,4 +1,6 @@
 
+import { hashHistory } from 'react-router'
+
 import React, { PropTypes } from 'react'
 import GridItem from './GridItem'
 
@@ -16,11 +18,16 @@ export default class CategoryGrid extends React.Component{
 		return (
 			<div className={className}>
 				{
-					this.props.categories.map(
-						(category, index) => {
-							return <GridItem item={category} key={index} link={global.baseURL+'discover/categories/'+category.id} />
-						}
-					)
+					this.props.categories.map(category => {
+						return (
+							<GridItem 
+								key={category.id}
+								type="category"
+								item={category}
+								onClick={e => {hashHistory.push(global.baseURL+'discover/categories/'+category.id)}}
+							/>
+						)
+					})
 				}
 			</div>
 		);

@@ -82,14 +82,15 @@ class Artist extends React.Component{
 	}
 
 	inLibrary(){
-		return (this.props.library_artists && this.props.library_artists.indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_artists'
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
 	}
 
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
 				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link>
+				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link> : null}
 				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
 			</div>
 		)
@@ -98,7 +99,7 @@ class Artist extends React.Component{
 	renderBody(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)
@@ -178,7 +179,7 @@ class Artist extends React.Component{
 						<h4>Albums</h4>
 						<section className="grid-wrapper no-top-padding">
 							<AlbumGrid albums={albums} />
-							<LazyLoadListener enabled={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
+							<LazyLoadListener loading={this.props.artist.albums_more} loadMore={ () => this.loadMore() }/>
 						</section>
 					</div>
 				)
@@ -263,7 +264,8 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		artist: (state.core.artists && typeof(state.core.artists[ownProps.params.uri]) !== 'undefined' ? state.core.artists[ownProps.params.uri] : false ),
 		artists: (state.core.artists ? state.core.artists : []),
-		library_artists: (state.core.library_artists ? state.core.library_artists : []),
+		spotify_library_artists: state.spotify.library_artists,
+		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected

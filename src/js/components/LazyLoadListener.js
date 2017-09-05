@@ -6,7 +6,9 @@ export default class LazyLoadListener extends React.Component{
 
 	constructor(props) {
 		super(props);
-		this.state = { loading: false }
+		this.state = {
+			loading: false
+		}
 		this.handleScroll = this.handleScroll.bind(this);
 	}
 
@@ -20,7 +22,7 @@ export default class LazyLoadListener extends React.Component{
 
 	handleScroll(e){
 	    if( (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80) ){
-	    	if( !this.state.loading && this.props.enabled ){
+	    	if (!this.state.loading && this.props.loading){
 				this.setState({ loading: true })
 				this.props.loadMore();
 			}
@@ -31,7 +33,7 @@ export default class LazyLoadListener extends React.Component{
 
 	render(){
 		return (
-			<div className="lazy-loader body-loader">
+			<div className={"lazy-loader body-loader"+(this.state.loading ? ' loading' : '')}>
 				{this.state.loading ? <div className="loader"></div> : null}
 			</div>
 		)

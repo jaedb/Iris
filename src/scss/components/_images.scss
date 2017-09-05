@@ -11,7 +11,7 @@
 		padding-bottom: 100%;
 		position: relative;
 		background-repeat: no-repeat;
-		background-color: $grey;
+		background-color: lighten($dark_grey, 2%);
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;

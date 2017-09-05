@@ -67,59 +67,27 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.createPlaylist( action.name, action.description, action.is_private, action.is_collaborative ))
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = state.core.playlists[action.key]
 
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
-                if( !store.getState().spotify.me || store.getState().spotify.me.id != playlist.owner.id ){
-                    store.dispatch( uiActions.createNotification( "You can't edit a playlist you don't own", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break
 
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.addTracksToPlaylist( action.key, action.tracks_uris ))
                 break
 
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
-
-                if( !store.getState().spotify.me || store.getState().spotify.me.id != helpers.getFromUri('artistid',action.key) ){
-                    store.dispatch( uiActions.createNotification( "You can't edit a playlist you don't own", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break
 
 
             case 'SPOTIFY_SAVE_PLAYLIST':
-
-                if( !store.getState().spotify.authorization ){
-                    store.dispatch( uiActions.createNotification( "Must be logged in to Spotify to do that", 'bad' ) )
-                    return
-                }
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
                 break
 
@@ -212,6 +180,10 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+            case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data))
+                break
+
             case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                 var playlists = []
                 for( var i = 0; i < action.playlists.length; i++ ){
@@ -236,20 +208,24 @@ const SpotifyMiddleware = (function(){
                     playlists: playlists
                 });
 
-                store.dispatch({
-                    type: 'LIBRARY_PLAYLISTS_LOADED',
-                    uris: helpers.arrayOf('uri',playlists)
-                });
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',playlists)
+                next(action)
+                break
+
+            case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data))
                 break
 
             case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
                 var artists = []
-                for (var i = 0; i < action.data.artists.items.length; i++){
+                for (var i = 0; i < action.artists.length; i++){
                     artists.push(
                         Object.assign(
                             {},
-                            action.data.artists.items[i],
+                            action.artists[i],
                             {
+                                source: 'spotify',
                                 in_library: true     // assumed because we asked for library items
                             }
                         )
@@ -259,27 +235,30 @@ const SpotifyMiddleware = (function(){
                     type: 'ARTISTS_LOADED',
                     artists: artists
                 });
-                store.dispatch({
-                    type: 'LIBRARY_ARTISTS_LOADED',
-                    uris: helpers.arrayOf('uri',artists),
-                    more: action.data.artists.next,
-                    total: action.data.artists.total
-                });
+
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',artists)
+                next(action)
+                break
+
+            case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data))
                 break
 
             case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
                 var albums = []
-                for (var i = 0; i < action.data.items.length; i++){
+                for (var i = 0; i < action.albums.length; i++){
                     albums.push(
                         Object.assign(
                             {},
-                            action.data.items[i].album,
+                            action.albums[i].album,
                             {
                                 in_library: true,    // assumed because we asked for library items
-                                added_at: action.data.items[i].added_at,
-                                tracks: action.data.items[i].album.tracks.items,
-                                tracks_more: action.data.items[i].album.tracks.next,
-                                tracks_total: action.data.items[i].album.tracks.total
+                                source: 'spotify',
+                                added_at: action.albums[i].added_at,
+                                tracks: action.albums[i].album.tracks.items,
+                                tracks_more: action.albums[i].album.tracks.next,
+                                tracks_total: action.albums[i].album.tracks.total
                             }
                         )
                     )
@@ -290,12 +269,9 @@ const SpotifyMiddleware = (function(){
                     albums: albums
                 });
 
-                store.dispatch({
-                    type: 'LIBRARY_ALBUMS_LOADED',
-                    uris: helpers.arrayOf('uri',albums),
-                    more: action.data.next,
-                    total: action.data.total
-                });
+                // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
+                action.uris = helpers.arrayOf('uri',albums)
+                next(action)
                 break
 
             case 'SPOTIFY_FAVORITES_LOADED':
@@ -324,11 +300,25 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+
+            /**
+             * Searching
+             * More results are lazy-loaded on demand, based on the _more URL
+             **/
+
+            case 'SEARCH_STARTED':
+                store.dispatch({ 
+                    type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'
+                });
+                next(action)
+                break
+
             case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    tracks: action.data.tracks.items,
-                    tracks_more: action.data.tracks.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'tracks',
+                    results: action.data.tracks.items,
+                    more: action.data.tracks.next
                 });
                 break
 
@@ -340,9 +330,10 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
-                    playlists_more: action.data.playlists.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'artists',
+                    results: helpers.arrayOf('uri',action.data.playlists.items),
+                    more: action.data.playlists.next
                 });
                 break
 
@@ -354,9 +345,10 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    albums_uris: helpers.arrayOf('uri',action.data.albums.items),
-                    albums_more: action.data.albums.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'playlists',
+                    results: helpers.arrayOf('uri',action.data.albums.items),
+                    more: action.data.albums.next
                 });
                 break
 
@@ -379,17 +371,19 @@ const SpotifyMiddleware = (function(){
                 });
 
                 store.dispatch({
-                    type: 'SEARCH_RESULTS_LOADED',
-                    playlists_uris: helpers.arrayOf('uri',action.data.playlists.items),
-                    playlists_more: action.data.playlists.next
+                    type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
+                    context: 'playlists',
+                    results: helpers.arrayOf('uri',action.data.playlists.items),
+                    more: action.data.playlists.next
                 });
                 break
+
 
             case 'SPOTIFY_ME_LOADED':
 
                 // We've loaded 'me' and we are Anonymous currently
                 if (action.data && store.getState().pusher.username == 'Anonymous'){
-                    if (typeof(action.data.display_name) !== 'undefined'){
+                    if (action.data.display_name !== null){
                         var name = action.data.display_name
                     } else {
                         var name = action.data.id

@@ -25,7 +25,7 @@
 			.select-zone {
 				&::after {
 					background: $blue;
-					border-color: $blue;
+					border-color: $blue !important;
 				}
 			}
 		}
@@ -50,13 +50,6 @@
 			text-transform: uppercase;
 			border-top: 0;
 			padding-bottom: 2px;
-		}
-
-		.source {
-			color: $mid_grey;
-			position: absolute;
-			top: 14px;
-			right: 12px;
 		}
 
 		&.field {
@@ -91,6 +84,13 @@
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;
+			}
+
+			.source {
+				color: $mid_grey;
+				position: absolute;
+				top: 14px;
+				right: 12px;
 			}
 		}
 	}
@@ -209,6 +209,68 @@
 		}
 	}
 
+	&.track-list.mini-zones {
+		.list-item {	
+
+			&.can-sort {
+				padding-left: 78px !important;
+			}
+			
+			&:not(.can-sort){
+				padding-left: 46px !important;
+			}
+
+			.select-zone {
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 38px;
+				font-size: 8px;
+				display: block;
+				
+				.fa {
+					position: absolute;
+					top: 27px;
+					left: 19px;
+					pointer-events: none;
+					color: $white;
+					z-index: 1;
+				}
+
+				&:after {
+					display: block;
+					content: '';
+					border: 1px solid $mid_grey;
+					border-radius: 50%;
+					width: 14px;
+					height: 14px;
+					position: absolute;
+					top: 23px;
+					left: 16px;
+				}
+			}
+
+			.drag-zone {
+				position: absolute;
+				top: 0;
+				left: 38px;
+				height: 100%;
+				width: 38px;
+				font-size: 14px;
+				display: block;
+				color: $mid_grey;
+				
+				.fa {
+					position: absolute;
+					top: 24px;
+					left: 8px;
+					pointer-events: none;
+				}
+			}
+		}
+	}
+
 	@include responsive( $bp_medium ){
 
 		.list-item {
@@ -230,7 +292,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 20px;
+					top: 27px;
 					left: 19px;
 					pointer-events: none;
 					color: $white;
@@ -262,7 +324,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 17px;
+					top: 24px;
 					left: 8px;
 					pointer-events: none;
 				}

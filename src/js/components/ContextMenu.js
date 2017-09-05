@@ -121,13 +121,13 @@ class ContextMenu extends React.Component{
 
 		switch (helpers.uriType(item.uri)){
 			case 'artist':
-				return (this.props.library_artists && this.props.library_artists.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1)
 				break
 			case 'album':
-				return (this.props.library_albums && this.props.library_albums.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_albums && this.props.spotify_library_albums.indexOf(item.uri) > -1)
 				break
 			case 'playlist':
-				return (this.props.library_playlists && this.props.library_playlists.indexOf(item.uri) > -1)
+				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1)
 				break
 		}
 		return false
@@ -195,6 +195,11 @@ class ContextMenu extends React.Component{
 		this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
 	}
 
+	deletePlaylist(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.coreActions.deletePlaylist(this.props.menu.uris[0])
+	}
+
 	startRadio(e){
 		this.props.uiActions.hideContextMenu()
 		this.props.pusherActions.startRadio(this.props.menu.uris)
@@ -248,6 +253,30 @@ class ContextMenu extends React.Component{
 
 		playlists = helpers.sortItems(playlists, 'name')
 
+		var loader = null
+		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+			loader = (
+				<div className="menu-item-wrapper">
+					<div className="menu-item mini-loader loading">
+						<div className="loader"></div>
+					</div>
+				</div>
+			)
+		}
+
+		var list = <span className="menu-item-wrapper"><span className="menu-item grey-text">No writable playlists</span></span>
+		if (playlists.length > 0){
+			list = playlists.map(playlist => {
+				return (
+					<span className="menu-item-wrapper" key={playlist.uri}>
+						<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
+							<span className="label">{ playlist.name }</span>
+						</a>
+					</span>
+				)
+			})
+		}
+
 		return (			
 			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
 				<span className="menu-item-wrapper">
@@ -259,17 +288,8 @@ class ContextMenu extends React.Component{
 						</span>
 					</a>
 				</span>
-				{
-					playlists.map( playlist => {
-						return (
-							<span className="menu-item-wrapper" key={playlist.uri}>
-								<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
-									<span className="label">{ playlist.name }</span>
-								</a>
-							</span>
-						)
-					})
-				}
+				{list}
+				{loader}
 			</div>
 		)
 	}
@@ -332,6 +352,19 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	setPlaylistSubmenu(expanded = !this.state.submenu_expanded){
+		this.setState({submenu_expanded: expanded})
+
+		if (expanded){
+			if (!this.props.spotify_library_playlists){
+				this.props.spotifyActions.getLibraryPlaylists()
+			}
+			if (!this.props.mopidy_library_playlists){
+				this.props.mopidyActions.getLibraryPlaylists()
+			}
+		}
+	}
+
 	renderItems(){
 		var context = this.getContext()
 
@@ -385,7 +418,7 @@ class ContextMenu extends React.Component{
 
 		var add_to_playlist = (
 			<span className="menu-item-wrapper has-submenu">
-				<a className="menu-item" onClick={e => this.setState({ submenu_expanded: !this.state.submenu_expanded })}>
+				<a className="menu-item" onClick={e => this.setPlaylistSubmenu()}>
 					<span className="label">Add to playlist</span>
 					<FontAwesome className="submenu-icon" name='caret-right' />
 				</a>
@@ -451,6 +484,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var delete_playlist = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.deletePlaylist(e)}>
+					<span className="label">Delete</span>
+				</a>
+			</span>
+		)
+
 		var copy_uris = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.copyURIs(e)}>
@@ -493,6 +534,18 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
 						{this.canBeInLibrary() ? toggle_in_library : null}
+					</div>
+				)
+				break
+
+			case 'editable-playlist':
+				return (
+					<div>
+						{play_playlist}
+						{context.source == 'spotify' ? go_to_user : null}
+						{copy_uris}
+						{this.canBeInLibrary() ? toggle_in_library : null}
+						{delete_playlist}
 					</div>
 				)
 				break
@@ -576,11 +629,15 @@ class ContextMenu extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		menu: state.ui.context_menu,
+		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
-		library_artists: state.core.library_artists,
-		library_albums: state.core.library_albums,
-		library_playlists: state.core.library_playlists,
+		spotify_library_playlists: state.spotify.library_playlists,
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		spotify_library_artists: state.spotify.library_artists,
+		mopidy_library_artists: state.mopidy.library_artists,
+		spotify_library_albums: state.spotify.library_albums,
+		mopidy_library_albums: state.mopidy.library_albums,
 		playlists: state.core.playlists,
 		spotify_authorized: state.spotify.authorization
 	}

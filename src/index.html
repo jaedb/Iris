@@ -15,9 +15,14 @@
 	<link rel="shortcut-icon" href="/iris/assets/favicon.ico" />
 
 	<link href="//fonts.googleapis.com/css?family=Overpass:400,400i,600,700,800" rel="stylesheet">
-	<link href="/iris/app.css" rel="stylesheet" />
 
+	<!-- Chrome app -->
 	<link rel="manifest" href="/iris/assets/manifest.json">
+
+	<!-- Apple app -->
+	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png">
+	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
+	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
 
 </head>
 <body>
@@ -28,6 +33,29 @@
 
 </body>
 
-<script type="text/javascript" src="/iris/app.js"></script>
+<script type="text/javascript">
+
+	var build_version = "BUILD_VERSION_HERE";
+
+    var js = document.createElement("script");
+    js.type = "application/javascript";
+
+    var css = document.createElement("link");
+    css.rel = "stylesheet";
+
+    // Identify whether we're in test mode, and need to fetch non-minified assets
+    var ui = JSON.parse( localStorage.getItem('ui') );
+    if (typeof(ui) === 'undefined' || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
+	    js.src = '/iris/app.min.js?v='+build_version;
+	    css.href = '/iris/app.min.css?v='+build_version;
+    } else {
+	    js.src = '/iris/app.js?v='+build_version;
+	    css.href = '/iris/app.css?v='+build_version;
+    }
+	   
+	document.body.appendChild(js);
+	document.body.appendChild(css);
+</script>
 
 </html>
+

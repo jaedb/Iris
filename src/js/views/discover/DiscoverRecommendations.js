@@ -39,11 +39,7 @@ class Discover extends React.Component{
 
 		// BAU
 		} else {
-			if (this.props.authorized){
-				this.props.spotifyActions.getFavorites()
-			} else {
-				this.getRecommendations()
-			}
+			this.props.spotifyActions.getFavorites()
 		}
 	}
 
@@ -174,7 +170,7 @@ class Discover extends React.Component{
 	renderResults(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_recommendations'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)
@@ -213,11 +209,11 @@ class Discover extends React.Component{
 			<div className="content-wrapper recommendations-results">
 				<section>
 					<h4>Artists</h4>
-					<ArtistGrid artists={artists} />
+					<ArtistGrid single_row artists={artists} />
 				</section>
 				<section>
 					<h4>Albums</h4>
-					<AlbumGrid albums={albums} />
+					<AlbumGrid single_row albums={albums} />
 				</section>
 				<section>
 					<h4>Tracks</h4>
@@ -240,8 +236,8 @@ class Discover extends React.Component{
 					<div className="liner">
 						<h1>Explore new music</h1>
 						<h2 className="grey-text">
-							Add seeds below to build your sound. Let's start with 
-							{this.props.authorized ? " two of your favorite artists" : " the chill genre"}.
+							Add seeds below to build your sound
+							{!this.props.params.seeds ? ". Let's start with two of your favorite artists." : null}
 						</h2>
 						{this.renderSeeds()}
 					</div>

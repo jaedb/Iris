@@ -24,6 +24,19 @@ aside{
 		overflow-y: auto;
 	}
 
+	.branding {
+		height: 50px;
+		margin-top: 30px;
+		opacity: 0.2;
+
+		background: {
+			image: url('../assets/icon.svg');
+			position: 50% 50%;
+			repeat: no-repeat;
+			size: contain;
+		}
+	}
+
 	nav {
 		z-index: 2;
 		position: relative;
@@ -87,6 +100,7 @@ aside{
 	}
 
 	@include responsive( $bp_medium ){
+		@include animate(0.15s);
 		width: 220px;
 		left: -220px;
 		padding-bottom: 0;
@@ -94,7 +108,9 @@ aside{
 		z-index: 100;
 
 		.sidebar-open & {
-			left: 0px;
+			-ms-transform: translate(220px, 0);
+			-webkit-transform: translate(220px, 0);
+			transform: translate(220px, 0);
 		}
 
 		.liner {

@@ -198,6 +198,7 @@ $bp_shallow: 650px;
 	
 	&:before {
 		@include animate();
+		border-radius: $radius;
 		content: '';
 		display: block;
 		position: absolute;

@@ -105,6 +105,7 @@ const CoreMiddleware = (function(){
 
             case 'SEARCH_STARTED':
                 ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+                next(action)
 
                 var state = store.getState()
                 if (state.ui.search_settings){
@@ -133,45 +134,9 @@ const CoreMiddleware = (function(){
 
                 // backend searching (mopidy)
                 if (state.mopidy.connected){
-                    switch (action.search_type){
-                        case 'playlists':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'artists':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'albums':
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,100,full_uri_schemes[i]))
-                            }
-                            break
-
-                        case 'tracks':
-                            for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,100,uri_schemes[i]))
-                            }
-                            break
-
-                        default:
-                            for (var i = 0; i < full_uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getPlaylistSearchResults(action.query,6,full_uri_schemes[i]))
-                                store.dispatch(mopidyActions.getArtistSearchResults(action.query,6,full_uri_schemes[i]))
-                                store.dispatch(mopidyActions.getAlbumSearchResults(action.query,6,full_uri_schemes[i]))
-                            }
-
-                            for (var i = 0; i < uri_schemes.length; i++){
-                                store.dispatch(mopidyActions.getTrackSearchResults(action.query,20,uri_schemes[i]))
-                            }
-                    }
+                    store.dispatch(mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes))
                 }
 
-                next(action)
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
@@ -251,6 +216,39 @@ const CoreMiddleware = (function(){
                     }
                 }
 
+                next(action)
+                break
+
+            // Get assets from all of our providers
+            case 'GET_LIBRARY_PLAYLISTS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryPlaylists())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryPlaylists())
+                }
+                next(action)
+                break
+
+            // Get assets from all of our providers
+            case 'GET_LIBRARY_ALBUMS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryAlbums())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryAlbums())
+                }
+                next(action)
+                break
+
+            // Get assets from all of our providers
+            case 'GET_LIBRARY_ARTISTS':
+                if (store.getState().spotify.connected){
+                    store.dispatch(spotifyActions.getLibraryArtists())
+                }
+                if (store.getState().mopidy.connected){
+                    store.dispatch(mopidyActions.getLibraryArtists())
+                }
                 next(action)
                 break
 
