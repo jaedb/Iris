@@ -31,6 +31,20 @@ class VolumeControl extends React.Component{
 		this.props.mopidyActions.setVolume( percent )
 	}
 
+	handleWheel(e) {
+		var percent = Math.round(this.props.volume - e.deltaY/8);
+
+		if (percent > 100){
+			percent = 100
+		} else if (percent < 0 ){
+			percent = 0
+		}
+
+		this.props.mopidyActions.setVolume( percent );
+
+		e.preventDefault();
+	}
+
 	renderMuteButton(){
 		if (this.props.mute){
 			return (
@@ -55,7 +69,7 @@ class VolumeControl extends React.Component{
 			className += " muted"
 		}
 		return (
-			<span className={className}>
+			<span className={className} onWheel={e => this.handleWheel(e)}>
 				{this.renderMuteButton()}
 				<div className="slider-wrapper">
 					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
