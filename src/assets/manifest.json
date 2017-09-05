@@ -1,20 +1,20 @@
 {
-  "manifest_version": 2.2,
+  "manifest_version": 2.3,
   "short_name": "Iris",
   "name": "",
   "icons": [
     {
-      "src": "/iris/assets/icon-192.png",
+      "src": "/iris/assets/logo-app-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/iris/assets/icon-256.png",
+      "src": "/iris/assets/logo-icon-256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/iris/assets/icon-512.png",
+      "src": "/iris/assets/logo-full-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
