@@ -7,6 +7,7 @@ import { Link, withRouter } from 'react-router'
 import Icon from './Icon'
 import Dropzones from './Dropzones'
 import Thumbnail from './Thumbnail'
+import AISMenu from './SidebarMenus/AISMenu'
 
 import FontAwesome from 'react-fontawesome'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -62,36 +63,10 @@ class Sidebar extends React.Component{
 								New releases
 							</Link>
 						</section> : null}
-
-            {this.props.ais_enabled &&
-						<section>
-							<title>AI-Speaker</title>
-							<Link className={this.linkClassName('library/browse/ais:root:1')} to={global.baseURL+"library/browse/ais:root:1"}>
-								<Icon name="ais" />
-								Discover
-							</Link>
-							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
-								<Icon name="playlist" />
-								Playlists
-							</Link>
-							<Link className={this.linkClassName('library/browse/ais:root:2')} to={global.baseURL+"library/browse/ais:root:2"}>
-								<Icon name="ais-library" />
-								My Library
-							</Link>
-							<Link className={this.linkClassName('library/browse/ais:root:3')} to={global.baseURL+"library/browse/ais:root:3"}>
-								<Icon name="ais-family" />
-								My Family
-							</Link>
-							<Link className={this.linkClassName('library/browse/ais:root:4')} to={global.baseURL+"library/browse/ais:root:4"}>
-								<Icon name="ais-likes" />
-								My Likes
-							</Link>
-							<Link className={this.linkClassName('library/browse/ais:root:5')} to={global.baseURL+"library/browse/ais:root:5"}>
-								<Icon name="ais-pendrive" />
-								Pendrive
-							</Link>
-						</section>}
-
+						<AISMenu
+							enabled={this.props.ais_enabled}
+							location={this.props.location}
+						/>
             { !this.props.ais_enabled &&
 						<section>
 							<title>My Music</title>
