@@ -511,9 +511,15 @@ const MopidyMiddleware = (function(){
 
 
             case 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR':
+                var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR
+
+                // Cancelling
+                if (last_run && last_run.status == 'cancelling'){
+                    store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
+                    return
 
                 // No more schemes, so we're done!
-                if (!action.data.uri_scheme){
+                } else if (!action.data.uri_scheme){
                     store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
                     return
                 }
