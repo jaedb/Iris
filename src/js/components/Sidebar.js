@@ -64,10 +64,11 @@ class Sidebar extends React.Component{
 							</Link>
 						</section> : null}
 						<AISMenu
-							enabled={this.props.ais_enabled}
+							enabled={this.props.ais.connected}
 							location={this.props.location}
+							menuItems={this.props.ais.menuItems}
 						/>
-            { !this.props.ais_enabled &&
+            { !this.props.ais.connected &&
 						<section>
 							<title>My Music</title>
 							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
@@ -123,7 +124,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
-		ais_enabled: state.ais.connected,
+		ais: state.ais,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
 		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),

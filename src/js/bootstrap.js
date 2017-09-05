@@ -74,7 +74,8 @@ var initialState = {
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
 	},
 	ais: {
-		connected: false
+		connected: false,
+		menuItems: []
 	}
 };
 

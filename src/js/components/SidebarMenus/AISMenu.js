@@ -14,33 +14,17 @@ class AISMenu extends Component {
   }
 
   render = () => {
+    let menuItems = this.props.menuItems.map((menuItem) => {
+      return <Link key={menuItem.href} className={this.linkClassName(menuItem.href)} to={global.baseURL+menuItem.href}>
+        <Icon name={menuItem.icon} />
+        {menuItem.name}
+      </Link>
+    })
+
     if(this.props.enabled) {
     return <section>
       <title>AI-Speaker</title>
-      <Link className={this.linkClassName('library/browse/ais:root:1')} to={global.baseURL+"library/browse/ais:root:1"}>
-        <Icon name="ais" />
-        Discover
-      </Link>
-      <Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
-        <Icon name="playlist" />
-        Playlists
-      </Link>
-      <Link className={this.linkClassName('library/browse/ais:root:2')} to={global.baseURL+"library/browse/ais:root:2"}>
-        <Icon name="ais-library" />
-        My Library
-      </Link>
-      <Link className={this.linkClassName('library/browse/ais:root:3')} to={global.baseURL+"library/browse/ais:root:3"}>
-        <Icon name="ais-family" />
-        My Family
-      </Link>
-      <Link className={this.linkClassName('library/browse/ais:root:4')} to={global.baseURL+"library/browse/ais:root:4"}>
-        <Icon name="ais-likes" />
-        My Likes
-      </Link>
-      <Link className={this.linkClassName('library/browse/ais:root:5')} to={global.baseURL+"library/browse/ais:root:5"}>
-        <Icon name="ais-pendrive" />
-        Pendrive
-      </Link>
+      {menuItems}
     </section>
     } else {
       return null;
