@@ -77,35 +77,35 @@ class Search extends React.Component{
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
 
 		var artists = []
-		if (this.props.spotify_search_results.artists){
-			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)]
-		}
 		if (this.props.mopidy_search_results.artists){
 			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.mopidy_search_results.artists)]
 		}
+		if (this.props.spotify_search_results.artists){
+			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)]
+		}
 
 		var albums = []
-		if (this.props.spotify_search_results.albums){
-			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
-		}
 		if (this.props.mopidy_search_results.albums){
 			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.mopidy_search_results.albums)]
 		}
+		if (this.props.spotify_search_results.albums){
+			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
+		}
 
 		var playlists = []
-		if (this.props.spotify_search_results.playlists){
-			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)]
-		}
 		if (this.props.mopidy_search_results.playlists){
 			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.mopidy_search_results.playlists)]
 		}
+		if (this.props.spotify_search_results.playlists){
+			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)]
+		}
 
 		var tracks = []
-		if (this.props.spotify_search_results.tracks){
-			tracks = [...tracks, ...this.props.spotify_search_results.tracks]
-		}
 		if (this.props.mopidy_search_results.tracks){
 			tracks = [...tracks, ...this.props.mopidy_search_results.tracks]
+		}
+		if (this.props.spotify_search_results.tracks){
+			tracks = [...tracks, ...this.props.spotify_search_results.tracks]
 		}
 
 		switch (this.props.view){
