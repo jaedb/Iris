@@ -28,11 +28,18 @@ class VolumeControl extends React.Component{
 			percent = 0
 		}
 
-		this.props.mopidyActions.setVolume( percent )
+		this.props.mopidyActions.setVolume(percent)
 	}
 
-	handleWheel(e) {
-		var percent = Math.round(this.props.volume - e.deltaY/8);
+	handleWheel(e){
+
+		// Identify which direction we've scrolled (inverted)
+		// This is simplified and doesn't consider momentum as it varies wildly
+		// between browsers and devices
+		var direction = (e.deltaY > 0 ? -1 : 1)
+		var percent = this.props.volume;
+
+		percent += direction * 5
 
 		if (percent > 100){
 			percent = 100
@@ -40,7 +47,7 @@ class VolumeControl extends React.Component{
 			percent = 0
 		}
 
-		this.props.mopidyActions.setVolume( percent );
+		this.props.mopidyActions.setVolume(percent);
 
 		e.preventDefault();
 	}
