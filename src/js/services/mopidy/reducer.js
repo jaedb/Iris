@@ -147,7 +147,6 @@ export default function reducer(mopidy = {}, action){
          **/
 
         case 'MOPIDY_CLEAR_SEARCH_RESULTS':
-            console.log(action)
             return Object.assign({}, mopidy, { search_results: {} });
 
         case 'MOPIDY_SEARCH_RESULTS_LOADED':

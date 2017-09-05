@@ -503,6 +503,7 @@ const MopidyMiddleware = (function(){
                         query: action.query,
                         limit: action.limit,
                         total: uri_schemes_total,
+                        remaining: uri_schemes.length,
                         uri_scheme: uri_scheme,
                         uri_schemes: uri_schemes
                     }
@@ -524,15 +525,18 @@ const MopidyMiddleware = (function(){
                     return
                 }
 
-                // Update UI for this round
-                store.dispatch(uiActions.updateProcess(
-                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                    'Searching '+action.data.uri_scheme.replace(':','')
-                ))
-
                 // Construct our next batch's task
                 var next_uri_schemes = Object.assign([], action.data.uri_schemes)
                 var next_uri_scheme = next_uri_schemes.shift()
+
+                // Update UI for this round
+                store.dispatch(uiActions.updateProcess(
+                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                    'Searching '+action.data.uri_scheme.replace(':',''),
+                    {
+                        remaining: next_uri_schemes.length,
+                    }
+                ))
 
                 switch (action.data.context){
 
