@@ -7,6 +7,7 @@ import pusher from './services/pusher/reducer'
 import mopidy from './services/mopidy/reducer'
 import lastfm from './services/lastfm/reducer'
 import spotify from './services/spotify/reducer'
+import ais from './services/ais/reducer'
 
 import thunk from 'redux-thunk'
 import coreMiddleware from './services/core/middleware'
@@ -22,7 +23,8 @@ let reducers = combineReducers({
     pusher,
     mopidy,
     lastfm,
-    spotify
+    spotify,
+		ais
 });
 
 // set application defaults
@@ -70,6 +72,9 @@ var initialState = {
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
+	},
+	ais: {
+		connected: false
 	}
 };
 
@@ -106,8 +111,8 @@ if( localStorage.getItem('spotify') ){
 console.log('Bootstrapping', initialState)
 
 let store = createStore(
-	reducers, 
-	initialState, 
+	reducers,
+	initialState,
 	applyMiddleware( thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
 );
 
