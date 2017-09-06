@@ -1372,7 +1372,15 @@ export function getLibraryPlaylistsProcessor(data){
                     var total = response.total
                     var loaded = getState().spotify.library_playlists.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading '+remaining+' Spotify playlists', {next: response.next}))
+                    dispatch(uiActions.updateProcess(
+                        'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 
+                        'Loading '+remaining+' Spotify playlists', 
+                        {
+                            next: response.next,
+                            total: response.total,
+                            remaining: remaining
+                        }
+                    ))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
@@ -1425,7 +1433,15 @@ export function getLibraryArtistsProcessor(data){
                     var total = response.artists.total
                     var loaded = getState().spotify.library_artists.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+remaining+' Spotify artists', {next: response.artists.next}))
+                    dispatch(uiActions.updateProcess(
+                        'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 
+                        'Loading '+remaining+' Spotify artists', 
+                        {
+                            next: response.artists.next, 
+                            total: response.artists.total,
+                            remaining: remaining
+                        }
+                    ))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', {next: response.artists.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
@@ -1478,7 +1494,15 @@ export function getLibraryAlbumsProcessor(data){
                     var total = response.total
                     var loaded = getState().spotify.library_albums.length
                     var remaining = total - loaded
-                    dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+remaining+' Spotify albums', {next: response.next}))
+                    dispatch(uiActions.updateProcess(
+                        'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 
+                        'Loading '+remaining+' Spotify albums', 
+                        {
+                            next: response.next, 
+                            total: response.total,
+                            remaining: remaining
+                        }
+                    ))
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))

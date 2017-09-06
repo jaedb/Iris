@@ -41,13 +41,18 @@ export default class Notifications extends React.Component{
 	renderProcess(process){
 
 		var progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed()
+		if (isNaN(progress)){
+			progress = 0
+		}
 
 		switch (process.status){
 			case 'running':
 				return(
 					<div className="process notification" key={process.key}>
-						<div className="loader"></div>
-						{process.message} {progress ? progress+'%' : null}
+						<div className="loader">
+							<div className="progress" style={{borderWidth: (10-progress*0.1)+'px'}}></div>
+						</div>
+						{process.message}
 						<FontAwesome name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
 					</div>
 				)

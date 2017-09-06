@@ -76,7 +76,9 @@
 				position: absolute;
 				top: 16px;
 				left: 18px;
-				opacity: 1;				
+				opacity: 1;	
+				z-index: 2;
+				border-radius: 50%;
 
 				&:before {
 					border-color: transparent;
@@ -84,6 +86,18 @@
 
 				&:after {
 					border-right-color: $white;
+				}
+
+				.progress {
+					background: $light_blue;
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					border: 0px solid $blue;
+					box-sizing: border-box;
+					border-radius: 50%;
 				}
 			}
 		}

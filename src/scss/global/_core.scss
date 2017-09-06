@@ -262,6 +262,10 @@ button.placeholder {
 	@include clearfix;
 }
 
+.hidden {
+	display: none !important;
+}
+
 .pulse { @include pulse(); }
 .one-liner { @include one_line_text; }
 .centred-text { text-align: center; }
