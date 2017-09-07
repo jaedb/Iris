@@ -337,7 +337,15 @@ const MopidyMiddleware = (function(){
                 next(action)
 
                 // start our processor
-                store.dispatch(uiActions.startProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+action.uris.length+' URI(s)', {batches: batches}))
+                store.dispatch(uiActions.startProcess(
+                    'MOPIDY_ENQUEUE_URIS_PROCESSOR',
+                    'Adding '+action.uris.length+' URI(s)', 
+                    {
+                        batches: batches,
+                        remaining: action.uris.length,
+                        total: action.uris.length
+                    }
+                ))
                 break
 
             case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
@@ -352,7 +360,13 @@ const MopidyMiddleware = (function(){
                         total_uris += batches[i].uris.length
                     }
                     batches.shift()
-                    store.dispatch(uiActions.updateProcess('MOPIDY_ENQUEUE_URIS_PROCESSOR', 'Adding '+total_uris+' URI(s)'))
+                    store.dispatch(uiActions.updateProcess(
+                        'MOPIDY_ENQUEUE_URIS_PROCESSOR', 
+                        'Adding '+total_uris+' URI(s)',
+                        {
+                            remaining: total_uris
+                        }
+                    ))
 
                 // no batches means we're done here
                 } else {

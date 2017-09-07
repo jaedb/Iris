@@ -50,7 +50,9 @@ export default class Notifications extends React.Component{
 				return(
 					<div className="process notification" key={process.key}>
 						<div className="loader">
-							<div className="progress" style={{borderWidth: (10-progress*0.1)+'px'}}></div>
+							<div className="progress">
+								<div className="fill" style={{width: progress+'%'}}></div>
+							</div>
 						</div>
 						{process.message}
 						<FontAwesome name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
