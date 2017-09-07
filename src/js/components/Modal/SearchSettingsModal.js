@@ -11,7 +11,6 @@ export default class SearchSettingsModal extends React.Component{
 		super(props)
 
 		this.state = {
-			spotify: true,
 			uri_schemes: []
 		}
 	}
@@ -21,7 +20,6 @@ export default class SearchSettingsModal extends React.Component{
 			this.setState(Object.assign({},this.props.search_settings))
 		} else {
 			this.setState({
-				spotify: true,
 				uri_schemes: Object.assign([],this.props.uri_schemes)
 			})
 		}
@@ -30,7 +28,6 @@ export default class SearchSettingsModal extends React.Component{
 	handleSubmit(e){
 		this.props.uiActions.set({search_settings: this.state})
 		this.props.uiActions.closeModal()
-		this.props.coreActions.startSearch(this.props.data.type, this.props.data.query)
 	}
 
 	handleToggle(scheme){
@@ -54,16 +51,6 @@ export default class SearchSettingsModal extends React.Component{
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="list small">
-						<div className="list-item field checkbox white">
-							<label>
-								<input 
-									type="checkbox"
-									name="enabled"
-									checked={ this.state.spotify }
-									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
-								<span className="label">spotify <span className="grey-text">(http)</span></span>
-							</label>
-						</div>
 						{
 							this.props.uri_schemes.map(scheme => {
 								return (								
@@ -74,7 +61,7 @@ export default class SearchSettingsModal extends React.Component{
 												name={scheme}
 												checked={this.state.uri_schemes.indexOf(scheme) > -1}
 												onChange={ e => this.handleToggle(scheme)} />
-											<span className="label">{scheme.replace(':','')} <span className="grey-text">(mopidy)</span></span>
+											<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
 										</label>
 									</div>
 								)

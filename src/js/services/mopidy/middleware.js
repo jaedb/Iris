@@ -218,7 +218,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_URISCHEMES':
                 var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc']
+                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','yt']
 
                 // remove all our ignored types
                 for( var i = 0; i < remove.length; i++ ){
@@ -480,104 +480,414 @@ const MopidyMiddleware = (function(){
              **/
 
 
-            case 'MOPIDY_GET_TRACK_SEARCH_RESULTS':
-                instruct( socket, store, 'library.search', {query: {any: [action.query]}, uris: [action.uri_scheme]})
-                    .then( response => {
-                        if (response.length <= 0) return
-                        if (typeof(response[0].tracks) === 'undefined') return
+            case 'MOPIDY_GET_SEARCH_RESULTS':
 
-                        var tracks = response[0].tracks.splice(0,action.limit)
+                // Flush out our previous results
+                store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'})
 
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', tracks: tracks });
-                    })
-                break;
+                var uri_schemes_to_ignore = ['spotify:']
+                var uri_schemes = Object.assign([], store.getState().ui.search_settings.uri_schemes)
+                for (var i = 0; i < uri_schemes.length; i++){
+                    if (uri_schemes_to_ignore.includes(uri_schemes[i])){
+                        uri_schemes.splice(i,1)
+                    }
+                }
+                var uri_schemes_total = uri_schemes.length
+                var uri_scheme = uri_schemes.shift()
 
-            case 'MOPIDY_GET_ARTIST_SEARCH_RESULTS':
-                instruct( socket, store, 'library.search', {query: {artist: [action.query]}, uris: [action.uri_scheme]})
-                    .then( response => { 
-                        if (response.length <= 0) return
-
-                        var artists_uris = []
-                        if (response[0].tracks){
-                            for (var i = 0; i < response[0].tracks.length; i++){
-                                if (response[0].tracks[i].artists){
-                                    for (var j = 0; j < response[0].tracks[i].artists.length; j++){
-                                        var artist = response[0].tracks[i].artists[j]
-                                        if (artist.uri){
-                                            artists_uris.push(artist.uri)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // TODO: limit uris at the loop, rather than post loop for performance
-                        artists_uris = helpers.removeDuplicates(artists_uris).splice(0, action.limit)
-
-                        // load each artist
-                        for (var i = 0; i < artists_uris.length; i++){
-                            store.dispatch(mopidyActions.getArtist(artists_uris[i]))
-                        }
-
-                        // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', artists_uris: artists_uris })
-                    })
-                break;
-
-            case 'MOPIDY_GET_ALBUM_SEARCH_RESULTS':
-                instruct( socket, store, 'library.search', {query: {album: [action.query]}, uris: [action.uri_scheme]})
-                    .then( response => {
-                        if (response.length <= 0) return
-
-                        // collate all our different sources into one array
-                        var albums_uris = []
-                        if (response[0].tracks){
-                            for (var i = 0; i < response[0].tracks.length; i++){
-                                if (response[0].tracks[i].album){
-                                    var album = response[0].tracks[i].album
-                                    if (album.uri){
-                                        albums_uris.push(album.uri)
-                                    }
-                                }
-                            }
-                        }
-
-                        // TODO: limit uris at the loop, rather than post loop for performance
-                        albums_uris = helpers.removeDuplicates(albums_uris).splice(0, action.limit)
-
-                        // load each album
-                        for (var i = 0; i < albums_uris.length; i++){
-                            store.dispatch(mopidyActions.getAlbum(albums_uris[i]))
-                        }
-
-                        // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', albums_uris: albums_uris })
-                    })
+                store.dispatch(uiActions.startProcess(
+                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                    'Searching '+uri_schemes_total+' Mopidy providers',
+                    {
+                        context: action.context,
+                        query: action.query,
+                        limit: action.limit,
+                        total: uri_schemes_total,
+                        remaining: uri_schemes.length,
+                        uri_scheme: uri_scheme,
+                        uri_schemes: uri_schemes
+                    }
+                ));
                 break
 
-            case 'MOPIDY_GET_PLAYLIST_SEARCH_RESULTS':
-                instruct( socket, store, 'playlists.asList')
-                    .then( response => {
-                        if (response.length <= 0) return
 
-                        var playlists_uris = []
-                        for (var i = 0; i < response.length; i++){
-                            var playlist = response[i]
-                            if (playlist.name.includes(action.query) && action.uri_scheme == helpers.uriSource(playlist.uri)+':'){
-                                playlists_uris.push(playlist.uri)
-                            }
-                        }
+            case 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR':
+                var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR
 
-                        playlists_uris = playlists_uris.splice(0, action.limit)
+                // Cancelling
+                if (last_run && last_run.status == 'cancelling'){
+                    store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
+                    return
 
-                        // load each playlist
-                        for (var i = 0; i < playlists_uris.length; i++){
-                            store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]))
-                        }
+                // No more schemes, so we're done!
+                } else if (!action.data.uri_scheme){
+                    store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
+                    return
+                }
 
-                        // and plug in their URIs
-                        store.dispatch({ type: 'SEARCH_RESULTS_LOADED', playlists_uris: playlists_uris })
-                    })
+                // Construct our next batch's task
+                var next_uri_schemes = Object.assign([], action.data.uri_schemes)
+                var next_uri_scheme = next_uri_schemes.shift()
+
+                // Update UI for this round
+                store.dispatch(uiActions.updateProcess(
+                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                    'Searching '+action.data.uri_scheme.replace(':',''),
+                    {
+                        remaining: next_uri_schemes.length,
+                    }
+                ))
+
+                switch (action.data.context){
+
+                    // Albums
+                    case 'albums':
+
+                        store.dispatch(uiActions.updateProcess(
+                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                            'Searching '+action.data.uri_scheme.replace(':','')
+                        ))
+            
+                        instruct( socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            .then( response => {
+
+                                if (response.length > 0){
+
+                                    // collate all our different sources into one array
+                                    var albums = []
+                                    if (response[0].tracks){
+                                        for (var i = 0; i < response[0].tracks.length; i++){
+                                            if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined){
+                                                albums.push(response[0].tracks[i].album)
+                                            }
+                                        }
+                                    }
+
+                                    // TODO: limit uris at the loop, rather than post loop for performance
+                                    var albums_uris = helpers.arrayOf('uri',albums)
+                                    albums_uris = helpers.removeDuplicates(albums_uris)
+
+                                    store.dispatch({ 
+                                        type: 'ALBUMS_LOADED',
+                                        albums: albums
+                                    })
+
+                                    // and plug in their URIs
+                                    store.dispatch({ 
+                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                        context: action.data.context,
+                                        results: albums_uris 
+                                    })
+                                }
+
+                                store.dispatch(uiActions.runProcess(
+                                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                    {
+                                        context: action.data.context,
+                                        query: action.data.query,
+                                        limit: action.data.limit,
+                                        uri_scheme: next_uri_scheme,
+                                        uri_schemes: next_uri_schemes
+                                    }
+                                ))
+                            })
+                        break
+
+                    // Artists
+                    case 'artists':              
+
+                        store.dispatch(uiActions.updateProcess(
+                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                            'Searching '+action.data.uri_scheme.replace(':','')
+                        ))
+
+                        instruct( socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            .then( response => { 
+
+                                if (response.length > 0){
+                                    var artists_uris = []
+                                    if (response[0].tracks){
+                                        for (var i = 0; i < response[0].tracks.length; i++){
+                                            if (response[0].tracks[i].artists){
+                                                for (var j = 0; j < response[0].tracks[i].artists.length; j++){
+                                                    var artist = response[0].tracks[i].artists[j]
+                                                    if (artist.uri){
+                                                        artists_uris.push(artist.uri)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // TODO: limit uris at the loop, rather than post loop for performance
+                                    artists_uris = helpers.removeDuplicates(artists_uris)
+
+                                    // load each artist
+                                    for (var i = 0; i < artists_uris.length; i++){
+                                        store.dispatch(mopidyActions.getArtist(artists_uris[i]))
+                                    }
+
+                                    // and plug in their URIs
+                                    store.dispatch({ 
+                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                        context: action.data.context,
+                                        results: artists_uris 
+                                    })
+                                }
+
+                                store.dispatch(uiActions.runProcess(
+                                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                    {
+                                        context: action.data.context,
+                                        query: action.data.query,
+                                        limit: action.data.limit,
+                                        uri_scheme: next_uri_scheme,
+                                        uri_schemes: next_uri_schemes
+                                    }
+                                ))
+                            })
+                        break
+
+                    // Playlists
+                    case 'playlists':
+
+                        store.dispatch(uiActions.updateProcess(
+                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                            'Searching playlists'
+                        ))
+
+                        instruct( socket, store, 'playlists.asList')
+                            .then( response => {
+                                if (response.length > 0){
+
+                                    var playlists_uris = []
+                                    for (var i = 0; i < response.length; i++){
+                                        var playlist = response[i]
+                                        if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(helpers.uriSource(playlist.uri)+':')){
+                                            playlists_uris.push(playlist.uri)
+                                        }
+                                    }
+
+                                    playlists_uris = playlists_uris
+
+                                    // load each playlist
+                                    for (var i = 0; i < playlists_uris.length; i++){
+                                        store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]))
+                                    }
+
+                                    // and plug in their URIs
+                                    store.dispatch({
+                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                        context: action.data.context,
+                                        results: playlists_uris
+                                    })
+                                }
+
+                                store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
+                            })
+                        break
+
+                    // Tracks
+                    case 'tracks':
+
+                        store.dispatch(uiActions.updateProcess(
+                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                            'Searching '+action.data.uri_scheme.replace(':','')
+                        ))
+
+                        instruct( socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            .then( response => {
+
+                                if (response.length > 0 && response[0].tracks !== undefined){
+                                    var tracks = response[0].tracks
+
+                                    store.dispatch({ 
+                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
+                                        context: action.data.context,
+                                        results: tracks
+                                    });
+                                }
+
+                                store.dispatch(uiActions.runProcess(
+                                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                    {
+                                        context: action.data.context,
+                                        query: action.data.query,
+                                        limit: action.data.limit,
+                                        uri_scheme: next_uri_scheme,
+                                        uri_schemes: next_uri_schemes
+                                    }
+                                ))
+                            })
+                        break
+
+                    // Search for all types
+                    case 'all':
+                    default:
+                
+                        // Albums
+                        store.dispatch(uiActions.updateProcess(
+                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                            'Searching '+action.data.uri_scheme.replace(':','')+' albums'
+                        ))
+                        instruct( socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            .then( response => {
+
+                                if (response.length > 0){
+
+                                    // collate all our different sources into one array
+                                    var albums = []
+                                    if (response[0].tracks){
+                                        for (var i = 0; i < response[0].tracks.length; i++){
+                                            if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined){
+                                                albums.push(response[0].tracks[i].album)
+                                            }
+                                        }
+                                    }
+
+                                    // TODO: limit uris at the loop, rather than post loop for performance
+                                    var albums_uris = helpers.arrayOf('uri',albums)
+                                    albums_uris = helpers.removeDuplicates(albums_uris)
+
+                                    store.dispatch({ 
+                                        type: 'ALBUMS_LOADED',
+                                        albums: albums
+                                    })
+
+                                    // and plug in their URIs
+                                    store.dispatch({ 
+                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                        context: 'albums',
+                                        results: albums_uris 
+                                    })
+                                }
+
+                                // Then, artists     
+                                store.dispatch(uiActions.updateProcess(
+                                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                    'Searching '+action.data.uri_scheme.replace(':','')+' artists'
+                                ))                           
+                                instruct( socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
+                                    .then( response => { 
+
+                                        if (response.length > 0){
+                                            var artists_uris = []
+                                            if (response[0].tracks){
+                                                for (var i = 0; i < response[0].tracks.length; i++){
+                                                    if (response[0].tracks[i].artists){
+                                                        for (var j = 0; j < response[0].tracks[i].artists.length; j++){
+                                                            var artist = response[0].tracks[i].artists[j]
+                                                            if (artist.uri){
+                                                                artists_uris.push(artist.uri)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // TODO: limit uris at the loop, rather than post loop for performance
+                                            artists_uris = helpers.removeDuplicates(artists_uris)
+
+                                            // load each artist
+                                            for (var i = 0; i < artists_uris.length; i++){
+                                                store.dispatch(mopidyActions.getArtist(artists_uris[i]))
+                                            }
+
+                                            // and plug in their URIs
+                                            store.dispatch({ 
+                                                type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                context: 'artists',
+                                                results: artists_uris 
+                                            })
+                                        }
+
+                                        // Then, tracks
+                                        store.dispatch(uiActions.updateProcess(
+                                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                            'Searching '+action.data.uri_scheme.replace(':','')+' tracks'
+                                        ))
+                                        instruct( socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
+                                            .then( response => {
+
+                                                if (response.length > 0 && response[0].tracks !== undefined){
+                                                    var tracks = response[0].tracks
+
+                                                    store.dispatch({ 
+                                                        type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
+                                                        context: 'tracks',
+                                                        results: tracks
+                                                    });
+                                                }
+
+
+                                      
+                                                // And lastly, playlists (if we're m3u)
+                                                if (action.data.uri_scheme == 'm3u:'){
+                                                    store.dispatch(uiActions.updateProcess(
+                                                        'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                                        'Searching '+action.data.uri_scheme.replace(':','')+' playlists'
+                                                    ))
+                                                    instruct( socket, store, 'playlists.asList')
+                                                        .then( response => {
+                                                            if (response.length > 0){
+
+                                                                var playlists_uris = []
+                                                                for (var i = 0; i < response.length; i++){
+                                                                    var playlist = response[i]
+                                                                    if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(helpers.uriSource(playlist.uri)+':')){
+                                                                        playlists_uris.push(playlist.uri)
+                                                                    }
+                                                                }
+
+                                                                playlists_uris = playlists_uris
+
+                                                                // load each playlist
+                                                                for (var i = 0; i < playlists_uris.length; i++){
+                                                                    store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]))
+                                                                }
+
+                                                                // and plug in their URIs
+                                                                store.dispatch({
+                                                                    type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                                    context: 'playlists',
+                                                                    results: playlists_uris
+                                                                })
+                                                            }
+
+                                                            // We're finally done searching for types on this provider
+                                                            // On to the next scheme!
+                                                            store.dispatch(uiActions.runProcess(
+                                                                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                                                {
+                                                                    context: action.data.context,
+                                                                    query: action.data.query,
+                                                                    limit: action.data.limit,
+                                                                    uri_scheme: next_uri_scheme,
+                                                                    uri_schemes: next_uri_schemes
+                                                                }
+                                                            ))
+                                                        })
+
+                                                // Not m3u? Then we're done searching this provider, move on to the next
+                                                } else {
+                                                    store.dispatch(uiActions.runProcess(
+                                                        'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                                        {
+                                                            context: action.data.context,
+                                                            query: action.data.query,
+                                                            limit: action.data.limit,
+                                                            uri_scheme: next_uri_scheme,
+                                                            uri_schemes: next_uri_schemes
+                                                        }
+                                                    ))
+                                                }
+
+                                            })
+                                    })
+
+                            })
+                }
+
                 break
 
 
@@ -876,7 +1186,15 @@ const MopidyMiddleware = (function(){
                             });
 
                             // Start our process to load the full album objects
-                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR','Loading '+uris.length+' local albums', {uris: uris}))
+                            store.dispatch(uiActions.startProcess(
+                                'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
+                                'Loading '+uris.length+' local albums', 
+                                {
+                                    uris: uris,
+                                    total: uris.length,
+                                    remaining: uris.length
+                                }
+                            ))
                         })
 
                 } else if (last_run.status == 'cancelled'){
@@ -901,7 +1219,14 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50)
 
                 if (uris_to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading '+uris.length+' local albums', {uris: uris}))
+                    store.dispatch(uiActions.updateProcess(
+                        'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
+                        'Loading '+uris.length+' local albums', 
+                        {
+                            uris: uris,
+                            remaining: uris.length
+                        }
+                    ))
                     store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))

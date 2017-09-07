@@ -77,7 +77,7 @@ class Sidebar extends React.Component{
 								Albums
 							</Link>
 							<Link className={this.linkClassName('library/tracks')} to={global.baseURL+"library/tracks"}>
-								<Icon name="cd" />
+								<Icon name="music" />
 								Tracks
 							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
@@ -90,6 +90,7 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="cog" />
 								Settings
+								{ this.props.test_mode ? <FontAwesome name="info-circle" className="orange-text pull-right" />: null}
 								{ !this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
 							</Link>
 						</section>
@@ -118,6 +119,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_enabled: state.spotify.enabled,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
+		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
 		dragger: state.ui.dragger
 	}
 }

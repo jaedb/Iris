@@ -25,7 +25,7 @@
 			.select-zone {
 				&::after {
 					background: $blue;
-					border-color: $blue;
+					border-color: $blue !important;
 				}
 			}
 		}
@@ -231,7 +231,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 20px;
+					top: 27px;
 					left: 19px;
 					pointer-events: none;
 					color: $white;
@@ -246,7 +246,7 @@
 					width: 14px;
 					height: 14px;
 					position: absolute;
-					top: 16px;
+					top: 23px;
 					left: 16px;
 				}
 			}
@@ -263,7 +263,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 17px;
+					top: 24px;
 					left: 8px;
 					pointer-events: none;
 				}
@@ -292,7 +292,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 20px;
+					top: 27px;
 					left: 19px;
 					pointer-events: none;
 					color: $white;
@@ -324,7 +324,7 @@
 				
 				.fa {
 					position: absolute;
-					top: 17px;
+					top: 24px;
 					left: 8px;
 					pointer-events: none;
 				}

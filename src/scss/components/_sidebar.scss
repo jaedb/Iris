@@ -24,6 +24,19 @@ aside{
 		overflow-y: auto;
 	}
 
+	.branding {
+		height: 50px;
+		margin-top: 30px;
+		opacity: 0.2;
+
+		background: {
+			image: url('../assets/icon.svg');
+			position: 50% 50%;
+			repeat: no-repeat;
+			size: contain;
+		}
+	}
+
 	nav {
 		z-index: 2;
 		position: relative;

@@ -488,14 +488,10 @@ export default function reducer(core = {}, action){
         case 'SEARCH_STARTED':
             return Object.assign({}, core, {
                 search_results: {
-                    artists_more: null,
                     artists_uris: [],
-                    albums_more: null,
                     albums_uris: [],
-                    playlists_more: null,
                     playlists_uris: [],
                     tracks: [],
-                    tracks_more: null,
                 }
             });
 

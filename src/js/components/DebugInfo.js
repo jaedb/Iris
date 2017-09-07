@@ -85,7 +85,7 @@ class DebugInfo extends React.Component{
 					Slim mode: {this.props.ui.slim_mode ? 'on' : 'off'}
 				</div>
 				<div className="item">
-					_testMode: {window._testMode ? 'on' : 'off'}
+					Test mode: {this.props.ui.test_mode ? 'on' : 'off'}
 				</div>
 				<div className="item">
 					Touch: {helpers.isTouchDevice() ? 'on' : 'off'}

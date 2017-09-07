@@ -279,6 +279,7 @@
 
 .context-menu-trigger {
 	@include animate();
+	@include gradient_overlay(3px);
 	display: inline-block;
 	padding: 14px 12px;
 	cursor: pointer;
@@ -297,21 +298,9 @@
 		margin: 1px;
 	}
 
-	&:before {
-		@include animate();
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		opacity: 0;
-		z-index: 9;
-		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-		background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+	&:active {
+		margin-top: 0px;
+		margin-bottom: -1px;
 	}
 
 	&:hover{
@@ -324,36 +313,34 @@
 	}
 }
 
+#app > .notouch .list.track-list {	
+	.context-menu-trigger {
+		display: none;
+	}
+}
+
 .list {	
 	&.track-list {
-
 		.context-menu-trigger {	
-			display: none;
-		}
-		
-		@include responsive( $bp_medium ){
+			@include gradient_overlay(50%, 0.15);
+			display: block;
+			position: fixed;
+			bottom: 55px;
+			right: 5px;
+			width: 48px;
+			height: 8px;
+			padding: 20px 0;
+			overflow: hidden;
+			z-index: 97;
+			background: $blue;
 
-			.context-menu-trigger {	
-				@include gradient_overlay(50%, 0.15);
-				display: block;
-				position: fixed;
-				bottom: 55px;
-				right: 5px;
-				width: 48px;
-				height: 8px;
-				padding: 20px 0;
-				overflow: hidden;
-				z-index: 97;
-				background: $blue;
-
-				.dot {
-					background: $white;
-				}
-				
-				&:focus,
-				&:active {
-					background: darken($blue, 10%);
-				}
+			.dot {
+				background: $white;
+			}
+			
+			&:focus,
+			&:active {
+				background: darken($blue, 10%);
 			}
 		}
 	}

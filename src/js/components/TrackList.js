@@ -208,7 +208,7 @@ class TrackList extends React.Component{
 	handleSelection(e,track_key){
 		let selected_tracks = this.props.selected_tracks
 
-		if (e.ctrlKey || this.props.slim_mode){
+		if (e.ctrlKey || this.props.slim_mode || helpers.isTouchDevice()){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
@@ -300,10 +300,10 @@ class TrackList extends React.Component{
 	 **/
 	buildTrackKey(track, index){
 		let key = index
-		key += '_'+(track.tlid ? track.tlid : 'none')
-		key += '_'+track.uri
-		key += '_'+(this.props.uri ? this.props.uri : 'none')
-		key += '_'+(this.props.context ? this.props.context : 'none')
+		key += '@@'+(track.tlid ? track.tlid : 'none')
+		key += '@@'+track.uri
+		key += '@@'+(this.props.uri ? this.props.uri : 'none')
+		key += '@@'+(this.props.context ? this.props.context : 'none')
 		return key
 	}
 
@@ -331,7 +331,7 @@ class TrackList extends React.Component{
 		// This is enough to perform interactions (dragging, selecting, etc)
 		let array = []
 		for (let i = 0; i < keys.length; i++){
-			let key = keys[i].split('_')
+			let key = keys[i].split('@@')
 
 			if (indexes_only){
 				array.push(key[0])

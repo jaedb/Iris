@@ -1,7 +1,7 @@
 
 .artist-view {
 
-	.body-loader {
+	.body-loader:not(.lazy-loader) {
 		padding: 15vh 0;
 	}
 

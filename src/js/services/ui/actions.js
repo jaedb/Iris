@@ -201,7 +201,6 @@ export function runProcess(key,data = {}){
 }
 
 export function cancelProcess(key){
-    console.log('cancel process',key)
     return { 
         type: 'CANCEL_PROCESS',
         key: key

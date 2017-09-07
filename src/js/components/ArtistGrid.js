@@ -30,7 +30,9 @@ class ArtistGrid extends React.Component{
 	render(){
 		if( this.props.artists ){
 			var className = "grid artist-grid"
-			if( this.props.className ) className += ' '+this.props.className
+			if (this.props.className) className += ' '+this.props.className
+			if (this.props.single_row) className += ' single-row'
+				
 			return (
 				<div className={className}>
 					{
