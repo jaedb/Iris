@@ -36,7 +36,7 @@
 		"sass-loader": "^6.0.2",
 		"style-loader": "^0.13.2",
 		"url-loader": "^0.5.8",
-		"webpack": "^3.3.0",
+		"webpack": "^3.5.1",
 		"webpack-strip": "0.1.0",
 		"react-lazyload": "2.2.7"
 	},

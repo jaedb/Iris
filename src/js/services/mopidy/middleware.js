@@ -534,7 +534,7 @@ const MopidyMiddleware = (function(){
                     'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
                     'Searching '+action.data.uri_scheme.replace(':',''),
                     {
-                        remaining: next_uri_schemes.length,
+                        remaining: action.data.uri_schemes.length
                     }
                 ))
 
@@ -728,11 +728,13 @@ const MopidyMiddleware = (function(){
                         // Albums
                         store.dispatch(uiActions.updateProcess(
                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                            'Searching '+action.data.uri_scheme.replace(':','')+' albums'
+                            'Searching '+action.data.uri_scheme.replace(':','')+' albums',
+                            {
+                                remaining: (action.data.uri_schemes.length) + 1
+                            }
                         ))
                         instruct( socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then( response => {
-
                                 if (response.length > 0){
 
                                     // collate all our different sources into one array
@@ -762,10 +764,13 @@ const MopidyMiddleware = (function(){
                                     })
                                 }
 
-                                // Then, artists     
+                                // Then, artists  
                                 store.dispatch(uiActions.updateProcess(
                                     'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                                    'Searching '+action.data.uri_scheme.replace(':','')+' artists'
+                                    'Searching '+action.data.uri_scheme.replace(':','')+' artists',
+                                    {
+                                        remaining: (action.data.uri_schemes.length) + 0.75
+                                    }
                                 ))                           
                                 instruct( socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
                                     .then( response => { 
@@ -804,7 +809,10 @@ const MopidyMiddleware = (function(){
                                         // Then, tracks
                                         store.dispatch(uiActions.updateProcess(
                                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                                            'Searching '+action.data.uri_scheme.replace(':','')+' tracks'
+                                            'Searching '+action.data.uri_scheme.replace(':','')+' tracks',
+                                            {
+                                                remaining: (action.data.uri_schemes.length) + 0.5
+                                            }
                                         ))
                                         instruct( socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
                                             .then( response => {
@@ -825,7 +833,10 @@ const MopidyMiddleware = (function(){
                                                 if (action.data.uri_scheme == 'm3u:'){
                                                     store.dispatch(uiActions.updateProcess(
                                                         'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                                                        'Searching '+action.data.uri_scheme.replace(':','')+' playlists'
+                                                        'Searching '+action.data.uri_scheme.replace(':','')+' playlists',
+                                                        {
+                                                            remaining: (action.data.uri_schemes.length) + 0.25
+                                                        }
                                                     ))
                                                     instruct( socket, store, 'playlists.asList')
                                                         .then( response => {
@@ -863,7 +874,8 @@ const MopidyMiddleware = (function(){
                                                                     query: action.data.query,
                                                                     limit: action.data.limit,
                                                                     uri_scheme: next_uri_scheme,
-                                                                    uri_schemes: next_uri_schemes
+                                                                    uri_schemes: next_uri_schemes,
+                                                                    remaining: action.data.uri_schemes.length
                                                                 }
                                                             ))
                                                         })
@@ -877,7 +889,8 @@ const MopidyMiddleware = (function(){
                                                             query: action.data.query,
                                                             limit: action.data.limit,
                                                             uri_scheme: next_uri_scheme,
-                                                            uri_schemes: next_uri_schemes
+                                                            uri_schemes: next_uri_schemes,
+                                                            remaining: action.data.uri_schemes.length
                                                         }
                                                     ))
                                                 }

@@ -35,7 +35,7 @@
 
 <script type="text/javascript">
 
-	var build_version = "BUILD_VERSION_HERE";
+	var build_name = "BUILD_NAME_HERE";
 
     var js = document.createElement("script");
     js.type = "application/javascript";
@@ -46,11 +46,11 @@
     // Identify whether we're in test mode, and need to fetch non-minified assets
     var ui = JSON.parse( localStorage.getItem('ui') );
     if (typeof(ui) === 'undefined' || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
-	    js.src = '/iris/app.min.js?v='+build_version;
-	    css.href = '/iris/app.min.css?v='+build_version;
+	    js.src = '/iris/app.min.js?v='+build_name;
+	    css.href = '/iris/app.min.css?v='+build_name;
     } else {
-	    js.src = '/iris/app.js?v='+build_version;
-	    css.href = '/iris/app.css?v='+build_version;
+	    js.src = '/iris/app.js?v='+build_name;
+	    css.href = '/iris/app.css?v='+build_name;
     }
 	   
 	document.body.appendChild(js);

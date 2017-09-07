@@ -11,6 +11,7 @@ import ReactGA from 'react-ga'
 
 import store from './bootstrap.js'
 require('../scss/app.scss');
+require('../index.html');
 
 import App from './App'
 import Album from './views/Album'

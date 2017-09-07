@@ -8,4 +8,4 @@ public_html
 Thumbs.db
 *.pyc
 package-lock.json
-
+npm-debug.log
