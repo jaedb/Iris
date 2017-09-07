@@ -3,6 +3,8 @@ const isDev = process.env.NODE_ENV !== "production";
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 
 const node_dir = path.resolve(__dirname, 'node_modules');
 const output_dir = path.resolve(__dirname, 'mopidy_iris/static');
@@ -17,8 +19,10 @@ const config = {
 	
 	output: {
 		path: path.resolve(__dirname, 'mopidy_iris/static'),
-		filename: 'app.js'
-	},
+		filename: 'app.js',
+    publicPath: '/iris/'
+
+  },
 	
 	module: {
 		rules: [
@@ -80,6 +84,14 @@ const config = {
 /**
  * Development-only configuration values
  **/
+if (isDev) {
+  config.plugins.push(new HtmlWebpackPlugin({
+    title: 'Iris',
+    filename: 'index.html',
+    template: './src/index.ejs'
+  }))
+}
+
 if (isDev){
 	
 	// set compiled css location

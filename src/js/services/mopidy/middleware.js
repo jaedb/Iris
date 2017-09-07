@@ -241,6 +241,12 @@ const MopidyMiddleware = (function(){
                     })
                 }
 
+              if (uri_schemes.includes('ais:')){
+                store.dispatch({
+                  type: 'ENABLE_AIS'
+                })
+              }
+
                 store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
                 break
 

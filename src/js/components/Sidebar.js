@@ -7,6 +7,7 @@ import { Link, withRouter } from 'react-router'
 import Icon from './Icon'
 import Dropzones from './Dropzones'
 import Thumbnail from './Thumbnail'
+import AISMenu from './SidebarMenus/AISMenu'
 
 import FontAwesome from 'react-fontawesome'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -26,6 +27,7 @@ class Sidebar extends React.Component{
 	}
 
 	render(){
+		console.log(this.props)
 		return (
 			<aside>
 				<div className="liner">
@@ -61,7 +63,12 @@ class Sidebar extends React.Component{
 								New releases
 							</Link>
 						</section> : null}
-
+						<AISMenu
+							enabled={this.props.ais.connected}
+							location={this.props.location}
+							menuItems={this.props.ais.menuItems}
+						/>
+            { !this.props.ais.connected &&
 						<section>
 							<title>My Music</title>
 							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
@@ -84,7 +91,7 @@ class Sidebar extends React.Component{
 								<Icon name="folder" />
 								Browse
 							</Link>
-						</section>
+						</section>  }
 
 						<section>
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
@@ -117,6 +124,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
+		ais: state.ais,
 		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
 		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
