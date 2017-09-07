@@ -245,6 +245,10 @@ const SpotifyMiddleware = (function(){
                 store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data))
                 break
 
+            case 'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR':
+                store.dispatch(spotifyActions.getPlaylistTracksForPlayingProcessor(action.data))
+                break
+
             case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
                 var albums = []
                 for (var i = 0; i < action.albums.length; i++){

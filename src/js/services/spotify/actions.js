@@ -1236,27 +1236,68 @@ export function getPlaylist(uri){
  *
  * Recursively get .next until we have all tracks
  **/
-function loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, lastResponse){
-    if( lastResponse.next ){
-        sendRequest(dispatch, getState, lastResponse.next)
-            .then( response => {
-                tracks = [...tracks, ...response.items]
-                loadNextPlaylistTracksBatch(dispatch, getState, uri, tracks, response)
-            });
-    }else{
-        dispatch({
-            type: 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING',
-            uri: uri,
-            tracks: tracks
-        });
+
+export function getPlaylistTracksForPlaying(uri){
+    return (dispatch, getState) => {
+        dispatch(uiActions.startProcess(
+            'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR',
+            'Loading playlist tracks', 
+            {
+                next: 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().core.country
+            }
+        ))
     }
 }
 
-export function getAllPlaylistTracks(uri){
+export function getPlaylistTracksForPlayingProcessor(data){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().core.country)
+        sendRequest(dispatch, getState, data.next)
             .then( response => {
-                loadNextPlaylistTracksBatch(dispatch, getState, uri, response.items, response)
+
+                // Check to see if we've been cancelled
+                if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'] !== undefined){
+                    var processor = getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR']
+
+                    if (processor.status == 'cancelling'){
+                        dispatch(uiActions.processCancelled('SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'))
+                        return false
+                    }
+                }
+
+                // Add on our new batch of loaded tracks
+                var uris = []
+                var new_uris = []
+                for (var i = 0; i < response.items.length; i++){
+                    new_uris.push(response.items[i].track.uri)
+                }
+                if (data.uris){
+                    uris = [...data.uris, ...new_uris];
+                } else {
+                    uris = new_uris;
+                }
+
+                // We got a next link, so we've got more work to be done
+                if (response.next){
+                    dispatch(uiActions.updateProcess(
+                        'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR', 
+                        'Loading '+(response.total-uris.length)+' playlist tracks', 
+                        {
+                            next: response.next,
+                            total: response.total,
+                            remaining: response.total - uris.length
+                        }
+                    ))
+                    dispatch(uiActions.runProcess(
+                        'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR', 
+                        {
+                            next: response.next,
+                            uris: uris
+                        }
+                    ))
+                } else {
+                    dispatch(mopidyActions.playURIs(uris))
+                    dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'))
+                }
             });
     }
 }

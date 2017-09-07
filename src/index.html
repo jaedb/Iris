@@ -45,7 +45,7 @@
 
     // Identify whether we're in test mode, and need to fetch non-minified assets
     var ui = JSON.parse( localStorage.getItem('ui') );
-    if (typeof(ui) === 'undefined' || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
+    if (typeof(ui) === 'undefined' || !ui || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
 	    js.src = '/iris/app.min.js?v='+build_name;
 	    css.href = '/iris/app.min.css?v='+build_name;
     } else {

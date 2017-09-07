@@ -282,14 +282,14 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                        store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
                         break
                     }
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri))
+                    store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
                     break
 
                 // Not in index, and Spotify HTTP not enabled, so just play it as-is
@@ -348,10 +348,17 @@ const MopidyMiddleware = (function(){
                 ))
                 break
 
-            case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
+            case 'MOPIDY_ENQUEUE_URIS_PROCESSOR': 
+
+                var last_run = store.getState().ui.processes.MOPIDY_ENQUEUE_URIS_PROCESSOR
+
+                // Cancelling
+                if (last_run && last_run.status == 'cancelling'){
+                    store.dispatch(uiActions.processCancelled('MOPIDY_ENQUEUE_URIS_PROCESSOR'))
+                    return
 
                 // make sure we have some uris in the queue
-                if (action.data.batches && action.data.batches.length > 0){
+                } else if (action.data.batches && action.data.batches.length > 0){
 
                     var batches = Object.assign([],action.data.batches)
                     var batch = batches[0]
