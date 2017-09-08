@@ -81,23 +81,28 @@ const localstorageMiddleware = (function(){
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
+            case 'SPOTIFY_IMPORT_AUTHORIZATION':
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
+                if (action.authorization !== undefined){
+                    var authorization = action.authorization;
+                } else if (action.data){
+                    var authorization = action.data;
+                }
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
                 spotify = Object.assign(
                     {},
                     (spotify ? spotify : {}),
                     {
-                        authorization: action.data,
-                        access_token: action.data.access_token, 
-                        refresh_token: action.data.refresh_token, 
-                        token_expiry: action.data.token_expiry
+                        authorization: authorization,
+                        access_token: authorization.access_token, 
+                        refresh_token: authorization.refresh_token, 
+                        token_expiry: authorization.token_expiry
                     }
                 );
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                console.log('local',action)
                 var spotify = JSON.parse( localStorage.getItem('spotify') );
                 spotify = Object.assign(
                     {},
@@ -109,7 +114,6 @@ const localstorageMiddleware = (function(){
                         token_expiry: false
                     }
                 );
-                console.log(spotify)
                 localStorage.setItem('spotify', JSON.stringify(spotify));
                 break;
 
