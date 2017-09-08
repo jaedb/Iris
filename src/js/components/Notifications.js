@@ -40,9 +40,9 @@ export default class Notifications extends React.Component{
 
 	renderProcess(process){
 
-		var progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed()
-		if (isNaN(progress)){
-			progress = 0
+		var progress = 0;
+		if (process.data.total && process.data.remaining){
+			progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed()
 		}
 
 		switch (process.status){
