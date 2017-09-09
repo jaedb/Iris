@@ -108,8 +108,8 @@ const CoreMiddleware = (function(){
                 next(action)
 
                 var state = store.getState()
-                if (state.ui.search_settings){
-                    var uri_schemes = state.ui.search_settings.uri_schemes
+                if (state.ui.search_uri_schemes){
+                    var uri_schemes = state.ui.search_uri_schemes
                 } else {
                     var uri_schemes = state.mopidy.uri_schemes
                 }

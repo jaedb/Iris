@@ -6,6 +6,7 @@ import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class FollowButton extends React.Component{
@@ -29,7 +30,7 @@ class FollowButton extends React.Component{
 	}
 
 	render(){
-		if (!this.props.spotify_authorized || !this.props.uri){
+		if (!this.props.uri){
 			return false
 		}
 
@@ -45,7 +46,9 @@ class FollowButton extends React.Component{
 			className += ' working'
 		}
 
-		if (this.props.is_following === true){
+		if (!this.props.spotify_authorized){
+			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification('You must authorize Iris first','warning')}>{this.props.addText}</button>
+		} else if (this.props.is_following === true){
 			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {
 			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
@@ -62,6 +65,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

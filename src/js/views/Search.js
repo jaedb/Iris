@@ -29,15 +29,17 @@ class Search extends React.Component{
 
 	componentDidMount(){
 
+		console.log(this.props.search_uri_schemes)
+
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
 
 		if (this.props.params.query && this.props.params.query !== ''){
-			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+			if (this.props.mopidy_connected && this.props.search_uri_schemes){
 				this.props.mopidyActions.getSearchResults(this.props.view, this.props.params.query)
 			}
 
-			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+			if (this.props.spotify_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(this.props.view, this.props.params.query)
 			}
 		}
@@ -48,7 +50,7 @@ class Search extends React.Component{
 			this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)		
 		}
 
-		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.params.query && newProps.search_settings.uri_schemes.includes('spotify:')){		
+		if (!this.props.spotify_connected && newProps.spotify_connected && newProps.params.query && newProps.search_uri_schemes.includes('spotify:')){		
 			this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)	
 		}
 
@@ -58,11 +60,11 @@ class Search extends React.Component{
 			this.props.mopidyActions.clearSearchResults()
 			this.props.spotifyActions.clearSearchResults()
 
-			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes){
+			if (this.props.mopidy_connected && this.props.search_uri_schemes){
 				this.props.mopidyActions.getSearchResults(newProps.view, newProps.params.query)
 			}
 
-			if (this.props.mopidy_connected && this.props.search_settings.uri_schemes && this.props.search_settings.uri_schemes.includes('spotify:')){
+			if (this.props.mopidy_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(newProps.view, newProps.params.query)
 			}
 		}
@@ -247,7 +249,7 @@ class Search extends React.Component{
 		var options = (
 			<span>
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ search_view: val }); this.props.uiActions.hideContextMenu() }} />
-				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_settings', {query: this.props.params.query})}>
+				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_uri_schemes', {query: this.props.params.query})}>
 					<FontAwesome name="wrench" />&nbsp;
 					Sources
 				</button>
@@ -275,7 +277,7 @@ const mapStateToProps = (state, ownProps) => {
 		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),
 		tracks: (state.core.tracks ? state.core.tracks : []),
-		search_settings: (state.ui.search_settings ? state.ui.search_settings : {}),
+		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {})
 	}

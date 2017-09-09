@@ -5,33 +5,26 @@ import FontAwesome from 'react-fontawesome'
 import Icon from '../Icon'
 import * as helpers from '../../helpers'
 
-export default class SearchSettingsModal extends React.Component{
+export default class SearchURISchemesModal extends React.Component{
 
 	constructor(props){
 		super(props)
-
 		this.state = {
-			uri_schemes: []
+			schemes: []
 		}
 	}
 
 	componentDidMount(){
-		if (this.props.search_settings){
-			this.setState(Object.assign({},this.props.search_settings))
-		} else {
-			this.setState({
-				uri_schemes: Object.assign([],this.props.uri_schemes)
-			})
-		}
+		this.setState({schemes: Object.assign([],this.props.search_uri_schemes)})
 	}
 
 	handleSubmit(e){
-		this.props.uiActions.set({search_settings: this.state})
+		this.props.uiActions.set({search_uri_schemes: this.state.schemes})
 		this.props.uiActions.closeModal()
 	}
 
 	handleToggle(scheme){
-		var uri_schemes = this.state.uri_schemes
+		var uri_schemes = this.state.schemes
 		var index = uri_schemes.indexOf(scheme)
 
 		if (index > -1){
@@ -40,7 +33,7 @@ export default class SearchSettingsModal extends React.Component{
 			uri_schemes.push(scheme)
 		}
 
-		this.setState({uri_schemes: uri_schemes})
+		this.setState(uri_schemes)
 	}
 
 	render(){
@@ -52,14 +45,14 @@ export default class SearchSettingsModal extends React.Component{
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="list small">
 						{
-							this.props.uri_schemes.map(scheme => {
+							this.props.available_uri_schemes.map(scheme => {
 								return (								
 									<div className="list-item field checkbox white" key={scheme}>
 										<label>
 											<input 
 												type="checkbox"
 												name={scheme}
-												checked={this.state.uri_schemes.indexOf(scheme) > -1}
+												checked={this.state.schemes.indexOf(scheme) > -1}
 												onChange={ e => this.handleToggle(scheme)} />
 											<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
 										</label>
