@@ -197,8 +197,12 @@ class Artist extends React.Component{
 		}
 
 		if (this.props.artist){
-			var can_play_radio = (scheme == 'spotify')
-			var can_follow = (scheme == 'spotify')
+			var is_spotify = (scheme == 'spotify')
+			if (is_spotify){
+				var uris_to_play = helpers.arrayOf('uri',this.props.artist.tracks)
+			} else {
+				var uris_to_play = this.props.artist.albums_uris
+			}
 
 			return (
 				<div className="view artist-view">
@@ -212,8 +216,8 @@ class Artist extends React.Component{
 						<div className="liner">
 							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 							<div className="actions">
-								{ can_play_radio ? <button className="primary" onClick={e => this.props.pusherActions.startRadio([this.props.artist.uri])}>Start radio</button> : <button className="primary" onClick={e => this.props.mopidyActions.playURIs(this.props.artist.albums_uris, this.props.artist.uri)}>Play all</button>}
-								{ can_follow ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
+								<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
+								{is_spotify ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
 								{this.props.slim_mode ? null : <ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />}
 							</div>
 							{ this.renderSubViewMenu() }
