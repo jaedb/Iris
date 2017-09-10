@@ -146,6 +146,14 @@ h4 {
 	}
 }
 
+.no-results {
+	text-align: center;
+	padding: 40px;
+	color: $grey;
+	font-style: italic;
+	font-size: 1.2rem;
+}
+
 .placeholder {
 	display: inline-block;
 	height: 1.2em;

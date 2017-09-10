@@ -239,6 +239,7 @@ const MopidyMiddleware = (function(){
                             enabled: true
                         }
                     })
+                    store.dispatch(spotifyActions.connect());
                 }
 
                 // If we haven't customised our search schemes, add all to search

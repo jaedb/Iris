@@ -23,10 +23,6 @@ const CoreMiddleware = (function(){
                 store.dispatch(pusherActions.connect())
                 store.dispatch(lastfmActions.connect())
 
-                if (store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.connect())
-                }
-                
                 next(action)
                 break
 

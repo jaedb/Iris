@@ -47,6 +47,7 @@ export default class AddToPlaylistModal extends React.Component{
 			<div>
 				<h1>Add to playlist</h1>
 				<h2 className="grey-text">Select playlist to add {this.props.tracks_uris.length} track{this.props.tracks_uris.length>1?'s':null} to</h2>
+				{playlists.length <= 0 ? <div className="no-results">No playlists available</div> : null}
 				<div className="list small playlists">
 					{
 						playlists.map( playlist => {
