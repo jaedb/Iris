@@ -199,7 +199,7 @@ class Artist extends React.Component{
 		if (this.props.artist){
 			var is_spotify = (scheme == 'spotify')
 			if (is_spotify){
-				var uris_to_play = helpers.arrayOf('uri',this.props.artist.tracks)
+				var uris_to_play = (this.props.artist.tracks ? helpers.arrayOf('uri', this.props.artist.tracks) : [])
 			} else {
 				var uris_to_play = this.props.artist.albums_uris
 			}
