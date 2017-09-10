@@ -160,6 +160,7 @@ class Settings extends React.Component {
 		let icon = 'close'
 		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
 		let text = 'Disconnected'
+		let tooltip = null
 
 		service = this.props[service]
 
@@ -169,12 +170,14 @@ class Settings extends React.Component {
 			text = 'Connecting'
 		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
 			icon = 'exclamation-triangle'
-			colour = 'orange'
-			text = 'Mopidy-Spotify not detected'
+			colour = 'red'
+			text = 'Not installed'
+			tooltip = 'Mopidy-Spotify is not installed or enabled'
 		} else if (service.connected && name == 'Spotify' && !service.authorization){
 			icon = 'lock'
 			colour = 'orange'
 			text = 'Limited access'
+			tooltip = 'Authorize Iris for full Spotify functionality'
 		} else if (service.connected){
 			icon = 'check'
 			colour = 'green'
@@ -182,7 +185,7 @@ class Settings extends React.Component {
 		}
 
 		return (
-			<div className="service">
+			<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
 				<h4 className="title">
 					{name}
 				</h4>
@@ -192,6 +195,7 @@ class Settings extends React.Component {
 				<div className={"status "+colour+'-text'}>					
 					{text}
 				</div>
+				{tooltip ? <span className="tooltip">{tooltip}</span> : null}
 			</div>
 		)
 	}
@@ -296,17 +300,6 @@ class Settings extends React.Component {
 					</div>
 
 					<h4 className="underline">Spotify</h4>
-
-					<div className="field readonly">
-						<div className="name">Status</div>
-						<div className="input">
-							<div className="text">
-								{!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:') ? <div className="red-text"><FontAwesome name="exclamation-triangle" />&nbsp; Mopidy-Spotify not available</div> : null}
-
-								{this.props.spotify.authorization ? <span><span className="green-text"><FontAwesome name="check" /> Authorized</span>&nbsp; All Spotify functionality available</span> : <span><span className="orange-text"><FontAwesome name="lock" /> Limited access</span>&nbsp; Authorize Iris for full functionality</span>}
-							</div>
-						</div>
-					</div>
 					<div className="field">
 						<div className="name">Authorization</div>
 						<div className="input">
