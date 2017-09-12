@@ -29,8 +29,6 @@ class Search extends React.Component{
 
 	componentDidMount(){
 
-		console.log(this.props.search_uri_schemes)
-
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
 

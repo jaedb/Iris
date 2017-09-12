@@ -139,7 +139,7 @@
 				left: 60px;
 				right: 60px;
 
-				.progress {
+				&.playing .progress {
 					@include animate(1s, linear);
 				}
 			}
