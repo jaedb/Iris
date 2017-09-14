@@ -109,6 +109,9 @@ export default function reducer(mopidy = {}, action){
             }
             return Object.assign({}, mopidy, { library_playlists: helpers.removeDuplicates(uris) })
 
+        case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL':
+            return Object.assign({}, mopidy, { library_playlists_loaded_all: true })
+
         case 'MOPIDY_LIBRARY_PLAYLIST_CREATED':
             var library_playlists = []
             if (mopidy.library_playlists){

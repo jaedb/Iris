@@ -356,10 +356,10 @@ class ContextMenu extends React.Component{
 		this.setState({submenu_expanded: expanded})
 
 		if (expanded){
-			if (!this.props.spotify_library_playlists){
+			if (!this.props.spotify_library_playlists_loaded_all){
 				this.props.spotifyActions.getLibraryPlaylists()
 			}
-			if (!this.props.mopidy_library_playlists){
+			if (!this.props.mopidy_library_playlists_loaded_all){
 				this.props.mopidyActions.getLibraryPlaylists()
 			}
 		}
@@ -633,7 +633,9 @@ const mapStateToProps = (state, ownProps) => {
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
 		spotify_library_playlists: state.spotify.library_playlists,
+		spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
 		mopidy_library_playlists: state.mopidy.library_playlists,
+		mopidy_library_playlists_loaded_all: state.mopidy.library_playlists_loaded_all,
 		spotify_library_artists: state.spotify.library_artists,
 		mopidy_library_artists: state.mopidy.library_artists,
 		spotify_library_albums: state.spotify.library_albums,

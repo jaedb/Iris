@@ -1243,6 +1243,7 @@ export function getPlaylistTracksForPlaying(uri){
             'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR',
             'Loading playlist tracks', 
             {
+                uri: uri,
                 next: 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().core.country
             }
         ))
@@ -1295,7 +1296,7 @@ export function getPlaylistTracksForPlayingProcessor(data){
                         }
                     ))
                 } else {
-                    dispatch(mopidyActions.playURIs(uris))
+                    dispatch(mopidyActions.playURIs(uris, data.uri))
                     dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'))
                 }
             });
@@ -1425,6 +1426,7 @@ export function getLibraryPlaylistsProcessor(data){
                     dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                 } else {
                     dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
+                    dispatch({type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL'})
                 }
             });
     }

@@ -313,7 +313,7 @@ const MopidyMiddleware = (function(){
                     }
                 })
                 break
-
+/*
             case 'SPOTIFY_ALL_PLAYLIST_TRACKS_LOADED_FOR_PLAYING':
                 var uris = []
                 for (var i = 0; i < action.tracks.length; i++){
@@ -321,6 +321,7 @@ const MopidyMiddleware = (function(){
                 }
                 store.dispatch(mopidyActions.playURIs(uris, action.uri))
                 break
+                */
 
             case 'MOPIDY_ENQUEUE_URIS':
 
@@ -952,6 +953,7 @@ const MopidyMiddleware = (function(){
                         }
 
                         store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris_filtered });
+                        store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL' });
 
                         // get the full playlist objects
                         for (var i = 0; i < playlist_uris_filtered.length; i++ ){

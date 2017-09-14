@@ -200,6 +200,9 @@ export default function reducer(spotify = {}, action){
             })
 
 
+        case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL':
+            return Object.assign({}, spotify, { library_playlists_loaded_all: true })
+
         case 'SPOTIFY_LIBRARY_PLAYLISTS_CLEAR':
             return Object.assign({}, spotify, { library_playlists: [] })
 
