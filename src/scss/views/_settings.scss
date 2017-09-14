@@ -113,6 +113,10 @@
 			}
 		}
 
+		.content-wrapper {
+			padding-bottom: 60px;
+		}
+
 		.services {
 			text-align: center;
 
@@ -135,8 +139,9 @@
 		.field.pusher-connections {
 			.connection {
 				.col {
-					float: none;
-					width: 100%;
+					width: auto;
+					display: inline-block;
+					padding-right: 10px;
 				}
 			}
 		}
