@@ -1,4 +1,5 @@
 
+var coreActions = require('../../services/core/actions')
 var uiActions = require('../../services/ui/actions')
 var mopidyActions = require('../../services/mopidy/actions')
 var lastfmActions = require('../../services/lastfm/actions')
@@ -64,14 +65,20 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                                 status = response.error.status
                             }
 
+                            dispatch(coreActions.handleException(
+                                message,
+                                {
+                                    config: config,
+                                    response: response
+                                }
+                            ))
+
                             // TODO: Instead of allowing request to fail before renewing the token, once refreshed
                             // we should retry the original request(s)
                             if (message == 'The access token expired'){
                                 dispatch(refreshToken(dispatch, getState))
                             }
 
-                            dispatch(uiActions.createNotification(message,'bad'))
-                            console.error( endpoint+' failed', response)
                             reject(error)
                         }
                     )

@@ -18,6 +18,27 @@ const CoreMiddleware = (function(){
 
         switch(action.type){
 
+            case 'HANDLE_EXCEPTION':
+                var data = Object.assign(
+                    {},
+                    action.data, 
+                    {
+                        state: store.getState()
+                    }
+                );
+
+                Raven.captureException(
+                    new Error(action.message), 
+                    {
+                        extra: data
+                    }
+                );
+
+                store.dispatch(uiActions.createNotification(action.message,'bad'))
+
+                console.error(action.message, data);
+                break;
+
             case 'CORE_START_SERVICES':
                 store.dispatch(mopidyActions.connect())
                 store.dispatch(pusherActions.connect())

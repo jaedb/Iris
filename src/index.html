@@ -24,6 +24,11 @@
 	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
 	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
 
+	<!-- Raven Sentry -->
+	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+
+	<script src="//d2wy8f7a9ursnm.cloudfront.net/bugsnag-3.min.js" data-apikey="04e476df27fbfb1ce96602e985ef3bdd"></script>
+
 </head>
 <body>
 
@@ -34,6 +39,9 @@
 </body>
 
 <script type="text/javascript">
+
+	// Initiate Raven Sentry
+	Raven.config('https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026').install()
 
 	var build_name = "BUILD_NAME_HERE";
 

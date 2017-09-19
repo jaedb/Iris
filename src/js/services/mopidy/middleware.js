@@ -5,6 +5,7 @@ import { hashHistory } from 'react-router'
 import * as helpers from '../../helpers'
 
 var mopidyActions = require('./actions.js')
+var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
 var spotifyActions = require('../spotify/actions.js')
 var pusherActions = require('../pusher/actions.js')
@@ -128,7 +129,7 @@ const MopidyMiddleware = (function(){
 
         return new Promise( (resolve, reject) => {
 
-            if( model in ws ){
+            if (model in ws){
                 if( method in ws[model] ){
                     var mopidyObject = ws[model][method]
                     var property = method;       
@@ -136,13 +137,19 @@ const MopidyMiddleware = (function(){
                     var mopidyObject = ws[model]
                     var property = model;   
                 }
-            }else{
+
+            } else {
                 var error = {
                     message: 'Call to an invalid object. Check you are calling a valid Mopidy object.',
                     call: call,
                     value: value
                 }
-                console.error(error)
+
+                store.dispatch(coreActions.handleException(
+                    error.message, 
+                    error
+                ));
+
                 reject(error)
             }
 

@@ -21,13 +21,25 @@ const PusherMiddleware = (function(){
         // if debug enabled
         if (store.getState().ui.log_pusher) console.log('Pusher', message)
 
+        // error
+        if (message.status == 0){
+            store.dispatch(coreActions.handleException(
+                message.message, 
+                message
+            ));
+        }
+
         // response to a request [we] made
-        if (typeof(message.request_id) !== 'undefined' && message.request_id){            
+        if (message.request_id !== undefined && message.request_id){            
             if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
                 store.dispatch(uiActions.stopLoading(message.request_id))
                 deferredRequests[ message.request_id ].resolve( message )
+
             } else {
-                console.error('Pusher: Response with no matching request', message);
+                store.dispatch(coreActions.handleException(
+                    'Pusher response received with no matching request', 
+                    message
+                ));
             }
 
         // general message

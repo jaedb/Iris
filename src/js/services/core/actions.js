@@ -32,7 +32,15 @@ export function startSearch(search_type, query, only_mopidy = false){
 	}
 }
 
-export function debugResponse( response ){
+export function handleException(message, data = {}){
+    return {
+        type: 'HANDLE_EXCEPTION',
+        message: message,
+        data: data
+    }
+}
+
+export function debugResponse(response){
     return {
         type: 'DEBUG',
         response: response

@@ -56,9 +56,11 @@ class DiscoverNewReleases extends React.Component{
 							onContextMenu={e => this.handleContextMenu(e,album)}>
 								<Thumbnail images={album.images} />
 						</Link>
-						<Link to={global.baseURL+'album/'+album.uri}>
-							<h2>{album.name}</h2>
-						</Link>
+						<h2>
+							<Link to={global.baseURL+'album/'+album.uri}>
+								{album.name}
+							</Link>
+						</h2>
 						<h3>
 							<ArtistSentence artists={album.artists} />
 						</h3>

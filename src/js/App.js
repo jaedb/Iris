@@ -47,6 +47,8 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
+		
+		// Fire up our services
 		this.props.coreActions.startServices()
 		this.props.coreActions.getBroadcasts()
 

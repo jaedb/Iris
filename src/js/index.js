@@ -35,6 +35,15 @@ import LibraryTracks from './views/library/LibraryTracks'
 import LibraryPlaylists from './views/library/LibraryPlaylists'
 import LibraryBrowse from './views/library/LibraryBrowse'
 
+/*
+// Hijack console error for Raven to capture
+var originalConsoleError = console.error;  
+console.error = function(message, error){  
+    Raven.captureException(message, error);
+    originalConsoleError.apply(this, arguments)
+}
+*/
+
 // setup our analytics tracking
 ReactGA.initialize('UA-64701652-3');
 function handleUpdate() {

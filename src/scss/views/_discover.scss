@@ -97,9 +97,6 @@
 			padding-bottom: 20px;
 		}
 	}
-
-	@include responsive( $bp_medium ){
-	}
 }
 
 .discover-featured-view,
@@ -155,6 +152,8 @@
 
 	@include responsive( $bp_medium ){
 		.intro {
+			padding-top: 50px;
+
 			.content {
 				padding: 20px;
 
@@ -162,10 +161,18 @@
 					padding-top: 0;
 				}
 
+				h2 {
+					padding-top: 0;
+				}
+
+				h3 {
+					line-height: 1.3em;
+				}
+
 				h2,
 				h3,
 				.actions {
-					padding-left: 120px;
+					padding-left: 45%;
 				}
 
 				.actions {
@@ -173,7 +180,7 @@
 				}
 
 				.thumbnail {
-					max-width: 100px;
+					max-width: 40%;
 				}
 			}
 		}
