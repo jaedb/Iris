@@ -1,6 +1,6 @@
 {
 	"name": "mopidy-iris",
-	"version": "0.0.0",
+	"version": "1.1.2",
 	"description": "Mopidy HTTP interface",
 	"repository": "https://github.com/jaedb/iris",
 	"author": "James Barnsley <james@barnsley.nz>",
@@ -43,7 +43,6 @@
 	"scripts": {
 		"dev": "./build.sh && NODE_ENV=development webpack --watch",
 		"prod": "./build.sh && NODE_ENV=development webpack && NODE_ENV=production webpack",
-		"test": "./build.sh $1",
 		"release": "NODE_ENV=production webpack && NODE_ENV=development webpack && ./build.sh $1 && python setup.py sdist upload -r pypi"
 	}
 }
