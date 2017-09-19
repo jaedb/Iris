@@ -2,11 +2,7 @@
 
 # process production html
 BUILD=$(date +%s)
-if [ $# -eq 0 ]; then
-	VERSION="0.0.0"
-else
-	VERSION=$1
-fi
+VERSION=$(cat VERSION.md)
 
 echo -e "Building $VERSION ($BUILD)"
 
