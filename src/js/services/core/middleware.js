@@ -34,8 +34,7 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                store.dispatch(uiActions.createNotification(action.message,'bad'))
-
+                store.dispatch(uiActions.createNotification(action.message,'bad'));
                 console.error(action.message, data);
                 break;
 

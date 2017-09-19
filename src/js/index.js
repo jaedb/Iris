@@ -41,7 +41,6 @@ var originalConsoleError = console.error;
 console.error = function(message, error){  
     Raven.captureException(message, error);
     originalConsoleError.apply(this, arguments)
-}
 */
 
 // setup our analytics tracking

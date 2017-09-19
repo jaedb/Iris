@@ -55,27 +55,19 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         },
                         (xhr, status, error) => {
                             dispatch(uiActions.stopLoading(loader_key))
-                            
-                            // Get the error message, jsson decode if necessary
-                            var message = xhr.responseText
-                            var status = null
-                            var response = JSON.parse(xhr.responseText)                            
-                            if (response.error && response.error.message){
-                                message = response.error.message
-                                status = response.error.status
-                            }
-
                             dispatch(coreActions.handleException(
-                                message,
+                                xhr.responseJSON.error.message,
                                 {
                                     config: config,
-                                    response: response
+                                    xhr: xhr,
+                                    status: status,
+                                    error: error
                                 }
                             ))
 
                             // TODO: Instead of allowing request to fail before renewing the token, once refreshed
                             // we should retry the original request(s)
-                            if (message == 'The access token expired'){
+                            if (xhr.responseJSON.error.message == 'The access token expired'){
                                 dispatch(refreshToken(dispatch, getState))
                             }
 
@@ -121,27 +113,35 @@ function refreshToken( dispatch, getState ){
 
         if (getState().spotify.authorization){
 
-            $.ajax({
-                    method: 'GET',
-                    url: getState().spotify.authorization_url+'?action=refresh&refresh_token='+getState().spotify.refresh_token,
-                    dataType: "json",
-                    timeout: 10000
-                })
+            var config = {
+                method: 'GET',
+                url: getState().spotify.authorization_url+'?action=refresh&refresh_token='+getState().spotify.refresh_token,
+                dataType: "json",
+                timeout: 10000
+            };
+
+            $.ajax(config)
                 .then(
                     response => {
                         response.token_expiry = new Date().getTime() + ( response.expires_in * 1000 )
                         response.source = 'spotify'
                         dispatch({
                             type: 'SPOTIFY_TOKEN_REFRESHED',
-                            access_token_provider: 'http_api',
                             data: response
                         })
                         resolve(response)
                     },
-                    error => {
+                    (xhr, status, error) => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
-                        dispatch(uiActions.createNotification('Could not refresh token','bad'))
-                        console.error('Could not refresh token', error)
+                        dispatch(coreActions.handleException(
+                            xhr.responseJSON.error_description,
+                            {
+                                config: config,
+                                xhr: xhr,
+                                status: status,
+                                error: error
+                            }
+                        ))
                         reject(error)
                     }
                 );
