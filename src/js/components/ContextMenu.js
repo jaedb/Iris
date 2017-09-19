@@ -519,7 +519,7 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
-						{start_radio}
+						{context.source == 'spotify' ? start_radio : null}
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
 						{this.canBeInLibrary() ? toggle_in_library : null}

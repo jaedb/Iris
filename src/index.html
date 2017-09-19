@@ -38,29 +38,40 @@
 
 <script type="text/javascript">
 
+	var build = "BUILD_HERE";
+	var version = "VERSION_HERE";
+
 	// Initiate Raven Sentry
-	Raven.config('https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026').install()
+	Raven.config(
+		'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
+		{
+			release: version+"_"+build
+		}
+	).install();
 
-	var build_name = "BUILD_NAME_HERE";
-
+	// Construct the script tag
     var js = document.createElement("script");
     js.type = "application/javascript";
 
+    // Construct our css tag
     var css = document.createElement("link");
     css.rel = "stylesheet";
 
     // Identify whether we're in test mode, and need to fetch non-minified assets
     var ui = JSON.parse( localStorage.getItem('ui') );
     if (typeof(ui) === 'undefined' || !ui || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
-	    js.src = '/iris/app.min.js?v='+build_name;
-	    css.href = '/iris/app.min.css?v='+build_name;
+	    js.src = '/iris/app.min.js?v='+build;
+	    css.href = '/iris/app.min.css?v='+build;
     } else {
-	    js.src = '/iris/app.js?v='+build_name;
-	    css.href = '/iris/app.css?v='+build_name;
+	    js.src = '/iris/app.js?v='+build;
+	    css.href = '/iris/app.css?v='+build;
     }
-	   
+	  
+
+	// And finally inject our CSS/JS tags
 	document.body.appendChild(js);
 	document.body.appendChild(css);
+
 </script>
 
 </html>
