@@ -11,7 +11,7 @@ cp src/index.html mopidy_iris/static/index.html
 # process production html
 BUILD=$(date +%s)
 if [ $# -eq 0 ]; then
-	VERSION="preview"
+	VERSION="0.0.0"
 else
 	VERSION=$1
 fi

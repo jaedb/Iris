@@ -38,10 +38,13 @@
 
 <script type="text/javascript">
 
+	// Release details
+	// These are automatically injected by build.sh
 	var build = "BUILD_HERE";
 	var version = "VERSION_HERE";
 
-	// Initiate Raven Sentry
+	// Initiate error tracking. This helps catch errors early so 
+	// patches can accurately and quickly fix issues.
 	Raven.config(
 		'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
 		{
