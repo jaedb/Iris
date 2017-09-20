@@ -19,11 +19,28 @@ const CoreMiddleware = (function(){
         switch(action.type){
 
             case 'HANDLE_EXCEPTION':
+                var state = Object.assign({}, store.getState());
+
+                // Strip out non-essential store info
+                delete state.core.albums
+                delete state.core.artists
+                delete state.core.playlists
+                delete state.core.users
+                delete state.core.queue_metadata
+                delete state.core.current_tracklist
+                delete state.spotify.library_albums
+                delete state.spotify.library_artists
+                delete state.spotify.library_playlists
+                delete state.spotify.autocomplete_results
+                delete state.mopidy.library_albums
+                delete state.mopidy.library_artists
+                delete state.mopidy.library_playlists
+
                 var data = Object.assign(
                     {},
                     action.data, 
                     {
-                        state: store.getState()
+                        state: state
                     }
                 );
 
