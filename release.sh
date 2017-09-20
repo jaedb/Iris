@@ -2,18 +2,18 @@
 
 VERSION=$(cat VERSION.md)
 
-echo -e "Releasing $VERSION ($BUILD)"
+echo -e "Releasing $VERSION"
 
 echo -e "git add -A"
 ADD=$(git add -A)
 echo -e $ADD
 
-echo -e "git commit -m 'Releasing $VERSION ($BUILD)'"
-COMMIT=$(git commit -m "Releasing $VERSION ($BUILD)")
+echo -e "git commit -m 'Releasing $VERSION'"
+COMMIT=$(git commit -m "Releasing $VERSION")
 echo -e $COMMIT
 
-echo -e "git tag -a '$VERSION' -m 'Releasing $VERSION ($BUILD)'"
-TAG=$(git tag -a "$VERSION" -m "Releasing $VERSION ($BUILD)")
+echo -e "git tag -a '$VERSION' -m 'Releasing $VERSION'"
+TAG=$(git tag -a "$VERSION" -m "Releasing $VERSION")
 echo -e $TAG
 
 echo -e "git push"
