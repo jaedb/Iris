@@ -6,6 +6,7 @@ import { Link, hashHistory } from 'react-router'
 
 import ArtistSentence from './ArtistSentence'
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -67,11 +68,11 @@ class AddSeedField extends React.Component{
 		switch (helpers.uriType(item.uri)){
 
 			case 'artist':
-				this.props.uiActions.artistLoaded(item.uri,item)
+				this.props.coreActions.artistLoaded(item.uri,item)
 				break
 
 			case 'track':
-				this.props.uiActions.trackLoaded(item.uri,item)
+				this.props.coreActions.trackLoaded(item.uri,item)
 				break
 		}
 	}
@@ -143,6 +144,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

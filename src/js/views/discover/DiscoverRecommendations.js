@@ -157,7 +157,7 @@ class Discover extends React.Component{
 							<span className="seed" key={seed.uri}>
 								{seed.name}
 								<span className="type">({type})</span>
-								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(seed.uri)} />
+								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
 							</span>
 						)
 					})
