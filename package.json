@@ -1,6 +1,6 @@
 {
 	"name": "mopidy-iris",
-	"version": "3.4.4",
+	"version": "3.4.5",
 	"description": "Mopidy HTTP interface",
 	"repository": "https://github.com/jaedb/iris",
 	"author": "James Barnsley <james@barnsley.nz>",
@@ -41,8 +41,10 @@
 		"react-lazyload": "2.2.7"
 	},
 	"scripts": {
+		"build": "./build.sh",
+		"test": "./build.sh && ./release.sh",
 		"dev": "./build.sh && NODE_ENV=development webpack --watch",
 		"prod": "./build.sh && NODE_ENV=development webpack && NODE_ENV=production webpack",
-		"release": "./build.sh && NODE_ENV=production webpack && NODE_ENV=development webpack && python setup.py sdist upload -r pypi"
+		"release": "./build.sh && NODE_ENV=production webpack && NODE_ENV=development webpack && python setup.py sdist upload -r pypi && ./release.sh"
 	}
 }

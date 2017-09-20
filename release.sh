@@ -17,7 +17,7 @@ TAG=$(git tag -a "$VERSION" -m "Releasing $VERSION ($BUILD)")
 echo -e $TAG
 
 echo -e "git push"
-PUSH=$(git push)
-echo -e $PUSH
+#PUSH=$(git push)
+#echo -e $PUSH
 
 echo -e "\x1b[32;01m"Done!"\x1b[39;49;00m"

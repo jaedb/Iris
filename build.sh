@@ -19,7 +19,7 @@ sed -i 's/VERSION_HERE/'$VERSION'/g' mopidy_iris/static/index.html
 sed -i 's/BUILD_HERE/'$BUILD'/g' mopidy_iris/static/index.html
 
 echo -e "Setting version in Python"
-sed -i '/__version__ = "/c\__version__ = "'$VERSION'"' mopidy_iris/__init__.py
+sed -i "/__version__ = '/c\__version__ = '"$VERSION"'" mopidy_iris/__init__.py
 
 echo -e "Setting version in NPM"
 sed -i '/	"version": "/c\	"version": "'$VERSION'",' package.json

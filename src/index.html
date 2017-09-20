@@ -53,29 +53,27 @@
 
     // Check for test mode. This is toggled under Settings > Debug > Test mode
     var ui = JSON.parse( localStorage.getItem('ui') );
+    var test_mode = (typeof(ui) !== 'undefined' && ui && typeof(ui.test_mode) !== 'undefined' && ui.test_mode);
 
-    // Test mode either not enabled, or not configured
-    if (typeof(ui) === 'undefined' || !ui || typeof(ui.test_mode) === 'undefined' || !ui.test_mode){
-
-    	// Production-grade, minified app
-	    js.src = '/iris/app.min.js?v='+build;
-	    css.href = '/iris/app.min.css?v='+build;
-
-		// Initiate error tracking. This helps catch errors early so 
-		// patches can accurately and quickly fix issues.
-		Raven.config(
-			'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
-			{
-				release: version+"_"+build
-			}
-		).install();
-
-	// We're in test mode, so use built (but not minified) code
-    } else {
+	// Test mode, use built (but not minified) code
+    if (test_mode){
 	    js.src = '/iris/app.js?v='+build;
 	    css.href = '/iris/app.css?v='+build;
+
+    // Production-grade, minified app
+    } else {
+	    js.src = '/iris/app.min.js?v='+build;
+	    css.href = '/iris/app.min.css?v='+build;
     }
-	  
+	 
+	// Initiate error tracking. This helps catch errors early so 
+	// patches can accurately and quickly fix issues.
+	Raven.config(
+		'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
+		{
+			release: version+(test_mode ? "_testmode" : "")
+		}
+	).install();
 
 	// And finally inject our CSS/JS tags
 	document.body.appendChild(js);
