@@ -846,7 +846,7 @@ const MopidyMiddleware = (function(){
                                 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
                                 'Searching '+action.data.uri_scheme.replace(':','')+' albums',
                                 {
-                                    remaining: (action.data.uri_schemes.length) + 0.5
+                                    remaining: (action.data.uri_schemes.length) + 0.75
                                 }
                             ));
                             instruct( socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
@@ -893,9 +893,9 @@ const MopidyMiddleware = (function(){
                         var process_artists = () => {
                             store.dispatch(uiActions.updateProcess(
                                 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                                'Searching '+action.data.uri_scheme.replace(':','')+' tracks',
+                                'Searching '+action.data.uri_scheme.replace(':','')+' artists',
                                 {
-                                    remaining: (action.data.uri_schemes.length) + 0.75
+                                    remaining: (action.data.uri_schemes.length) + 0.5
                                 }
                             ));
                             instruct( socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})

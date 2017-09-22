@@ -132,6 +132,7 @@ class IrisCore(object):
                     'connection': client
                 })
             except:
+                self.raven_client.captureException()
                 logger.error('Failed to close connection to '+ connection_id)           
 
     def set_username(self, data):
@@ -150,6 +151,7 @@ class IrisCore(object):
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'
+            self.raven_client.captureMessage(error)
             logger.error(error)
             return {
                 'status': 0,
@@ -168,6 +170,7 @@ class IrisCore(object):
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'
+            self.raven_client.captureMessage(error)
             logger.error(error)
             return {
                 'status': 0,
@@ -217,6 +220,7 @@ class IrisCore(object):
             upgrade_available = ( upgrade_available == 1 )
 
         except urllib2.HTTPError as e:
+            self.raven_client.captureException(e)
             latest_version = '0.0.0'
             upgrade_available = False
         
@@ -234,7 +238,8 @@ class IrisCore(object):
         try:
             subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
             return True
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
+            self.raven_client.captureException(e)
             return False
         
     def restart( self ):
@@ -341,7 +346,9 @@ class IrisCore(object):
             token = self.spotify_token
             token = token['access_token']
         except:
-            logger.error('IrisFrontend: access_token missing or invalid')
+            error = 'IrisFrontend: access_token missing or invalid'
+            self.raven_client.captureMessage(error)
+            logger.error(error)
             self.broadcast({
                 'type': 'error',
                 'message': 'Could not get radio tracks: access_token missing or invalid',
@@ -368,6 +375,7 @@ class IrisCore(object):
             return uris
 
         except:
+            self.raven_client.captureException()
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             self.broadcast({
                 'type': 'error',
@@ -491,6 +499,7 @@ class IrisCore(object):
             return self.get_spotify_token({})
 
         except urllib2.HTTPError as e:
+            self.raven_client.captureException()
             error = json.loads(e.read())
 
             return {

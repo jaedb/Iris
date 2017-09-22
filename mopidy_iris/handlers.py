@@ -93,6 +93,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     response['request_id'] = request_id
                     mem.iris.send_message(self.connection_id, response)
             else:
+                mem.iris.raven_client.captureMessage("Method "+message['method']+" does not exist")
                 response = {
                     'status': 0,
                     'message': 'Method "'+message['method']+'" does not exist',
@@ -100,6 +101,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 }
                 mem.iris.send_message(self.connection_id, response)
         else:
+            mem.iris.raven_client.captureMessage("Method key missing from request")
             response = {
                 'status': 0,
                 'message': 'Method key missing from request',
@@ -133,6 +135,7 @@ class HttpHandler(tornado.web.RequestHandler):
             # make the call, and return it's response
             self.write(getattr(mem.iris, slug)({}))
         else:
+            mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
                 'error': 'Method "'+slug+'" does not exist'
             })
