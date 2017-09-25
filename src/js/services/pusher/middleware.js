@@ -24,7 +24,7 @@ const PusherMiddleware = (function(){
         // error
         if (message.status == 0){
             store.dispatch(coreActions.handleException(
-                message.message, 
+                'Pusher: '+message.message, 
                 message
             ));
         }
@@ -37,7 +37,7 @@ const PusherMiddleware = (function(){
 
             } else {
                 store.dispatch(coreActions.handleException(
-                    'Pusher response received with no matching request', 
+                    'Pusher: Response received with no matching request', 
                     message
                 ));
             }

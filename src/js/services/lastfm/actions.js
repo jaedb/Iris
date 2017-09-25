@@ -1,4 +1,5 @@
 
+var coreActions = require('../core/actions')
 var uiActions = require('../ui/actions')
 var helpers = require('../../helpers')
 
@@ -10,25 +11,33 @@ var helpers = require('../../helpers')
  * @param endpoint params = the url params to send
  **/
 const sendRequest = ( dispatch, getState, params ) => {
-    return new Promise( (resolve, reject) => {   
-
-        var url = '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&'+params
+    return new Promise( (resolve, reject) => {
 
         var loader_key = helpers.generateGuid()
         dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
 
-        $.ajax({
-                method: 'GET',
-                cache: true,
-                url: url
-            }).then( 
+        var config = {
+            method: 'GET',
+            cache: true,
+            url: '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&'+params
+        }
+
+        $.ajax(config).then( 
                 response => {
                     dispatch(uiActions.stopLoading(loader_key))    
                     resolve(response)
                 },
                 (xhr, status, error) => {
                     dispatch(uiActions.stopLoading(loader_key))    
-                    console.error( params+' failed', xhr.responseText)
+                    dispatch(coreActions.handleException(
+                        'LastFM: '+xhr.responseText, 
+                        {
+                            config: config,
+                            error: error,
+                            status: status,
+                            xhr: xhr
+                        }
+                    ));
                     reject(error)
                 }
             )

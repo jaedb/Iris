@@ -56,8 +56,9 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         (xhr, status, error) => {
                             dispatch(uiActions.stopLoading(loader_key))
                             dispatch(coreActions.handleException(
-                                xhr.responseJSON.error.message,
+                                'Spotify: '+xhr.responseJSON.error.message,
                                 {
+                                    source: 'spotify/actions.js/sendRequest',
                                     config: config,
                                     xhr: xhr,
                                     status: status,
@@ -99,10 +100,6 @@ function getToken( dispatch, getState ){
             .then(
                 response => {
                     resolve(response.access_token)
-                },
-                error => {
-                    dispatch({ type: 'SPOTIFY_DISCONNECTED' })
-                    reject(error)
                 }
             );
     });
@@ -134,8 +131,9 @@ function refreshToken( dispatch, getState ){
                     (xhr, status, error) => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                         dispatch(coreActions.handleException(
-                            xhr.responseJSON.error_description,
+                            'Spotify: '+xhr.responseJSON.error_description,
                             {
+                                source: 'spotify/actions.js/refreshToken',
                                 config: config,
                                 xhr: xhr,
                                 status: status,
@@ -146,7 +144,7 @@ function refreshToken( dispatch, getState ){
                     }
                 );
 
-        }else{
+        } else {
 
             $.ajax({
                     method: 'GET',
@@ -158,8 +156,16 @@ function refreshToken( dispatch, getState ){
                     response => {
                         if (response.type == 'error'){
                             dispatch({ type: 'SPOTIFY_DISCONNECTED' })
-                            dispatch(uiActions.createNotification(response.message,'bad'))
-                            console.error('Could not refresh token', response)
+                            dispatch(coreActions.handleException(
+                                'Spotify: '+response.message,
+                                {
+                                    source: 'spotify/actions.js/refreshToken',
+                                    config: config,
+                                    xhr: xhr,
+                                    status: status,
+                                    error: error
+                                }
+                            ))
                             reject(response)
 
                         } else {
@@ -177,8 +183,16 @@ function refreshToken( dispatch, getState ){
                     },
                     error => {
                         dispatch({ type: 'SPOTIFY_DISCONNECTED' })
-                        dispatch(uiActions.createNotification('Could not refresh token','bad'))
-                        console.error('Could not refresh token', error)
+                        dispatch(coreActions.handleException(
+                            'Spotify: Could not refresh token',
+                            {
+                                source: 'spotify/actions.js/refreshToken',
+                                config: config,
+                                xhr: xhr,
+                                status: status,
+                                error: error
+                            }
+                        ))
                         reject(error)
                     }
                 );
