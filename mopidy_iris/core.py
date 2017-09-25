@@ -10,13 +10,19 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
+if sys.platform == 'win32':
+    import ctypes
+
 # import logger
 logger = logging.getLogger(__name__)
 
 class IrisCore(object):
 
     version = 0
-    is_root = ( os.geteuid() == 0 )
+    try:
+       is_root = os.geteuid() == 0
+    except AttributeError:
+       is_root = ctypes.windll.shell32.IsUserAnAdmin() != 0
     spotify_token = False
     queue_metadata = {}
     connections = {}
