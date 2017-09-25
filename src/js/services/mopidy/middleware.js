@@ -146,7 +146,7 @@ const MopidyMiddleware = (function(){
                 }
 
                 store.dispatch(coreActions.handleException(
-                    error.message, 
+                    'Mopidy: '+error.message, 
                     error
                 ));
 
@@ -331,7 +331,10 @@ const MopidyMiddleware = (function(){
                             }
                         },
                         error => {
-                            store.dispatch(coreActions.handleException((error.message ? error.message : "Lookup failed"),error));
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Lookup failed"),
+                                error
+                            ));
                         }
                     );
                 break;
@@ -455,7 +458,10 @@ const MopidyMiddleware = (function(){
                             )
                         },
                         error => {
-                            store.dispatch(coreActions.handleException((error.message ? error.message : "Adding tracks failed"),error));
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Adding tracks failed"),
+                                error
+                            ));
                         }
                     )
 
@@ -489,7 +495,10 @@ const MopidyMiddleware = (function(){
                                 }
                                 store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri))
                             } else {
-                                store.dispatch(coreActions.handleException("Failed to add some tracks",response));
+                                store.dispatch(coreActions.handleException(
+                                    "Mopidy: Failed to add some tracks",
+                                    response
+                                ));
                             }
 
                             // add the rest of our uris (if any)
@@ -507,7 +516,10 @@ const MopidyMiddleware = (function(){
                             }
                         },
                         error => {
-                            store.dispatch(coreActions.handleException((error.message ? error.message : "Adding tracks failed"),error));
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Adding tracks failed"),
+                                error
+                            ));
                         }
                     )
                 break;
@@ -521,7 +533,10 @@ const MopidyMiddleware = (function(){
                             // TODO: when complete, send event to confirm success/failure
                         },
                         error => {
-                            store.dispatch(coreActions.handleException((error.message ? error.message : "Reorder failed"),error));
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Reorder failed"),
+                                error
+                            ));
                         }
                     )
                 break;
@@ -649,7 +664,10 @@ const MopidyMiddleware = (function(){
                                     continue_process();
                                 },
                                 error => {
-                                    store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                    store.dispatch(coreActions.handleException(
+                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                        error
+                                    ));
                                     continue_process();
                                 }
                             )
@@ -713,7 +731,10 @@ const MopidyMiddleware = (function(){
                                     continue_process();
                                 },
                                 error => {
-                                    store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                    store.dispatch(coreActions.handleException(
+                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                        error
+                                    ));
                                     continue_process();
                                 }
                             );
@@ -761,7 +782,10 @@ const MopidyMiddleware = (function(){
                                     continue_process();
                                 },
                                 error => {
-                                    store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                    store.dispatch(coreActions.handleException(
+                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                        error
+                                    ));
                                     continue_process();
                                 }
                             )
@@ -803,7 +827,10 @@ const MopidyMiddleware = (function(){
                                     continue_process();
                                 },
                                 error => {
-                                    store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                    store.dispatch(coreActions.handleException(
+                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                        error
+                                    ));
                                     continue_process();
                                 }
                             )
@@ -836,7 +863,10 @@ const MopidyMiddleware = (function(){
                                     process_albums();
                                 },
                                 error => {
-                                    store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                    store.dispatch(coreActions.handleException(
+                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                        error
+                                    ));
                                     process_albums();
                                 }
                             );
@@ -884,7 +914,10 @@ const MopidyMiddleware = (function(){
                                         process_artists();
                                     },
                                     error => {
-                                        store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                        store.dispatch(coreActions.handleException(
+                                            "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                            error
+                                        ));
                                         process_artists();
                                     }
                                 );
@@ -935,7 +968,10 @@ const MopidyMiddleware = (function(){
                                         process_playlists();
                                     },
                                     error => {
-                                        store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                        store.dispatch(coreActions.handleException(
+                                            "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                            error
+                                        ));
                                         process_playlists();
                                     }
                             );
@@ -996,7 +1032,10 @@ const MopidyMiddleware = (function(){
                                             finished();
                                         },
                                         error => {
-                                            store.dispatch(coreActions.handleException((error.message ? error.message : "Search failed"),error));
+                                            store.dispatch(coreActions.handleException(
+                                                "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                                error
+                                            ));
                                             finished();
                                         }
                                     );
