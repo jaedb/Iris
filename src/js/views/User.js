@@ -87,7 +87,7 @@ class User extends React.Component{
 			}
 		}
 
-		if (this.props.user && this.props.user.images ){
+		if (this.props.user && this.props.user.images){
 			var image = helpers.sizedImages(this.props.user.images).huge
 		} else {
 			var image = null
@@ -104,8 +104,8 @@ class User extends React.Component{
 						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
 						<h2>
 							<ul className="details">
-								<li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li>
-								<li>{this.props.user.followers.total.toLocaleString()} followers</li>
+								{this.props.user.playlists_total ? <li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li> : null}
+								{this.props.user.followers ? <li>{this.props.user.followers.total.toLocaleString()} followers</li> : null}
 								{this.isMe() ? <li>You</li> : null}
 							</ul>
 						</h2>
