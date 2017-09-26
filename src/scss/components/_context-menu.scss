@@ -343,5 +343,21 @@
 				background: darken($blue, 10%);
 			}
 		}
+
+		@include responsive( $bp_medium ){
+			.context-menu-trigger {	
+				bottom: 8px;
+				right: 43px;
+				width: 32px;
+				height: 8px;
+				padding: 12px 0;
+				z-index: 102;
+
+				.dot {
+					width: 5px;
+					height: 5px;
+				}
+			}
+		}
 	}
 }
