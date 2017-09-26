@@ -39,13 +39,13 @@ class Settings extends React.Component {
 		var changed = false
 		var state = this.state
 		
-		if (newProps.spotify.country != this.state.spotify_country && this.state.input_in_focus != 'spotify_country'){
-			state.spotify_country = newProps.spotify.country
+		if (newProps.core.country != this.state.country && this.state.input_in_focus != 'country'){
+			state.country = newProps.core.country
 			changed = true
 		}
 		
-		if (newProps.spotify.locale != this.state.spotify_locale && this.state.input_in_focus != 'spotify_locale'){
-			state.spotify_locale = newProps.spotify.locale
+		if (newProps.core.locale != this.state.locale && this.state.input_in_focus != 'locale'){
+			state.locale = newProps.core.locale
 			changed = true
 		}
 		
