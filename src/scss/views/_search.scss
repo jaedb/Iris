@@ -18,6 +18,12 @@
 			border-bottom: 2px solid transparent;
 			border-radius: 0;
 
+			/* handle Safari's ridiculous non-vertical centering */
+			&:not(:root:root) {
+				height: 4rem;
+				margin-top: -1rem;
+			}
+
 			&:focus,
 			&:active {
 				border-color: $turquoise;
