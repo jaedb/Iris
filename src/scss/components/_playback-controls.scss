@@ -138,10 +138,6 @@
 				bottom: 2px;
 				left: 60px;
 				right: 60px;
-
-				&.playing .progress {
-					@include animate(1s, linear);
-				}
 			}
 
 			.current {
