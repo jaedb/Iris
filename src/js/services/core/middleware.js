@@ -19,28 +19,36 @@ const CoreMiddleware = (function(){
         switch(action.type){
 
             case 'HANDLE_EXCEPTION':
-                var state = Object.assign({}, store.getState());
+                var message = action.message;
+                var state = store.getState();
+                var exported_state = {
+                    core: Object.assign({},state.core),
+                    ui: Object.assign({},state.ui),
+                    spotify: Object.assign({},state.spotify),
+                    mopidy: Object.assign({},state.mopidy),
+                    pusher: Object.assign({},state.pusher)
+                }
 
                 // Strip out non-essential store info
-                delete state.core.albums
-                delete state.core.artists
-                delete state.core.playlists
-                delete state.core.users
-                delete state.core.queue_metadata
-                delete state.core.current_tracklist
-                delete state.spotify.library_albums
-                delete state.spotify.library_artists
-                delete state.spotify.library_playlists
-                delete state.spotify.autocomplete_results
-                delete state.mopidy.library_albums
-                delete state.mopidy.library_artists
-                delete state.mopidy.library_playlists
+                delete exported_state.core.albums
+                delete exported_state.core.artists
+                delete exported_state.core.playlists
+                delete exported_state.core.users
+                delete exported_state.core.queue_metadata
+                delete exported_state.core.current_tracklist
+                delete exported_state.spotify.library_albums
+                delete exported_state.spotify.library_artists
+                delete exported_state.spotify.library_playlists
+                delete exported_state.spotify.autocomplete_results
+                delete exported_state.mopidy.library_albums
+                delete exported_state.mopidy.library_artists
+                delete exported_state.mopidy.library_playlists
 
                 var data = Object.assign(
                     {},
                     action.data, 
                     {
-                        state: state
+                        state: exported_state
                     }
                 );
 
@@ -51,7 +59,12 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                store.dispatch(uiActions.createNotification(action.message,'bad'));
+                var xhr_response = JSON.parse(action.data.xhr.responseText);        
+                if (xhr_response.error && xhr_response.error.message){
+                    message = message +": "+ xhr_response.error.message;
+                }
+
+                store.dispatch(uiActions.createNotification(message,'bad'));
                 console.error(action.message, data);
                 break;
 

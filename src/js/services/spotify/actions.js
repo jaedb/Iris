@@ -68,7 +68,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                                     xhr: xhr,
                                     status: status,
                                     error: error
-                                })
+                                });
                             }
                         )
                 },

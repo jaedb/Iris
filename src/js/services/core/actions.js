@@ -17,7 +17,17 @@ export function getBroadcasts(){
                     })
                 },
                 (xhr, status, error) => {
-                    console.error('Could not fetch broadcasts from GitHub')
+                    dispatch(
+                        handleException(
+                            'Could not fetch broadcasts from GitHub',
+                            {
+                                config: config,
+                                xhr: xhr,
+                                status: status,
+                                error: error
+                            }
+                        )
+                    );
                 }
             )
     }

@@ -76,37 +76,36 @@ const SpotifyMiddleware = (function(){
                     ReactGA.event({ category: 'Spotify', action: 'Recommendations', label: action.seeds_uris.join(',') })
                 }
                 next(action)
-                break
+                break;
 
             case 'SPOTIFY_USER_LOADED':
                 if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
                 next(action)
-                break
+                break;
 
             case 'SPOTIFY_CREATE_PLAYLIST':
                 store.dispatch( spotifyActions.createPlaylist( action.name, action.description, action.is_private, action.is_collaborative ))
-                break
+                break;
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = Object.assign({},state.core.playlists[action.key]);
-
                 store.dispatch( spotifyActions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
-                break
+                break;
 
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
                 store.dispatch( spotifyActions.addTracksToPlaylist( action.key, action.tracks_uris ))
-                break
+                break;
 
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
                 store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
-                break
+                break;
 
 
             case 'SPOTIFY_SAVE_PLAYLIST':
                 store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
-                break
+                break;
 
             case 'SPOTIFY_NEW_RELEASES_LOADED':
                 store.dispatch({
