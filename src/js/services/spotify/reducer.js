@@ -150,6 +150,26 @@ export default function reducer(spotify = {}, action){
          * Library
          **/
 
+        case 'SPOTIFY_FLUSH_LIBRARY':
+            return Object.assign(
+                {}, 
+                spotify, 
+                { 
+                    library_playlists: null,
+                    library_playlists_loaded_all: null,
+                    library_playlists_status: null,
+                    library_albums: null,
+                    library_albums_status: null,
+                    library_albums_loaded_all: null,
+                    library_artists: null,
+                    library_artists_status: null,
+                    library_artists_loaded_all: null,
+                    library_tracks: null,
+                    library_tracks_status: null,
+                    library_tracks_loaded_all: null
+                }
+            )
+
         case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
             if (spotify.library_playlists){
                 var uris = [...spotify.library_playlists,...action.uris]

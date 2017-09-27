@@ -35,24 +35,41 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
                 ReactGA.event({ category: 'Spotify', action: 'Authorization granted' })
+
+                // Flush out the previous user's library
+                store.dispatch(spotifyActions.flushLibrary());
+
                 next(action)
                 break
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
                 var label = null
-                if (store.getState().spotify.me) label = store.getState().spotify.me.id
+                if (store.getState().spotify.me){
+                    label = store.getState().spotify.me.id;
+                }
                 ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: label })
                 next(action)
-                break
+
+                // Now dispatch a getMe to get the backend-provided user
+                store.dispatch(spotifyActions.getMe())
+
+                // Flush out the previous user's library
+                store.dispatch(spotifyActions.flushLibrary());
+
+                break;
 
             case 'SPOTIFY_IMPORT_AUTHORIZATION':
-                var label = null
+                var label = null;
                 if (action.me && action.me.id){
                     label = action.me.id
                 }
-                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label })
-                next(action)
-                break
+                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label });
+
+                // Flush out the previous user's library
+                store.dispatch(spotifyActions.flushLibrary());
+
+                next(action);
+                break;
 
             case 'SPOTIFY_RECOMMENDATIONS_LOADED':
                 if (action.seeds_uris){
@@ -71,7 +88,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = state.core.playlists[action.key]
+                var playlist = Object.assign({},state.core.playlists[action.key]);
 
                 store.dispatch( spotifyActions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break
