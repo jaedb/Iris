@@ -104,15 +104,7 @@ class Settings extends React.Component {
 	}
 
 	renderSpotifyUser(){
-
-		var user = null
-		if (this.props.spotify.me && this.props.spotify.authorization){
-			user = this.props.spotify.me
-		} else if (this.props.spotify.backend_username){
-			if (this.props.core.users && this.props.core.users['spotify:user:'+this.props.spotify.backend_username] !== undefined){
-				user = this.props.core.users['spotify:user:'+this.props.spotify.backend_username]
-			}
-		}
+		var user = this.props.spotify.me
 
 		if (user){
 			return (
@@ -120,15 +112,6 @@ class Settings extends React.Component {
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.id}
-					</span>
-				</Link>
-			)
-		} else if (this.props.spotify.backend_username){
-			return (
-				<Link className="user" to={global.baseURL+'user/spotify:user:'+this.props.spotify.backend_username}>
-					<Thumbnail circle={true} size="small" />
-					<span className="user-name">
-						{this.props.spotify.backend_username}
 					</span>
 				</Link>
 			)

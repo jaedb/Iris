@@ -122,9 +122,7 @@ const PusherMiddleware = (function(){
 
                             response.type = 'PUSHER_CONFIG'
                             store.dispatch(response)
-                            if (response.config.spotify_username && store.getState().spotify.enabled){
-                                store.dispatch(spotifyActions.getUser('spotify:user:'+response.config.spotify_username))
-                            }
+
                             var core = store.getState().core
                             if (!core.country || !core.locale){
                                 store.dispatch(coreActions.set({
@@ -348,14 +346,8 @@ const PusherMiddleware = (function(){
                 store.dispatch(spotifyActions.set({
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
-                    authorization_url: (action.config.authorization_url ? action.config.authorization_url : null),
-                    backend_username: (action.config.spotify_username ? action.config.spotify_username : null)
+                    authorization_url: (action.config.authorization_url ? action.config.authorization_url : null)
                 }))
-
-                // Get our backend_username user
-                if (store.getState().spotify.access !== 'none' && (!store.getState().core.users || !store.getState().core.users[action.config.spotify_username])){
-                    store.dispatch(spotifyActions.getUser(action.config.spotify_username))
-                }
 
                 next( action )
                 break

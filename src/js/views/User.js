@@ -48,21 +48,8 @@ class User extends React.Component{
 	}
 
 	isMe(){
-		let userid = helpers.getFromUri('userid',this.props.params.uri)
-		switch (this.props.spotify_authentication_provider){
-			case 'backend':
-				if (this.props.spotify_authorized && this.props.me){
-					return userid == this.props.me.id
-				}
-				return false
-				break
-
-			case 'http_api':
-				return userid == this.props.spotify_backend_username
-
-			default:
-				return false
-		}
+		let userid = helpers.getFromUri('userid',this.props.params.uri);
+		return (this.props.me && this.props.me.id && this.props.me.id == userid);
 	}
 
 	render(){
@@ -131,8 +118,6 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
-		spotify_authentication_provider: state.spotify.authentication_provider,
-		spotify_backend_username: state.spotify.backend_username,
 		me: state.spotify.me,
 		playlists: state.core.playlists,
 		user: (state.core.users && state.core.users[ownProps.params.uri] !== undefined ? state.core.users[ownProps.params.uri] : false),

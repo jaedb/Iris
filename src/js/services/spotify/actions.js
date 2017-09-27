@@ -1027,8 +1027,6 @@ export function getUserPlaylists(user_uri){
                     var can_edit = false
                     if (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id){
                         can_edit = true
-                    } else if (response.items[i].owner.id == getState().backend_username){
-                        can_edit = true
                     }
 
                     playlists.push(Object.assign(

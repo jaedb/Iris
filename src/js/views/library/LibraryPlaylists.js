@@ -264,7 +264,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_playlists: state.spotify.library_playlists,
 		spotify_library_playlists_status: state.spotify.library_playlists_status,
 		load_queue: state.ui.load_queue,
-		me_id: (state.spotify.me ? state.spotify.me.id : (state.ui.config && state.ui.config.spotify_username ? state.ui.config.spotify_username : false)),
+		me_id: (state.spotify.me ? state.spotify.me.id : false),
 		view: state.ui.library_playlists_view,
 		source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
 		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
