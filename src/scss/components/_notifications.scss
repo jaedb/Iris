@@ -29,6 +29,13 @@
 			border-bottom: 1px dotted $black;
 		}
 
+		p.description {
+			font-size: 14px;
+			opacity: 0.5;
+			padding-top: 5px;
+			line-height: 1.1em;
+		}
+
 		.close-button {
 			position: absolute;
 			top: 4px;
