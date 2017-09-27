@@ -228,6 +228,9 @@ class Settings extends React.Component {
 								onFocus={e => this.setState({input_in_focus: 'pusher_username'})}
 								onBlur={e => this.handleUsernameBlur(e)}
 								value={this.state.pusher_username } />
+							<div className="description">
+								A non-unique string used to identify this client (no special characters)
+							</div>
 						</div>
 					</div>
 
@@ -268,6 +271,9 @@ class Settings extends React.Component {
 								onFocus={e => this.setState({input_in_focus: 'country'})} 
 								onBlur={e => this.handleBlur('country',e.target.value)} 
 								value={ this.state.country } />
+							<div className="description">
+								An <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code (eg <em>NZ</em>)
+							</div>
 						</div>
 					</div>
 					<div className="field">
@@ -279,6 +285,9 @@ class Settings extends React.Component {
 								onFocus={e => this.setState({input_in_focus: 'locale'})} 
 								onBlur={e => this.handleBlur('locale',e.target.value)} 
 								value={this.state.locale} />
+							<div className="description">
+								Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639</a> language code and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code, joined by an underscore (eg <em>en_NZ</em>)
+							</div>
 						</div>
 					</div>
 
