@@ -171,15 +171,6 @@ input[type="submit"] {
 		}
 	}
 
-	.flag {
-		font-size: 10px;
-		margin-left: 5px;
-		padding: 1px 4px;
-		line-height: 1.2em;
-		vertical-align: top;
-		margin-top: 1px;
-	}
-
 	@include responsive( $bp_medium ){
 		margin-right: 10px;
 		padding-left: 20px;
@@ -201,13 +192,6 @@ input[type="submit"] {
 
 	label {
 		display: inline-block;
-	}
-
-	.description {
-		display: inline-block;
-		padding: 10px 14px;
-		font-size: 12px;
-		opacity: 0.6;
 	}
 
 	.input {
@@ -286,9 +270,17 @@ input[type="submit"] {
 		}
 	}
 
-	.error {
-		color: $red;
+	.description {
 		display: inline-block;
+		padding: 10px 14px;
+		font-size: 12px;
+		opacity: 0.6;
+
+		&.error {
+			color: $red;
+			display: inline-block;
+			opacity: 1;
+		}
 	}
 }
 

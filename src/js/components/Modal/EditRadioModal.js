@@ -161,7 +161,7 @@ export default class EditRadioModal extends React.Component{
 						<span className="button discrete add-uri no-hover" onClick={e => this.addSeed()}>
 							<FontAwesome name="plus" />&nbsp; Add
 						</span>
-						{this.state.error_message ? <span className="error">{this.state.error_message}</span> : null}
+						{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
 					</div>
 				</form>
 
