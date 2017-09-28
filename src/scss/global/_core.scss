@@ -1,4 +1,35 @@
 
+@font-face {
+    font-family: 'Overpass';
+    src: url('../assets/fonts/overpass-italic-webfont.woff2') format('woff2'),
+         url('../assets/fonts/overpass-italic-webfont.woff') format('woff');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Overpass';
+    src: url('../assets/fonts/overpass-regular-webfont.woff2') format('woff2'),
+         url('../assets/fonts/overpass-regular-webfont.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Overpass';
+    src: url('../assets/fonts/overpass-bold-webfont.woff2') format('woff2'),
+         url('../assets/fonts/overpass-bold-webfont.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Overpass';
+    src: url('../assets/fonts/overpass-extrabold-webfont.woff2') format('woff2'),
+         url('../assets/fonts/overpass-extrabold-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
 
 body,
 html {
@@ -108,7 +139,7 @@ main {
 h1 {
 	@include feature_font();
 	color: $white;
-	font-weight: 800;
+	font-weight: 700;
 	font-size: 3rem;
 	line-height: 3.2rem;
 }
@@ -134,7 +165,7 @@ h4 {
 	@include feature_font();
 	font-size: 1.3rem;
 	margin-bottom: 14px;
-	font-weight: 800;
+	font-weight: 700;
 
 	&.underline {
 		padding-bottom: 4px;
