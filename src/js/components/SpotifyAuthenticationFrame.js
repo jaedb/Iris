@@ -81,7 +81,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			'playlist-read-collaborative',
 			'ugc-image-upload' // playlist image uploading
 		]
-		var popup = window.open(url+'&scope='+scopes.join('%20'),"popup","height=680,width=400");
+		var popup = window.open(url+'&scope='+scopes.join('%20'),"popup","height=500,width=350");
 
 		// Start timer to check our popup's state
 		var timer = setInterval(checkPopup, 1000);

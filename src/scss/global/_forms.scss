@@ -140,6 +140,7 @@ input[type="submit"] {
 
 	&.working {
 		position: relative;
+		cursor: wait !important;
 
 		&:after {
 			pointer-events: none;
@@ -147,8 +148,7 @@ input[type="submit"] {
 			display: block;
 			content: '';
 		    animation: slideloader 1s infinite;
-			background: $mid_grey;
-			opacity: 0.5;
+			background: rgba(200,200,200,0.4);
 			top: 0;
 			left: 0;
 			bottom: 0;

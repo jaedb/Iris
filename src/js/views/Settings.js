@@ -286,25 +286,27 @@ class Settings extends React.Component {
 								onBlur={e => this.handleBlur('locale',e.target.value)} 
 								value={this.state.locale} />
 							<div className="description">
-								Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639</a> language code and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code, joined by an underscore (eg <em>en_NZ</em>)
+								Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a> and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>, joined by an underscore (eg <em>en_NZ</em>)
 							</div>
 						</div>
 					</div>
 
 					<h4 className="underline">Spotify</h4>
-					<div className="field">
-						<div className="name">Authorization</div>
-						<div className="input">
-							<SpotifyAuthenticationFrame />
-							{ this.renderSendAuthorizationButton() }
-						</div>
-					</div>
+
 					<div className="field current-user">
 						<div className="name">Current user</div>
 						<div className="input">
 							<div className="text">
 								{ this.renderSpotifyUser() }
 							</div>
+						</div>
+					</div>	
+					<div className="field">
+						<div className="name">Authorization</div>
+						<div className="input">
+							<SpotifyAuthenticationFrame />
+							{ this.renderSendAuthorizationButton() }
+							{this.props.spotify.refreshing_token ? <button className="working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
 						</div>
 					</div>
 
@@ -353,7 +355,6 @@ class Settings extends React.Component {
 						<div className="name">Reset</div>
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-					        <button onClick={e => this.props.spotifyActions.refreshingToken()}>Refresh Spotify token</button>
 				        </div>
 			        </div>
 

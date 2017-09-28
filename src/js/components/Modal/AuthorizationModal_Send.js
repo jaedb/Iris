@@ -31,7 +31,7 @@ class AuthorizationModal_Send extends React.Component{
 		}
 
 		if (connections.length <= 0){
-			return <div className="no-results">No connections available</div>
+			return <div className="no-results">No peer connections available</div>
 		} else {
 			return (
 				<div className="list small pusher-connection-list">
