@@ -74,6 +74,7 @@
 						width: 100%;
 						color: $white;
 						border-bottom: 2px solid $white;
+						border-radius: 0;
 
 						&:focus,
 						&:active {
@@ -175,8 +176,8 @@
 			}			
 		}
 
-		button.add-uri,
-		button.remove-uri {
+		.add-uri,
+		.remove-uri {
 			position: absolute;
 			top: 5px;
 			right: 0;
