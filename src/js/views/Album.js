@@ -27,7 +27,7 @@ class Album extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadAlbum() 
+		this.loadAlbum();
 	}
 
 	handleContextMenu(e){

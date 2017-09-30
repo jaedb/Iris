@@ -59,9 +59,11 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                var xhr_response = JSON.parse(action.data.xhr.responseText);        
-                if (xhr_response.error && xhr_response.error.message){
-                    message = message+'<p class="description">'+xhr_response.error.message+'</p>';
+                if (action.data.xhr){
+                    var xhr_response = JSON.parse(action.data.xhr.responseText);        
+                    if (xhr_response.error && xhr_response.error.message){
+                        message = message+'<p class="description">'+xhr_response.error.message+'</p>';
+                    }
                 }
 
                 store.dispatch(uiActions.createNotification(message,'bad'));

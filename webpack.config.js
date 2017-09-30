@@ -122,15 +122,15 @@ if (isDev){
 	// set compiled css location
 	config.plugins.push( new ExtractTextPlugin("app.min.css") );
 	
-	// uglify our js, with no sourcemaps
+	// uglify our js
+	config.devtool = 'sourcemap';
 	config.plugins.push(
-			new webpack.optimize.UglifyJsPlugin({
-				compress: true,
-				mangle: false,
-				sourceMap: false,
-				comments: false
-			})
-		);
+		new webpack.optimize.UglifyJsPlugin({
+			compress: true,
+			mangle: false,
+			sourceMap: true
+		})
+	);
 }
 
 // now export our collated config object

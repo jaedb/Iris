@@ -52,6 +52,7 @@ const PusherMiddleware = (function(){
 
     const request = (store, method, data = {}) => {
         return new Promise( (resolve, reject) => {
+
             var request_id = helpers.generateGuid()
             var message = {
                 method: method,
@@ -61,6 +62,15 @@ const PusherMiddleware = (function(){
             socket.send( JSON.stringify(message) )
 
             store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method))
+
+            // Start our 10 second timeout
+            var timeout = setTimeout(
+                function(){
+                    store.dispatch(uiActions.stopLoading(request_id));
+                    reject({message: "Request timed out", method: method, data: data});
+                },
+                10000
+            );
             
             // add query to our deferred responses
             deferredRequests[request_id] = {
@@ -130,6 +140,12 @@ const PusherMiddleware = (function(){
                                     locale: response.config.locale
                                 }))
                             }
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load config',
+                                error
+                            ));
                         }
                     )
                 request(store, 'get_version')
@@ -141,6 +157,12 @@ const PusherMiddleware = (function(){
                             }
                             response.type = 'PUSHER_VERSION'
                             store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load version',
+                                error
+                            ));
                         }
                     )
                 request(store, 'get_radio')
@@ -153,6 +175,12 @@ const PusherMiddleware = (function(){
 
                             response.type = 'PUSHER_RADIO'
                             store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load radio',
+                                error
+                            ));
                         }
                     )
 
@@ -166,6 +194,12 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Instruct failed',
+                                error
+                            ));
                         }
                     )
                 break
@@ -175,6 +209,12 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch( uiActions.createNotification('Message delivered') )
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not deliver message',
+                                error
+                            ));
                         }
                     )
                 break
@@ -189,6 +229,12 @@ const PusherMiddleware = (function(){
                         response => {
                             response.type = 'PUSHER_QUEUE_METADATA'
                             store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load queue metadata',
+                                error
+                            ));
                         }
                     )
                 break;
@@ -204,23 +250,29 @@ const PusherMiddleware = (function(){
             case 'PUSHER_START_UPGRADE':
                 ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
                 request(store, 'upgrade')
-                .then(
-                    response => {
-                        if (response.error){
-                            console.error(response.error)
-                            return false
-                        }
+                    .then(
+                        response => {
+                            if (response.error){
+                                console.error(response.error)
+                                return false
+                            }
 
-                        if (response.upgrade_successful){
-                            store.dispatch( uiActions.createNotification('Upgrade complete') )
-                        }else{
-                            store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
-                        }
+                            if (response.upgrade_successful){
+                                store.dispatch( uiActions.createNotification('Upgrade complete') )
+                            }else{
+                                store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
+                            }
 
-                        response.type = 'PUSHER_VERSION'
-                        store.dispatch(response)
-                    }
-                )
+                            response.type = 'PUSHER_VERSION'
+                            store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not start upgrade',
+                                error
+                            ));
+                        }
+                    )
                 return next(action);
                 break;
 
@@ -236,6 +288,12 @@ const PusherMiddleware = (function(){
                         }
                         response.type = 'PUSHER_USERNAME_CHANGED'
                         store.dispatch(response)
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Could not set username',
+                            error
+                        ));
                     }
                 )
                 return next(action);
@@ -251,6 +309,12 @@ const PusherMiddleware = (function(){
                         }
                         response.type = 'PUSHER_CONNECTIONS'
                         store.dispatch(response)
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Could not load connections',
+                            error
+                        ));
                     }
                 )
                 return next(action);
@@ -293,12 +357,20 @@ const PusherMiddleware = (function(){
                 }
 
                 request(store, 'change_radio', data)
-                .then(response => {
-                    if (response.status == 0){
-                        store.dispatch(uiActions.createNotification(response.message, 'bad'))
-                    }
-                    store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'))
-                })
+                    .then(
+                        response => {
+                            if (response.status == 0){
+                                store.dispatch(uiActions.createNotification(response.message, 'bad'))
+                            }
+                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'))
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not change radio',
+                                error
+                            ));
+                        }
+                    )
                 break
 
             case 'PUSHER_STOP_RADIO':
@@ -357,6 +429,12 @@ const PusherMiddleware = (function(){
                 .then(
                     response => {
                         store.dispatch({type: 'DEBUG', response: response})
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Could not debug',
+                            error
+                        ));
                     }
                 )
                 break;

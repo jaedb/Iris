@@ -79,7 +79,11 @@ class IrisCore(object):
 
 
     def send_message(self, to, data):
-        self.connections[to]['connection'].write_message( json_encode(data) )
+        try:
+            self.connections[to]['connection'].write_message( json_encode(data) )
+        except:
+            self.raven_client.captureException()
+            logger.error('Failed to send message to '+ to)
 
 
     def broadcast(self, data):
