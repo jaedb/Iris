@@ -1,4 +1,13 @@
 
+/**
+ * Iris builder 
+ *
+ * Collates all static elements into the mopidy_iris Python package folder
+ * We also amend all related files with the latest build version
+ *
+ * To run, execute npm run dev|build|prod|release
+ **/
+
 var fs = require('fs');
 var copydir = require('copy-dir');
 

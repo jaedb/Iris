@@ -1,5 +1,12 @@
 #!/bin/bash
 
+##
+# Release Iris
+#
+# This provides shortcuts to the Git commands during a release. Essentially it commits
+# everything and creates a new tag, based on the current version number.
+##
+
 VERSION=$(cat VERSION.md)
 
 echo -e "Releasing $VERSION"
