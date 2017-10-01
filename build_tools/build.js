@@ -16,10 +16,7 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		console.log('Copied assets');
 
 		var html_file = "mopidy_iris/static/index.html";
-		fs.createReadStream("src/index.html").pipe(fs.createWriteStream(html_file));
-		console.log('Copied HTML');
-
-		var html_file_content = fs.readFileSync(html_file, "utf8");
+		var html_file_content = fs.readFileSync("src/index.html", "utf8");
 		html_file_content = html_file_content.replace("VERSION_HERE", version);
 		html_file_content = html_file_content.replace("BUILD_HERE", build);
 		fs.writeFileSync(html_file, html_file_content, 'utf8');
