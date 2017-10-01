@@ -2,7 +2,6 @@
 var fs = require('fs');
 var copydir = require('copy-dir');
 
-var filename, file;
 var version = fs.readFileSync("build_tools/VERSION.md", "utf8");
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');
@@ -16,28 +15,27 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 	} else {
 		console.log('Copied assets');
 
-		filename = "mopidy_iris/static/index.html";
-		fs.createReadStream("src/index.html").pipe(fs.createWriteStream(filename));
+		var html_file = "mopidy_iris/static/index.html";
+		fs.createReadStream("src/index.html").pipe(fs.createWriteStream(html_file));
 		console.log('Copied HTML');
 
-		filename = "mopidy_iris/static/index.html";
-		file = fs.readFileSync(filename, "utf8");
-		file = file.replace("VERSION_HERE", version);
-		file = file.replace("BUILD_HERE", build);
-		fs.writeFileSync(filename, file, 'utf8');
+		var html_file_content = fs.readFileSync(html_file, "utf8");
+		html_file_content = html_file_content.replace("VERSION_HERE", version);
+		html_file_content = html_file_content.replace("BUILD_HERE", build);
+		fs.writeFileSync(html_file, html_file_content, 'utf8');
 		console.log('Setting version in HTML');
 
 		console.log('Setting version in Python');
-		filename = "mopidy_iris/__init__.py";
-		file = fs.readFileSync(filename, "utf8");
-		file = file.replace(/(?:__version__\ \=\ \')(?:.*)'/, "__version__ = '"+version+"'");
-		fs.writeFileSync(filename, file, 'utf8');
+		var init_file = "mopidy_iris/__init__.py";
+		var init_file_content = fs.readFileSync(init_file, "utf8");
+		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \')(?:.*)'/, "__version__ = '"+version+"'");
+		fs.writeFileSync(init_file, init_file_content, 'utf8');
 
 		console.log('Setting version in NPM');
-		filename = "package.json";
-		file = fs.readFileSync(filename, "utf8");
-		file = file.replace(/(?:\"version\"\:\ \")(?:.*)"/, '"version": "'+version+'"');
-		fs.writeFileSync(filename, file, 'utf8');
+		var package_file = "package.json";
+		var package_file_content = fs.readFileSync(package_file, "utf8");
+		package_file_content = package_file_content.replace(/(?:\"version\"\:\ \")(?:.*)"/, '"version": "'+version+'"');
+		fs.writeFileSync(package_file, package_file_content, 'utf8');
 
 		console.log('Done!');
 		return true;
