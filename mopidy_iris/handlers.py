@@ -133,7 +133,7 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(mem.iris, slug):
 
             # make the call, and return it's response
-            self.write(getattr(mem.iris, slug)(data={}, request=self.request))
+            self.write(getattr(mem.iris, slug)(request=self.request))
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({

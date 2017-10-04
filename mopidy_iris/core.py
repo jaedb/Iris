@@ -160,8 +160,17 @@ class IrisCore(object):
                 logger.error('Failed to close connection to '+ connection_id)           
 
     def set_username(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'set_username'
+            }
+
         connection_id = data['connection_id']
-        data = kwargs.get('data', None)
 
         if connection_id in self.connections:
             self.connections[connection_id]['client']['username'] = data['username']
@@ -187,7 +196,15 @@ class IrisCore(object):
             }         
 
     def deliver_message(self, *args, **kwargs):
-        data = kwargs.get('data', "{}")
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'deliver_message'
+            }
 
         if data['connection_id'] in self.connections:
             self.send_message(connection_id=data['connection_id'], data=data['message'])
@@ -234,7 +251,6 @@ class IrisCore(object):
         }
 
     def get_version(self, *args, **kwargs):
-
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
         req = urllib2.Request(url)
         
@@ -289,7 +305,15 @@ class IrisCore(object):
         }
 
     def change_radio(self, *args, **kwargs):
-        data = kwargs.get('data', None)
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'change_radio'
+            }
 
         # figure out if we're starting or updating radio mode
         if data['update'] and self.radio['enabled']:
@@ -459,7 +483,15 @@ class IrisCore(object):
         }
 
     def add_queue_metadata(self, *args, **kwargs):
-        data = kwargs.get('data', None)
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'add_queue_metadata'
+            }
 
         for tlid in data['tlids']:
             item = {
@@ -549,7 +581,7 @@ class IrisCore(object):
             error = json.loads(e.read())
 
             return {
-                'type': 'error',
+                'status': 0,
                 'message': 'Could not refresh token: '+error['error_description'],
                 'source': 'refresh_spotify_token'
             }
@@ -564,18 +596,25 @@ class IrisCore(object):
     ##
 
     def proxy_request(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'proxy_request'
+            }
 
-        data = kwargs.get('data', None)
         origin_request = kwargs.get('request', None)
 
         # Our request includes data, so make sure we POST the data
         if 'url' not in data:
             self.raven_client.captureException()
             return {
-                'type': 'error',
-                'message': 'Could not complete proxy request',
+                'status': 0,
+                'message': 'Malformed data (missing URL)',
                 'source': 'proxy_request',
-                'error': "Missing URL property",
                 'original_request': data
             }
 
@@ -606,7 +645,8 @@ class IrisCore(object):
             try:
                 response = json.loads(target_response_body)
                 return {
-                    'response': response
+                    'response': response,
+                    'response_code': int(target_response.code)
                 }
             except:
                 return {
@@ -616,18 +656,20 @@ class IrisCore(object):
         except urllib2.HTTPError as e:
             self.raven_client.captureException()
             return {
-                'type': 'error',
+                'status': 0,
                 'message': 'Could not complete proxy request',
                 'source': 'proxy_request',
                 'response': e.read(),
+                'response_code': int(e.code),
                 'original_request': data
             }
 
         except urllib2.URLError as e:
             self.raven_client.captureException()
             return {
-                'type': 'error',
+                'status': 0,
                 'message': 'Could not complete proxy request',
                 'source': 'proxy_request',
+                'response_code': int(e.code),
                 'original_request': data
             }
