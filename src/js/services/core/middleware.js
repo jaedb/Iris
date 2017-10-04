@@ -1,13 +1,14 @@
 
 import ReactGA from 'react-ga'
 
-var coreActions = require('./actions.js')
-var uiActions = require('../ui/actions.js')
-var pusherActions = require('../pusher/actions.js')
-var mopidyActions = require('../mopidy/actions.js')
-var spotifyActions = require('../spotify/actions.js')
-var lastfmActions = require('../lastfm/actions.js')
-var helpers = require('../../helpers.js')
+var coreActions = require('./actions.js');
+var uiActions = require('../ui/actions.js');
+var pusherActions = require('../pusher/actions.js');
+var mopidyActions = require('../mopidy/actions.js');
+var spotifyActions = require('../spotify/actions.js');
+var lastfmActions = require('../lastfm/actions.js');
+var geniusActions = require('../genius/actions.js');
+var helpers = require('../../helpers.js');
 
 const CoreMiddleware = (function(){
 
@@ -71,9 +72,8 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'CORE_START_SERVICES':
-                store.dispatch(mopidyActions.connect())
-                store.dispatch(pusherActions.connect())
-                store.dispatch(lastfmActions.connect())
+                store.dispatch(mopidyActions.connect());
+                store.dispatch(pusherActions.connect());
 
                 next(action)
                 break

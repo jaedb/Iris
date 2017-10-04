@@ -24,7 +24,9 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
 
                     // prepend the API baseurl, unless the endpoint already has it (ie pagination requests)
                     var url = 'https://api.spotify.com/v1/'+endpoint
-                    if (endpoint.startsWith('https://api.spotify.com/')) url = endpoint;
+                    if (endpoint.startsWith('https://api.spotify.com/')){
+                        url = endpoint;
+                    }
 
                     // create our ajax request config
                     var config = {

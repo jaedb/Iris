@@ -174,6 +174,7 @@ class Debug extends React.Component{
 									<option value='{"method":"set_username","data":{"connection_id":"CONNECTION_ID_HERE","username":"NewUsername"}}'>Change username</option>
 									<option value='{"method":"refresh_spotify_token"}'>Refresh Spotify token</option>
 									<option value='{"method":"perform_upgrade"}'>Perform upgrade (beta)</option>
+									<option value='{"method":"proxy_request","data":{"url":"https://jsonplaceholder.typicode.com/posts/1"}}'>Proxy request</option>
 								</select>
 							</div>
 						</div>
