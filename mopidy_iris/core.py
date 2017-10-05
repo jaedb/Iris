@@ -563,7 +563,7 @@ class IrisCore(object):
         req = urllib2.Request(url, data_encoded)
 
         try:
-            response = urllib2.urlopen(req, timeout=15).read()
+            response = urllib2.urlopen(req, timeout=30).read()
             response_dict = json.loads(response)
             self.spotify_token = response_dict
 
@@ -626,9 +626,12 @@ class IrisCore(object):
             target_request_headers = {}
 
         # Adjust headers
+        target_request_headers["Accept-Language"] = "*" 
         target_request_headers["Accept-Encoding"] = "deflate" 
         if "Content-Type" in target_request_headers:
             del target_request_headers["Content-Type"]
+        if "Host" in target_request_headers:
+            del target_request_headers["Host"]
 
         # Our request includes data, so make sure we POST the data
         if ('data' in data and data['data']):
@@ -636,10 +639,17 @@ class IrisCore(object):
 
         # No data, so just a simple GET request
         else:
+
+            # Strip out our origin content-length otherwise this confuses
+            # the target server as content-length doesn't apply to GET requests
+            if "Content-Length" in target_request_headers:
+                del target_request_headers["Content-Length"]
+
             target_request = urllib2.Request(data['url'], headers=target_request_headers)
 
+        # Now actually attempt the request
         try:
-            target_response = urllib2.urlopen(target_request, timeout=15)
+            target_response = urllib2.urlopen(target_request, timeout=30)
             target_response_body = target_response.read()
 
             try:
@@ -654,7 +664,6 @@ class IrisCore(object):
                 }
 
         except urllib2.HTTPError as e:
-            self.raven_client.captureException()
             return {
                 'status': 0,
                 'message': 'Could not complete proxy request',
@@ -665,11 +674,19 @@ class IrisCore(object):
             }
 
         except urllib2.URLError as e:
-            self.raven_client.captureException()
             return {
                 'status': 0,
                 'message': 'Could not complete proxy request',
                 'source': 'proxy_request',
                 'response_code': int(e.code),
+                'original_request': data
+            }
+
+        else:
+            return {
+                'status': 0,
+                'message': 'Could not complete proxy request',
+                'source': 'proxy_request',
+                'response_code': null,
                 'original_request': data
             }

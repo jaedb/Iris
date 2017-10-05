@@ -19,13 +19,17 @@ export default class TrackInfoModal extends React.Component{
 	}
 
 	render(){
-		var track = this.props.current_track;
+		if (this.props.current_track){
+			var track = this.props.current_track;
+		} else {
+			var track = null
+		}
 
 		return (
 			<div>
 				<h1>Track info</h1>
-				<h2 className="grey-text">{track.name} by <ArtistSentence artists={track.artists} /></h2>
-				{track.annotations ? track.annotations.id : "No annotations"}
+				{track ? <h2 className="grey-text">{track.name} by <ArtistSentence artists={track.artists} /></h2> : null}
+				{track && track.annotations ? track.annotations.id : "No annotations"}
 			</div>
 		)
 	}

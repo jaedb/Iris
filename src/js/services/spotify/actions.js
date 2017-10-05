@@ -33,6 +33,7 @@ const sendRequest = ( dispatch, getState, endpoint, method = 'GET', data = false
                         method: method,
                         url: url,
                         cached: true,
+                        timeout: 15000,
                         headers: {
                             Authorization: 'Bearer '+ response
                         }

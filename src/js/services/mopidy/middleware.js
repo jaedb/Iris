@@ -159,13 +159,13 @@ const MopidyMiddleware = (function(){
             var loader_key = helpers.generateGuid()
             store.dispatch(uiActions.startLoading(loader_key, 'mopidy_'+property))
 
-            // Start our 10 second timeout
+            // Start our 15 second timeout
             var timeout = setTimeout(
                 function(){
                     store.dispatch(uiActions.stopLoading(loader_key));
                     reject({message: "Request timed out", call: call, value: value});
                 },
-                10000
+                15000
             );
 
             mopidyObject(value)

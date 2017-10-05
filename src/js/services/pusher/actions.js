@@ -59,7 +59,7 @@ export function sendAuthorization( recipient_connectionid, authorization, me ){
 	return {
 		type: 'PUSHER_DELIVER_MESSAGE',
 		data: {
-			to: recipient_connectionid,
+			connection_id: recipient_connectionid,
 			message: {
 				type: 'spotify_authorization',
 				authorization: authorization,

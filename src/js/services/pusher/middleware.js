@@ -63,13 +63,13 @@ const PusherMiddleware = (function(){
 
             store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method))
 
-            // Start our 10 second timeout
+            // Start our 15 second timeout
             var timeout = setTimeout(
                 function(){
                     store.dispatch(uiActions.stopLoading(request_id));
                     reject({message: "Request timed out", method: method, data: data});
                 },
-                10000
+                15000
             );
             
             // add query to our deferred responses

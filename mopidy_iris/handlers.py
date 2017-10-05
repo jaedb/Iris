@@ -122,10 +122,17 @@ class HttpHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")        
 
     def initialize(self, core, config):
         self.core = core
         self.config = config
+
+    # Options request
+    # This is a preflight request for CORS requests
+    def options(self, slug=None):
+        self.set_status(204)
+        self.finish()
     
     def get(self, slug=None):
 

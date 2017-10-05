@@ -7,6 +7,7 @@ export function getBroadcasts(){
     return (dispatch, getState) => {
         var config = {
             method: 'GET',
+            timeout: 15000,
             url: 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
         }
         $.ajax(config).then( 

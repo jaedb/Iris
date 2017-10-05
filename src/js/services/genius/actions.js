@@ -4,7 +4,7 @@ var uiActions = require('../ui/actions')
 var helpers = require('../../helpers')
 
 /**
- * Send an ajax request to the Spotify API
+ * Send an ajax request
  *
  * @param dispatch obj
  * @param getState obj
@@ -17,26 +17,33 @@ const sendRequest = (dispatch, getState, endpoint) => {
         dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
 
         var config = {
-            method: 'GET',
+            method: 'POST',
             cache: false,
-            url: 'https://api.genius.com/'+endpoint+'&access_token=2AGP9sfzKQcxfKSZuGa_3lqsDIpuOiTGT7-vhJYcKaaDjHIIA2HICsxXCiC30Xxi'
+            timeout: 15000,
+            headers: {
+                Authorization: 'Bearer 2AGP9sfzKQcxfKSZuGa_3lqsDIpuOiTGT7-vhJYcKaaDjHIIA2HICsxXCiC30Xxi'
+            },
+            data: JSON.stringify({
+                url: 'https://api.genius.com/'+endpoint
+            }),
+            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
         };
 
         $.ajax(config).then( 
-                response => {
-                    dispatch(uiActions.stopLoading(loader_key));
-                    resolve(response.response);
-                },
-                (xhr, status, error) => {
-                    dispatch(uiActions.stopLoading(loader_key));
-                    reject({
-                        config: config,
-                        xhr: xhr,
-                        status: status,
-                        error: error
-                    });
-                }
-            )
+            response => {
+                dispatch(uiActions.stopLoading(loader_key));
+                resolve(response.response);
+            },
+            (xhr, status, error) => {
+                dispatch(uiActions.stopLoading(loader_key));
+                reject({
+                    config: config,
+                    xhr: xhr,
+                    status: status,
+                    error: error
+                });
+            }
+        )
     })
 }
 
@@ -49,15 +56,15 @@ export function getTrackInfo(track){
         }
         query += track.name;
 
-        sendRequest(dispatch, getState, 'search?q='+query)
+        sendRequest(dispatch, getState, 'search?q='+encodeURIComponent(query))
             .then(
                 response => {
-                    if (response.hits && response.hits.length > 0){
+                    if (response.response.hits && response.response.hits.length > 0){
                         dispatch({
                             type: 'TRACK_LOADED',
                             key: track.uri,
                             track: {
-                                annotations: response.hits[0].result
+                                annotations: response.response.hits[0].result
                             }
                         });
                     }
@@ -68,6 +75,6 @@ export function getTrackInfo(track){
                         error
                     ));
                 }
-            )
+            );
     }
 }
