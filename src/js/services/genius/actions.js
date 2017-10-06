@@ -47,6 +47,51 @@ const sendRequest = (dispatch, getState, endpoint) => {
     })
 }
 
+export function getTrackLyrics(track){
+    return (dispatch, getState) => {
+
+        var query = '';
+        for (var i = 0; i < track.artists.length; i++){
+            query += track.artists[i].name+' ';
+        }
+        query += track.name+' lyrics';
+        query = query.replace(/\s+/g, '-').toLowerCase();
+
+        var config = {
+            method: 'POST',
+            cache: false,
+            timeout: 15000,
+            data: JSON.stringify({
+                url: 'https://genius.com/'+query
+            }),
+            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
+        };
+
+        $.ajax(config).then( 
+            response => {
+                var html = $(response.response);
+                var lyrics = html.find('.lyrics');
+                if (lyrics.length > 0){
+
+                    lyrics = lyrics.first();
+                    lyrics.find('a').replaceWith(function(){ return this.innerHTML; });
+
+                    dispatch({
+                        type: 'TRACK_LOADED',
+                        key: track.uri,
+                        track: {
+                            lyrics: lyrics.html()
+                        }
+                    });
+                }
+            },
+            (xhr, status, error) => {
+                console.log(xhr, status, error)
+            }
+        )
+    }
+}
+
 export function getTrackInfo(track){
     return (dispatch, getState) => {
 

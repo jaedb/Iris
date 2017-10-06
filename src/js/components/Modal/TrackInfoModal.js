@@ -13,8 +13,14 @@ export default class TrackInfoModal extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.current_track && !this.props.current_track.annotations){
-			this.props.geniusActions.getTrackInfo(this.props.current_track);
+		if (this.props.current_track && !this.props.current_track.lyrics){
+			this.props.geniusActions.getTrackLyrics(this.props.current_track);
+		}
+	}
+
+	componentWillReceiveProps(nextProps){
+		if (nextProps.current_track && nextProps.current_track.uri !== this.props.current_track.uri && !nextProps.current_track.lyrics){
+			this.props.geniusActions.getTrackLyrics(nextProps.current_track);
 		}
 	}
 
@@ -29,7 +35,7 @@ export default class TrackInfoModal extends React.Component{
 			<div>
 				<h1>Track info</h1>
 				{track ? <h2 className="grey-text">{track.name} by <ArtistSentence artists={track.artists} /></h2> : null}
-				{track && track.annotations ? track.annotations.id : "No annotations"}
+				{track && track.lyrics ? <div className="lyrics" dangerouslySetInnerHTML={{__html: track.lyrics}}></div> : "No lyrics"}
 			</div>
 		)
 	}
