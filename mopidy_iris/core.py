@@ -5,6 +5,7 @@ import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, m
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
+import requests
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
@@ -559,13 +560,9 @@ class IrisCore(object):
             'grant_type': 'client_credentials'
         }
 
-        data_encoded = urllib.urlencode( data )
-        req = urllib2.Request(url, data_encoded)
-
         try:
-            response = urllib2.urlopen(req, timeout=30).read()
-            response_dict = json.loads(response)
-            self.spotify_token = response_dict
+            response = requests.post(url, data)
+            self.spotify_token = response.json()
 
             self.broadcast(
                 data={
@@ -622,72 +619,63 @@ class IrisCore(object):
         # Construct request headers
         # If we have an original request, pass through it's headers
         if origin_request:
-            target_request_headers = origin_request.headers
+            headers = origin_request.headers
         else:
-            target_request_headers = {}
+            headers = {}
 
         # Adjust headers
-        target_request_headers["Accept-Language"] = "*" 
-        target_request_headers["Accept-Encoding"] = "deflate" 
-        if "Content-Type" in target_request_headers:
-            del target_request_headers["Content-Type"]
-        if "Host" in target_request_headers:
-            del target_request_headers["Host"]
-
-        # Our request includes data, so make sure we POST the data
-        if ('data' in data and data['data']):
-            target_request = urllib2.Request(data['url'], data=urllib.urlencode(data['data']), headers=target_request_headers)
-
-        # No data, so just a simple GET request
-        else:
-
-            # Strip out our origin content-length otherwise this confuses
-            # the target server as content-length doesn't apply to GET requests
-            if "Content-Length" in target_request_headers:
-                del target_request_headers["Content-Length"]
-
-            target_request = urllib2.Request(data['url'], headers=target_request_headers)
+        headers["Accept-Language"] = "*" 
+        headers["Accept-Encoding"] = "deflate" 
+        if "Content-Type" in headers:
+            del headers["Content-Type"]
+        if "Host" in headers:
+            del headers["Host"]
+        if "X-Requested-With" in headers:
+            del headers["X-Requested-With"]
+        if "X-Forwarded-Server" in headers:
+            del headers["X-Forwarded-Server"]
+        if "X-Forwarded-Host" in headers:
+            del headers["X-Forwarded-Host"]
+        if "X-Forwarded-For" in headers:
+            del headers["X-Forwarded-For"]
+        if "Referrer" in headers:
+            del headers["Referrer"]
 
         # Now actually attempt the request
         try:
-            target_response = urllib2.urlopen(target_request, timeout=30)
-            target_response_body = target_response.read()
+            # Our request includes data, so make sure we POST the data
+            if ('data' in data and data['data']):
+                response = requests.post(data['url'], data=data['data'], headers=headers, verify=False)
 
+            # No data, so just a simple GET request
+            else:
+
+                # Strip out our origin content-length otherwise this confuses
+                # the target server as content-length doesn't apply to GET requests
+                if "Content-Length" in headers:
+                    del headers["Content-Length"]
+
+                response = requests.get(data['url'], headers=headers, verify=False)
+
+
+            # Attempt to decode body as JSON, otherwise just return plain text
             try:
-                response = json.loads(target_response_body)
                 return {
-                    'response': response,
-                    'response_code': int(target_response.code)
+                    'response_code': int(response.status_code),
+                    'response': response.json()
                 }
             except:
                 return {
-                    'response': target_response_body
+                    'response_code': int(response.status_code),
+                    'response': response.text
                 }
 
-        except urllib2.HTTPError as e:
+        except requests.exceptions.RequestException as e:
             return {
                 'status': 0,
                 'message': 'Could not complete proxy request',
                 'source': 'proxy_request',
-                'response': e.read(),
-                'response_code': int(e.code),
-                'original_request': data
-            }
-
-        except urllib2.URLError as e:
-            return {
-                'status': 0,
-                'message': 'Could not complete proxy request',
-                'source': 'proxy_request',
-                'response_code': int(e.code),
-                'original_request': data
-            }
-
-        else:
-            return {
-                'status': 0,
-                'message': 'Could not complete proxy request',
-                'source': 'proxy_request',
-                'response_code': null,
+                'response': e.text,
+                'response_code': int(e.response_code),
                 'original_request': data
             }

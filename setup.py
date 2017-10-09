@@ -25,7 +25,8 @@ setup(
         'Mopidy >= 2.0',
         'Mopidy-Local-Images >= 1.0',
         'ConfigObj >= 5.0.6',
-        'raven >= 6.1.0'
+        'raven >= 6.1.0',
+        'requests >= 2.0.0'
     ],
     classifiers=[
         'Environment :: No Input/Output (Daemon)',
