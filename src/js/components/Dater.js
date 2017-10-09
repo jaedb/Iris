@@ -111,6 +111,10 @@ export default class Dater extends React.Component{
 	}
 
 	render(){
-		return <span className="dater">{ this.calculate() }</span>
+		if (!this.props.data){
+			return null;
+		} else {
+			return <span className="dater">{ this.calculate() }</span>
+		}
 	}
 }

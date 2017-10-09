@@ -1,0 +1,83 @@
+
+main .track-view {
+	padding-left: 30%;
+	position: relative;
+
+	.title {
+		h2 {
+			a:hover {
+				color: darken($mid_grey, 20%);
+			}
+		}
+
+		.details {
+			padding: 25px 0 30px;
+		}
+	}
+
+	.actions {
+		padding-bottom: 30px;
+	}
+
+	.thumbnail-wrapper {
+		position: absolute;
+		padding: 40px;
+		width: 30%;
+		top: 0;
+		left: 0;
+		box-sizing: border-box;
+
+		.thumbnail {
+			max-width: 100%;
+		}
+	}
+
+	.lyrics {
+		p {
+			line-height: 0.8em;
+		}
+	}
+
+	@include responsive( $bp_medium ){
+		padding-top: 0;
+		padding-left: 10px;
+
+		.thumbnail-wrapper {
+			width: 40%;
+			padding: 10px 20px 10px 0;
+			float: left;
+			position: static;
+
+			.thumbnail {
+				float: none;
+				max-width: none;
+				margin: 0 0 0 0;
+			}
+		}
+
+		.title {
+			padding: 30px 0 20px 40%;
+
+			.details {
+				padding: 5px 0;
+			}
+		}
+
+		.actions {
+			@include clearfix();
+			padding: 10px 0 20px 40%;
+		}
+	}
+
+	@include responsive( $bp_small ){
+		.title {
+			@include clearfix();
+			padding: 20px 20px 10px 40%;
+			min-height: 20vw;
+		}
+
+		.actions {
+			padding: 0;
+		}
+	}
+}

@@ -1703,6 +1703,27 @@ const MopidyMiddleware = (function(){
 
                 next(action)
                 break
+
+            case 'MOPIDY_GET_TRACK':
+                instruct( socket, store, 'library.lookup', action.data )
+                    .then(
+                        response => {
+                            if (response.length > 0){
+                                store.dispatch({
+                                    type: 'TRACK_LOADED',
+                                    key: action.data.uri,
+                                    track: response[0]
+                                });
+                            }
+                        },
+                        error => {
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Could not get track"),
+                                error
+                            ));
+                        }
+                    )
+                break
                 
 
             /**

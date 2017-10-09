@@ -59,7 +59,7 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                if (action.data.xhr){
+                if (action.data.xhr && action.data.xhr.responseText){
                     var xhr_response = JSON.parse(action.data.xhr.responseText);        
                     if (xhr_response.error && xhr_response.error.message){
                         message = message+'<p class="description">'+xhr_response.error.message+'</p>';

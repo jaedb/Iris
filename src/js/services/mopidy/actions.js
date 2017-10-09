@@ -201,6 +201,13 @@ export function getDirectory( uri ){
 	}
 }
 
+export function getTrack( uri ){
+	return { 
+		type: 'MOPIDY_GET_TRACK', 
+		data: { uri: uri } 
+	}
+}
+
 export function getLibraryArtists(){
 	return { 
 		type: 'MOPIDY_GET_LIBRARY_ARTISTS' 

@@ -1,13 +1,13 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
-import Parallax from '../components/Parallax'
 import ArtistSentence from '../components/ArtistSentence'
 import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
@@ -48,7 +48,10 @@ class Track extends React.Component{
 			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
 				this.loadTrack( nextProps )
 			}
-		} else if (!nextProps.track.lyrics && nextProps.track.artists && !this.props.track.artists){
+		}
+
+		// We don't have lyrics, and we have just received our artists
+		if (!nextProps.track.lyrics && !this.props.track.artists && nextProps.track.artists){
 			this.props.geniusActions.getTrackLyrics(nextProps.track);
 		}
 	}
@@ -71,6 +74,16 @@ class Track extends React.Component{
 					console.info('Loading track from index')
 				}else{
 					this.props.spotifyActions.getTrack( props.params.uri );
+				}
+				break;
+
+			default:
+				if (props.mopidy_connected){
+					if (props.track){
+						console.info('Loading track from index')
+					} else {
+						this.props.mopidyActions.getTrack( props.params.uri );
+					}
 				}
 				break;
 		}
@@ -105,24 +118,42 @@ class Track extends React.Component{
 
 		if (!this.props.track){
 			return null
+		} else {
+			var track = this.props.track
 		}
 
 		return (
 			<div className="view track-view content-wrapper">
 
-				{this.props.slim_mode ? <Header icon="cd" title="Album" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
+				{this.props.slim_mode ? <Header 
+					icon="music" 
+					title="Track" 
+					handleContextMenuTrigger={e => this.handleContextMenu(e)} 
+					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={ this.props.track.album.images } />
+					<Thumbnail size="large" canZoom images={track.images} />
 				</div>
 
 				<div className="title">
 
-					<h1>{ this.props.track.name }</h1>
+					<h1>{track.name}</h1>
+					<h2 className="grey-text">{track.album ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : "Unknown album"} by <ArtistSentence artists={track.artists} /></h2>
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} track</span></li> : null }
-						<li><ArtistSentence artists={this.props.track.artists} /></li>
+						{!this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri)} /><span className="tooltip">{helpers.uriSource(this.props.params.uri)} track</span></li> : null}
+						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
+						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
+						<li>
+							{track.disc_no ? <span>Disc {track.disc_no}</span> : null}
+							{track.disc_number ? <span>Disc {track.disc_number}</span> : null}
+							{track.track_no ? <span>, track {track.track_no}</span> : null}
+							{track.track_number ? <span>, track {track.track_number}</span> : null}
+						</li>
+						<li>
+							{track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null}
+							{track.length ? <Dater type="length" data={track.length} /> : null}
+						</li>
 					</ul>
 				</div>
 

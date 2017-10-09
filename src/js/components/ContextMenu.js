@@ -229,6 +229,15 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	goToTrack(e){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0){
+			return null
+		} else {
+			this.props.uiActions.hideContextMenu()
+			hashHistory.push( global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri))
+		}
+	}
+
 	copyURIs(e){
 		var temp = $("<input>");
 		$("body").append(temp);
@@ -452,6 +461,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var go_to_track = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.goToTrack(e)}>
+					<span className="label">Track info</span>
+				</a>
+			</span>
+		)
+
 		var go_to_recommendations = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.goToRecommendations(e)}>
@@ -555,8 +572,9 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_queue_item}
 						{add_to_playlist}
-						{context.source == 'spotify' ? go_to_recommendations : null}
+						{context.source == 'spotify' && context.items_count == 1 ? go_to_recommendations : null}
 						{copy_uris}
+						{context.items_count == 1 ? go_to_track : null}
 						{remove_from_queue}
 					</div>
 				)
@@ -569,8 +587,9 @@ class ContextMenu extends React.Component{
 						{play_uris_next}
 						{add_to_queue}
 						{add_to_playlist}
-						{start_radio}
+						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						{copy_uris}
+						{context.items_count == 1 ? go_to_track : null}
 						{remove_from_playlist}
 					</div>
 				)
@@ -583,8 +602,9 @@ class ContextMenu extends React.Component{
 						{play_uris_next}
 						{add_to_queue}
 						{add_to_playlist}
-						{context.source == 'spotify' ? start_radio : null}
-						{context.source == 'spotify' ? go_to_recommendations : null}
+						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
+						{context.source == 'spotify' && context.items_count == 1 ? go_to_recommendations : null}
+						{context.items_count == 1 ? go_to_track : null}
 						{copy_uris}
 					</div>
 				)

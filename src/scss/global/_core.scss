@@ -158,6 +158,13 @@ h2 {
 			border-bottom: 1px solid $white;
 		}
 	}
+
+	&.grey-text {
+		a:hover {
+			color: $mid_grey !important;
+			border-bottom: 1px solid $mid_grey;
+		}
+	}
 }
 
 h3 {
