@@ -15,27 +15,36 @@
 	background: $overlay_dark;
 	overflow-y: scroll;
 
-	.close-modal {
-		@include animate();
+	.controls {
 		position: absolute;
 		top: 10px;
 		right: 10px;
-		opacity: 0.5;
-		cursor: pointer;
-		padding: 20px;
 		z-index: 99;
 
-		img {
-			width: 30px;
-		}
+		.control {
+			@include animate();
+			display: block;
+			float: right;
+			opacity: 0.5;
+			cursor: pointer;
+			padding: 20px;
 
-		&:hover {
-			opacity: 1;
+			img {
+				width: 30px;
+			}
+
+			&:hover {
+				opacity: 1;
+			}
+
+			.fa {
+				font-size: 24px;
+			}
 		}
 	}
 
 	.content {
-		padding: 10vh 25%;
+		padding: 80px 25%;
 		margin: 0 auto;
 		width: 50%;
 		color: $white;

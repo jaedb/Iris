@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../../helpers'
 import Icon from '../Icon'
@@ -16,14 +17,12 @@ import SearchURISchemesModal from './SearchURISchemesModal'
 import VolumeModal from './VolumeModal'
 import AuthorizationModal_Send from './AuthorizationModal_Send'
 import AuthorizationModal_Receive from './AuthorizationModal_Receive'
-import TrackInfoModal from './TrackInfoModal'
 
 import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 import * as pusherActions from '../../services/pusher/actions'
-import * as geniusActions from '../../services/genius/actions'
 
 class Modal extends React.Component{
 
@@ -39,14 +38,38 @@ class Modal extends React.Component{
 		}
 	}
 
+	toggleFullscreen(){
+		let app = document.documentElement
+		if (app.requestFullscreen){
+			app.requestFullscreen()
+		} else if (app.webkitRequestFullscreen){
+			app.webkitRequestFullscreen()
+		} else if (app.mozRequestFullScreen){
+			app.mozRequestFullScreen()
+		} else if (app.msRequestFullscreen){
+			app.msRequestFullscreen()
+		}
+	}
+
 	render(){
-		if( !this.props.modal ) return null;
+		if (!this.props.modal){
+			return null;
+		}
+
+		var can_fullscreen = false;
+		if (this.props.modal.name == 'kiosk_mode'){
+			can_fullscreen = true;
+		}
 
 		return (
 			<div className={this.props.modal.name+" modal"}>
-				<div className="close-modal" onClick={ () => this.props.uiActions.closeModal() }>
-					<Icon name="close" className="white" />
+
+				<div className="controls">
+					<div className="control close" onClick={e => this.props.uiActions.closeModal()}>
+						<Icon name="close" className="white" />
+					</div>
 				</div>
+
 				<div className="content">
 
 					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal 
@@ -114,12 +137,6 @@ class Modal extends React.Component{
 						volume={this.props.volume} 
 						mute={this.props.mute} /> : null }
 
-					{ this.props.modal.name == 'track_info' ? <TrackInfoModal 
-						load_queue={this.props.load_queue}
-						uiActions={this.props.uiActions}
-						geniusActions={this.props.geniusActions}
-						current_track={this.props.current_track} /> : null }
-
 				</div>
 			</div>
 		);
@@ -154,8 +171,7 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
-		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		geniusActions: bindActionCreators(geniusActions, dispatch)
+		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
 

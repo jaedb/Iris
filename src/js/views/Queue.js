@@ -119,8 +119,7 @@ class Queue extends React.Component{
 					<div className="current-track">
 						{ this.renderArtwork(image) }
 						<div className="title">
-							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
-							&nbsp; <FontAwesome name="info-circle" onClick={e => this.props.uiActions.openModal('track_info')} />
+							{this.props.current_track ? <Link to={global.baseURL+'track/'+this.props.current_track.uri}>{this.props.current_track.name}</Link> : <span>-</span>}
 						</div>
 						{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
 					</div>
