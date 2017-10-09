@@ -7,7 +7,6 @@ var pusherActions = require('../pusher/actions.js');
 var mopidyActions = require('../mopidy/actions.js');
 var spotifyActions = require('../spotify/actions.js');
 var lastfmActions = require('../lastfm/actions.js');
-var geniusActions = require('../genius/actions.js');
 var helpers = require('../../helpers.js');
 
 const CoreMiddleware = (function(){

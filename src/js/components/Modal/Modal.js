@@ -49,18 +49,76 @@ class Modal extends React.Component{
 				</div>
 				<div className="content">
 
-					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} spotifyActions={this.props.spotifyActions} mopidyActions={this.props.mopidyActions} playlists={this.props.playlists} tracks_uris={this.props.modal.data.tracks_uris} spotify_library_playlists={this.props.spotify_library_playlists} mopidy_library_playlists={this.props.mopidy_library_playlists} processes={this.props.processes} /> : null }
-					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} /> : null }
-					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} /> : null }
-					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'send_authorization' ? <AuthorizationModal_Send uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'receive_authorization' ? <AuthorizationModal_Receive uiActions={this.props.uiActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal uiActions={this.props.uiActions} pusherActions={this.props.pusherActions} spotifyActions={this.props.spotifyActions} data={this.props.modal.data} radio={this.props.radio} artists={this.props.artists} tracks={this.props.tracks} /> : null }
-					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal uiActions={this.props.uiActions} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal uiActions={this.props.uiActions} data={this.props.modal.data} current_track={this.props.current_track} /> : null }
-					{ this.props.modal.name == 'search_uri_schemes' ? <SearchURISchemesModal uiActions={this.props.uiActions} coreActions={this.props.coreActions} search_uri_schemes={this.props.search_uri_schemes} available_uri_schemes={this.props.uri_schemes} data={this.props.modal.data} /> : null }
-					{ this.props.modal.name == 'volume' ? <VolumeModal uiActions={this.props.uiActions} mopidyActions={this.props.mopidyActions} volume={this.props.volume} mute={this.props.mute} /> : null }
-					{ this.props.modal.name == 'track_info' ? <TrackInfoModal uiActions={this.props.uiActions} geniusActions={this.props.geniusActions} current_track={this.props.current_track} /> : null }
+					{ this.props.modal.name == 'add_to_playlist' ? <AddToPlaylistModal 
+						uiActions={this.props.uiActions} 
+						coreActions={this.props.coreActions} 
+						spotifyActions={this.props.spotifyActions} 
+						mopidyActions={this.props.mopidyActions} 
+						playlists={this.props.playlists} 
+						tracks_uris={this.props.modal.data.tracks_uris} 
+						spotify_library_playlists={this.props.spotify_library_playlists} 
+						mopidy_library_playlists={this.props.mopidy_library_playlists} 
+						processes={this.props.processes} /> : null }
+
+					{ this.props.modal.name == 'add_to_queue' ? <AddToQueueModal
+						uiActions={this.props.uiActions} 
+						mopidyActions={this.props.mopidyActions} /> : null }
+
+					{ this.props.modal.name == 'create_playlist' ? <CreatePlaylistModal
+						uiActions={this.props.uiActions}
+						coreActions={this.props.coreActions} /> : null }
+
+					{ this.props.modal.name == 'edit_playlist' ? <EditPlaylistModal
+						uiActions={this.props.uiActions}
+						coreActions={this.props.coreActions}
+						data={this.props.modal.data} /> : null }
+
+					{ this.props.modal.name == 'send_authorization' ? <AuthorizationModal_Send
+						uiActions={this.props.uiActions}
+						pusherActions={this.props.pusherActions}
+						data={this.props.modal.data} /> : null }
+
+					{ this.props.modal.name == 'receive_authorization' ? <AuthorizationModal_Receive 
+						uiActions={this.props.uiActions} 
+						spotifyActions={this.props.spotifyActions} 
+						data={this.props.modal.data} /> : null }
+
+					{ this.props.modal.name == 'edit_radio' ? <EditRadioModal 
+						uiActions={this.props.uiActions} 
+						pusherActions={this.props.pusherActions} 
+						spotifyActions={this.props.spotifyActions} 
+						data={this.props.modal.data} 
+						radio={this.props.radio} 
+						artists={this.props.artists} 
+						tracks={this.props.tracks} /> : null }
+
+					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal 
+						uiActions={this.props.uiActions} 
+						data={this.props.modal.data} /> : null }
+
+					{ this.props.modal.name == 'kiosk_mode' ? <KioskModeModal 
+						uiActions={this.props.uiActions} 
+						data={this.props.modal.data} 
+						current_track={this.props.current_track} /> : null }
+
+					{ this.props.modal.name == 'search_uri_schemes' ? <SearchURISchemesModal 
+						uiActions={this.props.uiActions} 
+						coreActions={this.props.coreActions} 
+						search_uri_schemes={this.props.search_uri_schemes} 
+						available_uri_schemes={this.props.uri_schemes} 
+						data={this.props.modal.data} /> : null }
+
+					{ this.props.modal.name == 'volume' ? <VolumeModal
+						uiActions={this.props.uiActions}
+						mopidyActions={this.props.mopidyActions} 
+						volume={this.props.volume} 
+						mute={this.props.mute} /> : null }
+
+					{ this.props.modal.name == 'track_info' ? <TrackInfoModal 
+						load_queue={this.props.load_queue}
+						uiActions={this.props.uiActions}
+						geniusActions={this.props.geniusActions}
+						current_track={this.props.current_track} /> : null }
 
 				</div>
 			</div>
@@ -82,6 +140,7 @@ const mapStateToProps = (state, ownProps) => {
 		playlists: state.core.playlists,
 		context_menu: state.ui.context_menu,
 		processes: state.ui.processes,
+		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_library_playlists: state.spotify.library_playlists,

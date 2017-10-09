@@ -24,6 +24,22 @@ export default class TrackInfoModal extends React.Component{
 		}
 	}
 
+	renderLyrics(track){
+		if (helpers.isLoading(this.props.load_queue,['genius_'])){
+			return (
+				<div className="body-loader loading">
+					<div className="loader"></div>
+				</div>
+			);
+		} else if (!track){
+			return <div className="lyrics">Could not load track</div>
+		} else if (!track.lyrics){
+			return <div className="lyrics">No lyrics available</div>
+		} else {
+			return <div className="lyrics" dangerouslySetInnerHTML={{__html: track.lyrics}}></div>
+		}
+	}
+
 	render(){
 		if (this.props.current_track){
 			var track = this.props.current_track;
@@ -35,7 +51,7 @@ export default class TrackInfoModal extends React.Component{
 			<div>
 				<h1>Track info</h1>
 				{track ? <h2 className="grey-text">{track.name} by <ArtistSentence artists={track.artists} /></h2> : null}
-				{track && track.lyrics ? <div className="lyrics" dangerouslySetInnerHTML={{__html: track.lyrics}}></div> : "No lyrics"}
+				{this.renderLyrics(track)}
 			</div>
 		)
 	}

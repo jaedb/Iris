@@ -24,7 +24,7 @@ const sendRequest = (dispatch, getState, endpoint) => {
                 Authorization: 'Bearer 2AGP9sfzKQcxfKSZuGa_3lqsDIpuOiTGT7-vhJYcKaaDjHIIA2HICsxXCiC30Xxi'
             },
             data: JSON.stringify({
-                url: 'https://api.genius.com/'+endpoint
+                url: 'https://genius.com/'+endpoint
             }),
             url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
         };
@@ -50,45 +50,45 @@ const sendRequest = (dispatch, getState, endpoint) => {
 export function getTrackLyrics(track){
     return (dispatch, getState) => {
 
-        var query = '';
+        var endpoint = '';
         for (var i = 0; i < track.artists.length; i++){
-            query += track.artists[i].name+' ';
+            endpoint += track.artists[i].name+' ';
         }
-        query += track.name+' lyrics';
-        query = query.replace(/\s+/g, '-').toLowerCase();
+        endpoint += track.name+' lyrics';
+        endpoint = endpoint.replace(/\s+/g, '-').toLowerCase();
 
-        var config = {
-            method: 'POST',
-            cache: false,
-            timeout: 15000,
-            data: JSON.stringify({
-                url: 'https://genius.com/'+query
-            }),
-            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
-        };
+        sendRequest(dispatch, getState, endpoint)
+            .then(
+                response => {
+                    var html = $(response);
+                    var lyrics = html.find('.lyrics');
+                    if (lyrics.length > 0){
 
-        $.ajax(config).then( 
-            response => {
-                var html = $(response.response);
-                var lyrics = html.find('.lyrics');
-                if (lyrics.length > 0){
+                        lyrics = lyrics.first();
+                        lyrics.find('a').replaceWith(function(){ 
+                            return this.innerHTML;
+                        });
 
-                    lyrics = lyrics.first();
-                    lyrics.find('a').replaceWith(function(){ return this.innerHTML; });
+                        var lyrics_html = lyrics.html();
+                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
+                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-                    dispatch({
-                        type: 'TRACK_LOADED',
-                        key: track.uri,
-                        track: {
-                            lyrics: lyrics.html()
-                        }
-                    });
+                        dispatch({
+                            type: 'TRACK_LOADED',
+                            key: track.uri,
+                            track: {
+                                lyrics: lyrics_html
+                            }
+                        });
+                    }
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not get track lyrics',
+                        error
+                    ));
                 }
-            },
-            (xhr, status, error) => {
-                console.log(xhr, status, error)
-            }
-        )
+            );
     }
 }
 
