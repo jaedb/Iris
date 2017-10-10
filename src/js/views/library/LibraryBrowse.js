@@ -16,7 +16,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class LibraryBrowse extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -24,20 +24,20 @@ class LibraryBrowse extends React.Component{
 		this.loadDirectory()
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 
 		// mopidy goes online
-		if (!this.props.mopidy_connected && nextProps.mopidy_connected ){
-			this.loadDirectory( nextProps );
+		if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+			this.loadDirectory(nextProps );
 		}
 
 		// our uri changes
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadDirectory( nextProps );
+			this.loadDirectory(nextProps );
 		}
 	}
 
-	loadDirectory( props = this.props ){
+	loadDirectory(props = this.props){
 		if (props.mopidy_connected){
 			var uri = null
 			if (typeof(props.params.uri) !== 'undefined'){
@@ -48,13 +48,13 @@ class LibraryBrowse extends React.Component{
 		}
 	}
 
-	arrange_directory( directory ){
+	arrange_directory(directory){
 		var folders = []
 		var tracks = []
 
-		for (var i = 0; i < directory.length; i++) {
-			if (directory[i].type && directory[i].type == 'track') {
-				tracks.push( directory[i] )
+		for (var i = 0; i < directory.length; i++){
+			if (directory[i].type && directory[i].type == 'track'){
+				tracks.push(directory[i] )
 			} else {
 				var uri = directory[i].uri
 
@@ -95,15 +95,15 @@ class LibraryBrowse extends React.Component{
 	render(){
 		if (typeof(this.props.params.uri) !== 'undefined' && this.props.params.uri){
 			
-			var title = 'Browse'
-			var uri_exploded = this.props.params.uri.split(':')
+			var title = 'Browse';
+			var uri_exploded = this.props.params.uri.split(':');
 			if (uri_exploded.length > 0){
-				title = uri_exploded[0]
-				title = title.charAt(0).toUpperCase() + title.slice(1)
+				title = uri_exploded[0];
+				title = title.charAt(0).toUpperCase() + title.slice(1);
 			}
 
-			var options = null
-			if (this.props.params.uri != 'local:directory' ){
+			var options = null;
+			if (this.props.params.uri != 'local:directory'){
 				options = (
 					<button className="no-hover" onClick={ () => window.history.back() }>
 						<FontAwesome name="reply" />&nbsp;
@@ -123,7 +123,7 @@ class LibraryBrowse extends React.Component{
 				)
 			}
 
-			var items = this.arrange_directory( this.props.directory )
+			var items = this.arrange_directory(this.props.directory )
 
 			return (
 				<div className="view library-local-view">

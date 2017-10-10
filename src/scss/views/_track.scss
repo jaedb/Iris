@@ -1,5 +1,5 @@
 
-main .playlist-view {
+main .track-view {
 	padding-left: 30%;
 	position: relative;
 
@@ -29,6 +29,12 @@ main .playlist-view {
 
 		.thumbnail {
 			max-width: 100%;
+		}
+	}
+
+	.lyrics {
+		p {
+			line-height: 0.8em;
 		}
 	}
 

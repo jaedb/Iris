@@ -58,7 +58,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         }
 
         # add to connections
-        mem.iris.add_connection(connection_id, self, client)
+        mem.iris.add_connection(connection_id=connection_id, connection=self, client=client)
  
 
     def on_message(self, message):
@@ -87,11 +87,11 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             if hasattr(mem.iris, message['method']):
 
                 # make the call, and return it's response
-                response = getattr(mem.iris, message['method'])(data)
+                response = getattr(mem.iris, message['method'])(data=data)
 
                 if response:
                     response['request_id'] = request_id
-                    mem.iris.send_message(self.connection_id, response)
+                    mem.iris.send_message(connection_id=self.connection_id, data=response)
             else:
                 mem.iris.raven_client.captureMessage("Method "+message['method']+" does not exist")
                 response = {
@@ -99,7 +99,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     'message': 'Method "'+message['method']+'" does not exist',
                     'request_id': request_id
                 }
-                mem.iris.send_message(self.connection_id, response)
+                mem.iris.send_message(connection_id=self.connection_id, data=response)
         else:
             mem.iris.raven_client.captureMessage("Method key missing from request")
             response = {
@@ -107,11 +107,11 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 'message': 'Method key missing from request',
                 'request_id': request_id
             }
-            mem.iris.send_message(self.connection_id, response)
+            mem.iris.send_message(connection_id=self.connection_id, data=response)
 
 
     def on_close(self):
-        mem.iris.remove_connection(self.connection_id)
+        mem.iris.remove_connection(connection_id=self.connection_id)
 
 
 
@@ -122,10 +122,17 @@ class HttpHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")        
 
     def initialize(self, core, config):
         self.core = core
         self.config = config
+
+    # Options request
+    # This is a preflight request for CORS requests
+    def options(self, slug=None):
+        self.set_status(204)
+        self.finish()
     
     def get(self, slug=None):
 
@@ -133,7 +140,30 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(mem.iris, slug):
 
             # make the call, and return it's response
-            self.write(getattr(mem.iris, slug)({}))
+            self.write(getattr(mem.iris, slug)(request=self.request))
+        else:
+            mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
+            self.write({
+                'error': 'Method "'+slug+'" does not exist'
+            })
+    
+    def post(self, slug=None):
+
+        # make sure the method exists
+        if hasattr(mem.iris, slug):
+
+            try:
+                data = json.loads(self.request.body.decode('utf-8'))
+
+                # make the call, and return it's response
+                self.write(getattr(mem.iris, slug)(data=data, request=self.request))
+
+            except urllib2.HTTPError as e:
+                self.raven_client.captureException()
+                self.write({
+                    'error': 'Invalid JSON payload'
+                })
+
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({

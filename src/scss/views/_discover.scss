@@ -150,7 +150,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		.intro {
 			padding-top: 50px;
 

@@ -13,15 +13,15 @@ import * as uiActions from '../services/ui/actions'
 
 class List extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
 	handleClick(e, uri){
 
 		// make sure we haven't clicked a nested link (ie Artist name)
-		if( e.target.tagName.toLowerCase() !== 'a' ){
-			hashHistory.push( (this.props.link_prefix ? this.props.link_prefix : '') + uri );
+		if (e.target.tagName.toLowerCase() !== 'a'){
+			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + uri );
 		}
 	}
 
@@ -38,7 +38,7 @@ class List extends React.Component{
 		return (
 			<div className="list-item header cf">
 				{
-					this.props.columns.map( (col, col_index) => {
+					this.props.columns.map((col, col_index) => {
 						var className = 'col '+col.name.replace('.','_')
 						return <div className={className} key={col_index}>{ col.label ? col.label : col.name }</div>
 					})
@@ -47,14 +47,14 @@ class List extends React.Component{
 		)
 	}
 
-	renderValue( row, key_string ){
+	renderValue(row, key_string){
 		var key = key_string.split('.')
 		var value = row
 
-		for (var i = 0; i < key.length; i++) {
-			if (typeof(value[key[i]]) === 'undefined') {
+		for (var i = 0; i < key.length; i++){
+			if (typeof(value[key[i]]) === 'undefined'){
 				return <span>-</span>
-			} else if ( typeof(value[key[i]]) === 'string' && value[key[i]].replace(' ','') == '') {
+			} else if (typeof(value[key[i]]) === 'string' && value[key[i]].replace(' ','') == ''){
 				return <span>-</span>
 			} else {
 				value = value[key[i]]
@@ -81,10 +81,10 @@ class List extends React.Component{
 			<div className={className}>
 				{ this.renderHeader() }
 				{
-					this.props.rows.map( (row, row_index) => {
+					this.props.rows.map((row, row_index) => {
 
 						var class_name = 'list-item'
-						if( row.type ) class_name += ' '+row.type
+						if (row.type ) class_name += ' '+row.type
 
 						return (
 							<div
@@ -93,7 +93,7 @@ class List extends React.Component{
 								className={class_name}
 								key={row_index}>
 								{
-									this.props.columns.map( (col, col_index) => {
+									this.props.columns.map((col, col_index) => {
 										var className = 'col '+col.name.replace('.','_')
 										return (
 											<div className={className} key={col_index}>

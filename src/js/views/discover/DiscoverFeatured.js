@@ -16,7 +16,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverFeatured extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 

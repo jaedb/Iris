@@ -10,7 +10,7 @@ import * as uiActions from '../services/ui/actions'
 
 class SearchForm extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this.state = {

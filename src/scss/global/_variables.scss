@@ -54,7 +54,7 @@ $bp_shallow: 650px;
  * General animations
  **/
 
-@mixin animate( $duration: 0.2s, $easing: ease-in-out ){
+@mixin animate($duration: 0.2s, $easing: ease-in-out){
 	-webkit-transition: all $duration $easing;
 	   -moz-transition: all $duration $easing;
 		 -o-transition: all $duration $easing;
@@ -73,7 +73,7 @@ $bp_shallow: 650px;
     to {	width: 0%; }
 }
 
-@mixin animate_timeout( $duration: 0.2s ){
+@mixin animate_timeout($duration: 0.2s){
     animation-name: shrink_from_right;
     animation-duration: $duration;
     animation-timing-function: linear;
@@ -84,7 +84,7 @@ $bp_shallow: 650px;
 	to {   transform: rotate(360deg); }
 }
 
-@mixin spin( $duration: 0.5s ){
+@mixin spin($duration: 0.5s){
     animation-name: spin;
     animation-duration: $duration;
     animation-timing-function: linear;
@@ -97,7 +97,7 @@ $bp_shallow: 650px;
     100% { opacity: 0; }
 }
 
-@mixin pulse( $duration: 0.5s ){
+@mixin pulse($duration: 0.5s){
     animation-name: pulse;
     animation-duration: $duration;
     animation-timing-function: linear;
@@ -109,7 +109,7 @@ $bp_shallow: 650px;
     100% { opacity: 1; }
 }
 
-@mixin fadein( $duration: 0.2s ){
+@mixin fadein($duration: 0.2s){
     animation-name: fadein;
     animation-duration: $duration;
     animation-timing-function: linear;
@@ -128,17 +128,17 @@ $bp_shallow: 650px;
  * Produces most album/playlist/artist grids
  **/
 
-@mixin grid_item( $cols, $gap: 2%, $bottom_margin: 3% ){
-	width: ( 0% + ( 100 / $cols ) - ( $gap * 2 ) + ( ( $gap * 2 ) / $cols ) );
+@mixin grid_item($cols, $gap: 2%, $bottom_margin: 3%){
+	width: (0% + (100 / $cols ) - ($gap * 2 ) + (($gap * 2 ) / $cols ) );
 	box-sizing: border-box;
 	margin: 0 $gap $bottom_margin;
 
-	&:nth-child(#{$cols}n-#{$cols}) {
+	&:nth-child(#{$cols}n-#{$cols}){
 		margin-right: 0;
 		@include clearfix;
 	}
 
-	&:nth-child(#{$cols}n-#{$cols - 1}) {
+	&:nth-child(#{$cols}n-#{$cols - 1}){
 		margin-left: 0;
 	}
 }
@@ -149,37 +149,37 @@ $bp_shallow: 650px;
  * Creates @media wrappers
  **/
 
-@mixin responsive( $max_width: null, $min_width: null, $max_height: null, $min_height: null ){
+@mixin responsive($max_width: null, $min_width: null, $max_height: null, $min_height: null){
 	@if $max_width and $max_height {
-		@media( max-width: $max_width ), ( max-height: $max_height ){ 
+		@media(max-width: $max_width ), (max-height: $max_height){ 
 			@content;
 		}
 	}@else if $max_width and $min_width {
-		@media( max-width: $max_width ) and ( min-width: $min_width ){ 
+		@media(max-width: $max_width ) and (min-width: $min_width){ 
 			@content;
 		}
 	}@else if $max_width {
-		@media( max-width: $max_width ){ 
+		@media(max-width: $max_width){ 
 			@content;
 		}
 	}@else if $max_height {
-		@media( max-height: $max_height ){ 
+		@media(max-height: $max_height){ 
 			@content;
 		}
 	}@else if $min_width {
-		@media( min-width: $min_width ){ 
+		@media(min-width: $min_width){ 
 			@content;
 		}
 	}@else if $min_height {
-		@media( min-height: $min_height ){ 
+		@media(min-height: $min_height){ 
 			@content;
 		}
 	}
 }
 
-@mixin blur( $size: 10px ) {
-	-webkit-filter: blur( $size );
-	filter: blur( $size );
+@mixin blur($size: 10px ){
+	-webkit-filter: blur($size );
+	filter: blur($size );
 }
 
 @mixin feature_font(){

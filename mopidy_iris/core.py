@@ -5,6 +5,7 @@ import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, m
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
+import requests
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
@@ -78,15 +79,20 @@ class IrisCore(object):
         return {"clientid": clientid, "connection_id": connection_id, "username": username, "generated": generated}
 
 
-    def send_message(self, to, data):
+    def send_message(self, *args, **kwargs):        
+        connection_id = kwargs.get('connection_id', None)
+        data = kwargs.get('data', {})
+
         try:
-            self.connections[to]['connection'].write_message( json_encode(data) )
+            self.connections[connection_id]['connection'].write_message( json_encode(data) )
         except:
             self.raven_client.captureException()
-            logger.error('Failed to send message to '+ to)
+            logger.error('Failed to send message to '+ connection_id)
 
 
-    def broadcast(self, data):
+    def broadcast(self, *args, **kwargs):
+        data = kwargs.get('data', None)
+
         for connection in self.connections.itervalues():
             connection['connection'].write_message( json_encode(data) )
         return {
@@ -102,7 +108,7 @@ class IrisCore(object):
     # to all current connections
     ##
 
-    def get_connections(self, data):        
+    def get_connections(self, *args, **kwargs):    
         connections = []
         for connection in self.connections.itervalues():
             connections.append(connection['client'])
@@ -112,7 +118,11 @@ class IrisCore(object):
             'connections': connections
         }
 
-    def add_connection(self, connection_id, connection, client):
+    def add_connection(self, *args, **kwargs):
+        connection_id = kwargs.get('connection_id', None)
+        connection = kwargs.get('connection', None)
+        client = kwargs.get('client', None)
+
         new_connection = {
             'client': client,
             'connection': connection
@@ -120,39 +130,57 @@ class IrisCore(object):
         self.connections[connection_id] = new_connection
 
         self.send_message(
-            connection_id, {
+            connection_id=connection_id,
+            data={
                 'type': 'connected',
                 'connection_id': connection_id,
                 'username': client['username']
             }
         )
 
-        self.broadcast({
-            'type': 'connection_added',
-            'connection': client
-        })
+        self.broadcast(
+            data={
+                'type': 'connection_added',
+                'connection': client
+            }
+        )
     
     def remove_connection(self, connection_id):
         if connection_id in self.connections:
             try:
                 client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
-                self.broadcast({
-                    'type': 'connection_removed',
-                    'connection': client
-                })
+                self.broadcast(
+                    data={
+                        'type': 'connection_removed',
+                        'connection': client
+                    }
+                )
             except:
                 self.raven_client.captureException()
                 logger.error('Failed to close connection to '+ connection_id)           
 
-    def set_username(self, data):
+    def set_username(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'set_username'
+            }
+
         connection_id = data['connection_id']
+
         if connection_id in self.connections:
             self.connections[connection_id]['client']['username'] = data['username']
-            self.broadcast({
-                'type': 'connection_updated',
-                'connection': self.connections[connection_id]['client']
-            })
+            self.broadcast(
+                data={
+                    'type': 'connection_updated',
+                    'connection': self.connections[connection_id]['client']
+                }
+            )
             return {
                 'status': 1,
                 'connection_id': connection_id,
@@ -168,14 +196,22 @@ class IrisCore(object):
                 'message': error
             }         
 
-    def deliver_message(self, data):
-        to = data['to']
-        if to in self.connections:
-
-            self.send_message(to, data['message'])
-
+    def deliver_message(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
             return {
-                'status': 1
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'deliver_message'
+            }
+
+        if data['connection_id'] in self.connections:
+            self.send_message(connection_id=data['connection_id'], data=data['message'])
+            return {
+                'status': 1,
+                'message': 'Sent message to '+data['connection_id']
             }
 
         else:
@@ -196,7 +232,7 @@ class IrisCore(object):
     # Faciitates upgrades and configuration fetching
     ##  
 
-    def get_config(self, data):
+    def get_config(self, *args, **kwargs):
 
         # handle config setups where there is no username/password
         # Iris won't work properly anyway, but at least we won't get server errors
@@ -215,8 +251,7 @@ class IrisCore(object):
             'config': config
         }
 
-    def get_version(self, data):
-
+    def get_version(self, *args, **kwargs):
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
         req = urllib2.Request(url)
         
@@ -264,13 +299,22 @@ class IrisCore(object):
     # recommendations limit low to avoid timeouts and slow UI
     ##
 
-    def get_radio(self, data):
+    def get_radio(self, *args, **kwargs):
         return {
             'status': 1,
             'radio': self.radio
         }
 
-    def change_radio(self, data):
+    def change_radio(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'change_radio'
+            }
 
         # figure out if we're starting or updating radio mode
         if data['update'] and self.radio['enabled']:
@@ -301,15 +345,19 @@ class IrisCore(object):
             if added.get():
                 if starting:
                     self.core.playback.play()
-                    self.broadcast({
-                        'type': 'radio_started',
-                        'radio': self.radio
-                    })
+                    self.broadcast(
+                        data={
+                            'type': 'radio_started',
+                            'radio': self.radio
+                        }
+                    )
                 else:
-                    self.broadcast({
-                        'type': 'radio_changed',
-                        'radio': self.radio
-                    })
+                    self.broadcast(
+                        data={
+                            'type': 'radio_changed',
+                            'radio': self.radio
+                        }
+                    )
 
                 return self.get_radio({})
 
@@ -322,7 +370,7 @@ class IrisCore(object):
         }
 
 
-    def stop_radio(self, data):
+    def stop_radio(self, *args, **kwargs):
 
         self.radio = {
             "enabled": 0,
@@ -336,10 +384,12 @@ class IrisCore(object):
         self.core.tracklist.set_consume(self.initial_consume)
         self.core.playback.stop()        
 
-        self.broadcast({
-            'type': 'radio_stopped',
-            'radio': self.radio
-        })
+        self.broadcast(
+            data={
+                'type': 'radio_stopped',
+                'radio': self.radio
+            }
+        )
         
         return {
             'status': 1
@@ -359,11 +409,13 @@ class IrisCore(object):
             error = 'IrisFrontend: access_token missing or invalid'
             self.raven_client.captureMessage(error)
             logger.error(error)
-            self.broadcast({
-                'type': 'error',
-                'message': 'Could not get radio tracks: access_token missing or invalid',
-                'source': 'load_more_tracks'
-            })
+            self.broadcast(
+                data={
+                    'type': 'error',
+                    'message': 'Could not get radio tracks: access_token missing or invalid',
+                    'source': 'load_more_tracks'
+                }
+            )
             
         try:
             url = 'https://api.spotify.com/v1/recommendations/'
@@ -387,17 +439,19 @@ class IrisCore(object):
         except:
             self.raven_client.captureException()
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
-            self.broadcast({
-                'type': 'error',
-                'message': 'Could not get radio tracks',
-                'source': 'load_more_tracks'
-            })
+            self.broadcast(
+                data={
+                    'type': 'error',
+                    'message': 'Could not get radio tracks',
+                    'source': 'load_more_tracks'
+                }
+            )
             return []
 
 
     def check_for_radio_update( self ):
         tracklistLength = self.core.tracklist.length.get()        
-        if( tracklistLength < 3 and self.radio['enabled'] == 1 ):
+        if (tracklistLength < 3 and self.radio['enabled'] == 1):
             
             # Grab our loaded tracks
             uris = self.radio['results']
@@ -423,13 +477,22 @@ class IrisCore(object):
     # added_by and from_uri.
     ##
 
-    def get_queue_metadata(self, data):
+    def get_queue_metadata(self, *args, **kwargs):
         return {
             'status': 1,
             'queue_metadata': self.queue_metadata
         }
 
-    def add_queue_metadata(self, data):
+    def add_queue_metadata(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'add_queue_metadata'
+            }
 
         for tlid in data['tlids']:
             item = {
@@ -439,10 +502,12 @@ class IrisCore(object):
             }
             self.queue_metadata['tlid_'+str(tlid)] = item
 
-        self.broadcast({
-            'type': 'queue_metadata_changed',
-            'queue_metadata': self.queue_metadata
-        })
+        self.broadcast(
+            data={
+                'type': 'queue_metadata_changed',
+                'queue_metadata': self.queue_metadata
+            }
+        )
 
         return {
             'status': 1
@@ -459,10 +524,12 @@ class IrisCore(object):
 
         self.queue_metadata = cleaned_queue_metadata
 
-        self.broadcast({
-            'type': 'queue_metadata_changed',
-            'queue_metadata': self.queue_metadata
-        })
+        self.broadcast(
+            data={
+                'type': 'queue_metadata_changed',
+                'queue_metadata': self.queue_metadata
+            }
+        )
 
         return {
             'status': 1
@@ -477,12 +544,12 @@ class IrisCore(object):
     # passing token to frontend for javascript requests without use of the Authorization Code Flow.
     ##
 
-    def get_spotify_token(self, data):
+    def get_spotify_token(self, *args, **kwargs):
         return {
             'spotify_token': self.spotify_token
         }
 
-    def refresh_spotify_token(self, data):
+    def refresh_spotify_token(self, *args, **kwargs):
         
         # Use client_id and client_secret from config
         # This was introduced in Mopidy-Spotify 3.1.0
@@ -493,18 +560,16 @@ class IrisCore(object):
             'grant_type': 'client_credentials'
         }
 
-        data_encoded = urllib.urlencode( data )
-        req = urllib2.Request(url, data_encoded)
-
         try:
-            response = urllib2.urlopen(req, timeout=30).read()
-            response_dict = json.loads(response)
-            self.spotify_token = response_dict
+            response = requests.post(url, data)
+            self.spotify_token = response.json()
 
-            self.broadcast({
-                'type': 'spotify_token_changed',
-                'spotify_token': self.spotify_token
-            })
+            self.broadcast(
+                data={
+                    'type': 'spotify_token_changed',
+                    'spotify_token': self.spotify_token
+                }
+            )
 
             return self.get_spotify_token({})
 
@@ -513,7 +578,104 @@ class IrisCore(object):
             error = json.loads(e.read())
 
             return {
-                'type': 'error',
+                'status': 0,
                 'message': 'Could not refresh token: '+error['error_description'],
                 'source': 'refresh_spotify_token'
+            }
+
+
+
+    ##
+    # Proxy a request to an external provider
+    #
+    # This is required when requesting to non-CORS providers. We simply make the request
+    # server-side and pass that back. All we change is the response's Access-Control-Allow-Origin
+    # to prevent CORS-blocking by the browser.
+    ##
+
+    def proxy_request(self, *args, **kwargs):
+        try:
+            data = kwargs.get('data', {})
+        except:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data',
+                'source': 'proxy_request'
+            }
+
+        origin_request = kwargs.get('request', None)
+
+        # Our request includes data, so make sure we POST the data
+        if 'url' not in data:
+            self.raven_client.captureException()
+            return {
+                'status': 0,
+                'message': 'Malformed data (missing URL)',
+                'source': 'proxy_request',
+                'original_request': data
+            }
+
+        # Construct request headers
+        # If we have an original request, pass through it's headers
+        if origin_request:
+            headers = origin_request.headers
+        else:
+            headers = {}
+
+        # Adjust headers
+        headers["Accept-Language"] = "*" 
+        headers["Accept-Encoding"] = "deflate" 
+        if "Content-Type" in headers:
+            del headers["Content-Type"]
+        if "Host" in headers:
+            del headers["Host"]
+        if "X-Requested-With" in headers:
+            del headers["X-Requested-With"]
+        if "X-Forwarded-Server" in headers:
+            del headers["X-Forwarded-Server"]
+        if "X-Forwarded-Host" in headers:
+            del headers["X-Forwarded-Host"]
+        if "X-Forwarded-For" in headers:
+            del headers["X-Forwarded-For"]
+        if "Referrer" in headers:
+            del headers["Referrer"]
+
+        # Now actually attempt the request
+        try:
+            # Our request includes data, so make sure we POST the data
+            if ('data' in data and data['data']):
+                response = requests.post(data['url'], data=data['data'], headers=headers, verify=False)
+
+            # No data, so just a simple GET request
+            else:
+
+                # Strip out our origin content-length otherwise this confuses
+                # the target server as content-length doesn't apply to GET requests
+                if "Content-Length" in headers:
+                    del headers["Content-Length"]
+
+                response = requests.get(data['url'], headers=headers, verify=False)
+
+
+            # Attempt to decode body as JSON, otherwise just return plain text
+            try:
+                return {
+                    'response_code': int(response.status_code),
+                    'response': response.json()
+                }
+            except:
+                return {
+                    'response_code': int(response.status_code),
+                    'response': response.text
+                }
+
+        except requests.exceptions.RequestException as e:
+            return {
+                'status': 0,
+                'message': 'Could not complete proxy request',
+                'source': 'proxy_request',
+                'response': e.text,
+                'response_code': int(e.response_code),
+                'original_request': data
             }

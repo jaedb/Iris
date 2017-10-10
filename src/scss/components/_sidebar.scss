@@ -99,7 +99,7 @@ aside{
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		@include animate(0.15s);
 		width: 220px;
 		left: -220px;

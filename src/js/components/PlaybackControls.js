@@ -17,7 +17,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 
 class PlaybackControls extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -27,7 +27,7 @@ class PlaybackControls extends React.Component{
 
 	renderPlayButton(){
 		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play" /></a>
-		if( this.props.play_state == 'playing' ){
+		if (this.props.play_state == 'playing'){
 			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause" /></a>
 		}
 		return button;
@@ -35,7 +35,7 @@ class PlaybackControls extends React.Component{
 
 	renderConsumeButton(){
 		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
-		if( this.props.consume ){
+		if (this.props.consume){
 			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		}
 		return button;
@@ -43,7 +43,7 @@ class PlaybackControls extends React.Component{
 
 	renderRandomButton(){
 		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
-		if( this.props.random ){
+		if (this.props.random){
 			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		}
 		return button;
@@ -51,7 +51,7 @@ class PlaybackControls extends React.Component{
 
 	renderRepeatButton(){
 		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
-		if( this.props.repeat ){
+		if (this.props.repeat){
 			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		}
 		return button;
@@ -59,18 +59,7 @@ class PlaybackControls extends React.Component{
 
 	handleThumbnailClick(e){
 		e.preventDefault();
-		this.props.uiActions.openModal('kiosk_mode')
-
-		let app = document.documentElement
-		if (app.requestFullscreen){
-			app.requestFullscreen()
-		} else if (app.webkitRequestFullscreen){
-			app.webkitRequestFullscreen()
-		} else if (app.mozRequestFullScreen){
-			app.mozRequestFullScreen()
-		} else if (app.msRequestFullscreen){
-			app.msRequestFullscreen()
-		}
+		this.props.uiActions.openModal('kiosk_mode');
 	}
 
 	render(){

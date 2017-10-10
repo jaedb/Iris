@@ -17,6 +17,7 @@ import Album from './views/Album'
 import Artist from './views/Artist'
 import Playlist from './views/Playlist'
 import User from './views/User'
+import Track from './views/Track'
 import Queue from './views/Queue'
 import QueueHistory from './views/QueueHistory'
 import Settings from './views/Settings'
@@ -45,7 +46,7 @@ console.error = function(message, error){
 
 // setup our analytics tracking
 ReactGA.initialize('UA-64701652-3');
-function handleUpdate() {
+function handleUpdate(){
 	ReactGA.set({ page: window.location.hash })
 	ReactGA.pageview(window.location.hash)
 	$(window).scrollTop(0)
@@ -70,6 +71,7 @@ ReactDOM.render(
 				<Route path="artist/:uri(/:sub_view)" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />
 				<Route path="user/:uri" component={User} />
+				<Route path="track/:uri" component={Track} />
 	
 				<Route path="discover/recommendations(/:seeds)" component={DiscoverRecommendations} />
 				<Route path="discover/featured" component={DiscoverFeatured} />

@@ -7,7 +7,7 @@ import Icon from './Icon'
 
 export default class Dropzone extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -37,7 +37,7 @@ export default class Dropzone extends React.Component{
 	}
 
 	render(){
-		if( !this.props.data ) return null
+		if (!this.props.data ) return null
 
 		return (
 			<div className={this.state.hover?"dropzone hover":"dropzone"} onMouseUp={ e => this.props.handleMouseUp(e) }>

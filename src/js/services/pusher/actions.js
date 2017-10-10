@@ -3,14 +3,14 @@
  * Actions and Action Creators
  **/
 
-export function setPort( port ){
+export function setPort(port){
 	return {
 		type: 'PUSHER_SET_PORT',
 		port: port
 	}
 }
 
-export function setUsername( username ){
+export function setUsername(username){
 	return {
 		type: 'PUSHER_SET_USERNAME',
 		username: username.replace(/[\W_]+/g,'')
@@ -41,25 +41,25 @@ export function getConnections(){
 	}
 }
 
-export function instruct( data = null ){
+export function instruct(data = null){
 	return {
 		type: 'PUSHER_INSTRUCT',
 		data: data
 	}
 }
 
-export function deliverBroadcast( data = null ){
+export function deliverBroadcast(data = null){
 	return {
 		type: 'PUSHER_DELIVER_BROADCAST',
 		data: data
 	}
 }
 
-export function sendAuthorization( recipient_connectionid, authorization, me ){
+export function sendAuthorization(recipient_connectionid, authorization, me){
 	return {
 		type: 'PUSHER_DELIVER_MESSAGE',
 		data: {
-			to: recipient_connectionid,
+			connection_id: recipient_connectionid,
 			message: {
 				type: 'spotify_authorization',
 				authorization: authorization,
@@ -69,14 +69,14 @@ export function sendAuthorization( recipient_connectionid, authorization, me ){
 	}
 }
 
-export function startRadio( uris ){
+export function startRadio(uris){
 	return {
 		type: 'PUSHER_START_RADIO',
 		uris: uris
 	}
 }
 
-export function updateRadio( uris ){
+export function updateRadio(uris){
 	return {
 		type: 'PUSHER_UPDATE_RADIO',
 		uris: uris
@@ -89,7 +89,7 @@ export function stopRadio(){
 	}
 }
 
-export function debug( message = null ){
+export function debug(message = null){
 	return {
 		type: 'PUSHER_DEBUG',
 		message: message
@@ -102,7 +102,7 @@ export function getQueueMetadata(){
 	}
 }
 
-export function addQueueMetadata( tlids = [], from_uri = null ){
+export function addQueueMetadata(tlids = [], from_uri = null){
 	return {
 		type: 'PUSHER_ADD_QUEUE_METADATA',
 		tlids: tlids,

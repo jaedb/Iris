@@ -12,7 +12,7 @@ import * as uiActions from '../services/ui/actions'
 
 class GridSlider extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this._pagelimit = 3
@@ -23,7 +23,7 @@ class GridSlider extends React.Component{
 	}
 
 	handleClick(e,link){
-		if( e.target.tagName.toLowerCase() !== 'a' ){
+		if (e.target.tagName.toLowerCase() !== 'a'){
 			hashHistory.push(link)
 		}
 	}
@@ -34,7 +34,7 @@ class GridSlider extends React.Component{
 			uris: [item.uri],
 			item: item
 		}
-		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
+		this.props.uiActions.showContextMenu(e, data, 'album', 'click' )
 	}
 
 	next(){
@@ -48,10 +48,10 @@ class GridSlider extends React.Component{
 	}
 
 	render(){
-		if( this.props.tracks ){
+		if (this.props.tracks){
 
 			var className = "grid-slider-wrapper"
-			if( this.props.className ) className += ' '+this.props.className
+			if (this.props.className ) className += ' '+this.props.className
 
 			var style = {
 				left: '-'+(this.state.page * 100)+'%'

@@ -13,7 +13,7 @@ import * as uiActions from '../services/ui/actions'
 
 class TrackList extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.touch_dragging_tracks_keys = false
@@ -255,9 +255,9 @@ class TrackList extends React.Component{
 	}
 
 	isRightClick(e){
-		if( 'which' in e ) 
+		if ('which' in e ) 
 			return e.which == 3
-		if( 'button' in e ) 
+		if ('button' in e ) 
 			return e.button == 2
 		return false
 	}
@@ -355,7 +355,7 @@ class TrackList extends React.Component{
 	}
 
 	renderHeader(){
-		if( this.props.noheader ) return null
+		if (this.props.noheader ) return null
 		
 		switch (this.props.context){
 

@@ -19,7 +19,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class LibraryPlaylists extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -77,7 +77,7 @@ class LibraryPlaylists extends React.Component{
 
 	setSort(value){
 		var reverse = false
-		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+		if (this.props.sort == value ) reverse = !this.props.sort_reverse
 
 		var data = {
 			library_playlists_sort_reverse: reverse,

@@ -5,7 +5,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class FilterField extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 		this.state = {
 			value: '',

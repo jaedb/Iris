@@ -1,13 +1,13 @@
 
 import ReactGA from 'react-ga'
 
-var coreActions = require('./actions.js')
-var uiActions = require('../ui/actions.js')
-var pusherActions = require('../pusher/actions.js')
-var mopidyActions = require('../mopidy/actions.js')
-var spotifyActions = require('../spotify/actions.js')
-var lastfmActions = require('../lastfm/actions.js')
-var helpers = require('../../helpers.js')
+var coreActions = require('./actions.js');
+var uiActions = require('../ui/actions.js');
+var pusherActions = require('../pusher/actions.js');
+var mopidyActions = require('../mopidy/actions.js');
+var spotifyActions = require('../spotify/actions.js');
+var lastfmActions = require('../lastfm/actions.js');
+var helpers = require('../../helpers.js');
 
 const CoreMiddleware = (function(){
 
@@ -59,7 +59,7 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                if (action.data.xhr){
+                if (action.data.xhr && action.data.xhr.responseText){
                     var xhr_response = JSON.parse(action.data.xhr.responseText);        
                     if (xhr_response.error && xhr_response.error.message){
                         message = message+'<p class="description">'+xhr_response.error.message+'</p>';
@@ -71,9 +71,8 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'CORE_START_SERVICES':
-                store.dispatch(mopidyActions.connect())
-                store.dispatch(pusherActions.connect())
-                store.dispatch(lastfmActions.connect())
+                store.dispatch(mopidyActions.connect());
+                store.dispatch(pusherActions.connect());
 
                 next(action)
                 break
@@ -197,7 +196,7 @@ const CoreMiddleware = (function(){
                         store.dispatch(spotifyActions.getPlaylist(action.key))
                         break
                     case 'm3u':
-                        if( store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key))
+                        if (store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key))
                         break
                 }
                 next(action)
@@ -252,7 +251,7 @@ const CoreMiddleware = (function(){
                 break
 
             case 'MOPIDY_CURRENTTLTRACK':
-                if (action.data && action.data.track ){
+                if (action.data && action.data.track){
                     helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state)
 
                     // make sure our images use mopidy host:port

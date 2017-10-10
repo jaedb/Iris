@@ -20,16 +20,16 @@ export default class AddToPlaylistModal extends React.Component{
 		}
 	}
 
-	playlistSelected( playlist_uri ){
-		this.props.coreActions.addTracksToPlaylist( playlist_uri, this.props.tracks_uris )
+	playlistSelected(playlist_uri){
+		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.tracks_uris )
 		this.props.uiActions.closeModal()
 	}
 
 	render(){
-		if( !this.props.playlists ) return <div className="empty">No editable playlists</div>
+		if (!this.props.playlists ) return <div className="empty">No editable playlists</div>
 		var playlists = []
 		for (var uri in this.props.playlists){
-			if( this.props.playlists[uri].can_edit ) playlists.push( this.props.playlists[uri] )
+			if (this.props.playlists[uri].can_edit ) playlists.push(this.props.playlists[uri] )
 		}
 
 		playlists = helpers.sortItems(playlists, 'name')
@@ -50,7 +50,7 @@ export default class AddToPlaylistModal extends React.Component{
 				{playlists.length <= 0 ? <div className="no-results">No playlists available</div> : null}
 				<div className="list small playlists">
 					{
-						playlists.map( playlist => {
+						playlists.map(playlist => {
 							return (
 								<div className="list-item" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
 									<Thumbnail images={playlist.images} size="small" />

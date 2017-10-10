@@ -46,20 +46,20 @@ export function hideTouchContextMenu(){
     }
 }
 
-export function lazyLoading( start ){
+export function lazyLoading(start){
     return {
         type: 'LAZY_LOADING',
         start: start
     }
 }
 
-export function toggleSidebar( new_state = 'toggle' ){
+export function toggleSidebar(new_state = 'toggle'){
     var action = { type: 'TOGGLE_SIDEBAR' }
-    if( new_state != 'toggle' ) action.new_state = new_state
+    if (new_state != 'toggle' ) action.new_state = new_state
     return action
 }
 
-export function dragStart( e, context, from_uri = null, victims, victims_indexes = null ){
+export function dragStart(e, context, from_uri = null, victims, victims_indexes = null){
     return {
         type: 'DRAG_START',
         context: context,
@@ -79,7 +79,7 @@ export function dragEnd(){
     return { type: 'DRAG_END' }
 }
 
-export function set( data ){
+export function set(data){
     return {
         type: 'UI_SET',
         data: data
@@ -94,7 +94,7 @@ export function set( data ){
  * Immersive full-screen dialog
  **/
 
-export function openModal( name, data ){
+export function openModal(name, data){
     return { 
         type: 'OPEN_MODAL',
         modal: {
@@ -117,7 +117,7 @@ export function closeModal(){
  * Subtle info/tooltip messages
  **/
 
-export function createBrowserNotification( data ){
+export function createBrowserNotification(data){
     return { 
         type: 'BROWSER_NOTIFICATION',
         data: data

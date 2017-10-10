@@ -4,7 +4,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class ContextMenuTrigger extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 

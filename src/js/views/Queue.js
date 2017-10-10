@@ -23,28 +23,28 @@ import * as mopidyActions from '../services/mopidy/actions'
 
 class Queue extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
 	removeTracks(track_indexes){
 		var tlids = []
 		for (var i = 0; i < track_indexes.length; i++){
-			tlids.push( this.props.current_tracklist[track_indexes[i]].tlid )
+			tlids.push(this.props.current_tracklist[track_indexes[i]].tlid )
 		}
-		this.props.mopidyActions.removeTracks( tlids )
+		this.props.mopidyActions.removeTracks(tlids )
 	}
 
-	playTrack( track ){
-		this.props.mopidyActions.changeTrack( track.tlid )
+	playTrack(track){
+		this.props.mopidyActions.changeTrack(track.tlid )
 	}
 
-	playTracks( tracks ){
-		this.props.mopidyActions.changeTrack( tracks[0].tlid )
+	playTracks(tracks){
+		this.props.mopidyActions.changeTrack(tracks[0].tlid )
 	}
 
-	reorderTracks( indexes, index ){
-		this.props.mopidyActions.reorderTracklist( indexes, index )
+	reorderTracks(indexes, index){
+		this.props.mopidyActions.reorderTracklist(indexes, index )
 	}
 
 	renderQueueStats(){
@@ -70,7 +70,7 @@ class Queue extends React.Component{
 		}
 
 		var link = null
-		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
+		if (this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
@@ -119,7 +119,7 @@ class Queue extends React.Component{
 					<div className="current-track">
 						{ this.renderArtwork(image) }
 						<div className="title">
-							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
+							{this.props.current_track ? <Link to={global.baseURL+'track/'+this.props.current_track.uri}>{this.props.current_track.name}</Link> : <span>-</span>}
 						</div>
 						{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
 					</div>
@@ -130,9 +130,9 @@ class Queue extends React.Component{
 							context="queue"
 							className="queue-track-list"
 							tracks={this.props.current_tracklist}
-							removeTracks={tracks => this.removeTracks( tracks )}
-							playTracks={tracks => this.playTracks( tracks )}
-							playTrack={track => this.playTrack( track )}
+							removeTracks={tracks => this.removeTracks(tracks )}
+							playTracks={tracks => this.playTracks(tracks )}
+							playTrack={track => this.playTrack(track )}
 							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index) } />
 					</section>
 				

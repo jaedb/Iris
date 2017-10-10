@@ -14,7 +14,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class LibraryTracks extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -24,7 +24,7 @@ class LibraryTracks extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL( this.props.tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE' );
+		this.props.spotifyActions.getURL(this.props.tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE' );
 	}
 
 	render(){

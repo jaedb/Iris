@@ -22,7 +22,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Album extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -33,19 +33,19 @@ class Album extends React.Component{
 	handleContextMenu(e){
 		e.preventDefault()
 		var data = { uris: [this.props.params.uri] }
-		this.props.uiActions.showContextMenu( e, data, 'album', 'click' )
+		this.props.uiActions.showContextMenu(e, data, 'album', 'click' )
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 
 		// if our URI has changed, fetch new album
-		if( nextProps.params.uri != this.props.params.uri ){
-			this.loadAlbum( nextProps )
+		if (nextProps.params.uri != this.props.params.uri){
+			this.loadAlbum(nextProps )
 
 		// if mopidy has just connected AND we're a local album, go get
-		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
-				this.loadAlbum( nextProps )
+		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+				this.loadAlbum(nextProps )
 			}
 		}
 	}
@@ -60,14 +60,14 @@ class Album extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadAlbum( props = this.props ){
-		switch( helpers.uriSource( props.params.uri ) ){
+	loadAlbum(props = this.props){
+		switch(helpers.uriSource(props.params.uri )){
 
 			case 'spotify':
 				if (props.album && props.album.tracks && props.album.artists_uris){
 					console.info('Loading album from index')
 				}else{
-					this.props.spotifyActions.getAlbum( props.params.uri );
+					this.props.spotifyActions.getAlbum(props.params.uri );
 				}
 				break;
 
@@ -76,7 +76,7 @@ class Album extends React.Component{
 					if (props.album && props.album.tracks){
 						console.info('Loading album from index')
 					} else {
-						this.props.mopidyActions.getAlbum( props.params.uri );
+						this.props.mopidyActions.getAlbum(props.params.uri );
 					}
 				}
 				break;
@@ -84,7 +84,7 @@ class Album extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL( this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
+		this.props.spotifyActions.getURL(this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
 	}
 
 	play(){
@@ -133,7 +133,7 @@ class Album extends React.Component{
 					<h1>{ this.props.album.name }</h1>
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon( this.props.params.uri )} /><span className="tooltip">{helpers.uriSource( this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
 						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
 						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li>

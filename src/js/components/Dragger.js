@@ -9,7 +9,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Dragger extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 		this.handleMouseMove = this.handleMouseMove.bind(this)
 		this.handleMouseUp = this.handleMouseUp.bind(this)
@@ -32,14 +32,14 @@ class Dragger extends React.Component{
 	}
 
 	handleMouseMove(e){
-		if( !this.props.dragger ) return null;
+		if (!this.props.dragger ) return null;
 
 		var threshold = 10
-		if(
+		if (
 			e.clientX > this.props.dragger.start_x + threshold || 
 			e.clientX < this.props.dragger.start_x - threshold || 
 			e.clientY > this.props.dragger.start_y + threshold || 
-			e.clientY < this.props.dragger.start_y - threshold ){
+			e.clientY < this.props.dragger.start_y - threshold){
 
 			this.setState({
 				position_x: e.clientX,
@@ -47,26 +47,26 @@ class Dragger extends React.Component{
 			})
 
 			var dropzones = document.getElementsByClassName('dropzone')
-			for( var i = 0; i < dropzones.length; i++ ){
+			for(var i = 0; i < dropzones.length; i++){
 				dropzones[i].classList.remove('hover')
 			}
 
-			if( e.target.classList.contains('dropzone') && !e.target.classList.contains('hover') ){
+			if (e.target.classList.contains('dropzone') && !e.target.classList.contains('hover')){
 				e.target.className += ' hover'
 			}
 
 			// if not already, activate
-			if( !this.props.dragger.active ) this.props.uiActions.dragActive()
+			if (!this.props.dragger.active ) this.props.uiActions.dragActive()
 		}
 	}
 
 	handleMouseUp(e){
-		if( !this.props.dragger ) return null;
-		this.props.uiActions.dragEnd( e )
+		if (!this.props.dragger ) return null;
+		this.props.uiActions.dragEnd(e )
 	}
 
 	render(){
-		if( !this.props.dragger || !this.props.dragger.active ) return null;
+		if (!this.props.dragger || !this.props.dragger.active ) return null;
 
 		var style = {
 			left: this.state.position_x,

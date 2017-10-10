@@ -2,7 +2,7 @@
 import * as helpers from '../../helpers'
 
 export default function reducer(mopidy = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'MOPIDY_CONNECT':
         case 'MOPIDY_CONNECTING':

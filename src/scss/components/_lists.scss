@@ -271,7 +271,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 
 		.list-item {
 			padding: 12px !important;

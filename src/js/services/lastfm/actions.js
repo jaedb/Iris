@@ -10,8 +10,8 @@ var helpers = require('../../helpers')
  * @param getState obj
  * @param endpoint params = the url params to send
  **/
-const sendRequest = ( dispatch, getState, params ) => {
-    return new Promise( (resolve, reject) => {
+const sendRequest = (dispatch, getState, params ) => {
+    return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid()
         dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
@@ -19,10 +19,11 @@ const sendRequest = ( dispatch, getState, params ) => {
         var config = {
             method: 'GET',
             cache: true,
+            timeout: 15000,
             url: '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&'+params
         }
 
-        $.ajax(config).then( 
+        $.ajax(config).then(
                 response => {
                     dispatch(uiActions.stopLoading(loader_key))    
                     resolve(response)
@@ -58,18 +59,18 @@ export function connect(){
     }
 }
 
-export function getArtist( uri, artist, mbid = false ){
+export function getArtist(uri, artist, mbid = false){
     return (dispatch, getState) => {
-        if( mbid ){
+        if (mbid){
             var params = 'method=artist.getInfo&mbid='+mbid
         }else{
-            artist = encodeURIComponent( artist );
+            artist = encodeURIComponent(artist );
             var params = 'method=artist.getInfo&artist='+artist
         }
         sendRequest(dispatch, getState, params)
             .then(
                 response => {
-                    if( response.artist ){
+                    if (response.artist){
                         dispatch({
                             type: 'ARTIST_LOADED',
                             key: uri,
@@ -87,22 +88,22 @@ export function getArtist( uri, artist, mbid = false ){
     }
 }
 
-export function getAlbum( artist, album, mbid = false ){
+export function getAlbum(artist, album, mbid = false){
     return (dispatch, getState) => {
 
         dispatch({ type: 'LASTFM_ALBUM_LOADED', data: false });
 
-        if( mbid ){
+        if (mbid){
             var params = 'method=album.getInfo&mbid='+mbid
         }else{
-            artist = encodeURIComponent( artist )
-            album = encodeURIComponent( album )
+            artist = encodeURIComponent(artist )
+            album = encodeURIComponent(album )
             var params = 'method=album.getInfo&album='+album+'&artist='+artist
         }
         sendRequest(dispatch, getState, params)
             .then(
                 response => {
-                    if( response.album ){
+                    if (response.album){
                         dispatch({
                             type: 'LASTFM_ALBUM_LOADED',
                             data: response.album
@@ -113,16 +114,16 @@ export function getAlbum( artist, album, mbid = false ){
     }
 }
 
-export function getTrack( artist, track ){
+export function getTrack(artist, track){
     return (dispatch, getState) => {
 
         dispatch({ type: 'LASTFM_TRACK_LOADED', data: false });
         
-        artist = encodeURIComponent( artist );
+        artist = encodeURIComponent(artist );
         sendRequest(dispatch, getState, 'method=track.getInfo&track='+track+'&artist='+artist)
             .then(
                 response => {
-                    if( response.track ){
+                    if (response.track){
                         dispatch({
                             type: 'LASTFM_TRACK_LOADED',
                             data: response.track

@@ -9,7 +9,7 @@ import * as helpers from '../helpers'
 
 export default class Track extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -93,7 +93,7 @@ export default class Track extends React.Component{
 	}
 
 	render(){
-		if( !this.props.track ) return null
+		if (!this.props.track ) return null
 
 		var track = this.props.track
 		var className = 'list-item track'
@@ -104,8 +104,8 @@ export default class Track extends React.Component{
 		if (this.state.hover) className += ' hover'
 		
 		var album = '-'
-		if( track.album ){
-			if( track.album.uri ){
+		if (track.album){
+			if (track.album.uri){
 				album = <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link>
 			} else {
 				album = <span>{track.album.name}</span>

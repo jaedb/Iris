@@ -60,7 +60,7 @@ main {
 			z-index: 99;
 		}
 
-		@include responsive( $bp_medium ){
+		@include responsive($bp_medium){
 			padding: 10px 10px 10px 0;
 			margin-bottom: -20px;
 

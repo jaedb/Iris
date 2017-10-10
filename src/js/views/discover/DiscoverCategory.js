@@ -11,7 +11,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategory extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -19,18 +19,18 @@ class DiscoverCategory extends React.Component{
 		this.loadCategory()
 	}
 
-	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.id != this.props.params.id ){
+	componentWillReceiveProps(nextProps){
+		if (nextProps.params.id != this.props.params.id){
 			this.loadCategory()
 		}
 	}
 
 	loadCategory(){
-		if (!this.props.category || !this.props.category.playlists_uris) this.props.spotifyActions.getCategory( this.props.params.id );
+		if (!this.props.category || !this.props.category.playlists_uris) this.props.spotifyActions.getCategory(this.props.params.id );
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL( this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
+		this.props.spotifyActions.getURL(this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
 	}
 
 	render(){

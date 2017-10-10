@@ -1,7 +1,7 @@
 
 .artist-view {
 
-	.body-loader:not(.lazy-loader) {
+	.body-loader:not(.lazy-loader){
 		padding: 15vh 0;
 	}
 
@@ -54,7 +54,7 @@
 		}
 	}
 
-	@include responsive( $bp_wide ){
+	@include responsive($bp_wide){
 		.intro {
 			.liner {
 				h1 {
@@ -65,7 +65,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		.intro {
 			margin-bottom: 0;
 

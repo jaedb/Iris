@@ -11,7 +11,7 @@ import GridItem from './GridItem'
 
 class PlaylistGrid extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -27,7 +27,7 @@ class PlaylistGrid extends React.Component{
 	}
 
 	render(){
-		if( !this.props.playlists ) return null
+		if (!this.props.playlists ) return null
 
 		var className = "grid playlist-grid"
 		if (this.props.className) className += ' '+this.props.className

@@ -53,10 +53,10 @@ class App extends React.Component{
 		this.props.coreActions.getBroadcasts()
 
 		// when we navigate to a new route
-		hashHistory.listen( location => {
+		hashHistory.listen(location => {
 
 			// Hide our sidebar
-			this.props.uiActions.toggleSidebar( false )
+			this.props.uiActions.toggleSidebar(false )
 
 			// Unselect any tracks
 			this.props.uiActions.setSelectedTracks([])

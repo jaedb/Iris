@@ -10,7 +10,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategories extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 

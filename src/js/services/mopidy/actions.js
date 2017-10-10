@@ -41,7 +41,7 @@ export function debug(call, value){
  * Playback-oriented actions
  **/
 
-export function changeTrack( tlid ){
+export function changeTrack(tlid){
 	return instruct('playback.play', {tlid: tlid})
 }
 
@@ -84,13 +84,13 @@ export function playAlbum(uri){
 	}
 }
 
-export function removeTracks( tlids ){
+export function removeTracks(tlids){
 	return instruct('tracklist.remove', {tlid: tlids})
 }
 
-export function reorderTracklist( indexes, insert_before ){
-	var range = helpers.createRange( indexes );
-	if( insert_before > range.start ) insert_before = insert_before - range.length
+export function reorderTracklist(indexes, insert_before){
+	var range = helpers.createRange(indexes );
+	if (insert_before > range.start ) insert_before = insert_before - range.length
 	return { 
 		type: 'MOPIDY_REORDER_TRACKLIST',
 		range_start: range.start,
@@ -152,7 +152,7 @@ export function setTimePosition(time_position){
  * Asset-oriented actions
  **/
 
-export function getImages( context, uris ){
+export function getImages(context, uris){
 	return { 
 		type: 'MOPIDY_GET_IMAGES',
 		context: context,
@@ -168,7 +168,7 @@ export function createPlaylist(name, scheme){
 	}
 }
 
-export function deletePlaylist( uri ){
+export function deletePlaylist(uri){
 	return { 
 		type: 'MOPIDY_DELETE_PLAYLIST',
 		uri: uri
@@ -179,7 +179,7 @@ export function getLibraryPlaylists(){
 	return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' }
 }
 
-export function getPlaylist( uri ){
+export function getPlaylist(uri){
 	return { 
 		type: 'MOPIDY_GET_PLAYLIST', 
 		data: { uri: uri } 
@@ -194,9 +194,16 @@ export function getPlaylists(uris, processor = null){
 	}
 }
 
-export function getDirectory( uri ){
+export function getDirectory(uri){
 	return { 
 		type: 'MOPIDY_GET_DIRECTORY', 
+		data: { uri: uri } 
+	}
+}
+
+export function getTrack(uri){
+	return { 
+		type: 'MOPIDY_GET_TRACK', 
 		data: { uri: uri } 
 	}
 }
@@ -207,7 +214,7 @@ export function getLibraryArtists(){
 	}
 }
 
-export function getArtist( uri ){
+export function getArtist(uri){
 	return { 
 		type: 'MOPIDY_GET_ARTIST', 
 		data: { uri: uri } 
@@ -222,7 +229,7 @@ export function getArtists(uris, processor = null){
 	}
 }
 
-export function getAlbum( uri ){
+export function getAlbum(uri){
 	return { 
 		type: 'MOPIDY_GET_ALBUM', 
 		data: { uri: uri } 

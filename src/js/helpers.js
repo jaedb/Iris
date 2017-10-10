@@ -4,7 +4,7 @@ export let isTouchDevice = function(){
 	return 'ontouchstart' in document.documentElement
 }
 
-export let sizedImages = function( images ){
+export let sizedImages = function(images){
 
 	var sizes = {
 		small: false,
@@ -50,7 +50,7 @@ export let sizedImages = function( images ){
 
 		// lastfm-styled images
 		} else if (image.size !== undefined){
-			switch( image.size ){
+			switch(image.size){
 				case 'mega':
 				case 'extralarge':
 					sizes.huge = image['#text']
@@ -121,19 +121,19 @@ export let digestMopidyImages = function(mopidy, images){
 
 
 export let generateGuid = function(format = 'xxxxxxxxxxxx'){
-	return format.replace(/[xy]/g, function(c) {
+	return format.replace(/[xy]/g, function(c){
 		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 		return v.toString(16);
 	});
 }
 
-export let getCurrentPusherConnection = function( connections, connectionid ){
+export let getCurrentPusherConnection = function(connections, connectionid){
 	function isCurrentConnection(connection){
 		return connection.connectionid == newProps.pusher.connectionid;
 	}
 	
 	var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
-	if( !currentConnection ) return false;
+	if (!currentConnection ) return false;
 
 	return currentConnection;
 }
@@ -160,10 +160,10 @@ export let getTrackIcon = function(current_track = false, core = false){
  * @param track object
  * @return string
  **/
-export let flattenTracks = function( tracks ){
+export let flattenTracks = function(tracks){
     var flattened = []
-    for( var i = 0; i < tracks.length; i++ ){
-        flattened.push( Object.assign(
+    for(var i = 0; i < tracks.length; i++){
+        flattened.push(Object.assign(
             {},
             tracks[i].track,
             {
@@ -190,7 +190,7 @@ export let uriSource = function(uri){
 
 export let sourceIcon = function(uri,source = null){
 	if (uri) source = uriSource(uri)
-	switch( source ){
+	switch(source){
 
 		case 'local':
 		case 'm3u':
@@ -230,7 +230,7 @@ export let getFromUri = function(element,uri){
     switch (element){
     	case 'mbid':
 	        var index = exploded.indexOf('mbid')
-	        if( index > -1 ) return exploded[index+1]
+	        if (index > -1 ) return exploded[index+1]
 	        break
 
     	case 'artistid':
@@ -291,7 +291,7 @@ export let getFromUri = function(element,uri){
  * @param uri = string
  * @return string
  **/
-export let uriType = function( uri ){
+export let uriType = function(uri){
     var exploded = uri.split(':')
 
     if (exploded[0] == 'm3u'){
@@ -359,15 +359,15 @@ export let mergeDuplicates = function(list, key){
 	var clean_list = [];
 	var keyed_list  = {};
 
-	for( var i in list ){
+	for(var i in list){
 		var item = list[i]
-		if( item[key] in keyed_list ){
+		if (item[key] in keyed_list){
 			item = Object.assign({}, keyed_list[item[key]], item)
 		}
 		keyed_list[item[key]] = item;
 	}
 
-	for( i in keyed_list ){
+	for(i in keyed_list){
 		clean_list.push(keyed_list[i]);
 	}
 
@@ -384,7 +384,7 @@ export let removeDuplicates = function(array){
 	var unique = [];
 
 	for (var i in array){
-		if (unique.indexOf(array[i]) <= -1 ){
+		if (unique.indexOf(array[i]) <= -1){
 			unique.push(array[i])
 		}
 	}
@@ -431,8 +431,8 @@ export let createRange = function (indexes){
     // iterate indexes to build the first 'bunch'
     var first_bunch = []
     var previous_index = false
-    for( var i = 0; i < indexes.length; i++ ){
-        if( !previous_index || previous_index == indexes[i]-1 ){
+    for(var i = 0; i < indexes.length; i++){
+        if (!previous_index || previous_index == indexes[i]-1){
             first_bunch.push(indexes[i])
             previous_index = indexes[i]
         }
@@ -456,12 +456,12 @@ export let createRange = function (indexes){
  **/
 export let sortItems = function (array, property, reverse = false){
 
-	function compare(a,b) {
+	function compare(a,b){
 
 		var a_value = a
 		var a_property_split = property.split('.')
-		for (var i = 0; i < a_property_split.length; i++) {
-			if (typeof(a_value[a_property_split[i]]) === 'undefined') {
+		for (var i = 0; i < a_property_split.length; i++){
+			if (typeof(a_value[a_property_split[i]]) === 'undefined'){
 				a_value = false
 				break
 			}else{
@@ -471,8 +471,8 @@ export let sortItems = function (array, property, reverse = false){
 
 		var b_value = b
 		var b_property_split = property.split('.')
-		for( var i = 0; i < b_property_split.length; i++ ){
-			if (typeof(b_value[b_property_split[i]]) === 'undefined') {
+		for(var i = 0; i < b_property_split.length; i++){
+			if (typeof(b_value[b_property_split[i]]) === 'undefined'){
 				b_value = false
 				break
 			} else {
@@ -480,13 +480,13 @@ export let sortItems = function (array, property, reverse = false){
 			}
 		}
 
-		if( typeof(a_value) === 'boolean'){
+		if (typeof(a_value) === 'boolean'){
 			if (a_value && !b_value) return -1
 			if (!a_value && b_value) return 1
 			return 0
 
-		}else if( typeof(a_value) === 'string'){
-			if ( !a_value || !b_value ) return 0
+		}else if (typeof(a_value) === 'string'){
+			if (!a_value || !b_value ) return 0
 			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1
 			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1
 			return 0
@@ -499,7 +499,7 @@ export let sortItems = function (array, property, reverse = false){
 	}
 
 	var sorted = Object.assign([], array.sort(compare))
-	if( reverse ) sorted.reverse()
+	if (reverse ) sorted.reverse()
 	return sorted
 }
 
@@ -508,7 +508,7 @@ export let sortItems = function (array, property, reverse = false){
  * @param data = mixed
  * @return boolean
  **/
-export let isNumeric = function (data) {
+export let isNumeric = function (data){
 	return !isNaN(parseFloat(data)) && isFinite(data)
 }
 
@@ -521,12 +521,12 @@ export let setWindowTitle = function (track = false, play_state = false){
 
     var title = 'No track playing'
     
-    if (track) {
+    if (track){
         var icon = '\u25A0 '
         var artistString = ''
         
-        if (track.artists) {
-            for( var i = 0; i < track.artists.length; i++) {
+        if (track.artists){
+            for(var i = 0; i < track.artists.length; i++){
                 if (artistString != '') artistString += ', '
                 artistString += track.artists[i].name
             }
@@ -555,7 +555,7 @@ export let setWindowTitle = function (track = false, play_state = false){
 export let isLoading = function(load_queue = [], keys = []){
 
 	// Loop all of our load queue items
-	for (var load_queue_key in load_queue) {
+	for (var load_queue_key in load_queue){
 
 		// Make sure it's not a root object method
 		if (load_queue.hasOwnProperty(load_queue_key)){

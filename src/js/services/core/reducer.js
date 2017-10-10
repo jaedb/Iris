@@ -2,7 +2,7 @@
 import * as helpers from '../../helpers'
 
 export default function reducer(core = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'CORE_SET':
             return Object.assign({}, core, action.data)
@@ -12,10 +12,10 @@ export default function reducer(core = {}, action){
          **/
 
         case 'MOPIDY_TLTRACKS':
-            if( !action.data ) return core
+            if (!action.data ) return core
 
             var tracklist = []
-            for( var i = 0; i < action.data.length; i++ ){
+            for(var i = 0; i < action.data.length; i++){
 
                 var tltrack = action.data[i]
 
@@ -32,9 +32,9 @@ export default function reducer(core = {}, action){
                     metadata,
                     { 
                         tlid: tltrack.tlid,
-                        playing: ( core.current_track && tltrack.tlid == core.current_track.tlid )
+                        playing: (core.current_track && tltrack.tlid == core.current_track.tlid )
                     })
-                tracklist.push( track )
+                tracklist.push(track )
             }
 
             return Object.assign({}, core, { current_tracklist: tracklist });
@@ -48,7 +48,7 @@ export default function reducer(core = {}, action){
             for (var i = 0; i < current_tracklist.length; i++){
                 Object.assign(
                     current_tracklist[i], 
-                    { playing: ( current_tracklist[i].tlid == action.data.tlid ) }
+                    { playing: (current_tracklist[i].tlid == action.data.tlid ) }
                 )
             }
 
@@ -94,7 +94,7 @@ export default function reducer(core = {}, action){
         case 'PUSHER_QUEUE_METADATA':
         case 'PUSHER_QUEUE_METADATA_CHANGED':
             var tracklist = Object.assign([], core.current_tracklist)
-            for( var i = 0; i < tracklist.length; i++ ){
+            for(var i = 0; i < tracklist.length; i++){
 
                 // load our metadata (if we have any for that tlid)
                 if (typeof(action.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
@@ -419,11 +419,11 @@ export default function reducer(core = {}, action){
             var playlist = Object.assign({}, playlists[action.key])
             var tracks = Object.assign([], playlist.tracks)
             var indexes = action.tracks_indexes.reverse()
-            for( var i = 0; i < indexes.length; i++ ){
-                tracks.splice( indexes[i], 1 )
+            for(var i = 0; i < indexes.length; i++){
+                tracks.splice(indexes[i], 1 )
             }
             var snapshot_id = null
-            if( action.snapshot_id ) snapshot_id = action.snapshot_id
+            if (action.snapshot_id ) snapshot_id = action.snapshot_id
             Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
             playlists[action.key] = playlist
             return Object.assign({}, core, { playlists: playlists });
@@ -442,18 +442,18 @@ export default function reducer(core = {}, action){
 
             // handle insert_before offset if we're moving BENEATH where we're slicing tracks
             var insert_before = action.insert_before
-            if( insert_before > action.range_start ) insert_before = insert_before - action.range_length
+            if (insert_before > action.range_start ) insert_before = insert_before - action.range_length
 
             // cut our moved tracks into a new array
             var tracks_to_move = tracks.splice(action.range_start, action.range_length)
             tracks_to_move.reverse()
 
-            for( i = 0; i < tracks_to_move.length; i++ ){
+            for(i = 0; i < tracks_to_move.length; i++){
                 tracks.splice(insert_before, 0, tracks_to_move[i])
             }
 
             var snapshot_id = null
-            if( action.snapshot_id ) snapshot_id = action.snapshot_id
+            if (action.snapshot_id ) snapshot_id = action.snapshot_id
             Object.assign(playlist, { tracks: tracks, snapshot_id: snapshot_id })
             playlists[action.key] = playlist
             return Object.assign({}, core, { playlists: playlists });

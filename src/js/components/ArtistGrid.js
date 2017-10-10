@@ -12,7 +12,7 @@ import * as uiActions from '../services/ui/actions'
 
 class ArtistGrid extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -28,7 +28,7 @@ class ArtistGrid extends React.Component{
 	}
 
 	render(){
-		if( this.props.artists ){
+		if (this.props.artists){
 			var className = "grid artist-grid"
 			if (this.props.className) className += ' '+this.props.className
 			if (this.props.single_row) className += ' single-row'

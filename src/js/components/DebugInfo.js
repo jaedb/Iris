@@ -9,7 +9,7 @@ import * as uiActions from '../services/ui/actions'
 
 class DebugInfo extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 

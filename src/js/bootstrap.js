@@ -7,6 +7,7 @@ import pusher from './services/pusher/reducer'
 import mopidy from './services/mopidy/reducer'
 import lastfm from './services/lastfm/reducer'
 import spotify from './services/spotify/reducer'
+import genius from './services/genius/reducer'
 
 import thunk from 'redux-thunk'
 import coreMiddleware from './services/core/middleware'
@@ -22,6 +23,7 @@ let reducers = combineReducers({
     pusher,
     mopidy,
     lastfm,
+    genius,
     spotify
 });
 
@@ -61,10 +63,10 @@ var initialState = {
 		}
 	},
 	lastfm: {
-		connected: false,
-		album: {},
-		artist: {},
-		track: {}
+		connected: false
+	},
+	genius: {
+		connected: false
 	},
 	spotify: {
 		connected: false,
@@ -75,32 +77,32 @@ var initialState = {
 };
 
 // if we've got a stored version of spotify state, load and merge
-if( localStorage.getItem('core') ){
-	var storedCore = JSON.parse( localStorage.getItem('core') );
+if (localStorage.getItem('core')){
+	var storedCore = JSON.parse(localStorage.getItem('core') );
 	initialState.core = Object.assign(initialState.core, storedCore );
 }
 
 // if we've got a stored version of spotify state, load and merge
-if( localStorage.getItem('ui') ){
-	var storedUi = JSON.parse( localStorage.getItem('ui') );
+if (localStorage.getItem('ui')){
+	var storedUi = JSON.parse(localStorage.getItem('ui') );
 	initialState.ui = Object.assign(initialState.ui, storedUi );
 }
 
 // if we've got a stored version of mopidy state, load and merge
-if( localStorage.getItem('mopidy') ){
-	var storedMopidy = JSON.parse( localStorage.getItem('mopidy') );
+if (localStorage.getItem('mopidy')){
+	var storedMopidy = JSON.parse(localStorage.getItem('mopidy') );
 	initialState.mopidy = Object.assign(initialState.mopidy, storedMopidy );
 }
 
 // if we've got a stored version of pusher state, load and merge
-if( localStorage.getItem('pusher') ){
-	var storedPusher = JSON.parse( localStorage.getItem('pusher') );
+if (localStorage.getItem('pusher')){
+	var storedPusher = JSON.parse(localStorage.getItem('pusher') );
 	initialState.pusher = Object.assign(initialState.pusher, storedPusher );
 }
 
 // if we've got a stored version of spotify state, load and merge
-if( localStorage.getItem('spotify') ){
-	var storedSpotify = JSON.parse( localStorage.getItem('spotify') );
+if (localStorage.getItem('spotify')){
+	var storedSpotify = JSON.parse(localStorage.getItem('spotify') );
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
@@ -109,7 +111,7 @@ console.log('Bootstrapping', initialState)
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware( thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
+	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
 );
 
 export default store;
