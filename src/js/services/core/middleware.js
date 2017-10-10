@@ -77,8 +77,19 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
+            case 'TRACK_LOADED':
+                if (action.data) ReactGA.event({ category: 'Track', action: 'Load', label: action.key });
+
+                // make sure our images use mopidy host:port
+                if (action.track.album && action.track.album.images && action.track.album.images.length > 0){
+                    action.track.album.images = helpers.digestMopidyImages(store.getState().mopidy, action.track.album.images);
+                }
+
+                next(action)
+                break
+
             case 'ALBUM_LOADED':
-                if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.album.uri })
+                if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.key })
 
                 // make sure our images use mopidy host:port
                 if (action.album.images && action.album.images.length > 0){
@@ -98,6 +109,7 @@ const CoreMiddleware = (function(){
                 if (action.data) ReactGA.event({ category: 'Albums', action: 'Load', label: action.albums.length+' items' })
 
                 for (var i = 0; i < action.albums.length; i++){
+
                     // make sure our images use mopidy host:port
                     if (action.albums[i].images && action.albums[i].images.length > 0){
                         var images = Object.assign([], action.albums[i].images)
