@@ -1735,13 +1735,12 @@ const MopidyMiddleware = (function(){
                 instruct(socket, store, 'library.getImages', {uris: action.uris})
                     .then(response => {
 
-                        let records = []
+                        var records = []
                         for (var uri in response){
                             if (response.hasOwnProperty(uri)){
 
-                                let images = response[uri]
-                                images = helpers.digestMopidyImages(store.getState().mopidy, images)
-
+                                var images = response[uri];
+                                images = helpers.digestMopidyImages(store.getState().mopidy, images);
                                 records.push({
                                     uri: uri,
                                     images: images
@@ -1749,7 +1748,7 @@ const MopidyMiddleware = (function(){
                             }
                         }
                         
-                        let action_data = {
+                        var action_data = {
                             type: (action.context+'_LOADED').toUpperCase()
                         }
                         action_data[action.context] = records

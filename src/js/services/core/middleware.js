@@ -80,7 +80,6 @@ const CoreMiddleware = (function(){
             case 'TRACK_LOADED':
                 if (action.data) ReactGA.event({ category: 'Track', action: 'Load', label: action.key });
 
-                // make sure our images use mopidy host:port
                 if (action.track.album && action.track.album.images && action.track.album.images.length > 0){
                     action.track.album.images = helpers.digestMopidyImages(store.getState().mopidy, action.track.album.images);
                 }
@@ -91,15 +90,8 @@ const CoreMiddleware = (function(){
             case 'ALBUM_LOADED':
                 if (action.data) ReactGA.event({ category: 'Album', action: 'Load', label: action.key })
 
-                // make sure our images use mopidy host:port
                 if (action.album.images && action.album.images.length > 0){
-                    var images = Object.assign([], action.album.images)
-                    for (var i = 0; i < images.length; i++){
-                        if (typeof(images[i]) === 'string' && images[i].startsWith('/images/')){
-                            images[i] = '//'+store.getState().mopidy.host+':'+store.getState().mopidy.port+images[i]
-                        }
-                    }
-                    action.album.images = images
+                    action.album.images = helpers.digestMopidyImages(store.getState().mopidy, action.album.images);
                 }
 
                 next(action)
@@ -109,16 +101,8 @@ const CoreMiddleware = (function(){
                 if (action.data) ReactGA.event({ category: 'Albums', action: 'Load', label: action.albums.length+' items' })
 
                 for (var i = 0; i < action.albums.length; i++){
-
-                    // make sure our images use mopidy host:port
                     if (action.albums[i].images && action.albums[i].images.length > 0){
-                        var images = Object.assign([], action.albums[i].images)
-                        for (var j = 0; j < images.length; j++){
-                            if (typeof(images[j]) === 'string' && images[j].startsWith('/images/')){
-                                images[j] = '//'+store.getState().mopidy.host+':'+store.getState().mopidy.port+images[j]
-                            }
-                        }
-                        action.albums[i].images = images
+                        action.albums[i].images = helpers.digestMopidyImages(store.getState().mopidy, action.albums[i].images);
                     }
                 }
 
