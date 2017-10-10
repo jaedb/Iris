@@ -165,7 +165,7 @@ const MopidyMiddleware = (function(){
                     store.dispatch(uiActions.stopLoading(loader_key));
                     reject({message: "Request timed out", call: call, value: value});
                 },
-                15000
+                30000
             );
 
             mopidyObject(value)

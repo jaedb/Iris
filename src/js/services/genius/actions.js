@@ -19,7 +19,7 @@ const sendRequest = (dispatch, getState, endpoint) => {
         var config = {
             method: 'POST',
             cache: false,
-            timeout: 15000,
+            timeout: 30000,
             headers: {
                 Authorization: 'Bearer 2AGP9sfzKQcxfKSZuGa_3lqsDIpuOiTGT7-vhJYcKaaDjHIIA2HICsxXCiC30Xxi'
             },
