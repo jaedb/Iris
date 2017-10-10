@@ -2,7 +2,7 @@
 import * as helpers from '../../helpers'
 
 export default function reducer(spotify = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'SPOTIFY_CONNECT':
         case 'SPOTIFY_CONNECTING':
@@ -88,7 +88,7 @@ export default function reducer(spotify = {}, action){
             }})
 
         case 'SPOTIFY_DISCOVER_LOADED':
-            if( !action.data ) return Object.assign({}, spotify, { discover: [] })
+            if (!action.data ) return Object.assign({}, spotify, { discover: [] })
             return Object.assign({}, spotify, { discover: [...spotify.discover, ...[action.data]] })
 
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':

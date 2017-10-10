@@ -20,7 +20,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Debug extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 		this.state = {
 			mopidy_call: 'playlists.asList',
@@ -32,12 +32,12 @@ class Debug extends React.Component{
 
 	callMopidy(e){
 		e.preventDefault()
-		this.props.mopidyActions.debug( this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
+		this.props.mopidyActions.debug(this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
 	}
 
 	callPusher(e){
 		e.preventDefault()
-		this.props.pusherActions.debug( JSON.parse(this.state.pusher_data) )
+		this.props.pusherActions.debug(JSON.parse(this.state.pusher_data) )
 	}
 
 	render(){

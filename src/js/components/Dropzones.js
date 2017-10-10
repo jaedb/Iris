@@ -11,7 +11,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Dropzones extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this._zones = [
@@ -35,19 +35,19 @@ class Dropzones extends React.Component{
 	}
 
 	handleMouseMove(e){
-		if( !this.props.dragger || !this.props.dragger.active ) return null;
-		this.props.uiActions.dragMove( e )
+		if (!this.props.dragger || !this.props.dragger.active ) return null;
+		this.props.uiActions.dragMove(e )
 	}
 
 	handleMouseUp(e, index){
 		var target = this._zones[index]
 		var victims = this.props.dragger.victims
 		var uris = []
-		for( var i = 0; i < victims.length; i++ ){
-			uris.push( victims[i].uri )
+		for(var i = 0; i < victims.length; i++){
+			uris.push(victims[i].uri )
 		}
 
-		switch( target.action ){
+		switch(target.action){
 			case 'enqueue':
 				this.props.mopidyActions.enqueueURIs(uris, this.props.dragger.from_uri)
 				break
@@ -63,12 +63,12 @@ class Dropzones extends React.Component{
 	}
 
 	render(){
-		if( !this.props.dragger || !this.props.dragger.active ) return null
+		if (!this.props.dragger || !this.props.dragger.active ) return null
 
 		return (
 			<div className="dropzones">
 				{
-					this._zones.map( (zone, index) => {
+					this._zones.map((zone, index) => {
 						return <Dropzone key={index} data={zone} handleMouseUp={ e => this.handleMouseUp(e, index) }/>
 					})
 				}

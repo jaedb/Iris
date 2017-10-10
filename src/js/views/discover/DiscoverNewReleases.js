@@ -18,7 +18,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverNewReleases extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 

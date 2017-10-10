@@ -9,7 +9,7 @@ import ArtistSentence from './ArtistSentence'
 
 export default class GridItem extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
@@ -74,12 +74,12 @@ export default class GridItem extends React.Component{
 		if (!this.props.item) return null
 
 		var item = this.props.item;
-		if( typeof(item.album) !== 'undefined' ){
+		if (typeof(item.album) !== 'undefined'){
 			item.album.added_at = item.added_at;
 			item = item.album;
 		}
 		var images = null
-		if (this.props.item.images) {
+		if (this.props.item.images){
 			images = this.props.item.images
 		} else if (this.props.item.icons){
 			images = this.props.item.icons

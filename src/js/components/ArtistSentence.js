@@ -5,22 +5,22 @@ import { Link } from 'react-router'
 
 export default class ArtistSentence extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
 	render(){
-		if( !this.props.artists ) return <span>-</span>
+		if (!this.props.artists ) return <span>-</span>
 
 		return (
 			<span className={ this.props.className ? this.props.className+" artist-sentence" : "artist-sentence" }>
 				{
-					this.props.artists.map( (artist, index) => {
+					this.props.artists.map((artist, index) => {
 						if (!artist) return <span>-</span>
 						var separator = null;
-						if( index == this.props.artists.length - 2 ){
+						if (index == this.props.artists.length - 2){
 							separator = ' and ';
-						}else if( index < this.props.artists.length - 2 ){
+						}else if (index < this.props.artists.length - 2){
 							separator = ', ';
 						}
 						if (!artist.name){							

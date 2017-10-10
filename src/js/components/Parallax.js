@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 
 export default class Parallax extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this._loading = false
@@ -35,14 +35,14 @@ export default class Parallax extends React.Component{
         if (this.props.image){
 			this._loading = true
 			this.setState({ url: this.props.image, image: false, loading: true })
-			this.loadImage( this.props.image )
+			this.loadImage(this.props.image )
 				.then(
 					response => {
-						if( this._mounted ){
+						if (this._mounted){
 							this._loading = false
 							this._loaded = true
 							this.setState({ url: this.props.image, image: response, loading: false })
-							this.updateCanvas( response )
+							this.updateCanvas(response )
 						}
 					}
 				)
@@ -59,14 +59,14 @@ export default class Parallax extends React.Component{
         window.removeEventListener("scroll", this.handleScroll);
     }
 
-	componentWillReceiveProps( nextProps ){
-		if( ( !this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image ){
+	componentWillReceiveProps(nextProps){
+		if ((!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
 			this._loading = true
 			this.setState({ url: nextProps.image, image: false, loading: true })
-			this.loadImage( nextProps.image )
+			this.loadImage(nextProps.image )
 				.then(
 					response => {
-						if( this._mounted ){
+						if (this._mounted){
 							this._loading = false
 							this._loaded = true
 							this.setState({ url: nextProps.image, image: response, loading: false })
@@ -94,7 +94,7 @@ export default class Parallax extends React.Component{
     }
 
 	loadImage(url){
-		return new Promise( (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 
 			var imageObject = new Image()
 			imageObject.src = url
@@ -108,7 +108,7 @@ export default class Parallax extends React.Component{
 					original_height: imageObject.naturalHeight,
 					object: imageObject
 				}
-				resolve( image )
+				resolve(image )
 			}
 		})
 	}
@@ -124,7 +124,7 @@ export default class Parallax extends React.Component{
 				}
 			})
 		}
-		this.renderCanvas( image );
+		this.renderCanvas(image );
 	}
 
 	renderCanvas(image = false){
@@ -141,25 +141,25 @@ export default class Parallax extends React.Component{
 		if (image){
 		
 			// zoom image to fill canvas, widthwise
-			if( image.width < this.state.canvas.width || image.width > this.state.canvas.width ){
+			if (image.width < this.state.canvas.width || image.width > this.state.canvas.width){
 				var scale = this.state.canvas.width / image.width;
 				image.width = image.width * scale;
 				image.height = image.height * scale;
 			}
 			
 			// now check for fill heightwise, and zoom in if necessary
-			if( image.height < this.state.canvas.height ){
+			if (image.height < this.state.canvas.height){
 				var scale = this.state.canvas.height / image.height;
 				image.width = image.width * scale;
 				image.height = image.height * scale;
 			}
 			
 			// figure out where we want the image to be, based on scroll position
-			var percent = Math.round( self.state.scrollTop / this.state.canvas.height * 100 );
-			var position = Math.round( (this.state.canvas.height / 2) * (percent/100) ) - 100;
+			var percent = Math.round(self.state.scrollTop / this.state.canvas.height * 100 );
+			var position = Math.round((this.state.canvas.height / 2) * (percent/100) ) - 100;
 			
-			image.x = ( this.state.canvas.width / 2 ) - ( image.width / 2 );
-			image.y = ( ( this.state.canvas.height / 2 ) - ( image.height / 2 ) ) + ( ( percent / 100 ) * 100);
+			image.x = (this.state.canvas.width / 2 ) - (image.width / 2 );
+			image.y = ((this.state.canvas.height / 2 ) - (image.height / 2 ) ) + ((percent / 100 ) * 100);
 
 			// Actually draw the image on the canvas
 			context.drawImage(image.object, image.x, image.y, image.width, image.height)

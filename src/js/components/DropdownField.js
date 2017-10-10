@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class DropdownField extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this.state = {
@@ -25,14 +25,14 @@ export default class DropdownField extends React.Component{
 
 	handleClick(e){
 		// TODO: remove dependency on jQuery and explore the performance of this functionality
-		if( $(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ','_').toLowerCase() && this.state.expanded ){
+		if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ','_').toLowerCase() && this.state.expanded){
 			this.setState({ expanded: false })
 		}
 	}
 
 	handleChange(value){
 		this.setState({ expanded: !this.state.expanded })
-		return this.props.handleChange( value )
+		return this.props.handleChange(value )
 	}
 
 	handleToggle(){
@@ -65,7 +65,7 @@ export default class DropdownField extends React.Component{
 				</div>
 				<div className="options">
 					{
-						this.props.options.map( option => {
+						this.props.options.map(option => {
 							return (
 								<div className="option" key={ option.value } onClick={ e => this.handleChange(option.value) }>
 									{option.value == current_value ? icon : null}

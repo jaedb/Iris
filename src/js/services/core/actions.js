@@ -10,7 +10,7 @@ export function getBroadcasts(){
             timeout: 15000,
             url: 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
         }
-        $.ajax(config).then( 
+        $.ajax(config).then(
                 response => {
                     dispatch({
                         type: 'BROADCASTS_LOADED',
@@ -65,7 +65,7 @@ export function startServices(){
     }
 }
 
-export function set( data ){
+export function set(data){
     return {
         type: 'CORE_SET',
         data: data
@@ -79,9 +79,9 @@ export function set( data ){
  * Playlist manipulation
  **/
 
-export function reorderPlaylistTracks( uri, indexes, insert_before, snapshot_id = false ){
-    var range = helpers.createRange( indexes );
-    switch( helpers.uriSource( uri ) ){
+export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id = false){
+    var range = helpers.createRange(indexes );
+    switch(helpers.uriSource(uri )){
 
         case 'spotify':
             return { 
@@ -134,7 +134,7 @@ export function createPlaylist(scheme, name, description = '', is_public = false
             if (description == ''){
                 description = null
             }
-            return spotifyActions.createPlaylist( name, description, is_public, is_collaborative )
+            return spotifyActions.createPlaylist(name, description, is_public, is_collaborative )
 
         default:
             return mopidyActions.createPlaylist(name, scheme)
@@ -154,8 +154,8 @@ export function deletePlaylist(uri){
     return false
 }
 
-export function removeTracksFromPlaylist( uri, tracks_indexes ){
-    switch( helpers.uriSource( uri ) ){
+export function removeTracksFromPlaylist(uri, tracks_indexes){
+    switch(helpers.uriSource(uri )){
 
         case 'spotify':
             return { 
@@ -173,8 +173,8 @@ export function removeTracksFromPlaylist( uri, tracks_indexes ){
     }
 }
 
-export function addTracksToPlaylist( uri, tracks_uris ){
-    switch( helpers.uriSource( uri ) ){
+export function addTracksToPlaylist(uri, tracks_uris){
+    switch(helpers.uriSource(uri )){
 
         case 'spotify':
             return { 

@@ -27,11 +27,11 @@ const localstorageMiddleware = (function(){
             }
         }
 
-        switch( action.type ){
+        switch(action.type){
 
             case 'PUSHER_CONNECTED':
-                var pusher = JSON.parse( localStorage.getItem('pusher') );
-                if( !pusher ) pusher = {};
+                var pusher = JSON.parse(localStorage.getItem('pusher') );
+                if (!pusher ) pusher = {};
                 Object.assign(
                     pusher,{
                         connection_id: action.connection_id
@@ -41,14 +41,14 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'PUSHER_SET_PORT':
-                var pusher = JSON.parse( localStorage.getItem('pusher') );
-                if( !pusher ) pusher = {};
-                Object.assign( pusher, { port: action.port } );
+                var pusher = JSON.parse(localStorage.getItem('pusher') );
+                if (!pusher ) pusher = {};
+                Object.assign(pusher, { port: action.port } );
                 localStorage.setItem('pusher', JSON.stringify(pusher));
                 break;
 
             case 'PUSHER_USERNAME_CHANGED':
-                var stored_pusher = JSON.parse( localStorage.getItem('pusher') )
+                var stored_pusher = JSON.parse(localStorage.getItem('pusher') )
                 var pusher = Object.assign({}, stored_pusher, { username: action.username })
                 localStorage.setItem('pusher', JSON.stringify(pusher))
                 break;
@@ -62,15 +62,15 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'MOPIDY_URISCHEMES_FILTERED':
-                var mopidy = JSON.parse( localStorage.getItem('mopidy') );
-                if( !mopidy ) mopidy = {};
-                Object.assign( mopidy, { uri_schemes: action.data });
+                var mopidy = JSON.parse(localStorage.getItem('mopidy') );
+                if (!mopidy ) mopidy = {};
+                Object.assign(mopidy, { uri_schemes: action.data });
                 localStorage.setItem('mopidy', JSON.stringify(mopidy));
                 break;
 
             case 'SPOTIFY_SET_CONFIG':
-                var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
+                var spotify = JSON.parse(localStorage.getItem('spotify') );
+                if (!spotify ) spotify = {};
                 Object.assign(
                     spotify,{
                         authentication_provider: action.config.authentication_provider, 
@@ -88,7 +88,7 @@ const localstorageMiddleware = (function(){
                 } else if (action.data){
                     var authorization = action.data;
                 }
-                var spotify = JSON.parse( localStorage.getItem('spotify') );
+                var spotify = JSON.parse(localStorage.getItem('spotify') );
                 spotify = Object.assign(
                     {},
                     (spotify ? spotify : {}),
@@ -103,7 +103,7 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                var spotify = JSON.parse( localStorage.getItem('spotify') );
+                var spotify = JSON.parse(localStorage.getItem('spotify') );
                 spotify = Object.assign(
                     {},
                     (spotify ? spotify : {}),
@@ -118,8 +118,8 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_TOKEN_REFRESHED':
-                var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
+                var spotify = JSON.parse(localStorage.getItem('spotify') );
+                if (!spotify ) spotify = {};
                 Object.assign(
                     spotify,{
                         access_token: action.data.access_token,
@@ -131,8 +131,8 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_ME_LOADED':
-                var spotify = JSON.parse( localStorage.getItem('spotify') );
-                if( !spotify ) spotify = {};
+                var spotify = JSON.parse(localStorage.getItem('spotify') );
+                if (!spotify ) spotify = {};
                 Object.assign(
                     spotify,
                     { me: action.data }
@@ -141,16 +141,16 @@ const localstorageMiddleware = (function(){
                 break;
 
             case 'CORE_SET':
-                var core = JSON.parse( localStorage.getItem('core') );
-                if( !core ) core = {};
-                Object.assign( core, action.data );
+                var core = JSON.parse(localStorage.getItem('core') );
+                if (!core ) core = {};
+                Object.assign(core, action.data );
                 localStorage.setItem('core', JSON.stringify(core));
                 break
 
             case 'UI_SET':
-                var ui = JSON.parse( localStorage.getItem('ui') );
-                if( !ui ) ui = {};
-                Object.assign( ui, action.data );
+                var ui = JSON.parse(localStorage.getItem('ui') );
+                if (!ui ) ui = {};
+                Object.assign(ui, action.data );
                 localStorage.setItem('ui', JSON.stringify(ui));
                 break
 

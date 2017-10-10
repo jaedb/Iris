@@ -52,13 +52,13 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		.grid-slider {
 			height: 23vw;
 		}
 	}
 
-	@include responsive( 500px ){
+	@include responsive(500px){
 		.grid-slider {
 			height: 40vw;
 

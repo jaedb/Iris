@@ -18,7 +18,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class User extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -26,13 +26,13 @@ class User extends React.Component{
 		this.loadUser();
 	}
 
-	componentWillReceiveProps( nextProps ){
-		if (nextProps.params.uri != this.props.params.uri ){
-			this.loadUser( nextProps )
+	componentWillReceiveProps(nextProps){
+		if (nextProps.params.uri != this.props.params.uri){
+			this.loadUser(nextProps )
 		}
 	}
 
-	loadUser( props = this.props ){
+	loadUser(props = this.props){
 		if (!props.user){
 			this.props.spotifyActions.getUser(props.params.uri)
 		}
@@ -44,7 +44,7 @@ class User extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL( this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
+		this.props.spotifyActions.getURL(this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
 	}
 
 	isMe(){

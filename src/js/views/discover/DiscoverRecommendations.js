@@ -17,7 +17,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class Discover extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this._autocomplete_timer = false

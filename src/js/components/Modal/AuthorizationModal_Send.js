@@ -17,7 +17,7 @@ class AuthorizationModal_Send extends React.Component{
 
 	handleClick(e, connection_id){		
 		e.preventDefault()
-		this.props.pusherActions.sendAuthorization( connection_id, this.props.authorization, this.props.me )
+		this.props.pusherActions.sendAuthorization(connection_id, this.props.authorization, this.props.me )
 		this.props.uiActions.closeModal()
 		return false;
 	}
@@ -36,7 +36,7 @@ class AuthorizationModal_Send extends React.Component{
 			return (
 				<div className="list small pusher-connection-list">
 					{
-						connections.map( (connection, index) => {
+						connections.map((connection, index) => {
 							return (
 								<div className='list-item connection' key={connection.connection_id} onClick={ e => this.handleClick(e, connection.connection_id) }>
 									{ connection.username }

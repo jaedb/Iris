@@ -13,7 +13,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class SpotifyAuthenticationFrame extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this.state = {

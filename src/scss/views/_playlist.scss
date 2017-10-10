@@ -32,7 +32,7 @@ main .playlist-view {
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		padding-top: 0;
 		padding-left: 10px;
 
@@ -63,7 +63,7 @@ main .playlist-view {
 		}
 	}
 
-	@include responsive( $bp_small ){
+	@include responsive($bp_small){
 		.title {
 			@include clearfix();
 			padding: 20px 20px 10px 40%;

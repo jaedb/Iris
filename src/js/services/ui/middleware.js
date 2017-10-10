@@ -41,8 +41,8 @@ const UIMiddleware = (function(){
 
                 // handle nested data objects
                 var data = {}
-                if( typeof(action.data) ) data = action.data
-                if( typeof(data.data) ) data = Object.assign({}, data, data.data)
+                if (typeof(action.data) ) data = action.data
+                if (typeof(data.data) ) data = Object.assign({}, data, data.data)
 
                 // construct our browser notification
                 var title = '';
@@ -52,12 +52,12 @@ const UIMiddleware = (function(){
                     lang: 'EN',
                     tag: 'iris'
                 };
-                if( data.title ) title = data.title;
-                if( data.body ) options.body = data.body;
-                if( data.icon ) options.icon = data.icon;
+                if (data.title ) title = data.title;
+                if (data.body ) options.body = data.body;
+                if (data.icon ) options.icon = data.icon;
 
                 // make it so
-                var notification = new notification( title, options );
+                var notification = new notification(title, options );
                 break
 
             case 'CREATE_NOTIFICATION':
@@ -78,7 +78,7 @@ const UIMiddleware = (function(){
             case 'REMOVE_NOTIFICATION':
                 var notifications = Object.assign([], store.getState().ui.notifications)
 
-                function getByKey( notification ){
+                function getByKey(notification){
                     return notification.key === action.key
                 }
                 var index = notifications.findIndex(getByKey)

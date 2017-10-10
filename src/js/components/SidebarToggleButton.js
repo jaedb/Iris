@@ -8,7 +8,7 @@ import * as uiActions from '../services/ui/actions'
 
 class SidebarToggleButton extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -19,8 +19,8 @@ class SidebarToggleButton extends React.Component{
 	render(){
 
 		var classname = 'sidebar-toggle'
-		if( this.props.open ) classname += ' open'
-		if( this.props.className ) classname += ' '+this.props.className
+		if (this.props.open ) classname += ' open'
+		if (this.props.className ) classname += ' '+this.props.className
 
 		return (
 			<div className={classname} onClick={ () => this.handleClick() }>

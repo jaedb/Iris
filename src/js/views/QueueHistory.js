@@ -16,7 +16,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 
 class QueueHistory extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -25,7 +25,7 @@ class QueueHistory extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
-		if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
+		if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			this.loadHistory(nextProps)
 		}
 	}

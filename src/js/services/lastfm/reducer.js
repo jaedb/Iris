@@ -1,6 +1,6 @@
 
 export default function reducer(lastfm = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'LASTFM_CONNECT':
         case 'LASTFM_CONNECTING':

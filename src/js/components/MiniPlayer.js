@@ -14,13 +14,13 @@ import * as mopidyActions from '../services/mopidy/actions'
 
 class MiniPlayer extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
 	renderPlayButton(){
 		var button = <a className="play" onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
-		if( this.props.play_state == 'playing' ){
+		if (this.props.play_state == 'playing'){
 			button = <a className="play" onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
 		return button;

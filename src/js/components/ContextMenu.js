@@ -15,7 +15,7 @@ import TrackList from './TrackList'
 
 class ContextMenu extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 		this.state = {
 			submenu_expanded: false
@@ -34,7 +34,7 @@ class ContextMenu extends React.Component{
 		window.removeEventListener("click", this.handleClick, false)
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
@@ -152,17 +152,17 @@ class ContextMenu extends React.Component{
 	playQueueItem(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
-		this.props.mopidyActions.changeTrack( tracks[0].tlid )
+		this.props.mopidyActions.changeTrack(tracks[0].tlid )
 	}
 
 	removeFromQueue(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
 		var tracks_tlids = [];
-		for( var i = 0; i < tracks.length; i++ ){
-			tracks_tlids.push( tracks[i].tlid );
+		for(var i = 0; i < tracks.length; i++){
+			tracks_tlids.push(tracks[i].tlid );
 		}
-		this.props.mopidyActions.removeTracks( tracks_tlids )
+		this.props.mopidyActions.removeTracks(tracks_tlids )
 	}
 
 	playURIs(e){
@@ -208,7 +208,7 @@ class ContextMenu extends React.Component{
 	goToRecommendations(e){
 		this.props.uiActions.hideContextMenu()
 		var uris_string = helpers.arrayOf('uri',this.props.menu.items).join(',')
-		hashHistory.push( global.baseURL +'discover/recommendations/'+ uris_string )
+		hashHistory.push(global.baseURL +'discover/recommendations/'+ uris_string )
 	}
 
 	goToArtist(e){
@@ -216,7 +216,7 @@ class ContextMenu extends React.Component{
 			return null
 		} else {
 			this.props.uiActions.hideContextMenu()
-			hashHistory.push( global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri )
+			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri )
 		}
 	}
 
@@ -225,7 +225,7 @@ class ContextMenu extends React.Component{
 			return null
 		} else {
 			this.props.uiActions.hideContextMenu()
-			hashHistory.push( global.baseURL +'user/'+ this.props.menu.items[0].owner.uri )
+			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].owner.uri )
 		}
 	}
 
@@ -234,7 +234,7 @@ class ContextMenu extends React.Component{
 			return null
 		} else {
 			this.props.uiActions.hideContextMenu()
-			hashHistory.push( global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri))
+			hashHistory.push(global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri))
 		}
 	}
 
@@ -245,7 +245,7 @@ class ContextMenu extends React.Component{
 		document.execCommand("copy");
 		temp.remove();
 
-		this.props.uiActions.createNotification( "Copied "+this.props.menu.uris.length+" URIs" )
+		this.props.uiActions.createNotification("Copied "+this.props.menu.uris.length+" URIs" )
 		this.props.uiActions.hideContextMenu()
 	}
 
@@ -257,7 +257,7 @@ class ContextMenu extends React.Component{
 	renderPlaylistSubmenu(){
 		var playlists = []
 		for (var uri in this.props.playlists){
-			if (this.props.playlists[uri].can_edit) playlists.push( this.props.playlists[uri])
+			if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri])
 		}
 
 		playlists = helpers.sortItems(playlists, 'name')

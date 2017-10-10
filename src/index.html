@@ -50,7 +50,7 @@
     css.rel = "stylesheet";
 
     // Check for test mode. This is toggled under Settings > Debug > Test mode
-    var ui = JSON.parse( localStorage.getItem('ui') );
+    var ui = JSON.parse(localStorage.getItem('ui') );
     var test_mode = (typeof(ui) !== 'undefined' && ui && typeof(ui.test_mode) !== 'undefined' && ui.test_mode);
 
 	// Test mode, use built (but not minified) code

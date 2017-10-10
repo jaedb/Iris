@@ -30,7 +30,7 @@ class Modal extends React.Component{
 		super(props)
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 		if (nextProps.modal){
 			$('body').addClass('modal-open')
 		} else {

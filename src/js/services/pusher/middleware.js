@@ -31,9 +31,9 @@ const PusherMiddleware = (function(){
 
         // response to a request [we] made
         if (message.request_id !== undefined && message.request_id){            
-            if (typeof( deferredRequests[ message.request_id ]) !== 'undefined' ){
+            if (typeof(deferredRequests[ message.request_id ]) !== 'undefined'){
                 store.dispatch(uiActions.stopLoading(message.request_id))
-                deferredRequests[ message.request_id ].resolve( message )
+                deferredRequests[ message.request_id ].resolve(message )
 
             } else {
                 store.dispatch(coreActions.handleException(
@@ -51,7 +51,7 @@ const PusherMiddleware = (function(){
     }
 
     const request = (store, method, data = {}) => {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
             var request_id = helpers.generateGuid()
             var message = {
@@ -59,7 +59,7 @@ const PusherMiddleware = (function(){
                 data: data,
                 request_id: request_id
             }
-            socket.send( JSON.stringify(message) )
+            socket.send(JSON.stringify(message) )
 
             store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method))
 
@@ -81,11 +81,11 @@ const PusherMiddleware = (function(){
     }
 
     return store => next => action => {
-        switch(action.type) {
+        switch(action.type){
 
             case 'PUSHER_CONNECT':
 
-                if(socket != null) socket.close();
+                if (socket != null) socket.close();
                 store.dispatch({ type: 'PUSHER_CONNECTING' });
 
                 var state = store.getState();
@@ -94,7 +94,7 @@ const PusherMiddleware = (function(){
                     connection_id: helpers.generateGuid(),
                     username: 'Anonymous'
                 }
-                if( state.pusher.username ) connection.username = state.pusher.username;
+                if (state.pusher.username ) connection.username = state.pusher.username;
                 connection.username = connection.username.replace(/\W/g, '')
                 
                 socket = new WebSocket(
@@ -104,7 +104,7 @@ const PusherMiddleware = (function(){
 
                 socket.onmessage = (message) => {
                     var message = JSON.parse(message.data);
-                    handleMessage( socket, store, message )
+                    handleMessage(socket, store, message )
                 };
 
                 socket.onclose = () => {
@@ -190,7 +190,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                request( action )
+                request(action )
                     .then(
                         response => {
                             store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
@@ -208,7 +208,7 @@ const PusherMiddleware = (function(){
                 request(store, 'deliver_message', action.data)
                     .then(
                         response => {
-                            store.dispatch( uiActions.createNotification('Message delivered') )
+                            store.dispatch(uiActions.createNotification('Message delivered') )
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -258,9 +258,9 @@ const PusherMiddleware = (function(){
                             }
 
                             if (response.upgrade_successful){
-                                store.dispatch( uiActions.createNotification('Upgrade complete') )
+                                store.dispatch(uiActions.createNotification('Upgrade complete') )
                             }else{
-                                store.dispatch( uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
+                                store.dispatch(uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                             }
 
                             response.type = 'PUSHER_VERSION'
@@ -342,16 +342,16 @@ const PusherMiddleware = (function(){
                     seed_tracks: []
                 }
                 
-                for( var i = 0; i < action.uris.length; i++){
-                    switch( helpers.uriType( action.uris[i] ) ){
+                for(var i = 0; i < action.uris.length; i++){
+                    switch(helpers.uriType(action.uris[i] )){
                         case 'artist':
-                            data.seed_artists.push( action.uris[i] );
+                            data.seed_artists.push(action.uris[i] );
                             break;
                         case 'track':
-                            data.seed_tracks.push( action.uris[i] );
+                            data.seed_tracks.push(action.uris[i] );
                             break;
                         case 'genre':
-                            data.seed_genres.push( action.uris[i] );
+                            data.seed_genres.push(action.uris[i] );
                             break;
                     }
                 }
@@ -409,9 +409,9 @@ const PusherMiddleware = (function(){
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
 
                 if (action.version.upgrade_available){
-                    store.dispatch( uiActions.createNotification( 'Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+                    store.dispatch(uiActions.createNotification('Version '+action.version.latest+' is available. See settings to upgrade.' ) )
                 }
-                next( action )
+                next(action )
                 break
 
             case 'PUSHER_CONFIG':
@@ -421,7 +421,7 @@ const PusherMiddleware = (function(){
                     authorization_url: (action.config.authorization_url ? action.config.authorization_url : null)
                 }))
 
-                next( action )
+                next(action )
                 break
 
             case 'PUSHER_DEBUG':

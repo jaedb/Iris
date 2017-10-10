@@ -15,7 +15,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 
 class FullPlayer extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -32,7 +32,7 @@ class FullPlayer extends React.Component{
 
 	renderPlayButton(){
 		var button = <a onClick={() => this.props.mopidyActions.play()}><FontAwesome name="play" /> </a>
-		if( this.props.play_state == 'playing' ){
+		if (this.props.play_state == 'playing'){
 			button = <a onClick={() => this.props.mopidyActions.pause()}><FontAwesome name="pause" /> </a>
 		}
 		return button;
@@ -40,7 +40,7 @@ class FullPlayer extends React.Component{
 
 	renderConsumeButton(){
 		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
-		if( this.props.consume ){
+		if (this.props.consume){
 			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		}
 		return button;
@@ -48,7 +48,7 @@ class FullPlayer extends React.Component{
 
 	renderRandomButton(){
 		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
-		if( this.props.random ){
+		if (this.props.random){
 			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		}
 		return button;
@@ -56,17 +56,17 @@ class FullPlayer extends React.Component{
 
 	renderRepeatButton(){
 		var button = <a className="has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
-		if( this.props.repeat ){
+		if (this.props.repeat){
 			button = <a className="active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		}
 		return button;
 	}
 
 	renderArtwork(){
-		if( 
+		if (
 			!this.props.current_track || 
 			!this.props.current_track.album || 
-			!this.props.current_track.album.images ){
+			!this.props.current_track.album.images){
 				return (
 					<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
 						{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
@@ -81,7 +81,7 @@ class FullPlayer extends React.Component{
 		}
 
 		var link = null
-		if( this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
+		if (this.props.current_track.album.uri ) link = '/album/'+this.props.current_track.album.uri
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link} onContextMenu={e => this.handleContextMenu(e,this.props.current_track.album)}>
 				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}

@@ -23,7 +23,7 @@ import * as geniusActions from '../services/genius/actions'
 
 class Track extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -34,19 +34,19 @@ class Track extends React.Component{
 	handleContextMenu(e){
 		e.preventDefault()
 		var data = { uris: [this.props.params.uri] }
-		this.props.uiActions.showContextMenu( e, data, 'track', 'click' )
+		this.props.uiActions.showContextMenu(e, data, 'track', 'click' )
 	}
 
-	componentWillReceiveProps( nextProps ){
+	componentWillReceiveProps(nextProps){
 
 		// if our URI has changed, fetch new album
-		if( nextProps.params.uri != this.props.params.uri ){
-			this.loadTrack( nextProps )
+		if (nextProps.params.uri != this.props.params.uri){
+			this.loadTrack(nextProps )
 
 		// if mopidy has just connected AND we're a local album, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
-				this.loadTrack( nextProps )
+			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+				this.loadTrack(nextProps )
 			}
 		}
 
@@ -66,14 +66,14 @@ class Track extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadTrack( props = this.props ){
+	loadTrack(props = this.props){
 		switch (helpers.uriSource(props.params.uri)){
 
 			case 'spotify':
 				if (props.track){
 					console.info('Loading track from index')
 				}else{
-					this.props.spotifyActions.getTrack( props.params.uri );
+					this.props.spotifyActions.getTrack(props.params.uri );
 				}
 				break;
 
@@ -82,7 +82,7 @@ class Track extends React.Component{
 					if (props.track){
 						console.info('Loading track from index')
 					} else {
-						this.props.mopidyActions.getTrack( props.params.uri );
+						this.props.mopidyActions.getTrack(props.params.uri );
 					}
 				}
 				break;
@@ -101,7 +101,7 @@ class Track extends React.Component{
 				</div>
 			);
 		} else if (!this.props.track.lyrics){
-			return <div className="lyrics">No lyrics available</div>
+			return <div className="lyrics"><p className="grey-text"><em>No lyrics available</em></p></div>
 		} else {
 			return <div className="lyrics" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
 		}
@@ -132,7 +132,7 @@ class Track extends React.Component{
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={track.images} />
+					<Thumbnail size="large" canZoom images={track.album.images} />
 				</div>
 
 				<div className="title">

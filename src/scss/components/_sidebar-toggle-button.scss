@@ -12,7 +12,7 @@
 	cursor: pointer;
 	display: none;
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		display: block;
 	}
 
@@ -35,7 +35,7 @@
 		}
 	}
 
-	&:not(.open) {
+	&:not(.open){
 		.close {
 			display: none;
 		}

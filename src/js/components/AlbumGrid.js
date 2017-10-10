@@ -11,7 +11,7 @@ import GridItem from './GridItem'
 
 class AlbumGrid extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
@@ -27,7 +27,7 @@ class AlbumGrid extends React.Component{
 	}
 
 	render(){
-		if( this.props.albums ){
+		if (this.props.albums){
 			var className = "grid album-grid"
 			if (this.props.className) className += ' '+this.props.className
 			if (this.props.single_row) className += ' single-row'

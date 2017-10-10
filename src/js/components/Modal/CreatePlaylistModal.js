@@ -24,7 +24,7 @@ export default class CreatePlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {	
-			this.props.coreActions.createPlaylist( this.state.scheme, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative )
+			this.props.coreActions.createPlaylist(this.state.scheme, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative )
 			this.props.uiActions.closeModal()
 		}
 

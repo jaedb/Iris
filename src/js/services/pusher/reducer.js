@@ -1,6 +1,6 @@
 
 export default function reducer(pusher = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'PUSHER_CONNECT':
         case 'PUSHER_CONNECTING':

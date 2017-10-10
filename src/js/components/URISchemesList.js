@@ -7,17 +7,17 @@ import FontAwesome from 'react-fontawesome'
 
 class URISchemesList extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
 	render(){
-		if( !this.props.uri_schemes ) return null;
+		if (!this.props.uri_schemes ) return null;
 
 		return (
 			<div className="uri-schemes-list">
 				{
-					this.props.uri_schemes.map( (scheme, index) => {
+					this.props.uri_schemes.map((scheme, index) => {
 						scheme = scheme.replace(':','')
 						return (
 							<span key={index+'_'+scheme}>

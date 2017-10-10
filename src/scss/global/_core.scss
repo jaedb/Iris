@@ -70,7 +70,7 @@ body {
 		overflow-y: hidden;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		&.context-menu-open {
 			overflow-y: hidden;
 		}
@@ -81,11 +81,11 @@ main,
 footer {
 	margin-left: 220px;
 
-	@include responsive( null, null, $bp_shallow ){
+	@include responsive(null, null, $bp_shallow){
 		padding-bottom: 60px;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		margin-left: 0;
 	}
 }
@@ -115,7 +115,7 @@ main {
 		white-space: pre-wrap;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 
 		.content-wrapper {
 			padding: 20px 10px 60px;
@@ -232,7 +232,7 @@ button.placeholder {
 	margin: 25px 40px;
 	height: 10px;
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		margin-left: 20px;
 		margin-right: 20px;
 	}
@@ -397,7 +397,7 @@ footer {
 
 
 
-@include responsive( $bp_medium ){
+@include responsive($bp_medium){
 	
 	h1 {
 		font-size: 1.8rem;

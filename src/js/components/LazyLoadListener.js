@@ -4,7 +4,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class LazyLoadListener extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 		this.state = {
 			loading: false
@@ -21,12 +21,12 @@ export default class LazyLoadListener extends React.Component{
 	}
 
 	handleScroll(e){
-	    if( (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80) ){
+	    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80)){
 	    	if (!this.state.loading && this.props.loading){
 				this.setState({ loading: true })
 				this.props.loadMore();
 			}
-	    }else if( this.state.loading ){
+	    }else if (this.state.loading){
 			this.setState({ loading: false })
 	    }
 	}

@@ -2,7 +2,7 @@
 import * as helpers from '../../helpers'
 
 export default function reducer(ui = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'LAZY_LOADING':
             return Object.assign({}, ui, { lazy_loading: action.start });
@@ -18,7 +18,7 @@ export default function reducer(ui = {}, action){
 
         case 'TOGGLE_SIDEBAR':
             var new_state = !ui.sidebar_open
-            if( typeof(action.new_state) !== 'undefined' ) new_state = action.new_state
+            if (typeof(action.new_state) !== 'undefined' ) new_state = action.new_state
             return Object.assign({}, ui, { sidebar_open : new_state })
 
         case 'SET_SELECTED_TRACKS':
@@ -100,7 +100,7 @@ export default function reducer(ui = {}, action){
         case 'REMOVE_NOTIFICATION':
             var notifications = Object.assign([], ui.notifications)
             
-            if( action.index > -1 ){
+            if (action.index > -1){
                 notifications.splice(action.index, 1)
             }
 

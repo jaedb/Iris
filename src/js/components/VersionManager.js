@@ -10,12 +10,12 @@ import * as pusherActions from '../services/pusher/actions'
 
 class VersionManager extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
 	renderUpgradeButton(){
-		if( this.props.pusher.upgrading ){
+		if (this.props.pusher.upgrading){
 			return (
 				<button className="outline" disabled>
 					<FontAwesome name="circle-o-notch" spin />
@@ -25,11 +25,11 @@ class VersionManager extends React.Component{
 			);
 		}
 
-		if( !this.props.pusher.version.is_root ){
+		if (!this.props.pusher.version.is_root){
 			return <button className="outline" disabled>Not running as root</button>
 		}
 
-		if( this.props.pusher.version.upgrade_available ){
+		if (this.props.pusher.version.upgrade_available){
 			return <button className="primary" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
 		}
 

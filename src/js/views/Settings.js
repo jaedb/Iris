@@ -23,7 +23,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Settings extends React.Component {
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 		this.state = {
 			country: this.props.core.country,

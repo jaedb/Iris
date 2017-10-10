@@ -157,7 +157,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		bottom: 60px;
 		left: 10px;
 		right: 10px;

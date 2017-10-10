@@ -1,6 +1,6 @@
 
 export default function reducer(genius = {}, action){
-    switch (action.type) {
+    switch (action.type){
 
         case 'GENIUS_CONNECT':
         case 'GENIUS_CONNECTING':

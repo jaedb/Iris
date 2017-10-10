@@ -46,7 +46,7 @@ console.error = function(message, error){
 
 // setup our analytics tracking
 ReactGA.initialize('UA-64701652-3');
-function handleUpdate() {
+function handleUpdate(){
 	ReactGA.set({ page: window.location.hash })
 	ReactGA.pageview(window.location.hash)
 	$(window).scrollTop(0)

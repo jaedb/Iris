@@ -10,7 +10,7 @@ import * as uiActions from '../services/ui/actions'
 
 class Thumbnail extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 /*
@@ -33,7 +33,7 @@ class Thumbnail extends React.Component{
 
 		// image item changed	
 		var size = 'medium'
-		var images = helpers.sizedImages( nextProps.images )
+		var images = helpers.sizedImages(nextProps.images )
 		if (this.props.size ) size = this.props.size
 		if (this.props.images[size] != images[size]) return true
 
@@ -41,21 +41,21 @@ class Thumbnail extends React.Component{
 	}
 	*/
 
-	mapImageSizes( props = this.props ){
+	mapImageSizes(props = this.props){
 
 		// no images
-		if( !this.props.image && !this.props.images ){
+		if (!this.props.image && !this.props.images){
 			return require('../../assets/no-image.svg')
 
 		// single image
-		}else if( this.props.image ){
+		}else if (this.props.image){
 			return this.props.image
 
 		// multiple images
-		}else if( this.props.images && this.props.images.length > 0 ){
-			var images = helpers.sizedImages( this.props.images )
+		}else if (this.props.images && this.props.images.length > 0){
+			var images = helpers.sizedImages(this.props.images )
 			var size = 'medium'
-			if( this.props.size ) size = this.props.size
+			if (this.props.size ) size = this.props.size
 			return images[size]
 		}
 	}
@@ -68,9 +68,9 @@ class Thumbnail extends React.Component{
 	render(){
 		var image = this.mapImageSizes()
 		var class_name = 'thumbnail '
-		if( this.props.size ) class_name += ' '+this.props.size
-		if( this.props.circle ) class_name += ' circle'
-		if( this.props.className ) class_name += ' '+this.props.className
+		if (this.props.size ) class_name += ' '+this.props.size
+		if (this.props.circle ) class_name += ' circle'
+		if (this.props.className ) class_name += ' '+this.props.className
 		
 		var zoom_icon = null
 		if (this.props.canZoom){

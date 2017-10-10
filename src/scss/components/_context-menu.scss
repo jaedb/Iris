@@ -1,5 +1,5 @@
 
-@include responsive( $bp_medium ){
+@include responsive($bp_medium){
 	body.context-menu-open {
 		.body {
 			@include blur(10px);
@@ -51,7 +51,7 @@
 					background: -o-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
 					background: -ms-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
 					background: linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
+					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
 				}
 			}
 
@@ -214,7 +214,7 @@
 		}
 	}
 
-	@include responsive( null, $bp_medium ){
+	@include responsive(null, $bp_medium){
 		.liner {
 			.title {
 				display: none;
@@ -222,7 +222,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		top: 0 !important;
 		right: 0 !important;
 		bottom: 0 !important;
@@ -344,7 +344,7 @@
 			}
 		}
 
-		@include responsive( $bp_medium ){
+		@include responsive($bp_medium){
 			.context-menu-trigger {	
 				bottom: 8px;
 				right: 43px;

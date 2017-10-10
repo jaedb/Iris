@@ -19,7 +19,7 @@
 			border-radius: 0;
 
 			/* handle Safari's ridiculous non-vertical centering */
-			&:not(:root:root) {
+			&:not(:root:root){
 				height: 4rem;
 				margin-top: -1rem;
 			}
@@ -38,7 +38,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 
 		.search-form {
 			top: 18px;

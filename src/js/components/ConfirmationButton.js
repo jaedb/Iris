@@ -4,7 +4,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class ConfirmationButton extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 		this.state = {
 			timing_out: false,
@@ -15,11 +15,11 @@ export default class ConfirmationButton extends React.Component{
 	}
 
 	componentWillUnmount(){
-		clearTimeout( this.unconfirmTimer );
+		clearTimeout(this.unconfirmTimer );
 	}
 
 	handleClick(e){
-		if( this.state.confirming ){
+		if (this.state.confirming){
 			this.setState({ confirming: false });
 			this.props.onConfirm();
 		}else{
@@ -29,11 +29,11 @@ export default class ConfirmationButton extends React.Component{
 
 	handleMouseEnter(e){
 		this.setState({ timing_out: false });
-		clearTimeout( this.unconfirmTimer );
+		clearTimeout(this.unconfirmTimer );
 	}
 
 	handleMouseLeave(e){
-		if( this.state.confirming ){
+		if (this.state.confirming){
 			this.setState({ timing_out: true });
 			this.unconfirmTimer = setTimeout(
 				function(){
@@ -49,13 +49,13 @@ export default class ConfirmationButton extends React.Component{
 		var className = 'button';
 		var content = this.props.content;
 
-		if( this.state.confirming ){
+		if (this.state.confirming){
 			className += ' confirming';	
 			content = this.props.confirmingContent;
-			if( this.state.timing_out ) className += ' timing-out';
+			if (this.state.timing_out ) className += ' timing-out';
 		}
 
-		if( this.props.className ) className += ' '+this.props.className
+		if (this.props.className ) className += ' '+this.props.className
 
 		return (
 			<button

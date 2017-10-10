@@ -18,7 +18,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class LibraryArtists extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -76,7 +76,7 @@ class LibraryArtists extends React.Component{
 
 	setSort(value){
 		var reverse = false
-		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+		if (this.props.sort == value ) reverse = !this.props.sort_reverse
 
 		var data = {
 			library_artists_sort_reverse: reverse,
@@ -86,7 +86,7 @@ class LibraryArtists extends React.Component{
 	}
 
 	renderView(artists){
-		if( this.props.view == 'list' ){
+		if (this.props.view == 'list'){
 			var columns = [
 				{
 					label: 'Name',

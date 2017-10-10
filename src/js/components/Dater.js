@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 
 export default class Dater extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
@@ -13,24 +13,24 @@ export default class Dater extends React.Component{
 	 * @param milliseconds int
 	 * @return string (HH:mm:ss)
 	 **/
-	durationTime( milliseconds = false ){
-		if( !milliseconds ) return null
+	durationTime(milliseconds = false){
+		if (!milliseconds ) return null
 
 		var string = '';
 		var total_hours, total_minutes, total_seconds, minutes, seconds;
 
 		// get total values for each 
-		total_seconds = Math.floor( milliseconds / 1000 )
-		total_minutes = Math.floor( milliseconds / (1000 * 60) )
+		total_seconds = Math.floor(milliseconds / 1000 )
+		total_minutes = Math.floor(milliseconds / (1000 * 60) )
 		total_hours = Math.floor(milliseconds / (1000 * 60 * 60))
 
 		// get left-over number of seconds
-		seconds = total_seconds - ( total_minutes * 60 )
+		seconds = total_seconds - (total_minutes * 60 )
 		if (seconds <= 9) seconds = '0'+ seconds
 		if (seconds == 0) seconds = '00'
 
 		// get left-over number of minutes
-		minutes = total_minutes - ( total_hours * 60 )
+		minutes = total_minutes - (total_hours * 60 )
 		if (minutes <= 9 && total_hours) minutes = '0'+ minutes
 		if (minutes == 0) minutes = '00'
 
@@ -47,20 +47,20 @@ export default class Dater extends React.Component{
 	 * @param milliseconds int
 	 * @return string (eg 2+ hours)
 	 **/
-	durationSentence( milliseconds = false ){
-		if( !milliseconds ) return null
+	durationSentence(milliseconds = false){
+		if (!milliseconds ) return null
 
 		var string = '';
 		var total_hours, total_minutes, total_seconds, minutes, seconds;
 
 		// get total values for each 
-		total_seconds = Math.floor( milliseconds / 1000 )
-		total_minutes = Math.floor( milliseconds / (1000 * 60) )
+		total_seconds = Math.floor(milliseconds / 1000 )
+		total_minutes = Math.floor(milliseconds / (1000 * 60) )
 		total_hours = Math.floor(milliseconds / (1000 * 60 * 60))
 
-		if( total_hours > 1 ) return total_hours+'+ hrs'
-		if( total_minutes > 1 ) return total_minutes+' mins'
-		if( total_seconds ) return total_seconds+' sec'
+		if (total_hours > 1 ) return total_hours+'+ hrs'
+		if (total_minutes > 1 ) return total_minutes+' mins'
+		if (total_seconds ) return total_seconds+' sec'
 	}
 
 	calculate(){
@@ -69,9 +69,9 @@ export default class Dater extends React.Component{
 			case 'total-time':
 				var duration = 0;
 				var tracks = this.props.data
-				for( var i = 0; i < tracks.length; i++ ){
-					if( tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
-					if( tracks[i].length ) duration += parseInt(tracks[i].length);
+				for(var i = 0; i < tracks.length; i++){
+					if (tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
+					if (tracks[i].length ) duration += parseInt(tracks[i].length);
 				}
 				return this.durationSentence(duration)
 				break

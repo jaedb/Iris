@@ -11,7 +11,7 @@ var helpers = require('../../helpers')
  * @param endpoint params = the url params to send
  **/
 const sendRequest = (dispatch, getState, endpoint) => {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid();
         dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
@@ -29,7 +29,7 @@ const sendRequest = (dispatch, getState, endpoint) => {
             url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
         };
 
-        $.ajax(config).then( 
+        $.ajax(config).then(
             response => {
                 dispatch(uiActions.stopLoading(loader_key));
                 resolve(response.response);

@@ -84,27 +84,27 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_CREATE_PLAYLIST':
-                store.dispatch( spotifyActions.createPlaylist( action.name, action.description, action.is_private, action.is_collaborative ))
+                store.dispatch(spotifyActions.createPlaylist(action.name, action.description, action.is_private, action.is_collaborative ))
                 break;
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
                 var playlist = Object.assign({},state.core.playlists[action.key]);
-                store.dispatch( spotifyActions.deleteTracksFromPlaylist( playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
+                store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break;
 
 
             case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
-                store.dispatch( spotifyActions.addTracksToPlaylist( action.key, action.tracks_uris ))
+                store.dispatch(spotifyActions.addTracksToPlaylist(action.key, action.tracks_uris ))
                 break;
 
 
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
-                store.dispatch( spotifyActions.reorderPlaylistTracks( action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
+                store.dispatch(spotifyActions.reorderPlaylistTracks(action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break;
 
 
             case 'SPOTIFY_SAVE_PLAYLIST':
-                store.dispatch( spotifyActions.savePlaylist( action.key, action.name, action.description, action.is_public, action.is_collaborative ))
+                store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative ))
                 break;
 
             case 'SPOTIFY_NEW_RELEASES_LOADED':
@@ -136,7 +136,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_USER_PLAYLISTS_LOADED':
                 var playlists = []
-                for( var i = 0; i < action.data.items.length; i++ ){
+                for(var i = 0; i < action.data.items.length; i++){
                     var playlist = Object.assign(
                         {},
                         action.data.items[i],
@@ -167,7 +167,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
                 var playlists = []
-                for( var i = 0; i < action.data.playlists.items.length; i++ ){
+                for(var i = 0; i < action.data.playlists.items.length; i++){
                     var playlist = Object.assign(
                         {},
                         action.data.playlists.items[i],
@@ -202,7 +202,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                 var playlists = []
-                for( var i = 0; i < action.playlists.length; i++ ){
+                for(var i = 0; i < action.playlists.length; i++){
                     var playlist = Object.assign(
                         {},
                         action.playlists[i],

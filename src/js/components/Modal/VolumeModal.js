@@ -15,9 +15,9 @@ export default class VolumeModal extends React.Component{
 
 		var sliderY = e.clientY - slider.getBoundingClientRect().top;
 		var sliderHeight = slider.getBoundingClientRect().height;
-		var percent = 100 - parseInt( sliderY / sliderHeight * 100 );
+		var percent = 100 - parseInt(sliderY / sliderHeight * 100 );
 
-		this.props.mopidyActions.setVolume( percent )
+		this.props.mopidyActions.setVolume(percent )
 	}
 
 	toggleMute(e){

@@ -23,7 +23,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		.option {
 			margin-right: 15px;
 		}

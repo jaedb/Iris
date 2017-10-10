@@ -5,18 +5,18 @@ import Thumbnail from './Thumbnail'
 
 export default class RelatedArtists extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
 	render(){
-		if( !this.props.artists ) return null
+		if (!this.props.artists ) return null
 
 		return (
 			<div className="list related-artist-list">
 				{
-					this.props.artists.map( (artist, index) => {
-						if( artist.uri ){
+					this.props.artists.map((artist, index) => {
+						if (artist.uri){
 							return (
 								<Link to={global.baseURL+'artist/'+ artist.uri} key={artist.uri} className="artist">
 									<Thumbnail circle={true} size="small" images={artist.images} />

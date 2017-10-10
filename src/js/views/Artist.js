@@ -26,7 +26,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Artist extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
@@ -34,12 +34,12 @@ class Artist extends React.Component{
 		this.loadArtist()
 	}
 
-	componentWillReceiveProps( nextProps ){
-		if( nextProps.params.uri != this.props.params.uri ){
-			this.loadArtist( nextProps )
-		}else if( !this.props.mopidy_connected && nextProps.mopidy_connected ){
-			if( helpers.uriSource( this.props.params.uri ) != 'spotify' ){
-				this.loadArtist( nextProps )
+	componentWillReceiveProps(nextProps){
+		if (nextProps.params.uri != this.props.params.uri){
+			this.loadArtist(nextProps )
+		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+				this.loadArtist(nextProps )
 			}
 		}
 	}
@@ -54,8 +54,8 @@ class Artist extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
-	loadArtist( props = this.props ){
-		switch( helpers.uriSource( props.params.uri ) ){
+	loadArtist(props = this.props){
+		switch(helpers.uriSource(props.params.uri )){
 
 			case 'spotify':
 				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
@@ -78,7 +78,7 @@ class Artist extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL( this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
+		this.props.spotifyActions.getURL(this.props.artist.albums_more, 'SPOTIFY_ARTIST_ALBUMS_LOADED', this.props.params.uri );
 	}
 
 	inLibrary(){
@@ -105,7 +105,7 @@ class Artist extends React.Component{
 			)
 		}
 		
-		var scheme = helpers.uriSource( this.props.params.uri );
+		var scheme = helpers.uriSource(this.props.params.uri );
 
 		var related_artists = []
 		if (this.props.artist.related_artists_uris){
@@ -188,10 +188,10 @@ class Artist extends React.Component{
 
 	render(){
 
-		var scheme = helpers.uriSource( this.props.params.uri )
+		var scheme = helpers.uriSource(this.props.params.uri )
 
-		if ( this.props.artist && this.props.artist.images ){
-			var image = helpers.sizedImages( this.props.artist.images ).huge
+		if (this.props.artist && this.props.artist.images){
+			var image = helpers.sizedImages(this.props.artist.images ).huge
 		} else {
 			var image = null
 		}

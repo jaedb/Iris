@@ -6,15 +6,15 @@ import GridItem from './GridItem'
 
 export default class CategoryGrid extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props);
 	}
 
 	render(){
-		if( !this.props.categories ) return null
+		if (!this.props.categories ) return null
 
 		var className = "grid category-grid"
-		if( this.props.className ) className += ' '+this.props.className
+		if (this.props.className ) className += ' '+this.props.className
 		return (
 			<div className={className}>
 				{

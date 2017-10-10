@@ -4,7 +4,7 @@ import FontAwesome from 'react-fontawesome'
 
 export default class Notifications extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 

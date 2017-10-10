@@ -23,7 +23,7 @@ import * as spotifyActions from '../services/spotify/actions'
 
 class Search extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
@@ -70,7 +70,7 @@ class Search extends React.Component{
 
 	loadMore(type){
 		alert('load more: '+type)
-		//this.props.spotifyActions.getURL( this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
+		//this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 	}
 
 	renderResults(){

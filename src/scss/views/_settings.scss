@@ -106,7 +106,7 @@
 		}
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		.intro {
 			.liner {
 				padding: 15vh 20px 0;
@@ -158,7 +158,7 @@
 		padding: 40px;
 	}
 
-	@include responsive( $bp_medium ){
+	@include responsive($bp_medium){
 		section {
 			padding: 20px;
 		}

@@ -10,21 +10,21 @@ import * as uiActions from '../services/ui/actions'
 
 class VolumeControl extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 	}
 
 	handleClick(e){
 		var slider = e.target;
-		if( slider.className != 'slider' ) slider = slider.parentElement;
+		if (slider.className != 'slider' ) slider = slider.parentElement;
 
 		var sliderX = e.clientX - slider.getBoundingClientRect().left;
 		var sliderWidth = slider.getBoundingClientRect().width;
-		var percent = Math.round(( sliderX / sliderWidth ) * 100);
+		var percent = Math.round((sliderX / sliderWidth ) * 100);
 
 		if (percent > 100){
 			percent = 100
-		} else if (percent < 0 ){
+		} else if (percent < 0){
 			percent = 0
 		}
 
@@ -43,7 +43,7 @@ class VolumeControl extends React.Component{
 
 		if (percent > 100){
 			percent = 100
-		} else if (percent < 0 ){
+		} else if (percent < 0){
 			percent = 0
 		}
 

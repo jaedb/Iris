@@ -21,7 +21,7 @@ import * as spotifyActions from '../../services/spotify/actions'
 
 class LibraryAlbums extends React.Component{
 
-	constructor(props) {
+	constructor(props){
 		super(props)
 
 		this.state = {
@@ -95,7 +95,7 @@ class LibraryAlbums extends React.Component{
 	}
 
 	loadMoreSpotify(){
-		this.props.spotifyActions.getURL( this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
+		this.props.spotifyActions.getURL(this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
 	}
 
 	loadMoreMopidy(){
@@ -105,7 +105,7 @@ class LibraryAlbums extends React.Component{
 
 	setSort(value){
 		var reverse = false
-		if( this.props.sort == value ) reverse = !this.props.sort_reverse
+		if (this.props.sort == value ) reverse = !this.props.sort_reverse
 
 		var data = {
 			library_albums_sort_reverse: reverse,
@@ -117,7 +117,7 @@ class LibraryAlbums extends React.Component{
 	renderView(albums){
 		if (!albums || albums.length <= 0) return null
 
-		if( this.props.view == 'list' ){
+		if (this.props.view == 'list'){
 			var columns = [
 				{
 					label: 'Name',
@@ -148,11 +148,11 @@ class LibraryAlbums extends React.Component{
 					className="album-list"
 					link_prefix={global.baseURL+"album/"} />
 			)
-		}else if( this.props.view == 'detail' ){
+		}else if (this.props.view == 'detail'){
 			return (
 				<div>
 					{
-						albums.map( album => {
+						albums.map(album => {
 							return (
 								<div className="album" key={album.uri}>
 									<Link to={global.baseURL+'album/'+album.uri}>

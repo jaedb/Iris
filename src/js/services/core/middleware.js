@@ -196,7 +196,7 @@ const CoreMiddleware = (function(){
                         store.dispatch(spotifyActions.getPlaylist(action.key))
                         break
                     case 'm3u':
-                        if( store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key))
+                        if (store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key))
                         break
                 }
                 next(action)
@@ -251,7 +251,7 @@ const CoreMiddleware = (function(){
                 break
 
             case 'MOPIDY_CURRENTTLTRACK':
-                if (action.data && action.data.track ){
+                if (action.data && action.data.track){
                     helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state)
 
                     // make sure our images use mopidy host:port
