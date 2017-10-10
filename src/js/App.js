@@ -127,7 +127,7 @@ class App extends React.Component{
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause()
 					this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut')
-				}else{
+				} else {
 					this.props.mopidyActions.play()
 					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut')
 				}

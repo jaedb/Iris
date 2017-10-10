@@ -23,7 +23,7 @@ export default class RelatedArtists extends React.Component{
 									<span className="name">{ artist.name }</span>
 								</Link>
 							)
-						}else{
+						} else {
 							return (
 								<span key={artist.uri} className="artist">
 									<Thumbnail circle={true} size="small" images={artist.images} />

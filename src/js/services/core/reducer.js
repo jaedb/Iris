@@ -71,9 +71,16 @@ export default function reducer(core = {}, action){
             var tracks = Object.assign({}, core.tracks)
             if (tracks[action.key]){
                 var track = Object.assign({}, tracks[action.key], action.track)
-            }else{
+            } else {
                 var track = Object.assign({}, action.track)
             }
+
+            // Standardise components
+            if (!track.track_number && track.track_no) track.track_number = track.track_no;
+            if (!track.disc_number && track.disc_no) track.disc_number = track.disc_no;
+            if (!track.duration && track.duration_ms) track.duration = track.duration_ms;
+            if (!track.duration && track.length) track.duration = track.length;
+            if (!track.date && track.release_date) track.date = track.release_date;
 
             tracks[action.key] = track
             return Object.assign({}, core, { tracks: tracks });
@@ -129,7 +136,7 @@ export default function reducer(core = {}, action){
 
             if (categories[action.key]){
                 var category = Object.assign({}, categories[action.key], action.category)
-            }else{
+            } else {
                 var category = Object.assign({}, action.category)
             }
 
@@ -143,7 +150,7 @@ export default function reducer(core = {}, action){
                 var key = 'category:'+action.categories[i].id
                 if (categories[key]){
                     var category = Object.assign({}, categories[key], action.categories[i])
-                }else{
+                } else {
                     var category = Object.assign({}, action.categories[i])
                 }
                 categories[key] = category
@@ -180,7 +187,7 @@ export default function reducer(core = {}, action){
 
             if (albums[action.key]){
                 var album = Object.assign({}, albums[action.key], action.album)
-            }else{
+            } else {
                 var album = Object.assign({}, action.album)
             }
 
@@ -237,7 +244,7 @@ export default function reducer(core = {}, action){
                 }
 
                 var artist = Object.assign({}, artists[action.key], action.artist)
-            }else{
+            } else {
                 var artist = Object.assign({}, action.artist)
             }
 
@@ -284,7 +291,7 @@ export default function reducer(core = {}, action){
 
             if (users[action.key]){
                 var user = Object.assign({}, users[action.key], action.user)
-            }else{
+            } else {
                 var user = Object.assign({}, action.user)
             }
 
@@ -340,7 +347,7 @@ export default function reducer(core = {}, action){
                         tracks: tracks
                     }
                 )
-            }else{
+            } else {
                 var merged_playlist = Object.assign({}, action.playlist)
             }
 
@@ -461,7 +468,7 @@ export default function reducer(core = {}, action){
         case 'LIBRARY_PLAYLISTS_LOADED':
             if (core.library_playlists){
                 var library_playlists = [...core.library_playlists, ...action.uris]
-            }else{
+            } else {
                 var library_playlists = action.uris
             }
 
@@ -500,7 +507,7 @@ export default function reducer(core = {}, action){
             // artists
             if (core.search_results && core.search_results.artists_uris){
                 var artists_uris = core.search_results.artists_uris
-            }else{
+            } else {
                 var artists_uris = []
             }
             if (action.artists_uris) artists_uris = [...artists_uris, ...action.artists_uris]
@@ -514,7 +521,7 @@ export default function reducer(core = {}, action){
             // albums
             if (core.search_results && core.search_results.albums_uris){
                 var albums_uris = core.search_results.albums_uris
-            }else{
+            } else {
                 var albums_uris = []
             }
             if (action.albums_uris) albums_uris = [...albums_uris, ...action.albums_uris]
@@ -528,7 +535,7 @@ export default function reducer(core = {}, action){
             // playlists
             if (core.search_results && core.search_results.playlists_uris){
                 var playlists_uris = core.search_results.playlists_uris
-            }else{
+            } else {
                 var playlists_uris = []
             }
             if (action.playlists_uris) playlists_uris = [...playlists_uris, ...action.playlists_uris]
@@ -542,7 +549,7 @@ export default function reducer(core = {}, action){
             // tracks
             if (core.search_results && core.search_results.tracks){
                 var tracks = core.search_results.tracks
-            }else{
+            } else {
                 var tracks = []
             }
             if (action.tracks) tracks = [...tracks, ...action.tracks]

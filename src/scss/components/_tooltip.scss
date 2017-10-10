@@ -10,7 +10,7 @@
 		background: $overlay_dark;
 		display: block;
 		max-width: 200px;
-		padding: 5px;
+		padding: 5px 8px;
 		color: $white;
 		font-size: 11px;
 		line-height: 11px;
@@ -18,8 +18,13 @@
 		left: 1px;
 		z-index: 97;
 		border-radius: 3px;
+		white-space: nowrap;
 
-		&::before {
+		&:first-letter {
+			text-transform: uppercase;
+		}
+
+		&:after {
 			content: '';
 			display: block;
 			width: 6px;

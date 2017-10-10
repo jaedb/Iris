@@ -63,7 +63,7 @@ export function getArtist(uri, artist, mbid = false){
     return (dispatch, getState) => {
         if (mbid){
             var params = 'method=artist.getInfo&mbid='+mbid
-        }else{
+        } else {
             artist = encodeURIComponent(artist );
             var params = 'method=artist.getInfo&artist='+artist
         }
@@ -95,7 +95,7 @@ export function getAlbum(artist, album, mbid = false){
 
         if (mbid){
             var params = 'method=album.getInfo&mbid='+mbid
-        }else{
+        } else {
             artist = encodeURIComponent(artist )
             album = encodeURIComponent(album )
             var params = 'method=album.getInfo&album='+album+'&artist='+artist

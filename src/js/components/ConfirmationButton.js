@@ -22,7 +22,7 @@ export default class ConfirmationButton extends React.Component{
 		if (this.state.confirming){
 			this.setState({ confirming: false });
 			this.props.onConfirm();
-		}else{
+		} else {
 			this.setState({ confirming: true });
 		}
 	}

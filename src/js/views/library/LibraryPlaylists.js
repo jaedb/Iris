@@ -163,7 +163,7 @@ class LibraryPlaylists extends React.Component{
 						link_prefix={global.baseURL+"playlist/"} />
 				</section>
 			)
-		}else{
+		} else {
 			return (
 				<section className="content-wrapper">
 					<PlaylistGrid

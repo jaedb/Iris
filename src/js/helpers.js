@@ -27,7 +27,7 @@ export let sizedImages = function(images){
 				sizes.medium = image.url;
 			}else if (image.width < 1000){
 				sizes.large = image.url;
-			}else{
+			} else {
 				sizes.huge = image.url;
 			}
 
@@ -44,7 +44,7 @@ export let sizedImages = function(images){
 				sizes.medium = image.url;
 			}else if (image.width < 1000){
 				sizes.large = image.url;
-			}else{
+			} else {
 				sizes.huge = image.url;
 			}
 
@@ -464,7 +464,7 @@ export let sortItems = function (array, property, reverse = false){
 			if (typeof(a_value[a_property_split[i]]) === 'undefined'){
 				a_value = false
 				break
-			}else{
+			} else {
 				a_value = a_value[a_property_split[i]]
 			}
 		}
@@ -491,7 +491,7 @@ export let sortItems = function (array, property, reverse = false){
 			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1
 			return 0
 
-		}else{
+		} else {
 			if (parseInt(a_value) > parseInt(b_value)) return 1
 			if (parseInt(a_value) < parseInt(b_value)) return -1
 			return 0

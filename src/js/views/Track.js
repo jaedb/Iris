@@ -72,7 +72,7 @@ class Track extends React.Component{
 			case 'spotify':
 				if (props.track){
 					console.info('Loading track from index')
-				}else{
+				} else {
 					this.props.spotifyActions.getTrack(props.params.uri );
 				}
 				break;
@@ -145,13 +145,12 @@ class Track extends React.Component{
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
-							{track.disc_no ? <span>Disc {track.disc_no}</span> : null}
 							{track.disc_number ? <span>Disc {track.disc_number}</span> : null}
-							{track.track_no ? <span>, track {track.track_no}</span> : null}
-							{track.track_number ? <span>, track {track.track_number}</span> : null}
+							{track.disc_number && track.track_number ? <span>, </span> : null}
+							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
 						<li>
-							{track.duration_ms ? <Dater type="length" data={track.duration_ms} /> : null}
+							{track.duration ? <Dater type="length" data={track.duration} /> : null}
 							{track.length ? <Dater type="length" data={track.length} /> : null}
 						</li>
 					</ul>

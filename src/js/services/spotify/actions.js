@@ -703,14 +703,14 @@ export function following(uri, method = 'GET'){
             case 'album':
                 if (method == 'GET'){
                     endpoint = 'me/albums/contains/?ids='+ helpers.getFromUri('albumid', uri)
-                }else{               
+                } else {               
                     endpoint = 'me/albums/?ids='+ helpers.getFromUri('albumid', uri) 
                 }
                 break
             case 'artist':
                 if (method == 'GET'){
                     endpoint = 'me/following/contains?type=artist&ids='+ helpers.getFromUri('artistid', uri)   
-                }else{
+                } else {
                     endpoint = 'me/following?type=artist&ids='+ helpers.getFromUri('artistid', uri)
                     data = {}                
                 }
@@ -718,7 +718,7 @@ export function following(uri, method = 'GET'){
             case 'user':
                 if (method == 'GET'){
                     endpoint = 'me/following/contains?type=user&ids='+ helpers.getFromUri('userid', uri)   
-                }else{
+                } else {
                     endpoint = 'me/following?type=user&ids='+ helpers.getFromUri('userid', uri)
                     data = {}                
                 }
@@ -726,7 +726,7 @@ export function following(uri, method = 'GET'){
             case 'playlist':
                 if (method == 'GET'){
                     endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers/contains?ids='+ getState().spotify.me.id
-                }else{
+                } else {
                     endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers'        
                 }
                 break

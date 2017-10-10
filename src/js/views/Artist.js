@@ -60,7 +60,7 @@ class Artist extends React.Component{
 			case 'spotify':
 				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
 					console.info('Loading spotify artist from index')
-				}else{
+				} else {
 					this.props.spotifyActions.getArtist(props.params.uri, true);
 				}
 				break

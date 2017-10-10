@@ -100,7 +100,7 @@ export default class Dater extends React.Component{
 				    return minutes + " minutes";
 				}else if (hours < 24){
 				    return hours + " hours";
-				}else{
+				} else {
 				    return days + " days"
 				}
 				break

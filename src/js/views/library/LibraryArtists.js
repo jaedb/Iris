@@ -111,7 +111,7 @@ class LibraryArtists extends React.Component{
 						link_prefix={global.baseURL+"artist/"} />
 				</section>
 			)
-		}else{
+		} else {
 			return (
 				<section className="content-wrapper">
 					<ArtistGrid 

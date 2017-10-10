@@ -50,7 +50,7 @@ const MopidyMiddleware = (function(){
                             store.dispatch(mopidyActions.getTimePosition())
 
                         // otherwise we just assume to add 1000ms every 1000ms of play time
-                        }else{
+                        } else {
                             store.dispatch(mopidyActions.setTimePosition(store.getState().mopidy.time_position + 1000 ))              
                         }
 
@@ -133,7 +133,7 @@ const MopidyMiddleware = (function(){
                 if (method in ws[model]){
                     var mopidyObject = ws[model][method]
                     var property = method;       
-                }else{                
+                } else {                
                     var mopidyObject = ws[model]
                     var property = model;   
                 }
@@ -1178,7 +1178,7 @@ const MopidyMiddleware = (function(){
                         var playlist = Object.assign({}, response)
                         if (playlist.tracks){
                             playlist.tracks = [...playlist.tracks, ...tracks]
-                        }else{
+                        } else {
                             playlist.tracks = tracks
                         }
 
@@ -1628,7 +1628,7 @@ const MopidyMiddleware = (function(){
                         if (!artist.images || artist.images.length <= 0){
                             if (artist.musicbrainz_id){
                                 store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
-                            }else{
+                            } else {
                                 store.dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and') ) )
                             }
                         }

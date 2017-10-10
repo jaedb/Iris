@@ -259,7 +259,7 @@ const PusherMiddleware = (function(){
 
                             if (response.upgrade_successful){
                                 store.dispatch(uiActions.createNotification('Upgrade complete') )
-                            }else{
+                            } else {
                                 store.dispatch(uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
                             }
 

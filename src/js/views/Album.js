@@ -66,7 +66,7 @@ class Album extends React.Component{
 			case 'spotify':
 				if (props.album && props.album.tracks && props.album.artists_uris){
 					console.info('Loading album from index')
-				}else{
+				} else {
 					this.props.spotifyActions.getAlbum(props.params.uri );
 				}
 				break;

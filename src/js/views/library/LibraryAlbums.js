@@ -173,7 +173,7 @@ class LibraryAlbums extends React.Component{
 					}
 				</div>			
 			)
-		}else{
+		} else {
 			return (
 				<AlbumGrid 
 					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
