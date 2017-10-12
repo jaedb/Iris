@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem, requests
 
 logger = logging.getLogger(__name__)
 
@@ -76,22 +76,17 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             data['connection_id'] = self.connection_id
 
         if 'request_id' in message:
-            request_id = message['request_id']
+            data['request_id'] = message['request_id']
         else:
-            request_id = False
+            data['request_id'] = False
 
         # call the method, as specified in payload
         if 'method' in message:
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
+                getattr(mem.iris, message['method'])(data=data, callback=self.handle_response)
 
-                # make the call, and return it's response
-                response = getattr(mem.iris, message['method'])(data=data)
-
-                if response:
-                    response['request_id'] = request_id
-                    mem.iris.send_message(connection_id=self.connection_id, data=response)
             else:
                 mem.iris.raven_client.captureMessage("Method "+message['method']+" does not exist")
                 response = {
@@ -112,6 +107,23 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         mem.iris.remove_connection(connection_id=self.connection_id)
+
+    ##
+    # Handle a response from our core
+    # This is just our callback from an Async request
+    ##
+    def handle_response(self, response):
+        if isinstance(response, tornado.httpclient.HTTPResponse):
+            response_obj = {
+                'body': response.body,
+                'request_id': request_id
+            }
+        else:
+            response['request_id'] = request_id
+            mem.iris.send_message(connection_id=self.connection_id, data=response)
+        
+        mem.iris.send_message(connection_id=self.connection_id, data=response)
+        self.finish()
 
 
 
@@ -134,39 +146,61 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_status(204)
         self.finish()
     
+    @tornado.web.asynchronous
     def get(self, slug=None):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
+            self.handle_request(getattr(mem.iris, slug)(request=self.request))
 
-            # make the call, and return it's response
-            self.write(getattr(mem.iris, slug)(request=self.request))
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
                 'error': 'Method "'+slug+'" does not exist'
             })
-    
+            self.finish()
+
+    @tornado.web.asynchronous
     def post(self, slug=None):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-
             try:
                 data = json.loads(self.request.body.decode('utf-8'))
-
-                # make the call, and return it's response
-                self.write(getattr(mem.iris, slug)(data=data, request=self.request))
+                getattr(mem.iris, slug)(data=data, request=self.request, callback=self.handle_response)
 
             except urllib2.HTTPError as e:
-                self.raven_client.captureException()
                 self.write({
                     'error': 'Invalid JSON payload'
                 })
+                self.finish()
 
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
                 'error': 'Method "'+slug+'" does not exist'
             })
+            self.finish()
+
+    ##
+    # Handle a response from our core
+    # This is just our callback from an Async request
+    ##
+    def handle_request(self, request):
+        response = request.then(lambda response: response).get()
+        self.write(response)
+        self.finish()
+
+    ##
+    # Handle a response from our core
+    # This is just our callback from an Async request
+    ##
+    def handle_response(self, response):
+        if isinstance(response, tornado.httpclient.HTTPResponse):
+            self.write(response.body)
+        else:
+            self.write(response)
+        self.finish()
+
+
         

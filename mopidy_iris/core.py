@@ -5,7 +5,9 @@ import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, m
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
+import tornado.httpclient
 import requests
+from promise import Promise
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
@@ -584,7 +586,6 @@ class IrisCore(object):
             }
 
 
-
     ##
     # Proxy a request to an external provider
     #
@@ -594,6 +595,9 @@ class IrisCore(object):
     ##
 
     def proxy_request(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+        origin_request = kwargs.get('request', None)
+        
         try:
             data = kwargs.get('data', {})
         except:
@@ -604,7 +608,6 @@ class IrisCore(object):
                 'source': 'proxy_request'
             }
 
-        origin_request = kwargs.get('request', None)
 
         # Our request includes data, so make sure we POST the data
         if 'url' not in data:
@@ -645,7 +648,9 @@ class IrisCore(object):
         try:
             # Our request includes data, so make sure we POST the data
             if ('data' in data and data['data']):
-                response = requests.post(data['url'], data=data['data'], headers=headers, verify=False)
+                http_client = tornado.httpclient.AsyncHTTPClient()
+                request = tornado.httpclient.HTTPRequest(data['url'], method='POST', data=data['data'], headers=headers, validate_cert=False)
+                http_client.fetch(request, callback=callback)
 
             # No data, so just a simple GET request
             else:
@@ -655,7 +660,9 @@ class IrisCore(object):
                 if "Content-Length" in headers:
                     del headers["Content-Length"]
 
-                response = requests.get(data['url'], headers=headers, verify=False)
+                http_client = tornado.httpclient.AsyncHTTPClient()
+                request = tornado.httpclient.HTTPRequest(data['url'], headers=headers, validate_cert=False)
+                http_client.fetch(request, callback=callback)
 
 
             # Attempt to decode body as JSON, otherwise just return plain text
@@ -679,3 +686,25 @@ class IrisCore(object):
                 'response_code': int(e.response_code),
                 'original_request': data
             }
+
+
+    def test(self, *args, **kwargs):
+
+        print "running test 1"
+        response = requests.get("http://platform.james.plasticstudio.co/test.php?sleep=1")
+
+        return Promise(
+            lambda resolve, reject: resolve(response.text)
+        )
+
+
+    def test2(self, *args, **kwargs):
+
+        print "running test 5"
+        response = requests.get("http://test.barnsley.nz/test.php?sleep=5")
+
+        return Promise(
+            lambda resolve, reject: resolve(response.text)
+        )
+
+
