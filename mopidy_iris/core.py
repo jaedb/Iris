@@ -7,7 +7,7 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.httpclient
 import requests
-from promise import Promise
+import time
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
@@ -664,19 +664,6 @@ class IrisCore(object):
                 request = tornado.httpclient.HTTPRequest(data['url'], headers=headers, validate_cert=False)
                 http_client.fetch(request, callback=callback)
 
-
-            # Attempt to decode body as JSON, otherwise just return plain text
-            try:
-                return {
-                    'response_code': int(response.status_code),
-                    'response': response.json()
-                }
-            except:
-                return {
-                    'response_code': int(response.status_code),
-                    'response': response.text
-                }
-
         except requests.exceptions.RequestException as e:
             return {
                 'status': 0,
@@ -689,22 +676,19 @@ class IrisCore(object):
 
 
     def test(self, *args, **kwargs):
-
-        print "running test 1"
-        response = requests.get("http://platform.james.plasticstudio.co/test.php?sleep=1")
-
-        return Promise(
-            lambda resolve, reject: resolve(response.text)
-        )
-
+        callback = kwargs.get('callback', None)
+        time.sleep(1)
+        callback({
+            'status': 1,
+            'message': "Slept for one"
+        })
 
     def test2(self, *args, **kwargs):
-
-        print "running test 5"
-        response = requests.get("http://test.barnsley.nz/test.php?sleep=5")
-
-        return Promise(
-            lambda resolve, reject: resolve(response.text)
-        )
+        callback = kwargs.get('callback', None)
+        time.sleep(5)
+        callback({
+            'status': 1,
+            'message': "Slept for FIVE!"
+        })
 
 

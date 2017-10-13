@@ -76,33 +76,31 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             data['connection_id'] = self.connection_id
 
         if 'request_id' in message:
-            data['request_id'] = message['request_id']
+            request_id = message['request_id']
         else:
-            data['request_id'] = False
+            request_id = False
 
         # call the method, as specified in payload
         if 'method' in message:
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
-                getattr(mem.iris, message['method'])(data=data, callback=self.handle_response)
+                getattr(mem.iris, message['method'])(data=data, callback=lambda response: self.handle_response(response=response, request_id=request_id))
 
             else:
                 mem.iris.raven_client.captureMessage("Method "+message['method']+" does not exist")
-                response = {
+                self.handle_response({
                     'status': 0,
                     'message': 'Method "'+message['method']+'" does not exist',
                     'request_id': request_id
-                }
-                mem.iris.send_message(connection_id=self.connection_id, data=response)
+                })
         else:
             mem.iris.raven_client.captureMessage("Method key missing from request")
-            response = {
+            self.handle_response({
                 'status': 0,
                 'message': 'Method key missing from request',
                 'request_id': request_id
-            }
-            mem.iris.send_message(connection_id=self.connection_id, data=response)
+            })
 
 
     def on_close(self):
@@ -112,9 +110,12 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
     # Handle a response from our core
     # This is just our callback from an Async request
     ##
-    def handle_response(self, response):
+    def handle_response(self, *args, **kwargs):
+        response = kwargs.get('response', None)
+        request_id = kwargs.get('request_id', False)
+
         if isinstance(response, tornado.httpclient.HTTPResponse):
-            response_obj = {
+            response = {
                 'body': response.body,
                 'request_id': request_id
             }
@@ -123,7 +124,6 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             mem.iris.send_message(connection_id=self.connection_id, data=response)
         
         mem.iris.send_message(connection_id=self.connection_id, data=response)
-        self.finish()
 
 
 
@@ -151,7 +151,7 @@ class HttpHandler(tornado.web.RequestHandler):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-            self.handle_request(getattr(mem.iris, slug)(request=self.request))
+            getattr(mem.iris, slug)(request=self.request, callback=self.handle_response)
 
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
@@ -181,15 +181,6 @@ class HttpHandler(tornado.web.RequestHandler):
                 'error': 'Method "'+slug+'" does not exist'
             })
             self.finish()
-
-    ##
-    # Handle a response from our core
-    # This is just our callback from an Async request
-    ##
-    def handle_request(self, request):
-        response = request.then(lambda response: response).get()
-        self.write(response)
-        self.finish()
 
     ##
     # Handle a response from our core
