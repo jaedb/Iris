@@ -93,7 +93,7 @@ class User extends React.Component{
 							<ul className="details">
 								{this.props.user.playlists_total ? <li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li> : null}
 								{this.props.user.followers ? <li>{this.props.user.followers.total.toLocaleString()} followers</li> : null}
-								{this.isMe() ? <li>You</li> : null}
+								{this.isMe() ? <li><span className="blue-text">You</span></li> : null}
 							</ul>
 						</h2>
 						<div className="actions">

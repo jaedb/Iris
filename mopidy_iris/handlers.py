@@ -162,7 +162,8 @@ class HttpHandler(tornado.web.RequestHandler):
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
-                'error': 'Method "'+slug+'" does not exist'
+                'status': 0,
+                'message': 'Method "'+slug+'" does not exist'
             })
             self.finish()
 
@@ -177,14 +178,16 @@ class HttpHandler(tornado.web.RequestHandler):
 
             except urllib2.HTTPError as e:
                 self.write({
-                    'error': 'Invalid JSON payload'
+                    'status': 0,
+                    'message': 'Invalid JSON payload'
                 })
                 self.finish()
 
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
-                'error': 'Method "'+slug+'" does not exist'
+                'status': 0,
+                'message': 'Method "'+slug+'" does not exist'
             })
             self.finish()
 
