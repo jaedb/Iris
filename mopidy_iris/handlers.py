@@ -114,11 +114,17 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         response = kwargs.get('response', None)
         request_id = kwargs.get('request_id', False)
 
+        # We've been handed an AsyncHTTPClient callback. This is the case
+        # when our request calls subsequent external requests (eg Spotify, Genius)
         if isinstance(response, tornado.httpclient.HTTPResponse):
             response = {
-                'body': response.body,
+                'response_code': response.code,
+                'response_reason': response.reason,
+                'response': response.body,
                 'request_id': request_id
             }
+
+        # Just a regular json object, so not an external request
         else:
             response['request_id'] = request_id
             mem.iris.send_message(connection_id=self.connection_id, data=response)
@@ -187,10 +193,18 @@ class HttpHandler(tornado.web.RequestHandler):
     # This is just our callback from an Async request
     ##
     def handle_response(self, response):
+
+        # We've been handed an AsyncHTTPClient callback. This is the case
+        # when our request calls subsequent external requests (eg Spotify, Genius).
+        # We don't need to wrap non-HTTPResponse responses as these are dicts
         if isinstance(response, tornado.httpclient.HTTPResponse):
-            self.write(response.body)
-        else:
-            self.write(response)
+            response = {
+                'response_code': response.code,
+                'response_reason': response.reason,
+                'response': response.body
+            }
+
+        self.write(response)
         self.finish()
 
 
