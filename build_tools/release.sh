@@ -7,7 +7,7 @@
 # everything and creates a new tag, based on the current version number.
 ##
 
-VERSION=$(cat build_tools/VERSION.md)
+VERSION=$(cat VERSION.md)
 
 echo -e "Releasing $VERSION"
 
