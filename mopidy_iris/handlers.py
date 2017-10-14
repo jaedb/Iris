@@ -201,10 +201,9 @@ class HttpHandler(tornado.web.RequestHandler):
         # when our request calls subsequent external requests (eg Spotify, Genius).
         # We don't need to wrap non-HTTPResponse responses as these are dicts
         if isinstance(response, tornado.httpclient.HTTPResponse):
-            print response.body
             response = {
                 'response_code': response.code,
-                'response_reason': response.reason,
+                'response_message': response.reason,
                 'response': response.body
             }
 
