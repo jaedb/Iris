@@ -572,7 +572,7 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_queue_item}
 						{add_to_playlist}
-						{context.source == 'spotify' && context.items_count == 1 ? go_to_recommendations : null}
+						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{copy_uris}
 						{context.items_count == 1 ? go_to_track : null}
 						{remove_from_queue}
@@ -588,6 +588,7 @@ class ContextMenu extends React.Component{
 						{add_to_queue}
 						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
+						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{copy_uris}
 						{context.items_count == 1 ? go_to_track : null}
 						{remove_from_playlist}
@@ -603,7 +604,7 @@ class ContextMenu extends React.Component{
 						{add_to_queue}
 						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
-						{context.source == 'spotify' && context.items_count == 1 ? go_to_recommendations : null}
+						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						{copy_uris}
 					</div>
