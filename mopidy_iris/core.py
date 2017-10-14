@@ -636,8 +636,9 @@ class IrisCore(object):
         }
 
         try:
-            response = requests.post(url, data)
-            self.spotify_token = response.json()
+            http_client = tornado.httpclient.AsyncHTTPClient()
+            request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.urlencode(data))
+            http_client.fetch(request, callback=callback)
 
             self.broadcast(
                 data={
@@ -645,8 +646,6 @@ class IrisCore(object):
                     'spotify_token': self.spotify_token
                 }
             )
-
-            return self.get_spotify_token(callback=callback)
 
         except urllib2.HTTPError as e:
             self.raven_client.captureException()
@@ -724,7 +723,7 @@ class IrisCore(object):
         # Our request includes data, so make sure we POST the data
         if ('data' in data and data['data']):
             http_client = tornado.httpclient.AsyncHTTPClient()
-            request = tornado.httpclient.HTTPRequest(data['url'], method='POST', data=data['data'], headers=headers, validate_cert=False)
+            request = tornado.httpclient.HTTPRequest(data['url'], method='POST', body=json.dumps(data['data']), headers=headers, validate_cert=False)
             http_client.fetch(request, callback=callback)
 
         # No data, so just a simple GET request
