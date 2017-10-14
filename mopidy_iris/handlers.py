@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem, requests
 
 logger = logging.getLogger(__name__)
 
@@ -85,33 +85,51 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
+                getattr(mem.iris, message['method'])(data=data, callback=lambda response: self.handle_response(response=response, request_id=request_id))
 
-                # make the call, and return it's response
-                response = getattr(mem.iris, message['method'])(data=data)
-
-                if response:
-                    response['request_id'] = request_id
-                    mem.iris.send_message(connection_id=self.connection_id, data=response)
             else:
                 mem.iris.raven_client.captureMessage("Method "+message['method']+" does not exist")
-                response = {
+                self.handle_response({
                     'status': 0,
                     'message': 'Method "'+message['method']+'" does not exist',
                     'request_id': request_id
-                }
-                mem.iris.send_message(connection_id=self.connection_id, data=response)
+                })
         else:
             mem.iris.raven_client.captureMessage("Method key missing from request")
-            response = {
+            self.handle_response({
                 'status': 0,
                 'message': 'Method key missing from request',
                 'request_id': request_id
-            }
-            mem.iris.send_message(connection_id=self.connection_id, data=response)
+            })
 
 
     def on_close(self):
         mem.iris.remove_connection(connection_id=self.connection_id)
+
+    ##
+    # Handle a response from our core
+    # This is just our callback from an Async request
+    ##
+    def handle_response(self, *args, **kwargs):
+        response = kwargs.get('response', None)
+        request_id = kwargs.get('request_id', False)
+
+        # We've been handed an AsyncHTTPClient callback. This is the case
+        # when our request calls subsequent external requests (eg Spotify, Genius)
+        if isinstance(response, tornado.httpclient.HTTPResponse):
+            response = {
+                'response_code': response.code,
+                'response_reason': response.reason,
+                'response': response.body,
+                'request_id': request_id
+            }
+
+        # Just a regular json object, so not an external request
+        else:
+            response['request_id'] = request_id
+            mem.iris.send_message(connection_id=self.connection_id, data=response)
+        
+        mem.iris.send_message(connection_id=self.connection_id, data=response)
 
 
 
@@ -134,39 +152,63 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_status(204)
         self.finish()
     
+    @tornado.web.asynchronous
     def get(self, slug=None):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
+            getattr(mem.iris, slug)(request=self.request, callback=self.handle_response)
 
-            # make the call, and return it's response
-            self.write(getattr(mem.iris, slug)(request=self.request))
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
-                'error': 'Method "'+slug+'" does not exist'
+                'status': 0,
+                'message': 'Method "'+slug+'" does not exist'
             })
-    
+            self.finish()
+
+    @tornado.web.asynchronous
     def post(self, slug=None):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-
             try:
                 data = json.loads(self.request.body.decode('utf-8'))
-
-                # make the call, and return it's response
-                self.write(getattr(mem.iris, slug)(data=data, request=self.request))
+                getattr(mem.iris, slug)(data=data, request=self.request, callback=self.handle_response)
 
             except urllib2.HTTPError as e:
-                self.raven_client.captureException()
                 self.write({
-                    'error': 'Invalid JSON payload'
+                    'status': 0,
+                    'message': 'Invalid JSON payload'
                 })
+                self.finish()
 
         else:
             mem.iris.raven_client.captureMessage("Method "+slug+" does not exist")
             self.write({
-                'error': 'Method "'+slug+'" does not exist'
+                'status': 0,
+                'message': 'Method "'+slug+'" does not exist'
             })
+            self.finish()
+
+    ##
+    # Handle a response from our core
+    # This is just our callback from an Async request
+    ##
+    def handle_response(self, response):
+
+        # We've been handed an AsyncHTTPClient callback. This is the case
+        # when our request calls subsequent external requests (eg Spotify, Genius).
+        # We don't need to wrap non-HTTPResponse responses as these are dicts
+        if isinstance(response, tornado.httpclient.HTTPResponse):
+            response = {
+                'response_code': response.code,
+                'response_reason': response.reason,
+                'response': response.body
+            }
+
+        self.write(response)
+        self.finish()
+
+
         

@@ -393,6 +393,12 @@ footer {
 		background: lighten($dark_grey,10%);
 		color: $mid_grey;
 	}
+
+	h1 &,
+	h2 & {
+		line-height: 1.4em;
+		vertical-align: middle;
+	}
 }
 
 

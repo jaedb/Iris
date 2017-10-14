@@ -26,7 +26,8 @@ setup(
         'Mopidy-Local-Images >= 1.0',
         'ConfigObj >= 5.0.6',
         'raven >= 6.1.0',
-        'requests >= 2.0.0'
+        'requests >= 2.0.0',
+        'promise >= 2.0.1'
     ],
     classifiers=[
         'Environment :: No Input/Output (Daemon)',

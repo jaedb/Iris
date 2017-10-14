@@ -87,31 +87,41 @@ export let sizedImages = function(images){
 
 
 /**
- * Digest an array of Mopidy image objects into a universal format
+ * Digest an array of Mopidy image objects into a universal format. We also re-write
+ * image URLs to be absolute to the mopidy server (required for proxy setups).
  *
  * @param mopidy = obj (mopidy store object)
  * @param images = array
  * @return array
  **/
 export let digestMopidyImages = function(mopidy, images){
-	let digested = []
+	var digested = [];
 
-	for (let i = 0; i < images.length; i++){
+	for (var i = 0; i < images.length; i++){
 
-		// Accommodate backends that provide URIs vs URLs
-		let url = images[i].url
-		if (!url && images[i].uri){
-			url = images[i].uri
+		// Image object (ie from images.get)
+		if (typeof images[i] === 'object'){
+			// Accommodate backends that provide URIs vs URLs
+			var url = images[i].url
+			if (!url && images[i].uri){
+				url = images[i].uri
+			}
+
+	        // Amend our URL
+	        images[i].url = url		
+
+			// Replace local images to point directly to our Mopidy server
+	        if (url.startsWith('/images/')){
+	            url = '//'+mopidy.host+':'+mopidy.port+url
+	        }
+
+	    // String-based image
+		} else if (typeof images[i] === 'string'){
+			// Replace local images to point directly to our Mopidy server
+	        if (images[i].startsWith('/images/')){
+	            images[i] = '//'+mopidy.host+':'+mopidy.port+images[i]
+	        }
 		}
-/*
-		// Replace local images to point directly to our Mopidy server
-        if (url.startsWith('/images/')){
-            url = '//'+mopidy.host+':'+mopidy.port+url
-        }
-        */
-
-        // Amend our URL
-        images[i].url = url
 
         digested.push(images[i])
 	}
