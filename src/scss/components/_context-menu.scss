@@ -140,6 +140,13 @@
 			}
 		}
 
+		.divider {
+			height: 1px;
+			padding: 0;
+			margin: 0;
+			background: lighten($grey, 8%);
+		}
+
 		& > span {
 			display: block;
 

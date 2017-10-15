@@ -525,6 +525,7 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
+						<div className="divider" />
 						{go_to_artist}
 						{copy_uris}
 						{this.canBeInLibrary() ? toggle_in_library : null}
@@ -537,8 +538,10 @@ class ContextMenu extends React.Component{
 					<div>
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{context.source == 'spotify' ? start_radio : null}
+						<div className="divider" />
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
@@ -548,8 +551,10 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						<div className="divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
@@ -559,8 +564,10 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						<div className="divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
+						<div className="divider" />
 						{this.canBeInLibrary() ? toggle_in_library : null}
 						{delete_playlist}
 					</div>
@@ -570,11 +577,13 @@ class ContextMenu extends React.Component{
 			case 'queue-track':
 				return (
 					<div>
-						{play_queue_item}
+						{context.items_count == 1 ? play_queue_item : null}
+						{context.items_count == 1 ? <div className="divider" /> : null}
 						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
-						{copy_uris}
 						{context.items_count == 1 ? go_to_track : null}
+						<div className="divider" />
+						{copy_uris}
 						{remove_from_queue}
 					</div>
 				)
@@ -586,11 +595,13 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
-						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
+						<div className="divider" />
+						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
-						{copy_uris}
 						{context.items_count == 1 ? go_to_track : null}
+						<div className="divider" />
+						{copy_uris}
 						{remove_from_playlist}
 					</div>
 				)
@@ -602,10 +613,12 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
-						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
+						<div className="divider" />
+						{add_to_playlist}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
+						<div className="divider" />
 						{copy_uris}
 					</div>
 				)
