@@ -16,15 +16,20 @@ const sendRequest = (dispatch, getState, endpoint) => {
         var loader_key = helpers.generateGuid();
         dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
 
+        var url = endpoint;
+        if (!url.startsWith('http')){
+            url = 'https://api.genius.com/'+url;
+        }
+
         var config = {
             method: 'POST',
             cache: false,
             timeout: 30000,
             headers: {
-                Authorization: 'Bearer 2AGP9sfzKQcxfKSZuGa_3lqsDIpuOiTGT7-vhJYcKaaDjHIIA2HICsxXCiC30Xxi'
+                Authorization: 'Bearer nBNNEFekix8BOsfPyfK7LtX-CaUz7L7ak92qC3GfMAIQi8eWjuwb4P8SUxK1K-iY'
             },
             data: JSON.stringify({
-                url: 'https://genius.com/'+endpoint
+                url: url
             }),
             url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
         };
@@ -47,17 +52,26 @@ const sendRequest = (dispatch, getState, endpoint) => {
     })
 }
 
-export function getTrackLyrics(track){
+/**
+ * Extract lyrics from a page
+ * We don't get the lyrics in the API, so we need to 'scrape' the HTML page instead
+ *
+ * @param uri = track uri
+ * @param result = lyrics result (title, url)
+ **/
+export function getTrackLyrics(uri, url){
     return (dispatch, getState) => {
 
-        var endpoint = '';
-        for (var i = 0; i < track.artists.length; i++){
-            endpoint += track.artists[i].name+' ';
-        }
-        endpoint += track.name+' lyrics';
-        endpoint = endpoint.replace(/\s+/g, '-').toLowerCase();
+        dispatch({
+            type: 'TRACK_LOADED',
+            key: uri,
+            track: {
+                lyrics: null,
+                lyrics_url: null
+            }
+        });
 
-        sendRequest(dispatch, getState, endpoint)
+        sendRequest(dispatch, getState, url)
             .then(
                 response => {
                     var html = $(response);
@@ -75,16 +89,17 @@ export function getTrackLyrics(track){
 
                         dispatch({
                             type: 'TRACK_LOADED',
-                            key: track.uri,
+                            key: uri,
                             track: {
-                                lyrics: lyrics_html
+                                lyrics: lyrics_html,
+                                lyrics_url: url
                             }
                         });
                     }
                 },
                 error => {
                     dispatch(coreActions.handleException(
-                        'Could not get track lyrics',
+                        'Could not extract track lyrics',
                         error
                     ));
                 }
@@ -92,26 +107,36 @@ export function getTrackLyrics(track){
     }
 }
 
-export function getTrackInfo(track){
+export function findTrackLyrics(track){
     return (dispatch, getState) => {
 
         var query = '';
-        for (var i = 0; i < track.artists.length; i++){
-            query += track.artists[i].name+' ';
-        }
+        query += track.artists[0].name+' ';
         query += track.name;
+        query = query.toLowerCase();
+        query = query.replace(/\([^)]*\) */g, '');        // anything in circle-braces
+        query = query.replace(/\([^[]*\] */g, '');        // anything in square-braces
+        query = query.replace(/[^A-Za-z0-9\s]/g, '');     // non-alphanumeric
 
         sendRequest(dispatch, getState, 'search?q='+encodeURIComponent(query))
             .then(
                 response => {
                     if (response.response.hits && response.response.hits.length > 0){
+                        var lyrics_results = [];
+                        for (var i = 0; i < response.response.hits.length; i++){
+                            lyrics_results.push({
+                                title: response.response.hits[i].result.full_title,
+                                url: response.response.hits[i].result.url
+                            });
+                        }
                         dispatch({
                             type: 'TRACK_LOADED',
                             key: track.uri,
                             track: {
-                                annotations: response.response.hits[0].result
+                                lyrics_results: lyrics_results
                             }
                         });
+                        dispatch(getTrackLyrics(track.uri, lyrics_results[0].url));
                     }
                 },
                 error => {

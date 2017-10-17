@@ -37,10 +37,21 @@ main .track-view {
 		}
 	}
 
-	.lyrics {
-		p {
-			line-height: 0.8em;
+	.lyrics {		
+		.content {
+			padding-bottom: 20px;
+			
+			*, 
+			& * {
+				font-size: 18px;
+				line-height: normal;
+				white-space: normal;
+			}
 		}
+	}
+
+	.lyrics-selector {
+		padding-bottom: 20px;
 	}
 
 	@include responsive($bp_medium){

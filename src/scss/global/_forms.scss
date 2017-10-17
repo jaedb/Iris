@@ -29,8 +29,13 @@ select {
 }
 
 select {
+	max-width: 100%;
+
 	option {
+		background: $white;
 		color: $darkest_grey;
+		max-width: 100%;
+		box-sizing: border-box;
 	}
 }
 

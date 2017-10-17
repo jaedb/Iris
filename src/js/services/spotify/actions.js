@@ -158,7 +158,7 @@ function refreshToken(dispatch, getState){
                 .then(
                     response => {
                         if (response.response_code == 200){
-                            var token = JSON.parse(response.response);
+                            var token = response.response;
                             token.token_expiry = new Date().getTime() + (token.expires_in * 1000 );
                             token.source = 'mopidy';
                             dispatch({

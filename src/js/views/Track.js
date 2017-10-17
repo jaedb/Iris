@@ -52,7 +52,7 @@ class Track extends React.Component{
 
 		// We don't have lyrics, and we have just received our artists
 		if (!nextProps.track.lyrics && !this.props.track.artists && nextProps.track.artists){
-			this.props.geniusActions.getTrackLyrics(nextProps.track);
+			this.props.geniusActions.findTrackLyrics(nextProps.track);
 		}
 	}
 
@@ -93,6 +93,38 @@ class Track extends React.Component{
 		this.props.mopidyActions.playURIs([this.props.params.uri], this.props.params.uri)
 	}
 
+	renderLyricsSelector(){
+		if (!this.props.track.lyrics_results){
+			return null;
+		}
+
+		return (
+			<div className="field lyrics-selector">
+				<div className="input">
+					<select
+						onChange={e => this.props.geniusActions.getTrackLyrics(this.props.track.uri, e.target.value)}>
+						{
+							this.props.track.lyrics_results.map(result => {
+								return (
+									<option 
+										key={result.url} 
+										value={result.url}
+										defaultValue={result.url == this.props.track.lyrics_url}
+									>
+											{result.title}
+									</option>
+								)
+							})
+						}
+					</select>
+					<div className="description">
+						Switch to another lyrics seach result
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	renderLyrics(){
 		if (helpers.isLoading(this.props.load_queue,['genius_'])){
 			return (
@@ -101,9 +133,22 @@ class Track extends React.Component{
 				</div>
 			);
 		} else if (!this.props.track.lyrics){
-			return <div className="lyrics"><p className="grey-text"><em>No lyrics available</em></p></div>
+			return (
+				<div className="lyrics">
+					<div className="content">
+						<em className="grey-text">No lyrics available</em>
+					</div>
+				</div>
+			)
 		} else {
-			return <div className="lyrics" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
+			return (
+				<div className="lyrics">
+					<div className="content" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
+					<div className="origin grey-text">
+						Origin: <a href={this.props.track.lyrics_url} target="_blank">{this.props.track.lyrics_url}</a>
+					</div>
+				</div>
+			)
 		}
 	}
 
@@ -161,6 +206,7 @@ class Track extends React.Component{
 					{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
 				</div>
 
+				{this.renderLyricsSelector()}
 				{this.renderLyrics()}
 
 			</div>
