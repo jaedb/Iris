@@ -51,7 +51,7 @@ class Track extends React.Component{
 		}
 
 		// We don't have lyrics, and we have just received our artists
-		if (!nextProps.track.lyrics && !this.props.track.artists && nextProps.track.artists){
+		if (!nextProps.track.lyrics_results && !this.props.track.artists && nextProps.track.artists){
 			this.props.geniusActions.findTrackLyrics(nextProps.track);
 		}
 	}
@@ -71,7 +71,7 @@ class Track extends React.Component{
 
 			case 'spotify':
 				if (props.track){
-					console.info('Loading track from index')
+					console.info('Loading track from index');
 				} else {
 					this.props.spotifyActions.getTrack(props.params.uri );
 				}
@@ -80,12 +80,17 @@ class Track extends React.Component{
 			default:
 				if (props.mopidy_connected){
 					if (props.track){
-						console.info('Loading track from index')
+						console.info('Loading track from index');
 					} else {
 						this.props.mopidyActions.getTrack(props.params.uri );
 					}
 				}
 				break;
+		}
+
+		// We don't have lyrics, but the track (and artists) is already loaded
+		if (props.track && !props.track.lyrics_results && props.track.artists){
+			this.props.geniusActions.findTrackLyrics(props.track);
 		}
 	}
 
@@ -128,8 +133,10 @@ class Track extends React.Component{
 	renderLyrics(){
 		if (helpers.isLoading(this.props.load_queue,['genius_'])){
 			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
+				<div className="lyrics">
+					<div className="body-loader loading">
+						<div className="loader"></div>
+					</div>
 				</div>
 			);
 		} else if (!this.props.track.lyrics){

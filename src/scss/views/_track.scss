@@ -37,10 +37,14 @@ main .track-view {
 		}
 	}
 
-	.lyrics {		
+	.lyrics {
+		.body-loader {
+			padding: 10vh 0;
+		}
+
 		.content {
 			padding-bottom: 20px;
-			
+
 			*, 
 			& * {
 				font-size: 18px;
