@@ -204,10 +204,7 @@ class Track extends React.Component{
 							{track.disc_number && track.track_number ? <span>, </span> : null}
 							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
-						<li>
-							{track.duration ? <Dater type="length" data={track.duration} /> : null}
-							{track.length ? <Dater type="length" data={track.length} /> : null}
-						</li>
+						{track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
 					</ul>
 				</div>
 

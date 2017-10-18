@@ -213,16 +213,7 @@ export default function reducer(spotify = {}, action){
             var tracks = action.data.items
 
             if (tracks){
-                for (var i = 0; i < tracks.length; i++){
-                    var track = Object.assign(
-                        {},
-                        tracks[i].track,
-                        {
-                            added_at: tracks[i].added_at
-                        }
-                    )
-                    tracks[i] = track
-                }
+                tracks = helpers.formatTracks(tracks);
                 if (spotify.library_tracks){
                     tracks = [...spotify.library_tracks,...tracks]
                 }

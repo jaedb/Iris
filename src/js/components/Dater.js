@@ -70,8 +70,9 @@ export default class Dater extends React.Component{
 				var duration = 0;
 				var tracks = this.props.data
 				for(var i = 0; i < tracks.length; i++){
-					if (tracks[i].duration_ms ) duration += parseInt(tracks[i].duration_ms);
-					if (tracks[i].length ) duration += parseInt(tracks[i].length);
+					if (tracks[i].duration ){
+						duration += parseInt(tracks[i].duration);
+					}
 				}
 				return this.durationSentence(duration)
 				break
