@@ -253,8 +253,14 @@ export default function reducer(core = {}, action){
                 }
 
                 var artist = Object.assign({}, artists[action.key], action.artist)
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
+                }
             } else {
                 var artist = Object.assign({}, action.artist)
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
+                }
             }
 
             artists[action.key] = artist
@@ -267,6 +273,10 @@ export default function reducer(core = {}, action){
                 var artist = action.artists[i]
                 if (typeof(artists[artist.uri]) !== 'undefined'){
                     artist = Object.assign({}, artists[artist.uri], artist)
+                }
+
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
                 }
                 artists[artist.uri] = artist
             }
