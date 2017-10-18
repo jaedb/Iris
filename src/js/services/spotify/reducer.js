@@ -88,8 +88,22 @@ export default function reducer(spotify = {}, action){
             }})
 
         case 'SPOTIFY_DISCOVER_LOADED':
-            if (!action.data ) return Object.assign({}, spotify, { discover: [] })
-            return Object.assign({}, spotify, { discover: [...spotify.discover, ...[action.data]] })
+            if (!action.data ){
+                return Object.assign(
+                    {}, 
+                    spotify, 
+                    { 
+                        discover: []
+                    }
+                );
+            }
+            return Object.assign(
+                {}, 
+                spotify, 
+                { 
+                    discover: [...spotify.discover, ...[action.data]]
+                }
+            );
 
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':
             return Object.assign(
@@ -99,7 +113,7 @@ export default function reducer(spotify = {}, action){
                     recommendations: {
                         artists_uris: action.artists_uris,
                         albums_uris: action.albums_uris,
-                        tracks: action.tracks
+                        tracks: helpers.formatTracks(action.tracks)
                     }
                 })
 
