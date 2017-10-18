@@ -173,6 +173,10 @@ export let getTrackIcon = function(current_track = false, core = false){
  **/
 export let formatTracks = function(tracks){
 
+	if (!tracks || tracks === undefined){
+		return null;
+	}
+
 	// Handle single recoreds
 	var singular = false;
 	if (tracks.constructor !== Array){

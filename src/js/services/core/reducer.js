@@ -28,10 +28,9 @@ export default function reducer(core = {}, action){
 
                 var track = Object.assign(
                     {}, 
-                    tltrack.track,
+                    tltrack,
                     metadata,
-                    { 
-                        tlid: tltrack.tlid,
+                    {
                         playing: (core.current_track && tltrack.tlid == core.current_track.tlid )
                     })
                 tracklist.push(track)
