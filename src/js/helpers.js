@@ -166,24 +166,72 @@ export let getTrackIcon = function(current_track = false, core = false){
 
 
 /**
- * Get a track's icon
- * @param track object
- * @return string
+ * Format tracks into our universal format
+ *
+ * @param tracks = array
+ * @return array
  **/
-export let flattenTracks = function(tracks){
-    var flattened = []
-    for(var i = 0; i < tracks.length; i++){
-        flattened.push(Object.assign(
-            {},
-            tracks[i].track,
-            {
-                added_by: tracks[i].added_by,
-                added_at: tracks[i].added_at
-            }
-        ))
+export let formatTracks = function(tracks){
+
+	if (!tracks || tracks === undefined){
+		return null;
+	}
+
+	// Handle single recoreds
+	var singular = false;
+	if (tracks.constructor !== Array){
+		tracks = [tracks];
+		singular = true;
+	}
+
+    var formatted = [];
+    for (var i = 0; i < tracks.length; i++){
+
+    	// Nested track object (eg in spotify playlist)
+    	if (tracks[i].track){
+    		var track = Object.assign({}, tracks[i].track);
+
+    		// Copy supporting values
+    		if (tracks[i].added_by){
+    			track.added_by = tracks[i].added_by;
+    		}
+    		if (tracks[i].added_at){
+    			track.added_at = tracks[i].added_at;
+    		}
+    		if (tracks[i].tlid){
+    			track.tlid = tracks[i].tlid;
+    		}
+
+    	} else {
+    		var track = Object.assign({}, tracks[i]);
+    	}
+
+    	if (track.duration_ms){
+    		track.duration = track.duration_ms;
+    	} else if (track.length){
+    		track.duration = track.length;
+    	}
+
+        if (track.track_no){
+        	track.track_number = track.track_no;
+        }
+
+        if (track.disc_no){
+        	track.disc_number = track.disc_no;
+        }
+
+        if (track.release_date){
+        	track.date = track.release_date;
+        }
+
+        formatted.push(track);
     }
 
-    return flattened
+    if (singular){
+    	return formatted[0];
+    } else {
+    	return formatted;
+    }
 }
 
 

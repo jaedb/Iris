@@ -15,9 +15,9 @@ export default function reducer(core = {}, action){
             if (!action.data ) return core
 
             var tracklist = []
-            for(var i = 0; i < action.data.length; i++){
+            for (var i = 0; i < action.data.length; i++){
 
-                var tltrack = action.data[i]
+                var tltrack = helpers.formatTracks(action.data[i]);
 
                 // load our metadata (if we have any for that tlid)
                 if (core.queue_metadata !== undefined && core.queue_metadata['tlid_'+tltrack.tlid] !== undefined){
@@ -28,14 +28,15 @@ export default function reducer(core = {}, action){
 
                 var track = Object.assign(
                     {}, 
-                    tltrack.track,
+                    tltrack,
                     metadata,
-                    { 
-                        tlid: tltrack.tlid,
+                    {
                         playing: (core.current_track && tltrack.tlid == core.current_track.tlid )
                     })
-                tracklist.push(track )
+                tracklist.push(track)
             }
+
+            tracklist = helpers.formatTracks(tracklist);
 
             return Object.assign({}, core, { current_tracklist: tracklist });
 
@@ -70,17 +71,17 @@ export default function reducer(core = {}, action){
 
             var tracks = Object.assign({}, core.tracks)
             if (tracks[action.key]){
-                var track = Object.assign({}, tracks[action.key], action.track)
+                var track = Object.assign(
+                    {}, 
+                    tracks[action.key], 
+                    helpers.formatTracks(action.track)
+                );
             } else {
-                var track = Object.assign({}, action.track)
+                var track = Object.assign(
+                    {},
+                    helpers.formatTracks(action.track)
+                );
             }
-
-            // Standardise components
-            if (!track.track_number && track.track_no) track.track_number = track.track_no;
-            if (!track.disc_number && track.disc_no) track.disc_number = track.disc_no;
-            if (!track.duration && track.duration_ms) track.duration = track.duration_ms;
-            if (!track.duration && track.length) track.duration = track.length;
-            if (!track.date && track.release_date) track.date = track.release_date;
 
             tracks[action.key] = track
             return Object.assign({}, core, { tracks: tracks });
@@ -90,10 +91,14 @@ export default function reducer(core = {}, action){
 
             for (var i = 0; i < action.tracks.length; i++){
                 var track = action.tracks[i]
-                if (typeof(tracks[track.uri]) !== 'undefined'){
-                    track = Object.assign({}, tracks[track.uri], track)
+                if (tracks[track.uri] !== undefined){
+                    track = Object.assign(
+                        {}, 
+                        tracks[track.uri], 
+                        track
+                    );
                 }
-                tracks[track.uri] = track
+                tracks[track.uri] = helpers.formatTracks(track);
             }
 
             return Object.assign({}, core, { tracks: tracks });
@@ -191,7 +196,9 @@ export default function reducer(core = {}, action){
                 var album = Object.assign({}, action.album)
             }
 
+            album.tracks = helpers.formatTracks(album.tracks);
             albums[action.key] = album
+
             return Object.assign({}, core, { albums: albums });
 
         case 'ALBUMS_LOADED':
@@ -202,6 +209,8 @@ export default function reducer(core = {}, action){
                 if (albums[album.uri]){
                     album = Object.assign({}, albums[album.uri], album)
                 }
+
+                album.tracks = helpers.formatTracks(album.tracks);
                 albums[album.uri] = album
             }
 
@@ -244,8 +253,14 @@ export default function reducer(core = {}, action){
                 }
 
                 var artist = Object.assign({}, artists[action.key], action.artist)
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
+                }
             } else {
                 var artist = Object.assign({}, action.artist)
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
+                }
             }
 
             artists[action.key] = artist
@@ -258,6 +273,10 @@ export default function reducer(core = {}, action){
                 var artist = action.artists[i]
                 if (typeof(artists[artist.uri]) !== 'undefined'){
                     artist = Object.assign({}, artists[artist.uri], artist)
+                }
+
+                if (artist.tracks){
+                    artist.tracks = helpers.formatTracks(artist.tracks);
                 }
                 artists[artist.uri] = artist
             }
@@ -344,7 +363,7 @@ export default function reducer(core = {}, action){
                     existing_playlist, 
                     action.playlist,
                     {
-                        tracks: tracks
+                        tracks: helpers.formatTracks(tracks)
                     }
                 )
             } else {
@@ -393,7 +412,7 @@ export default function reducer(core = {}, action){
                         existing_playlist,
                         loaded_playlist,
                         {
-                            tracks: tracks
+                            tracks: helpers.formatTracks(tracks)
                         }
                     )
 
@@ -412,7 +431,7 @@ export default function reducer(core = {}, action){
                 {}, 
                 playlists[action.key],
                 {
-                    tracks: [...playlists[action.key].tracks, ...helpers.flattenTracks(action.data.items)],
+                    tracks: [...playlists[action.key].tracks, ...helpers.formatTracks(action.data.items)],
                     tracks_more: action.data.next,
                     tracks_total: action.data.total
                 }
@@ -437,7 +456,7 @@ export default function reducer(core = {}, action){
 
         case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], core.playlists)
-            var playlist = Object.assign({}, playlists[action.key], { tracks: action.tracks })
+            var playlist = Object.assign({}, playlists[action.key], { tracks: helpers.formatTracks(action.tracks) })
 
             playlists[action.key] = playlist
             return Object.assign({}, core, { playlists: playlists });
@@ -552,7 +571,7 @@ export default function reducer(core = {}, action){
             } else {
                 var tracks = []
             }
-            if (action.tracks) tracks = [...tracks, ...action.tracks]
+            if (action.tracks) tracks = [...tracks, ...helpers.formatTracks(action.tracks)]
 
             // more tracks
             if (typeof(action.tracks_more) !== 'undefined') var tracks_more = action.tracks_more

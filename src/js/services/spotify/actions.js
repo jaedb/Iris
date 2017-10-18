@@ -302,6 +302,7 @@ export function getTrack(uri){
                             images: response.album.images
                         }
                     )
+
                     dispatch({
                         type: 'TRACK_LOADED',
                         key: uri,
@@ -395,7 +396,7 @@ export function getFeaturedPlaylists(){
                 },
                 error => {
                     dispatch(coreActions.handleException(
-                        'Could not load featured tracks',
+                        'Could not load featured playlists',
                         error
                     ));
                 }
@@ -1470,7 +1471,7 @@ export function getPlaylist(uri){
                     response,
                     {
                         can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
-                        tracks: helpers.flattenTracks(response.tracks.items),
+                        tracks: response.tracks.items,
                         tracks_more: response.tracks.next,
                         tracks_total: response.tracks.total,
                         description: description
