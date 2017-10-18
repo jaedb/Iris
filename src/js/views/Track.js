@@ -100,7 +100,16 @@ class Track extends React.Component{
 
 	renderLyricsSelector(){
 		if (!this.props.track.lyrics_results){
-			return null;
+			return (
+				<div className="field lyrics-selector">
+					<div className="input">
+						<input type="text" disabled="disabled" value="Loading..." />
+						<div className="description">
+							Switch to another lyrics seach result
+						</div>
+					</div>
+				</div>
+			);
 		}
 
 		return (
@@ -139,15 +148,7 @@ class Track extends React.Component{
 					</div>
 				</div>
 			);
-		} else if (!this.props.track.lyrics){
-			return (
-				<div className="lyrics">
-					<div className="content">
-						<em className="grey-text">No lyrics available</em>
-					</div>
-				</div>
-			)
-		} else {
+		} else if (this.props.track.lyrics){
 			return (
 				<div className="lyrics">
 					<div className="content" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
@@ -156,6 +157,8 @@ class Track extends React.Component{
 					</div>
 				</div>
 			)
+		} else {
+			return null;
 		}
 	}
 

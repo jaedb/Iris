@@ -26,6 +26,10 @@ select {
 	&:active {
 		background: rgba(255,255,255,0.2);
 	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
 }
 
 select {
