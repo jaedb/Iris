@@ -88,11 +88,11 @@ class Queue extends React.Component{
 
 		var options = (
 			<span>
-				<button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
+				{this.props.spotify_enabled ? <button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
 					<FontAwesome name="podcast" />&nbsp;
 					Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
-				</button>
+				</button> : null}
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
 					<FontAwesome name="history" />&nbsp;
 					History
@@ -151,6 +151,7 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		current_tracklist: state.core.current_tracklist,
