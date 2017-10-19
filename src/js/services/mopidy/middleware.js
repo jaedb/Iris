@@ -553,29 +553,34 @@ const MopidyMiddleware = (function(){
                 // Flush out our previous results
                 store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'})
 
-                var uri_schemes_to_ignore = ['spotify:']
-                var uri_schemes = Object.assign([], store.getState().ui.search_uri_schemes)
+                var uri_schemes_to_ignore = ['spotify:'];
+                var uri_schemes = Object.assign([], store.getState().ui.search_uri_schemes);
                 for (var i = 0; i < uri_schemes.length; i++){
                     if (uri_schemes_to_ignore.includes(uri_schemes[i])){
-                        uri_schemes.splice(i,1)
+                        uri_schemes.splice(i,1);
                     }
                 }
-                var uri_schemes_total = uri_schemes.length
-                var uri_scheme = uri_schemes.shift()
+                var uri_schemes_total = uri_schemes.length;
+                var uri_scheme = uri_schemes.shift();
 
-                store.dispatch(uiActions.startProcess(
-                    'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                    'Searching '+uri_schemes_total+' Mopidy providers',
-                    {
-                        context: action.context,
-                        query: action.query,
-                        limit: action.limit,
-                        total: uri_schemes_total,
-                        remaining: uri_schemes.length,
-                        uri_scheme: uri_scheme,
-                        uri_schemes: uri_schemes
-                    }
-                ));
+                if (uri_schemes_total <= 0){
+                    store.dispatch(uiActions.createNotification('No sources selected', 'warning'));
+                } else {
+                    store.dispatch(uiActions.startProcess(
+                        'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                        'Searching '+uri_schemes_total+' Mopidy providers',
+                        {
+                            context: action.context,
+                            query: action.query,
+                            limit: action.limit,
+                            total: uri_schemes_total,
+                            remaining: uri_schemes.length,
+                            uri_scheme: uri_scheme,
+                            uri_schemes: uri_schemes
+                        }
+                    ));
+                }
+
                 break
 
 
