@@ -85,7 +85,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
-                getattr(mem.iris, message['method'])(data=data, callback=lambda response, error: self.handle_response(response=response, error=error, request_id=request_id))
+                getattr(mem.iris, message['method'])(data=data, callback=lambda response, error=False: self.handle_response(response=response, error=error, request_id=request_id))
 
             else:
                 self.handle_response(error={'message': 'Method "'+message['method']+'" does not exist'})
@@ -120,9 +120,8 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # when our request calls subsequent external requests (eg Spotify, Genius)
         elif isinstance(response, tornado.httpclient.HTTPResponse):
             data = {
-                'status': 1,
-                'response_code': response.code,
-                'response_reason': response.reason,
+                'status': response.code,
+                'message': response.reason,
                 'response': response.body,
                 'request_id': request_id
             }
@@ -162,7 +161,7 @@ class HttpHandler(tornado.web.RequestHandler):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-            getattr(mem.iris, slug)(request=self.request, callback=lambda response, error: self.handle_response(response=response, error=error))
+            getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_response(response=response, error=error))
 
         else:
             self.handle_response(error={'message': "Method "+slug+" does not exist"})
@@ -175,7 +174,7 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(mem.iris, slug):
             try:
                 data = json.loads(self.request.body.decode('utf-8'))
-                getattr(mem.iris, slug)(data=data, request=self.request, callback=lambda response, error: self.handle_response(response=response, error=error))
+                getattr(mem.iris, slug)(data=data, request=self.request, callback=lambda response, error=False: self.handle_response(response=response, error=error))
 
             except urllib2.HTTPError as e:
                 self.handle_response(error={'message': "Invalid JSON payload"})
@@ -193,10 +192,6 @@ class HttpHandler(tornado.web.RequestHandler):
         response = kwargs.get('response', None)
         error = kwargs.get('error', None)
         data = {}
-
-        print response
-        print error
-        print "------------"
 
         if error:
             data = error

@@ -108,7 +108,7 @@ class IrisCore(object):
             'message': 'Broadcast to '+str(len(self.connections))+' connections'
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response  
     
@@ -131,7 +131,7 @@ class IrisCore(object):
             'connections': connections
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response  
 
@@ -195,7 +195,7 @@ class IrisCore(object):
                 'username': data['username']
             }
             if (callback):
-                callback(response, False)
+                callback(response)
             else:
                 return response  
 
@@ -222,7 +222,7 @@ class IrisCore(object):
                 'message': 'Sent message to '+data['connection_id']
             }
             if (callback):
-                callback(response, False)
+                callback(response)
             else:
                 return response
 
@@ -268,7 +268,7 @@ class IrisCore(object):
         }
 
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -300,7 +300,7 @@ class IrisCore(object):
             }
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -313,7 +313,7 @@ class IrisCore(object):
                 'message': "Upgrade started"
             }
             if (callback):
-                callback(response, False)
+                callback(response)
             else:
                 return response
 
@@ -346,7 +346,7 @@ class IrisCore(object):
             'radio': self.radio
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -438,7 +438,7 @@ class IrisCore(object):
             'message': 'Stopped radio'
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -518,7 +518,7 @@ class IrisCore(object):
             'queue_metadata': self.queue_metadata
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -545,7 +545,7 @@ class IrisCore(object):
             'message': 'Added queue metadata'
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -572,7 +572,7 @@ class IrisCore(object):
             'message': 'Cleaned queue metadata'
         }
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -592,7 +592,7 @@ class IrisCore(object):
         }
 
         if (callback):
-            callback(response, False)
+            callback(response)
         else:
             return response
 
@@ -627,7 +627,7 @@ class IrisCore(object):
             }
 
             if (callback):
-                callback(response, False)
+                callback(response)
             else:
                 return response
 
