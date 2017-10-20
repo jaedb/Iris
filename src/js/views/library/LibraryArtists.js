@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
-import LazyLoadListener from '../../components/LazyLoadListener'
 import Header from '../../components/Header'
 import ArtistGrid from '../../components/ArtistGrid'
 import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
 import FilterField from '../../components/FilterField'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -22,7 +22,9 @@ class LibraryArtists extends React.Component{
 		super(props)
 
 		this.state = {
-			filter: ''
+			filter: '',
+			limit: 50,
+			per_page: 50
 		}
 	}
 
@@ -85,44 +87,7 @@ class LibraryArtists extends React.Component{
 		this.props.uiActions.set(data)
 	}
 
-	renderView(artists){
-		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Followers',
-					name: 'followers.total'
-				},
-				{
-					label: 'Popularity',
-					name: 'popularity'
-				}
-			]
-			return (
-				<section className="content-wrapper">
-					<List 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						rows={artists} 
-						columns={columns} 
-						className="artist-list"
-						link_prefix={global.baseURL+"artist/"} />
-				</section>
-			)
-		} else {
-			return (
-				<section className="content-wrapper">
-					<ArtistGrid 
-						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-						artists={artists} />
-				</section>				
-			)
-		}
-	}
-
-	render(){
+	renderView(){
 		var artists = []
 
 		// Mopidy library items
@@ -162,6 +127,49 @@ class LibraryArtists extends React.Component{
 			artists = helpers.applyFilter('name', this.state.filter, artists)
 		}
 
+		// Apply our lazy-load-rendering
+		var total_artists = artists.length;
+		artists = artists.slice(0, this.state.limit);
+
+		if (this.props.view == 'list'){
+			var columns = [
+				{
+					label: 'Name',
+					name: 'name'
+				},
+				{
+					label: 'Followers',
+					name: 'followers.total'
+				},
+				{
+					label: 'Popularity',
+					name: 'popularity'
+				}
+			]
+			return (
+				<section className="content-wrapper">
+					<List 
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						rows={artists} 
+						columns={columns} 
+						className="artist-list"
+						link_prefix={global.baseURL+"artist/"} />
+					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+				</section>
+			)
+		} else {
+			return (
+				<section className="content-wrapper">
+					<ArtistGrid 
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						artists={artists} />
+					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+				</section>				
+			)
+		}
+	}
+
+	render(){
 		var source_options = [
 			{
 				value: 'all',
@@ -205,7 +213,7 @@ class LibraryArtists extends React.Component{
 
 		var options = (
 			<span>
-				<FilterField handleChange={value => this.setState({filter: value})} />
+				<FilterField handleChange={value => this.setState({filter: value, limit: this.state.per_page})} />
 				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={value => {this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu()}} />
 				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_artists_source: val}); this.props.uiActions.hideContextMenu() }} />
@@ -214,8 +222,8 @@ class LibraryArtists extends React.Component{
 
 		return (
 			<div className="view library-artists-view">
-				<Header icon="mic" title="My artists" options={options} uiActions={this.props.uiActions} />				
-				{ this.renderView(artists) }
+				<Header icon="mic" title="My artists" options={options} uiActions={this.props.uiActions} />		
+				{this.renderView()}
 			</div>
 		);
 	}
