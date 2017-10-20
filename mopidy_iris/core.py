@@ -454,7 +454,6 @@ class IrisCore(object):
 
 
     def load_more_tracks(self, *args, **kwargs):
-        callback = kwargs.get('callback', False)
         
         # this is crude, but it means we don't need to handle expired tokens
         # TODO: address this when it's clear what Jodal and the team want to do with Pyspotify
@@ -467,13 +466,7 @@ class IrisCore(object):
             error = 'IrisFrontend: access_token missing or invalid'
             self.raven_client.captureMessage(error)
             logger.error(error)
-            self.broadcast(
-                data={
-                    'type': 'error',
-                    'message': 'Could not get radio tracks: access_token missing or invalid',
-                    'source': 'load_more_tracks'
-                }
-            )
+            return False
             
         try:
             url = 'https://api.spotify.com/v1/recommendations/'
@@ -497,14 +490,7 @@ class IrisCore(object):
         except:
             self.raven_client.captureException()
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
-            self.broadcast(
-                data={
-                    'type': 'error',
-                    'message': 'Could not get radio tracks',
-                    'source': 'load_more_tracks'
-                }
-            )
-            return []
+            return False
 
 
     def check_for_radio_update( self ):
@@ -636,9 +622,9 @@ class IrisCore(object):
         }
 
         try:
-            http_client = tornado.httpclient.AsyncHTTPClient()
+            http_client = tornado.httpclient.HTTPClient()
             request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.urlencode(data))
-            http_client.fetch(request, callback=callback)
+            response = http_client.fetch(request)
 
             self.broadcast(
                 data={
@@ -646,6 +632,14 @@ class IrisCore(object):
                     'spotify_token': self.spotify_token
                 }
             )
+
+            token = json.loads(response.body)
+            self.spotify_token = token
+
+            if (callback):
+                callback(token)
+            else:
+                return token
 
         except urllib2.HTTPError as e:
             self.raven_client.captureException()
