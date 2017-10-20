@@ -157,24 +157,15 @@ function refreshToken(dispatch, getState){
             $.ajax(config)
                 .then(
                     response => {
-                        if (response.response_code == 200){
-                            var token = response.response;
-                            token.token_expiry = new Date().getTime() + (token.expires_in * 1000 );
-                            token.source = 'mopidy';
-                            dispatch({
-                                type: 'SPOTIFY_TOKEN_REFRESHED',
-                                access_token_provider: 'backend',
-                                data: token
-                            });
-                            resolve(token);  
-
-                        } else {  
-                            dispatch({ type: 'SPOTIFY_DISCONNECTED' })
-                            reject({
-                                config: config,
-                                error: response
-                            })                        
-                        }
+                        var token = response.spotify_token;
+                        token.token_expiry = new Date().getTime() + (token.expires_in * 1000 );
+                        token.source = 'mopidy';
+                        dispatch({
+                            type: 'SPOTIFY_TOKEN_REFRESHED',
+                            access_token_provider: 'backend',
+                            data: token
+                        });
+                        resolve(token);
 
                     },
                     (xhr, status, error) => {

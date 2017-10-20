@@ -637,7 +637,10 @@ class IrisCore(object):
             self.spotify_token = token
 
             if (callback):
-                callback(token)
+                callback({
+                    'status': 1,
+                    'spotify_token': token
+                })
             else:
                 return token
 
