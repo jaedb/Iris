@@ -12,6 +12,7 @@ import TrackList from '../../components/TrackList'
 import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/DropdownField'
 import FilterField from '../../components/FilterField'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -25,7 +26,9 @@ class LibraryAlbums extends React.Component{
 		super(props)
 
 		this.state = {
-			filter: ''
+			filter: '',
+			limit: 50,
+			per_page: 50
 		}
 	}
 
@@ -114,75 +117,7 @@ class LibraryAlbums extends React.Component{
 		this.props.uiActions.set(data)
 	}
 
-	renderView(albums){
-		if (!albums || albums.length <= 0) return null
-
-		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Artists',
-					name: 'artists'
-				},
-				{
-					label: 'Added',
-					name: 'added_at'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				}
-			]
-			return (
-				<List 
-					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-					rows={albums} 
-					columns={columns} 
-					className="album-list"
-					link_prefix={global.baseURL+"album/"} />
-			)
-		}else if (this.props.view == 'detail'){
-			return (
-				<div>
-					{
-						albums.map(album => {
-							return (
-								<div className="album" key={album.uri}>
-									<Link to={global.baseURL+'album/'+album.uri}>
-										<Thumbnail size="medium" images={album.images} />
-									</Link>
-									<div className="detail">
-										<Link to={global.baseURL+'album/'+album.uri}>
-											<h2>{ album.name }</h2>
-										</Link>
-										<h3><ArtistSentence className="grey-text" artists={album.artists} /></h3>
-									</div>
-									<div className="list-wrapper">
-										<TrackList tracks={album.tracks} />
-									</div>
-								</div>
-							)
-						})
-					}
-				</div>			
-			)
-		} else {
-			return (
-				<AlbumGrid 
-					handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
-					albums={albums} />
-			)
-		}
-	}
-
-	render(){
+	renderView(){
 		var albums = []
 
 		// Spotify library items
@@ -222,6 +157,57 @@ class LibraryAlbums extends React.Component{
 			albums = helpers.applyFilter('name', this.state.filter, albums)
 		}
 
+		// Apply our lazy-load-rendering
+		var total_albums = albums.length;
+		albums = albums.slice(0, this.state.limit);
+
+		if (this.props.view == 'list'){
+			var columns = [
+				{
+					label: 'Name',
+					name: 'name'
+				},
+				{
+					label: 'Artists',
+					name: 'artists'
+				},
+				{
+					label: 'Added',
+					name: 'added_at'
+				},
+				{
+					label: 'Tracks',
+					name: 'tracks_total'
+				},
+				{
+					label: 'Source',
+					name: 'source'
+				}
+			]
+			return (
+				<section className="content-wrapper">
+					<List 
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						rows={albums} 
+						columns={columns} 
+						className="album-list"
+						link_prefix={global.baseURL+"album/"} />
+					<LazyLoadListener loading={this.state.limit < total_albums} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+				</section>
+			)
+		} else {
+			return (
+				<section className="content-wrapper">
+					<AlbumGrid 
+						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
+						albums={albums} />
+					<LazyLoadListener loading={this.state.limit < total_albums} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+				</section>
+			)
+		}
+	}
+
+	render(){
 		var source_options = [
 			{
 				value: 'all',
@@ -273,7 +259,7 @@ class LibraryAlbums extends React.Component{
 
 		var options = (
 			<span>
-				<FilterField handleChange={value => this.setState({filter: value})} />
+				<FilterField handleChange={value => this.setState({filter: value, limit: this.state.per_page})} />
 				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_albums_source: val}); this.props.uiActions.hideContextMenu() }} />
@@ -282,13 +268,8 @@ class LibraryAlbums extends React.Component{
 
 		return (
 			<div className="view library-albums-view">
-
 				<Header icon="cd" title="My albums" options={options} uiActions={this.props.uiActions} />
-
-				<section className="content-wrapper">
-					{this.renderView(albums)}
-				</section>
-
+				{this.renderView()}
 			</div>
 		);
 	}

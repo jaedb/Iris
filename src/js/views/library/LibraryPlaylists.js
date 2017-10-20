@@ -10,6 +10,7 @@ import List from '../../components/List'
 import DropdownField from '../../components/DropdownField'
 import Header from '../../components/Header'
 import FilterField from '../../components/FilterField'
+import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -23,7 +24,9 @@ class LibraryPlaylists extends React.Component{
 		super(props)
 
 		this.state = {
-			filter: ''
+			filter: '',
+			limit: 50,
+			per_page: 50
 		}
 	}
 
@@ -87,7 +90,7 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	renderView(){
-		var playlists = []
+		var playlists = [];
 
 		// Spotify library items
 		if (this.props.spotify_library_playlists && (this.props.source == 'all' || this.props.source == 'spotify')){
@@ -109,12 +112,16 @@ class LibraryPlaylists extends React.Component{
 			}
 		}
 
-		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse)
-		playlists = helpers.removeDuplicates(playlists)
+		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+		playlists = helpers.removeDuplicates(playlists);
 
 		if (this.state.filter !== ''){
-			playlists = helpers.applyFilter('name', this.state.filter, playlists)
+			playlists = helpers.applyFilter('name', this.state.filter, playlists);
 		}
+
+		// Apply our lazy-load-rendering
+		var total_playlists = playlists.length;
+		playlists = playlists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
 			if (this.props.slim_mode){
@@ -161,6 +168,7 @@ class LibraryPlaylists extends React.Component{
 						columns={columns}
 						className="playlist-list"
 						link_prefix={global.baseURL+"playlist/"} />
+					<LazyLoadListener loading={this.state.limit < total_playlists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
 				</section>
 			)
 		} else {
@@ -169,13 +177,13 @@ class LibraryPlaylists extends React.Component{
 					<PlaylistGrid
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						playlists={playlists} />
+					<LazyLoadListener loading={this.state.limit < total_playlists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
 				</section>				
 			)
 		}
 	}
 
 	render(){
-
 		var source_options = [
 			{
 				value: 'all',
