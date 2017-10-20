@@ -105,11 +105,10 @@ class IrisCore(object):
             connection['connection'].write_message( json_encode(data) )
 
         response = {
-            'status': 1,
             'message': 'Broadcast to '+str(len(self.connections))+' connections'
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response  
     
@@ -129,11 +128,10 @@ class IrisCore(object):
             connections.append(connection['client'])
         
         response = {
-            'status': 1,
             'connections': connections
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response  
 
@@ -193,12 +191,11 @@ class IrisCore(object):
                 }
             )
             response = {
-                'status': 1,
                 'connection_id': connection_id,
                 'username': data['username']
             }
             if (callback):
-                callback(response)
+                callback(response, False)
             else:
                 return response  
 
@@ -206,14 +203,14 @@ class IrisCore(object):
             error = 'Connection "'+data['connection_id']+'" not found'
             self.raven_client.captureMessage(error)
             logger.error(error)
-            response = {
-                'status': 0,
+
+            error = {
                 'message': error
             }
             if (callback):
-                callback(response)
+                callback(False, error)
             else:
-                return response     
+                return error   
 
     def deliver_message(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
@@ -222,11 +219,10 @@ class IrisCore(object):
         if data['connection_id'] in self.connections:
             self.send_message(connection_id=data['connection_id'], data=data['message'])
             response = {
-                'status': 1,
                 'message': 'Sent message to '+data['connection_id']
             }
             if (callback):
-                callback(response)
+                callback(response, False)
             else:
                 return response
 
@@ -234,14 +230,14 @@ class IrisCore(object):
             error = 'Connection "'+data['connection_id']+'" not found'
             self.raven_client.captureMessage(error)
             logger.error(error)
-            response = {
-                'status': 0,
+
+            error = {
                 'message': error
             }
             if (callback):
-                callback(response)
+                callback(False, error)
             else:
-                return response
+                return error
             
 
 
@@ -272,7 +268,7 @@ class IrisCore(object):
         }
 
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -296,7 +292,6 @@ class IrisCore(object):
             upgrade_available = False
         
         response = {
-            'status': 1,
             'version': {
                 'current': self.version,
                 'latest': latest_version,
@@ -305,7 +300,7 @@ class IrisCore(object):
             }
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -315,24 +310,22 @@ class IrisCore(object):
         try:
             subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
             response = {
-                'status': 1,
                 'message': "Upgrade started"
             }
             if (callback):
-                callback(response)
+                callback(response, False)
             else:
                 return response
 
         except subprocess.CalledProcessError as e:
             self.raven_client.captureException(e)
-            response = {
-                'status': 0,
+            error = {
                 'message': "Could not start upgrade"
             }
             if (callback):
-                callback(response)
+                callback(False, error)
             else:
-                return response
+                return error
         
     def restart(self, *args, **kwargs):
         os.execl(sys.executable, *([sys.executable]+sys.argv))
@@ -350,11 +343,10 @@ class IrisCore(object):
         callback = kwargs.get('callback', False)
 
         response = {
-            'status': 1,
             'radio': self.radio
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -405,20 +397,19 @@ class IrisCore(object):
                         }
                     )
 
-                return self.get_radio(callback=callback)
+                self.get_radio(callback=callback)
+                return
         
         # failed fetching/adding tracks, so no-go
         self.radio['enabled'] = 0;
-        response = {
-            'status': 0,
+        error = {
             'message': 'Could not start radio',
             'radio': self.radio
         }
-
         if (callback):
-            callback(response)
+            callback(False, error)
         else:
-            return response
+            return error
 
 
     def stop_radio(self, *args, **kwargs):
@@ -444,11 +435,10 @@ class IrisCore(object):
         )
         
         response = {
-            'status': 1,
             'message': 'Stopped radio'
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -525,11 +515,10 @@ class IrisCore(object):
         callback = kwargs.get('callback', False)
 
         response = {
-            'status': 1,
             'queue_metadata': self.queue_metadata
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -553,11 +542,10 @@ class IrisCore(object):
         )
         
         response = {
-            'status': 1,
             'message': 'Added queue metadata'
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -581,11 +569,10 @@ class IrisCore(object):
         )
         
         response = {
-            'status': 1,
             'message': 'Cleaned queue metadata'
         }
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -605,7 +592,7 @@ class IrisCore(object):
         }
 
         if (callback):
-            callback(response)
+            callback(response, False)
         else:
             return response
 
@@ -635,28 +622,24 @@ class IrisCore(object):
 
             token = json.loads(response.body)
             self.spotify_token = token
+            response = {
+                'spotify_token': token
+            }
 
             if (callback):
-                callback({
-                    'status': 1,
-                    'spotify_token': token
-                })
+                callback(response, False)
             else:
-                return token
+                return response
 
         except urllib2.HTTPError as e:
             self.raven_client.captureException()
             error = json.loads(e.read())
-            response = {
-                'status': 0,
-                'message': 'Could not refresh token: '+error['error_description'],
-                'source': 'refresh_spotify_token'
-            }
+            error = {'message': 'Could not refresh token: '+error['error_description']}
 
             if (callback):
-                callback(response)
+                callback(False, error)
             else:
-                return response
+                return error
 
 
     ##
@@ -675,22 +658,21 @@ class IrisCore(object):
             data = kwargs.get('data', {})
         except:
             self.raven_client.captureException()
-            callback({
-                'status': 0,
+            callback(False, {
                 'message': 'Malformed data',
                 'source': 'proxy_request'
             })
-
+            return
 
         # Our request includes data, so make sure we POST the data
         if 'url' not in data:
             self.raven_client.captureException()
-            callback({
-                'status': 0,
+            callback(False, {
                 'message': 'Malformed data (missing URL)',
                 'source': 'proxy_request',
                 'original_request': data
             })
+            return
 
         # Construct request headers
         # If we have an original request, pass through it's headers
@@ -741,8 +723,12 @@ class IrisCore(object):
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
-        time.sleep(1)
-        callback({
-            'status': 1,
-            'message': "Slept for one second"
-        })
+        data = kwargs.get('data', {})
+
+        if data and 'force_error' in data:
+            callback(False, {'message': "Could not sleep, forced error"})
+            return
+        else:
+            time.sleep(1)
+            callback({'message': "Slept for one second"}, False)
+            return
