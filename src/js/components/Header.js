@@ -32,6 +32,16 @@ export default class Header extends React.Component{
 		}
 	}
 
+	renderContextMenuTrigger(){
+
+		// No custom trigger, nor any options
+		if (!this.props.handleContextMenuTrigger && !this.props.options){
+			return null;
+		}
+
+		return <ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
+	}
+
 	renderOptions(){
 		if (!this.props.options && !this.props.handleContextMenuTrigger){
 			return null;
@@ -39,7 +49,7 @@ export default class Header extends React.Component{
 
 		return (
 			<div className='options'>
-				<ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
+				{this.renderContextMenuTrigger()}
 				<span className="items">
 					<span className="liner">
 						{this.props.options ? this.props.options : null}

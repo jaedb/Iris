@@ -117,7 +117,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name }) }>Edit</button>
-						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 
@@ -127,7 +127,7 @@ class Playlist extends React.Component{
 						<div className="actions">
 							<button className="primary" onClick={ e => this.play() }>Play</button>
 							<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name, public: this.props.playlist.public, collaborative: this.props.playlist.collaborative, description: this.props.playlist.description }) }>Edit</button>
-							{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)
 				}
@@ -135,7 +135,7 @@ class Playlist extends React.Component{
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
 						<FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
-						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 
@@ -143,7 +143,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
 		}
@@ -168,9 +168,6 @@ class Playlist extends React.Component{
 
 		return (
 			<div className="view playlist-view content-wrapper">
-
-				{this.props.slim_mode ? <Header icon="playlist" title="Playlist" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
-
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
 				</div>
