@@ -9,7 +9,6 @@ import Parallax from '../components/Parallax'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import Dater from '../components/Dater'
-import SidebarToggleButton from '../components/SidebarToggleButton'
 import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
 import Thumbnail from '../components/Thumbnail'
@@ -111,9 +110,7 @@ class Queue extends React.Component{
 		return (
 			<div className="view queue-view">			
 				<Header icon="play" className="overlay" title="Now playing" options={options} uiActions={this.props.uiActions} />
-
 				<Parallax blur image={image} />
-
 				<div className="content-wrapper">
 				
 					<div className="current-track">

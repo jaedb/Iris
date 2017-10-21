@@ -57,15 +57,18 @@ main {
 			top: 0;
 			left: 0;
 			width: 100%;
-			z-index: 99;
+			z-index: 98;
 		}
 
 		@include responsive($bp_medium){
 			padding: 10px 10px 10px 0;
-			margin-bottom: -20px;
+			margin-bottom: -10px;
 
 			.icon {
-				visibility: hidden;
+				height: 1.2rem;
+				margin-bottom: 5px;
+				padding-right: 10px;
+				margin-left: 10px;
 			}
 
 			h1 {

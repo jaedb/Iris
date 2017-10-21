@@ -11,7 +11,6 @@ import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
 import AddSeedField from '../../components/AddSeedField'
-import SidebarToggleButton from '../../components/SidebarToggleButton'
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -226,9 +225,6 @@ class Discover extends React.Component{
 	render(){
 		return (
 			<div className="view discover-view">
-			
-				<SidebarToggleButton />
-
 				<div className="intro">
 
 					<Parallax image="/iris/assets/backgrounds/discover.jpg" />

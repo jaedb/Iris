@@ -97,9 +97,9 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="settings">
-					{ this.renderConsumeButton() }
-					{ this.renderRandomButton() }
-					{ this.renderRepeatButton() }
+					{this.renderConsumeButton()}
+					{this.renderRandomButton()}
+					{this.renderRepeatButton()}
 				</section>
 
 				<section className="progress">
@@ -113,8 +113,11 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="triggers">
-					<a className="control next" onClick={() => this.setState({expanded: !this.state.expanded})}>
+					<a className="control expanded-controls" onClick={() => this.setState({expanded: !this.state.expanded})}>
 						{this.state.expanded ? <FontAwesome name="chevron-down" /> : <FontAwesome name="chevron-up" />}
+					</a>
+					<a className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={() => this.props.uiActions.toggleSidebar()}>
+						<FontAwesome className="open" name="bars" />
 					</a>
 				</section>
 				
@@ -138,7 +141,8 @@ const mapStateToProps = (state, ownProps) => {
 		time_position: state.mopidy.time_position,
 		consume: state.mopidy.consume,
 		repeat: state.mopidy.repeat,
-		random: state.mopidy.random
+		random: state.mopidy.random,
+		sidebar_open: state.ui.sidebar_open
 	}
 }
 

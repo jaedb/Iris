@@ -14,7 +14,6 @@ import Parallax from '../components/Parallax'
 import ArtistGrid from '../components/ArtistGrid'
 import RelatedArtists from '../components/RelatedArtists'
 import FollowButton from '../components/FollowButton'
-import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
@@ -232,7 +231,6 @@ class Artist extends React.Component{
 		} else {
 			return (
 				<div className="view artist-view">
-					<SidebarToggleButton />
 					<div className="intro">
 						<Parallax />
 						<div className="liner">
