@@ -9,6 +9,7 @@ import Dropzones from './Dropzones'
 import Thumbnail from './Thumbnail'
 
 import FontAwesome from 'react-fontawesome'
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
 class Sidebar extends React.Component{
@@ -100,6 +101,10 @@ class Sidebar extends React.Component{
 
 		       	<Dropzones />
 
+		       	<div className="close" onClick={e => this.props.uiActions.toggleSidebar(false)}>
+		       		<FontAwesome name="chevron-right" />
+		       	</div>
+
 			</aside>
 		);
 	}
@@ -126,6 +131,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }

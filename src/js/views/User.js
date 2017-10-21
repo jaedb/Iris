@@ -8,7 +8,6 @@ import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
 import FollowButton from '../components/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
-import SidebarToggleButton from '../components/SidebarToggleButton'
 import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
@@ -82,9 +81,6 @@ class User extends React.Component{
 
 		return (
 			<div className="view user-view">
-
-				<SidebarToggleButton />
-
 				<div className="intro">
 					<Parallax image={image} />
 					<div className="liner">

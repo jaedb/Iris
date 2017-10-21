@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import FontAwesome from 'react-fontawesome'
 
 import Icon from './Icon'
-import SidebarToggleButton from './SidebarToggleButton'
 import ContextMenuTrigger from './ContextMenuTrigger'
 
 export default class Header extends React.Component{
@@ -33,12 +32,24 @@ export default class Header extends React.Component{
 		}
 	}
 
+	renderContextMenuTrigger(){
+
+		// No custom trigger, nor any options
+		if (!this.props.handleContextMenuTrigger && !this.props.options){
+			return null;
+		}
+
+		return <ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
+	}
+
 	renderOptions(){
-		if (!this.props.options && !this.props.handleContextMenuTrigger) return null
+		if (!this.props.options && !this.props.handleContextMenuTrigger){
+			return null;
+		}
 
 		return (
 			<div className='options'>
-				<ContextMenuTrigger onTrigger={e => this.handleContextMenuTrigger(e,this.props.options)} />
+				{this.renderContextMenuTrigger()}
 				<span className="items">
 					<span className="liner">
 						{this.props.options ? this.props.options : null}
@@ -52,7 +63,6 @@ export default class Header extends React.Component{
 		return (
 			<header className={(this.props.className ? this.props.className : null)}>
 				{this.props.icon ? <Icon name={this.props.icon} /> : null}
-				<SidebarToggleButton />
 				{this.props.title ? <h1>{ this.props.title }</h1> : null}
 				{this.renderOptions()}
 			</header>

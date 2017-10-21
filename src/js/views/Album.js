@@ -121,9 +121,6 @@ class Album extends React.Component{
 
 		return (
 			<div className="view album-view content-wrapper">
-
-				{this.props.slim_mode ? <Header icon="cd" title="Album" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
-
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={ this.props.album.images } />
 				</div>
@@ -146,7 +143,7 @@ class Album extends React.Component{
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
 					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
-					{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
 				<section className="list-wrapper">

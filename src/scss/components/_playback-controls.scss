@@ -86,7 +86,7 @@
 		font-size: 12px;
 		color: $white;
 		cursor: pointer;
-		padding: 8px 6px;
+		padding: 10px 8px;
 		display: inline-block;
 		vertical-align: bottom;
 		opacity: 0.8;
@@ -117,11 +117,11 @@
 
 	section {
 		position: absolute;
-		bottom: 11px;
+		bottom: 8px;
 
 		&.playback {
-			left: 20px;
-			width: 120px;
+			left: 10px;
+			width: 125px;
 			text-align: center;
 		}
 
@@ -257,6 +257,22 @@
 			&.triggers {
 				display: block;
 				right: 10px;
+
+				.sidebar-toggle.open {
+					opacity: 1 !important;
+
+					&:after {
+						background: rgba(0,0,0,0.8);
+						content: '';
+						display: block;
+						position: fixed;
+						top: 0;
+						left: 0;
+						bottom: 0;
+						right: 0;
+						z-index: 99;
+					}
+				}
 			}
 		}
 

@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
 import PlaybackControls from './components/PlaybackControls'
-import SidebarToggleButton from './components/SidebarToggleButton'
 import ContextMenu from './components/ContextMenu'
 import Dragger from './components/Dragger'
 import Modal from './components/Modal/Modal'

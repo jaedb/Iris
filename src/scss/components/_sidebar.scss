@@ -99,26 +99,43 @@ aside{
 		}
 	}
 
+	.close {
+		display: none;
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+		padding: 10px 8px;
+		display: inline-block;
+		opacity: 0.5;
+		z-index: 99;
+	}
+
 	@include responsive($bp_medium){
 		@include animate(0.15s);
 		width: 220px;
-		left: -220px;
+		left: auto;
+		right: -220px;
 		padding-bottom: 0;
 		position: fixed;
 		z-index: 100;
 
 		.sidebar-open & {
-			-ms-transform: translate(220px, 0);
-			-webkit-transform: translate(220px, 0);
-			transform: translate(220px, 0);
+			-ms-transform: translate(-220px, 0);
+			-webkit-transform: translate(-220px, 0);
+			transform: translate(-220px, 0);
 		}
 
 		.liner {
 			bottom: 0 !important;
+			padding-bottom: 30px;
 		}
 
 		.thumbnail {
 			display: none;
+		}
+
+		.close {
+			display: block;
 		}
 	}
 }

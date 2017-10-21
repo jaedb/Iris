@@ -14,7 +14,6 @@ import Parallax from '../components/Parallax'
 import ArtistGrid from '../components/ArtistGrid'
 import RelatedArtists from '../components/RelatedArtists'
 import FollowButton from '../components/FollowButton'
-import SidebarToggleButton from '../components/SidebarToggleButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 
 import * as helpers from '../helpers'
@@ -206,9 +205,6 @@ class Artist extends React.Component{
 
 			return (
 				<div className="view artist-view">
-
-					{this.props.slim_mode ? <Header className="overlay" icon="mic" title="Artist" handleContextMenuTrigger={e => this.handleContextMenu(e)} uiActions={this.props.uiActions} /> : null}
-
 					<div className="intro">
 
 						<Parallax image={image} />
@@ -218,7 +214,7 @@ class Artist extends React.Component{
 							<div className="actions">
 								<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
 								{is_spotify ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
-								{this.props.slim_mode ? null : <ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />}
+								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 							</div>
 							{ this.renderSubViewMenu() }
 						</div>
@@ -232,7 +228,6 @@ class Artist extends React.Component{
 		} else {
 			return (
 				<div className="view artist-view">
-					<SidebarToggleButton />
 					<div className="intro">
 						<Parallax />
 						<div className="liner">
