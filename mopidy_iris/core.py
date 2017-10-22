@@ -93,7 +93,6 @@ class IrisCore(object):
         try:
             self.connections[connection_id]['connection'].write_message( json_encode(data) )
         except:
-            self.raven_client.captureException()
             logger.error('Failed to send message to '+ connection_id)
 
 
@@ -174,7 +173,6 @@ class IrisCore(object):
                     }
                 )
             except:
-                self.raven_client.captureException()
                 logger.error('Failed to close connection to '+ connection_id)           
 
     def set_username(self, *args, **kwargs):
@@ -201,7 +199,6 @@ class IrisCore(object):
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'
-            self.raven_client.captureMessage(error)
             logger.error(error)
 
             error = {
@@ -228,7 +225,6 @@ class IrisCore(object):
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'
-            self.raven_client.captureMessage(error)
             logger.error(error)
 
             error = {
@@ -287,7 +283,6 @@ class IrisCore(object):
             upgrade_available = ( upgrade_available == 1 )
 
         except urllib2.HTTPError as e:
-            self.raven_client.captureException(e)
             latest_version = '0.0.0'
             upgrade_available = False
         
@@ -318,7 +313,6 @@ class IrisCore(object):
                 return response
 
         except subprocess.CalledProcessError as e:
-            self.raven_client.captureException(e)
             error = {
                 'message': "Could not start upgrade"
             }
@@ -454,7 +448,6 @@ class IrisCore(object):
             token = token['access_token']
         except:
             error = 'IrisFrontend: access_token missing or invalid'
-            self.raven_client.captureMessage(error)
             logger.error(error)
             return False
             
@@ -478,7 +471,6 @@ class IrisCore(object):
             return uris
 
         except:
-            self.raven_client.captureException()
             logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
             return False
 
@@ -632,7 +624,6 @@ class IrisCore(object):
                 return response
 
         except urllib2.HTTPError as e:
-            self.raven_client.captureException()
             error = json.loads(e.read())
             error = {'message': 'Could not refresh token: '+error['error_description']}
 
@@ -657,7 +648,6 @@ class IrisCore(object):
         try:
             data = kwargs.get('data', {})
         except:
-            self.raven_client.captureException()
             callback(False, {
                 'message': 'Malformed data',
                 'source': 'proxy_request'
@@ -666,7 +656,6 @@ class IrisCore(object):
 
         # Our request includes data, so make sure we POST the data
         if 'url' not in data:
-            self.raven_client.captureException()
             callback(False, {
                 'message': 'Malformed data (missing URL)',
                 'source': 'proxy_request',
