@@ -107,10 +107,6 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         error = kwargs.get('error', None)
         request_id = kwargs.get('request_id', False)
 
-        print response
-        print error
-        print '-------'
-
         # We've been given an error
         if error:
             data = error
