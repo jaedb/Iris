@@ -36,7 +36,6 @@ RUN set -ex \
         Mopidy-GMusic \
         Mopidy-YouTube \
         pyasn1==0.3.2 \
-        Mopidy-Iris \
     # Clean-up
     && apt-get purge --auto-remove -y \
         curl \
@@ -54,6 +53,9 @@ USER mopidy
 VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
 
 EXPOSE 6600 6680
+
+# Install Iris
+CMD ["python", "setup.py install"]
 
 ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
 CMD ["/usr/bin/mopidy"]
