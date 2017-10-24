@@ -41,7 +41,7 @@ RUN set -ex \
         curl \
         gcc \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache \    
     # Limited access rights.
     && chown mopidy:audio -R /var/lib/mopidy/.config \
     && chmod +x /entrypoint.sh \
