@@ -2865,7 +2865,7 @@ function getPlaylist(uri) {
 
             var playlist = Object.assign({}, response, {
                 can_edit: getState().spotify.me && response.owner.id == getState().spotify.me.id,
-                tracks: response.tracks.items,
+                tracks: helpers.formatTracks(response.tracks.items),
                 tracks_more: response.tracks.next,
                 tracks_total: response.tracks.total,
                 description: description

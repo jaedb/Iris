@@ -61,7 +61,8 @@ const config = {
 				use: { 
 					loader: 'url-loader',
 					options: {
-						'limit': 100000
+						name: '[name].[ext]?[hash]',
+						limit: 100000
 					}
 				}
 			}
