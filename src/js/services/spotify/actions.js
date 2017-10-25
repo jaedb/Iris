@@ -135,7 +135,14 @@ function refreshToken(dispatch, getState){
                         resolve(response)
                     },
                     (xhr, status, error) => {
-                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                        dispatch({ type: 'SPOTIFY_DISCONNECTED' });
+
+                        dispatch(coreActions.handleException(
+                            'Could not refresh authorized spotify token',
+                            error,
+                            true
+                        ));
+
                         reject({
                             config: config,
                             xhr: xhr,
@@ -169,7 +176,14 @@ function refreshToken(dispatch, getState){
 
                     },
                     (xhr, status, error) => {
-                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                        dispatch({ type: 'SPOTIFY_DISCONNECTED' });
+
+                        dispatch(coreActions.handleException(
+                            'Could not refresh backend spotify token',
+                            error,
+                            true
+                        ));
+
                         reject({
                             config: config,
                             xhr: xhr,
@@ -207,7 +221,8 @@ export function connect(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not connect to Spotify',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -264,7 +279,8 @@ export function getMe(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load your profile',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -303,7 +319,8 @@ export function getTrack(uri){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load track',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -326,7 +343,8 @@ export function getLibraryTracks(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not get library tracks',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -388,7 +406,8 @@ export function getFeaturedPlaylists(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load featured playlists',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -408,7 +427,8 @@ export function getCategories(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load categories',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -440,7 +460,8 @@ export function getCategory(id){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load category',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -476,7 +497,8 @@ export function getCategory(id){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load category playlists',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -496,7 +518,8 @@ export function getNewReleases(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load new releases',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -517,7 +540,8 @@ export function getURL(url, action_name, key = false){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load URL',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -614,7 +638,8 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load search results',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -669,7 +694,8 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load autocomplete results',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -739,7 +765,8 @@ export function following(uri, method = 'GET'){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not follow/unfollow',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -776,7 +803,8 @@ export function resolveRadioSeeds(radio){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not resolve radio artist seeds',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -800,7 +828,8 @@ export function resolveRadioSeeds(radio){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load radio track seeds',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -840,7 +869,8 @@ export function getFavorites(limit = 50, term = 'long_term'){
             (artists_error, tracks_error) => {
                 dispatch(coreActions.handleException(
                     'Could not load favorites',
-                    Object.assign({},artists_error,tracks_error)
+                    Object.assign({},artists_error,tracks_error),
+                    true
                 ));
             }
         )
@@ -949,7 +979,8 @@ export function getRecommendations(uris = [], limit = 20){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load recommendations',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -975,7 +1006,8 @@ export function getGenres(){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load genres',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -1013,7 +1045,8 @@ export function getArtist(uri, full = false){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load artist',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -1031,7 +1064,8 @@ export function getArtist(uri, full = false){
                         error => {
                             dispatch(coreActions.handleException(
                                 'Could not load artist\'s top tracks',
-                                error
+                                error,
+                                true
                             ));
                         }
                     )
@@ -1050,7 +1084,8 @@ export function getArtist(uri, full = false){
                     error => {
                         dispatch(coreActions.handleException(
                             'Could not load artist\'s related artists',
-                            error
+                            error,
+                            true
                         ));
                     }
                 )
@@ -1086,7 +1121,8 @@ export function getArtist(uri, full = false){
                     error => {
                         dispatch(coreActions.handleException(
                             'Could not load artist\'s albums',
-                            error
+                            error,
+                            true
                         ));
                     }
                 );
@@ -1127,7 +1163,8 @@ export function getArtists(uris){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load artists',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1155,7 +1192,8 @@ export function playArtistTopTracks(uri){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not play artist\'s top tracks',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -1186,7 +1224,8 @@ export function getUser(uri){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load user',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -1234,7 +1273,8 @@ export function getUserPlaylists(user_uri){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load user\'s playlists',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1312,7 +1352,8 @@ export function getAlbum(uri){
                             error => {
                                 dispatch(coreActions.handleException(
                                     'Could not load album\'s artists',
-                                    error
+                                    error,
+                                    true
                                 ));
                             }
                         );
@@ -1321,7 +1362,8 @@ export function getAlbum(uri){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load album',
-                        error
+                        error,
+                        true
                     ));
                 }
             )
@@ -1345,7 +1387,8 @@ export function toggleAlbumInLibrary(uri, method){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not add/remove library album',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1398,7 +1441,8 @@ export function createPlaylist(name, description, is_public, is_collaborative){
             error => {
                 dispatch(coreActions.handleException(
                     'Could not create playlist',
-                    error
+                    error,
+                    true
                 ));
             }
         )
@@ -1478,7 +1522,8 @@ export function getPlaylist(uri){
             error => {
                 dispatch(coreActions.handleException(
                     'Could not load playlist',
-                    error
+                    error,
+                    true
                 ));
             }
         )
@@ -1558,7 +1603,8 @@ export function getPlaylistTracksForPlayingProcessor(data){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load tracks to play playlist',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1582,7 +1628,8 @@ export function toggleFollowingPlaylist(uri, method){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not add/remove library playlist',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1604,7 +1651,8 @@ export function addTracksToPlaylist(uri, tracks_uris){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not add tracks to playlist',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1626,7 +1674,8 @@ export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not remove tracks from playlist',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1650,7 +1699,8 @@ export function reorderPlaylistTracks(uri, range_start, range_length, insert_bef
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not reorder playlist tracks',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1734,7 +1784,8 @@ export function getLibraryPlaylistsProcessor(data){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load library playlists',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1804,7 +1855,8 @@ export function getLibraryArtistsProcessor(data){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load library artists',
-                        error
+                        error,
+                        true
                     ));
                 }
             );
@@ -1874,7 +1926,8 @@ export function getLibraryAlbumsProcessor(data){
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load library albums',
-                        error
+                        error,
+                        true
                     ));
                 }
             );

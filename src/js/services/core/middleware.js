@@ -52,22 +52,50 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                Raven.captureException(
-                    new Error(action.message), 
-                    {
-                        extra: data
-                    }
-                );
-
+                var description = null;
                 if (action.data.xhr && action.data.xhr.responseText){
                     var xhr_response = JSON.parse(action.data.xhr.responseText);        
                     if (xhr_response.error && xhr_response.error.message){
-                        message = message+'<p class="description">'+xhr_response.error.message+'</p>';
+                        description = xhr_response.error.message;
                     }
                 }
 
+                if (action.fatal){
+                    console.error("Fatal error logged: "+message+" ("+(description ? description : "no description")+")", data);
+
+                    // Log the error with Raven Sentry
+                    Raven.captureException(
+                        new Error(action.message), 
+                        {
+                            extra: data
+                        }
+                    );
+
+                    // Log the error with Analytics
+                    ReactGA.event({
+                        category: "Fatal error",
+                        action: message,
+                        label: (description ? description : "No description"),
+                        nonInteraction: true
+                    });
+
+                } else {
+                    console.info("Non-fatal error logged: "+message+" ("+(description ? description : "no description")+")", data);
+
+                    // Log the error with Analytics
+                    ReactGA.event({
+                        category: "Non-fatal error",
+                        action: message,
+                        label: (description ? description : "No description"),
+                        nonInteraction: true
+                    });
+                }
+
+                if (description){
+                    message = message+'<p class="description">'+description+'</p>';
+                }
+
                 store.dispatch(uiActions.createNotification(message,'bad'));
-                console.error(action.message, data);
                 break;
 
             case 'CORE_START_SERVICES':

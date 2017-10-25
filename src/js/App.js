@@ -46,6 +46,8 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
+
+		this.props.coreActions.handleException("Test exception", {}, true);
 		
 		// Fire up our services
 		this.props.coreActions.startServices()
