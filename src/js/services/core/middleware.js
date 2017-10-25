@@ -19,7 +19,18 @@ const CoreMiddleware = (function(){
         switch(action.type){
 
             case 'HANDLE_EXCEPTION':
+
+                // Construct meaningful message and description
                 var message = action.message;
+                var description = null;
+                if (action.data.xhr && action.data.xhr.responseText){
+                    var xhr_response = JSON.parse(action.data.xhr.responseText);        
+                    if (xhr_response.error && xhr_response.error.message){
+                        description = xhr_response.error.message;
+                    }
+                }
+
+                // Prepare a summary dump of our state
                 var state = store.getState();
                 var exported_state = {
                     core: Object.assign({},state.core),
@@ -48,25 +59,35 @@ const CoreMiddleware = (function(){
                     {},
                     action.data, 
                     {
+                        message: message,
+                        description: description,
                         state: exported_state
                     }
                 );
 
+                // Log with Raven Sentry
                 Raven.captureException(
-                    new Error(action.message), 
+                    new Error(message), 
                     {
                         extra: data
                     }
                 );
 
-                if (action.data.xhr && action.data.xhr.responseText){
-                    var xhr_response = JSON.parse(action.data.xhr.responseText);        
-                    if (xhr_response.error && xhr_response.error.message){
-                        message = message+'<p class="description">'+xhr_response.error.message+'</p>';
-                    }
-                }
+                // Log with Analytics
+                ReactGA.event({
+                    category: "Error",
+                    action: message,
+                    label: (description ? description : "No description"),
+                    nonInteraction: true
+                });
 
-                store.dispatch(uiActions.createNotification(message,'bad'));
+                store.dispatch(uiActions.createNotification(
+                    message, 
+                    'bad',
+                    null, 
+                    null, 
+                    description
+                ));
                 console.error(action.message, data);
                 break;
 
