@@ -1,0 +1,83 @@
+<html>
+<head>
+
+	<title>Iris</title>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<meta name="mobile-web-app-capable" content="yes" >
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="theme-color" content="#222222" />
+	<meta name="viewport" content="width=device-width">
+
+	<link rel="shortcut icon" type="image/ico" href="/iris/assets/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="/iris/assets/favicon.ico" />
+	<link rel="shortcut-icon" href="/iris/assets/favicon.ico" />
+
+	<!-- Chrome app -->
+	<link rel="manifest" href="/iris/assets/manifest.json">
+
+	<!-- Apple app -->
+	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png">
+	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
+	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
+
+	<!-- Raven Sentry -->
+	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+	<div id="app">
+		<!-- ReactJS application here -->
+	</div>
+
+</body>
+
+<script type="text/javascript">
+
+	// Release details
+	// These are automatically injected by build.sh
+	var build = "1508915786";
+	var version = "3.6.1";
+
+	// Construct the script tag
+    var js = document.createElement("script");
+    js.type = "application/javascript";
+
+    // Construct our css tag
+    var css = document.createElement("link");
+    css.rel = "stylesheet";
+
+    // Check for test mode. This is toggled under Settings > Debug > Test mode
+    var ui = JSON.parse(localStorage.getItem('ui') );
+    var test_mode = (typeof(ui) !== 'undefined' && ui && typeof(ui.test_mode) !== 'undefined' && ui.test_mode);
+
+	// Test mode, use built (but not minified) code
+    if (test_mode){
+	    js.src = '/iris/app.js?v='+build;
+	    css.href = '/iris/app.css?v='+build;
+
+    // Production-grade, minified app
+    } else {
+	    js.src = '/iris/app.min.js?v='+build;
+	    css.href = '/iris/app.min.css?v='+build;
+	 
+		// Initiate error tracking. This helps catch errors early so 
+		// patches can accurately and quickly fix issues.
+		Raven.config(
+			'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
+			{
+				release: version
+			}
+		).install();
+    }
+
+	// And finally inject our CSS/JS tags
+	document.body.appendChild(js);
+	document.body.appendChild(css);
+
+</script>
+
+</html>
+
