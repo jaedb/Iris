@@ -114,7 +114,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             data['request_id'] = request_id
 
             # Log error with Sentry
-            mem.iris.raven_client.captureMessage(error.message)
+            #mem.iris.raven_client.captureMessage(data.message)
 
         # We've been handed an AsyncHTTPClient callback. This is the case
         # when our request calls subsequent external requests (eg Spotify, Genius)
@@ -198,7 +198,7 @@ class HttpHandler(tornado.web.RequestHandler):
             data['status'] = 0
 
             # Log error with Sentry
-            mem.iris.raven_client.captureMessage(data.message)
+            #mem.iris.raven_client.captureMessage(data.message)
 
 
         # We've been handed an AsyncHTTPClient callback. This is the case
