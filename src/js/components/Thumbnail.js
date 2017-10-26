@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
-import LazyLoad from 'react-lazyload'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -44,15 +43,15 @@ class Thumbnail extends React.Component{
 	mapImageSizes(props = this.props){
 
 		// no images
-		if (!this.props.image && !this.props.images){
+		if (!this.props.image && (!this.props.images || this.props.images.length <= 0)){
 			return require('../../assets/no-image.svg')
 
 		// single image
-		}else if (this.props.image){
+		} else if (this.props.image){
 			return this.props.image
 
 		// multiple images
-		}else if (this.props.images && this.props.images.length > 0){
+		} else if (this.props.images && this.props.images.length > 0){
 			var images = helpers.sizedImages(this.props.images )
 			var size = 'medium'
 			if (this.props.size ) size = this.props.size
@@ -76,13 +75,6 @@ class Thumbnail extends React.Component{
 		if (this.props.canZoom){
 			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>
 		}
-
-		/*
-		// It's a great idea, but interferes with huge lists (like Albums library)
-		<LazyLoad height={600} placeholder={<div className="image"></div>}>
-			<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
-		</LazyLoad>
-		*/
 
 		return (
 			<div className={class_name}>

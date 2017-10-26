@@ -162,13 +162,17 @@
 
 	&.image_zoom {
 		.content {
-			text-align: center;
-			padding: 5vh 5%;
+			padding: 100px 5%;
 			width: 90%;
+			height: 100%;
+			box-sizing: border-box;
 
-			img {
-				max-height: 90vh;
-				max-width: 100%;
+			.image {
+				width: 100%;
+				height: 100%;
+				background-size: contain;
+				background-position: 50% 50%;
+				background-repeat: no-repeat;
 			}
 		}
 	}

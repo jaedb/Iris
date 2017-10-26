@@ -122,7 +122,7 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper">
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={ this.props.album.images } />
+					<Thumbnail size="large" canZoom images={this.props.album.images} />
 				</div>
 
 				<div className="title">

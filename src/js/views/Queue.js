@@ -70,7 +70,7 @@ class Queue extends React.Component{
 
 		var link = null
 		if (this.props.current_track.album && this.props.current_track.album.uri){
-			link = '/album/'+this.props.current_track.album.uri;
+			link = '/album/'+this.props.current_track.album.uri.replace(/[/]/g,'%2F');
 		}
 		return (
 			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
