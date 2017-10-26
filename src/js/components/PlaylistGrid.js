@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../helpers'
@@ -41,7 +41,7 @@ class PlaylistGrid extends React.Component{
 								key={playlist.uri}
 								type="playlist"
 								item={playlist}
-								onClick={e => {hashHistory.push(global.baseURL+'playlist/'+playlist.uri)}}
+								onClick={e => {hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(playlist.uri))}}
 								onContextMenu={e => this.handleContextMenu(e,playlist)}
 							/>
 						)}

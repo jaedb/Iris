@@ -5,6 +5,8 @@ import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
+import URILink from './URILink'
+
 import * as helpers from '../helpers'
 
 export default class Track extends React.Component{
@@ -98,6 +100,7 @@ export default class Track extends React.Component{
 		var track = this.props.track
 		var className = 'list-item track'
 		if (this.props.selected) className += ' selected'
+		if (this.props.selected) className += ' selected'
 		if (this.props.can_sort) className += ' can-sort'
 		if (track.type !== undefined) className += ' '+track.type
 		if (track.playing) className += ' playing'
@@ -106,7 +109,7 @@ export default class Track extends React.Component{
 		var album = '-'
 		if (track.album){
 			if (track.album.uri){
-				album = <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link>
+				album = <URILink type="album" uri={track.album.uri}>{track.album.name}</URILink>
 			} else {
 				album = <span>{track.album.name}</span>
 			}
@@ -137,9 +140,9 @@ export default class Track extends React.Component{
 			if (track.added_from && track.added_by){
 				var type = (track.added_from ? helpers.uriType(track.added_from) : null)
 				if (type == 'discover'){
-					var link = <Link to={global.baseURL+'discover/recommendations/'+helpers.getFromUri('seeds',track.added_from)}>discover</Link>
+					var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',track.added_from)}>discover</URILink>
 				} else {
-					var link = <Link to={global.baseURL+type+'/'+track.added_from}>{type}</Link>
+					var link = <URILink type={type} uri={track.added_from}>{type}</URILink>
 				}
 				var added = <span>{track.added_by} <span className="grey-text"> (from {link})</span></span>
 

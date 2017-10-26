@@ -1111,7 +1111,7 @@ const MopidyMiddleware = (function(){
                             {},
                             response,
                             {
-                                uri: decodeURIComponent(response.uri),
+                                uri: response.uri,
                                 type: 'playlist',
                                 is_mopidy: true,
                                 tracks: (response.tracks ? response.tracks : []),
@@ -1602,7 +1602,7 @@ const MopidyMiddleware = (function(){
                                 {},
                                 response[i].album,
                                 {
-                                    uri: decodeURIComponent(response[i].album.uri),
+                                    uri: response[i].album.uri,
                                 }
                             );
                             if (album){
@@ -1630,9 +1630,7 @@ const MopidyMiddleware = (function(){
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
-                        );
-                        artist.uri = decodeURIComponent(artist.uri);
-                        
+                        );                        
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
@@ -1666,7 +1664,6 @@ const MopidyMiddleware = (function(){
                                         is_mopidy: true
                                     }
                                 )
-                                artist.uri = decodeURIComponent(artist.uri);
                                 artists.push(artist)
                             }
                         }
@@ -1698,36 +1695,38 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CURRENTTLTRACK':
                 if (action.data && action.data.track){
+                    var track = helpers.formatTracks(action.data);
 
                     // Fire off our universal track index loader
                     store.dispatch({
                         type: 'TRACK_LOADED',
-                        key: action.data.track.uri,
-                        track: action.data.track
+                        key: track.uri,
+                        track: track
                     });
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (helpers.uriSource(action.data.track.uri) == 'spotify' && store.getState().spotify.enabled){
-                        store.dispatch(spotifyActions.getTrack(action.data.track.uri))
+                    if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
+                        store.dispatch(spotifyActions.getTrack(track.uri))
 
                     // Some other source, rely on Mopidy backends to do their work
                     } else {
-                        store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
+                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
                     }
                 }
 
-                next(action)
-                break
+                next(action);
+                break;
 
             case 'MOPIDY_GET_TRACK':
                 instruct(socket, store, 'library.lookup', action.data )
                     .then(
                         response => {
                             if (response.length > 0){
+                                var track = Object.assign({}, response[0]);
                                 store.dispatch({
                                     type: 'TRACK_LOADED',
-                                    key: decodeURIComponent(action.data.uri),
-                                    track: response[0]
+                                    key: track.uri,
+                                    track: track
                                 });
                             }
                         },
@@ -1753,27 +1752,27 @@ const MopidyMiddleware = (function(){
 
                         var records = []
                         for (var uri in response){
-                            uri = decodeURIComponent(uri);
                             if (response.hasOwnProperty(uri)){
-
                                 var images = response[uri];
                                 images = helpers.digestMopidyImages(store.getState().mopidy, images);
-                                records.push({
-                                    uri: uri,
-                                    images: images
-                                })
+                                if (images && images.length > 0){
+                                    records.push({
+                                        uri: uri,
+                                        images: images
+                                    });
+                                }
                             }
                         }
                         
                         var action_data = {
                             type: (action.context+'_LOADED').toUpperCase()
                         }
-                        action_data[action.context] = records
-                        store.dispatch(action_data)
-                    })
+                        action_data[action.context] = records;
+                        store.dispatch(action_data);
+                    });
 
-                next(action)
-                break
+                next(action);
+                break;
                 
 
             /**

@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
 import Thumbnail from './Thumbnail'
+import URILink from './URILink'
 
 export default class RelatedArtists extends React.Component{
 
@@ -18,10 +18,10 @@ export default class RelatedArtists extends React.Component{
 					this.props.artists.map((artist, index) => {
 						if (artist.uri){
 							return (
-								<Link to={global.baseURL+'artist/'+ artist.uri} key={artist.uri} className="artist">
+								<URILink type="artist" uri={artist.uri} key={artist.uri} className="artist">
 									<Thumbnail circle={true} size="small" images={artist.images} />
 									<span className="name">{ artist.name }</span>
-								</Link>
+								</URILink>
 							)
 						} else {
 							return (

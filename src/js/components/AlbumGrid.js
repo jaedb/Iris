@@ -41,7 +41,7 @@ class AlbumGrid extends React.Component{
 									key={album.uri}
 									type="album"
 									item={album}
-									onClick={e => {hashHistory.push(global.baseURL+'album/'+album.uri)}}
+									onClick={e => {hashHistory.push(global.baseURL+'album/'+encodeURIComponent(album.uri))}}
 									onLoad={() => this.handleLoad(album.uri)}
 									onContextMenu={e => this.handleContextMenu(e,album)}
 								/>

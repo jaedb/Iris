@@ -9,10 +9,10 @@ import Parallax from '../components/Parallax'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
 import Dater from '../components/Dater'
-import FullPlayer from '../components/FullPlayer'
 import ArtistSentence from '../components/ArtistSentence'
 import Thumbnail from '../components/Thumbnail'
 import Header from '../components/Header'
+import URILink from '../components/URILink'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -68,23 +68,28 @@ class Queue extends React.Component{
 			)
 		}
 
-		var link = null
+		var uri = null
 		if (this.props.current_track.album && this.props.current_track.album.uri){
-			link = '/album/'+this.props.current_track.album.uri.replace(/[/]/g,'%2F');
+			uri = this.props.current_track.album.uri;
 		}
 		return (
-			<Link className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'} to={link}>
-				{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
-				<Thumbnail image={image} circle={this.props.radio_enabled} />
-			</Link>
+			<URILink
+				className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}
+				type="album" 
+				uri={uri}>
+					{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
+					<Thumbnail image={image} circle={this.props.radio_enabled} />
+			</URILink>
 		)
 	}
 
 	render(){
 		var image = null
-		if (this.props.current_track && this.props.current_track.images !== undefined){
-			image = helpers.sizedImages(this.props.current_track.images)
-			image = image.large
+		if (this.props.current_track){
+			if (this.props.current_track.images !== undefined && this.props.current_track.images){
+				image = helpers.sizedImages(this.props.current_track.images)
+				image = image.large
+			}
 		}
 
 		var options = (
@@ -118,7 +123,7 @@ class Queue extends React.Component{
 					<div className="current-track">
 						{ this.renderArtwork(image) }
 						<div className="title">
-							{this.props.current_track ? <Link to={global.baseURL+'track/'+this.props.current_track.uri}>{this.props.current_track.name}</Link> : <span>-</span>}
+							{this.props.current_track ? <URILink type="track" uri={this.props.current_track.uri}>{this.props.current_track.name}</URILink> : <span>-</span>}
 						</div>
 						{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
 					</div>
@@ -154,7 +159,7 @@ const mapStateToProps = (state, ownProps) => {
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		current_tracklist: state.core.current_tracklist,
-		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null)
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track] !== undefined ? state.core.tracks[state.core.current_track] : null)
 	}
 }
 

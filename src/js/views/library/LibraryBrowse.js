@@ -55,31 +55,11 @@ class LibraryBrowse extends React.Component{
 			if (directory[i].type && directory[i].type == 'track'){
 				tracks.push(directory[i] )
 			} else {
-				var uri = directory[i].uri
-
-				// If we've navigated to a handled asset type, use our standard views
-				switch (helpers.uriType(uri)){
-					case 'album':
-						uri = global.baseURL+'album/'+uri
-						break
-
-					case 'artist':
-						uri = global.baseURL+'artist/'+uri
-						break
-
-					case 'playlist':
-						uri = global.baseURL+'playlist/'+uri
-						break
-
-					default:
-						uri = global.baseURL+"library/browse/"+uri.replace(/[/]/g,'%2F')
-				}
-
 				folders.push(Object.assign(
 					{},
 					directory[i],
 					{
-						uri: uri
+						uri: directory[i].uri
 					}
 				))
 			}
@@ -91,119 +71,123 @@ class LibraryBrowse extends React.Component{
 		}
 	}
 
-	render(){
-		if (typeof(this.props.params.uri) !== 'undefined' && this.props.params.uri){
-			
-			var title = 'Browse';
-			var uri_exploded = this.props.params.uri.split(':');
-			if (uri_exploded.length > 0){
-				title = uri_exploded[0];
-				title = title.charAt(0).toUpperCase() + title.slice(1);
-			}
+	renderDirectory(){
+		var title = 'Browse';
+		var uri_exploded = this.props.params.uri.split(':');
+		if (uri_exploded.length > 0){
+			title = uri_exploded[0];
+			title = title.charAt(0).toUpperCase() + title.slice(1);
+		}
 
-			var options = null;
-			if (this.props.params.uri != 'local:directory'){
-				options = (
-					<button className="no-hover" onClick={ () => window.history.back() }>
-						<FontAwesome name="reply" />&nbsp;
-						Back
-					</button>
-				)
-			}
+		var options = (
+			<button className="no-hover" onClick={ () => window.history.back() }>
+				<FontAwesome name="reply" />&nbsp;
+				Back
+			</button>
+		);
 
-			if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
-				return (
-					<div className="view library-local-view">
-						<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
-						<div className="body-loader loading">
-							<div className="loader"></div>
-						</div>
-					</div>
-				)
-			}
-
-			var items = this.arrange_directory(this.props.directory )
-
+		if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
 			return (
 				<div className="view library-local-view">
 					<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
-					<section className="content-wrapper">
-						<List
-							columns={[{ name: 'name', width: '100'}]} 
-							rows={items.folders} 
-							className="library-local-directory-list" />
-						<TrackList 
-							tracks={items.tracks} 
-							className="library-local-track-list" 
-							noheader />
-					</section>
+					<div className="body-loader loading">
+						<div className="loader"></div>
+					</div>
 				</div>
-			);
+			)
+		}
 
-		} else {				
+		var items = this.arrange_directory(this.props.directory);
 
-			var grid_items = []
-			if (this.props.directory){
-				for (var i = 0; i < this.props.directory.length; i++){
-					var directory = this.props.directory[i]
+		return (
+			<div className="view library-local-view">
+				<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
+				<section className="content-wrapper">
+					<List
+						columns={[{ name: 'name', width: '100'}]} 
+						rows={items.folders} 
+						className="library-local-directory-list"
+						link_prefix={global.baseURL+'library/browse/'}
+					/>
+					<TrackList 
+						tracks={items.tracks} 
+						className="library-local-track-list" 
+						noheader />
+				</section>
+			</div>
+		);
+	}
 
-					switch (directory.name){
-						case 'Files':
-							directory.icons = ['assets/backgrounds/browse-folders.jpg']
-							break
+	renderIndex(){
+		var grid_items = []
+		if (this.props.directory){
+			for (var i = 0; i < this.props.directory.length; i++){
+				var directory = this.props.directory[i]
 
-						case 'Local media':
-							directory.icons = ['assets/backgrounds/browse-folders.jpg']
-							break
+				switch (directory.name){
+					case 'Files':
+						directory.icons = ['assets/backgrounds/browse-folders.jpg']
+						break
 
-						case 'Spotify':
-						case 'Spotify Browse':
-							directory.icons = ['assets/backgrounds/browse-spotify.jpg']
-							break
+					case 'Local media':
+						directory.icons = ['assets/backgrounds/browse-folders.jpg']
+						break
 
-						case 'Spotify Tunigo':
-						case 'Tunigo':
-							directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
-							break
+					case 'Spotify':
+					case 'Spotify Browse':
+						directory.icons = ['assets/backgrounds/browse-spotify.jpg']
+						break
 
-						case 'TuneIn':
-							directory.icons = ['assets/backgrounds/browse-tunein.jpg']
-							break
+					case 'Spotify Tunigo':
+					case 'Tunigo':
+						directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
+						break
 
-						default:
-							directory.icons = ['assets/backgrounds/browse-default.jpg']
-					}
+					case 'TuneIn':
+						directory.icons = ['assets/backgrounds/browse-tunein.jpg']
+						break
 
-					grid_items.push({
-						name: directory.name,
-						link: global.baseURL+'library/browse/'+directory.uri.replace(/[/]/g,'%2F'),
-						icons: directory.icons
-					})
+					default:
+						directory.icons = ['assets/backgrounds/browse-default.jpg']
 				}
-			}
 
-			return (
-				<div className="view library-local-view">
-					<Header icon="folder" title="Browse" />
-					<section className="content-wrapper">
-						<div className="grid category-grid">				
-							{
-								grid_items.map(
-									(item, index) => {
-										return (
-											<GridItem 
-												item={item} 
-												key={index} 
-												onClick={e => hashHistory.push(item.link)}
-											/>
-										)
-									}
-								)
-							}
-						</div>
-					</section>
-				</div>
-			);
+				grid_items.push({
+					name: directory.name,
+					link: global.baseURL+'library/browse/'+encodeURIComponent(directory.uri),
+					icons: directory.icons
+				})
+			}
+		}
+
+		return (
+			<div className="view library-local-view">
+				<Header icon="folder" title="Browse" />
+				<section className="content-wrapper">
+					<div className="grid category-grid">				
+						{
+							grid_items.map(
+								(item, index) => {
+									return (
+										<GridItem 
+											item={item} 
+											key={index} 
+											onClick={e => hashHistory.push(item.link)}
+										/>
+									)
+								}
+							)
+						}
+					</div>
+				</section>
+			</div>
+		);
+	}
+
+	render(){
+		if (this.props.params.uri !== undefined && this.props.params.uri){
+			return this.renderDirectory();
+		} else {
+			return this.renderIndex();
 		}
 	}
 }

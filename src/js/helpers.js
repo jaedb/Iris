@@ -224,6 +224,13 @@ export let formatTracks = function(tracks){
         	track.date = track.release_date;
         }
 
+	    // Copy images from albums (if applicable)
+	    if (track.album && track.album.images){
+	    	if (!track.images || track.images.length > 0){
+	    		track.images = track.album.images;
+	    	}
+	    }
+
         formatted.push(track);
     }
 
