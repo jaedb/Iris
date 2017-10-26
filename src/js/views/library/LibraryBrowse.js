@@ -40,11 +40,10 @@ class LibraryBrowse extends React.Component{
 	loadDirectory(props = this.props){
 		if (props.mopidy_connected){
 			var uri = null
-			if (typeof(props.params.uri) !== 'undefined'){
-				uri = decodeURIComponent(props.params.uri)
+			if (props.params.uri !== undefined){
+				uri = props.params.uri;
 			}
-
-			this.props.mopidyActions.getDirectory(uri)
+			this.props.mopidyActions.getDirectory(uri);
 		}
 	}
 
@@ -73,7 +72,7 @@ class LibraryBrowse extends React.Component{
 						break
 
 					default:
-						uri = global.baseURL+"library/browse/"+encodeURIComponent(uri)
+						uri = global.baseURL+"library/browse/"+uri.replace(/[/]/g,'%2F')
 				}
 
 				folders.push(Object.assign(
@@ -177,7 +176,7 @@ class LibraryBrowse extends React.Component{
 
 					grid_items.push({
 						name: directory.name,
-						link: global.baseURL+'library/browse/'+encodeURIComponent(directory.uri),
+						link: global.baseURL+'library/browse/'+directory.uri.replace(/[/]/g,'%2F'),
 						icons: directory.icons
 					})
 				}

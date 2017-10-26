@@ -229,10 +229,11 @@ class Track extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
+	var uri = ownProps.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		track: (state.core.tracks && state.core.tracks[ownProps.params.uri] !== undefined ? state.core.tracks[ownProps.params.uri] : false),
+		track: (state.core.tracks && state.core.tracks[uri] !== undefined ? state.core.tracks[uri] : false),
 		tracks: state.core.tracks,
 		artists: state.core.artists,
 		albums: state.core.albums,

@@ -35,7 +35,7 @@ class Playlist extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.loadPlaylist(nextProps )
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
 				this.loadPlaylist(nextProps )
 			}
 		}
@@ -207,8 +207,7 @@ class Playlist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri
-	uri = uri.replace(' ','%20')
+	var uri = ownProps.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,

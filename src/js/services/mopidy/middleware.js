@@ -1111,19 +1111,22 @@ const MopidyMiddleware = (function(){
                             {},
                             response,
                             {
+                                uri: decodeURIComponent(response.uri),
                                 type: 'playlist',
                                 is_mopidy: true,
-                                tracks: (response.tracks ? response.tracks : [] ),
-                                tracks_total: (response.tracks ? response.tracks.length : [] )
+                                tracks: (response.tracks ? response.tracks : []),
+                                tracks_total: (response.tracks ? response.tracks.length : [])
                             }
                         )
 
                         // tracks? get the full track objects
-                        if (playlist.tracks.length > 0 ) store.dispatch({
-                            type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
-                            tracks: playlist.tracks, 
-                            key: response.uri
-                        })
+                        if (playlist.tracks.length > 0){
+                            store.dispatch({
+                                type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
+                                tracks: playlist.tracks, 
+                                key: playlist.uri
+                            });
+                        }
 
                         store.dispatch({ 
                             type: 'PLAYLIST_LOADED',
@@ -1137,7 +1140,7 @@ const MopidyMiddleware = (function(){
                 var tracks = Object.assign([], action.tracks)
                 var uris = helpers.arrayOf('uri',tracks)
 
-                instruct(socket, store, 'library.lookup', { uris: uris } )
+                instruct(socket, store, 'library.lookup', { uris: uris })
                     .then(response => {
                         for(var uri in response){
                             if (response.hasOwnProperty(uri)){
@@ -1595,14 +1598,20 @@ const MopidyMiddleware = (function(){
                                           
                         var albums = []
                         for(var i = 0; i < response.length; i++){
-                            var album = response[i].album;
+                            var album = Object.assign(
+                                {},
+                                response[i].album,
+                                {
+                                    uri: decodeURIComponent(response[i].album.uri),
+                                }
+                            );
                             if (album){
                                 function getByURI(albumToCheck){
                                     return album.uri == albumToCheck.uri
                                 }
                                 var existingAlbum = albums.find(getByURI);
                                 if (!existingAlbum){
-                                    albums.push(album)
+                                    albums.push(album);
                                 }
                             }
                         }
@@ -1621,7 +1630,8 @@ const MopidyMiddleware = (function(){
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
-                        )
+                        );
+                        artist.uri = decodeURIComponent(artist.uri);
                         
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
@@ -1656,6 +1666,7 @@ const MopidyMiddleware = (function(){
                                         is_mopidy: true
                                     }
                                 )
+                                artist.uri = decodeURIComponent(artist.uri);
                                 artists.push(artist)
                             }
                         }
@@ -1663,7 +1674,7 @@ const MopidyMiddleware = (function(){
                         store.dispatch({ 
                             type: 'ARTISTS_LOADED',
                             artists: artists
-                        })
+                        });
 
                         // Re-run any consequential processes in 100ms. This allows a small window for other
                         // server requests before our next batch. It's a little crude but it means the server isn't
@@ -1715,7 +1726,7 @@ const MopidyMiddleware = (function(){
                             if (response.length > 0){
                                 store.dispatch({
                                     type: 'TRACK_LOADED',
-                                    key: action.data.uri,
+                                    key: decodeURIComponent(action.data.uri),
                                     track: response[0]
                                 });
                             }
@@ -1742,6 +1753,7 @@ const MopidyMiddleware = (function(){
 
                         var records = []
                         for (var uri in response){
+                            uri = decodeURIComponent(uri);
                             if (response.hasOwnProperty(uri)){
 
                                 var images = response[uri];
@@ -1771,8 +1783,8 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_DIRECTORY':
                 store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false })
-                instruct(socket, store, 'library.browse', action.data )
-                    .then(response => {                    
+                instruct(socket, store, 'library.browse', action.data)
+                    .then(response => {
                         store.dispatch({ 
                             type: 'MOPIDY_DIRECTORY_LOADED',
                             data: response
