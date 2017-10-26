@@ -30,7 +30,7 @@ class Artist extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadArtist()
+		this.loadArtist();
 	}
 
 	componentWillReceiveProps(nextProps){

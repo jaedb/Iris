@@ -22,12 +22,15 @@ const CoreMiddleware = (function(){
 
                 // Construct meaningful message and description
                 var message = action.message;
-                var description = null;
-                if (action.data.xhr && action.data.xhr.responseText){
+                if (action.description){
+                    var description = action.description;
+                } else if (action.data.xhr && action.data.xhr.responseText){
                     var xhr_response = JSON.parse(action.data.xhr.responseText);        
                     if (xhr_response.error && xhr_response.error.message){
-                        description = xhr_response.error.message;
+                        var description = xhr_response.error.message;
                     }
+                } else {
+                    var description = null;
                 }
 
                 // Prepare a summary dump of our state
@@ -77,7 +80,7 @@ const CoreMiddleware = (function(){
                 ReactGA.event({
                     category: "Error",
                     action: message,
-                    label: (description ? description : "No description"),
+                    label: description,
                     nonInteraction: true
                 });
 
@@ -88,7 +91,7 @@ const CoreMiddleware = (function(){
                     null, 
                     description
                 ));
-                console.error(action.message, data);
+                console.error(message, description, data);
                 break;
 
             case 'CORE_START_SERVICES':
