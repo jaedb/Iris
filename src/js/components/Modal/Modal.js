@@ -145,7 +145,7 @@ class Modal extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track] !== undefined ? state.core.tracks[state.core.current_track] : null),
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
 		volume: state.mopidy.volume,
