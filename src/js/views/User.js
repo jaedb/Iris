@@ -111,12 +111,13 @@ class User extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
+	var uri = ownProps.params.uri;
 	return {
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
 		me: state.spotify.me,
 		playlists: state.core.playlists,
-		user: (state.core.users && state.core.users[ownProps.params.uri] !== undefined ? state.core.users[ownProps.params.uri] : false),
+		user: (state.core.users && state.core.users[uri] !== undefined ? state.core.users[uri] : false),
 		users: state.core.users
 	};
 }

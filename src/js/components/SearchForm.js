@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
@@ -38,19 +38,19 @@ class SearchForm extends React.Component{
 		switch (helpers.uriType(this.state.query)){
 
 			case 'album':
-				hashHistory.push(global.baseURL+'album/'+this.state.query)
+				hashHistory.push(global.baseURL+'album/'+encodeURIComponent(this.state.query))
 				break
 
 			case 'artist':
-				hashHistory.push(global.baseURL+'artist/'+this.state.query)
+				hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(this.state.query))
 				break
 
 			case 'playlist':
-				hashHistory.push(global.baseURL+'playlist/'+this.state.query)
+				hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(this.state.query))
 				break
 
 			default:
-				hashHistory.push(global.baseURL+'search/iris:search:'+this.state.query)
+				hashHistory.push(global.baseURL+'search/iris:search:'+encodeURIComponent(this.state.query))
 				break
 		}
 

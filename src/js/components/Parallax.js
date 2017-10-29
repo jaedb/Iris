@@ -61,16 +61,16 @@ export default class Parallax extends React.Component{
 
 	componentWillReceiveProps(nextProps){
 		if ((!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
-			this._loading = true
-			this.setState({ url: nextProps.image, image: false, loading: true })
-			this.loadImage(nextProps.image )
+			this._loading = true;
+			this.setState({ url: nextProps.image, image: false, loading: true });
+			this.loadImage(nextProps.image)
 				.then(
 					response => {
 						if (this._mounted){
-							this._loading = false
-							this._loaded = true
-							this.setState({ url: nextProps.image, image: response, loading: false })
-							this.updateCanvas(response)
+							this._loading = false;
+							this._loaded = true;
+							this.setState({ url: nextProps.image, image: response, loading: false });
+							this.updateCanvas(response);
 						}
 					}
 				)
@@ -96,9 +96,13 @@ export default class Parallax extends React.Component{
 	loadImage(url){
 		return new Promise((resolve, reject) => {
 
-			var imageObject = new Image()
-			imageObject.src = url
-			imageObject.crossOrigin = 'anonymous'
+			var imageObject = new Image();
+			imageObject.src = url;
+
+			// This seems to prevent Dirble images from loading.
+			// Other domains don't seem to mind any more, so perhaps we can remove for good.
+			// TODO: Re-test the nature of crossorigin images
+			// imageObject.crossOrigin = 'anonymous';
 
 			imageObject.onload = function(){
 				var image = {
@@ -108,7 +112,7 @@ export default class Parallax extends React.Component{
 					original_height: imageObject.naturalHeight,
 					object: imageObject
 				}
-				resolve(image )
+				resolve(image);
 			}
 		})
 	}

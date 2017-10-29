@@ -30,7 +30,7 @@ class Artist extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadArtist()
+		this.loadArtist();
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -258,10 +258,11 @@ class Artist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
+	var uri = ownProps.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		artist: (state.core.artists && typeof(state.core.artists[ownProps.params.uri]) !== 'undefined' ? state.core.artists[ownProps.params.uri] : false ),
+		artist: (state.core.artists && state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),
 		artists: (state.core.artists ? state.core.artists : []),
 		spotify_library_artists: state.spotify.library_artists,
 		local_library_artists: state.mopidy.library_artists,

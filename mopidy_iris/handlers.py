@@ -88,10 +88,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 getattr(mem.iris, message['method'])(data=data, callback=lambda response, error=False: self.handle_response(response=response, error=error, request_id=request_id))
 
             else:
-                self.handle_response(error={'message': 'Method "'+message['method']+'" does not exist'})
+                self.handle_response(error={'message': 'Method "'+message['method']+'" does not exist'}, request_id=request_id)
                 return
         else:
-            self.handle_response(error={'message': 'Method key missing from request'})
+            self.handle_response(error={'message': 'Method key missing from request'}, request_id=request_id)
             return
 
 

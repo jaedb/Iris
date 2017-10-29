@@ -2,10 +2,10 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
+import URILink from './URILink'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -39,9 +39,10 @@ class ArtistGrid extends React.Component{
 						this.props.artists.map(
 							(artist, index) => {
 								return (
-									<Link 
+									<URILink 
 										className="grid-item"
-										to={global.baseURL+'artist/'+artist.uri}
+										type="artist"
+										uri={artist.uri}
 										key={index} 
 										onContextMenu={e => this.handleContextMenu(e,artist)}>
 											<Thumbnail size="medium" images={artist.images} />
@@ -53,7 +54,7 @@ class ArtistGrid extends React.Component{
 												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
 												{artist.albums_uris && !artist.followers ? artist.albums_uris.length+' albums' : null}
 											</div>
-									</Link>
+									</URILink>
 								)
 							}
 						)

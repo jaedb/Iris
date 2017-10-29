@@ -512,7 +512,7 @@ class ContextMenu extends React.Component{
 		var copy_uris = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.copyURIs(e)}>
-					<span className="label">Copy URIs</span>
+					<span className="label">Copy URI{context.items_count > 1 ? 's' : ''}</span>
 				</a>
 			</span>
 		)

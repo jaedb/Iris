@@ -128,7 +128,7 @@ export function createBrowserNotification(data){
     }
 }
 
-export function createNotification(content, type = 'default', key = null, title = null, sticky = false){
+export function createNotification(content, type = 'default', key = null, title = null, description = null, sticky = false){
     if (!key){
         key = helpers.generateGuid()
     }
@@ -138,6 +138,7 @@ export function createNotification(content, type = 'default', key = null, title 
             key: key,
             type: type,
             title: title,
+            description: description,
             content: content,
             sticky: sticky
         }

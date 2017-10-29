@@ -22,10 +22,11 @@ class ImageZoomModal extends React.Component{
 	}
 
 	render(){
+		if (!this.props.data.url){
+			return null;
+		}
 		return (
-			<div className="image-zoom-modal">
-				{this.props.data.url ? <img src={this.props.data.url} /> : null }
-			</div>
+			<div className="image" style={{backgroundImage: "url("+this.props.data.url+")"}}></div>
 		)
 	}
 }

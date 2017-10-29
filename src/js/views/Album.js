@@ -122,7 +122,7 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper">
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={ this.props.album.images } />
+					<Thumbnail size="large" canZoom images={this.props.album.images} />
 				</div>
 
 				<div className="title">
@@ -164,11 +164,12 @@ class Album extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
+	var uri = ownProps.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,
-		album: (state.core.albums && typeof(state.core.albums[ownProps.params.uri]) !== 'undefined' ? state.core.albums[ownProps.params.uri] : false ),
+		album: (state.core.albums && state.core.albums[uri] !== undefined ? state.core.albums[uri] : false ),
 		albums: state.core.albums,
 		spotify_library_albums: state.spotify.library_albums,
 		local_library_albums: state.mopidy.library_albums,

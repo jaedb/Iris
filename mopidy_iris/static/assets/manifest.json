@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2.4,
+  "short_name": "Iris",
+  "name": "",
+  "icons": [
+    {
+      "src": "/iris/assets/logo-app-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/iris/assets/logo-icon-256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/iris/assets/logo-full-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/iris/index.html",
+  "background_color": "#08d58f",
+  "theme_color": "#181818",
+  "display": "standalone",
+  "app": {
+    "background": {}
+  }
+}

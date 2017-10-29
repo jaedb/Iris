@@ -26,12 +26,17 @@ export default function reducer(core = {}, action){
                     var metadata = {}
                 }
 
+                var current_tlid = null;
+                if (core.current_track && core.tracks && core.tracks[core.current_track] !== undefined && core.tracks[core.current_track].tlid !== undefined){
+                    current_tlid = core.tracks[core.current_track].tlid;
+                }
+
                 var track = Object.assign(
                     {}, 
                     tltrack,
                     metadata,
                     {
-                        playing: (core.current_track && tltrack.tlid == core.current_track.tlid )
+                        playing: (tltrack.tlid == current_tlid)
                     })
                 tracklist.push(track)
             }
@@ -53,17 +58,9 @@ export default function reducer(core = {}, action){
                 )
             }
 
-            var current_track = Object.assign(
-                {},
-                action.data.track,
-                {
-                    tlid: action.data.tlid
-                }
-            )
-
             return Object.assign({}, core, {
                 current_tracklist: current_tracklist,
-                current_track: current_track
+                current_track: action.data.track.uri
             });
 
         case 'TRACK_LOADED':

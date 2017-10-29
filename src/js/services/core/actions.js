@@ -43,10 +43,11 @@ export function startSearch(search_type, query, only_mopidy = false){
 	}
 }
 
-export function handleException(message, data = {}){
+export function handleException(message, data = {}, description = null){
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
+        description: description,
         data: data
     }
 }

@@ -24,7 +24,7 @@ export default class CategoryGrid extends React.Component{
 								key={category.id}
 								type="category"
 								item={category}
-								onClick={e => {hashHistory.push(global.baseURL+'discover/categories/'+category.id)}}
+								onClick={e => {hashHistory.push(global.baseURL+'discover/categories/'+encodeURIComponent(category.id))}}
 							/>
 						)
 					})

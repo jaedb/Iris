@@ -18,23 +18,28 @@ const PusherMiddleware = (function(){
     // handle all manner of socket messages
     const handleMessage = (ws, store, message) => {
 
-        // if debug enabled
-        if (store.getState().ui.log_pusher) console.log('Pusher', message)
-
-        // error
-        if (message.status == 0){
-            store.dispatch(coreActions.handleException(
-                'Pusher: '+message.message, 
-                message
-            ));
+        if (store.getState().ui.log_pusher){
+            console.log('Pusher', message);
         }
 
-        // response to a request [we] made
-        if (message.request_id !== undefined && message.request_id){            
-            if (typeof(deferredRequests[ message.request_id ]) !== 'undefined'){
-                store.dispatch(uiActions.stopLoading(message.request_id))
-                deferredRequests[ message.request_id ].resolve(message )
+        // Response with request_id
+        if (message.request_id !== undefined && message.request_id){
 
+            // Response matches a pending request
+            if (deferredRequests[message.request_id] !== undefined){
+
+                store.dispatch(uiActions.stopLoading(message.request_id));
+
+                // Response is an error
+                if (message.status <= 0){
+                    deferredRequests[message.request_id].reject(message);
+
+                // Successful response
+                } else {
+                    deferredRequests[message.request_id].resolve(message);
+                }
+
+            // Hmm, the response doesn't appear to be for us?
             } else {
                 store.dispatch(coreActions.handleException(
                     'Pusher: Response received with no matching request', 
@@ -42,11 +47,19 @@ const PusherMiddleware = (function(){
                 ));
             }
 
-        // general message
-        // this can be client-client, server-client or a broadcast to many clients
+        // General broadcast received
         } else {
-            message.type = 'PUSHER_'+message.type.toUpperCase()
-            store.dispatch(message)
+
+            // Broadcast of an error
+            if (message.status !== undefined && message.status <= 0){
+                store.dispatch(coreActions.handleException(
+                    'Pusher: '+message.message, 
+                    message
+                ));
+            } else {
+                message.type = 'PUSHER_'+message.type.toUpperCase();
+                store.dispatch(message);  
+            }
         }
     }
 
@@ -59,9 +72,9 @@ const PusherMiddleware = (function(){
                 data: data,
                 request_id: request_id
             }
-            socket.send(JSON.stringify(message) )
+            socket.send(JSON.stringify(message));
 
-            store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method))
+            store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method));
 
             // Start our 15 second timeout
             var timeout = setTimeout(
@@ -69,14 +82,14 @@ const PusherMiddleware = (function(){
                     store.dispatch(uiActions.stopLoading(request_id));
                     reject({message: "Request timed out", method: method, data: data});
                 },
-                30000
+                5000 // 30000
             );
             
             // add query to our deferred responses
             deferredRequests[request_id] = {
                 resolve: resolve,
                 reject: reject
-            }
+            };
         })
     }
 
@@ -112,7 +125,7 @@ const PusherMiddleware = (function(){
                         type: 'PUSHER_DISCONNECTED'
                     })
 
-                    // attempt to reconnect ever 5 seconds
+                    // attempt to reconnect every 5 seconds
                     setTimeout(() => {
                         store.dispatch(pusherActions.connect())
                     }, 5000);
@@ -147,7 +160,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 request(store, 'get_version')
                     .then(
                         response => {
@@ -164,7 +177,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 request(store, 'get_radio')
                     .then(
                         response => {
@@ -182,7 +195,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
 
                 store.dispatch(pusherActions.getQueueMetadata())
 
@@ -190,7 +203,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                request(action )
+                request(action)
                     .then(
                         response => {
                             store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
@@ -201,7 +214,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 break
 
             case 'PUSHER_DELIVER_MESSAGE':
@@ -216,7 +229,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 break
 
             case 'PUSHER_DELIVER_BROADCAST':
@@ -236,7 +249,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 break;
 
             case 'PUSHER_ADD_QUEUE_METADATA':
@@ -272,7 +285,7 @@ const PusherMiddleware = (function(){
                                 error
                             ));
                         }
-                    )
+                    );
                 return next(action);
                 break;
 
@@ -280,43 +293,43 @@ const PusherMiddleware = (function(){
                 request(store, 'set_username', {
                     username: action.username
                 })
-                .then(
-                    response => {
-                        if (response.error){
-                            console.error(response.error)
-                            return false
+                    .then(
+                        response => {
+                            if (response.error){
+                                console.error(response.error)
+                                return false
+                            }
+                            response.type = 'PUSHER_USERNAME_CHANGED'
+                            store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not set username',
+                                error
+                            ));
                         }
-                        response.type = 'PUSHER_USERNAME_CHANGED'
-                        store.dispatch(response)
-                    },
-                    error => {                            
-                        store.dispatch(coreActions.handleException(
-                            'Could not set username',
-                            error
-                        ));
-                    }
-                )
+                    );
                 return next(action);
                 break;
 
             case 'PUSHER_GET_CONNECTIONS':
                 request(store, 'get_connections')
-                .then(
-                    response => {             
-                        if (response.error){
-                            console.error(response.error)
-                            return false
+                    .then(
+                        response => {             
+                            if (response.error){
+                                console.error(response.error)
+                                return false
+                            }
+                            response.type = 'PUSHER_CONNECTIONS'
+                            store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load connections',
+                                error
+                            ));
                         }
-                        response.type = 'PUSHER_CONNECTIONS'
-                        store.dispatch(response)
-                    },
-                    error => {                            
-                        store.dispatch(coreActions.handleException(
-                            'Could not load connections',
-                            error
-                        ));
-                    }
-                )
+                    );
                 return next(action);
                 break
 
@@ -426,17 +439,18 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_DEBUG':
                 request(store, action.message.method, action.message.data )
-                .then(
-                    response => {
-                        store.dispatch({type: 'DEBUG', response: response})
-                    },
-                    error => {                            
-                        store.dispatch(coreActions.handleException(
-                            'Could not debug',
-                            error
-                        ));
-                    }
-                )
+                    .then(
+                        response => {
+                            store.dispatch({type: 'DEBUG', response: response})
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not debug',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
                 break;
 
             case 'PUSHER_ERROR':

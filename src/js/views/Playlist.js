@@ -35,7 +35,7 @@ class Playlist extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.loadPlaylist(nextProps )
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
 				this.loadPlaylist(nextProps )
 			}
 		}
@@ -180,7 +180,7 @@ class Playlist extends React.Component{
 						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} playlist</span></li> : null }
 						{ this.props.playlist.owner && !this.props.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-						{ this.props.playlist.last_modified ? <li><Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
+						{ this.props.playlist.last_modified ? <li>Edited <Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
 						<li>
 							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
 							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
@@ -207,8 +207,7 @@ class Playlist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri
-	uri = uri.replace(' ','%20')
+	var uri = ownProps.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,

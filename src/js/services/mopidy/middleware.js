@@ -1111,19 +1111,22 @@ const MopidyMiddleware = (function(){
                             {},
                             response,
                             {
+                                uri: response.uri,
                                 type: 'playlist',
                                 is_mopidy: true,
-                                tracks: (response.tracks ? response.tracks : [] ),
-                                tracks_total: (response.tracks ? response.tracks.length : [] )
+                                tracks: (response.tracks ? response.tracks : []),
+                                tracks_total: (response.tracks ? response.tracks.length : [])
                             }
                         )
 
                         // tracks? get the full track objects
-                        if (playlist.tracks.length > 0 ) store.dispatch({
-                            type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
-                            tracks: playlist.tracks, 
-                            key: response.uri
-                        })
+                        if (playlist.tracks.length > 0){
+                            store.dispatch({
+                                type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
+                                tracks: playlist.tracks, 
+                                key: playlist.uri
+                            });
+                        }
 
                         store.dispatch({ 
                             type: 'PLAYLIST_LOADED',
@@ -1137,7 +1140,7 @@ const MopidyMiddleware = (function(){
                 var tracks = Object.assign([], action.tracks)
                 var uris = helpers.arrayOf('uri',tracks)
 
-                instruct(socket, store, 'library.lookup', { uris: uris } )
+                instruct(socket, store, 'library.lookup', { uris: uris })
                     .then(response => {
                         for(var uri in response){
                             if (response.hasOwnProperty(uri)){
@@ -1595,14 +1598,20 @@ const MopidyMiddleware = (function(){
                                           
                         var albums = []
                         for(var i = 0; i < response.length; i++){
-                            var album = response[i].album;
+                            var album = Object.assign(
+                                {},
+                                response[i].album,
+                                {
+                                    uri: response[i].album.uri,
+                                }
+                            );
                             if (album){
                                 function getByURI(albumToCheck){
                                     return album.uri == albumToCheck.uri
                                 }
                                 var existingAlbum = albums.find(getByURI);
                                 if (!existingAlbum){
-                                    albums.push(album)
+                                    albums.push(album);
                                 }
                             }
                         }
@@ -1621,8 +1630,7 @@ const MopidyMiddleware = (function(){
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
-                        )
-                        
+                        );                        
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
@@ -1663,7 +1671,7 @@ const MopidyMiddleware = (function(){
                         store.dispatch({ 
                             type: 'ARTISTS_LOADED',
                             artists: artists
-                        })
+                        });
 
                         // Re-run any consequential processes in 100ms. This allows a small window for other
                         // server requests before our next batch. It's a little crude but it means the server isn't
@@ -1687,36 +1695,38 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CURRENTTLTRACK':
                 if (action.data && action.data.track){
+                    var track = helpers.formatTracks(action.data);
 
                     // Fire off our universal track index loader
                     store.dispatch({
                         type: 'TRACK_LOADED',
-                        key: action.data.track.uri,
-                        track: action.data.track
+                        key: track.uri,
+                        track: track
                     });
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (helpers.uriSource(action.data.track.uri) == 'spotify' && store.getState().spotify.enabled){
-                        store.dispatch(spotifyActions.getTrack(action.data.track.uri))
+                    if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
+                        store.dispatch(spotifyActions.getTrack(track.uri))
 
                     // Some other source, rely on Mopidy backends to do their work
                     } else {
-                        store.dispatch(mopidyActions.getImages('tracks',[action.data.track.uri]))
+                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
                     }
                 }
 
-                next(action)
-                break
+                next(action);
+                break;
 
             case 'MOPIDY_GET_TRACK':
                 instruct(socket, store, 'library.lookup', action.data )
                     .then(
                         response => {
                             if (response.length > 0){
+                                var track = Object.assign({}, response[0]);
                                 store.dispatch({
                                     type: 'TRACK_LOADED',
-                                    key: action.data.uri,
-                                    track: response[0]
+                                    key: track.uri,
+                                    track: track
                                 });
                             }
                         },
@@ -1743,25 +1753,26 @@ const MopidyMiddleware = (function(){
                         var records = []
                         for (var uri in response){
                             if (response.hasOwnProperty(uri)){
-
                                 var images = response[uri];
                                 images = helpers.digestMopidyImages(store.getState().mopidy, images);
-                                records.push({
-                                    uri: uri,
-                                    images: images
-                                })
+                                if (images && images.length > 0){
+                                    records.push({
+                                        uri: uri,
+                                        images: images
+                                    });
+                                }
                             }
                         }
                         
                         var action_data = {
                             type: (action.context+'_LOADED').toUpperCase()
                         }
-                        action_data[action.context] = records
-                        store.dispatch(action_data)
-                    })
+                        action_data[action.context] = records;
+                        store.dispatch(action_data);
+                    });
 
-                next(action)
-                break
+                next(action);
+                break;
                 
 
             /**
@@ -1771,8 +1782,8 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_DIRECTORY':
                 store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false })
-                instruct(socket, store, 'library.browse', action.data )
-                    .then(response => {                    
+                instruct(socket, store, 'library.browse', action.data)
+                    .then(response => {
                         store.dispatch({ 
                             type: 'MOPIDY_DIRECTORY_LOADED',
                             data: response
