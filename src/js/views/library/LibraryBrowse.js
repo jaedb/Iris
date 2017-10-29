@@ -47,7 +47,12 @@ class LibraryBrowse extends React.Component{
 		}
 	}
 
-	arrange_directory(directory){
+	playAll(e){
+		var tracks = this.arrangeDirectory().tracks;
+		this.props.mopidyActions.playURIs(helpers.arrayOf('uri',tracks), this.props.params.uri)
+	}
+
+	arrangeDirectory(directory = this.props.directory){
 		var folders = []
 		var tracks = []
 
@@ -79,17 +84,10 @@ class LibraryBrowse extends React.Component{
 			title = title.charAt(0).toUpperCase() + title.slice(1);
 		}
 
-		var options = (
-			<button className="no-hover" onClick={ () => window.history.back() }>
-				<FontAwesome name="reply" />&nbsp;
-				Back
-			</button>
-		);
-
 		if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
 			return (
 				<div className="view library-local-view">
-					<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
+					<Header icon="music" title={title} />
 					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
@@ -97,7 +95,20 @@ class LibraryBrowse extends React.Component{
 			)
 		}
 
-		var items = this.arrange_directory(this.props.directory);
+		var items = this.arrangeDirectory(this.props.directory);
+
+		var options = (
+			<span>
+				<button className="no-hover" onClick={e => this.playAll(e)}>
+					<FontAwesome name="play" />&nbsp;
+					Play all
+				</button>
+				<button className="no-hover" onClick={() => window.history.back()}>
+					<FontAwesome name="reply" />&nbsp;
+					Back
+				</button>
+			</span>
+		);
 
 		return (
 			<div className="view library-local-view">
