@@ -11,6 +11,7 @@ import TrackList from '../../components/TrackList'
 import GridItem from '../../components/GridItem'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -49,7 +50,13 @@ class LibraryBrowse extends React.Component{
 
 	playAll(e){
 		var tracks = this.arrangeDirectory().tracks;
-		this.props.mopidyActions.playURIs(helpers.arrayOf('uri',tracks), this.props.params.uri)
+		this.props.mopidyActions.playURIs(helpers.arrayOf('uri',tracks), this.props.params.uri);
+		this.props.uiActions.hideContextMenu();
+	}
+
+	goBack(e){
+		window.history.back();
+		this.props.uiActions.hideContextMenu();
 	}
 
 	arrangeDirectory(directory = this.props.directory){
@@ -87,7 +94,7 @@ class LibraryBrowse extends React.Component{
 		if (!this.props.directory || helpers.isLoading(this.props.load_queue,['mopidy_browse'])){
 			return (
 				<div className="view library-local-view">
-					<Header icon="music" title={title} />
+					<Header icon="music" title={title} uiActions={this.props.uiActions} />
 					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
@@ -103,7 +110,7 @@ class LibraryBrowse extends React.Component{
 					<FontAwesome name="play" />&nbsp;
 					Play all
 				</button>
-				<button className="no-hover" onClick={() => window.history.back()}>
+				<button className="no-hover" onClick={e => this.goBack(e)}>
 					<FontAwesome name="reply" />&nbsp;
 					Back
 				</button>
@@ -213,6 +220,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
