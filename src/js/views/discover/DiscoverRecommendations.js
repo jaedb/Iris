@@ -11,6 +11,8 @@ import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
 import AddSeedField from '../../components/AddSeedField'
+import URILink from '../../components/URILink'
+
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -155,7 +157,7 @@ class Discover extends React.Component{
 						return (
 							<span className="seed" key={seed.uri}>
 								{seed.name}
-								<span className="type">({type})</span>
+								<URILink className="type" type={type} uri={seed.uri}>({type})</URILink>
 								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
 							</span>
 						)

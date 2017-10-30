@@ -583,9 +583,6 @@ export let isNumeric = function (data){
  * @param track
  **/
 export let setWindowTitle = function (track = false, play_state = false){
-
-	console.log(track);
-
     var title = 'No track playing'
     
     if (track){
