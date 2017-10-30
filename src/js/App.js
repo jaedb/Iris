@@ -62,37 +62,37 @@ class App extends React.Component{
 		});
 
 		// Check our slim_mode
-		this.handleWindowResize(null)
+		this.handleWindowResize(null);
 	}
 
 	shouldTriggerShortcut(e){
 
 		// When we're focussed on certian elements, don't fire any shortcuts
 		// Typically form inputs
-		var ignoreNodes = ['INPUT', 'TEXTAREA']
+		var ignoreNodes = ['INPUT', 'TEXTAREA'];
 		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
-			return false
+			return false;
 		}
 
 		// Listen for standalone key codes
-		let keyCodes = [27,32,191]
+		let keyCodes = [27,32,191];
 		if (keyCodes.indexOf(e.keyCode) > -1){
-			e.preventDefault()
-			return true
+			e.preventDefault();
+			return true;
 		}
 
 		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrl = [37,38,39,40]
-		if (e.ctrlKey && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
-			e.preventDefault()
-			return true
+		let keyCodesWithCtrl = [37,38,39,40];
+		if ((e.ctrlKey || e.metaKey) && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
+			e.preventDefault();
+			return true;
 		}
 
 		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrlShift = [70]
-		if (e.ctrlKey && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1){
-			e.preventDefault()
-			return true
+		let keyCodesWithCtrlShift = [70];
+		if ((e.ctrlKey || e.metaKey) && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1){
+			e.preventDefault();
+			return true;
 		}
 	}
 
@@ -123,85 +123,100 @@ class App extends React.Component{
 		switch(e.keyCode){
 
 			case 32: // spacebar
-				if (this.props.play_state == 'playing'){
-					this.props.mopidyActions.pause()
-					this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut')
+				if (e.ctrlKey || e.metaKey){
+					this.props.mopidyActions.stop();
+					this.props.uiActions.createNotification('stop', 'shortcut', 'shortcut');
+				} else if (this.props.play_state == 'playing'){
+					this.props.mopidyActions.pause();
+					this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut');
 				} else {
-					this.props.mopidyActions.play()
-					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut')
+					this.props.mopidyActions.play();
+					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut');
 				}
 				break
 
 			case 27: // esc
 				if (this.props.dragger && this.props.dragger.dragging){
-					this.props.uiActions.dragEnd()
+					this.props.uiActions.dragEnd();
 				}
 				if (this.props.modal){
-					this.props.uiActions.closeModal()
+					this.props.uiActions.closeModal();
 				}
 				break
 
 			case 40: // down
-				if (e.ctrlKey && e.shiftKey){
-					this.props.mopidyActions.setMute(true)
-					this.props.uiActions.createNotification('volume-off', 'shortcut', 'shortcut')
+				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+					this.props.mopidyActions.setMute(true);
+					this.props.uiActions.createNotification('volume-off', 'shortcut', 'shortcut');
 				} else if (e.ctrlKey){
-					var volume = this.props.volume
+					var volume = this.props.volume;
 					if (volume !== 'false'){
-						volume -= 5
-						if (volume < 0) volume = 0
-						this.props.mopidyActions.setVolume(volume)
-						if (this.props.mute) this.props.mopidyActions.setMute(false)
-						this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut')
+						volume -= 5;
+						if (volume < 0){
+							volume = 0;
+						}
+						this.props.mopidyActions.setVolume(volume);
+						if (this.props.mute){
+							this.props.mopidyActions.setMute(false);
+						}
+						this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut');
 					}
 				}
 				break
 
 			case 38: // up
-				if (e.ctrlKey && e.shiftKey){
+				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
 					this.props.mopidyActions.setVolume(100)
-					if (this.props.mute) this.props.mopidyActions.setMute(false)
-					this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut')
-				} else if (e.ctrlKey){
+					if (this.props.mute){
+						this.props.mopidyActions.setMute(false);
+					}
+					this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut');
+				} else if (e.ctrlKey || e.metaKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
-						volume += 5
-						if (volume > 100) volume = 100
-						this.props.mopidyActions.setVolume(volume)
-						if (this.props.mute) this.props.mopidyActions.setMute(false)
-						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut')
+						volume += 5;
+						if (volume > 100){
+							volume = 100
+						}
+						this.props.mopidyActions.setVolume(volume);
+						if (this.props.mute){
+							this.props.mopidyActions.setMute(false);
+						}
+						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut');
 					}
 				}
 				break
 
 			case 37: // left
-				if (e.ctrlKey && e.shiftKey){
-					var new_position = this.props.play_time_position - 30000
-					if (new_position < 0) new_position = 0
-					this.props.mopidyActions.seek(new_position)
-					this.props.uiActions.createNotification('fast-backward', 'shortcut', 'shortcut')
-				} else if (e.ctrlKey){
-					this.props.mopidyActions.previous()
-					this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut')
+				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+					var new_position = this.props.play_time_position - 30000;
+					if (new_position < 0){
+						new_position = 0;;
+					}
+					this.props.mopidyActions.seek(new_position);
+					this.props.uiActions.createNotification('fast-backward', 'shortcut', 'shortcut');
+				} else if (e.ctrlKey || e.metaKey){
+					this.props.mopidyActions.previous();
+					this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut');
 				}
 				break
 
 			case 39: // right
-				if (e.ctrlKey && e.shiftKey){
-					this.props.mopidyActions.seek(this.props.play_time_position + 30000)
-					this.props.uiActions.createNotification('fast-forward', 'shortcut', 'shortcut')
-				} else if (e.ctrlKey){
-					this.props.mopidyActions.next()
-					this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut')
+				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+					this.props.mopidyActions.seek(this.props.play_time_position + 30000);
+					this.props.uiActions.createNotification('fast-forward', 'shortcut', 'shortcut');
+				} else if (e.ctrlKey || e.metaKey){
+					this.props.mopidyActions.next();
+					this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut');
 				}
 				break
 
 			case 70: // F
-				if (e.ctrlKey && e.shiftKey){
+				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
 					if (this.props.modal){
-						this.props.uiActions.closeModal()
+						this.props.uiActions.closeModal();
 					} else {
-						this.props.uiActions.openModal('kiosk_mode')
+						this.props.uiActions.openModal('kiosk_mode');
 					}
 				}
 				break
@@ -210,15 +225,25 @@ class App extends React.Component{
 
 	render(){
 		var className = '';
-		if (this.props.dragger && this.props.dragger.active) className += ' dragging'
-		if (this.props.sidebar_open) className += ' sidebar-open'
-		if (this.props.modal) className += ' modal-open'
-		if (this.props.touch_dragging) className += ' touch-dragging'
-		if (this.props.slim_mode) className += ' slim-mode'
+		if (this.props.dragger && this.props.dragger.active){
+			className += ' dragging';
+		}
+		if (this.props.sidebar_open){
+			className += ' sidebar-open';
+		}
+		if (this.props.modal){
+			className += ' modal-open';
+		}
+		if (this.props.touch_dragging){
+			className += ' touch-dragging';
+		}
+		if (this.props.slim_mode){
+			className += ' slim-mode';
+		}
 		if (helpers.isTouchDevice()){
-			className += ' touch'
+			className += ' touch';
 		} else {
-			className += ' notouch'
+			className += ' notouch';
 		}
 
 		return (

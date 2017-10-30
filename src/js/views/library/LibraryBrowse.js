@@ -52,11 +52,7 @@ class LibraryBrowse extends React.Component{
 		var tracks = this.arrangeDirectory().tracks;
 		var tracks_uris = helpers.arrayOf('uri',tracks);
 
-		if (tracks_uris.length > 0){
-			this.props.mopidyActions.playURIs(tracks_uris, this.props.params.uri);
-		} else {
-			this.props.uiActions.createNotification("No tracks to play","warning");
-		}
+		this.props.mopidyActions.playURIs(tracks_uris, this.props.params.uri);
 		this.props.uiActions.hideContextMenu();
 	}
 

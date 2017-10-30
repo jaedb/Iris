@@ -341,6 +341,11 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_ENQUEUE_URIS':
 
+                if (!action.uris || action.uris.length <= 0){
+                    this.props.uiActions.createNotification("No URIs to enqueue","warning");
+                    break;
+                }
+
                 // split into batches
                 var uris = Object.assign([], action.uris)
                 var batches = []
@@ -469,14 +474,19 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_URIS':
 
+                if (!action.uris || action.uris.length <= 0){
+                    this.props.uiActions.createNotification("No URIs to play","warning");
+                    break;
+                }
+
                 // Stop the radio
                 if (store.getState().core.radio && store.getState().core.radio.enabled){
-                    store.dispatch(pusherActions.stopRadio())
+                    store.dispatch(pusherActions.stopRadio());
                 }
 
                 // Clear tracklist (if set)
                 if (store.getState().ui.clear_tracklist_on_play){
-                    store.dispatch(mopidyActions.clearTracklist())
+                    store.dispatch(mopidyActions.clearTracklist());
                 }
 
                 var first_uri = action.uris[0]
@@ -551,7 +561,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_SEARCH_RESULTS':
 
                 // Flush out our previous results
-                store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'})
+                store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'});
 
                 var uri_schemes_to_ignore = ['spotify:'];
                 var uri_schemes = Object.assign([], store.getState().ui.search_uri_schemes);
