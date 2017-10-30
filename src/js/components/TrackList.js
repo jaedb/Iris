@@ -59,7 +59,7 @@ class TrackList extends React.Component{
 				break;
 			
 			case 65: // a
-				if (e.ctrlKey){
+				if ((e.ctrlKey || e.metaKey)){
 
 					e.preventDefault();
 
@@ -208,7 +208,7 @@ class TrackList extends React.Component{
 	handleSelection(e,track_key){
 		let selected_tracks = this.props.selected_tracks
 
-		if (e.ctrlKey || this.props.slim_mode || helpers.isTouchDevice()){
+		if ((e.ctrlKey || e.metaKey) || this.props.slim_mode || helpers.isTouchDevice()){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){

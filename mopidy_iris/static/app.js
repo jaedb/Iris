@@ -15805,7 +15805,7 @@ var TrackList = function (_React$Component) {
 
 				case 65:
 					// a
-					if (e.ctrlKey) {
+					if (e.ctrlKey || e.metaKey) {
 
 						e.preventDefault();
 
@@ -15958,7 +15958,7 @@ var TrackList = function (_React$Component) {
 		value: function handleSelection(e, track_key) {
 			var selected_tracks = this.props.selected_tracks;
 
-			if (e.ctrlKey || this.props.slim_mode || helpers.isTouchDevice()) {
+			if (e.ctrlKey || e.metaKey || this.props.slim_mode || helpers.isTouchDevice()) {
 
 				// Already selected, so unselect it
 				if (selected_tracks.includes(track_key)) {
@@ -55596,6 +55596,7 @@ var SpotifyMiddleware = function () {
                             // Use 'me' name as my Pusher username
                             store.dispatch(pusherActions.setUsername(name));
                         }
+                        _reactGa2.default.set({ userId: action.data.id });
                         _reactGa2.default.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id });
 
                         store.dispatch({
