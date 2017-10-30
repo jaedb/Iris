@@ -133,7 +133,7 @@ class App extends React.Component{
 					this.props.mopidyActions.play();
 					this.props.uiActions.createNotification('play', 'shortcut', 'shortcut');
 				}
-				break
+				break;
 
 			case 27: // esc
 				if (this.props.dragger && this.props.dragger.dragging){
@@ -142,7 +142,7 @@ class App extends React.Component{
 				if (this.props.modal){
 					this.props.uiActions.closeModal();
 				}
-				break
+				break;
 
 			case 40: // down
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
@@ -162,7 +162,7 @@ class App extends React.Component{
 						this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut');
 					}
 				}
-				break
+				break;
 
 			case 38: // up
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
@@ -185,7 +185,7 @@ class App extends React.Component{
 						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut');
 					}
 				}
-				break
+				break;
 
 			case 37: // left
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
@@ -199,7 +199,7 @@ class App extends React.Component{
 					this.props.mopidyActions.previous();
 					this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut');
 				}
-				break
+				break;
 
 			case 39: // right
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
@@ -209,7 +209,7 @@ class App extends React.Component{
 					this.props.mopidyActions.next();
 					this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut');
 				}
-				break
+				break;
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
@@ -219,7 +219,7 @@ class App extends React.Component{
 						this.props.uiActions.openModal('kiosk_mode');
 					}
 				}
-				break
+				break;
 		}
 	}
 
