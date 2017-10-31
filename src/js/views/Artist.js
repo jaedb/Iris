@@ -35,10 +35,10 @@ class Artist extends React.Component{
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadArtist(nextProps )
+			this.loadArtist(nextProps);
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadArtist(nextProps )
+				this.loadArtist(nextProps);
 			}
 		}
 	}
@@ -50,7 +50,7 @@ class Artist extends React.Component{
 			items: [this.props.artist],
 			uris: [this.props.params.uri]
 		}
-		this.props.uiActions.showContextMenu(data)
+		this.props.uiActions.showContextMenu(data);
 	}
 
 	loadArtist(props = this.props){
@@ -58,16 +58,17 @@ class Artist extends React.Component{
 
 			case 'spotify':
 				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
-					console.info('Loading spotify artist from index')
+					console.info('Loading spotify artist from index');
 				} else {
 					this.props.spotifyActions.getArtist(props.params.uri, true);
 				}
+				this.props.spotifyActions.following(props.params.uri);
 				break
 
 			default:
 				if (props.mopidy_connected){
 					if (props.artist && props.artist.images){
-						console.info('Loading local artist from index')
+						console.info('Loading local artist from index');
 					} else {
 						this.props.mopidyActions.getArtist(props.params.uri);
 					}

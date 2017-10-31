@@ -46,7 +46,7 @@ class Track extends React.Component{
 		// if mopidy has just connected AND we're a local album, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadTrack(nextProps )
+				this.loadTrack(nextProps);
 			}
 		}
 
@@ -73,7 +73,8 @@ class Track extends React.Component{
 				if (props.track){
 					console.info('Loading track from index');
 				} else {
-					this.props.spotifyActions.getTrack(props.params.uri );
+					this.props.spotifyActions.getTrack(props.params.uri);
+					this.props.spotifyActions.following(props.params.uri);
 				}
 				break;
 

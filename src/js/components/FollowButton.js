@@ -12,38 +12,32 @@ import * as spotifyActions from '../services/spotify/actions'
 class FollowButton extends React.Component{
 
 	constructor(props){
-		super(props)
-	}
-
-	componentDidMount(){
-		if (this.props.spotify_authorized && this.props.uri){
-			this.props.spotifyActions.following(this.props.uri)			
-		}
+		super(props);
 	}
 
 	remove(){
-		this.props.spotifyActions.following(this.props.uri, 'DELETE')
+		this.props.spotifyActions.following(this.props.uri, 'DELETE');
 	}
 
 	add(){
-		this.props.spotifyActions.following(this.props.uri, 'PUT')
+		this.props.spotifyActions.following(this.props.uri, 'PUT');
 	}
 
 	render(){
 		if (!this.props.uri){
-			return false
+			return false;
 		}
 
-		var className = ''
+		var className = '';
 
 		// Inherit passed-down classes
 		if (this.props.className){
-			className += ' '+this.props.className
+			className += ' '+this.props.className;
 		}
 
 		// Loader
 		if (helpers.isLoading(this.props.load_queue,['/following','/followers','me/albums/contains/?ids=','me/albums/?ids='])){
-			className += ' working'
+			className += ' working';
 		}
 
 		if (!this.props.spotify_authorized){

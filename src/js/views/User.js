@@ -27,23 +27,24 @@ class User extends React.Component{
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadUser(nextProps )
+			this.loadUser(nextProps);
 		}
 	}
 
 	loadUser(props = this.props){
 		if (!props.user){
-			this.props.spotifyActions.getUser(props.params.uri)
+			this.props.spotifyActions.getUser(props.params.uri);
+			this.props.spotifyActions.following(props.params.uri);
 		}
 
 		// We got a user, but we haven't fetched their playlists yet
 		if (props.user && !props.user.playlists_uris){
-			this.props.spotifyActions.getUserPlaylists(props.params.uri)
+			this.props.spotifyActions.getUserPlaylists(props.params.uri);
 		}
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri )
+		this.props.spotifyActions.getURL(this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri);
 	}
 
 	isMe(){
@@ -61,9 +62,11 @@ class User extends React.Component{
 			)
 		}
 
-		if (!this.props.user) return null
+		if (!this.props.user){
+			return null;
+		}
 
-		var playlists = []
+		var playlists = [];
 		if (this.props.user.playlists_uris){
 			for (var i = 0; i < this.props.user.playlists_uris.length; i++){
 				var uri = this.props.user.playlists_uris[i]

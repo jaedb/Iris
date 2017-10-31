@@ -60,12 +60,13 @@ class Playlist extends React.Component{
 			switch (helpers.uriSource(props.params.uri)){
 
 				case 'spotify':
-					this.props.spotifyActions.getPlaylist(props.params.uri )
+					this.props.spotifyActions.getPlaylist(props.params.uri);
+					this.props.spotifyActions.following(props.params.uri);
 					break
 
 				default:
 					if (props.mopidy_connected){
-						this.props.mopidyActions.getPlaylist(props.params.uri )
+						this.props.mopidyActions.getPlaylist(props.params.uri);
 					}
 					break
 			}
