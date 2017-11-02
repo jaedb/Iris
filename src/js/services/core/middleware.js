@@ -97,6 +97,7 @@ const CoreMiddleware = (function(){
             case 'CORE_START_SERVICES':
                 store.dispatch(mopidyActions.connect());
                 store.dispatch(pusherActions.connect());
+                store.dispatch(lastfmActions.connect());
 
                 next(action)
                 break

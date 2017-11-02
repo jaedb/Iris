@@ -14,6 +14,7 @@ import coreMiddleware from './services/core/middleware'
 import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
+import lastfmMiddleware from './services/lastfm/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
@@ -108,12 +109,18 @@ if (localStorage.getItem('spotify')){
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
+// if we've got a stored version of lastfm state, load and merge
+if (localStorage.getItem('lastfm')){
+	var storedLastfm = JSON.parse(localStorage.getItem('lastfm') );
+	initialState.lastfm = Object.assign(initialState.lastfm, storedLastfm );
+}
+
 console.log('Bootstrapping', initialState)
 
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
+	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware )
 );
 
 export default store;

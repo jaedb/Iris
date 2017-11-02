@@ -13,22 +13,17 @@ export default function reducer(lastfm = {}, action){
             return Object.assign({}, lastfm, action.data)
 
         case 'LASTFM_AUTHORIZATION_GRANTED':
-            return Object.assign({}, lastfm, { 
-                enabled: true, 
+            return Object.assign({}, lastfm, {
                 authorizing: false, 
-                authorization: action.data,
-                api_key: action.data.api_key,
-                token_expiry: action.data.token_expiry
+                session: action.data.session
             })
 
         case 'LASTFM_AUTHORIZATION_REVOKED':
             return Object.assign({}, lastfm, { 
-                authorizing: false, 
-                authorization: false,
-                api_key: false,
-                token_expiry: 0,
+                authorizing: false,
+                session: false,
                 me: false
-            })
+            });
 
         default:
             return lastfm

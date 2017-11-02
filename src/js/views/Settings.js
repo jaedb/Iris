@@ -15,11 +15,13 @@ import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
+import URILink from '../components/URILink'
 
 import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class Settings extends React.Component {
@@ -109,21 +111,45 @@ class Settings extends React.Component {
 
 		if (user){
 			return (
-				<Link className="user" to={global.baseURL+'user/'+user.uri}>
+				<URILink className="user" type="user" uri={user.uri}>
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.id}
 					</span>
-				</Link>
+				</URILink>
 			)
 		} else {
 			return (
-				<Link className="user">
+				<URILink className="user">
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
 						Unknown
 					</span>
-				</Link>
+				</URILink>
+			)
+		}
+	}
+
+	renderLastfmUser(){
+		var user = this.props.core.users["lastfm:user:"+this.props.lastfm.session.name];
+
+		if (user){
+			return (
+				<URILink className="user" type="user" uri={user.uri}>
+					<Thumbnail circle={true} size="small" images={user.image} />
+					<span className="user-name">
+						{user.realname ? user.realname : user.name}
+					</span>
+				</URILink>
+			)
+		} else {
+			return (
+				<URILink className="user" type="user" uri={false}>
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						Unknown
+					</span>
+				</URILink>
 			)
 		}
 	}
@@ -302,6 +328,7 @@ class Settings extends React.Component {
 							</div>
 						</div>
 					</div>	
+
 					<div className="field">
 						<div className="name">Authorization</div>
 						<div className="input">
@@ -312,6 +339,15 @@ class Settings extends React.Component {
 					</div>
 
 					<h4 className="underline">LastFM</h4>
+
+					{this.props.lastfm.session ? <div className="field current-user">
+						<div className="name">Current user</div>
+						<div className="input">
+							<div className="text">
+								{ this.renderLastfmUser() }
+							</div>
+						</div>
+					</div> : null}
 
 					<div className="field">
 						<div className="name">Authorization</div>
@@ -408,6 +444,7 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

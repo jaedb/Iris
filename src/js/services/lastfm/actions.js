@@ -59,8 +59,11 @@ export function set(data){
  **/
 
 export function authorizationGranted(data){
-    data.token_expiry = new Date().getTime() + data.expires_in;
-    return { type: 'LASTFM_AUTHORIZATION_GRANTED', data: data }
+    data.session.expiry = new Date().getTime() + 3600;
+    return {
+        type: 'LASTFM_AUTHORIZATION_GRANTED',
+        data: data
+    }
 }
 
 export function revokeAuthorization(){
@@ -70,12 +73,37 @@ export function revokeAuthorization(){
 export function connect(){
     return (dispatch, getState) => {
 
-        dispatch({ type: 'LASTFM_CONNECTING' })
+        dispatch({ type: 'LASTFM_CONNECTING' });
 
-        sendRequest(dispatch, getState, 'method=artist.getInfo&artist=')
+        // Authorized, dual-purpose our connection to get the current user
+        if (getState().lastfm.session){
+            dispatch(getMe());
+
+        // Not authorized, just use a generic lookup to test our connection
+        } else {
+            sendRequest(dispatch, getState, 'method=artist.getInfo&artist=')
+                .then(
+                    response => {
+                        dispatch({ type: 'LASTFM_CONNECTED' })
+                    }
+                )
+        }
+    }
+}
+
+export function getMe(){
+    return (dispatch, getState) => {
+        var params = 'method=user.getInfo&user='+getState().lastfm.session.name
+        sendRequest(dispatch, getState, params)
             .then(
                 response => {
-                    dispatch({ type: 'LASTFM_CONNECTED' })
+                    if (response.user){
+                        dispatch({
+                            type: 'LASTFM_USER_LOADED',
+                            user: response.user
+                        });
+                        dispatch({ type: 'LASTFM_CONNECTED' })
+                    }
                 }
             )
     }

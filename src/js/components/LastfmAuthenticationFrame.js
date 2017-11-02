@@ -21,20 +21,20 @@ class LastfmAuthenticationFrame extends React.Component{
 	}
 
 	componentDidMount(){
-
 		let self = this;
 
-		// Listen for incoming messages from the authorization iframe
-		// This is triggered when the popup posts a message, which is then passed to
-		// the iframe, and then passed on to the parent frame (our application)
+		// Listen for incoming messages from the authorization popup
 		window.addEventListener('message', function(event){
-			self.handleMessage(event)
+			var data = JSON.parse(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin == 'auth_lastfm'){
+				self.handleMessage(event, data);
+			}
 		}, false);
 	}
 
-	handleMessage(event){
-
-		var data = JSON.parse(event.data)
+	handleMessage(event, data){
 				
 		// Only allow incoming data from our authorized authenticator proxy
 		var authorization_domain = this.props.authorization_url.substring(0,this.props.authorization_url.indexOf('/',8))
@@ -44,13 +44,13 @@ class LastfmAuthenticationFrame extends React.Component{
 		}
 
 		// Bounced with an error
-		if (typeof(data.error) !== 'undefined'){
+		if (data.error !== undefined){
 			this.props.uiActions.createNotification(data.error,'bad')
 
 		// No errors? We're in!
 		} else {
 			this.props.lastfmActions.authorizationGranted(data)
-			//this.props.lastfmActions.getMe()
+			this.props.lastfmActions.getMe()
 		}
 
 		// Turn off our authorizing switch
@@ -64,7 +64,8 @@ class LastfmAuthenticationFrame extends React.Component{
 
 		// Open an authentication request window
 		var url = this.props.authorization_url+'?action=authorize'
-		var popup = window.open(url,"popup","height=500,width=350");
+		var popup = window.open(url,"popup","height=580,width=350");
+		popup.name = "LastfmAuthenticationWindow";
 
 		// Start timer to check our popup's state
 		var timer = setInterval(checkPopup, 1000);
@@ -108,7 +109,7 @@ class LastfmAuthenticationFrame extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorization_url: state.lastfm.authorization_url,
-		authorized: state.lastfm.authorization,
+		authorized: state.lastfm.session,
 		authorizing: state.lastfm.authorizing
 	}
 }
