@@ -45,6 +45,28 @@ const sendRequest = (dispatch, getState, params ) => {
     })
 }
 
+
+export function set(data){
+    return {
+        type: 'LASTFM_SET',
+        data: data
+    }
+}
+
+
+/**
+ * Handle authorization process
+ **/
+
+export function authorizationGranted(data){
+    data.token_expiry = new Date().getTime() + data.expires_in;
+    return { type: 'LASTFM_AUTHORIZATION_GRANTED', data: data }
+}
+
+export function revokeAuthorization(){
+    return { type: 'LASTFM_AUTHORIZATION_REVOKED' }
+}
+
 export function connect(){
     return (dispatch, getState) => {
 

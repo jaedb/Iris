@@ -63,7 +63,9 @@ var initialState = {
 		}
 	},
 	lastfm: {
-		connected: false
+		connected: false,
+		me: false,
+		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
 	},
 	genius: {
 		connected: false
@@ -72,7 +74,7 @@ var initialState = {
 		connected: false,
 		me: false,
 		autocomplete_results: {},
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'
 	}
 };
 

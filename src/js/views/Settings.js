@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
+import LastfmAuthenticationFrame from '../components/LastfmAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import URISchemesList from '../components/URISchemesList'
@@ -307,6 +308,15 @@ class Settings extends React.Component {
 							<SpotifyAuthenticationFrame />
 							{ this.renderSendAuthorizationButton() }
 							{this.props.spotify.refreshing_token ? <button className="working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
+						</div>
+					</div>
+
+					<h4 className="underline">LastFM</h4>
+
+					<div className="field">
+						<div className="name">Authorization</div>
+						<div className="input">
+							<LastfmAuthenticationFrame />
 						</div>
 					</div>
 

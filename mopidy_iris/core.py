@@ -259,7 +259,8 @@ class IrisCore(object):
                 "spotify_username": spotify_username,
                 "country": self.config['iris']['country'],
                 "locale": self.config['iris']['locale'],
-                "authorization_url": self.config['iris']['authorization_url']
+                "spotify_authorization_url": self.config['iris']['spotify_authorization_url'],
+                "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url']
             }
         }
 
