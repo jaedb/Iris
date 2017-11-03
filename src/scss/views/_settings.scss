@@ -35,33 +35,46 @@
 		@include clearfix();
 		margin-bottom: -20px;
 
-		.service {
-			margin-right: 20px;
-			margin-bottom: 20px;
-			padding-left: 46px;
-			box-sizing: border-box;
-			position: relative;
+		.service-wrapper {
 			float: left;
-			min-width: 150px;
+			width: 16.6667%;
 
-			.title {
-				margin: 0;
-				padding: 0;
-			}
+			.service {
+				padding-bottom: 100%;
+				position: relative;
 
-			.icon {
-				position: absolute;
-				top: 2px;
-				left: 0;
-				width: 34px;
-				height: 25px;
-				padding-top: 9px;
-				border: 2px solid $grey;
-				text-align: center;
-				border-radius: 50%;
+				.liner {
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					right: 0;
+					margin: 5px;
+					box-sizing: border-box;
+					border-radius: 3px;
+					border: 3px solid rgba(255,255,255,0.1);
+					text-align: center;
 
-				.fa {
-					font-size: 16px;
+					.logo {
+						font-size: 80px;
+						position: absolute;
+						top: 20%;
+						left: 0;
+						right: 0;
+						opacity: 0.05;
+					}
+
+					.title {
+						padding-top: 55%;
+						margin-bottom: 0px;
+					}
+
+					.status {
+						.fa {
+							font-size: 12px;
+							margin-right: 4px;
+						}
+					}
 				}
 			}
 		}

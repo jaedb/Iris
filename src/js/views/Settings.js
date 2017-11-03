@@ -166,11 +166,18 @@ class Settings extends React.Component {
 
 	renderServiceStatus(service){
 
-		let colour = 'red'
-		let icon = 'close'
-		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
-		let text = 'Disconnected'
-		let tooltip = null
+		let colour = 'red';
+		let icon = 'close';
+		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase();
+		let text = 'Disconnected';
+		let tooltip = null;
+		let logo = service;
+
+		if (logo == 'mopidy'){
+			logo = 'database';
+		} else if (logo == 'pusher'){
+			logo = 'rss';
+		}
 
 		service = this.props[service]
 
@@ -195,17 +202,20 @@ class Settings extends React.Component {
 		}
 
 		return (
-			<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
-				<h4 className="title">
-					{name}
-				</h4>
-				<div className={colour+'-text icon'}>
-					<FontAwesome name={icon} />
+			<div className="service-wrapper">
+				<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
+					<div className="liner">
+						<FontAwesome name={logo} className="logo" />
+						<h4 className="title">
+							{name}
+						</h4>
+						<div className={"status "+colour+'-text'}>
+							<FontAwesome name={icon} />		
+							{text}
+						</div>
+						{tooltip ? <span className="tooltip">{tooltip}</span> : null}
+					</div>
 				</div>
-				<div className={"status "+colour+'-text'}>					
-					{text}
-				</div>
-				{tooltip ? <span className="tooltip">{tooltip}</span> : null}
 			</div>
 		)
 	}
@@ -242,6 +252,7 @@ class Settings extends React.Component {
 						{this.renderServiceStatus('mopidy')}
 						{this.renderServiceStatus('pusher')}
 						{this.renderServiceStatus('spotify')}
+						{this.renderServiceStatus('lastfm')}
 					</div>
 
 					<h4 className="underline">System</h4>
