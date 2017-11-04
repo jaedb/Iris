@@ -41,7 +41,7 @@ class FollowButton extends React.Component{
 		}
 
 		if (!this.props.spotify_authorized){
-			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification('You must authorize Iris first','warning')}>{this.props.addText}</button>
+			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification('You must authorize Spotify first','warning')}>{this.props.addText}</button>
 		} else if (this.props.is_following === true){
 			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {

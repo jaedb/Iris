@@ -192,25 +192,8 @@ export function set(data){
 
 export function connect(){
     return (dispatch, getState) => {
-
         dispatch({ type: 'SPOTIFY_CONNECTING' });
-
-        // send a generic request to ensure spotify is up and running
-        // there is no 'test' or 'ping' endpoint on the Spotify API
-        sendRequest(dispatch, getState, 'browse/categories?limit=1' )
-            .then(
-                response => {
-                    dispatch({
-                        type: 'SPOTIFY_CONNECTED'
-                    });
-                },
-                error => {
-                    dispatch(coreActions.handleException(
-                        'Could not connect to Spotify',
-                        error
-                    ));
-                }
-            );
+        dispatch(getMe());
     }
 }
 
@@ -260,12 +243,14 @@ export function getMe(){
                         type: 'SPOTIFY_ME_LOADED',
                         data: response
                     });
+                    dispatch({ type: 'SPOTIFY_CONNECTED' });
                 },
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load your profile',
                         error
                     ));
+                    dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 }
             );
     }

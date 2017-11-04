@@ -4,13 +4,14 @@ var uiActions = require('../ui/actions')
 var helpers = require('../../helpers')
 
 /**
- * Send an ajax request to the Spotify API
+ * Send an ajax request to the LastFM API
  *
- * @param dispatch obj
- * @param getState obj
- * @param endpoint params = the url params to send
+ * @param dispatch = obj
+ * @param getState = obj
+ * @param params = string, the url params to send
+ * @param signed = boolean
  **/
-const sendRequest = (dispatch, getState, params ) => {
+const sendRequest = (dispatch, getState, params, signed) => {
     return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid()
@@ -75,11 +76,11 @@ export function connect(){
 
         dispatch({ type: 'LASTFM_CONNECTING' });
 
-        // Authorized, dual-purpose our connection to get the current user
+        // Authorized? Multi-purpose our connection test to get the current user
         if (getState().lastfm.session){
             dispatch(getMe());
 
-        // Not authorized, just use a generic lookup to test our connection
+        // Not authorized? Just use a generic lookup to test our connection
         } else {
             sendRequest(dispatch, getState, 'method=artist.getInfo&artist=')
                 .then(
@@ -90,6 +91,33 @@ export function connect(){
         }
     }
 }
+
+
+/**
+ * Signed requests
+ * TODO
+ **/
+
+export function loveTrack(artist, track){
+    return (dispatch, getState) => {
+        var params = 'method=track.love&artist='+artist+'&track='+track
+        sendRequest(dispatch, getState, params, true)
+            .then(
+                response => {
+                    dispatch({
+                        type: 'LASTFM_TRACK_LOVED',
+                        artist: artist,
+                        track: track
+                    });
+                }
+            )
+    }
+}
+
+
+/**
+ * Non-signed requests
+ **/
 
 export function getMe(){
     return (dispatch, getState) => {

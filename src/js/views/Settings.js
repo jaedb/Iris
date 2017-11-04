@@ -115,6 +115,7 @@ class Settings extends React.Component {
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.id}
+						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
 					</span>
 				</URILink>
 			)
@@ -165,20 +166,11 @@ class Settings extends React.Component {
 	}
 
 	renderServiceStatus(service){
-
-		let colour = 'red';
-		let icon = 'close';
-		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase();
-		let text = 'Disconnected';
-		let tooltip = null;
-		let logo = service;
-
-		if (logo == 'mopidy'){
-			logo = 'database';
-		} else if (logo == 'pusher'){
-			logo = 'rss';
-		}
-
+		let colour = 'red'
+		let icon = 'close'
+		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
+		let text = 'Disconnected'
+		let tooltip = null
 		service = this.props[service]
 
 		if (service.connecting){
@@ -190,11 +182,6 @@ class Settings extends React.Component {
 			colour = 'red'
 			text = 'Not installed'
 			tooltip = 'Mopidy-Spotify is not installed or enabled'
-		} else if (service.connected && name == 'Spotify' && !service.authorization){
-			icon = 'lock'
-			colour = 'orange'
-			text = 'Limited access'
-			tooltip = 'Authorize Iris for full Spotify functionality'
 		} else if (service.connected){
 			icon = 'check'
 			colour = 'green'
@@ -202,20 +189,17 @@ class Settings extends React.Component {
 		}
 
 		return (
-			<div className="service-wrapper">
-				<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
-					<div className="liner">
-						<FontAwesome name={logo} className="logo" />
-						<h4 className="title">
-							{name}
-						</h4>
-						<div className={"status "+colour+'-text'}>
-							<FontAwesome name={icon} />		
-							{text}
-						</div>
-						{tooltip ? <span className="tooltip">{tooltip}</span> : null}
-					</div>
+			<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
+				<h4 className="title">
+					{name}
+				</h4>
+				<div className={colour+'-text icon'}>
+					<FontAwesome name={icon} />
 				</div>
+				<div className={"status "+colour+'-text'}>					
+					{text}
+				</div>
+				{tooltip ? <span className="tooltip">{tooltip}</span> : null}
 			</div>
 		)
 	}
@@ -247,6 +231,8 @@ class Settings extends React.Component {
 				</div>
 
 				<section className="content-wrapper">
+
+					<h4 className="underline">Services</h4>
 
 					<div className="services">
 						{this.renderServiceStatus('mopidy')}

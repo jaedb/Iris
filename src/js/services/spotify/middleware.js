@@ -27,10 +27,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(spotifyActions.getAllLibraryPlaylists())
                 }
 
-                // Get the current logged-in user
-                store.dispatch(spotifyActions.getMe())
-
-                next(action)
+                next(action);
                 break
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
