@@ -11,6 +11,7 @@ import Thumbnail from '../components/Thumbnail'
 import ArtistSentence from '../components/ArtistSentence'
 import ArtistGrid from '../components/ArtistGrid'
 import FollowButton from '../components/FollowButton'
+import LastfmLoveButton from '../components/LastfmLoveButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
@@ -19,6 +20,7 @@ import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 import * as geniusActions from '../services/genius/actions'
 
 class Track extends React.Component{
@@ -39,13 +41,13 @@ class Track extends React.Component{
 
 	componentWillReceiveProps(nextProps){
 
-		// if our URI has changed, fetch new album
+		// if our URI has changed, fetch new track
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadTrack(nextProps )
+			this.loadTrack(nextProps)
 
-		// if mopidy has just connected AND we're a local album, go get
+		// if mopidy has just connected AND we're not a Spotify track, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
+			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
 				this.loadTrack(nextProps);
 			}
 		}
@@ -87,6 +89,11 @@ class Track extends React.Component{
 					}
 				}
 				break;
+		}
+
+		// Get the LastFM version of this track
+		if (props.lastfm_authorized){
+			//this.props.lastfmActions.getTrack(this.props.track);
 		}
 
 		// We don't have lyrics, but the track (and artists) is already loaded
@@ -211,7 +218,8 @@ class Track extends React.Component{
 
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
-					{this.props.slim_mode ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />}
+					<LastfmLoveButton uri={this.props.params.uri} artist={this.props.track.artists[0].name} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.userloved} />
+					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
 				{this.renderLyricsSelector()}
@@ -240,6 +248,7 @@ const mapStateToProps = (state, ownProps) => {
 		albums: state.core.albums,
 		spotify_library_albums: state.spotify.library_albums,
 		local_library_albums: state.mopidy.library_albums,
+		lastfm_authorized: state.spotify.session,
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	};
@@ -250,6 +259,7 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
 		geniusActions: bindActionCreators(geniusActions, dispatch)
 	}

@@ -264,11 +264,7 @@ export function getMe(){
  **/
 export function getTrack(uri){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_TRACK_LOADED', data: false });
-
-        sendRequest(dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri) )
+        sendRequest(dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri))
             .then(
                 response => {
                     let track = Object.assign(
@@ -677,6 +673,13 @@ export function following(uri, method = 'GET'){
         var asset_name = helpers.uriType(uri);
         var endpoint, data
         switch(asset_name){
+            case 'track':
+                if (method == 'GET'){
+                    endpoint = 'me/tracks/contains/?ids='+ helpers.getFromUri('trackid', uri)
+                } else {               
+                    endpoint = 'me/tracks/?ids='+ helpers.getFromUri('trackid', uri) 
+                }
+                break
             case 'album':
                 if (method == 'GET'){
                     endpoint = 'me/albums/contains/?ids='+ helpers.getFromUri('albumid', uri)
@@ -709,7 +712,7 @@ export function following(uri, method = 'GET'){
                 break
         }
 
-        sendRequest(dispatch, getState, endpoint, method, data )
+        sendRequest(dispatch, getState, endpoint, method, data)
             .then(
                 response => {
                     if (response ) is_following = response

@@ -9,19 +9,26 @@ var helpers = require('../../helpers')
  * @param dispatch = obj
  * @param getState = obj
  * @param params = string, the url params to send
- * @param signed = boolean
+ * @params signed = boolean, whether we've got a signed request with baked-in api_key
  **/
-const sendRequest = (dispatch, getState, params, signed) => {
+const sendRequest = (dispatch, getState, params, signed = false) => {
     return new Promise((resolve, reject) => {
 
-        var loader_key = helpers.generateGuid()
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
+        var loader_key = helpers.generateGuid();
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params));
 
         var config = {
             method: 'GET',
             cache: true,
             timeout: 30000,
-            url: '//ws.audioscrobbler.com/2.0/?format=json&api_key=4320a3ef51c9b3d69de552ac083c55e3&'+params
+            url: '//ws.audioscrobbler.com/2.0/?format=json&'+params
+        }
+
+        // Signed requests don't need our api_key as the proxy has it's own 
+        if (!signed){
+            config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
+        } else {
+            config.method = 'POST';
         }
 
         $.ajax(config).then(
@@ -43,6 +50,58 @@ const sendRequest = (dispatch, getState, params, signed) => {
                     reject(error)
                 }
             )
+    })
+}
+
+/**
+ * Send a SIGNED ajax request to the LastFM API
+ *
+ * @param dispatch = obj
+ * @param getState = obj
+ * @param params = string, the url params to send
+ * @param signed = boolean
+ **/
+const sendSignedRequest = (dispatch, getState, params) => {
+    return new Promise((resolve, reject) => {
+
+        var loader_key = helpers.generateGuid()
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
+
+        var config = {
+            method: 'GET',
+            cache: false,
+            timeout: 30000,
+            url: getState().lastfm.authorization_url+"?action=sign_request&"+params
+        }
+
+        $.ajax(config).then(
+                response => {
+                    var signed_params = "";
+                    for (var key in response){
+                        if (response.hasOwnProperty(key)){
+                            if (signed_params != ""){
+                                signed_params += "&"
+                            }
+                            signed_params += key+'='+response[key];
+                        }
+                    }
+                    dispatch(uiActions.stopLoading(loader_key))
+                    return sendRequest(dispatch, getState, signed_params, true)
+                },
+                (xhr, status, error) => {
+                    dispatch(uiActions.stopLoading(loader_key))    
+                    dispatch(coreActions.handleException(
+                        'LastFM: '+xhr.responseText, 
+                        {
+                            config: config,
+                            error: error,
+                            status: status,
+                            xhr: xhr
+                        }
+                    ));
+                    reject(error)
+                }
+            );
     })
 }
 
@@ -98,16 +157,38 @@ export function connect(){
  * TODO
  **/
 
-export function loveTrack(artist, track){
+export function loveTrack(uri, artist, track){
     return (dispatch, getState) => {
-        var params = 'method=track.love&artist='+artist+'&track='+track
-        sendRequest(dispatch, getState, params, true)
+        artist = encodeURIComponent(artist);
+        var params = 'method=track.love&track='+track+'&artist='+artist;
+        sendSignedRequest(dispatch, getState, params)
             .then(
                 response => {
                     dispatch({
-                        type: 'LASTFM_TRACK_LOVED',
-                        artist: artist,
-                        track: track
+                        type: 'TRACK_LOADED',
+                        key: uri,
+                        track: {
+                            userloved: true
+                        }
+                    });
+                }
+            )
+    }
+}
+
+export function unloveTrack(uri, artist, track){
+    return (dispatch, getState) => {
+        artist = encodeURIComponent(artist);
+        var params = 'method=track.unlove&track='+track+'&artist='+artist;
+        sendSignedRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    dispatch({
+                        type: 'TRACK_LOADED',
+                        key: uri,
+                        track: {
+                            userloved: false
+                        }
                     });
                 }
             )
@@ -192,19 +273,30 @@ export function getAlbum(artist, album, mbid = false){
     }
 }
 
-export function getTrack(artist, track){
+export function getTrack(track, artist_name = null, track_name = null){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'LASTFM_TRACK_LOADED', data: false });
-        
-        artist = encodeURIComponent(artist );
-        sendRequest(dispatch, getState, 'method=track.getInfo&track='+track+'&artist='+artist)
+        if (track){
+            artist_name = track.artist[0].name;
+            track_name = track.name;
+        }
+        artist_name = encodeURIComponent(artist_name);
+        var params = 'method=track.getInfo&track='+track+'&artist='+artist;
+        if (getState().lastfm.session){
+            params += '&username='+getState().lastfm.session.name;
+        }
+        sendRequest(dispatch, getState, params)
             .then(
                 response => {
                     if (response.track){
+                        var merged_track = Object.assign(
+                            {},
+                            response.track,
+                            track
+                        );
                         dispatch({
-                            type: 'LASTFM_TRACK_LOADED',
-                            data: response.track
+                            type: 'TRACK_LOADED',
+                            key: uri,
+                            track: merged_track
                         });
                     }
                 }
