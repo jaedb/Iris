@@ -164,6 +164,7 @@ export function loveTrack(uri, artist, track){
         sendSignedRequest(dispatch, getState, params)
             .then(
                 response => {
+                    console.log(response);
                     dispatch({
                         type: 'TRACK_LOADED',
                         key: uri,
