@@ -52,9 +52,18 @@ class Track extends React.Component{
 			}
 		}
 
-		// We don't have lyrics, and we have just received our artists
-		if (!nextProps.track.lyrics_results && !this.props.track.artists && nextProps.track.artists){
-			this.props.geniusActions.findTrackLyrics(nextProps.track);
+		// We have just received our full track info (with artists)
+		if (!this.props.track.artists && nextProps.track.artists){
+
+			// Ready to load LastFM
+			if (nextProps.lastfm_authorized){
+				this.props.lastfmActions.getTrack(nextProps.track);
+			}
+
+			// Ready to load lyrics
+			if (!nextProps.track.lyrics_results){
+				this.props.geniusActions.findTrackLyrics(nextProps.track);
+			}
 		}
 	}
 
@@ -91,14 +100,18 @@ class Track extends React.Component{
 				break;
 		}
 
-		// Get the LastFM version of this track
-		if (props.lastfm_authorized){
-			//this.props.lastfmActions.getTrack(this.props.track);
-		}
+		// We have artist info already
+		if (props.track && props.track.artists){
 
-		// We don't have lyrics, but the track (and artists) is already loaded
-		if (props.track && !props.track.lyrics_results && props.track.artists){
-			this.props.geniusActions.findTrackLyrics(props.track);
+			// Get the LastFM version of this track (provided we have artist info)
+			if (props.lastfm_authorized){
+				this.props.lastfmActions.getTrack(props.track);
+			}
+
+			// Ready for lyrics
+			if (props.track && !props.track.lyrics_results){
+				this.props.geniusActions.findTrackLyrics(props.track);
+			}
 		}
 	}
 
@@ -218,7 +231,7 @@ class Track extends React.Component{
 
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
-					<LastfmLoveButton uri={this.props.params.uri} artist={this.props.track.artists[0].name} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.userloved} />
+					<LastfmLoveButton uri={this.props.params.uri} artist={this.props.track.artists[0].name} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
@@ -248,7 +261,7 @@ const mapStateToProps = (state, ownProps) => {
 		albums: state.core.albums,
 		spotify_library_albums: state.spotify.library_albums,
 		local_library_albums: state.mopidy.library_albums,
-		lastfm_authorized: state.spotify.session,
+		lastfm_authorized: state.lastfm.session,
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	};

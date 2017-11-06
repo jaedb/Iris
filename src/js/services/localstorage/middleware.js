@@ -178,6 +178,17 @@ const localstorageMiddleware = (function(){
                 );
                 localStorage.setItem('lastfm', JSON.stringify(lastfm));
                 break;
+
+            case 'LASTFM_AUTHORIZATION_REVOKED':
+                var lastfm = JSON.parse(localStorage.getItem('lastfm') );
+                lastfm = Object.assign(
+                    {},
+                    {
+                        session: null
+                    }
+                );
+                localStorage.setItem('lastfm', JSON.stringify(lastfm));
+                break;
         }
     }
 

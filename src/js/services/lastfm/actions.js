@@ -33,21 +33,32 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
 
         $.ajax(config).then(
                 response => {
-                    dispatch(uiActions.stopLoading(loader_key))    
-                    resolve(response)
+                    dispatch(uiActions.stopLoading(loader_key));
+                    if (response.error){
+                        reject({
+                            config: config,
+                            error: response
+                        });
+                    } else {
+                        resolve(response);
+                    }
                 },
                 (xhr, status, error) => {
-                    dispatch(uiActions.stopLoading(loader_key))    
-                    dispatch(coreActions.handleException(
-                        'LastFM: '+xhr.responseText, 
-                        {
-                            config: config,
-                            error: error,
-                            status: status,
-                            xhr: xhr
-                        }
-                    ));
-                    reject(error)
+                    dispatch(uiActions.stopLoading(loader_key));
+
+                    // Snatch a more meaningful error
+                    var description = null;
+                    if (xhr.responseJSON.message){
+                        description = xhr.responseJSON.message;
+                    }
+
+                    reject({
+                        config: config,
+                        error: error,
+                        description: description,
+                        status: status,
+                        xhr: xhr
+                    });
                 }
             )
     })
@@ -64,8 +75,18 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
 const sendSignedRequest = (dispatch, getState, params) => {
     return new Promise((resolve, reject) => {
 
+        // Not authorized
+        if (!getState().lastfm.session){
+            reject({
+                params: params,
+                error: "No active LastFM session"
+            });
+        }
+
         var loader_key = helpers.generateGuid()
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params))
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params));
+
+        params += "&sk="+getState().lastfm.session.key;
 
         var config = {
             method: 'GET',
@@ -75,33 +96,33 @@ const sendSignedRequest = (dispatch, getState, params) => {
         }
 
         $.ajax(config).then(
-                response => {
-                    var signed_params = "";
-                    for (var key in response){
-                        if (response.hasOwnProperty(key)){
-                            if (signed_params != ""){
-                                signed_params += "&"
-                            }
-                            signed_params += key+'='+response[key];
+            response => {
+                var signed_params = "";
+                for (var key in response){
+                    if (response.hasOwnProperty(key)){
+                        if (signed_params != ""){
+                            signed_params += "&"
                         }
+                        signed_params += key+'='+response[key];
                     }
-                    dispatch(uiActions.stopLoading(loader_key))
-                    return sendRequest(dispatch, getState, signed_params, true)
-                },
-                (xhr, status, error) => {
-                    dispatch(uiActions.stopLoading(loader_key))    
-                    dispatch(coreActions.handleException(
-                        'LastFM: '+xhr.responseText, 
-                        {
-                            config: config,
-                            error: error,
-                            status: status,
-                            xhr: xhr
-                        }
-                    ));
-                    reject(error)
                 }
-            );
+
+                dispatch(uiActions.stopLoading(loader_key))
+                sendRequest(dispatch, getState, signed_params, true)
+                    .then(
+                        response => {
+                            resolve(response);
+                        },
+                        error => {
+                            reject(error);
+                        }
+                    );
+            },
+            (xhr, status, error) => {
+                dispatch(uiActions.stopLoading(loader_key));
+                reject(error)
+            }
+        );
     })
 }
 
@@ -164,7 +185,6 @@ export function loveTrack(uri, artist, track){
         sendSignedRequest(dispatch, getState, params)
             .then(
                 response => {
-                    console.log(response);
                     dispatch({
                         type: 'TRACK_LOADED',
                         key: uri,
@@ -277,11 +297,13 @@ export function getAlbum(artist, album, mbid = false){
 export function getTrack(track, artist_name = null, track_name = null){
     return (dispatch, getState) => {
         if (track){
-            artist_name = track.artist[0].name;
             track_name = track.name;
+            if (track.artists){
+                artist_name = track.artists[0].name;
+            }
         }
         artist_name = encodeURIComponent(artist_name);
-        var params = 'method=track.getInfo&track='+track+'&artist='+artist;
+        var params = 'method=track.getInfo&track='+track_name+'&artist='+artist_name;
         if (getState().lastfm.session){
             params += '&username='+getState().lastfm.session.name;
         }
@@ -296,10 +318,39 @@ export function getTrack(track, artist_name = null, track_name = null){
                         );
                         dispatch({
                             type: 'TRACK_LOADED',
-                            key: uri,
+                            key: merged_track.uri,
                             track: merged_track
                         });
                     }
+                }
+            )
+    }
+}
+
+export function scrobble(track){
+    return (dispatch, getState) => {
+        var track_name = track.name;
+        var artist_name = "Unknown";
+        if (track.artists){
+            artist_name = track.artists[0].name;
+        }
+        var artist_name = encodeURIComponent(artist_name);
+
+        var params = 'method=track.scrobble';
+        params += '&track='+track_name+'&artist='+artist_name;
+        params += '&timestamp='+Date.now();
+
+        sendSignedRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    console.log("Scrobbled", response);
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not scrobble track',
+                        error,
+                        (error.description ? error.description : null)
+                    ));
                 }
             )
     }

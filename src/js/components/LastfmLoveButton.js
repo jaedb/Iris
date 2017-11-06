@@ -37,7 +37,7 @@ class FollowButton extends React.Component{
 
 		if (!this.props.lastfm_authorized){
 			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification('You must authorize LastFM first','warning')}>{this.props.addText}</button>
-		} else if (this.props.loved === true){
+		} else if (this.props.is_loved && this.props.is_loved !== "0"){
 			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {
 			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
