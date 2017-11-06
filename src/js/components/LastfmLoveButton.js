@@ -16,11 +16,11 @@ class FollowButton extends React.Component{
 	}
 
 	remove(){
-		this.props.lastfmActions.loveTrack(this.props.uri, this.props.artist, this.props.track);
+		this.props.lastfmActions.unloveTrack(this.props.uri, this.props.artist, this.props.track);
 	}
 
 	add(){
-		this.props.lastfmActions.unloveTrack(this.props.uri, this.props.artist, this.props.track);
+		this.props.lastfmActions.loveTrack(this.props.uri, this.props.artist, this.props.track);
 	}
 
 	render(){

@@ -95,20 +95,13 @@ const sendSignedRequest = (dispatch, getState, params) => {
             url: getState().lastfm.authorization_url+"?action=sign_request&"+params
         }
 
+        // Get our server proxy to sign our request
         $.ajax(config).then(
             response => {
-                var signed_params = "";
-                for (var key in response){
-                    if (response.hasOwnProperty(key)){
-                        if (signed_params != ""){
-                            signed_params += "&"
-                        }
-                        signed_params += key+'='+response[key];
-                    }
-                }
+                dispatch(uiActions.stopLoading(loader_key));
 
-                dispatch(uiActions.stopLoading(loader_key))
-                sendRequest(dispatch, getState, signed_params, true)
+                // Now we have signed params, we can make the actual request
+                sendRequest(dispatch, getState, response.params, true)
                     .then(
                         response => {
                             resolve(response);
@@ -338,7 +331,7 @@ export function scrobble(track){
 
         var params = 'method=track.scrobble';
         params += '&track='+track_name+'&artist='+artist_name;
-        params += '&timestamp='+Date.now();
+        params += '&timestamp='+Math.floor(Date.now() / 1000);
 
         sendSignedRequest(dispatch, getState, params)
             .then(
