@@ -32,15 +32,6 @@ const LastfmMiddleware = (function(){
                 next(action);
                 break;
 
-            case 'MOPIDY_CURRENTTLTRACK':
-                if (action.data && action.data.track){
-                    if (state.lastfm.session){
-                        store.dispatch(lastfmActions.scrobble(action.data.track));
-                    }
-                }
-                next(action);
-                break;
-
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

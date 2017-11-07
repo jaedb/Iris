@@ -12,38 +12,10 @@ export default function reducer(core = {}, action){
          **/
 
         case 'MOPIDY_TLTRACKS':
-            if (!action.data ) return core
-
-            var tracklist = []
-            for (var i = 0; i < action.data.length; i++){
-
-                var tltrack = helpers.formatTracks(action.data[i]);
-
-                // load our metadata (if we have any for that tlid)
-                if (core.queue_metadata !== undefined && core.queue_metadata['tlid_'+tltrack.tlid] !== undefined){
-                    var metadata = core.queue_metadata['tlid_'+tltrack.tlid]
-                } else {
-                    var metadata = {}
-                }
-
-                var current_tlid = null;
-                if (core.current_track && core.tracks && core.tracks[core.current_track] !== undefined && core.tracks[core.current_track].tlid !== undefined){
-                    current_tlid = core.tracks[core.current_track].tlid;
-                }
-
-                var track = Object.assign(
-                    {}, 
-                    tltrack,
-                    metadata,
-                    {
-                        playing: (tltrack.tlid == current_tlid)
-                    })
-                tracklist.push(track)
+            if (!action.tracklist){
+                return core;
             }
-
-            tracklist = helpers.formatTracks(tracklist);
-
-            return Object.assign({}, core, { current_tracklist: tracklist });
+            return Object.assign({}, core, { current_tracklist: action.tracklist });
 
         case 'MOPIDY_CURRENTTLTRACK':
             if (!action.data) return core

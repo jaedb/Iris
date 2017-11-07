@@ -15,7 +15,10 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
     return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid();
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params));
+        var method = params.substring(params.indexOf("method=")+7, params.length);
+        method = method.substring(0, method.indexOf("&"));
+
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+method));
 
         var config = {
             method: 'GET',
@@ -83,8 +86,11 @@ const sendSignedRequest = (dispatch, getState, params) => {
             });
         }
 
-        var loader_key = helpers.generateGuid()
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+params));
+        var loader_key = helpers.generateGuid();
+        var method = params.substring(params.indexOf("method=")+7, params.length);
+        method = method.substring(0, method.indexOf("&"));
+
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_'+method));
 
         params += "&sk="+getState().lastfm.session.key;
 

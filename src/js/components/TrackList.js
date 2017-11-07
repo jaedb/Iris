@@ -202,7 +202,7 @@ class TrackList extends React.Component{
 			uris: selected_tracks_uris,
 			indexes: selected_tracks_indexes
 		}
-		this.props.uiActions.showContextMenu(data)
+		this.props.uiActions.showContextMenu(data);
 	}
 
 	handleSelection(e,track_key){

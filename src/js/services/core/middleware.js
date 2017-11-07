@@ -119,6 +119,14 @@ const CoreMiddleware = (function(){
                     action.album.images = helpers.digestMopidyImages(store.getState().mopidy, action.album.images);
                 }
 
+                // Load our tracks
+                if (action.album.tracks){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.album.tracks
+                    });
+                }
+
                 next(action)
                 break
 
@@ -129,13 +137,30 @@ const CoreMiddleware = (function(){
                     if (action.albums[i].images && action.albums[i].images.length > 0){
                         action.albums[i].images = helpers.digestMopidyImages(store.getState().mopidy, action.albums[i].images);
                     }
+
+                    // Load our tracks
+                    if (action.albums[i].tracks){
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: action.albums[i].tracks
+                        });
+                    }
                 }
 
                 next(action)
                 break
 
             case 'ARTIST_LOADED':
-                if (action.data) ReactGA.event({ category: 'Artist', action: 'Load', label: action.artist.uri })
+                if (action.data) ReactGA.event({ category: 'Artist', action: 'Load', label: action.artist.uri });
+
+                // Load our tracks
+                if (action.artist.tracks){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.artist.tracks
+                    });
+                }
+
                 next(action)
                 break
 
@@ -239,9 +264,17 @@ const CoreMiddleware = (function(){
                         }
                 }
 
+                // Load our tracks
+                if (action.playlist.tracks){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.playlist.tracks
+                    });
+                }
+
                 // proceed as usual
-                action.playlist = playlist
-                next(action)
+                action.playlist = playlist;
+                next(action);
                 break
 
             case 'PLAYLISTS_LOADED':
@@ -288,6 +321,49 @@ const CoreMiddleware = (function(){
                 }
 
                 next(action)
+                break
+
+            case 'MOPIDY_TLTRACKS':
+
+                var core = store.getState().core;
+                var tracklist = []
+                for (var i = 0; i < action.data.length; i++){
+
+                    var tltrack = helpers.formatTracks(action.data[i]);
+
+                    // load our metadata (if we have any for that tlid)
+                    if (core.queue_metadata !== undefined && core.queue_metadata['tlid_'+tltrack.tlid] !== undefined){
+                        var metadata = core.queue_metadata['tlid_'+tltrack.tlid]
+                    } else {
+                        var metadata = {}
+                    }
+
+                    var current_tlid = null;
+                    if (core.current_track && core.tracks && core.tracks[core.current_track] !== undefined && core.tracks[core.current_track].tlid !== undefined){
+                        current_tlid = core.tracks[core.current_track].tlid;
+                    }
+
+                    var track = Object.assign(
+                        {}, 
+                        tltrack,
+                        metadata,
+                        {
+                            playing: (tltrack.tlid == current_tlid)
+                        })
+                    tracklist.push(track)
+                }
+
+                // Append to our action
+                tracklist = helpers.formatTracks(tracklist);
+                action.tracklist = tracklist;
+
+                // Load our tracks into index
+                store.dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: tracklist
+                });
+
+                next(action);
                 break
 
             // Get assets from all of our providers
