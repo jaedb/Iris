@@ -25,9 +25,8 @@ const LastfmMiddleware = (function(){
                     }
                 );
                 store.dispatch({
-                    type: "USER_LOADED",
-                    key: user.uri,
-                    user: user
+                    type: "USERS_LOADED",
+                    users: [user]
                 });
                 next(action);
                 break;

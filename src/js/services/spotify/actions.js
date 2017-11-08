@@ -1166,9 +1166,8 @@ export function getUser(uri){
             .then(
                 response => {
                     dispatch({
-                        type: 'USER_LOADED',
-                        key: response.uri,
-                        user: response
+                        type: 'USERS_LOADED',
+                        users: [response]
                     });
                 },
                 error => {

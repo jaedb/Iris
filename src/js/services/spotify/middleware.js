@@ -413,9 +413,8 @@ const SpotifyMiddleware = (function(){
                 ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: action.data.id});
 
                 store.dispatch({
-                    type: 'USER_LOADED',
-                    key: action.data.uri,
-                    user: action.data
+                    type: 'USERS_LOADED',
+                    users: [action.data]
                 })
 
                 next(action);

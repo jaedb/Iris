@@ -189,8 +189,8 @@ export function loveTrack(uri, artist, track){
                 response => {
                     dispatch({
                         type: 'TRACK_LOADED',
-                        key: uri,
                         track: {
+                            uri: uri,
                             userloved: true
                         }
                     });
@@ -208,8 +208,8 @@ export function unloveTrack(uri, artist, track){
                 response => {
                     dispatch({
                         type: 'TRACK_LOADED',
-                        key: uri,
                         track: {
+                            uri: uri,
                             userloved: false
                         }
                     });
@@ -255,8 +255,8 @@ export function getArtist(uri, artist, mbid = false){
                     if (response.artist){
                         dispatch({
                             type: 'ARTIST_LOADED',
-                            key: uri,
                             artist: {
+                                uri: uri,
                                 images: response.artist.image,
                                 bio: response.artist.bio,
                                 listeners: parseInt(response.artist.stats.listeners),
@@ -315,12 +315,14 @@ export function getTrack(track, artist_name = null, track_name = null){
                     if (response.track){
                         var merged_track = Object.assign(
                             {},
+                            {
+                                uri: track.uri
+                            },
                             response.track,
                             track
                         );
                         dispatch({
                             type: 'TRACK_LOADED',
-                            key: merged_track.uri,
                             track: merged_track
                         });
                     }

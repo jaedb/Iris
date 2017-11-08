@@ -68,12 +68,12 @@ class AddSeedField extends React.Component{
 		switch (helpers.uriType(item.uri)){
 
 			case 'artist':
-				this.props.coreActions.artistLoaded(item.uri,item)
-				break
+				this.props.coreActions.artistsLoaded(item);
+				break;
 
 			case 'track':
-				this.props.coreActions.trackLoaded(item.uri,item)
-				break
+				this.props.coreActions.tracksLoaded(item);
+				break;
 		}
 	}
 

@@ -221,11 +221,10 @@ export function getLibraryArtists(){
  * Assets loaded
  **/
 
-export function albumLoaded(key,album){
+export function tracksLoaded(tracks){
     return {
-        type: 'ALBUM_LOADED',
-        key: key,
-        album: album
+        type: 'TRACKS_LOADED',
+        tracks: tracks
     }
 }
 
@@ -236,14 +235,6 @@ export function albumsLoaded(albums){
     }
 }
 
-export function artistLoaded(key,artist){
-    return {
-        type: 'ARTIST_LOADED',
-        key: key,
-        artist: artist
-    }
-}
-
 export function artistsLoaded(artists){
     return {
         type: 'ALBUMS_LOADED',
@@ -251,17 +242,16 @@ export function artistsLoaded(artists){
     }
 }
 
-export function trackLoaded(key,track){
+export function playlistsLoaded(playlists){
     return {
-        type: 'TRACK_LOADED',
-        key: key,
-        track: track
+        type: 'PLAYLISTS_LOADED',
+        playlists: playlists
     }
 }
 
-export function tracksLoaded(tracks){
+export function usersLoaded(users){
     return {
-        type: 'TRACKS_LOADED',
-        tracks: tracks
+        type: 'USERS_LOADED',
+        users: users
     }
 }
