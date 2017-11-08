@@ -120,6 +120,16 @@ class Album extends React.Component{
 			}
 		}
 
+		var tracks = [];
+		if (this.props.album.tracks_uris && this.props.tracks){
+			for (var i = 0; i < this.props.album.tracks_uris.length; i++){
+				var uri = this.props.album.tracks_uris[i]
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view album-view content-wrapper">
 				<div className="thumbnail-wrapper">
@@ -135,8 +145,7 @@ class Album extends React.Component{
 						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
 						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
 						<li>
-							{ this.props.album.tracks_total ? this.props.album.tracks_total : '0' } tracks,&nbsp;
-							{ this.props.album.tracks ? <Dater type="total-time" data={this.props.album.tracks} /> : '0 mins' }
+							{tracks ? <span>{tracks.length} tracks, <Dater type="total-time" data={tracks} /></span> : '0 tracks, 0 mins' }
 						</li>
 					</ul>
 				</div>
@@ -148,7 +157,7 @@ class Album extends React.Component{
 				</div>
 
 				<section className="list-wrapper">
-					{ this.props.album.tracks ? <TrackList className="album-track-list" tracks={ this.props.album.tracks } uri={this.props.params.uri} /> : null }
+					<TrackList className="album-track-list" tracks={tracks} uri={this.props.params.uri} />
 					<LazyLoadListener loading={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 
@@ -169,6 +178,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
+		tracks: state.core.tracks,
 		artists: state.core.artists,
 		album: (state.core.albums && state.core.albums[uri] !== undefined ? state.core.albums[uri] : false ),
 		albums: state.core.albums,

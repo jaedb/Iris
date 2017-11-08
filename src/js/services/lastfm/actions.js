@@ -161,10 +161,13 @@ export function connect(){
 
         // Not authorized? Just use a generic lookup to test our connection
         } else {
-            sendRequest(dispatch, getState, 'method=artist.getInfo&artist=')
+            sendRequest(dispatch, getState, 'method=artist.getInfo&artist=Moby')
                 .then(
                     response => {
                         dispatch({ type: 'LASTFM_CONNECTED' })
+                    },
+                    error => {
+                        dispatch({ type: 'LASTFM_DISCONNECTED' })
                     }
                 )
         }
