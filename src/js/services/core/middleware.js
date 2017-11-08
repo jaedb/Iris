@@ -277,33 +277,6 @@ const CoreMiddleware = (function(){
                 next(action);
                 break
 
-            case 'PLAYLISTS_LOADED':
-                if (action.data) ReactGA.event({ category: 'Playlists', action: 'Load', label: action.playlists.length+' items' })
-
-                var playlists = []
-                for (var i = 0; i < action.playlists.length; i++){
-                    var playlist = Object.assign({}, action.playlists[i])
-
-                    switch (helpers.uriSource(playlist.uri)){
-
-                        case 'm3u':
-                            playlist.can_edit = true
-                            break
-
-                        case 'spotify':
-                            if (store.getState().spotify.authorization && store.getState().spotify.me){
-                                playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
-                            }
-                    }
-
-                    playlists.push(playlist)
-                }
-
-                // proceed as usual
-                action.playlists = playlists
-                next(action)
-                break
-
             case 'MOPIDY_CURRENTTLTRACK':
                 if (action.data && action.data.track){
                     helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state);
