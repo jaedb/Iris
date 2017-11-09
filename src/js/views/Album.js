@@ -85,7 +85,14 @@ class Album extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.album.tracks_more, 'SPOTIFY_ALBUM_LOADED_MORE' );
+		this.props.spotifyActions.loadMore(
+			this.props.album.tracks_more,
+			{
+				parent_type: 'album',
+				parent_key: this.props.album.uri,
+				records_type: 'track'
+			}
+		);
 	}
 
 	play(){

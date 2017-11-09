@@ -505,6 +505,40 @@ export function getURL(url, action_name, key = false){
     }
 }
 
+export function loadMore(url, loaded_more_action = null, custom_action = null){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, url)
+            .then(
+                response => {
+                    if (loaded_more_action){
+                        dispatch(coreActions.loadedMore(
+                            loaded_more_action.parent_type,
+                            loaded_more_action.parent_key,
+                            loaded_more_action.records_type,
+                            response
+                        ));
+                    } else if (custom_action){
+                        dispatch({
+                            type: custom_action.type,
+                            key: custom_action.key,
+                            data: response
+                        });
+                    } else {
+                        dispatch(coreActions.handleException(
+                            'No callback handler for loading more items'
+                        ));
+                    }
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not load more '+callback_action.parent_type+' '+callback_action.records_type+'s',
+                        error
+                    ));
+                }
+            );
+    }
+}
+
 export function clearSearchResults(){
     return {
         type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'

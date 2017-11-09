@@ -221,6 +221,16 @@ export function getLibraryArtists(){
  * Assets loaded
  **/
 
+export function loadedMore(parent_type, parent_key, records_type, records_data){
+    return {
+        type: 'LOADED_MORE',
+        parent_type: parent_type,
+        parent_key: parent_key,
+        records_type: records_type,
+        records_data: records_data
+    }
+}
+
 export function tracksLoaded(tracks){
     return {
         type: 'TRACKS_LOADED',

@@ -74,7 +74,14 @@ class Playlist extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.playlist.tracks_more, 'PLAYLIST_LOADED_MORE_TRACKS', this.props.playlist.uri );
+		this.props.spotifyActions.loadMore(
+			this.props.playlist.tracks_more,
+			{
+				parent_type: 'playlist',
+				parent_key: this.props.playlist.uri,
+				records_type: 'track'
+			}
+		);
 	}
 
 	play(){
@@ -223,7 +230,7 @@ const mapStateToProps = (state, ownProps) => {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
-		playlist: (state.core.playlists && state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
+		playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
 		spotify_library_playlists: state.spotify.library_playlists,
 		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,

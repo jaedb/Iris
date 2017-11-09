@@ -220,7 +220,6 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'MOPIDY_TLTRACKS':
-
                 var core = store.getState().core;
                 var tracklist = []
                 for (var i = 0; i < action.data.length; i++){
@@ -484,19 +483,7 @@ const CoreMiddleware = (function(){
                     }
 
                     if (playlists[playlist.uri] !== undefined){
-                        var existing_playlist = playlists[playlist.uri];
-
-                        if (existing_playlist.tracks && playlist.tracks){
-                            var tracks = [...existing_playlist.tracks, ...playlist.tracks];
-                        } else if (existing_playlist.tracks){
-                            var tracks = existing_playlist.tracks;
-                        } else if (playlist.tracks){
-                            var tracks = playlist.tracks;
-                        } else {
-                            var tracks = [];
-                        }
-
-                        playlist = Object.assign({tracks: tracks}, existing_playlist, playlist);
+                        playlist = Object.assign({}, playlists[playlist.uri], playlist);
                     }
 
                     // Load our tracks
@@ -527,7 +514,7 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'USERS_LOADED':
-                var users = Object.assign([], core.users);
+                var users = Object.assign({}, core.users);
 
                 for (var i = 0; i < action.users.length; i++){
                     var user = Object.assign({}, action.users[i]);
@@ -544,6 +531,63 @@ const CoreMiddleware = (function(){
                     type: 'UPDATE_USERS_INDEX',
                     users: users
                 });
+
+                next(action);
+                break;
+
+            /**
+             * Loaded more linked assets
+             * Often fired during lazy-loading or async asset grabbing.
+             * We link the parent to these indexed records by {type}s_uris
+             **/
+
+            case 'LOADED_MORE':
+                var parent_type_plural = action.parent_type+'s';
+                var parent_index = Object.assign({}, core[action.parent_type+'s']);
+                var parent = Object.assign({}, parent_index[action.parent_key]);
+
+                if (action.records_data.items !== undefined){
+                    var records = action.records_data.items;
+                } else if (action.records_data.tracks !== undefined){
+                    var records = action.records_data.tracks;
+                } else if (action.records_data.artists !== undefined){
+                    var records = action.records_data.artists;
+                } else if (action.records_data.albums !== undefined){
+                    var records = action.records_data.albums;
+                } else if (action.records_data.playlists !== undefined){
+                    var records = action.records_data.playlists;
+                } else {
+                    var records = action.records_data;
+                }
+
+                if (action.records_type == 'track'){
+                    records = helpers.formatTracks(records);
+                }
+
+                var records_type_plural = action.records_type+'s';
+                var records_index = Object.assign({});
+                var records_uris = helpers.arrayOf('uri', records);
+
+                // Append our records_uris array with our new records
+                var uris = [...parent[records_type_plural+'_uris'], ...records_uris];
+                parent[records_type_plural+'_uris'] = uris;
+                if (action.records_data.next !== undefined){
+                    parent[records_type_plural+'_more'] = action.records_data.next;
+                }
+
+                // Parent loaded (well, changed)
+                var parent_action = {
+                    type: parent_type_plural.toUpperCase()+'_LOADED'
+                };
+                parent_action[parent_type_plural] = [parent];
+                store.dispatch(parent_action);
+
+                // Records loaded
+                var records_action = {
+                    type: records_type_plural.toUpperCase()+'_LOADED'
+                };
+                records_action[records_type_plural] = records;
+                store.dispatch(records_action);
 
                 next(action);
                 break;
