@@ -490,7 +490,7 @@ const CoreMiddleware = (function(){
                             var tracks = [...existing_playlist.tracks, ...playlist.tracks];
                         } else if (existing_playlist.tracks){
                             var tracks = existing_playlist.tracks;
-                        } else if (action.playlist.tracks){
+                        } else if (playlist.tracks){
                             var tracks = playlist.tracks;
                         } else {
                             var tracks = [];

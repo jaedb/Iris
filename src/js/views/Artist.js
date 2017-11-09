@@ -161,12 +161,23 @@ class Artist extends React.Component{
 				)
 
 			default:
+
+				var tracks = [];
+				if (this.props.artist.tracks_uris && this.props.tracks){
+					for (var i = 0; i < this.props.artist.tracks_uris.length; i++){
+						var uri = this.props.artist.tracks_uris[i]
+						if (this.props.tracks.hasOwnProperty(uri)){
+							tracks.push(this.props.tracks[uri])
+						}
+					}
+				}
+
 				return (
 					<div className="body overview">
 						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
 							<h4>Top tracks</h4>
 							<div className="list-wrapper">
-								{ this.props.artist.tracks ? <TrackList className="artist-track-list" uri={this.props.params.uri} tracks={this.props.artist.tracks} /> : null }
+								<TrackList className="artist-track-list" uri={this.props.params.uri} tracks={tracks} />
 							</div>
 						</div>
 
@@ -263,8 +274,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		artist: (state.core.artists && state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),
-		artists: (state.core.artists ? state.core.artists : []),
+		artist: (state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),
+		tracks: state.core.tracks,
+		artists: state.core.artists,
 		spotify_library_artists: state.spotify.library_artists,
 		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
