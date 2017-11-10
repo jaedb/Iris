@@ -64,8 +64,8 @@ export function getTrackLyrics(uri, url){
 
         dispatch({
             type: 'TRACK_LOADED',
-            key: uri,
             track: {
+                uri: uri,
                 lyrics: null,
                 lyrics_url: null
             }
@@ -89,8 +89,8 @@ export function getTrackLyrics(uri, url){
 
                         dispatch({
                             type: 'TRACK_LOADED',
-                            key: uri,
                             track: {
+                                uri: uri,
                                 lyrics: lyrics_html,
                                 lyrics_url: url
                             }
@@ -131,8 +131,8 @@ export function findTrackLyrics(track){
                         }
                         dispatch({
                             type: 'TRACK_LOADED',
-                            key: track.uri,
                             track: {
+                                uri: track.uri,
                                 lyrics_results: lyrics_results
                             }
                         });

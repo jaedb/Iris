@@ -81,8 +81,8 @@ export function set(data){
  **/
 
 export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id = false){
-    var range = helpers.createRange(indexes );
-    switch(helpers.uriSource(uri )){
+    var range = helpers.createRange(indexes);
+    switch(helpers.uriSource(uri)){
 
         case 'spotify':
             return { 
@@ -221,11 +221,20 @@ export function getLibraryArtists(){
  * Assets loaded
  **/
 
-export function albumLoaded(key,album){
+export function loadedMore(parent_type, parent_key, records_type, records_data){
     return {
-        type: 'ALBUM_LOADED',
-        key: key,
-        album: album
+        type: 'LOADED_MORE',
+        parent_type: parent_type,
+        parent_key: parent_key,
+        records_type: records_type,
+        records_data: records_data
+    }
+}
+
+export function tracksLoaded(tracks){
+    return {
+        type: 'TRACKS_LOADED',
+        tracks: tracks
     }
 }
 
@@ -236,14 +245,6 @@ export function albumsLoaded(albums){
     }
 }
 
-export function artistLoaded(key,artist){
-    return {
-        type: 'ARTIST_LOADED',
-        key: key,
-        artist: artist
-    }
-}
-
 export function artistsLoaded(artists){
     return {
         type: 'ALBUMS_LOADED',
@@ -251,17 +252,16 @@ export function artistsLoaded(artists){
     }
 }
 
-export function trackLoaded(key,track){
+export function playlistsLoaded(playlists){
     return {
-        type: 'TRACK_LOADED',
-        key: key,
-        track: track
+        type: 'PLAYLISTS_LOADED',
+        playlists: playlists
     }
 }
 
-export function tracksLoaded(tracks){
+export function usersLoaded(users){
     return {
-        type: 'TRACKS_LOADED',
-        tracks: tracks
+        type: 'USERS_LOADED',
+        users: users
     }
 }

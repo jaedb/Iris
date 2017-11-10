@@ -27,10 +27,7 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(spotifyActions.getAllLibraryPlaylists())
                 }
 
-                // Get the current logged-in user
-                store.dispatch(spotifyActions.getMe())
-
-                next(action)
+                next(action);
                 break
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
@@ -416,10 +413,9 @@ const SpotifyMiddleware = (function(){
                 ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: action.data.id});
 
                 store.dispatch({
-                    type: 'USER_LOADED',
-                    key: action.data.uri,
-                    user: action.data
-                })
+                    type: 'USERS_LOADED',
+                    users: [action.data]
+                });
 
                 next(action);
                 break;

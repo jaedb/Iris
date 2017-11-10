@@ -1259,11 +1259,11 @@ const MopidyMiddleware = (function(){
                                         type: 'PLAYLIST_KEY_UPDATED', 
                                         key: action.key,
                                         new_key: response.uri
-                                    })
-                                    hashHistory.push(global.baseURL+'playlist/'+response.uri)
+                                    });
+                                    hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification('Saved'))
+                                store.dispatch(uiActions.createNotification('Saved'));
                             })
                     });
                 break
@@ -1703,16 +1703,16 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
+            case 'MOPIDY_TLTRACKS':
+                store.dispatch({
+                    type: 'QUEUE_LOADED',
+                    tracks: helpers.formatTracks(action.data)
+                })
+                break;
+
             case 'MOPIDY_CURRENTTLTRACK':
                 if (action.data && action.data.track){
                     var track = helpers.formatTracks(action.data);
-
-                    // Fire off our universal track index loader
-                    store.dispatch({
-                        type: 'TRACK_LOADED',
-                        key: track.uri,
-                        track: track
-                    });
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
                     if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
@@ -1722,9 +1722,16 @@ const MopidyMiddleware = (function(){
                     } else {
                         store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
                     }
-                }
 
-                next(action);
+                    // Set our window title to the track title
+                    helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+
+                    store.dispatch({
+                        type: 'CURRENT_TRACK_LOADED',
+                        current_track: track,
+                        current_track_uri: track.uri
+                    });
+                }
                 break;
 
             case 'MOPIDY_GET_TRACK':

@@ -8,9 +8,9 @@ import FontAwesome from 'react-fontawesome'
 import Thumbnail from './Thumbnail'
 
 import * as uiActions from '../services/ui/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 
-class SpotifyAuthenticationFrame extends React.Component{
+class LastfmAuthenticationFrame extends React.Component{
 
 	constructor(props){
 		super(props);
@@ -28,7 +28,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			var data = JSON.parse(event.data);
 
 			// Only digest messages relevant to us
-			if (data.origin == 'auth_spotify'){
+			if (data.origin == 'auth_lastfm'){
 				self.handleMessage(event, data);
 			}
 		}, false);
@@ -43,14 +43,14 @@ class SpotifyAuthenticationFrame extends React.Component{
 			return false
 		}
 
-		// Spotify bounced with an error
+		// Bounced with an error
 		if (data.error !== undefined){
-			this.props.uiActions.createNotification(data.error,'bad')
+			this.props.uiActions.createNotification(data.message,'bad')
 
 		// No errors? We're in!
 		} else {
-			this.props.spotifyActions.authorizationGranted(data)
-			this.props.spotifyActions.getMe()
+			this.props.lastfmActions.authorizationGranted(data)
+			this.props.lastfmActions.getMe()
 		}
 
 		// Turn off our authorizing switch
@@ -62,25 +62,10 @@ class SpotifyAuthenticationFrame extends React.Component{
 		var self = this
 		this.setState({authorizing: true})
 
-		// Open an authentication request window (to spotify)
+		// Open an authentication request window
 		var url = this.props.authorization_url+'?action=authorize'
-		var scopes = [
-			'playlist-modify-private',
-			'playlist-modify-public',
-			'playlist-read-private',
-			'playlist-modify-private',
-			'user-library-read',
-			'user-library-modify',
-			'user-follow-modify',
-			'user-follow-read',
-			'user-read-email',
-			'user-top-read',
-			'user-read-currently-playing',
-			'user-read-playback-state',
-			'playlist-read-collaborative',
-			'ugc-image-upload' // playlist image uploading
-		]
-		var popup = window.open(url+'&scope='+scopes.join('%20'),"popup","height=580,width=350");
+		var popup = window.open(url,"popup","height=580,width=350");
+		popup.name = "LastfmAuthenticationWindow";
 
 		// Start timer to check our popup's state
 		var timer = setInterval(checkPopup, 1000);
@@ -111,7 +96,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 			)
 		} else if (this.props.authorized){
 			return (
-				<button className="destructive" onClick={() => this.props.spotifyActions.revokeAuthorization()}>Log out</button>
+				<button className="destructive" onClick={() => this.props.lastfmActions.revokeAuthorization()}>Log out</button>
 			)
 		} else {
 			return (
@@ -123,17 +108,17 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		authorization_url: state.spotify.authorization_url,
-		authorized: state.spotify.authorization,
-		authorizing: state.spotify.authorizing
+		authorization_url: state.lastfm.authorization_url,
+		authorized: state.lastfm.session,
+		authorizing: state.lastfm.authorizing
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		lastfmActions: bindActionCreators(lastfmActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SpotifyAuthenticationFrame)
+export default connect(mapStateToProps, mapDispatchToProps)(LastfmAuthenticationFrame)

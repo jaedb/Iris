@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Spotify Authentication proxy
  *
@@ -31,36 +30,41 @@ if (isset($_GET['code'])){
 	
 	// go get our credentials
 	$response = getToken($_GET['code']);
-	$responseArray = json_decode( $response, true );
+	$response = json_decode( $response, true );
 	
 	// add our code to the array of credentials, etc
-	$responseArray['authorization_code'] = $_GET['code'];
-	$response = json_encode($responseArray);
-	
+	$response['authorization_code'] = $_GET['code'];
+	$response['origin'] = "auth_spotify";
+
 	// make sure we have a successful response
-	if( !isset($responseArray['access_token']) ){
+	if( !isset($response['access_token']) ){
 		echo 'Error!';
 		die();
 	}
 	
-    // Pass our error back to the popup opener
+	// Pass our error back to the popup opener
 	?>	
 		<script type="text/javascript">
-			window.opener.postMessage( '<?php echo $response ?>', "*");
+			window.opener.postMessage( '<?php echo json_encode($response) ?>', "*");
 			window.close();
 		</script>
 	<?php
 
 // authorization error
 } else if (isset($_GET['error'])){
+	
+	$response = array(
+		"error" => $_GET["error"],
+		"origin" => "auth_spotify"
+	);
 
-        // Pass our error back to the popup opener
-        ?>
-                <script type="text/javascript">
-                        window.opener.postMessage("{\"error\": \"<?php echo $_GET['error'] ?>\"}", "*");
-                        window.close();
-                </script>
-        <?php
+    // Pass our error back to the popup opener
+    ?>
+            <script type="text/javascript">
+                    window.opener.postMessage('<?php echo json_encode($response) ?>', "*");
+                    window.close();
+            </script>
+    <?php
 
 // refresh existing token
 } else if (isset($_GET['action']) && $_GET['action'] == 'refresh' && $_GET['refresh_token']){
@@ -172,3 +176,4 @@ function refreshToken($refresh_token){
 	
 	return $response;
 }
+
