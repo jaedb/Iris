@@ -92,6 +92,31 @@ class Queue extends React.Component{
 			}
 		}
 
+		var tracks = [];
+		if (this.props.queue && this.props.tracks){
+			for (var i = 0; i < this.props.queue.length; i++){
+				var uri = this.props.queue[i];
+				if (this.props.tracks.hasOwnProperty(uri)){
+					var track = this.props.tracks[uri];
+					track.playing = (track.uri == this.props.current_track_uri);
+					tracks.push(track);
+				}
+			}
+		}
+
+		// Merge our metadata with each track
+		for (var i = 0; i < tracks.length; i++){
+			var track = tracks[i];
+			if (this.props.queue_metadata["tlid_"+track.tlid] !== undefined){
+				track = Object.assign(
+					{},
+					track,
+					this.props.queue_metadata["tlid_"+track.tlid]
+				);
+				tracks[i] = track;
+			}
+		}
+
 		var options = (
 			<span>
 				{this.props.spotify_enabled ? <button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
@@ -133,11 +158,11 @@ class Queue extends React.Component{
 							show_source_icon={true}
 							context="queue"
 							className="queue-track-list"
-							tracks={this.props.current_tracklist}
-							removeTracks={tracks => this.removeTracks(tracks )}
-							playTracks={tracks => this.playTracks(tracks )}
-							playTrack={track => this.playTrack(track )}
-							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index) } />
+							tracks={tracks}
+							removeTracks={tracks => this.removeTracks(tracks)}
+							playTracks={tracks => this.playTracks(tracks)}
+							playTrack={track => this.playTrack(track)}
+							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)} />
 					</section>
 				
 				</div>
@@ -158,8 +183,11 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
-		current_tracklist: state.core.current_tracklist,
-		current_track: (state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track] !== undefined ? state.core.tracks[state.core.current_track] : null)
+		tracks: state.core.tracks,
+		queue: state.core.queue,
+		queue_metadata: state.core.queue_metadata,
+		current_track_uri: state.core.current_track_uri,
+		current_track: (state.core.tracks[state.core.current_track_uri] !== undefined ? state.core.tracks[state.core.current_track_uri] : null)
 	}
 }
 

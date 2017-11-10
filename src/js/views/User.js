@@ -33,18 +33,20 @@ class User extends React.Component{
 
 	loadUser(props = this.props){
 		if (!props.user){
-			this.props.spotifyActions.getUser(props.params.uri);
+			this.props.spotifyActions.getUser(props.params.uri, true);
 			this.props.spotifyActions.following(props.params.uri);
-		}
-
-		// We got a user, but we haven't fetched their playlists yet
-		if (props.user && !props.user.playlists_uris){
-			this.props.spotifyActions.getUserPlaylists(props.params.uri);
 		}
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.user.playlists_more, 'SPOTIFY_USER_PLAYLISTS_LOADED', this.props.params.uri);
+		this.props.spotifyActions.loadMore(
+			this.props.user.playlists_more,
+			{
+				parent_type: 'user',
+				parent_key: this.props.params.uri,
+				records_type: 'playlist'
+			}
+		);
 	}
 
 	isMe(){
@@ -105,7 +107,7 @@ class User extends React.Component{
 					<section className="grid-wrapper">
 						<h4>Playlists</h4>
 						<PlaylistGrid playlists={playlists} />
-						<LazyLoadListener enabled={this.props.user.playlists_more} loadMore={ () => this.loadMore() }/>
+						<LazyLoadListener loading={this.props.user.playlists_more} loadMore={() => this.loadMore()} />
 					</section>
 				</div>
 			</div>
@@ -120,8 +122,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_authorized: state.spotify.authorization,
 		me: state.spotify.me,
 		playlists: state.core.playlists,
-		user: (state.core.users && state.core.users[uri] !== undefined ? state.core.users[uri] : false),
-		users: state.core.users
+		user: (state.core.users[uri] !== undefined ? state.core.users[uri] : false)
 	};
 }
 

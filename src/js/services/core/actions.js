@@ -81,8 +81,8 @@ export function set(data){
  **/
 
 export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id = false){
-    var range = helpers.createRange(indexes );
-    switch(helpers.uriSource(uri )){
+    var range = helpers.createRange(indexes);
+    switch(helpers.uriSource(uri)){
 
         case 'spotify':
             return { 

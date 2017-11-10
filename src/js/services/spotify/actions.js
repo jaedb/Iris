@@ -232,10 +232,6 @@ export function importAuthorization(data){
  **/
 export function getMe(){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ME_LOADED', data: false });
-
         sendRequest(dispatch, getState, 'me' )
             .then(
                 response => {
@@ -1192,7 +1188,7 @@ export function playArtistTopTracks(uri){
  * ======================================================================================
  **/
 
-export function getUser(uri){
+export function getUser(uri, and_playlists = false){
     return (dispatch, getState) => {
 
         // get the user
@@ -1212,7 +1208,9 @@ export function getUser(uri){
                 }
             )
 
-        dispatch(getUserPlaylists(uri))
+        if (and_playlists){
+            dispatch(getUserPlaylists(uri));
+        }
     }
 }
 
@@ -1242,14 +1240,11 @@ export function getUserPlaylists(user_uri){
                     }
 
                     dispatch({
-                        type: 'PLAYLISTS_LOADED',
-                        playlists: playlists
-                    });
-
-                    dispatch({
-                        type: 'SPOTIFY_USER_PLAYLISTS_LOADED',
-                        key: user_uri,
-                        data: response
+                        type: 'LOADED_MORE',
+                        parent_type: 'user',
+                        parent_key: user_uri,
+                        records_type: 'playlist',
+                        records_data: response
                     });
                 },
                 error => {

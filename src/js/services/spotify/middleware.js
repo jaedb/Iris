@@ -415,7 +415,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({
                     type: 'USERS_LOADED',
                     users: [action.data]
-                })
+                });
 
                 next(action);
                 break;

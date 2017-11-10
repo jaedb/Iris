@@ -1,7 +1,7 @@
 
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var helpers = require('../../helpers')
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var helpers = require('../../helpers');
 
 /**
  * Send an ajax request to the LastFM API
@@ -150,34 +150,9 @@ export function revokeAuthorization(){
     return { type: 'LASTFM_AUTHORIZATION_REVOKED' }
 }
 
-export function connect(){
-    return (dispatch, getState) => {
-
-        dispatch({ type: 'LASTFM_CONNECTING' });
-
-        // Authorized? Multi-purpose our connection test to get the current user
-        if (getState().lastfm.session){
-            dispatch(getMe());
-
-        // Not authorized? Just use a generic lookup to test our connection
-        } else {
-            sendRequest(dispatch, getState, 'method=artist.getInfo&artist=Moby')
-                .then(
-                    response => {
-                        dispatch({ type: 'LASTFM_CONNECTED' })
-                    },
-                    error => {
-                        dispatch({ type: 'LASTFM_DISCONNECTED' })
-                    }
-                )
-        }
-    }
-}
-
 
 /**
  * Signed requests
- * TODO
  **/
 
 export function loveTrack(uri, artist, track){
@@ -213,6 +188,35 @@ export function unloveTrack(uri, artist, track){
                             userloved: false
                         }
                     });
+                }
+            )
+    }
+}
+
+export function scrobble(track){
+    return (dispatch, getState) => {
+        var track_name = track.name;
+        var artist_name = "Unknown";
+        if (track.artists){
+            artist_name = track.artists[0].name;
+        }
+        var artist_name = encodeURIComponent(artist_name);
+
+        var params = 'method=track.scrobble';
+        params += '&track='+track_name+'&artist='+artist_name;
+        params += '&timestamp='+Math.floor(Date.now() / 1000);
+
+        sendSignedRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    console.log("Scrobbled", response);
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not scrobble track',
+                        error,
+                        (error.description ? error.description : null)
+                    ));
                 }
             )
     }
@@ -326,35 +330,6 @@ export function getTrack(track, artist_name = null, track_name = null){
                             track: merged_track
                         });
                     }
-                }
-            )
-    }
-}
-
-export function scrobble(track){
-    return (dispatch, getState) => {
-        var track_name = track.name;
-        var artist_name = "Unknown";
-        if (track.artists){
-            artist_name = track.artists[0].name;
-        }
-        var artist_name = encodeURIComponent(artist_name);
-
-        var params = 'method=track.scrobble';
-        params += '&track='+track_name+'&artist='+artist_name;
-        params += '&timestamp='+Math.floor(Date.now() / 1000);
-
-        sendSignedRequest(dispatch, getState, params)
-            .then(
-                response => {
-                    console.log("Scrobbled", response);
-                },
-                error => {
-                    dispatch(coreActions.handleException(
-                        'Could not scrobble track',
-                        error,
-                        (error.description ? error.description : null)
-                    ));
                 }
             )
     }

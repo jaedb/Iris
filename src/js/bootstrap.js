@@ -32,8 +32,9 @@ let reducers = combineReducers({
 // TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
 	core: {
-		current_tracklist: [],
-		current_tltrack: false,
+		queue: [],
+		queue_metadata: {},
+		current_track_uri: null,
 		albums: {},
 		artists: {},
 		playlists: {},

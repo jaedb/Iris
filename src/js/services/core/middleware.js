@@ -186,81 +186,6 @@ const CoreMiddleware = (function(){
                 next(action)
                 break
 
-            case 'MOPIDY_CURRENTTLTRACK':
-                if (action.data && action.data.track){
-                    helpers.setWindowTitle(action.data.track, store.getState().mopidy.play_state);
-
-                    // make sure our images use mopidy host:port
-                    if (action.data.track.album && action.data.track.album.images && action.data.track.album.images.length > 0){
-                        var images = Object.assign([], action.data.track.album.images)
-                        for (var i = 0; i < images.length; i++){
-                            if (typeof(images[i]) === 'string' && images[i].startsWith('/images/')){
-                                images[i] = '//'+store.getState().mopidy.host+':'+store.getState().mopidy.port+images[i]
-                            }
-                        }
-                        action.data.track.album.images = images
-                    }
-                }
-
-                var current_tracklist = []
-                Object.assign(current_tracklist, core.current_tracklist)
-
-                for (var i = 0; i < current_tracklist.length; i++){
-                    Object.assign(
-                        current_tracklist[i], 
-                        { playing: (current_tracklist[i].tlid == action.data.tlid) }
-                    )
-                }
-
-                // Update action
-                action.current_tracklist = current_tracklist;
-                action.current_track = action.data.track.uri;
-
-                next(action);
-                break;
-
-            case 'MOPIDY_TLTRACKS':
-                var core = store.getState().core;
-                var tracklist = []
-                for (var i = 0; i < action.data.length; i++){
-
-                    var tltrack = helpers.formatTracks(action.data[i]);
-
-                    // load our metadata (if we have any for that tlid)
-                    if (core.queue_metadata !== undefined && core.queue_metadata['tlid_'+tltrack.tlid] !== undefined){
-                        var metadata = core.queue_metadata['tlid_'+tltrack.tlid]
-                    } else {
-                        var metadata = {}
-                    }
-
-                    var current_tlid = null;
-                    if (core.current_track && core.tracks && core.tracks[core.current_track] !== undefined && core.tracks[core.current_track].tlid !== undefined){
-                        current_tlid = core.tracks[core.current_track].tlid;
-                    }
-
-                    var track = Object.assign(
-                        {}, 
-                        tltrack,
-                        metadata,
-                        {
-                            playing: (tltrack.tlid == current_tlid)
-                        })
-                    tracklist.push(track)
-                }
-
-                // Append to our action
-                tracklist = helpers.formatTracks(tracklist);
-                action.tracklist = tracklist;
-
-                // Load our tracks into index
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracklist
-                });
-
-                next(action);
-                break
-
             // Get assets from all of our providers
             case 'GET_LIBRARY_PLAYLISTS':
                 if (store.getState().spotify.connected){
@@ -295,8 +220,115 @@ const CoreMiddleware = (function(){
                 break
 
             case 'RESTART':
-                location.reload()
-                break
+                location.reload();
+                break;
+
+
+            /**
+             * Playlist manipulation
+             **/
+
+            case 'PLAYLIST_KEY_UPDATED':
+                var playlists = Object.assign({}, core.playlists);
+
+                if (playlists[action.key] === undefined){
+                    dispatch(coreActions.handleException("Cannot change key of playlist not in index"));
+                }
+
+                // Delete our old playlist by key, and add by new key
+                var playlist = Object.assign({}, playlists[action.key]);
+                delete playlists[action.key];
+                playlists[action.new_key] = playlist;
+
+                store.dispatch({
+                    type: 'UPDATE_PLAYLISTS_INDEX',
+                    playlists: playlists
+                });
+                break;
+
+            case 'PLAYLIST_TRACKS_REORDERED':
+                var playlists = Object.assign({}, core.playlists);
+                var playlist = Object.assign({}, playlists[action.key]);
+                var tracks_uris = Object.assign([], playlist.tracks_uris);
+
+                // handle insert_before offset if we're moving BENEATH where we're slicing tracks
+                var insert_before = action.insert_before
+                if (insert_before > action.range_start){
+                    insert_before = insert_before - action.range_length;
+                }
+
+                // cut our moved tracks into a new array
+                var tracks_to_move = tracks_uris.splice(action.range_start, action.range_length)
+                tracks_to_move.reverse()
+
+                for (i = 0; i < tracks_to_move.length; i++){
+                    tracks_uris.splice(insert_before, 0, tracks_to_move[i])
+                }
+
+                var snapshot_id = null;
+                if (action.snapshot_id){
+                    snapshot_id = action.snapshot_id;
+                }
+
+                // Update our playlist 
+                playlist.tracks_uris = tracks_uris;
+                playlist.snapshot_id = snapshot_id;
+
+                // Trigger normal playlist updating
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: [playlist]
+                });
+                break;
+
+            case 'PLAYLIST_TRACKS_REMOVED':
+                var playlists = Object.assign({}, core.playlists);
+                var playlist = Object.assign({}, playlists[action.key]);
+                var tracks_uris = Object.assign([], playlist.tracks_uris);
+
+                var indexes = action.tracks_indexes.reverse()
+                for(var i = 0; i < indexes.length; i++){
+                    tracks_uris.splice(indexes[i], 1);
+                }
+
+                var snapshot_id = null;
+                if (action.snapshot_id){
+                    snapshot_id = action.snapshot_id;
+                }
+
+                // Update our playlist 
+                playlist.tracks_uris = tracks_uris;
+                playlist.snapshot_id = snapshot_id;
+
+                // Trigger normal playlist updating
+                store.dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: [playlist]
+                });
+                break;
+
+
+            /**
+             * Queue and playback info
+             **/
+
+            case 'CURRENT_TRACK_LOADED':
+                store.dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: [action.current_track]
+                });
+                next(action);
+                break;
+
+            case 'QUEUE_LOADED':
+                store.dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: action.tracks
+                });
+
+                action.tracks_uris = helpers.arrayOf('uri',action.tracks);
+                next(action);
+                break;
 
 
             /**
@@ -309,8 +341,7 @@ const CoreMiddleware = (function(){
                 store.dispatch({
                     type: 'TRACKS_LOADED',
                     tracks: [action.track]
-                })
-                next(action);
+                });
                 break;
 
             // Array wrapper for ALBUMS_LOADED
@@ -319,7 +350,6 @@ const CoreMiddleware = (function(){
                     type: 'ALBUMS_LOADED',
                     albums: [action.album]
                 });
-                next(action);
                 break;
 
             // Array wrapper for ARTISTS_LOADED
@@ -328,7 +358,6 @@ const CoreMiddleware = (function(){
                     type: 'ARTISTS_LOADED',
                     artists: [action.artist]
                 });
-                next(action);
                 break;
 
             // Array wrapper for PLAYLISTS_LOADED
@@ -337,7 +366,6 @@ const CoreMiddleware = (function(){
                     type: 'PLAYLISTS_LOADED',
                     playlists: [action.playlist]
                 });
-                next(action);
                 break;
 
             // Array wrapper for USERS_LOADED
@@ -346,7 +374,6 @@ const CoreMiddleware = (function(){
                     type: 'USERS_LOADED',
                     users: [action.user]
                 });
-                next(action);
                 break;
 
             case 'TRACKS_LOADED':
@@ -361,6 +388,7 @@ const CoreMiddleware = (function(){
 
                     if (track.album && track.album.images && track.album.images.length > 0){
                         track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
+                        track.images = track.album.images;
                     }
 
                     tracks[track.uri] = track;
@@ -523,7 +551,7 @@ const CoreMiddleware = (function(){
                         user = Object.assign({}, users[user.uri], user);
                     }
 
-                    users[action.key] = user;
+                    users[user.uri] = user;
                 }
 
                 // Update index
@@ -542,6 +570,7 @@ const CoreMiddleware = (function(){
              **/
 
             case 'LOADED_MORE':
+                console.log(action);
                 var parent_type_plural = action.parent_type+'s';
                 var parent_index = Object.assign({}, core[action.parent_type+'s']);
                 var parent = Object.assign({}, parent_index[action.parent_key]);
@@ -569,7 +598,10 @@ const CoreMiddleware = (function(){
                 var records_uris = helpers.arrayOf('uri', records);
 
                 // Append our records_uris array with our new records
-                var uris = [...parent[records_type_plural+'_uris'], ...records_uris];
+                var uris = records_uris;
+                if (parent[records_type_plural+'_uris'] !== undefined){
+                    uris = [...parent[records_type_plural+'_uris'], ...uris];
+                }
                 parent[records_type_plural+'_uris'] = uris;
                 if (action.records_data.next !== undefined){
                     parent[records_type_plural+'_more'] = action.records_data.next;

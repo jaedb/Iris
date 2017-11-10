@@ -14,6 +14,7 @@ import LazyLoadListener from '../components/LazyLoadListener'
 import FollowButton from '../components/FollowButton'
 import Header from '../components/Header'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import URILink from '../components/URILink'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -101,20 +102,20 @@ class Playlist extends React.Component{
 
 	// TODO: Once deletion occurs, remove playlist from global playlists list
 	delete(){
-		this.props.mopidyActions.deletePlaylist(this.props.playlist.uri )
+		this.props.mopidyActions.deletePlaylist(this.props.playlist.uri);
 	}
 
 	reorderTracks(indexes, index){
-		this.props.coreActions.reorderPlaylistTracks(this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
+		this.props.coreActions.reorderPlaylistTracks(this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id);
 	}
 
 	removeTracks(tracks_indexes){
-		this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes )
+		this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes);
 	}
 
 	inLibrary(){
-		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists'
-		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists';
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1);
 	}
 
 	renderActions(){
@@ -195,8 +196,8 @@ class Playlist extends React.Component{
 					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} playlist</span></li> : null }
-						{ this.props.playlist.owner && !this.props.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri)} playlist</span></li> : null }
+						{ this.props.playlist.owner && !this.props.slim_mode ? <li><URILink type="user" uri={this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</URILink></li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ this.props.playlist.last_modified ? <li>Edited <Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
 						<li>

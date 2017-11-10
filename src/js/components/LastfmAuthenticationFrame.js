@@ -45,7 +45,7 @@ class LastfmAuthenticationFrame extends React.Component{
 
 		// Bounced with an error
 		if (data.error !== undefined){
-			this.props.uiActions.createNotification(data.error,'bad')
+			this.props.uiActions.createNotification(data.message,'bad')
 
 		// No errors? We're in!
 		} else {
