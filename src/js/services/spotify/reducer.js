@@ -210,17 +210,19 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
-            var tracks = action.data.items
+            var tracks = action.data.items;
+            var uris = [];
 
             if (tracks){
                 tracks = helpers.formatTracks(tracks);
+                uris = helpers.arrayOf('uri', tracks);
                 if (spotify.library_tracks){
-                    tracks = [...spotify.library_tracks,...tracks]
+                    uris = [...spotify.library_tracks, ...uris]
                 }
             }
 
             return Object.assign({}, spotify, { 
-                library_tracks: tracks, 
+                library_tracks: helpers.removeDuplicates(uris), 
                 library_tracks_more: action.data.next
             })
 

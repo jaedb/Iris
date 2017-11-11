@@ -30,7 +30,7 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.loadMore(
+		this.props.spotifyActions.getMore(
 			this.props.category.playlists_more,
 			null,
 			{

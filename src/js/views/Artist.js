@@ -78,7 +78,7 @@ class Artist extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.loadMore(
+		this.props.spotifyActions.getMore(
 			this.props.artist.albums_more,
 			{
 				parent_type: 'artist',

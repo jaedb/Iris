@@ -289,10 +289,7 @@ export function getTrack(uri){
 
 export function getLibraryTracks(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
-
-        sendRequest(dispatch, getState, 'me/tracks?limit=50' )
+        sendRequest(dispatch, getState, 'me/tracks?limit=50')
             .then(
                 response => {
                     dispatch({
@@ -501,24 +498,21 @@ export function getURL(url, action_name, key = false){
     }
 }
 
-export function loadMore(url, loaded_more_action = null, custom_action = null){
+export function getMore(url, core_action = null, custom_action = null){
     return (dispatch, getState) => {
         sendRequest(dispatch, getState, url)
             .then(
                 response => {
-                    if (loaded_more_action){
+                    if (core_action){
                         dispatch(coreActions.loadedMore(
-                            loaded_more_action.parent_type,
-                            loaded_more_action.parent_key,
-                            loaded_more_action.records_type,
+                            core_action.parent_type,
+                            core_action.parent_key,
+                            core_action.records_type,
                             response
                         ));
                     } else if (custom_action){
-                        dispatch({
-                            type: custom_action.type,
-                            key: custom_action.key,
-                            data: response
-                        });
+                        custom_action.data = response;
+                        dispatch(custom_action);
                     } else {
                         dispatch(coreActions.handleException(
                             'No callback handler for loading more items'

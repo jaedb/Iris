@@ -309,12 +309,23 @@ const SpotifyMiddleware = (function(){
                 next(action)
                 break
 
+            case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
+            case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
+                if (action.data){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.data.items
+                    });
+                }
+                next(action);
+                break;
+
             case 'SPOTIFY_TRACK_LOADED':
                 store.dispatch({
-                    type: 'TRACK_LOADED',
-                    key: action.data.uri,
-                    track: action.data
+                    type: 'TRACKS_LOADED',
+                    tracks: [action.data]
                 });
+                next(action);
                 break
 
 

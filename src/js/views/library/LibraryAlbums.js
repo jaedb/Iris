@@ -47,12 +47,12 @@ class LibraryAlbums extends React.Component{
 
 			// We've just connected
 			if (!this.props.mopidy_connected){
-				this.props.mopidyActions.getLibraryAlbums()
+				this.props.mopidyActions.getLibraryAlbums();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished' && newProps.mopidy_library_albums_status != 'started'){
-				this.props.mopidyActions.getLibraryAlbums()
+				this.props.mopidyActions.getLibraryAlbums();
 			}			
 		}
 
@@ -60,12 +60,12 @@ class LibraryAlbums extends React.Component{
 
 			// We've just connected
 			if (!this.props.spotify_connected){
-				this.props.spotifyActions.getLibraryAlbums()
+				this.props.spotifyActions.getLibraryAlbums();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started'){
-				this.props.spotifyActions.getLibraryAlbums()
+				this.props.spotifyActions.getLibraryAlbums();
 			}			
 		}
 	}
@@ -289,9 +289,9 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
-		mopidy_library_albums_status: state.mopidy.library_albums_status,
+		mopidy_library_albums_status: (state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null),
 		spotify_library_albums: state.spotify.library_albums,
-		spotify_library_albums_status: state.spotify.library_albums_status,
+		spotify_library_albums_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null),
 		view: state.ui.library_albums_view,
 		source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
 		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),

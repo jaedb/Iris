@@ -75,7 +75,7 @@ class Playlist extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.loadMore(
+		this.props.spotifyActions.getMore(
 			this.props.playlist.tracks_more,
 			{
 				parent_type: 'playlist',
