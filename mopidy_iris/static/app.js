@@ -1423,11 +1423,9 @@ module.exports = exports['default'];
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -1573,12 +1571,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -1665,7 +1661,7 @@ exports.getCategories = getCategories;
 exports.getCategory = getCategory;
 exports.getNewReleases = getNewReleases;
 exports.getURL = getURL;
-exports.loadMore = loadMore;
+exports.getMore = getMore;
 exports.clearSearchResults = clearSearchResults;
 exports.getSearchResults = getSearchResults;
 exports.getAutocompleteResults = getAutocompleteResults;
@@ -1948,9 +1944,6 @@ function getTrack(uri) {
 
 function getLibraryTracks() {
     return function (dispatch, getState) {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
-
         sendRequest(dispatch, getState, 'me/tracks?limit=50').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
@@ -2105,20 +2098,17 @@ function getURL(url, action_name) {
     };
 }
 
-function loadMore(url) {
-    var loaded_more_action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+function getMore(url) {
+    var core_action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var custom_action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     return function (dispatch, getState) {
         sendRequest(dispatch, getState, url).then(function (response) {
-            if (loaded_more_action) {
-                dispatch(coreActions.loadedMore(loaded_more_action.parent_type, loaded_more_action.parent_key, loaded_more_action.records_type, response));
+            if (core_action) {
+                dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response));
             } else if (custom_action) {
-                dispatch({
-                    type: custom_action.type,
-                    key: custom_action.key,
-                    data: response
-                });
+                custom_action.data = response;
+                dispatch(custom_action);
             } else {
                 dispatch(coreActions.handleException('No callback handler for loading more items'));
             }
@@ -3224,7 +3214,7 @@ function getLibraryAlbumsProcessor(data) {
         });
     };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 11 */
@@ -3630,33 +3620,6 @@ module.exports = reactProdInvariant;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3750,6 +3713,33 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 
 /***/ }),
@@ -4247,11 +4237,9 @@ module.exports = function() {
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -15108,12 +15096,10 @@ return jQuery;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 if (process.env.NODE_ENV !== 'production') {
@@ -15532,11 +15518,9 @@ module.exports = ReactComponentTreeHook;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  */
@@ -16386,17 +16370,8 @@ exports.default = LazyLoadListener;
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(true)
-		module.exports = factory(__webpack_require__(1), __webpack_require__(25), __webpack_require__(14));
-	else if(typeof define === 'function' && define.amd)
-		define(["react", "prop-types", "object-assign"], factory);
-	else {
-		var a = typeof exports === 'object' ? factory(require("react"), require("prop-types"), require("object-assign")) : factory(root["react"], root["prop-types"], root["object-assign"]);
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_10__, __WEBPACK_EXTERNAL_MODULE_11__, __WEBPACK_EXTERNAL_MODULE_12__) {
-return /******/ (function(modules) { // webpackBootstrap
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -16624,12 +16599,7 @@ function initialize(configs, options) {
     return false;
   }
 
-  (0, _loadGA2.default)();
-  internalGa = function internalGa() {
-    var _window;
-
-    return (_window = window).ga.apply(_window, arguments);
-  };
+  internalGa = (0, _loadGA2.default)();
 
   if (Array.isArray(configs)) {
     configs.forEach(function (config) {
@@ -16662,7 +16632,7 @@ function ga() {
     }
   }
 
-  return window.ga;
+  return internalGa;
 }
 
 /**
@@ -17252,6 +17222,8 @@ exports.default = function () {
     m.parentNode.insertBefore(a, m);
   })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
   /* eslint-enable */
+
+  return window.ga;
 };
 
 /***/ }),
@@ -17386,23 +17358,22 @@ exports.default = OutboundLink;
 /* 10 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
+module.exports = __webpack_require__(1);
 
 /***/ }),
 /* 11 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_11__;
+module.exports = __webpack_require__(25);
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
+module.exports = __webpack_require__(13);
 
 /***/ })
 /******/ ]);
-});
 
 /***/ }),
 /* 33 */
@@ -17772,7 +17743,7 @@ module.exports = ReactCurrentOwner;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(121);
 var PooledClass = __webpack_require__(45);
@@ -18026,7 +17997,7 @@ module.exports = ReactUpdates;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(45);
 
@@ -18407,7 +18378,7 @@ var URILink = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = URILink;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 39 */
@@ -19138,7 +19109,7 @@ exports.default = Parallax;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactCurrentOwner = __webpack_require__(34);
 
@@ -19832,7 +19803,7 @@ exports.default = ContextMenuTrigger;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactBaseClasses = __webpack_require__(109);
 var ReactChildren = __webpack_require__(170);
@@ -21613,7 +21584,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AlbumGrid);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 63 */
@@ -21729,7 +21700,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaylistGrid);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 64 */
@@ -21768,11 +21739,9 @@ module.exports = canDefineProperty;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -22592,7 +22561,7 @@ module.exports = escapeTextContentForBrowser;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var EventPluginRegistry = __webpack_require__(66);
 var ReactEventEmitterMixin = __webpack_require__(217);
@@ -23575,12 +23544,10 @@ module.exports = lowPriorityWarning;
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -24544,11 +24511,9 @@ module.exports = ReactComponentEnvironment;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  * 
@@ -24970,7 +24935,7 @@ module.exports = ReactUpdateQueue;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var emptyFunction = __webpack_require__(27);
 var warning = __webpack_require__(9);
@@ -26529,7 +26494,7 @@ exports.default = FilterField;
 
 
 var _prodInvariant = __webpack_require__(49),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var ReactNoopUpdateQueue = __webpack_require__(110);
 
@@ -27091,12 +27056,10 @@ module.exports = ReactElementValidator;
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -27119,12 +27082,10 @@ module.exports = function(isValidElement) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -27132,6 +27093,7 @@ module.exports = function(isValidElement) {
 var emptyFunction = __webpack_require__(27);
 var invariant = __webpack_require__(7);
 var warning = __webpack_require__(9);
+var assign = __webpack_require__(13);
 
 var ReactPropTypesSecret = __webpack_require__(78);
 var checkPropTypes = __webpack_require__(179);
@@ -27230,7 +27192,8 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
     objectOf: createObjectOfTypeChecker,
     oneOf: createEnumTypeChecker,
     oneOfType: createUnionTypeChecker,
-    shape: createShapeTypeChecker
+    shape: createShapeTypeChecker,
+    exact: createStrictShapeTypeChecker,
   };
 
   /**
@@ -27445,7 +27408,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
       if (typeof checker !== 'function') {
         warning(
           false,
-          'Invalid argument supplid to oneOfType. Expected an array of check functions, but ' +
+          'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
           'received %s at index %s.',
           getPostfixForTypeWarning(checker),
           i
@@ -27496,6 +27459,36 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
       }
       return null;
     }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createStrictShapeTypeChecker(shapeTypes) {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== 'object') {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+      }
+      // We need to check all keys in case some are required but missing from
+      // props.
+      var allKeys = assign({}, props[propName], shapeTypes);
+      for (var key in allKeys) {
+        var checker = shapeTypes[key];
+        if (!checker) {
+          return new PropTypeError(
+            'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+            '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
+          );
+        }
+        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+        if (error) {
+          return error;
+        }
+      }
+      return null;
+    }
+
     return createChainableTypeChecker(validate);
   }
 
@@ -27648,7 +27641,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var emptyObject = __webpack_require__(65);
 var _invariant = __webpack_require__(7);
@@ -29082,11 +29075,9 @@ module.exports = setTextContent;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -29539,7 +29530,7 @@ module.exports = ReactPropTypesSecret;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var LinkedValueUtils = __webpack_require__(88);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -29744,7 +29735,7 @@ module.exports = ReactDOMSelect;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var ReactCompositeComponent = __webpack_require__(224);
 var ReactEmptyComponent = __webpack_require__(134);
@@ -30199,11 +30190,9 @@ module.exports = traverseAllChildren;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -30408,11 +30397,9 @@ module.exports = ReactInputSelection;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -32944,6 +32931,11 @@ var Track = function (_React$Component) {
 		key: 'handleMouseDown',
 		value: function handleMouseDown(e) {
 
+			// Clicked a nested link (ie Artist name), so no dragging required
+			if (e.target.tagName.toLowerCase() === 'a') {
+				return false;
+			}
+
 			// Only listen for left mouse clicks
 			if (e.button === 0) {
 				this.start_position = {
@@ -33008,6 +33000,12 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
+
+			// Clicked a nested link (ie Artist name), so no dragging required
+			if (e.target.tagName.toLowerCase() === 'a') {
+				return false;
+			}
+
 			this.props.handleTouchDrag(e);
 		}
 	}, {
@@ -33967,7 +33965,7 @@ _reactDom2.default.render(_react2.default.createElement(
 		)
 	)
 ), document.getElementById('app'));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 170 */
@@ -34862,12 +34860,10 @@ module.exports = factory(isValidElement);
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -34901,7 +34897,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
         try {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
+          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
           error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
         } catch (ex) {
           error = ex;
@@ -35693,7 +35689,7 @@ module.exports = BeforeInputEventPlugin;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(45);
 
@@ -36811,11 +36807,9 @@ module.exports = ReactHostOperationHistoryHook;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -36848,11 +36842,9 @@ module.exports = performanceNow;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37329,11 +37321,9 @@ module.exports = Danger;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37419,11 +37409,9 @@ module.exports = createNodesFromMarkup;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37552,11 +37540,9 @@ module.exports = createArrayFromMixed;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -37698,7 +37684,7 @@ module.exports = ReactDOMIDOperations;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var AutoFocusUtils = __webpack_require__(208);
 var CSSPropertyOperations = __webpack_require__(209);
@@ -38951,11 +38937,9 @@ module.exports = CSSPropertyOperations;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -38998,11 +38982,9 @@ module.exports = camelizeStyleName;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39116,11 +39098,9 @@ module.exports = dangerousStyleValue;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39162,11 +39142,9 @@ module.exports = hyphenateStyleName;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39198,11 +39176,9 @@ module.exports = hyphenate;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  * @typechecks static-only
@@ -39410,7 +39386,7 @@ module.exports = getVendorPrefixedEventName;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var DOMPropertyOperations = __webpack_require__(129);
 var LinkedValueUtils = __webpack_require__(88);
@@ -39700,7 +39676,7 @@ module.exports = ReactDOMInput;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var React = __webpack_require__(48);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -39827,7 +39803,7 @@ module.exports = ReactDOMOption;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var LinkedValueUtils = __webpack_require__(88);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -40598,7 +40574,7 @@ module.exports = ReactChildReconciler;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var React = __webpack_require__(48);
 var ReactComponentEnvironment = __webpack_require__(89);
@@ -41792,7 +41768,7 @@ module.exports = flattenChildren;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(45);
 var Transaction = __webpack_require__(67);
@@ -42029,7 +42005,7 @@ module.exports = ReactServerUpdateQueue;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var DOMLazyTree = __webpack_require__(51);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -42233,7 +42209,7 @@ module.exports = {
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var DOMChildrenOperations = __webpack_require__(85);
 var DOMLazyTree = __webpack_require__(51);
@@ -42398,7 +42374,7 @@ module.exports = ReactDOMTextComponent;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactUpdates = __webpack_require__(35);
 var Transaction = __webpack_require__(67);
@@ -42469,7 +42445,7 @@ module.exports = ReactDefaultBatchingStrategy;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var EventListener = __webpack_require__(137);
 var ExecutionEnvironment = __webpack_require__(19);
@@ -42619,11 +42595,9 @@ module.exports = ReactEventListener;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -42708,7 +42682,7 @@ module.exports = ReactInjection;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(121);
 var PooledClass = __webpack_require__(45);
@@ -43176,11 +43150,9 @@ module.exports = getNodeForCharacterOffset;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  */
@@ -43221,11 +43193,9 @@ module.exports = containsNode;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -43251,11 +43221,9 @@ module.exports = isTextNode;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -45116,12 +45084,10 @@ function createProvider() {
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -45166,7 +45132,8 @@ module.exports = function() {
     objectOf: getShim,
     oneOf: getShim,
     oneOfType: getShim,
-    shape: getShim
+    shape: getShim,
+    exact: getShim
   };
 
   ReactPropTypes.checkPropTypes = emptyFunction;
@@ -45596,7 +45563,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 /* harmony default export */ __webpack_exports__["a"] = (freeGlobal);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(14)))
 
 /***/ }),
 /* 278 */
@@ -45794,7 +45761,7 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13), __webpack_require__(285)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(285)(module)))
 
 /***/ }),
 /* 285 */
@@ -47614,7 +47581,7 @@ function match(_ref, callback) {
 "use strict";
 
 var strictUriEncode = __webpack_require__(309);
-var objectAssign = __webpack_require__(14);
+var objectAssign = __webpack_require__(13);
 
 function encoderForArrayFormat(opts) {
 	switch (opts.arrayFormat) {
@@ -49714,16 +49681,18 @@ function reducer() {
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
             var tracks = action.data.items;
+            var uris = [];
 
             if (tracks) {
                 tracks = helpers.formatTracks(tracks);
+                uris = helpers.arrayOf('uri', tracks);
                 if (spotify.library_tracks) {
-                    tracks = [].concat(_toConsumableArray(spotify.library_tracks), _toConsumableArray(tracks));
+                    uris = [].concat(_toConsumableArray(spotify.library_tracks), _toConsumableArray(uris));
                 }
             }
 
             return Object.assign({}, spotify, {
-                library_tracks: tracks,
+                library_tracks: helpers.removeDuplicates(uris),
                 library_tracks_more: action.data.next
             });
 
@@ -52690,7 +52659,7 @@ var MopidyMiddleware = function () {
 }();
 
 exports.default = MopidyMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 332 */
@@ -55827,12 +55796,23 @@ var SpotifyMiddleware = function () {
                         next(action);
                         break;
 
+                    case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
+                    case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
+                        if (action.data) {
+                            store.dispatch({
+                                type: 'TRACKS_LOADED',
+                                tracks: action.data.items
+                            });
+                        }
+                        next(action);
+                        break;
+
                     case 'SPOTIFY_TRACK_LOADED':
                         store.dispatch({
-                            type: 'TRACK_LOADED',
-                            key: action.data.uri,
-                            track: action.data
+                            type: 'TRACKS_LOADED',
+                            tracks: [action.data]
                         });
+                        next(action);
                         break;
 
                     /**
@@ -56764,7 +56744,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 // We wrap our Sidebar with the Router, and then to the redux store
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)((0, _reactRouter.withRouter)(Sidebar));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 356 */
@@ -58966,7 +58946,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ContextMenu);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 393 */
@@ -61782,7 +61762,7 @@ var Album = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.album.tracks_more, {
+			this.props.spotifyActions.getMore(this.props.album.tracks_more, {
 				parent_type: 'album',
 				parent_key: this.props.album.uri,
 				records_type: 'track'
@@ -62119,7 +62099,7 @@ var Artist = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.artist.albums_more, {
+			this.props.spotifyActions.getMore(this.props.artist.albums_more, {
 				parent_type: 'artist',
 				parent_key: this.props.params.uri,
 				records_type: 'album'
@@ -62506,7 +62486,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Artist);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 410 */
@@ -62752,7 +62732,7 @@ var Playlist = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.playlist.tracks_more, {
+			this.props.spotifyActions.getMore(this.props.playlist.tracks_more, {
 				parent_type: 'playlist',
 				parent_key: this.props.playlist.uri,
 				records_type: 'track'
@@ -63138,7 +63118,7 @@ var User = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.user.playlists_more, {
+			this.props.spotifyActions.getMore(this.props.user.playlists_more, {
 				parent_type: 'user',
 				parent_key: this.props.params.uri,
 				records_type: 'playlist'
@@ -63740,7 +63720,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Track);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 414 */
@@ -64351,7 +64331,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Queue);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 417 */
@@ -64503,7 +64483,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(QueueHistory);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 418 */
@@ -65351,7 +65331,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Settings);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 419 */
@@ -66069,7 +66049,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Debug);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 421 */
@@ -66640,7 +66620,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapDispatchToProps)(SearchForm);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 423 */
@@ -67484,7 +67464,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverFeatured);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 426 */
@@ -67678,7 +67658,7 @@ var CategoryGrid = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = CategoryGrid;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 428 */
@@ -67760,7 +67740,7 @@ var DiscoverCategory = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.category.playlists_more, null, {
+			this.props.spotifyActions.getMore(this.props.category.playlists_more, null, {
 				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
 				key: 'category:' + this.props.params.id
 			});
@@ -67932,7 +67912,7 @@ var DiscoverNewReleases = function (_React$Component) {
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.loadMore(this.props.new_releases_more, null, {
+			this.props.spotifyActions.getMore(this.props.new_releases_more, null, {
 				type: 'SPOTIFY_NEW_RELEASES_LOADED',
 				key: null
 			});
@@ -68092,7 +68072,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverNewReleases);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 430 */
@@ -68410,9 +68390,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
 		mopidy_library_artists: state.mopidy.library_artists,
-		mopidy_library_artists_status: state.mopidy.library_artists_status,
+		mopidy_library_artists_status: state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null,
 		spotify_library_artists: state.spotify.library_artists,
-		spotify_library_artists_status: state.spotify.library_artists_status,
+		spotify_library_artists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null,
 		artists: state.core.artists,
 		source: state.ui.library_artists_source ? state.ui.library_artists_source : 'all',
 		sort: state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name',
@@ -68430,7 +68410,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryArtists);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 431 */
@@ -68605,17 +68585,6 @@ var LibraryAlbums = function (_React$Component) {
 			}
 
 			return uris;
-		}
-	}, {
-		key: 'loadMoreSpotify',
-		value: function loadMoreSpotify() {
-			this.props.spotifyActions.getURL(this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED');
-		}
-	}, {
-		key: 'loadMoreMopidy',
-		value: function loadMoreMopidy() {
-			var uris = this.moreURIsToLoad();
-			this.props.mopidyActions.getAlbums(uris);
 		}
 	}, {
 		key: 'setSort',
@@ -68807,9 +68776,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
-		mopidy_library_albums_status: state.mopidy.library_albums_status,
+		mopidy_library_albums_status: state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null,
 		spotify_library_albums: state.spotify.library_albums,
-		spotify_library_albums_status: state.spotify.library_albums_status,
+		spotify_library_albums_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null,
 		view: state.ui.library_albums_view,
 		source: state.ui.library_albums_source ? state.ui.library_albums_source : 'all',
 		sort: state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name',
@@ -68827,7 +68796,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryAlbums);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 432 */
@@ -68901,12 +68870,16 @@ var LibraryTracks = function (_React$Component) {
 	_createClass(LibraryTracks, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.props.spotifyActions.getLibraryTracks();
+			if (this.props.library_tracks === undefined) {
+				this.props.spotifyActions.getLibraryTracks();
+			}
 		}
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
-			this.props.spotifyActions.getURL(this.props.tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE');
+			this.props.spotifyActions.getMore(this.props.library_tracks_more, null, {
+				type: 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE'
+			});
 		}
 	}, {
 		key: 'render',
@@ -68926,6 +68899,16 @@ var LibraryTracks = function (_React$Component) {
 				);
 			}
 
+			var tracks = [];
+			if (this.props.library_tracks && this.props.tracks) {
+				for (var i = 0; i < this.props.library_tracks.length; i++) {
+					var uri = this.props.library_tracks[i];
+					if (this.props.tracks.hasOwnProperty(uri)) {
+						tracks.push(this.props.tracks[uri]);
+					}
+				}
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-tracks-view' },
@@ -68933,8 +68916,8 @@ var LibraryTracks = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
-					this.props.tracks ? _react2.default.createElement(_TrackList2.default, { tracks: this.props.tracks }) : null,
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more, loadMore: function loadMore() {
+					_react2.default.createElement(_TrackList2.default, { tracks: tracks }),
+					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.library_tracks_more, loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
 				)
@@ -68954,8 +68937,9 @@ var LibraryTracks = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
-		tracks: state.spotify.library_tracks,
-		tracks_more: state.spotify.library_tracks_more
+		tracks: state.core.tracks,
+		library_tracks: state.spotify.library_tracks,
+		library_tracks_more: state.spotify.library_tracks_more
 	};
 };
 
@@ -69314,9 +69298,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
 		mopidy_library_playlists: state.mopidy.library_playlists,
-		mopidy_library_playlists_status: state.mopidy.library_playlists_status,
+		mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
 		spotify_library_playlists: state.spotify.library_playlists,
-		spotify_library_playlists_status: state.spotify.library_playlists_status,
+		spotify_library_playlists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
 		load_queue: state.ui.load_queue,
 		me_id: state.spotify.me ? state.spotify.me.id : false,
 		view: state.ui.library_playlists_view,
@@ -69337,7 +69321,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryPlaylists);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 434 */
@@ -69652,7 +69636,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryBrowse);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 435 */
