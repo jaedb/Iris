@@ -23,6 +23,11 @@ export default class Track extends React.Component{
 
 	handleMouseDown(e){
 
+		// Clicked a nested link (ie Artist name), so no dragging required
+		if (e.target.tagName.toLowerCase() === 'a'){
+			return false;
+		}
+
 		// Only listen for left mouse clicks
 		if (e.button === 0){
 			this.start_position = {
@@ -66,32 +71,38 @@ export default class Track extends React.Component{
 				e.preventDefault()
 
 				if (this.props.handleDrop !== undefined){
-					this.props.handleDrop(e)
+					this.props.handleDrop(e);
 				}
 			} else {
 				var target = $(e.target);
 				if (!target.is('a') && target.closest('a').length <= 0){
-					this.props.handleSelection(e)
-					this.start_position = false
+					this.props.handleSelection(e);
+					this.start_position = false;
 				}
 			}
 
 		// Not left click, then ensure no dragging
 		} else {			
-			this.start_position = false
-			return false
+			this.start_position = false;
+			return false;
 		}
 	}
 
 	handleTouchStart(e){
-		this.props.handleTouchDrag(e)
+
+		// Clicked a nested link (ie Artist name), so no dragging required
+		if (e.target.tagName.toLowerCase() === 'a'){
+			return false;
+		}
+
+		this.props.handleTouchDrag(e);
 	}
 
 	handleContextMenu(e){
-		e.preventDefault()
-		e.stopPropagation()
-		e.cancelBubble = true
-		this.props.handleContextMenu(e)
+		e.preventDefault();
+		e.stopPropagation();
+		e.cancelBubble = true;
+		this.props.handleContextMenu(e);
 	}
 
 	render(){
