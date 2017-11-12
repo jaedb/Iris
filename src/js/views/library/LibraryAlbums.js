@@ -97,15 +97,6 @@ class LibraryAlbums extends React.Component{
 		return uris
 	}
 
-	loadMoreSpotify(){
-		this.props.spotifyActions.getURL(this.props.library_albums_more, 'SPOTIFY_LIBRARY_ALBUMS_LOADED' );
-	}
-
-	loadMoreMopidy(){
-		var uris = this.moreURIsToLoad()
-		this.props.mopidyActions.getAlbums(uris)
-	}
-
 	setSort(value){
 		var reverse = false
 		if (this.props.sort == value ) reverse = !this.props.sort_reverse
