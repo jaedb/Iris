@@ -57,7 +57,7 @@ class Track extends React.Component{
 
 			// Ready to load LastFM
 			if (nextProps.lastfm_authorized){
-				this.props.lastfmActions.getTrack(nextProps.track);
+				this.props.lastfmActions.getTrack(nextProps.track.uri);
 			}
 
 			// Ready to load lyrics
@@ -77,6 +77,10 @@ class Track extends React.Component{
 		this.props.uiActions.showContextMenu(data)
 	}
 
+	/**
+	 * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
+	 * we need to accommodate? 
+	 **/
 	loadTrack(props = this.props){
 		switch (helpers.uriSource(props.params.uri)){
 
@@ -105,7 +109,7 @@ class Track extends React.Component{
 
 			// Get the LastFM version of this track (provided we have artist info)
 			if (props.lastfm_authorized){
-				this.props.lastfmActions.getTrack(props.track);
+				this.props.lastfmActions.getTrack(props.track.uri);
 			}
 
 			// Ready for lyrics

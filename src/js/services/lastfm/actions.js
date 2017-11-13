@@ -151,77 +151,6 @@ export function revokeAuthorization(){
 }
 
 
-/**
- * Signed requests
- **/
-
-export function loveTrack(uri, artist, track){
-    return (dispatch, getState) => {
-        artist = encodeURIComponent(artist);
-        var params = 'method=track.love&track='+track+'&artist='+artist;
-        sendSignedRequest(dispatch, getState, params)
-            .then(
-                response => {
-                    dispatch({
-                        type: 'TRACK_LOADED',
-                        track: {
-                            uri: uri,
-                            userloved: true
-                        }
-                    });
-                }
-            )
-    }
-}
-
-export function unloveTrack(uri, artist, track){
-    return (dispatch, getState) => {
-        artist = encodeURIComponent(artist);
-        var params = 'method=track.unlove&track='+track+'&artist='+artist;
-        sendSignedRequest(dispatch, getState, params)
-            .then(
-                response => {
-                    dispatch({
-                        type: 'TRACK_LOADED',
-                        track: {
-                            uri: uri,
-                            userloved: false
-                        }
-                    });
-                }
-            )
-    }
-}
-
-export function scrobble(track){
-    return (dispatch, getState) => {
-        var track_name = track.name;
-        var artist_name = "Unknown";
-        if (track.artists){
-            artist_name = track.artists[0].name;
-        }
-        var artist_name = encodeURIComponent(artist_name);
-
-        var params = 'method=track.scrobble';
-        params += '&track='+track_name+'&artist='+artist_name;
-        params += '&timestamp='+Math.floor(Date.now() / 1000);
-
-        sendSignedRequest(dispatch, getState, params)
-            .then(
-                response => {
-                    console.log("Scrobbled", response);
-                },
-                error => {
-                    dispatch(coreActions.handleException(
-                        'Could not scrobble track',
-                        error,
-                        (error.description ? error.description : null)
-                    ));
-                }
-            )
-    }
-}
-
 
 /**
  * Non-signed requests
@@ -239,6 +168,55 @@ export function getMe(){
                             user: response.user
                         });
                         dispatch({ type: 'LASTFM_CONNECTED' })
+                    }
+                }
+            )
+    }
+}
+
+export function getTrack(uri){
+    return (dispatch, getState) => {
+        if (getState().core.tracks[uri] !== undefined){
+            var track = getState().core.tracks[uri];
+            if (!track.artists){
+                dispatch(coreActions.handleException(
+                    "Could not get track",
+                    {},
+                    "Track has no artists"
+                ));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException(
+                "Could not get track",
+                {},
+                "Could not find track in index"
+            ));
+            return;
+        }
+
+        var track_name = track.name;
+        var artist_name = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.getInfo&track='+track_name+'&artist='+artist_name;
+        if (getState().lastfm.session){
+            params += '&username='+getState().lastfm.session.name;
+        }
+        sendRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    if (response.track){
+                        var merged_track = Object.assign(
+                            {},
+                            {
+                                uri: track.uri
+                            },
+                            response.track,
+                            track
+                        );
+                        dispatch({
+                            type: 'TRACK_LOADED',
+                            track: merged_track
+                        });
                     }
                 }
             )
@@ -300,38 +278,122 @@ export function getAlbum(artist, album, mbid = false){
     }
 }
 
-export function getTrack(track, artist_name = null, track_name = null){
+
+
+
+/**
+ * Signed requests
+ **/
+
+export function loveTrack(uri){
     return (dispatch, getState) => {
-        if (track){
-            track_name = track.name;
-            if (track.artists){
-                artist_name = track.artists[0].name;
+        if (getState().core.tracks[uri] !== undefined){
+            var track = getState().core.tracks[uri];
+            if (!track.artists){
+                dispatch(coreActions.handleException(
+                    "Could not love track",
+                    track,
+                    "Track has no artists"
+                ));
+                return;
             }
+        } else {
+            dispatch(coreActions.handleException(
+                "Could not love track",
+                track,
+                "Could not find track in index"
+            ));
+            return;
         }
-        artist_name = encodeURIComponent(artist_name);
-        var params = 'method=track.getInfo&track='+track_name+'&artist='+artist_name;
-        if (getState().lastfm.session){
-            params += '&username='+getState().lastfm.session.name;
-        }
-        sendRequest(dispatch, getState, params)
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.love&track='+track.name+'&artist='+artist;
+        sendSignedRequest(dispatch, getState, params)
             .then(
                 response => {
-                    if (response.track){
-                        var merged_track = Object.assign(
-                            {},
-                            {
-                                uri: track.uri
-                            },
-                            response.track,
-                            track
-                        );
-                        dispatch({
-                            type: 'TRACK_LOADED',
-                            track: merged_track
-                        });
-                    }
+                    track = Object.assign(
+                        {},
+                        track,
+                        {
+                            userloved: true
+                        }
+                    );
+                    dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: [track]
+                    });
+                }
+            );
+    }
+}
+
+export function unloveTrack(uri){
+    return (dispatch, getState) => {
+        if (getState().core.tracks[uri] !== undefined){
+            var track = getState().core.tracks[uri];
+            if (!track.artists){
+                dispatch(coreActions.handleException(
+                    "Could not unlove track",
+                    track,
+                    "Track has no artists"
+                ));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException(
+                "Could not unlove track",
+                track,
+                "Could not find track in index"
+            ));
+            return;
+        }
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.unlove&track='+track.name+'&artist='+artist;
+        sendSignedRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    track = Object.assign(
+                        {},
+                        track,
+                        {
+                            userloved: false
+                        }
+                    );
+                    dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: [track]
+                    });
+                }
+            );
+    }
+}
+
+export function scrobble(track){
+    return (dispatch, getState) => {
+        var track_name = track.name;
+        var artist_name = "Unknown";
+        if (track.artists){
+            artist_name = track.artists[0].name;
+        }
+        var artist_name = encodeURIComponent(artist_name);
+
+        var params = 'method=track.scrobble';
+        params += '&track='+track_name+'&artist='+artist_name;
+        params += '&timestamp='+Math.floor(Date.now() / 1000);
+
+        sendSignedRequest(dispatch, getState, params)
+            .then(
+                response => {
+                    console.log("Scrobbled", response);
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not scrobble track',
+                        error,
+                        (error.description ? error.description : null)
+                    ));
                 }
             )
     }
 }
-

@@ -439,7 +439,7 @@ class Settings extends React.Component {
 							<em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em> is an open-source project by <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
 								<br />
 								<br />
-								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements.
+								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements. This may include personal information (eg Spotify Username). For more information, see <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use" target="_blank">terms and conditions</a>.
 								<br />
 						</div>
 						<br /><br />

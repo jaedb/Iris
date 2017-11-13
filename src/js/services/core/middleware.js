@@ -570,7 +570,6 @@ const CoreMiddleware = (function(){
              **/
 
             case 'LOADED_MORE':
-                console.log(action);
                 var parent_type_plural = action.parent_type+'s';
                 var parent_index = Object.assign({}, core[action.parent_type+'s']);
                 var parent = Object.assign({}, parent_index[action.parent_key]);

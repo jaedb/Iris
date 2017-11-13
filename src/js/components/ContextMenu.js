@@ -57,9 +57,8 @@ class ContextMenu extends React.Component{
 
 			// if we're able to be in the LastFM library, run a check
 			if (nextProps.lastfm_authorized && context.is_track && context.items_count == 1){
-				if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined){
-					var track = this.props.tracks[nextProps.menu.items[0].uri];
-					this.props.lastfmActions.getTrack(track);
+				if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined && this.props.tracks[nextProps.menu.items[0].uri].userloved === undefined){
+					this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
 				}
 			}
 
@@ -222,9 +221,9 @@ class ContextMenu extends React.Component{
 	toggleLoved(e, is_loved){
 		this.props.uiActions.hideContextMenu()
 		if (is_loved){
-			this.props.lastfmActions.unloveTrack(this.props.menu.items[0])
+			this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri)
 		} else {
-			this.props.lastfmActions.loveTrack(this.props.menu.items[0])
+			this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri)
 		}
 	}
 
@@ -488,8 +487,9 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
-
-		if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
+		if (!this.props.lastfm_authorized){
+			var toggle_loved = null;
+		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
 			var toggle_loved = (
 				<span className="menu-item-wrapper">
 					<a className="menu-item">
