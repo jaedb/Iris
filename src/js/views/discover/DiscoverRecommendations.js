@@ -178,32 +178,42 @@ class Discover extends React.Component{
 		}
 		
 		if (!this.props.recommendations || typeof(this.props.recommendations.albums_uris) === 'undefined' || typeof(this.props.recommendations.artists_uris) === 'undefined'){
-			return null
+			return null;
 		}
 
-		var albums = []
+		var albums = [];
 		if (this.props.recommendations.albums_uris && this.props.albums){
 			for (var i = 0; i < this.props.recommendations.albums_uris.length; i++){
-				var uri = this.props.recommendations.albums_uris[i]
+				var uri = this.props.recommendations.albums_uris[i];
 				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
+					albums.push(this.props.albums[uri]);
 				}
 			}
 		}
 
-		var artists = []
+		var artists = [];
 		if (this.props.recommendations.artists_uris && this.props.artists){
 			for (var i = 0; i < this.props.recommendations.artists_uris.length; i++){
-				var uri = this.props.recommendations.artists_uris[i]
+				var uri = this.props.recommendations.artists_uris[i];
 				if (this.props.artists.hasOwnProperty(uri)){
-					artists.push(this.props.artists[uri])
+					artists.push(this.props.artists[uri]);
 				}
 			}
 		}
 
-		var uri = 'iris:discover'
+		var tracks = [];
+		if (this.props.recommendations.tracks_uris && this.props.tracks){
+			for (var i = 0; i < this.props.recommendations.tracks_uris.length; i++){
+				var uri = this.props.recommendations.tracks_uris[i];
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri]);
+				}
+			}
+		}
+
+		var uri = 'iris:discover';
 		if (this.props.params.seeds){
-			uri += ':'+this.props.params.seeds.split(':').join('_')
+			uri += ':'+this.props.params.seeds.split(':').join('_');
 		}
 		
 		return (
@@ -218,7 +228,7 @@ class Discover extends React.Component{
 				</section>
 				<section>
 					<h4>Tracks</h4>
-					{this.props.recommendations.tracks ? <TrackList className="discover-track-list" uri={uri} tracks={this.props.recommendations.tracks} /> : null}
+					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
 				</section>
 			</div>
 		)
@@ -258,9 +268,9 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		albums: (state.core.albums ? state.core.albums : []),
-		artists: (state.core.artists ? state.core.artists : []),
-		tracks: (state.core.tracks ? state.core.tracks : []),
+		albums: state.core.albums,
+		artists: state.core.artists,
+		tracks: state.core.tracks,
 		genres: (state.core.genres ? state.core.genres : []),
 		authorized: state.spotify.authorization,
 		load_queue: state.ui.load_queue,

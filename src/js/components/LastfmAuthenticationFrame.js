@@ -54,7 +54,7 @@ class LastfmAuthenticationFrame extends React.Component{
 		}
 
 		// Turn off our authorizing switch
-		this.setState({authorizing: false})	
+		this.setState({authorizing: false});
 	}
 
 	startAuthorization(){

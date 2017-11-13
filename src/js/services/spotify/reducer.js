@@ -105,6 +105,9 @@ export default function reducer(spotify = {}, action){
                 }
             );
 
+        case 'CLEAR_SPOTIFY_RECOMMENDATIONS':
+            return Object.assign({}, spotify, {recommendations: {artists_uris: [], albums_uris: [], tracks_uris: []}});
+
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':
             return Object.assign(
                 {}, 
@@ -113,9 +116,9 @@ export default function reducer(spotify = {}, action){
                     recommendations: {
                         artists_uris: action.artists_uris,
                         albums_uris: action.albums_uris,
-                        tracks: helpers.formatTracks(action.tracks)
+                        tracks_uris: action.tracks_uris
                     }
-                })
+                });
 
         case 'SPOTIFY_FAVORITES_LOADED':
             return Object.assign(

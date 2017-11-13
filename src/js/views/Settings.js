@@ -38,6 +38,12 @@ class Settings extends React.Component {
 		}
 	}
 
+	componentDidMount(){
+		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
+			this.props.lastfmActions.getMe();
+		}
+	}
+
 	componentWillReceiveProps(newProps){
 		var changed = false
 		var state = this.state
@@ -107,7 +113,7 @@ class Settings extends React.Component {
 	}
 
 	renderSpotifyUser(){
-		var user = this.props.spotify.me
+		var user = this.props.spotify.me;
 
 		if (user){
 			return (
@@ -165,43 +171,59 @@ class Settings extends React.Component {
 		)
 	}
 
-	renderServiceStatus(service){
-		let colour = 'red'
-		let icon = 'close'
-		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
-		let text = 'Disconnected'
-		let tooltip = null
-		service = this.props[service]
+	renderServerStatus(){
+		var colour = 'grey';
+		var icon = 'question-circle';
+		var status = 'Unknown';
 
-		if (service.connecting){
-			icon = 'plug'
-			colour = 'grey'
-			text = 'Connecting'
-		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
-			icon = 'exclamation-triangle'
-			colour = 'red'
-			text = 'Not installed'
-			tooltip = 'Mopidy-Spotify is not installed or enabled'
-		} else if (service.connected){
-			icon = 'check'
-			colour = 'green'
-			text = 'Connected'
+		if (this.props.mopidy.connecting || this.props.pusher.connecting){
+			icon = 'plug';
+			status = 'Connecting...'
+		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
+			colour = 'red';
+			icon = 'close';
+			status = 'Disconnected';
+		} else if (this.props.mopidy.connected && this.props.pusher.connected){
+			colour = 'green';
+			icon = 'check';
+			status = 'Connected';
 		}
 
 		return (
-			<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
-				<h4 className="title">
-					{name}
-				</h4>
-				<div className={colour+'-text icon'}>
-					<FontAwesome name={icon} />
-				</div>
-				<div className={"status "+colour+'-text'}>					
-					{text}
-				</div>
-				{tooltip ? <span className="tooltip">{tooltip}</span> : null}
-			</div>
-		)
+			<span className={colour+'-text'}>
+				<FontAwesome name={icon} />&nbsp; {status}
+			</span>
+		);
+	}
+
+	renderSpotifyStatus(){
+		var colour = 'grey';
+		var icon = 'question-circle';
+		var status = 'Unknown';
+
+		if (this.props.spotify.connecting){
+			icon = 'plug';
+			status = 'Connecting...'
+		} else if (!this.props.spotify.connected){
+			colour = 'red';
+			icon = 'close';
+			status = 'Disconnected';
+		} else if (this.props.mopidy.connected){
+			colour = 'green';
+			icon = 'check';
+			status = 'Connected';
+		}
+
+		if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')){
+			colour = 'orange';
+			status += ' (Mopidy-Spotify extension not installed/enabled!)';
+		}
+
+		return (
+			<span className={colour+'-text'}>
+				<FontAwesome name={icon} />&nbsp; {status}
+			</span>
+		);
 	}
 
 	render(){
@@ -232,16 +254,16 @@ class Settings extends React.Component {
 
 				<section className="content-wrapper">
 
-					<h4 className="underline">Services</h4>
+					<h4 className="underline">Server</h4>
 
-					<div className="services">
-						{this.renderServiceStatus('mopidy')}
-						{this.renderServiceStatus('pusher')}
-						{this.renderServiceStatus('spotify')}
-						{this.renderServiceStatus('lastfm')}
+					<div className="field">
+						<div className="name">Status</div>
+						<div className="input">
+							<div className="text">
+								{this.renderServerStatus()}
+							</div>
+						</div>
 					</div>
-
-					<h4 className="underline">System</h4>
 
 					<div className="field">
 						<div className="name">Username</div>
@@ -316,6 +338,15 @@ class Settings extends React.Component {
 					</div>
 
 					<h4 className="underline">Spotify</h4>
+
+					<div className="field">
+						<div className="name">Status</div>
+						<div className="input">
+							<div className="text">
+								{this.renderSpotifyStatus()}
+							</div>
+						</div>
+					</div>
 
 					<div className="field current-user">
 						<div className="name">Current user</div>
