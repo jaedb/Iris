@@ -1,16 +1,9 @@
 <?php
-/**
- * Spotify Authentication proxy
- *
- * To use:
- * 1. Create a Spotify App (https://developer.spotify.com/my-applications), and paste in your credentials below
- * 2. Save this script to a publicly-accessible server
- * 3. Set config in mopidy.conf to point to this script
- **/
 
 // Spotify app credentials
-define('CLIENT_ID','YOUR_ID_HERE');
-define('CLIENT_SECRET','YOUR_SECRET_HERE');
+// Create your application here: https://developer.spotify.com/my-applications
+define('CLIENT_ID','YOUR_CLIENT_ID_HERE');
+define('CLIENT_SECRET','YOUR_CLIENT_SECRET_HERE');
 define('REDIRECT_URI','YOUR_REDIRECT_URI_HERE');
 
 // Allow cross-domain requests
@@ -176,4 +169,5 @@ function refreshToken($refresh_token){
 	
 	return $response;
 }
+
 

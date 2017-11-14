@@ -111,7 +111,7 @@ export let digestMopidyImages = function(mopidy, images){
 	        images[i].url = url		
 
 			// Replace local images to point directly to our Mopidy server
-	        if (url.startsWith('/images/')){
+	        if (url && url.startsWith('/images/')){
 	            url = '//'+mopidy.host+':'+mopidy.port+url
 	        }
 
