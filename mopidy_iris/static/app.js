@@ -381,7 +381,7 @@ var digestMopidyImages = exports.digestMopidyImages = function digestMopidyImage
 			images[i].url = url;
 
 			// Replace local images to point directly to our Mopidy server
-			if (url.startsWith('/images/')) {
+			if (url && url.startsWith('/images/')) {
 				url = '//' + mopidy.host + ':' + mopidy.port + url;
 			}
 
@@ -2421,7 +2421,7 @@ function getRecommendations() {
 
     return function (dispatch, getState) {
 
-        dispatch({ type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: [], artists_uris: [], albums_uris: [] });
+        dispatch({ type: 'CLEAR_SPOTIFY_RECOMMENDATIONS' });
 
         // build our starting point
         var artists_ids = [];
@@ -2459,15 +2459,16 @@ function getRecommendations() {
         endpoint += '&limit=' + limit;
 
         sendRequest(dispatch, getState, endpoint).then(function (response) {
+            var tracks = Object.assign([], response.tracks);
 
             // We only get simple artist objects, so we need to
             // get the full object. We'll add URIs to our recommendations
             // anyway so we can proceed in the meantime
             var artists_uris = [];
-            if (response.tracks.length > artists_ids.length && response.tracks.length > 10) {
+            if (tracks.length > artists_ids.length && tracks.length > 10) {
                 while (artists_uris.length < 5) {
-                    var random_index = Math.round(Math.random() * (response.tracks.length - 1));
-                    var artist = response.tracks[random_index].artists[0];
+                    var random_index = Math.round(Math.random() * (tracks.length - 1));
+                    var artist = tracks[random_index].artists[0];
 
                     // Make sure this artist is not already in our sample, and
                     // is not one of the seeds
@@ -2481,10 +2482,10 @@ function getRecommendations() {
             // Copy already loaded albums into array
             var albums = [];
             var albums_uris = [];
-            if (response.tracks.length > 10) {
+            if (tracks.length > 10) {
                 while (albums.length < 5) {
-                    var random_index = Math.round(Math.random() * (response.tracks.length - 1));
-                    var album = response.tracks[random_index].album;
+                    var random_index = Math.round(Math.random() * (tracks.length - 1));
+                    var album = tracks[random_index].album;
 
                     // Make sure this album is not already in our sample
                     if (!albums_uris.includes(album.uri)) {
@@ -2494,16 +2495,20 @@ function getRecommendations() {
                 }
             }
 
-            // Officially add albums to index
             dispatch({
                 type: 'ALBUMS_LOADED',
                 albums: albums
             });
 
             dispatch({
+                type: 'TRACKS_LOADED',
+                tracks: tracks
+            });
+
+            dispatch({
                 type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
                 seeds_uris: uris,
-                tracks: response.tracks,
+                tracks_uris: helpers.arrayOf('uri', tracks),
                 artists_uris: artists_uris,
                 albums_uris: helpers.arrayOf('uri', albums)
             });
@@ -17388,13 +17393,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.set = set;
 exports.authorizationGranted = authorizationGranted;
 exports.revokeAuthorization = revokeAuthorization;
+exports.getMe = getMe;
+exports.getTrack = getTrack;
+exports.getArtist = getArtist;
+exports.getAlbum = getAlbum;
 exports.loveTrack = loveTrack;
 exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
-exports.getMe = getMe;
-exports.getArtist = getArtist;
-exports.getAlbum = getAlbum;
-exports.getTrack = getTrack;
 
 var coreActions = __webpack_require__(22);
 var uiActions = __webpack_require__(5);
@@ -17536,63 +17541,6 @@ function revokeAuthorization() {
 }
 
 /**
- * Signed requests
- **/
-
-function loveTrack(uri, artist, track) {
-    return function (dispatch, getState) {
-        artist = encodeURIComponent(artist);
-        var params = 'method=track.love&track=' + track + '&artist=' + artist;
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            dispatch({
-                type: 'TRACK_LOADED',
-                track: {
-                    uri: uri,
-                    userloved: true
-                }
-            });
-        });
-    };
-}
-
-function unloveTrack(uri, artist, track) {
-    return function (dispatch, getState) {
-        artist = encodeURIComponent(artist);
-        var params = 'method=track.unlove&track=' + track + '&artist=' + artist;
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            dispatch({
-                type: 'TRACK_LOADED',
-                track: {
-                    uri: uri,
-                    userloved: false
-                }
-            });
-        });
-    };
-}
-
-function scrobble(track) {
-    return function (dispatch, getState) {
-        var track_name = track.name;
-        var artist_name = "Unknown";
-        if (track.artists) {
-            artist_name = track.artists[0].name;
-        }
-        var artist_name = encodeURIComponent(artist_name);
-
-        var params = 'method=track.scrobble';
-        params += '&track=' + track_name + '&artist=' + artist_name;
-        params += '&timestamp=' + Math.floor(Date.now() / 1000);
-
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            console.log("Scrobbled", response);
-        }, function (error) {
-            dispatch(coreActions.handleException('Could not scrobble track', error, error.description ? error.description : null));
-        });
-    };
-}
-
-/**
  * Non-signed requests
  **/
 
@@ -17606,6 +17554,39 @@ function getMe() {
                     user: response.user
                 });
                 dispatch({ type: 'LASTFM_CONNECTED' });
+            }
+        });
+    };
+}
+
+function getTrack(uri) {
+    return function (dispatch, getState) {
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not get track", {}, "Track has no artists"));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException("Could not get track", {}, "Could not find track in index"));
+            return;
+        }
+
+        var track_name = track.name;
+        var artist_name = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.getInfo&track=' + track_name + '&artist=' + artist_name;
+        if (getState().lastfm.session) {
+            params += '&username=' + getState().lastfm.session.name;
+        }
+        sendRequest(dispatch, getState, params).then(function (response) {
+            if (response.track) {
+                var merged_track = Object.assign({}, {
+                    uri: track.uri
+                }, response.track, track);
+                dispatch({
+                    type: 'TRACK_LOADED',
+                    track: merged_track
+                });
             }
         });
     };
@@ -17664,32 +17645,86 @@ function getAlbum(artist, album) {
     };
 }
 
-function getTrack(track) {
-    var artist_name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    var track_name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+/**
+ * Signed requests
+ **/
 
+function loveTrack(uri) {
     return function (dispatch, getState) {
-        if (track) {
-            track_name = track.name;
-            if (track.artists) {
-                artist_name = track.artists[0].name;
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not love track", track, "Track has no artists"));
+                return;
             }
+        } else {
+            dispatch(coreActions.handleException("Could not love track", track, "Could not find track in index"));
+            return;
         }
-        artist_name = encodeURIComponent(artist_name);
-        var params = 'method=track.getInfo&track=' + track_name + '&artist=' + artist_name;
-        if (getState().lastfm.session) {
-            params += '&username=' + getState().lastfm.session.name;
-        }
-        sendRequest(dispatch, getState, params).then(function (response) {
-            if (response.track) {
-                var merged_track = Object.assign({}, {
-                    uri: track.uri
-                }, response.track, track);
-                dispatch({
-                    type: 'TRACK_LOADED',
-                    track: merged_track
-                });
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.love&track=' + track.name + '&artist=' + artist;
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            track = Object.assign({}, track, {
+                userloved: true
+            });
+            dispatch({
+                type: 'TRACKS_LOADED',
+                tracks: [track]
+            });
+        });
+    };
+}
+
+function unloveTrack(uri) {
+    return function (dispatch, getState) {
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not unlove track", track, "Track has no artists"));
+                return;
             }
+        } else {
+            dispatch(coreActions.handleException("Could not unlove track", track, "Could not find track in index"));
+            return;
+        }
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.unlove&track=' + track.name + '&artist=' + artist;
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            track = Object.assign({}, track, {
+                userloved: false
+            });
+            dispatch({
+                type: 'TRACKS_LOADED',
+                tracks: [track]
+            });
+        });
+    };
+}
+
+/**
+ * TODO: Currently scrobbling client-side would result in duplicated scrobbles
+ * if the user was authorized across multiple connections. Ideally this would
+ * be handled server-side. Mopidy-Scrobbler currently achieves this.
+ **/
+function scrobble(track) {
+    return function (dispatch, getState) {
+        var track_name = track.name;
+        var artist_name = "Unknown";
+        if (track.artists) {
+            artist_name = track.artists[0].name;
+        }
+        var artist_name = encodeURIComponent(artist_name);
+
+        var params = 'method=track.scrobble';
+        params += '&track=' + track_name + '&artist=' + artist_name;
+        params += '&timestamp=' + Math.floor(Date.now() / 1000);
+
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            console.log("Scrobbled", response);
+        }, function (error) {
+            dispatch(coreActions.handleException('Could not scrobble track', error, error.description ? error.description : null));
         });
     };
 }
@@ -49595,12 +49630,15 @@ function reducer() {
                 discover: [].concat(_toConsumableArray(spotify.discover), [action.data])
             });
 
+        case 'CLEAR_SPOTIFY_RECOMMENDATIONS':
+            return Object.assign({}, spotify, { recommendations: { artists_uris: [], albums_uris: [], tracks_uris: [] } });
+
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':
             return Object.assign({}, spotify, {
                 recommendations: {
                     artists_uris: action.artists_uris,
                     albums_uris: action.albums_uris,
-                    tracks: helpers.formatTracks(action.tracks)
+                    tracks_uris: action.tracks_uris
                 }
             });
 
@@ -50403,7 +50441,6 @@ var CoreMiddleware = function () {
                      **/
 
                     case 'LOADED_MORE':
-                        console.log(action);
                         var parent_type_plural = action.parent_type + 's';
                         var parent_index = Object.assign({}, core[action.parent_type + 's']);
                         var parent = Object.assign({}, parent_index[action.parent_key]);
@@ -57685,7 +57722,7 @@ var ProgressSlider = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		current_track: state.core.current_track !== undefined && state.core.tracks !== undefined && state.core.tracks[state.core.current_track] !== undefined ? state.core.tracks[state.core.current_track] : null,
+		current_track: state.core.tracks[state.core.current_track_uri] !== undefined ? state.core.tracks[state.core.current_track_uri] : null,
 		connected: state.mopidy.connected,
 		time_position: state.mopidy.time_position,
 		play_state: state.mopidy.play_state
@@ -58001,9 +58038,8 @@ var ContextMenu = function (_React$Component) {
 
 				// if we're able to be in the LastFM library, run a check
 				if (nextProps.lastfm_authorized && context.is_track && context.items_count == 1) {
-					if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined) {
-						var track = this.props.tracks[nextProps.menu.items[0].uri];
-						this.props.lastfmActions.getTrack(track);
+					if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined && this.props.tracks[nextProps.menu.items[0].uri].userloved === undefined) {
+						this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
 					}
 				}
 
@@ -58191,9 +58227,9 @@ var ContextMenu = function (_React$Component) {
 		value: function toggleLoved(e, is_loved) {
 			this.props.uiActions.hideContextMenu();
 			if (is_loved) {
-				this.props.lastfmActions.unloveTrack(this.props.menu.items[0]);
+				this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri);
 			} else {
-				this.props.lastfmActions.loveTrack(this.props.menu.items[0]);
+				this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri);
 			}
 		}
 	}, {
@@ -58578,7 +58614,9 @@ var ContextMenu = function (_React$Component) {
 				)
 			);
 
-			if (helpers.isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
+			if (!this.props.lastfm_authorized) {
+				var toggle_loved = null;
+			} else if (helpers.isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
 				var toggle_loved = _react2.default.createElement(
 					'span',
 					{ className: 'menu-item-wrapper' },
@@ -63402,7 +63440,7 @@ var Track = function (_React$Component) {
 
 				// Ready to load LastFM
 				if (nextProps.lastfm_authorized) {
-					this.props.lastfmActions.getTrack(nextProps.track);
+					this.props.lastfmActions.getTrack(nextProps.track.uri);
 				}
 
 				// Ready to load lyrics
@@ -63422,6 +63460,12 @@ var Track = function (_React$Component) {
 			};
 			this.props.uiActions.showContextMenu(data);
 		}
+
+		/**
+   * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
+   * we need to accommodate? 
+   **/
+
 	}, {
 		key: 'loadTrack',
 		value: function loadTrack() {
@@ -63454,7 +63498,7 @@ var Track = function (_React$Component) {
 
 				// Get the LastFM version of this track (provided we have artist info)
 				if (props.lastfm_authorized) {
-					this.props.lastfmActions.getTrack(props.track);
+					this.props.lastfmActions.getTrack(props.track.uri);
 				}
 
 				// Ready for lyrics
@@ -64610,6 +64654,13 @@ var Settings = function (_React$Component) {
 	}
 
 	_createClass(Settings, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.lastfm.session && this.props.core.users["lastfm:user:" + this.props.lastfm.session.name] === undefined) {
+				this.props.lastfmActions.getMe();
+			}
+		}
+	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(newProps) {
 			var changed = false;
@@ -64769,53 +64820,64 @@ var Settings = function (_React$Component) {
 			);
 		}
 	}, {
-		key: 'renderServiceStatus',
-		value: function renderServiceStatus(service) {
-			var colour = 'red';
-			var icon = 'close';
-			var name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase();
-			var text = 'Disconnected';
-			var tooltip = null;
-			service = this.props[service];
+		key: 'renderServerStatus',
+		value: function renderServerStatus() {
+			var colour = 'grey';
+			var icon = 'question-circle';
+			var status = 'Unknown';
 
-			if (service.connecting) {
+			if (this.props.mopidy.connecting || this.props.pusher.connecting) {
 				icon = 'plug';
-				colour = 'grey';
-				text = 'Connecting';
-			} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))) {
-				icon = 'exclamation-triangle';
+				status = 'Connecting...';
+			} else if (!this.props.mopidy.connected || !this.props.pusher.connected) {
 				colour = 'red';
-				text = 'Not installed';
-				tooltip = 'Mopidy-Spotify is not installed or enabled';
-			} else if (service.connected) {
-				icon = 'check';
+				icon = 'close';
+				status = 'Disconnected';
+			} else if (this.props.mopidy.connected && this.props.pusher.connected) {
 				colour = 'green';
-				text = 'Connected';
+				icon = 'check';
+				status = 'Connected';
 			}
 
 			return _react2.default.createElement(
-				'div',
-				{ className: "service" + (tooltip ? ' has-tooltip large-tooltip' : '') },
-				_react2.default.createElement(
-					'h4',
-					{ className: 'title' },
-					name
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: colour + '-text icon' },
-					_react2.default.createElement(_reactFontawesome2.default, { name: icon })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: "status " + colour + '-text' },
-					text
-				),
-				tooltip ? _react2.default.createElement(
-					'span',
-					{ className: 'tooltip' },
-					tooltip
-				) : null
+				'span',
+				{ className: colour + '-text' },
+				_react2.default.createElement(_reactFontawesome2.default, { name: icon }),
+				'\xA0 ',
+				status
+			);
+		}
+	}, {
+		key: 'renderSpotifyStatus',
+		value: function renderSpotifyStatus() {
+			var colour = 'grey';
+			var icon = 'question-circle';
+			var status = 'Unknown';
+
+			if (this.props.spotify.connecting) {
+				icon = 'plug';
+				status = 'Connecting...';
+			} else if (!this.props.spotify.connected) {
+				colour = 'red';
+				icon = 'close';
+				status = 'Disconnected';
+			} else if (this.props.mopidy.connected) {
+				colour = 'green';
+				icon = 'check';
+				status = 'Connected';
+			}
+
+			if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')) {
+				colour = 'orange';
+				status += ' (Mopidy-Spotify extension not installed/enabled!)';
+			}
+
+			return _react2.default.createElement(
+				'span',
+				{ className: colour + '-text' },
+				_react2.default.createElement(_reactFontawesome2.default, { name: icon }),
+				'\xA0 ',
+				status
 			);
 		}
 	}, {
@@ -64866,20 +64928,25 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Services'
+						'Server'
 					),
 					_react2.default.createElement(
 						'div',
-						{ className: 'services' },
-						this.renderServiceStatus('mopidy'),
-						this.renderServiceStatus('pusher'),
-						this.renderServiceStatus('spotify'),
-						this.renderServiceStatus('lastfm')
-					),
-					_react2.default.createElement(
-						'h4',
-						{ className: 'underline' },
-						'System'
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Status'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'text' },
+								this.renderServerStatus()
+							)
+						)
 					),
 					_react2.default.createElement(
 						'div',
@@ -65067,6 +65134,24 @@ var Settings = function (_React$Component) {
 						'h4',
 						{ className: 'underline' },
 						'Spotify'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Status'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'text' },
+								this.renderSpotifyStatus()
+							)
+						)
 					),
 					_react2.default.createElement(
 						'div',
@@ -65278,7 +65363,13 @@ var Settings = function (_React$Component) {
 							'. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.',
 							_react2.default.createElement('br', null),
 							_react2.default.createElement('br', null),
-							'Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements.',
+							'Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements. This may include personal information (eg Spotify Username). For more information, see ',
+							_react2.default.createElement(
+								'a',
+								{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use', target: '_blank' },
+								'terms and conditions'
+							),
+							'.',
 							_react2.default.createElement('br', null)
 						),
 						_react2.default.createElement('br', null),
@@ -66909,6 +67000,16 @@ var Discover = function (_React$Component) {
 				}
 			}
 
+			var tracks = [];
+			if (this.props.recommendations.tracks_uris && this.props.tracks) {
+				for (var i = 0; i < this.props.recommendations.tracks_uris.length; i++) {
+					var uri = this.props.recommendations.tracks_uris[i];
+					if (this.props.tracks.hasOwnProperty(uri)) {
+						tracks.push(this.props.tracks[uri]);
+					}
+				}
+			}
+
 			var uri = 'iris:discover';
 			if (this.props.params.seeds) {
 				uri += ':' + this.props.params.seeds.split(':').join('_');
@@ -66945,7 +67046,7 @@ var Discover = function (_React$Component) {
 						null,
 						'Tracks'
 					),
-					this.props.recommendations.tracks ? _react2.default.createElement(_TrackList2.default, { className: 'discover-track-list', uri: uri, tracks: this.props.recommendations.tracks }) : null
+					_react2.default.createElement(_TrackList2.default, { className: 'discover-track-list', uri: uri, tracks: tracks })
 				)
 			);
 		}
@@ -66992,9 +67093,9 @@ var Discover = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		albums: state.core.albums ? state.core.albums : [],
-		artists: state.core.artists ? state.core.artists : [],
-		tracks: state.core.tracks ? state.core.tracks : [],
+		albums: state.core.albums,
+		artists: state.core.artists,
+		tracks: state.core.tracks,
 		genres: state.core.genres ? state.core.genres : [],
 		authorized: state.spotify.authorization,
 		load_queue: state.ui.load_queue,
