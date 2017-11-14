@@ -369,6 +369,11 @@ export function unloveTrack(uri){
     }
 }
 
+/**
+ * TODO: Currently scrobbling client-side would result in duplicated scrobbles
+ * if the user was authorized across multiple connections. Ideally this would
+ * be handled server-side. Mopidy-Scrobbler currently achieves this.
+ **/
 export function scrobble(track){
     return (dispatch, getState) => {
         var track_name = track.name;
