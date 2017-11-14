@@ -167,6 +167,28 @@ const localstorageMiddleware = (function(){
                 );
                 localStorage.setItem('ui', JSON.stringify(ui))
                 break
+
+            case 'LASTFM_AUTHORIZATION_GRANTED':
+                var lastfm = JSON.parse(localStorage.getItem('lastfm') );
+                lastfm = Object.assign(
+                    {},
+                    {
+                        session: action.data.session
+                    }
+                );
+                localStorage.setItem('lastfm', JSON.stringify(lastfm));
+                break;
+
+            case 'LASTFM_AUTHORIZATION_REVOKED':
+                var lastfm = JSON.parse(localStorage.getItem('lastfm') );
+                lastfm = Object.assign(
+                    {},
+                    {
+                        session: null
+                    }
+                );
+                localStorage.setItem('lastfm', JSON.stringify(lastfm));
+                break;
         }
     }
 

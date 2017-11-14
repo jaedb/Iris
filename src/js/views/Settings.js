@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
 import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
+import LastfmAuthenticationFrame from '../components/LastfmAuthenticationFrame'
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import URISchemesList from '../components/URISchemesList'
@@ -14,11 +15,13 @@ import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
+import URILink from '../components/URILink'
 
 import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
 class Settings extends React.Component {
@@ -32,6 +35,12 @@ class Settings extends React.Component {
 			mopidy_port: this.props.mopidy.port,
 			pusher_username: this.props.pusher.username,
 			input_in_focus: null
+		}
+	}
+
+	componentDidMount(){
+		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
+			this.props.lastfmActions.getMe();
 		}
 	}
 
@@ -104,25 +113,50 @@ class Settings extends React.Component {
 	}
 
 	renderSpotifyUser(){
-		var user = this.props.spotify.me
+		var user = this.props.spotify.me;
 
 		if (user){
 			return (
-				<Link className="user" to={global.baseURL+'user/'+user.uri}>
+				<URILink className="user" type="user" uri={user.uri}>
 					<Thumbnail circle={true} size="small" images={user.images} />
 					<span className="user-name">
 						{user.display_name ? user.display_name : user.id}
+						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
 					</span>
-				</Link>
+				</URILink>
 			)
 		} else {
 			return (
-				<Link className="user">
+				<URILink className="user">
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
 						Unknown
 					</span>
-				</Link>
+				</URILink>
+			)
+		}
+	}
+
+	renderLastfmUser(){
+		var user = this.props.core.users["lastfm:user:"+this.props.lastfm.session.name];
+
+		if (user){
+			return (
+				<URILink className="user" type="user" uri={user.uri}>
+					<Thumbnail circle={true} size="small" images={user.image} />
+					<span className="user-name">
+						{user.realname ? user.realname : user.name}
+					</span>
+				</URILink>
+			)
+		} else {
+			return (
+				<URILink className="user" type="user" uri={false}>
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						Unknown
+					</span>
+				</URILink>
 			)
 		}
 	}
@@ -137,50 +171,59 @@ class Settings extends React.Component {
 		)
 	}
 
-	renderServiceStatus(service){
+	renderServerStatus(){
+		var colour = 'grey';
+		var icon = 'question-circle';
+		var status = 'Unknown';
 
-		let colour = 'red'
-		let icon = 'close'
-		let name = service.charAt(0).toUpperCase() + service.slice(1).toLowerCase()
-		let text = 'Disconnected'
-		let tooltip = null
-
-		service = this.props[service]
-
-		if (service.connecting){
-			icon = 'plug'
-			colour = 'grey'
-			text = 'Connecting'
-		} else if (name == 'Spotify' && (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:'))){
-			icon = 'exclamation-triangle'
-			colour = 'red'
-			text = 'Not installed'
-			tooltip = 'Mopidy-Spotify is not installed or enabled'
-		} else if (service.connected && name == 'Spotify' && !service.authorization){
-			icon = 'lock'
-			colour = 'orange'
-			text = 'Limited access'
-			tooltip = 'Authorize Iris for full Spotify functionality'
-		} else if (service.connected){
-			icon = 'check'
-			colour = 'green'
-			text = 'Connected'
+		if (this.props.mopidy.connecting || this.props.pusher.connecting){
+			icon = 'plug';
+			status = 'Connecting...'
+		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
+			colour = 'red';
+			icon = 'close';
+			status = 'Disconnected';
+		} else if (this.props.mopidy.connected && this.props.pusher.connected){
+			colour = 'green';
+			icon = 'check';
+			status = 'Connected';
 		}
 
 		return (
-			<div className={"service"+(tooltip ? ' has-tooltip large-tooltip' : '')}>
-				<h4 className="title">
-					{name}
-				</h4>
-				<div className={colour+'-text icon'}>
-					<FontAwesome name={icon} />
-				</div>
-				<div className={"status "+colour+'-text'}>					
-					{text}
-				</div>
-				{tooltip ? <span className="tooltip">{tooltip}</span> : null}
-			</div>
-		)
+			<span className={colour+'-text'}>
+				<FontAwesome name={icon} />&nbsp; {status}
+			</span>
+		);
+	}
+
+	renderSpotifyStatus(){
+		var colour = 'grey';
+		var icon = 'question-circle';
+		var status = 'Unknown';
+
+		if (this.props.spotify.connecting){
+			icon = 'plug';
+			status = 'Connecting...'
+		} else if (!this.props.spotify.connected){
+			colour = 'red';
+			icon = 'close';
+			status = 'Disconnected';
+		} else if (this.props.mopidy.connected){
+			colour = 'green';
+			icon = 'check';
+			status = 'Connected';
+		}
+
+		if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')){
+			colour = 'orange';
+			status += ' (Mopidy-Spotify extension not installed/enabled!)';
+		}
+
+		return (
+			<span className={colour+'-text'}>
+				<FontAwesome name={icon} />&nbsp; {status}
+			</span>
+		);
 	}
 
 	render(){
@@ -211,13 +254,16 @@ class Settings extends React.Component {
 
 				<section className="content-wrapper">
 
-					<div className="services">
-						{this.renderServiceStatus('mopidy')}
-						{this.renderServiceStatus('pusher')}
-						{this.renderServiceStatus('spotify')}
-					</div>
+					<h4 className="underline">Server</h4>
 
-					<h4 className="underline">System</h4>
+					<div className="field">
+						<div className="name">Status</div>
+						<div className="input">
+							<div className="text">
+								{this.renderServerStatus()}
+							</div>
+						</div>
+					</div>
 
 					<div className="field">
 						<div className="name">Username</div>
@@ -293,6 +339,15 @@ class Settings extends React.Component {
 
 					<h4 className="underline">Spotify</h4>
 
+					<div className="field">
+						<div className="name">Status</div>
+						<div className="input">
+							<div className="text">
+								{this.renderSpotifyStatus()}
+							</div>
+						</div>
+					</div>
+
 					<div className="field current-user">
 						<div className="name">Current user</div>
 						<div className="input">
@@ -301,12 +356,31 @@ class Settings extends React.Component {
 							</div>
 						</div>
 					</div>	
+
 					<div className="field">
 						<div className="name">Authorization</div>
 						<div className="input">
 							<SpotifyAuthenticationFrame />
 							{ this.renderSendAuthorizationButton() }
 							{this.props.spotify.refreshing_token ? <button className="working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
+						</div>
+					</div>
+
+					<h4 className="underline">LastFM</h4>
+
+					{this.props.lastfm.session ? <div className="field current-user">
+						<div className="name">Current user</div>
+						<div className="input">
+							<div className="text">
+								{ this.renderLastfmUser() }
+							</div>
+						</div>
+					</div> : null}
+
+					<div className="field">
+						<div className="name">Authorization</div>
+						<div className="input">
+							<LastfmAuthenticationFrame />
 						</div>
 					</div>
 
@@ -365,7 +439,7 @@ class Settings extends React.Component {
 							<em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em> is an open-source project by <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
 								<br />
 								<br />
-								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements.
+								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements. This may include personal information (eg Spotify Username). For more information, see <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use" target="_blank">terms and conditions</a>.
 								<br />
 						</div>
 						<br /><br />
@@ -398,6 +472,7 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

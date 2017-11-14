@@ -14,6 +14,7 @@ import coreMiddleware from './services/core/middleware'
 import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
+import lastfmMiddleware from './services/lastfm/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
@@ -31,8 +32,9 @@ let reducers = combineReducers({
 // TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
 	core: {
-		current_tracklist: [],
-		current_tltrack: false,
+		queue: [],
+		queue_metadata: {},
+		current_track_uri: null,
 		albums: {},
 		artists: {},
 		playlists: {},
@@ -63,7 +65,9 @@ var initialState = {
 		}
 	},
 	lastfm: {
-		connected: false
+		connected: false,
+		me: false,
+		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
 	},
 	genius: {
 		connected: false
@@ -72,7 +76,7 @@ var initialState = {
 		connected: false,
 		me: false,
 		autocomplete_results: {},
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_v2.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'
 	}
 };
 
@@ -106,12 +110,18 @@ if (localStorage.getItem('spotify')){
 	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
 }
 
+// if we've got a stored version of lastfm state, load and merge
+if (localStorage.getItem('lastfm')){
+	var storedLastfm = JSON.parse(localStorage.getItem('lastfm') );
+	initialState.lastfm = Object.assign(initialState.lastfm, storedLastfm );
+}
+
 console.log('Bootstrapping', initialState)
 
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware )
+	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware )
 );
 
 export default store;

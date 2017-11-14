@@ -105,6 +105,9 @@ export default function reducer(spotify = {}, action){
                 }
             );
 
+        case 'CLEAR_SPOTIFY_RECOMMENDATIONS':
+            return Object.assign({}, spotify, {recommendations: {artists_uris: [], albums_uris: [], tracks_uris: []}});
+
         case 'SPOTIFY_RECOMMENDATIONS_LOADED':
             return Object.assign(
                 {}, 
@@ -113,9 +116,9 @@ export default function reducer(spotify = {}, action){
                     recommendations: {
                         artists_uris: action.artists_uris,
                         albums_uris: action.albums_uris,
-                        tracks: helpers.formatTracks(action.tracks)
+                        tracks_uris: action.tracks_uris
                     }
-                })
+                });
 
         case 'SPOTIFY_FAVORITES_LOADED':
             return Object.assign(
@@ -210,17 +213,19 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
         case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
-            var tracks = action.data.items
+            var tracks = action.data.items;
+            var uris = [];
 
             if (tracks){
                 tracks = helpers.formatTracks(tracks);
+                uris = helpers.arrayOf('uri', tracks);
                 if (spotify.library_tracks){
-                    tracks = [...spotify.library_tracks,...tracks]
+                    uris = [...spotify.library_tracks, ...uris]
                 }
             }
 
             return Object.assign({}, spotify, { 
-                library_tracks: tracks, 
+                library_tracks: helpers.removeDuplicates(uris), 
                 library_tracks_more: action.data.next
             })
 

@@ -27,20 +27,17 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(spotifyActions.getAllLibraryPlaylists())
                 }
 
-                // Get the current logged-in user
-                store.dispatch(spotifyActions.getMe())
-
-                next(action)
+                next(action);
                 break
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
-                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' })
+                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' });
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
 
-                next(action)
-                break
+                next(action);
+                break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
                 var label = null
@@ -51,7 +48,7 @@ const SpotifyMiddleware = (function(){
                 next(action)
 
                 // Now dispatch a getMe to get the backend-provided user
-                store.dispatch(spotifyActions.getMe())
+                store.dispatch(spotifyActions.getMe());
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
@@ -312,12 +309,23 @@ const SpotifyMiddleware = (function(){
                 next(action)
                 break
 
+            case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
+            case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
+                if (action.data){
+                    store.dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: action.data.items
+                    });
+                }
+                next(action);
+                break;
+
             case 'SPOTIFY_TRACK_LOADED':
                 store.dispatch({
-                    type: 'TRACK_LOADED',
-                    key: action.data.uri,
-                    track: action.data
+                    type: 'TRACKS_LOADED',
+                    tracks: [action.data]
                 });
+                next(action);
                 break
 
 
@@ -404,23 +412,23 @@ const SpotifyMiddleware = (function(){
                 // We've loaded 'me' and we are Anonymous currently
                 if (action.data && store.getState().pusher.username == 'Anonymous'){
                     if (action.data.display_name !== null){
-                        var name = action.data.display_name
+                        var name = action.data.display_name;
                     } else {
-                        var name = action.data.id
+                        var name = action.data.id;
                     }
 
                     // Use 'me' name as my Pusher username
-                    store.dispatch(pusherActions.setUsername(name))
+                    store.dispatch(pusherActions.setUsername(name));
                 }
-                ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id })
+                ReactGA.set({userId: action.data.id});
+                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: action.data.id});
 
                 store.dispatch({
-                    type: 'USER_LOADED',
-                    key: action.data.uri,
-                    user: action.data
-                })
+                    type: 'USERS_LOADED',
+                    users: [action.data]
+                });
 
-                next(action)
+                next(action);
                 break;
 
             // This action is irrelevant to us, pass it on to the next middleware

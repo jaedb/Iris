@@ -5,6 +5,7 @@ var helpers = require('../../helpers.js')
 var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
 var pusherActions = require('./actions.js')
+var lastfmActions = require('../lastfm/actions.js')
 var spotifyActions = require('../spotify/actions.js')
 
 const PusherMiddleware = (function(){ 
@@ -431,7 +432,10 @@ const PusherMiddleware = (function(){
                 store.dispatch(spotifyActions.set({
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
-                    authorization_url: (action.config.authorization_url ? action.config.authorization_url : null)
+                    authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
+                }))
+                store.dispatch(lastfmActions.set({
+                    authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
                 }))
 
                 next(action )

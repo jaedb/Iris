@@ -39,7 +39,7 @@ export default class URILink extends React.Component{
 				break;
 
 			default:
-				return null;
+				to = null;
 		}
 
 		return (

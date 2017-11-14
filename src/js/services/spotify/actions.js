@@ -192,25 +192,8 @@ export function set(data){
 
 export function connect(){
     return (dispatch, getState) => {
-
         dispatch({ type: 'SPOTIFY_CONNECTING' });
-
-        // send a generic request to ensure spotify is up and running
-        // there is no 'test' or 'ping' endpoint on the Spotify API
-        sendRequest(dispatch, getState, 'browse/categories?limit=1' )
-            .then(
-                response => {
-                    dispatch({
-                        type: 'SPOTIFY_CONNECTED'
-                    });
-                },
-                error => {
-                    dispatch(coreActions.handleException(
-                        'Could not connect to Spotify',
-                        error
-                    ));
-                }
-            );
+        dispatch(getMe());
     }
 }
 
@@ -249,10 +232,6 @@ export function importAuthorization(data){
  **/
 export function getMe(){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_ME_LOADED', data: false });
-
         sendRequest(dispatch, getState, 'me' )
             .then(
                 response => {
@@ -260,12 +239,14 @@ export function getMe(){
                         type: 'SPOTIFY_ME_LOADED',
                         data: response
                     });
+                    dispatch({ type: 'SPOTIFY_CONNECTED' });
                 },
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load your profile',
                         error
                     ));
+                    dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 }
             );
     }
@@ -279,11 +260,7 @@ export function getMe(){
  **/
 export function getTrack(uri){
     return (dispatch, getState) => {
-
-        // flush out the previous store value
-        dispatch({ type: 'SPOTIFY_TRACK_LOADED', data: false });
-
-        sendRequest(dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri) )
+        sendRequest(dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri))
             .then(
                 response => {
                     let track = Object.assign(
@@ -312,10 +289,7 @@ export function getTrack(uri){
 
 export function getLibraryTracks(){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'SPOTIFY_LIBRARY_TRACKS_LOADED', data: false });
-
-        sendRequest(dispatch, getState, 'me/tracks?limit=50' )
+        sendRequest(dispatch, getState, 'me/tracks?limit=50')
             .then(
                 response => {
                     dispatch({
@@ -524,6 +498,37 @@ export function getURL(url, action_name, key = false){
     }
 }
 
+export function getMore(url, core_action = null, custom_action = null){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, url)
+            .then(
+                response => {
+                    if (core_action){
+                        dispatch(coreActions.loadedMore(
+                            core_action.parent_type,
+                            core_action.parent_key,
+                            core_action.records_type,
+                            response
+                        ));
+                    } else if (custom_action){
+                        custom_action.data = response;
+                        dispatch(custom_action);
+                    } else {
+                        dispatch(coreActions.handleException(
+                            'No callback handler for loading more items'
+                        ));
+                    }
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not load more '+callback_action.parent_type+' '+callback_action.records_type+'s',
+                        error
+                    ));
+                }
+            );
+    }
+}
+
 export function clearSearchResults(){
     return {
         type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'
@@ -692,6 +697,13 @@ export function following(uri, method = 'GET'){
         var asset_name = helpers.uriType(uri);
         var endpoint, data
         switch(asset_name){
+            case 'track':
+                if (method == 'GET'){
+                    endpoint = 'me/tracks/contains/?ids='+ helpers.getFromUri('trackid', uri)
+                } else {               
+                    endpoint = 'me/tracks/?ids='+ helpers.getFromUri('trackid', uri) 
+                }
+                break
             case 'album':
                 if (method == 'GET'){
                     endpoint = 'me/albums/contains/?ids='+ helpers.getFromUri('albumid', uri)
@@ -724,7 +736,7 @@ export function following(uri, method = 'GET'){
                 break
         }
 
-        sendRequest(dispatch, getState, endpoint, method, data )
+        sendRequest(dispatch, getState, endpoint, method, data)
             .then(
                 response => {
                     if (response ) is_following = response
@@ -857,7 +869,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
 export function getRecommendations(uris = [], limit = 20){
     return (dispatch, getState) => {
 
-        dispatch({type: 'SPOTIFY_RECOMMENDATIONS_LOADED', tracks: [], artists_uris: [], albums_uris: []})
+        dispatch({type: 'CLEAR_SPOTIFY_RECOMMENDATIONS'});
 
         // build our starting point
         var artists_ids = []
@@ -897,15 +909,16 @@ export function getRecommendations(uris = [], limit = 20){
         sendRequest(dispatch, getState, endpoint)
             .then(
                 response => {
+                    var tracks = Object.assign([], response.tracks);
 
                     // We only get simple artist objects, so we need to
                     // get the full object. We'll add URIs to our recommendations
                     // anyway so we can proceed in the meantime
                     var artists_uris = []
-                    if (response.tracks.length > artists_ids.length && response.tracks.length > 10){
+                    if (tracks.length > artists_ids.length && tracks.length > 10){
                         while (artists_uris.length < 5){
-                            var random_index = Math.round(Math.random() * (response.tracks.length - 1))
-                            var artist = response.tracks[random_index].artists[0]
+                            var random_index = Math.round(Math.random() * (tracks.length - 1))
+                            var artist = tracks[random_index].artists[0]
 
                             // Make sure this artist is not already in our sample, and
                             // is not one of the seeds
@@ -919,10 +932,10 @@ export function getRecommendations(uris = [], limit = 20){
                     // Copy already loaded albums into array
                     var albums = []
                     var albums_uris = []
-                    if (response.tracks.length > 10){
+                    if (tracks.length > 10){
                         while (albums.length < 5){
-                            var random_index = Math.round(Math.random() * (response.tracks.length - 1))
-                            var album = response.tracks[random_index].album
+                            var random_index = Math.round(Math.random() * (tracks.length - 1))
+                            var album = tracks[random_index].album
 
                             // Make sure this album is not already in our sample
                             if (!albums_uris.includes(album.uri)){
@@ -932,19 +945,23 @@ export function getRecommendations(uris = [], limit = 20){
                         }
                     }
 
-                    // Officially add albums to index
                     dispatch({
                         type: 'ALBUMS_LOADED',
                         albums: albums
-                    })
+                    });
+
+                    dispatch({
+                        type: 'TRACKS_LOADED',
+                        tracks: tracks
+                    });
 
                     dispatch({
                         type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
                         seeds_uris: uris,
-                        tracks: response.tracks,
+                        tracks_uris: helpers.arrayOf('uri',tracks),
                         artists_uris: artists_uris,
                         albums_uris: helpers.arrayOf('uri',albums)
-                    })
+                    });
                 },
                 error => {
                     dispatch(coreActions.handleException(
@@ -1170,7 +1187,7 @@ export function playArtistTopTracks(uri){
  * ======================================================================================
  **/
 
-export function getUser(uri){
+export function getUser(uri, and_playlists = false){
     return (dispatch, getState) => {
 
         // get the user
@@ -1178,9 +1195,8 @@ export function getUser(uri){
             .then(
                 response => {
                     dispatch({
-                        type: 'USER_LOADED',
-                        key: response.uri,
-                        user: response
+                        type: 'USERS_LOADED',
+                        users: [response]
                     });
                 },
                 error => {
@@ -1191,7 +1207,9 @@ export function getUser(uri){
                 }
             )
 
-        dispatch(getUserPlaylists(uri))
+        if (and_playlists){
+            dispatch(getUserPlaylists(uri));
+        }
     }
 }
 
@@ -1221,14 +1239,11 @@ export function getUserPlaylists(user_uri){
                     }
 
                     dispatch({
-                        type: 'PLAYLISTS_LOADED',
-                        playlists: playlists
-                    });
-
-                    dispatch({
-                        type: 'SPOTIFY_USER_PLAYLISTS_LOADED',
-                        key: user_uri,
-                        data: response
+                        type: 'LOADED_MORE',
+                        parent_type: 'user',
+                        parent_key: user_uri,
+                        records_type: 'playlist',
+                        records_data: response
                     });
                 },
                 error => {

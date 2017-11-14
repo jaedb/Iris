@@ -30,7 +30,14 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.category.playlists_more, 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED', 'category:'+this.props.params.id );
+		this.props.spotifyActions.getMore(
+			this.props.category.playlists_more,
+			null,
+			{
+				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+				key: 'category:'+this.props.params.id
+			}
+		);
 	}
 
 	render(){

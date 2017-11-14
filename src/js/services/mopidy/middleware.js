@@ -341,6 +341,11 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_ENQUEUE_URIS':
 
+                if (!action.uris || action.uris.length <= 0){
+                    this.props.uiActions.createNotification("No URIs to enqueue","warning");
+                    break;
+                }
+
                 // split into batches
                 var uris = Object.assign([], action.uris)
                 var batches = []
@@ -469,14 +474,19 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_URIS':
 
+                if (!action.uris || action.uris.length <= 0){
+                    this.props.uiActions.createNotification("No URIs to play","warning");
+                    break;
+                }
+
                 // Stop the radio
                 if (store.getState().core.radio && store.getState().core.radio.enabled){
-                    store.dispatch(pusherActions.stopRadio())
+                    store.dispatch(pusherActions.stopRadio());
                 }
 
                 // Clear tracklist (if set)
                 if (store.getState().ui.clear_tracklist_on_play){
-                    store.dispatch(mopidyActions.clearTracklist())
+                    store.dispatch(mopidyActions.clearTracklist());
                 }
 
                 var first_uri = action.uris[0]
@@ -551,7 +561,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_SEARCH_RESULTS':
 
                 // Flush out our previous results
-                store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'})
+                store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'});
 
                 var uri_schemes_to_ignore = ['spotify:'];
                 var uri_schemes = Object.assign([], store.getState().ui.search_uri_schemes);
@@ -1249,11 +1259,11 @@ const MopidyMiddleware = (function(){
                                         type: 'PLAYLIST_KEY_UPDATED', 
                                         key: action.key,
                                         new_key: response.uri
-                                    })
-                                    hashHistory.push(global.baseURL+'playlist/'+response.uri)
+                                    });
+                                    hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification('Saved'))
+                                store.dispatch(uiActions.createNotification('Saved'));
                             })
                     });
                 break
@@ -1693,16 +1703,16 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
+            case 'MOPIDY_TLTRACKS':
+                store.dispatch({
+                    type: 'QUEUE_LOADED',
+                    tracks: helpers.formatTracks(action.data)
+                })
+                break;
+
             case 'MOPIDY_CURRENTTLTRACK':
                 if (action.data && action.data.track){
                     var track = helpers.formatTracks(action.data);
-
-                    // Fire off our universal track index loader
-                    store.dispatch({
-                        type: 'TRACK_LOADED',
-                        key: track.uri,
-                        track: track
-                    });
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
                     if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
@@ -1712,9 +1722,16 @@ const MopidyMiddleware = (function(){
                     } else {
                         store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
                     }
-                }
 
-                next(action);
+                    // Set our window title to the track title
+                    helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+
+                    store.dispatch({
+                        type: 'CURRENT_TRACK_LOADED',
+                        current_track: track,
+                        current_track_uri: track.uri
+                    });
+                }
                 break;
 
             case 'MOPIDY_GET_TRACK':

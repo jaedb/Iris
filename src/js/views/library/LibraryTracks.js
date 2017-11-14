@@ -20,11 +20,19 @@ class LibraryTracks extends React.Component{
 
 	// on render
 	componentDidMount(){
-		this.props.spotifyActions.getLibraryTracks();
+		if (this.props.library_tracks === undefined){
+			this.props.spotifyActions.getLibraryTracks();
+		}
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.tracks_more, 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE' );
+		this.props.spotifyActions.getMore(
+			this.props.library_tracks_more,
+			null,
+			{
+				type: 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE'
+			}
+		);
 	}
 
 	render(){
@@ -39,12 +47,22 @@ class LibraryTracks extends React.Component{
 			)
 		}
 
+		var tracks = [];
+		if (this.props.library_tracks && this.props.tracks){
+			for (var i = 0; i < this.props.library_tracks.length; i++){
+				var uri = this.props.library_tracks[i]
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view library-tracks-view">
 				<Header icon="music" title="My tracks" />
 				<section className="content-wrapper">
-					{ this.props.tracks ? <TrackList tracks={this.props.tracks} /> : null }
-					<LazyLoadListener loading={this.props.tracks_more} loadMore={() => this.loadMore()}/>
+					<TrackList tracks={tracks} />
+					<LazyLoadListener loading={this.props.library_tracks_more} loadMore={() => this.loadMore()}/>
 				</section>
 			</div>
 		);
@@ -61,8 +79,9 @@ class LibraryTracks extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
-		tracks: state.spotify.library_tracks,
-		tracks_more: state.spotify.library_tracks_more
+		tracks: state.core.tracks,
+		library_tracks: state.spotify.library_tracks,
+		library_tracks_more: state.spotify.library_tracks_more
 	}
 }
 

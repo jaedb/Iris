@@ -10,6 +10,7 @@ import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
 import TrackList from './TrackList'
 
@@ -41,16 +42,23 @@ class ContextMenu extends React.Component{
 			this.setState({ submenu_expanded: false })
 			$('body').addClass('context-menu-open')
 
-			var context = this.getContext()
+			var context = this.getContext(nextProps);
 
 			// if we're able to be in the library, run a check
-			if (this.props.spotify_authorized && context.source == 'spotify'){
+			if (nextProps.spotify_authorized && context.source == 'spotify'){
 				switch (nextProps.menu.context){
 					case 'artist':
 					case 'album':
 					case 'playlist':
 						this.props.spotifyActions.following(nextProps.menu.items[0].uri)
 						break
+				}
+			}
+
+			// if we're able to be in the LastFM library, run a check
+			if (nextProps.lastfm_authorized && context.is_track && context.items_count == 1){
+				if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined && this.props.tracks[nextProps.menu.items[0].uri].userloved === undefined){
+					this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
 				}
 			}
 
@@ -73,41 +81,44 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	getContext(){
+	getContext(props = this.props){
 		var context = {
 			name: null,
-			nice_name: 'Unknown'
+			nice_name: 'Unknown',
+			is_track: false
 		}
 
-		if (this.props.menu && this.props.menu.context){
-			context.name = this.props.menu.context
-			context.nice_name = this.props.menu.context
+		if (props.menu && props.menu.context){
+			context.name = props.menu.context;
+			context.nice_name = props.menu.context;
 
 			// handle ugly labels
-			switch (this.props.menu.context){
+			switch (props.menu.context){
 				case 'playlist':
 				case 'editable-playlist':
-					context.nice_name = 'playlist'
+					context.nice_name = 'playlist';
 					break
 
 				case 'track':
 				case 'queue-track':
 				case 'playlist-track':
 				case 'editable-playlist-track':
-					context.nice_name = 'track'
+					context.nice_name = 'track';
+					context.is_track = true;
 					break
 			}
 
 			// Consider the object(s) themselves
 			// We can only really accommodate the first item. The only instances where
 			// there is multiple is tracklists, when they're all of the same source (except search?)
-			if (this.props.menu.items && this.props.menu.items.length > 0){
-				var item = this.props.menu.items[0]
-				context.item = item
-				context.items_count = this.props.menu.items.length
-				context.source = helpers.uriSource(item.uri)
-				context.type = helpers.uriType(item.uri)
-				context.in_library = this.inLibrary(item)
+			if (props.menu.items && props.menu.items.length > 0){
+				var item = props.menu.items[0]
+				context.item = item;
+				context.items_count = props.menu.items.length;
+				context.source = helpers.uriSource(item.uri);
+				context.type = helpers.uriType(item.uri);
+				context.in_library = this.inLibrary(item);
+				context.is_loved = this.isLoved(item);
 			}
 		}
 
@@ -131,6 +142,23 @@ class ContextMenu extends React.Component{
 				break
 		}
 		return false
+	}
+
+	/**
+	 * TODO: Currently the select track keys are the only details available. We need
+	 * the actual track object reference (including name and artists) to getTrack from LastFM
+	 **/
+	isLoved(item = null){
+		if (!item){
+			return false
+		}
+
+		if (this.props.tracks[item.uri] === undefined){
+			return false;
+		}
+		var track = this.props.tracks[item.uri];
+
+		return (track.userloved !== undefined && track.userloved == "1");
 	}
 
 	canBeInLibrary(){
@@ -188,6 +216,20 @@ class ContextMenu extends React.Component{
 	addTracksToPlaylist(e, playlist_uri){
 		this.props.uiActions.hideContextMenu()
 		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
+	}
+
+	toggleLoved(e, is_loved){
+		this.props.uiActions.hideContextMenu()
+		if (is_loved){
+			this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri)
+		} else {
+			this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri)
+		}
+	}
+
+	unloveTrack(e){
+		this.props.uiActions.hideContextMenu()
+		this.props.lastfmActions.unloveTrack(this.props.menu.items[0])
 	}
 
 	removeFromPlaylist(e){
@@ -445,6 +487,30 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		if (!this.props.lastfm_authorized){
+			var toggle_loved = null;
+		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
+			var toggle_loved = (
+				<span className="menu-item-wrapper">
+					<a className="menu-item">
+						<span className="label grey-text">
+							Love track
+						</span>
+					</a>
+				</span>
+			)
+		} else {			
+			var toggle_loved = (
+				<span className="menu-item-wrapper">
+					<a className="menu-item" onClick={e => this.toggleLoved(e, context.is_loved)}>
+						<span className="label">
+							{context.is_loved ? 'Unlove' : 'Love'} track
+						</span>
+					</a>
+				</span>
+			)
+		}
+
 		var go_to_artist = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.goToArtist(e)}>
@@ -580,6 +646,7 @@ class ContextMenu extends React.Component{
 						{context.items_count == 1 ? play_queue_item : null}
 						{context.items_count == 1 ? <div className="divider" /> : null}
 						{add_to_playlist}
+						{context.items_count == 1 ? toggle_loved : null}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="divider" />
@@ -598,6 +665,7 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="divider" />
 						{add_to_playlist}
+						{context.items_count == 1 ? toggle_loved : null}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="divider" />
@@ -616,6 +684,7 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="divider" />
 						{add_to_playlist}
+						{context.items_count == 1 ? toggle_loved : null}
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="divider" />
@@ -663,6 +732,7 @@ class ContextMenu extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		menu: state.ui.context_menu,
+		load_queue: state.ui.load_queue,
 		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
@@ -675,7 +745,9 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		playlists: state.core.playlists,
-		spotify_authorized: state.spotify.authorization
+		tracks: state.core.tracks,
+		spotify_authorized: state.spotify.authorization,
+		lastfm_authorized: state.lastfm.session
 	}
 }
 
@@ -685,6 +757,7 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }

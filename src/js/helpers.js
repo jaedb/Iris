@@ -111,7 +111,7 @@ export let digestMopidyImages = function(mopidy, images){
 	        images[i].url = url		
 
 			// Replace local images to point directly to our Mopidy server
-	        if (url.startsWith('/images/')){
+	        if (url && url.startsWith('/images/')){
 	            url = '//'+mopidy.host+':'+mopidy.port+url
 	        }
 
@@ -583,23 +583,26 @@ export let isNumeric = function (data){
  * @param track
  **/
 export let setWindowTitle = function (track = false, play_state = false){
-
     var title = 'No track playing'
     
     if (track){
-        var icon = '\u25A0 '
-        var artistString = ''
+        var icon = '\u25A0 ';
+        var artist_string = '';
         
         if (track.artists){
-            for(var i = 0; i < track.artists.length; i++){
-                if (artistString != '') artistString += ', '
-                artistString += track.artists[i].name
+            for (var i = 0; i < track.artists.length; i++){
+                if (artist_string != ''){
+                	artist_string += ', ';
+                }
+                artist_string += track.artists[i].name
             }
         }
 
-        if (play_state && play_state == 'playing') icon = '\u25B6 '
+        if (play_state && play_state == 'playing'){
+        	icon = '\u25B6 ';
+        }
 
-        title = icon +' '+ track.name +' - '+ artistString
+        title = icon +' '+ track.name +' - '+ artist_string;
     }
     
     document.title = title

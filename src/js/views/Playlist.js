@@ -14,6 +14,7 @@ import LazyLoadListener from '../components/LazyLoadListener'
 import FollowButton from '../components/FollowButton'
 import Header from '../components/Header'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import URILink from '../components/URILink'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -60,12 +61,13 @@ class Playlist extends React.Component{
 			switch (helpers.uriSource(props.params.uri)){
 
 				case 'spotify':
-					this.props.spotifyActions.getPlaylist(props.params.uri )
+					this.props.spotifyActions.getPlaylist(props.params.uri);
+					this.props.spotifyActions.following(props.params.uri);
 					break
 
 				default:
 					if (props.mopidy_connected){
-						this.props.mopidyActions.getPlaylist(props.params.uri )
+						this.props.mopidyActions.getPlaylist(props.params.uri);
 					}
 					break
 			}
@@ -73,7 +75,14 @@ class Playlist extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.playlist.tracks_more, 'PLAYLIST_LOADED_MORE_TRACKS', this.props.playlist.uri );
+		this.props.spotifyActions.getMore(
+			this.props.playlist.tracks_more,
+			{
+				parent_type: 'playlist',
+				parent_key: this.props.playlist.uri,
+				records_type: 'track'
+			}
+		);
 	}
 
 	play(){
@@ -93,20 +102,20 @@ class Playlist extends React.Component{
 
 	// TODO: Once deletion occurs, remove playlist from global playlists list
 	delete(){
-		this.props.mopidyActions.deletePlaylist(this.props.playlist.uri )
+		this.props.mopidyActions.deletePlaylist(this.props.playlist.uri);
 	}
 
 	reorderTracks(indexes, index){
-		this.props.coreActions.reorderPlaylistTracks(this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id )
+		this.props.coreActions.reorderPlaylistTracks(this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id);
 	}
 
 	removeTracks(tracks_indexes){
-		this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes )
+		this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes);
 	}
 
 	inLibrary(){
-		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists'
-		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists';
+		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1);
 	}
 
 	renderActions(){
@@ -166,6 +175,16 @@ class Playlist extends React.Component{
 			)
 		}
 
+		var tracks = [];
+		if (this.props.playlist.tracks_uris && this.props.tracks){
+			for (var i = 0; i < this.props.playlist.tracks_uris.length; i++){
+				var uri = this.props.playlist.tracks_uris[i]
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri])
+				}
+			}
+		}
+
 		return (
 			<div className="view playlist-view content-wrapper">
 				<div className="thumbnail-wrapper">
@@ -177,13 +196,13 @@ class Playlist extends React.Component{
 					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} playlist</span></li> : null }
-						{ this.props.playlist.owner && !this.props.slim_mode ? <li><Link to={'/user/'+this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</Link></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri)} playlist</span></li> : null }
+						{ this.props.playlist.owner && !this.props.slim_mode ? <li><URILink type="user" uri={this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</URILink></li> : null }
 						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
 						{ this.props.playlist.last_modified ? <li>Edited <Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
 						<li>
-							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : '0'} tracks,&nbsp;
-							{ this.props.playlist.tracks ? <Dater type="total-time" data={this.props.playlist.tracks} /> : '0 mins' }
+							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : tracks.length} tracks,&nbsp;
+							<Dater type="total-time" data={tracks} />
 						</li>
 					</ul>
 				</div>
@@ -191,7 +210,7 @@ class Playlist extends React.Component{
 				{ this.renderActions() }
 
 				<section className="list-wrapper">
-					{ this.props.playlist.tracks ? <TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={this.props.playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } /> : null }
+					<TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
 					<LazyLoadListener loading={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
 				</section>
 			</div>
@@ -211,7 +230,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
-		playlist: (state.core.playlists && state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
+		tracks: state.core.tracks,
+		playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
 		spotify_library_playlists: state.spotify.library_playlists,
 		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,

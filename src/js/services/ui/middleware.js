@@ -15,8 +15,17 @@ const UIMiddleware = (function(){
         switch(action.type){
 
             case 'MOPIDY_STATE':
-                helpers.setWindowTitle(store.getState().core.current_track, action.data)
-                next(action)
+
+                // Get the current track from our index
+                var tracks = store.getState().core.tracks;
+                var current_track_uri = store.getState().core.current_track;
+                var current_track = null;
+                if (tracks[current_track_uri] !== undefined){
+                    current_track = tracks[current_track_uri];
+                }
+                
+                helpers.setWindowTitle(current_track, action.data);
+                next(action);
                 break
 
             case 'OPEN_MODAL':

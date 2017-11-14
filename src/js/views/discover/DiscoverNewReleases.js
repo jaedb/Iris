@@ -27,7 +27,14 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	loadMore(){
-		this.props.spotifyActions.getURL(this.props.new_releases_more, 'SPOTIFY_NEW_RELEASES_LOADED');
+		this.props.spotifyActions.getMore(
+			this.props.new_releases_more,
+			null,
+			{
+				type: 'SPOTIFY_NEW_RELEASES_LOADED',
+				key: null
+			}
+		);
 	}
 
 	playAlbum(e,album){
