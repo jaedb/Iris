@@ -142,21 +142,21 @@ class Settings extends React.Component {
 
 		if (user){
 			return (
-				<URILink className="user" type="user" uri={user.uri}>
+				<span className="user">
 					<Thumbnail circle={true} size="small" images={user.image} />
 					<span className="user-name">
 						{user.realname ? user.realname : user.name}
 					</span>
-				</URILink>
+				</span>
 			)
 		} else {
 			return (
-				<URILink className="user" type="user" uri={false}>
+				<span className="user">
 					<Thumbnail circle={true} size="small" />
 					<span className="user-name">
 						Unknown
 					</span>
-				</URILink>
+				</span>
 			)
 		}
 	}
