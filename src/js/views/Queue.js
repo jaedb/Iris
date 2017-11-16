@@ -27,11 +27,18 @@ class Queue extends React.Component{
 	}
 
 	removeTracks(track_indexes){
-		var tlids = []
+
+		var tlids = [];
 		for (var i = 0; i < track_indexes.length; i++){
-			tlids.push(this.props.current_tracklist[track_indexes[i]].tlid )
+			var uri = this.props.queue[track_indexes[i]];
+			if (this.props.tracks[uri] !== undefined){
+				tlids.push(this.props.tracks[uri].tlid);
+			}
 		}
-		this.props.mopidyActions.removeTracks(tlids )
+
+		if (tlids.length > 0){
+			this.props.mopidyActions.removeTracks(tlids);
+		}
 	}
 
 	playTrack(track){
