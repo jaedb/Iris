@@ -124,6 +124,7 @@ class LibraryBrowse extends React.Component{
 				<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
 				<section className="content-wrapper">
 					<List
+						nocontext
 						columns={[{ name: 'name', width: '100'}]} 
 						rows={items.folders} 
 						className="library-local-directory-list"

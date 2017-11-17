@@ -104,7 +104,7 @@ class List extends React.Component{
 										)
 									})
 								}
-								<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />
+								{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
 							</div>
 						)
 					})
