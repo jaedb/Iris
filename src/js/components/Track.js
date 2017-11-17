@@ -226,6 +226,15 @@ export default class Track extends React.Component{
 			)
 		}
 
+		track_columns.push(
+			<span 
+				className="context-zone"
+				key="context-zone"
+				onClick={e => this.handleContextMenu(e)}>
+					<FontAwesome name="ellipsis-h" fixedWidth />
+			</span>
+		)
+
 		if (this.props.mini_zones){
 
 			// Select zone handles selection events only

@@ -89,8 +89,19 @@
 			.source {
 				color: $mid_grey;
 				position: absolute;
-				top: 14px;
-				right: 12px;
+				top: 16px;
+				right: 32px;
+			}
+
+			.context-zone {
+				position: absolute;
+				top: 12px;
+				right: 4px;
+				padding: 4px;
+
+				.fa {
+					font-size: 16px;
+				}
 			}
 		}
 	}
@@ -213,11 +224,11 @@
 		.list-item {	
 
 			&.can-sort {
-				padding-left: 78px !important;
+				padding-left: 70px !important;
 			}
 			
 			&:not(.can-sort){
-				padding-left: 46px !important;
+				padding-left: 42px !important;
 			}
 
 			.select-zone {
@@ -225,14 +236,14 @@
 				top: 0;
 				left: 0;
 				height: 100%;
-				width: 38px;
+				width: 34px;
 				font-size: 8px;
 				display: block;
 				
 				.fa {
 					position: absolute;
 					top: 27px;
-					left: 19px;
+					left: 17px;
 					pointer-events: none;
 					color: $white;
 					z-index: 1;
@@ -247,16 +258,16 @@
 					height: 14px;
 					position: absolute;
 					top: 23px;
-					left: 16px;
+					left: 14px;
 				}
 			}
 
 			.drag-zone {
 				position: absolute;
 				top: 0;
-				left: 38px;
+				left: 34px;
 				height: 100%;
-				width: 38px;
+				width: 34px;
 				font-size: 14px;
 				display: block;
 				color: $mid_grey;
@@ -264,7 +275,7 @@
 				.fa {
 					position: absolute;
 					top: 24px;
-					left: 8px;
+					left: 6px;
 					pointer-events: none;
 				}
 			}
@@ -286,14 +297,14 @@
 				top: 0;
 				left: 0;
 				height: 100%;
-				width: 38px;
+				width: 34px;
 				font-size: 8px;
 				display: block;
 				
 				.fa {
 					position: absolute;
 					top: 27px;
-					left: 19px;
+					left: 17px;
 					pointer-events: none;
 					color: $white;
 					z-index: 1;
@@ -308,16 +319,16 @@
 					height: 14px;
 					position: absolute;
 					top: 16px;
-					left: 16px;
+					left: 14px;
 				}
 			}
 
 			.drag-zone {
 				position: absolute;
 				top: 0;
-				left: 38px;
+				left: 34px;
 				height: 100%;
-				width: 38px;
+				width: 34px;
 				font-size: 14px;
 				display: block;
 				color: $mid_grey;
@@ -325,9 +336,13 @@
 				.fa {
 					position: absolute;
 					top: 24px;
-					left: 8px;
+					left: 6px;
 					pointer-events: none;
 				}
+			}
+
+			.context-zone {
+				top: 14px;
 			}
 
 			.col {
@@ -404,10 +419,10 @@
 
 		&.track-list {
 			.list-item.can-sort {
-				padding-left: 78px !important;
+				padding-left: 70px !important;
 			}
 			.list-item:not(.can-sort){
-				padding-left: 46px !important;
+				padding-left: 42px !important;
 			}
 		}
 	}

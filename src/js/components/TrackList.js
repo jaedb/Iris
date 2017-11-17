@@ -435,7 +435,6 @@ class TrackList extends React.Component{
 						}
 					)
 				}
-				{this.props.selected_tracks.length > 0 ? <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, false)} /> : null}
 			</div>
 		);
 	}
