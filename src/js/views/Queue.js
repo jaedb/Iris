@@ -105,7 +105,7 @@ class Queue extends React.Component{
 				var uri = this.props.queue[i];
 				if (this.props.tracks.hasOwnProperty(uri)){
 					var track = this.props.tracks[uri];
-					track.playing = (track.uri == this.props.current_track_uri);
+					track.playing = (track.uri == this.props.current_track_uri && track.tlid == this.props.current_track_tlid);
 					tracks.push(track);
 				}
 			}
@@ -193,6 +193,7 @@ const mapStateToProps = (state, ownProps) => {
 		tracks: state.core.tracks,
 		queue: state.core.queue,
 		queue_metadata: state.core.queue_metadata,
+		current_track_tlid: state.core.current_track_tlid,
 		current_track_uri: state.core.current_track_uri,
 		current_track: (state.core.tracks[state.core.current_track_uri] !== undefined ? state.core.tracks[state.core.current_track_uri] : null)
 	}

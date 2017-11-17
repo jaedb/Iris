@@ -14,17 +14,19 @@ var lastfmActions = require('../lastfm/actions.js')
 const MopidyMiddleware = (function(){ 
 
     // container for the actual Mopidy socket
-    var socket = null
+    var socket = null;
 
     // play position timer
-    var progress_interval = null
-    var progress_interval_counter = 0
+    var progress_interval = null;
+    var progress_interval_counter = 0;
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, type, data) => {
 
         // if debug enabled
-        if (store.getState().ui.log_mopidy) console.log('Mopidy', type, data)
+        if (store.getState().ui.log_mopidy){
+            console.log('Mopidy', type, data);
+        }
 
         switch(type){
 
@@ -1704,6 +1706,28 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_TLTRACKS':
+
+                /**
+                 * TODO: Merge TLIDs into an array of TLIDS
+                var tracks = helpers.formatTracks(action.data);
+                var unique_tracks = [];
+                for (var i = 0; i < tracks.length; i++){
+                    var track = {};
+                    if (unique_tracks[tracks[i].uri] !== undefined){
+                        var track = unique_tracks[tracks[i].uri];
+                        if (existing_track.tlids !== undefined){
+                            var tlids = existing_track.tlids;
+                        } else {
+                            var tlids = [];
+                        }
+
+
+                    } else {
+                        unique_tracks[tracks[i].uri] = tracks[i];
+                    }
+                }
+                 **/
+
                 store.dispatch({
                     type: 'QUEUE_LOADED',
                     tracks: helpers.formatTracks(action.data)
@@ -1725,10 +1749,10 @@ const MopidyMiddleware = (function(){
 
                     // Set our window title to the track title
                     helpers.setWindowTitle(track, store.getState().mopidy.play_state);
-
                     store.dispatch({
                         type: 'CURRENT_TRACK_LOADED',
                         current_track: track,
+                        current_track_tlid: track.tlid,
                         current_track_uri: track.uri
                     });
                 }

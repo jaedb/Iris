@@ -13,6 +13,7 @@ export default function reducer(core = {}, action){
 
         case 'CURRENT_TRACK_LOADED':
             return Object.assign({}, core, {
+                current_track_tlid: action.current_track_tlid,
                 current_track_uri: action.current_track_uri
             });
 
