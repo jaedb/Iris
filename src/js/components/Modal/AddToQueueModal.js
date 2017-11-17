@@ -16,10 +16,9 @@ export default class AddToQueueModal extends React.Component{
 	}
 
 	handleSubmit(e){
-		var uris = this.state.uris.split(',')
-		console.log(this.state)
-		this.props.mopidyActions.enqueueURIs(uris, null, this.state.next)
-		this.props.uiActions.closeModal()
+		var uris = this.state.uris.split(',');
+		this.props.mopidyActions.enqueueURIs(uris, null, this.state.next);
+		this.props.uiActions.closeModal();
 	}
 
 	render(){

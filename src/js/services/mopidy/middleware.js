@@ -14,17 +14,19 @@ var lastfmActions = require('../lastfm/actions.js')
 const MopidyMiddleware = (function(){ 
 
     // container for the actual Mopidy socket
-    var socket = null
+    var socket = null;
 
     // play position timer
-    var progress_interval = null
-    var progress_interval_counter = 0
+    var progress_interval = null;
+    var progress_interval_counter = 0;
 
     // handle all manner of socket messages
     const handleMessage = (ws, store, type, data) => {
 
         // if debug enabled
-        if (store.getState().ui.log_mopidy) console.log('Mopidy', type, data)
+        if (store.getState().ui.log_mopidy){
+            console.log('Mopidy', type, data);
+        }
 
         switch(type){
 
@@ -410,12 +412,12 @@ const MopidyMiddleware = (function(){
                 }
 
                 var current_track = store.getState().core.current_track
-                var current_tracklist = store.getState().core.current_tracklist
+                var queue = store.getState().core.queue
                 var current_track_index = -1
 
                 if (current_track !== undefined){
-                    for(var i = 0; i < current_tracklist.length; i++){
-                        if (current_tracklist[i].tlid == current_track.tlid){
+                    for(var i = 0; i < queue.length; i++){
+                        if (queue[i].tlid == current_track.tlid){
                             current_track_index = i
                             break
                         }
@@ -1725,11 +1727,9 @@ const MopidyMiddleware = (function(){
 
                     // Set our window title to the track title
                     helpers.setWindowTitle(track, store.getState().mopidy.play_state);
-
                     store.dispatch({
                         type: 'CURRENT_TRACK_LOADED',
-                        current_track: track,
-                        current_track_uri: track.uri
+                        current_track: track
                     });
                 }
                 break;
@@ -1741,9 +1741,8 @@ const MopidyMiddleware = (function(){
                             if (response.length > 0){
                                 var track = Object.assign({}, response[0]);
                                 store.dispatch({
-                                    type: 'TRACK_LOADED',
-                                    key: track.uri,
-                                    track: track
+                                    type: 'TRACKS_LOADED',
+                                    tracks: [track]
                                 });
                             }
                         },

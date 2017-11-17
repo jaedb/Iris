@@ -13,12 +13,13 @@ export default function reducer(core = {}, action){
 
         case 'CURRENT_TRACK_LOADED':
             return Object.assign({}, core, {
+                current_track: action.current_track,
                 current_track_uri: action.current_track_uri
             });
 
         case 'QUEUE_LOADED':
             return Object.assign({}, core, {
-                queue: action.tracks_uris
+                queue: action.tracks
             });
 
         case 'PUSHER_QUEUE_METADATA':

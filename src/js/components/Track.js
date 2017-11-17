@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
+import ContextMenuTrigger from './ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 
@@ -226,6 +227,10 @@ export default class Track extends React.Component{
 			)
 		}
 
+		track_columns.push(
+			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
+		)
+
 		if (this.props.mini_zones){
 
 			// Select zone handles selection events only
@@ -269,7 +274,7 @@ export default class Track extends React.Component{
 					onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event
 					onDoubleClick={e => this.props.handleDoubleClick(e)}
 					onContextMenu={e => {this.handleContextMenu(e)}}>
-						{ track_columns }
+						{track_columns}
 				</div>
 			)
 		}

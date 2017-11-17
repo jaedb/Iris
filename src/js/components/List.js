@@ -8,6 +8,7 @@ import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
+import ContextMenuTrigger from './ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -103,6 +104,7 @@ class List extends React.Component{
 										)
 									})
 								}
+								{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
 							</div>
 						)
 					})

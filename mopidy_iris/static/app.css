@@ -3418,59 +3418,6 @@ input[type="submit"] {
     .context-menu-trigger:hover:before {
       opacity: 0.15; }
 
-#app > .notouch .list.track-list .context-menu-trigger {
-  display: none; }
-
-.list.track-list .context-menu-trigger {
-  position: relative;
-  border-radius: 50%;
-  display: block;
-  position: fixed;
-  bottom: 55px;
-  right: 5px;
-  width: 48px;
-  height: 8px;
-  padding: 20px 0;
-  overflow: hidden;
-  z-index: 97;
-  background: #32b5f2; }
-  .list.track-list .context-menu-trigger:before {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    border-radius: 50%;
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    opacity: 0.15;
-    z-index: 9;
-    pointer-events: none;
-    background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
-  .list.track-list .context-menu-trigger .dot {
-    background: #FFFFFF; }
-  .list.track-list .context-menu-trigger:focus, .list.track-list .context-menu-trigger:active {
-    background: #0e9fe3; }
-
-@media (max-width: 800px) {
-  .list.track-list .context-menu-trigger {
-    bottom: 8px;
-    right: 43px;
-    width: 32px;
-    height: 8px;
-    padding: 12px 0;
-    z-index: 102; }
-    .list.track-list .context-menu-trigger .dot {
-      width: 5px;
-      height: 5px; } }
-
 .loader {
   height: 120px;
   width: 120px;
@@ -4272,7 +4219,7 @@ aside {
   user-select: none;
   display: block;
   position: relative;
-  padding: 14px 10px 13px;
+  padding: 14px 30px 13px 10px;
   margin: 0 -10px -1px -10px;
   cursor: pointer;
   border-radius: 3px;
@@ -4292,6 +4239,21 @@ aside {
   .list .list-item .select-zone,
   .list .list-item .drag-zone {
     display: none; }
+  .list .list-item .context-menu-trigger {
+    position: absolute;
+    top: 6px;
+    right: 0; }
+    .list .list-item .context-menu-trigger .dot {
+      width: 4px;
+      height: 4px;
+      margin-left: 0; }
+    .list .list-item .context-menu-trigger:before {
+      display: none !important; }
+  .list .list-item .source {
+    color: #a3a19f;
+    position: absolute;
+    top: 16px;
+    right: 32px; }
   :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
@@ -4322,12 +4284,6 @@ aside {
   border-top: 3px solid #32b5f2;
   margin-top: -3px;
   background: transparent; }
-
-.list.track-list .list-item .source {
-  color: #a3a19f;
-  position: absolute;
-  top: 14px;
-  right: 12px; }
 
 .list.playlist-list .list-item .col.name {
   width: 50%; }
@@ -4399,23 +4355,23 @@ aside {
     opacity: 1; }
 
 .list.track-list.mini-zones .list-item.can-sort {
-  padding-left: 78px !important; }
+  padding-left: 70px !important; }
 
 .list.track-list.mini-zones .list-item:not(.can-sort) {
-  padding-left: 46px !important; }
+  padding-left: 42px !important; }
 
 .list.track-list.mini-zones .list-item .select-zone {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  width: 38px;
+  width: 34px;
   font-size: 8px;
   display: block; }
   .list.track-list.mini-zones .list-item .select-zone .fa {
     position: absolute;
     top: 27px;
-    left: 19px;
+    left: 17px;
     pointer-events: none;
     color: #FFFFFF;
     z-index: 1; }
@@ -4428,21 +4384,21 @@ aside {
     height: 14px;
     position: absolute;
     top: 23px;
-    left: 16px; }
+    left: 14px; }
 
 .list.track-list.mini-zones .list-item .drag-zone {
   position: absolute;
   top: 0;
-  left: 38px;
+  left: 34px;
   height: 100%;
-  width: 38px;
+  width: 34px;
   font-size: 14px;
   display: block;
   color: #a3a19f; }
   .list.track-list.mini-zones .list-item .drag-zone .fa {
     position: absolute;
     top: 24px;
-    left: 8px;
+    left: 6px;
     pointer-events: none; }
 
 @media (max-width: 800px) {
@@ -4456,13 +4412,13 @@ aside {
       top: 0;
       left: 0;
       height: 100%;
-      width: 38px;
+      width: 34px;
       font-size: 8px;
       display: block; }
       .list .list-item .select-zone .fa {
         position: absolute;
         top: 27px;
-        left: 19px;
+        left: 17px;
         pointer-events: none;
         color: #FFFFFF;
         z-index: 1; }
@@ -4475,21 +4431,23 @@ aside {
         height: 14px;
         position: absolute;
         top: 16px;
-        left: 16px; }
+        left: 14px; }
     .list .list-item .drag-zone {
       position: absolute;
       top: 0;
-      left: 38px;
+      left: 34px;
       height: 100%;
-      width: 38px;
+      width: 34px;
       font-size: 14px;
       display: block;
       color: #a3a19f; }
       .list .list-item .drag-zone .fa {
         position: absolute;
         top: 24px;
-        left: 8px;
+        left: 6px;
         pointer-events: none; }
+    .list .list-item .context-zone {
+      top: 14px; }
     .list .list-item .col.name {
       width: auto !important;
       padding-right: 10%;
@@ -4526,9 +4484,9 @@ aside {
   .list.queue-history-track-list .list-item .source {
     display: none !important; }
   .list.track-list .list-item.can-sort {
-    padding-left: 78px !important; }
+    padding-left: 70px !important; }
   .list.track-list .list-item:not(.can-sort) {
-    padding-left: 46px !important; } }
+    padding-left: 42px !important; } }
 
 .grid .grid-item-wrapper {
   display: inline-block; }
