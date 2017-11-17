@@ -115,7 +115,7 @@ class Queue extends React.Component{
 						track,
 						this.props.queue_metadata["tlid_"+track.tlid],
 						{
-							playing: (track.tlid == this.props.current_track.tlid)
+							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
 						}
 					);
 					tracks[i] = track;

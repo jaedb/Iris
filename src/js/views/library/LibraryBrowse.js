@@ -145,6 +145,10 @@ class LibraryBrowse extends React.Component{
 				var directory = this.props.directory[i]
 
 				switch (directory.name){
+					case 'Dirble':
+						directory.icons = ['assets/backgrounds/browse-dirble.jpg']
+						break
+
 					case 'Files':
 						directory.icons = ['assets/backgrounds/browse-folders.jpg']
 						break
@@ -165,6 +169,18 @@ class LibraryBrowse extends React.Component{
 
 					case 'TuneIn':
 						directory.icons = ['assets/backgrounds/browse-tunein.jpg']
+						break
+
+					case 'SoundCloud':
+						directory.icons = ['assets/backgrounds/browse-soundcloud.jpg']
+						break
+
+					case 'iTunes Store: Podcasts':
+						directory.icons = ['assets/backgrounds/browse-itunes.jpg']
+						break
+
+					case 'Soma FM':
+						directory.icons = ['assets/backgrounds/browse-somafm.jpg']
 						break
 
 					default:

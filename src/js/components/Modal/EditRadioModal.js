@@ -45,19 +45,23 @@ export default class EditRadioModal extends React.Component{
 
 	addSeed(){
 		if (this.state.uri == ''){
-			this.setState({error_message: 'Cannot be empty'})
-			return null
+			this.setState({error_message: 'Cannot be empty'});
+			return null;
 		}
 
-		var seeds = Object.assign([],this.state.seeds)
-		var uris = this.state.uri.split(',')
+		var seeds = Object.assign([],this.state.seeds);
+		var uris = this.state.uri.split(',');
 
 		for (var i = 0; i < uris.length; i++){
+			if (helpers.uriSource(uris[i]) !== 'spotify'){
+				this.setState({error_message: 'Non-Spotify URIs not supported'});
+				return;
+			}
 			if (seeds.indexOf(uris[i]) > -1){
-				this.setState({error_message: 'URI already added'})
+				this.setState({error_message: 'URI already added'});
 			} else {
-				seeds.push(uris[i])
-				this.setState({error_message: null})
+				seeds.push(uris[i]);
+				this.setState({error_message: null});
 			}			
 		}
 
