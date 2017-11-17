@@ -18452,6 +18452,18 @@ var ContextMenuTrigger = function (_React$Component) {
 	}
 
 	_createClass(ContextMenuTrigger, [{
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
+			e.stopPropagation();
+			this.props.onTrigger(e);
+		}
+	}, {
+		key: 'handleTouchEnd',
+		value: function handleTouchEnd(e) {
+			e.stopPropagation();
+			this.props.onTrigger(e);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -18464,10 +18476,10 @@ var ContextMenuTrigger = function (_React$Component) {
 				'span',
 				{ className: className,
 					onMouseDown: function onMouseDown(e) {
-						return _this2.props.onTrigger(e);
+						return _this2.handleMouseDown(e);
 					},
 					onTouchEnd: function onTouchEnd(e) {
-						return _this2.props.onTrigger(e);
+						return _this2.handleTouchEnd(e);
 					} },
 				_react2.default.createElement('span', { className: 'dot' }),
 				_react2.default.createElement('span', { className: 'dot' }),
@@ -58015,7 +58027,7 @@ var ContextMenu = function (_React$Component) {
 			submenu_expanded: false
 		};
 		_this.handleScroll = _this.handleScroll.bind(_this);
-		_this.handleClick = _this.handleClick.bind(_this);
+		_this.handleMouseDown = _this.handleMouseDown.bind(_this);
 		return _this;
 	}
 
@@ -58023,13 +58035,13 @@ var ContextMenu = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			window.addEventListener("scroll", this.handleScroll, false);
-			window.addEventListener("click", this.handleClick, false);
+			window.addEventListener("mousedown", this.handleMouseDown, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			window.removeEventListener("scroll", this.handleScroll, false);
-			window.removeEventListener("click", this.handleClick, false);
+			window.removeEventListener("mousedown", this.handleMouseDown, false);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -58073,8 +58085,8 @@ var ContextMenu = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'handleClick',
-		value: function handleClick(e) {
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
 			// if we click outside of the context menu or context menu trigger, kill it
 			if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
 				this.props.uiActions.hideContextMenu();
