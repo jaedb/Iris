@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
+import ContextMenuTrigger from './ContextMenuTrigger'
 
 import * as helpers from '../helpers'
 
@@ -227,12 +228,7 @@ export default class Track extends React.Component{
 		}
 
 		track_columns.push(
-			<span 
-				className="context-zone"
-				key="context-zone"
-				onClick={e => this.handleContextMenu(e)}>
-					<FontAwesome name="ellipsis-h" fixedWidth />
-			</span>
+			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
 		)
 
 		if (this.props.mini_zones){

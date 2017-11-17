@@ -14,10 +14,12 @@ export default class ContextMenuTrigger extends React.Component{
 			className += ' '+this.props.className
 		}
 		return (
-			<span className={className} onClick={e => this.props.onTrigger(e)}>
-				<span className="dot"></span>
-				<span className="dot"></span>
-				<span className="dot"></span>
+			<span className={className}
+				onMouseDown={e => this.props.onTrigger(e)}
+				onTouchEnd={e => this.props.onTrigger(e)}>
+					<span className="dot"></span>
+					<span className="dot"></span>
+					<span className="dot"></span>
 			</span>
 		);
 	}

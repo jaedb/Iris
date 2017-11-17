@@ -12,7 +12,7 @@
 
 		display: block;
 		position: relative;
-		padding: 14px 10px 13px;
+		padding: 14px 30px 13px 10px;
 		margin: 0 -10px -1px -10px;
 		cursor: pointer;
 		border-radius: 3px;
@@ -37,6 +37,29 @@
 		.select-zone,
 		.drag-zone {
 			display: none;
+		}
+
+		.context-menu-trigger {
+			position: absolute;
+			top: 6px;
+			right: 0;
+
+			.dot {
+				width: 4px;
+				height: 4px;
+				margin-left: 0;
+			}
+
+			&:before {
+				display: none !important;
+			}
+		}
+
+		.source {
+			color: $mid_grey;
+			position: absolute;
+			top: 16px;
+			right: 32px;
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
@@ -84,24 +107,6 @@
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;
-			}
-
-			.source {
-				color: $mid_grey;
-				position: absolute;
-				top: 16px;
-				right: 32px;
-			}
-
-			.context-zone {
-				position: absolute;
-				top: 12px;
-				right: 4px;
-				padding: 4px;
-
-				.fa {
-					font-size: 16px;
-				}
 			}
 		}
 	}
