@@ -27,12 +27,11 @@ class Queue extends React.Component{
 	}
 
 	removeTracks(track_indexes){
-
 		var tlids = [];
 		for (var i = 0; i < track_indexes.length; i++){
-			var uri = this.props.queue[track_indexes[i]];
-			if (this.props.tracks[uri] !== undefined){
-				tlids.push(this.props.tracks[uri].tlid);
+			var track = this.props.queue[track_indexes[i]];
+			if (track.tlid !== undefined){
+				tlids.push(track.tlid);
 			}
 		}
 
@@ -91,36 +90,52 @@ class Queue extends React.Component{
 	}
 
 	render(){
-		var image = null
-		if (this.props.current_track){
-			if (this.props.current_track.images !== undefined && this.props.current_track.images){
-				image = helpers.sizedImages(this.props.current_track.images)
-				image = image.large
-			}
-		}
 
+		var current_track = null;
 		var tracks = [];
 		if (this.props.queue && this.props.tracks){
 			for (var i = 0; i < this.props.queue.length; i++){
-				var uri = this.props.queue[i];
-				if (this.props.tracks.hasOwnProperty(uri)){
-					var track = this.props.tracks[uri];
-					track.playing = (track.uri == this.props.current_track_uri && track.tlid == this.props.current_track_tlid);
-					tracks.push(track);
+				var track = this.props.queue[i];
+
+				// If we have the track in our index, merge it in.
+				// We prioritise queue track over index track as queue has unique data, like which track
+				// is playing and tlids.
+				if (this.props.tracks.hasOwnProperty(track.uri)){
+					track = Object.assign(
+						{},
+						this.props.tracks[track.uri],
+						track
+					);
 				}
+
+				// Now merge in our queue metadata
+				if (this.props.queue_metadata["tlid_"+track.tlid] !== undefined){
+					track = Object.assign(
+						{},
+						track,
+						this.props.queue_metadata["tlid_"+track.tlid],
+						{
+							playing: (track.tlid == this.props.current_track.tlid)
+						}
+					);
+					tracks[i] = track;
+				}
+
+				// Siphon off this track if it's a full representation of our current track (by tlid)
+				if (this.props.current_track && this.props.current_track.uri == track.uri){
+					current_track = track;
+				}
+
+				// Now add our compiled track for our tracklist
+				tracks.push(track);
 			}
 		}
 
-		// Merge our metadata with each track
-		for (var i = 0; i < tracks.length; i++){
-			var track = tracks[i];
-			if (this.props.queue_metadata["tlid_"+track.tlid] !== undefined){
-				track = Object.assign(
-					{},
-					track,
-					this.props.queue_metadata["tlid_"+track.tlid]
-				);
-				tracks[i] = track;
+		var image = null
+		if (current_track){
+			if (current_track.images !== undefined && current_track.images){
+				image = helpers.sizedImages(current_track.images)
+				image = image.large
 			}
 		}
 
@@ -153,11 +168,11 @@ class Queue extends React.Component{
 				<div className="content-wrapper">
 				
 					<div className="current-track">
-						{ this.renderArtwork(image) }
+						{this.renderArtwork(image)}
 						<div className="title">
-							{this.props.current_track ? <URILink type="track" uri={this.props.current_track.uri}>{this.props.current_track.name}</URILink> : <span>-</span>}
+							{current_track ? <URILink type="track" uri={current_track.uri}>{current_track.name}</URILink> : <span>-</span>}
 						</div>
-						{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence />}
+						{current_track ? <ArtistSentence artists={current_track.artists} /> : <ArtistSentence />}
 					</div>
 
 					<section className="list-wrapper">
@@ -192,10 +207,9 @@ const mapStateToProps = (state, ownProps) => {
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		tracks: state.core.tracks,
 		queue: state.core.queue,
+		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,
-		current_track_tlid: state.core.current_track_tlid,
-		current_track_uri: state.core.current_track_uri,
-		current_track: (state.core.tracks[state.core.current_track_uri] !== undefined ? state.core.tracks[state.core.current_track_uri] : null)
+		current_track: state.core.current_track
 	}
 }
 

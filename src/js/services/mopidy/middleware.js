@@ -412,12 +412,12 @@ const MopidyMiddleware = (function(){
                 }
 
                 var current_track = store.getState().core.current_track
-                var current_tracklist = store.getState().core.current_tracklist
+                var queue = store.getState().core.queue
                 var current_track_index = -1
 
                 if (current_track !== undefined){
-                    for(var i = 0; i < current_tracklist.length; i++){
-                        if (current_tracklist[i].tlid == current_track.tlid){
+                    for(var i = 0; i < queue.length; i++){
+                        if (queue[i].tlid == current_track.tlid){
                             current_track_index = i
                             break
                         }
@@ -1706,28 +1706,6 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_TLTRACKS':
-
-                /**
-                 * TODO: Merge TLIDs into an array of TLIDS
-                var tracks = helpers.formatTracks(action.data);
-                var unique_tracks = [];
-                for (var i = 0; i < tracks.length; i++){
-                    var track = {};
-                    if (unique_tracks[tracks[i].uri] !== undefined){
-                        var track = unique_tracks[tracks[i].uri];
-                        if (existing_track.tlids !== undefined){
-                            var tlids = existing_track.tlids;
-                        } else {
-                            var tlids = [];
-                        }
-
-
-                    } else {
-                        unique_tracks[tracks[i].uri] = tracks[i];
-                    }
-                }
-                 **/
-
                 store.dispatch({
                     type: 'QUEUE_LOADED',
                     tracks: helpers.formatTracks(action.data)
@@ -1751,9 +1729,7 @@ const MopidyMiddleware = (function(){
                     helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                     store.dispatch({
                         type: 'CURRENT_TRACK_LOADED',
-                        current_track: track,
-                        current_track_tlid: track.tlid,
-                        current_track_uri: track.uri
+                        current_track: track
                     });
                 }
                 break;
@@ -1765,9 +1741,8 @@ const MopidyMiddleware = (function(){
                             if (response.length > 0){
                                 var track = Object.assign({}, response[0]);
                                 store.dispatch({
-                                    type: 'TRACK_LOADED',
-                                    key: track.uri,
-                                    track: track
+                                    type: 'TRACKS_LOADED',
+                                    tracks: [track]
                                 });
                             }
                         },

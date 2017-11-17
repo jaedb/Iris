@@ -412,7 +412,8 @@ class TrackList extends React.Component{
 				{
 					this.props.tracks.map(
 						(track, index) => {
-							let track_key = this.buildTrackKey(track, index)
+							let track_key = this.buildTrackKey(track, index);
+							track.key = track_key;
 							return (
 								<Track
 									show_source_icon={this.props.show_source_icon}

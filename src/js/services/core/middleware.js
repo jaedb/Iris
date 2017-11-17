@@ -317,6 +317,7 @@ const CoreMiddleware = (function(){
                     type: 'TRACKS_LOADED',
                     tracks: [action.current_track]
                 });
+
                 next(action);
                 break;
 
@@ -325,8 +326,7 @@ const CoreMiddleware = (function(){
                     type: 'TRACKS_LOADED',
                     tracks: action.tracks
                 });
-
-                action.tracks_uris = helpers.arrayOf('uri',action.tracks);
+                
                 next(action);
                 break;
 
