@@ -13,12 +13,12 @@
 		padding: 5px 8px;
 		color: $white;
 		font-size: 11px;
-		line-height: 11px;
-		top: -24px;
+		line-height: 12px;
+		bottom: 37px;
 		left: 1px;
 		z-index: 97;
 		border-radius: 3px;
-		white-space: nowrap;
+		white-space: wrap;
 
 		&:first-letter {
 			text-transform: uppercase;
@@ -42,7 +42,7 @@
 	&:hover {
 		.tooltip {
 			opacity: 1;
-			top: -22px;
+			bottom: 35px;
 		}
 	}
 
@@ -51,7 +51,7 @@
 			padding: 8px 12px;
 			font-size: 12px;
 			line-height: 14px;
-			top: -50px;
+			bottom: 50px;
 		}
 	}
 }

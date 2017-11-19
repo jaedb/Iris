@@ -21,18 +21,21 @@ class ContextMenu extends React.Component{
 		this.state = {
 			submenu_expanded: false
 		}
-		this.handleScroll = this.handleScroll.bind(this)
-		this.handleClick = this.handleClick.bind(this)
+		this.handleScroll = this.handleScroll.bind(this);
+		this.handleMouseDown = this.handleMouseDown.bind(this);
+		this.handleTouchEnd = this.handleTouchEnd.bind(this);
 	}
 
 	componentDidMount(){
-		window.addEventListener("scroll", this.handleScroll, false)
-		window.addEventListener("click", this.handleClick, false)
+		window.addEventListener("scroll", this.handleScroll, false);
+		window.addEventListener("mousedown", this.handleMouseDown, false);
+		window.addEventListener("touchend", this.handleTouchEnd, false);
 	}
 
 	componentWillUnmount(){		
-		window.removeEventListener("scroll", this.handleScroll, false)
-		window.removeEventListener("click", this.handleClick, false)
+		window.removeEventListener("scroll", this.handleScroll, false);
+		window.removeEventListener("mousedown", this.handleMouseDown, false);
+		window.removeEventListener("touchend", this.handleTouchEnd, false);
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -74,8 +77,16 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	handleTouchEnd(e){
+		this.handleClick(e);
+	}
+
+	handleMouseDown(e){
+		this.handleClick(e);
+	}
+
 	handleClick(e){
-		// if we click outside of the context menu or context menu trigger, kill it
+		// if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
 		if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0){
 			this.props.uiActions.hideContextMenu()
 		}
