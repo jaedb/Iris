@@ -49252,6 +49252,7 @@ function reducer() {
                 connected: true,
                 connecting: false,
                 connection_id: action.connection_id,
+                client_id: action.client_id,
                 username: action.username
             });
 
@@ -50822,19 +50823,25 @@ var PusherMiddleware = function () {
 
                     case 'PUSHER_CONNECT':
 
-                        if (socket != null) socket.close();
+                        // Stagnant socket, close it first
+                        if (socket != null) {
+                            socket.close();
+                        }
+
                         store.dispatch({ type: 'PUSHER_CONNECTING' });
 
                         var state = store.getState();
                         var connection = {
-                            clientid: helpers.generateGuid(),
+                            client_id: helpers.generateGuid(),
                             connection_id: helpers.generateGuid(),
                             username: 'Anonymous'
                         };
-                        if (state.pusher.username) connection.username = state.pusher.username;
+                        if (state.pusher.username) {
+                            connection.username = state.pusher.username;
+                        }
                         connection.username = connection.username.replace(/\W/g, '');
 
-                        socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/iris/ws/', [connection.clientid, connection.connection_id, connection.username]);
+                        socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/iris/ws/', [connection.client_id, connection.connection_id, connection.username]);
 
                         socket.onmessage = function (message) {
                             var message = JSON.parse(message.data);
@@ -55586,7 +55593,13 @@ var SpotifyMiddleware = function () {
 
                     case 'SPOTIFY_CONNECTED':
                         var label = null;
-                        if (store.getState().spotify.me) label = store.getState().spotify.me.id;
+                        if (store.getState().spotify.me) {
+                            if (store.getState().core.anonymise_analytics) {
+                                label = "anonymised_" + store.getState().pusher.client_id;
+                            } else {
+                                label = store.getState().spotify.me.id;
+                            }
+                        }
                         _reactGa2.default.event({ category: 'Spotify', action: 'Connected', label: label });
 
                         // TODO: remove this so we don't tap out our API limits before we even get started
@@ -55610,7 +55623,11 @@ var SpotifyMiddleware = function () {
                     case 'SPOTIFY_AUTHORIZATION_REVOKED':
                         var label = null;
                         if (store.getState().spotify.me) {
-                            label = store.getState().spotify.me.id;
+                            if (store.getState().core.anonymise_analytics) {
+                                label = "anonymised_" + store.getState().pusher.client_id;
+                            } else {
+                                label = store.getState().spotify.me.id;
+                            }
                         }
                         _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked', label: label });
                         next(action);
@@ -55626,7 +55643,11 @@ var SpotifyMiddleware = function () {
                     case 'SPOTIFY_IMPORT_AUTHORIZATION':
                         var label = null;
                         if (action.me && action.me.id) {
-                            label = action.me.id;
+                            if (store.getState().core.anonymise_analytics) {
+                                label = "anonymised_" + store.getState().pusher.client_id;
+                            } else {
+                                label = action.me.id;
+                            }
                         }
                         _reactGa2.default.event({ category: 'Spotify', action: 'Authorization imported', label: label });
 
@@ -55955,8 +55976,15 @@ var SpotifyMiddleware = function () {
                             // Use 'me' name as my Pusher username
                             store.dispatch(pusherActions.setUsername(name));
                         }
-                        _reactGa2.default.set({ userId: action.data.id });
-                        _reactGa2.default.event({ category: 'Spotify', action: 'Authorization verified', label: action.data.id });
+
+                        var label = null;
+                        if (store.getState().core.anonymise_analytics) {
+                            label = "anonymised_" + store.getState().pusher.client_id;
+                        } else {
+                            _reactGa2.default.set({ userId: action.data.id });
+                            label = action.data.id;
+                        }
+                        _reactGa2.default.event({ category: 'Spotify', action: 'Authorization verified', label: label });
 
                         store.dispatch({
                             type: 'USERS_LOADED',
@@ -65299,8 +65327,34 @@ var Settings = function (_React$Component) {
 									} }),
 								_react2.default.createElement(
 									'span',
-									{ className: 'label' },
-									'Clear tracklist on play of URI(s)'
+									{ className: 'label has-tooltip' },
+									'Clear tracklist on play of URI(s)',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Playing one or more URIs will clear the current play queue first'
+									)
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'log_actions',
+									checked: this.props.core.anonymise_analytics,
+									onChange: function onChange(e) {
+										return _this3.props.coreActions.set({ anonymise_analytics: !_this3.props.core.anonymise_analytics });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Exclude personal data from collection',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Personal data used for debugging Iris is not collected by Google Analytics'
+									)
 								)
 							)
 						)

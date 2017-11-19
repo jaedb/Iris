@@ -11,6 +11,7 @@ export default function reducer(pusher = {}, action){
                 connected: true,
                 connecting: false,
                 connection_id: action.connection_id,
+                client_id: action.client_id,
                 username: action.username
             });
 

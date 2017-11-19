@@ -29,7 +29,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             
         # otherwise, just return one of the supplied subprotocols
         else:
-            return protocols['clientid']
+            return protocols['client_id']
 
     def open(self):
     
@@ -37,7 +37,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         protocolElements = mem.iris.digest_protocol(self.request.headers.get('Sec-Websocket-Protocol', []))
 
         connection_id = protocolElements['connection_id']
-        clientid = protocolElements['clientid']
+        client_id = protocolElements['client_id']
         self.connection_id = connection_id
         username = protocolElements['username']
         created = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
@@ -50,7 +50,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         # construct our client object, and add to our list of connections
         client = {
-            'clientid': clientid,
+            'client_id': client_id,
             'connection_id': connection_id,
             'username': username,
             'ip': ip,

@@ -99,21 +99,27 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_CONNECT':
 
-                if (socket != null) socket.close();
+                // Stagnant socket, close it first
+                if (socket != null){
+                    socket.close();
+                }
+
                 store.dispatch({ type: 'PUSHER_CONNECTING' });
 
                 var state = store.getState();
                 var connection = {
-                    clientid: helpers.generateGuid(),
+                    client_id: helpers.generateGuid(),
                     connection_id: helpers.generateGuid(),
                     username: 'Anonymous'
                 }
-                if (state.pusher.username ) connection.username = state.pusher.username;
-                connection.username = connection.username.replace(/\W/g, '')
+                if (state.pusher.username){
+                    connection.username = state.pusher.username;
+                }
+                connection.username = connection.username.replace(/\W/g, '');
                 
                 socket = new WebSocket(
                     'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws/',
-                    [ connection.clientid, connection.connection_id, connection.username ]
+                    [ connection.client_id, connection.connection_id, connection.username ]
                 );
 
                 socket.onmessage = (message) => {
@@ -135,7 +141,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username })
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username})
                 request(store, 'get_config')
                     .then(
                         response => {
@@ -145,7 +151,7 @@ const PusherMiddleware = (function(){
                             }
 
                             response.type = 'PUSHER_CONFIG'
-                            store.dispatch(response)
+                            store.dispatch(response);
 
                             var core = store.getState().core
                             if (!core.country || !core.locale){
