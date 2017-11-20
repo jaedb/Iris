@@ -21,7 +21,7 @@
 		font-family: "Overpass";
 
 		.title {
-			display: block;
+			display: none;
 			padding: 10px 14px;
 			font-weight: bold;
 			box-sizing: border-box;
@@ -221,14 +221,6 @@
 		}
 	}
 
-	@include responsive(null, $bp_medium){
-		.liner {
-			.title {
-				display: none;
-			}
-		}
-	}
-
 	@include responsive($bp_medium){
 		top: 0 !important;
 		right: 0 !important;
@@ -255,7 +247,8 @@
 			z-index: 2;
 			border-radius: 3px;
 
-			.title {				
+			.title {
+				display: block;			
 				padding: 14px 18px;
 				box-sizing: border-box;
 				border-radius: 3px 3px 0 0;

@@ -89,21 +89,22 @@ class List extends React.Component{
 						if (row.type ) class_name += ' '+row.type
 
 						return (
-							<div
-								onClick={e => this.handleClick(e, row.uri)}
-								onContextMenu={e => this.handleContextMenu(e,row)}
-								className={class_name}
-								key={row_index}>
-								{
-									this.props.columns.map((col, col_index) => {
-										var className = 'col '+col.name.replace('.','_')
-										return (
-											<div className={className} key={col_index}>
-												{ this.renderValue(row, col.name) }
-											</div>
-										)
-									})
-								}
+							<div className={class_name} key={row_index}>
+								<div 
+									class="liner"
+									onClick={e => this.handleClick(e, row.uri)}
+									onContextMenu={e => this.handleContextMenu(e,row)}>
+										{
+											this.props.columns.map((col, col_index) => {
+												var className = 'col '+col.name.replace('.','_')
+												return (
+													<div className={className} key={col_index}>
+														{ this.renderValue(row, col.name) }
+													</div>
+												)
+											})
+										}
+								</div>
 								{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
 							</div>
 						)

@@ -100,7 +100,6 @@ export default class Track extends React.Component{
 	}
 
 	handleContextMenu(e){
-		console.log('handle');
 		e.preventDefault();
 		e.stopPropagation();
 		e.cancelBubble = true;
@@ -108,27 +107,29 @@ export default class Track extends React.Component{
 	}
 
 	render(){
-		if (!this.props.track ) return null
+		if (!this.props.track){
+			return null;
+		}
 
-		var track = this.props.track
-		var className = 'list-item track'
-		if (this.props.selected) className += ' selected'
-		if (this.props.selected) className += ' selected'
-		if (this.props.can_sort) className += ' can-sort'
-		if (track.type !== undefined) className += ' '+track.type
-		if (track.playing) className += ' playing'
-		if (this.state.hover) className += ' hover'
+		var track = this.props.track;
+		var className = 'list-item track';
+		if (this.props.selected) className += ' selected';
+		if (this.props.can_sort) className += ' can-sort';
+		if (track.type !== undefined) className += ' '+track.type;
+		if (track.playing) className += ' playing';
+		if (this.state.hover) className += ' hover';
 		
-		var album = '-'
+		var album = '-';
 		if (track.album){
 			if (track.album.uri){
-				album = <URILink type="album" uri={track.album.uri}>{track.album.name}</URILink>
+				album = <URILink type="album" uri={track.album.uri}>{track.album.name}</URILink>;
 			} else {
-				album = <span>{track.album.name}</span>
+				album = <span>{track.album.name}</span>;
 			}
 		}
 
-		let track_columns = []
+		let track_columns = [];
+		let track_actions = [];
 
 		if (track.type == 'history'){
 
@@ -228,7 +229,7 @@ export default class Track extends React.Component{
 			)
 		}
 
-		track_columns.push(
+		track_actions.push(
 			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
 		)
 
@@ -236,7 +237,7 @@ export default class Track extends React.Component{
 
 			// Select zone handles selection events only
 			// We use onClick to capture touch as well as mouse events in one tidy parcel
-			track_columns.push(
+			track_actions.push(
 				<span 
 					className="select-zone"
 					key="select-zone"
@@ -246,7 +247,7 @@ export default class Track extends React.Component{
 			)
 
 			if (this.props.can_sort){
-				track_columns.push(
+				track_actions.push(
 					<span 
 						className="drag-zone"
 						key="drag-zone"
@@ -260,22 +261,25 @@ export default class Track extends React.Component{
 			// the appropriate select/drag zone sub-elements
 			return (
 				<div className={className}>
-					{ track_columns }
+					{track_actions}
+					{track_columns}
 				</div>
 			)
 		} else {
 			return (
-				<div
-					className={className}
-					onMouseEnter={e => this.setState({hover: true})}
-					onMouseLeave={e => this.setState({hover: false})}
-					//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
-					onMouseDown={e => this.handleMouseDown(e)}			// Click (or potentially a mouse drag start)
-					onMouseMove={e => this.handleMouseMove(e)}			// Any movement over me
-					onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event
-					onDoubleClick={e => this.props.handleDoubleClick(e)}
-					onContextMenu={e => {this.handleContextMenu(e)}}>
-						{track_columns}
+				<div className={className}>
+					{track_actions}
+					<div className="liner"
+						onMouseEnter={e => this.setState({hover: true})}
+						onMouseLeave={e => this.setState({hover: false})}
+						//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
+						onMouseDown={e => this.handleMouseDown(e)}			// Click (or potentially a mouse drag start)
+						onMouseMove={e => this.handleMouseMove(e)}			// Any movement over me
+						onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event
+						onDoubleClick={e => this.props.handleDoubleClick(e)}
+						onContextMenu={e => {this.handleContextMenu(e)}}>
+							{track_columns}
+					</div>
 				</div>
 			)
 		}
