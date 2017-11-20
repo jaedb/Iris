@@ -83,7 +83,7 @@ const PusherMiddleware = (function(){
                     store.dispatch(uiActions.stopLoading(request_id));
                     reject({message: "Request timed out", method: method, data: data});
                 },
-                5000 // 30000
+                30000
             );
             
             // add query to our deferred responses
