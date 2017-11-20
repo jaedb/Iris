@@ -1042,6 +1042,7 @@ function setSelectedTracks() {
 function showContextMenu(data) {
     data.position_x = data.e.clientX;
     data.position_y = data.e.clientY;
+    console.log(data);
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -18452,6 +18453,20 @@ var ContextMenuTrigger = function (_React$Component) {
 	}
 
 	_createClass(ContextMenuTrigger, [{
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			this.props.onTrigger(e);
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			this.props.onTrigger(e);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -18463,11 +18478,8 @@ var ContextMenuTrigger = function (_React$Component) {
 			return _react2.default.createElement(
 				'span',
 				{ className: className,
-					onMouseDown: function onMouseDown(e) {
-						return _this2.props.onTrigger(e);
-					},
-					onTouchEnd: function onTouchEnd(e) {
-						return _this2.props.onTrigger(e);
+					onClick: function onClick(e) {
+						return _this2.handleClick(e);
 					} },
 				_react2.default.createElement('span', { className: 'dot' }),
 				_react2.default.createElement('span', { className: 'dot' }),
@@ -23472,23 +23484,26 @@ var List = function (_React$Component) {
 
 					return _react2.default.createElement(
 						'div',
-						{
-							onClick: function onClick(e) {
-								return _this2.handleClick(e, row.uri);
-							},
-							onContextMenu: function onContextMenu(e) {
-								return _this2.handleContextMenu(e, row);
-							},
-							className: class_name,
-							key: row_index },
-						_this2.props.columns.map(function (col, col_index) {
-							var className = 'col ' + col.name.replace('.', '_');
-							return _react2.default.createElement(
-								'div',
-								{ className: className, key: col_index },
-								_this2.renderValue(row, col.name)
-							);
-						}),
+						{ className: class_name, key: row_index },
+						_react2.default.createElement(
+							'div',
+							{
+								'class': 'liner',
+								onClick: function onClick(e) {
+									return _this2.handleClick(e, row.uri);
+								},
+								onContextMenu: function onContextMenu(e) {
+									return _this2.handleContextMenu(e, row);
+								} },
+							_this2.props.columns.map(function (col, col_index) {
+								var className = 'col ' + col.name.replace('.', '_');
+								return _react2.default.createElement(
+									'div',
+									{ className: className, key: col_index },
+									_this2.renderValue(row, col.name)
+								);
+							})
+						),
 						_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
 								return _this2.handleContextMenu(e, row);
 							} })
@@ -33069,11 +33084,12 @@ var Track = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			if (!this.props.track) return null;
+			if (!this.props.track) {
+				return null;
+			}
 
 			var track = this.props.track;
 			var className = 'list-item track';
-			if (this.props.selected) className += ' selected';
 			if (this.props.selected) className += ' selected';
 			if (this.props.can_sort) className += ' can-sort';
 			if (track.type !== undefined) className += ' ' + track.type;
@@ -33098,6 +33114,7 @@ var Track = function (_React$Component) {
 			}
 
 			var track_columns = [];
+			var track_actions = [];
 
 			if (track.type == 'history') {
 
@@ -33234,7 +33251,7 @@ var Track = function (_React$Component) {
 				));
 			}
 
-			track_columns.push(_react2.default.createElement(_ContextMenuTrigger2.default, { key: 'context', onTrigger: function onTrigger(e) {
+			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { key: 'context', onTrigger: function onTrigger(e) {
 					return _this2.handleContextMenu(e);
 				} }));
 
@@ -33242,7 +33259,7 @@ var Track = function (_React$Component) {
 
 				// Select zone handles selection events only
 				// We use onClick to capture touch as well as mouse events in one tidy parcel
-				track_columns.push(_react2.default.createElement(
+				track_actions.push(_react2.default.createElement(
 					'span',
 					{
 						className: 'select-zone',
@@ -33254,7 +33271,7 @@ var Track = function (_React$Component) {
 				));
 
 				if (this.props.can_sort) {
-					track_columns.push(_react2.default.createElement(
+					track_actions.push(_react2.default.createElement(
 						'span',
 						{
 							className: 'drag-zone',
@@ -33271,36 +33288,41 @@ var Track = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: className },
+					track_actions,
 					track_columns
 				);
 			} else {
 				return _react2.default.createElement(
 					'div',
-					{
-						className: className,
-						onMouseEnter: function onMouseEnter(e) {
-							return _this2.setState({ hover: true });
-						},
-						onMouseLeave: function onMouseLeave(e) {
-							return _this2.setState({ hover: false });
-						}
-						//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
-						, onMouseDown: function onMouseDown(e) {
-							return _this2.handleMouseDown(e);
-						} // Click (or potentially a mouse drag start)
-						, onMouseMove: function onMouseMove(e) {
-							return _this2.handleMouseMove(e);
-						} // Any movement over me
-						, onMouseUp: function onMouseUp(e) {
-							return _this2.handleMouseUp(e);
-						} // End of click, or potentially a dragging drop event
-						, onDoubleClick: function onDoubleClick(e) {
-							return _this2.props.handleDoubleClick(e);
-						},
-						onContextMenu: function onContextMenu(e) {
-							_this2.handleContextMenu(e);
-						} },
-					track_columns
+					{ className: className },
+					track_actions,
+					_react2.default.createElement(
+						'div',
+						{ className: 'liner',
+							onMouseEnter: function onMouseEnter(e) {
+								return _this2.setState({ hover: true });
+							},
+							onMouseLeave: function onMouseLeave(e) {
+								return _this2.setState({ hover: false });
+							}
+							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
+							, onMouseDown: function onMouseDown(e) {
+								return _this2.handleMouseDown(e);
+							} // Click (or potentially a mouse drag start)
+							, onMouseMove: function onMouseMove(e) {
+								return _this2.handleMouseMove(e);
+							} // Any movement over me
+							, onMouseUp: function onMouseUp(e) {
+								return _this2.handleMouseUp(e);
+							} // End of click, or potentially a dragging drop event
+							, onDoubleClick: function onDoubleClick(e) {
+								return _this2.props.handleDoubleClick(e);
+							},
+							onContextMenu: function onContextMenu(e) {
+								_this2.handleContextMenu(e);
+							} },
+						track_columns
+					)
 				);
 			}
 		}
@@ -58043,7 +58065,7 @@ var ContextMenu = function (_React$Component) {
 			submenu_expanded: false
 		};
 		_this.handleScroll = _this.handleScroll.bind(_this);
-		_this.handleClick = _this.handleClick.bind(_this);
+		_this.handleMouseDown = _this.handleMouseDown.bind(_this);
 		return _this;
 	}
 
@@ -58051,13 +58073,13 @@ var ContextMenu = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			window.addEventListener("scroll", this.handleScroll, false);
-			window.addEventListener("click", this.handleClick, false);
+			window.addEventListener("mousedown", this.handleMouseDown, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			window.removeEventListener("scroll", this.handleScroll, false);
-			window.removeEventListener("click", this.handleClick, false);
+			window.removeEventListener("mousedown", this.handleMouseDown, false);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -58101,9 +58123,9 @@ var ContextMenu = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'handleClick',
-		value: function handleClick(e) {
-			// if we click outside of the context menu or context menu trigger, kill it
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
+			// if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
 			if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
 				this.props.uiActions.hideContextMenu();
 			}
