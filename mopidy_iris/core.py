@@ -65,21 +65,21 @@ class IrisCore(object):
         
         # if we've been given a valid array
         try:
-            clientid = protocol[0]
+            client_id = protocol[0]
             connection_id = protocol[1]
             username = protocol[2]
             generated = False
           
         # invalid, so just create a default connection, and auto-generate an ID
         except:
-            clientid = self.generateGuid(12)
+            client_id = self.generateGuid(12)
             connection_id = self.generateGuid(12)
             username = 'Anonymous'
             generated = True
         
         # construct our protocol object, and return
         return {
-            "clientid": clientid,
+            "client_id": client_id,
             "connection_id": connection_id,
             "username": username,
             "generated": generated
@@ -150,7 +150,9 @@ class IrisCore(object):
             data={
                 'type': 'connected',
                 'connection_id': connection_id,
-                'username': client['username']
+                'client_id': client['client_id'],
+                'username': client['username'],
+                'ip': client['ip']
             }
         )
 

@@ -3154,7 +3154,7 @@ input[type="submit"] {
     font-weight: 500;
     font-family: "Overpass"; }
     #context-menu .liner .title {
-      display: block;
+      display: none;
       padding: 10px 14px;
       font-weight: bold;
       box-sizing: border-box;
@@ -3326,9 +3326,6 @@ input[type="submit"] {
               top: 14px; }
           #context-menu .liner > span .dropdown-field .options:before {
             display: none; }
-  @media (min-width: 800px) {
-    #context-menu .liner .title {
-      display: none; } }
   @media (max-width: 800px) {
     #context-menu {
       top: 0 !important;
@@ -3353,6 +3350,7 @@ input[type="submit"] {
         z-index: 2;
         border-radius: 3px; }
         #context-menu .liner .title {
+          display: block;
           padding: 14px 18px;
           box-sizing: border-box;
           border-radius: 3px 3px 0 0; }
@@ -5230,12 +5228,12 @@ main header {
     padding: 5px 8px;
     color: #FFFFFF;
     font-size: 11px;
-    line-height: 11px;
-    top: -24px;
+    line-height: 12px;
+    bottom: 37px;
     left: 1px;
     z-index: 97;
     border-radius: 3px;
-    white-space: nowrap; }
+    white-space: wrap; }
     .has-tooltip .tooltip:first-letter {
       text-transform: uppercase; }
     .has-tooltip .tooltip:after {
@@ -5252,12 +5250,12 @@ main header {
       left: 9px; }
   .has-tooltip:hover .tooltip {
     opacity: 1;
-    top: -22px; }
+    bottom: 35px; }
   .has-tooltip.large-tooltip .tooltip {
     padding: 8px 12px;
     font-size: 12px;
     line-height: 14px;
-    top: -50px; }
+    bottom: 50px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }

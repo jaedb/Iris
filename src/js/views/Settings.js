@@ -395,7 +395,21 @@ class Settings extends React.Component {
 									name="log_actions"
 									checked={ this.props.ui.clear_tracklist_on_play }
 									onChange={ e => this.props.uiActions.set({ clear_tracklist_on_play: !this.props.ui.clear_tracklist_on_play })} />
-								<span className="label">Clear tracklist on play of URI(s)</span>
+								<span className="label has-tooltip">
+									Clear tracklist on play of URI(s)
+									<span className="tooltip">Playing one or more URIs will clear the current play queue first</span>
+								</span>
+							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="log_actions"
+									checked={ this.props.core.anonymise_analytics }
+									onChange={ e => this.props.coreActions.set({ anonymise_analytics: !this.props.core.anonymise_analytics })} />
+								<span className="label has-tooltip">
+									Exclude personal data from collection
+									<span className="tooltip">Personal data used for debugging Iris is not collected by Google Analytics</span>
+								</span>
 							</label>
 						</div>
 					</div>
