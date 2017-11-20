@@ -100,6 +100,7 @@ export default class Track extends React.Component{
 	}
 
 	handleContextMenu(e){
+		console.log('handle');
 		e.preventDefault();
 		e.stopPropagation();
 		e.cancelBubble = true;

@@ -22,19 +22,19 @@ class ContextMenu extends React.Component{
 			submenu_expanded: false
 		}
 		this.handleScroll = this.handleScroll.bind(this);
-		this.handleMouseDown = this.handleMouseDown.bind(this);
+		this.handleMouseUp = this.handleMouseUp.bind(this);
 		this.handleTouchEnd = this.handleTouchEnd.bind(this);
 	}
 
 	componentDidMount(){
 		window.addEventListener("scroll", this.handleScroll, false);
-		window.addEventListener("mousedown", this.handleMouseDown, false);
+		window.addEventListener("mouseup", this.handleMouseUp, false);
 		window.addEventListener("touchend", this.handleTouchEnd, false);
 	}
 
 	componentWillUnmount(){		
 		window.removeEventListener("scroll", this.handleScroll, false);
-		window.removeEventListener("mousedown", this.handleMouseDown, false);
+		window.removeEventListener("mouseup", this.handleMouseUp, false);
 		window.removeEventListener("touchend", this.handleTouchEnd, false);
 	}
 
@@ -78,10 +78,12 @@ class ContextMenu extends React.Component{
 	}
 
 	handleTouchEnd(e){
+		console.log('ContextMenu > handleTouchEnd');
 		this.handleClick(e);
 	}
 
-	handleMouseDown(e){
+	handleMouseUp(e){
+		console.log('ContextMenu > handleMouseUp');
 		this.handleClick(e);
 	}
 

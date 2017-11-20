@@ -8,15 +8,11 @@ export default class ContextMenuTrigger extends React.Component{
 		super(props);
 	}
 
-	handleMouseDown(e){
-		e.preventDefault();
-		e.stopPropagation();
+	handleMouseUp(e){
 		this.props.onTrigger(e);
 	}
 
 	handleTouchEnd(e){
-		e.preventDefault();
-		e.stopPropagation();
 		this.props.onTrigger(e);
 	}
 
@@ -27,7 +23,7 @@ export default class ContextMenuTrigger extends React.Component{
 		}
 		return (
 			<span className={className}
-				onMouseDown={e => this.handleMouseDown(e)}
+				onMouseUp={e => this.handleMouseUp(e)}
 				onTouchEnd={e => this.handleTouchEnd(e)}>
 					<span className="dot"></span>
 					<span className="dot"></span>
