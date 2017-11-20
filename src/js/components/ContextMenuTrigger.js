@@ -8,12 +8,6 @@ export default class ContextMenuTrigger extends React.Component{
 		super(props);
 	}
 
-	handleMouseDown(e){
-		e.preventDefault();
-		e.stopPropagation();
-		this.props.onTrigger(e);
-	}
-
 	handleClick(e){
 		e.preventDefault();
 		e.stopPropagation();

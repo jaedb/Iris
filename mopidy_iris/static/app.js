@@ -18453,13 +18453,6 @@ var ContextMenuTrigger = function (_React$Component) {
 	}
 
 	_createClass(ContextMenuTrigger, [{
-		key: 'handleMouseDown',
-		value: function handleMouseDown(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			this.props.onTrigger(e);
-		}
-	}, {
 		key: 'handleClick',
 		value: function handleClick(e) {
 			e.preventDefault();
