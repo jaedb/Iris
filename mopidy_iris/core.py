@@ -374,39 +374,53 @@ class IrisCore(object):
             # We only want to play the first batch
             added = self.core.tracklist.add(uris = uris[0:3])
 
+            if (not added.get()):
+                logger.error("No recommendations added to queue")
+
+                self.radio['enabled'] = 0;
+                error = {
+                    'message': 'No recommendations added to queue',
+                    'radio': self.radio
+                }
+                if (callback):
+                    callback(False, error)
+                else:
+                    return error
+
             # Save results (minus first batch) for later use
             self.radio['results'] = uris[3:]
 
-            if added.get():
-                if starting:
-                    self.core.playback.play()
-                    self.broadcast(
-                        data={
-                            'type': 'radio_started',
-                            'radio': self.radio
-                        }
-                    )
-                else:
-                    self.broadcast(
-                        data={
-                            'type': 'radio_changed',
-                            'radio': self.radio
-                        }
-                    )
+            if starting:
+                self.core.playback.play()
+                self.broadcast(
+                    data={
+                        'type': 'radio_started',
+                        'radio': self.radio
+                    }
+                )
+            else:
+                self.broadcast(
+                    data={
+                        'type': 'radio_changed',
+                        'radio': self.radio
+                    }
+                )
 
-                self.get_radio(callback=callback)
-                return
+            self.get_radio(callback=callback)
+            return
         
-        # failed fetching/adding tracks, so no-go
-        self.radio['enabled'] = 0;
-        error = {
-            'message': 'Could not start radio',
-            'radio': self.radio
-        }
-        if (callback):
-            callback(False, error)
+        # Failed fetching/adding tracks, so no-go
         else:
-            return error
+            logger.error("No recommendations returned by Spotify")
+            self.radio['enabled'] = 0;
+            error = {
+                'message': 'Could not start radio',
+                'radio': self.radio
+            }
+            if (callback):
+                callback(False, error)
+            else:
+                return error
 
 
     def stop_radio(self, *args, **kwargs):
@@ -442,13 +456,10 @@ class IrisCore(object):
 
     def load_more_tracks(self, *args, **kwargs):
         
-        # this is crude, but it means we don't need to handle expired tokens
-        # TODO: address this when it's clear what Jodal and the team want to do with Pyspotify
-        self.refresh_spotify_token()
-        
         try:
-            token = self.spotify_token
-            token = token['access_token']
+            self.get_spotify_token()
+            spotify_token = self.spotify_token
+            access_token = spotify_token['access_token']
         except:
             error = 'IrisFrontend: access_token missing or invalid'
             logger.error(error)
@@ -462,7 +473,7 @@ class IrisCore(object):
             url = url+'&limit=50'
 
             req = urllib2.Request(url)
-            req.add_header('Authorization', 'Bearer '+self.spotify_token['access_token'])
+            req.add_header('Authorization', 'Bearer '+access_token)
 
             response = urllib2.urlopen(req, timeout=30).read()
             response_dict = json.loads(response)
@@ -556,21 +567,6 @@ class IrisCore(object):
 
         self.queue_metadata = cleaned_queue_metadata
 
-        self.broadcast(
-            data={
-                'type': 'queue_metadata_changed',
-                'queue_metadata': self.queue_metadata
-            }
-        )
-        
-        response = {
-            'message': 'Cleaned queue metadata'
-        }
-        if (callback):
-            callback(response)
-        else:
-            return response
-
 
     ##
     # Spotify authentication
@@ -582,6 +578,11 @@ class IrisCore(object):
 
     def get_spotify_token(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+
+        # Expired, so go get a new one
+        if (not self.spotify_token or self.spotify_token['expires_at'] <= time.time()):
+            self.refresh_spotify_token()
+
         response = {
             'spotify_token': self.spotify_token
         }
@@ -608,6 +609,10 @@ class IrisCore(object):
             request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.urlencode(data))
             response = http_client.fetch(request)
 
+            token = json.loads(response.body)
+            token['expires_at'] = time.time() + token['expires_in']
+            self.spotify_token = token
+
             self.broadcast(
                 data={
                     'type': 'spotify_token_changed',
@@ -615,12 +620,9 @@ class IrisCore(object):
                 }
             )
 
-            token = json.loads(response.body)
-            self.spotify_token = token
             response = {
                 'spotify_token': token
             }
-
             if (callback):
                 callback(response)
             else:

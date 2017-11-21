@@ -83,7 +83,7 @@ const PusherMiddleware = (function(){
                     store.dispatch(uiActions.stopLoading(request_id));
                     reject({message: "Request timed out", method: method, data: data});
                 },
-                5000 // 30000
+                30000
             );
             
             // add query to our deferred responses
@@ -379,12 +379,13 @@ const PusherMiddleware = (function(){
                 request(store, 'change_radio', data)
                     .then(
                         response => {
+                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
                             if (response.status == 0){
-                                store.dispatch(uiActions.createNotification(response.message, 'bad'))
+                                store.dispatch(uiActions.createNotification(response.message, 'bad'));
                             }
-                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'))
                         },
-                        error => {                            
+                        error => {       
+                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));                     
                             store.dispatch(coreActions.handleException(
                                 'Could not change radio',
                                 error
