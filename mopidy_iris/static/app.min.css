@@ -4217,16 +4217,17 @@ aside {
   user-select: none;
   display: block;
   position: relative;
-  padding: 14px 30px 13px 10px;
   margin: 0 -10px -1px -10px;
   cursor: pointer;
   border-radius: 3px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   border-top: 1px solid rgba(255, 255, 255, 0.05); }
-  .list .list-item::after {
-    content: '';
-    clear: both;
-    display: block; }
+  .list .list-item .liner {
+    padding: 14px 30px 13px 10px; }
+    .list .list-item .liner::after {
+      content: '';
+      clear: both;
+      display: block; }
   .list .list-item.selected {
     background: rgba(255, 255, 255, 0.08) !important; }
     .list .list-item.selected .select-zone::after {
@@ -4353,10 +4354,10 @@ aside {
     opacity: 1; }
 
 .list.track-list.mini-zones .list-item.can-sort {
-  padding-left: 70px !important; }
+  padding-left: 60px !important; }
 
 .list.track-list.mini-zones .list-item:not(.can-sort) {
-  padding-left: 42px !important; }
+  padding-left: 35px !important; }
 
 .list.track-list.mini-zones .list-item .select-zone {
   position: absolute;
@@ -4368,8 +4369,9 @@ aside {
   display: block; }
   .list.track-list.mini-zones .list-item .select-zone .fa {
     position: absolute;
-    top: 27px;
+    top: 50%;
     left: 17px;
+    margin-top: -3px;
     pointer-events: none;
     color: #FFFFFF;
     z-index: 1; }
@@ -4381,8 +4383,9 @@ aside {
     width: 14px;
     height: 14px;
     position: absolute;
-    top: 23px;
-    left: 14px; }
+    top: 50%;
+    left: 14px;
+    margin-top: -7px; }
 
 .list.track-list.mini-zones .list-item .drag-zone {
   position: absolute;
@@ -4395,83 +4398,84 @@ aside {
   color: #a3a19f; }
   .list.track-list.mini-zones .list-item .drag-zone .fa {
     position: absolute;
-    top: 24px;
+    top: 50%;
     left: 6px;
+    margin-top: -6px;
     pointer-events: none; }
 
 @media (max-width: 800px) {
-  .list .list-item {
+  .list .list-item .liner {
     padding: 12px !important; }
-    .list .list-item .source {
-      position: static;
-      float: none; }
-    .list .list-item .select-zone {
+  .list .list-item .source {
+    position: static;
+    float: none; }
+  .list .list-item .select-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 34px;
+    font-size: 8px;
+    display: block; }
+    .list .list-item .select-zone .fa {
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 34px;
-      font-size: 8px;
-      display: block; }
-      .list .list-item .select-zone .fa {
-        position: absolute;
-        top: 27px;
-        left: 17px;
-        pointer-events: none;
-        color: #FFFFFF;
-        z-index: 1; }
-      .list .list-item .select-zone:after {
-        display: block;
-        content: '';
-        border: 1px solid #a3a19f;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        position: absolute;
-        top: 16px;
-        left: 14px; }
-    .list .list-item .drag-zone {
-      position: absolute;
-      top: 0;
-      left: 34px;
-      height: 100%;
-      width: 34px;
-      font-size: 14px;
+      top: 27px;
+      left: 17px;
+      pointer-events: none;
+      color: #FFFFFF;
+      z-index: 1; }
+    .list .list-item .select-zone:after {
       display: block;
-      color: #a3a19f; }
-      .list .list-item .drag-zone .fa {
-        position: absolute;
-        top: 24px;
-        left: 6px;
-        pointer-events: none; }
-    .list .list-item .context-zone {
-      top: 14px; }
-    .list .list-item .col.name {
-      width: auto !important;
-      padding-right: 10%;
-      display: block;
-      float: none; }
-    .list .list-item .col.duration {
-      width: auto !important;
+      content: '';
+      border: 1px solid #a3a19f;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
       position: absolute;
-      right: 10px;
-      text-align: right; }
-    .list .list-item .col:not(.name):not(.duration):not(.album) {
-      color: #a3a19f;
-      display: inline;
-      width: auto !important;
-      float: none !important;
-      word-wrap: break-word; }
-    .list .list-item .col.followers_total:after {
-      content: ' followers'; }
-    .list .list-item .col.tracks_total:after {
-      content: ' tracks'; }
-    .list .list-item .col.popularity:after {
-      content: '% popularity'; }
-    .list .list-item .col.album, .list .list-item .col.can_edit, .list .list-item .col.release_date {
-      display: none; }
-    .list .list-item.header {
-      display: none; }
+      top: 16px;
+      left: 14px; }
+  .list .list-item .drag-zone {
+    position: absolute;
+    top: 0;
+    left: 34px;
+    height: 100%;
+    width: 34px;
+    font-size: 14px;
+    display: block;
+    color: #a3a19f; }
+    .list .list-item .drag-zone .fa {
+      position: absolute;
+      top: 24px;
+      left: 6px;
+      pointer-events: none; }
+  .list .list-item .context-zone {
+    top: 14px; }
+  .list .list-item .col.name {
+    width: auto !important;
+    padding-right: 10%;
+    display: block;
+    float: none; }
+  .list .list-item .col.duration {
+    width: auto !important;
+    position: absolute;
+    right: 10px;
+    text-align: right; }
+  .list .list-item .col:not(.name):not(.duration):not(.album) {
+    color: #a3a19f;
+    display: inline;
+    width: auto !important;
+    float: none !important;
+    word-wrap: break-word; }
+  .list .list-item .col.followers_total:after {
+    content: ' followers'; }
+  .list .list-item .col.tracks_total:after {
+    content: ' tracks'; }
+  .list .list-item .col.popularity:after {
+    content: '% popularity'; }
+  .list .list-item .col.album, .list .list-item .col.can_edit, .list .list-item .col.release_date {
+    display: none; }
+  .list .list-item.header {
+    display: none; }
   .list.queue-track-list .list-item .artists {
     padding-left: 0 !important; }
     .list.queue-track-list .list-item .artists:before {
