@@ -26,15 +26,43 @@ export default class EditRadioModal extends React.Component{
 	}
 
 	handleStart(e){
-		e.preventDefault()
-		this.props.pusherActions.startRadio(this.state.seeds)
-		this.props.uiActions.closeModal()
+		e.preventDefault();
+
+		var valid_seeds = true;
+		var seeds = this.mapSeeds();
+		for (var i = 0; i < seeds.length; i++){
+			if (seeds[i].unresolved !== undefined){
+				valid_seeds = false;
+				continue;
+			}
+		}
+
+		if (valid_seeds){
+			this.props.pusherActions.startRadio(this.state.seeds);
+			this.props.uiActions.closeModal();
+		} else {
+			this.setState({error_message: "Invalid seed URI(s)"});
+		}
 	}
 
 	handleUpdate(e){
-		e.preventDefault()
-		this.props.pusherActions.updateRadio(this.state.seeds)
-		this.props.uiActions.closeModal()
+		e.preventDefault();
+
+		var valid_seeds = true;
+		var seeds = this.mapSeeds();
+		for (var i = 0; i < seeds.length; i++){
+			if (seeds[i].unresolved !== undefined){
+				valid_seeds = false;
+				continue;
+			}
+		}
+
+		if (valid_seeds){
+			this.props.pusherActions.updateRadio(this.state.seeds);
+			this.props.uiActions.closeModal();
+		} else {
+			this.setState({error_message: "Invalid seed URI(s)"});
+		}
 	}
 
 	handleStop(e){
@@ -46,7 +74,7 @@ export default class EditRadioModal extends React.Component{
 	addSeed(){
 		if (this.state.uri == ''){
 			this.setState({error_message: 'Cannot be empty'});
-			return null;
+			return;
 		}
 
 		var seeds = Object.assign([],this.state.seeds);
@@ -62,7 +90,18 @@ export default class EditRadioModal extends React.Component{
 			} else {
 				seeds.push(uris[i]);
 				this.setState({error_message: null});
-			}			
+			}		
+
+			// Resolve
+			switch (helpers.uriType(uris[i])){
+				case 'track':
+					this.props.spotifyActions.getTrack(uris[i]);
+					break;
+
+				case 'artist':
+					this.props.spotifyActions.getArtist(uris[i]);
+					break;
+			}	
 		}
 
 		// commit to state
@@ -79,10 +118,10 @@ export default class EditRadioModal extends React.Component{
 				seeds.push(this.state.seeds[i])
 			}
 		}
-		this.setState({seeds: seeds})
+		this.setState({seeds: seeds});
 	}
 
-	renderSeeds(){
+	mapSeeds(){		
 		var seeds = []
 
 		if (this.state.seeds){
@@ -91,20 +130,18 @@ export default class EditRadioModal extends React.Component{
 				if (uri){
 					if (helpers.uriType(uri) == 'artist'){
 						if (this.props.artists && this.props.artists.hasOwnProperty(uri)){
-							seeds.push(this.props.artists[uri])
+							seeds.push(this.props.artists[uri]);
 						} else {
 							seeds.push({
-								type: 'artist',
 								unresolved: true,
 								uri: uri
 							})
 						}
 					} else if (helpers.uriType(uri) == 'track'){
 						if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)){
-							seeds.push(this.props.tracks[uri])
+							seeds.push(this.props.tracks[uri]);
 						} else {
 							seeds.push({
-								type: 'track',
 								unresolved: true,
 								uri: uri
 							})
@@ -113,6 +150,12 @@ export default class EditRadioModal extends React.Component{
 				}
 			}
 		}
+
+		return seeds;
+	}
+
+	renderSeeds(){
+		var seeds = this.mapSeeds();
 
 		if (seeds.length > 0){
 			return (
@@ -123,7 +166,7 @@ export default class EditRadioModal extends React.Component{
 								return (
 									<div className="list-item" key={seed.uri}>
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-										<span className="grey-text">&nbsp;({seed.type})</span>
+										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
 										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
 											<FontAwesome name="close" />&nbsp;Remove
 										</button>

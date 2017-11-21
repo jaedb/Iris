@@ -1,7 +1,6 @@
 
 .list {
 	.list-item {
-		@include clearfix;
 
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -12,12 +11,16 @@
 
 		display: block;
 		position: relative;
-		padding: 14px 30px 13px 10px;
 		margin: 0 -10px -1px -10px;
 		cursor: pointer;
 		border-radius: 3px;
 		border-bottom: 1px solid rgba(255,255,255,0.05);
 		border-top: 1px solid rgba(255,255,255,0.05);
+
+		.liner {
+			@include clearfix;
+			padding: 14px 30px 13px 10px;
+		}
 
 		&.selected {
 			background: rgba(255,255,255,0.08) !important;
@@ -229,11 +232,11 @@
 		.list-item {	
 
 			&.can-sort {
-				padding-left: 70px !important;
+				padding-left: 60px !important;
 			}
 			
 			&:not(.can-sort){
-				padding-left: 42px !important;
+				padding-left: 35px !important;
 			}
 
 			.select-zone {
@@ -247,8 +250,9 @@
 				
 				.fa {
 					position: absolute;
-					top: 27px;
+					top: 50%;
 					left: 17px;
+					margin-top: -3px;
 					pointer-events: none;
 					color: $white;
 					z-index: 1;
@@ -262,8 +266,9 @@
 					width: 14px;
 					height: 14px;
 					position: absolute;
-					top: 23px;
+					top: 50%;
 					left: 14px;
+					margin-top: -7px;
 				}
 			}
 
@@ -279,8 +284,9 @@
 				
 				.fa {
 					position: absolute;
-					top: 24px;
+					top: 50%;
 					left: 6px;
+					margin-top: -6px;
 					pointer-events: none;
 				}
 			}
@@ -290,7 +296,10 @@
 	@include responsive($bp_medium){
 
 		.list-item {
-			padding: 12px !important;
+
+			.liner {
+				padding: 12px !important;
+			}
 
 			.source {
 				position: static;

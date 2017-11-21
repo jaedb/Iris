@@ -262,7 +262,9 @@ export default class Track extends React.Component{
 			return (
 				<div className={className}>
 					{track_actions}
-					{track_columns}
+					<div className="liner">
+						{track_columns}
+					</div>
 				</div>
 			)
 		} else {

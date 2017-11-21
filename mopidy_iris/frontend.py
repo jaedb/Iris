@@ -19,9 +19,9 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     def on_start(self):        
         logger.info('Starting Iris '+mem.iris.version)
 
-    def track_playback_ended( self, tl_track, time_position ):
+    def track_playback_ended(self, tl_track, time_position):
         mem.iris.check_for_radio_update()
 
-    def tracklist_changed( self ):
+    def tracklist_changed(self):
         mem.iris.clean_queue_metadata()
         
