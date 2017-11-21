@@ -16136,19 +16136,23 @@ var TrackList = function (_React$Component) {
 						'div',
 						{ className: 'list-item header track' },
 						_react2.default.createElement(
-							'span',
-							{ className: 'col name' },
-							'Name'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col source' },
-							'Source'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col played_at' },
-							'Started playing'
+							'div',
+							{ className: 'liner' },
+							_react2.default.createElement(
+								'span',
+								{ className: 'col name' },
+								'Name'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col source' },
+								'Source'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col played_at' },
+								'Started playing'
+							)
 						)
 					);
 					break;
@@ -16158,29 +16162,33 @@ var TrackList = function (_React$Component) {
 						'div',
 						{ className: 'list-item header track' },
 						_react2.default.createElement(
-							'span',
-							{ className: 'col name' },
-							'Name'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col artists' },
-							'Artists'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col album' },
-							'Album'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col added' },
-							'Added by'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col duration' },
-							'Duration'
+							'div',
+							{ className: 'liner' },
+							_react2.default.createElement(
+								'span',
+								{ className: 'col name' },
+								'Name'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col artists' },
+								'Artists'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col album' },
+								'Album'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col added' },
+								'Added by'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col duration' },
+								'Duration'
+							)
 						)
 					);
 					break;
@@ -16190,24 +16198,28 @@ var TrackList = function (_React$Component) {
 						'div',
 						{ className: 'list-item header track' },
 						_react2.default.createElement(
-							'span',
-							{ className: 'col name' },
-							'Name'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col artists' },
-							'Artists'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col album' },
-							'Album'
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'col duration' },
-							'Duration'
+							'div',
+							{ className: 'liner' },
+							_react2.default.createElement(
+								'span',
+								{ className: 'col name' },
+								'Name'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col artists' },
+								'Artists'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col album' },
+								'Album'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col duration' },
+								'Duration'
+							)
 						)
 					);
 			}
@@ -23510,7 +23522,7 @@ var List = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{
-								'class': 'liner',
+								className: 'liner',
 								onClick: function onClick(e) {
 									return _this2.handleClick(e, row.uri);
 								},
