@@ -2,6 +2,7 @@
 layout: default
 overview: true
 ---
+# TESTING
 <img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="256" />
 
 Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
@@ -11,8 +12,7 @@ Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify t
 ![badge](https://img.shields.io/badge/unique_monthly_users-4,000+-brightgreen.svg?style=flat-square)
 [![badge](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
-Features
---------
+## Features
 
 * Full web-based interface controls for Mopidy
 * Integrated with Spotify and LastFM APIs for high-quality artwork and extra info
@@ -24,15 +24,13 @@ Features
 ![Overview](https://raw.githubusercontent.com/jaedb/iris/master/screenshot.jpg)
 
 
-Requirements
---------
+## Requirements
 
 * Mopidy
 * Mopidy-Spotify (recommended, not required)
 * Mopidy-Local-Sqlite (recommended, not required)
 
-Getting started
--------
+## Getting started
 
 * [Installation](https://github.com/jaedb/Iris/wiki/Getting-started#installing)
 * [Debugging](https://github.com/jaedb/Iris/wiki/Advanced#debugging)
