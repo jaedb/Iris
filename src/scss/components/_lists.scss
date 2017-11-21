@@ -75,7 +75,10 @@
 			color: $grey;
 			text-transform: uppercase;
 			border-top: 0;
-			padding-bottom: 2px;
+
+			.liner {
+				padding-bottom: 2px;
+			}
 		}
 
 		&.field {

@@ -93,7 +93,7 @@ class List extends React.Component{
 						return (
 							<div className={class_name} key={row_index}>
 								<div 
-									class="liner"
+									className="liner"
 									onClick={e => this.handleClick(e, row.uri)}
 									onContextMenu={e => this.handleContextMenu(e,row)}>
 										{
