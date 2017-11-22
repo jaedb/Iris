@@ -1,3 +1,7 @@
+---
+layout: default
+overview: true
+---
 Iris is a frontend for the Mopidy music server. The purpose of Iris is to pull together a variety of music sources and present them in an extremely functional and user-friendly experience. The primary music source (at this time) is Spotify, provided by the Mopidy-Spotify backend.
 
 ## Installing
