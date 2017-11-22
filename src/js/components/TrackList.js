@@ -362,9 +362,11 @@ class TrackList extends React.Component{
 			case 'history':
 				return (
 					<div className="list-item header track">
-						<span className="col name">Name</span>
-						<span className="col source">Source</span>
-						<span className="col played_at">Started playing</span>
+						<div className="liner">
+							<span className="col name">Name</span>
+							<span className="col source">Source</span>
+							<span className="col played_at">Started playing</span>
+						</div>
 					</div>
 				)
 				break
@@ -372,11 +374,13 @@ class TrackList extends React.Component{
 			case 'queue':
 				return (
 					<div className="list-item header track">
-						<span className="col name">Name</span>
-						<span className="col artists">Artists</span>
-						<span className="col album">Album</span>
-						<span className="col added">Added by</span>
-						<span className="col duration">Duration</span>
+						<div className="liner">
+							<span className="col name">Name</span>
+							<span className="col artists">Artists</span>
+							<span className="col album">Album</span>
+							<span className="col added">Added by</span>
+							<span className="col duration">Duration</span>
+						</div>
 					</div>
 				)
 				break
@@ -384,10 +388,12 @@ class TrackList extends React.Component{
 			default:
 				return (
 					<div className="list-item header track">
-						<span className="col name">Name</span>
-						<span className="col artists">Artists</span>
-						<span className="col album">Album</span>
-						<span className="col duration">Duration</span>
+						<div className="liner">
+							<span className="col name">Name</span>
+							<span className="col artists">Artists</span>
+							<span className="col album">Album</span>
+							<span className="col duration">Duration</span>
+						</div>
 					</div>
 				)
 		}
