@@ -22,6 +22,12 @@ var storage = (function() {
 	} catch (exception) {}
 }());
 
+/**
+ * Get a storage value
+ *
+ * @param key = string
+ * @param default_value = mixed (optional, if localStorage key doesn't exist, return this)
+ **/
 export let getStorage = function(key, default_value = {}){
 	if (storage){
 		var value = storage.getItem(key);
@@ -37,22 +43,34 @@ export let getStorage = function(key, default_value = {}){
 	}
 }
 
-export let setStorage = function(key, value){
+/**
+ * Set a storage value
+ *
+ * @param key = string
+ * @param value = object
+ * @param replace = boolean (optional, completely replace our local value rather than merging it)
+ **/
+export let setStorage = function(key, value, replace = false){
 	if (storage){
 		var stored_value = storage.getItem(key);
-		if (stored_value){
+
+		// We have nothing to merge with, or we want to completely replace previous value
+		if (!stored_value || replace){
+			var new_value = value;
+
+		// Merge new value with existing
+		} else {
 			var new_value = Object.assign(
 				{},
 				JSON.parse(stored_value),
 				value
 			);
-		} else {
-			var new_value = value;
 		}
 		storage.setItem(key, JSON.stringify(new_value));
+		return;
 	} else {
 		console.warn("localStorage not available. '"+key+"'' will not perist when you close your browser.");
-		return false;
+		return;
 	}
 }
 

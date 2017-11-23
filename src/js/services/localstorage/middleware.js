@@ -153,17 +153,21 @@ const localstorageMiddleware = (function(){
                 break
 
             case 'SUPPRESS_BROADCAST':
-                var ui = JSON.parse(localStorage.getItem('ui'))
-                if (!ui) ui = {}
+                var ui = helpers.getStorage('ui');
+                if (ui.suppressed_broadcasts !== undefined){
+                    var suppressed_broadcasts = ui.suppressed_broadcasts;
+                } else {
+                    var suppressed_broadcasts = [];
+                }
 
-                var suppressed_broadcasts = (typeof(ui.suppressed_broadcasts) !== 'undefined' ? ui.suppressed_broadcasts : [])
-                suppressed_broadcasts.push(action.key)
+                suppressed_broadcasts.push(action.key);
 
-                Object.assign(
-                    ui,
-                    { suppressed_broadcasts: suppressed_broadcasts }
+                helpers.setStorage(
+                    'ui', 
+                    {
+                        suppressed_broadcasts: suppressed_broadcasts
+                    }
                 );
-                localStorage.setItem('ui', JSON.stringify(ui))
                 break
 
             case 'LASTFM_AUTHORIZATION_GRANTED':

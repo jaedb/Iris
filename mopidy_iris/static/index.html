@@ -22,9 +22,6 @@
 	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
 	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
 
-	<!-- Raven Sentry -->
-	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
-
 </head>
 <body>
 
@@ -38,7 +35,7 @@
 
 	// Release details
 	// These are automatically injected by build.sh
-	var build = "1511424989";
+	var build = "1511467173";
 	var version = "3.8.5";
 
 	// Construct the script tag
@@ -67,7 +64,7 @@
     } else {
 	    js.src = '/iris/app.min.js?v='+build;
 	    css.href = '/iris/app.min.css?v='+build;
-	 
+
 		// Initiate error tracking. This helps catch errors early so 
 		// patches can accurately and quickly fix issues.
 		Raven.config(
