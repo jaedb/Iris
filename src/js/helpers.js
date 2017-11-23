@@ -24,7 +24,7 @@ var storage = (function() {
 
 export let getStorage = function(key, default_value = {}){
 	if (storage){
-		value = storage.getItem(key);
+		var value = storage.getItem(key);
 		if (value){
 			return JSON.parse(value);
 		} else {

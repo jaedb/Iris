@@ -301,7 +301,7 @@ var getStorage = exports.getStorage = function getStorage(key) {
 	var default_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	if (storage) {
-		value = storage.getItem(key);
+		var value = storage.getItem(key);
 		if (value) {
 			return JSON.parse(value);
 		} else {
