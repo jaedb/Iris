@@ -262,6 +262,15 @@ class ContextMenu extends React.Component{
 		}
 	}
 
+	goToAlbum(e){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album){
+			return null
+		} else {
+			this.props.uiActions.hideContextMenu()
+			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album.uri )
+		}
+	}
+
 	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0){
 			return null
@@ -519,6 +528,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var go_to_album = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.goToAlbum(e)}>
+					<span className="label">Go to album</span>
+				</a>
+			</span>
+		)
+
 		var go_to_user = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.goToUser(e)}>
@@ -591,10 +608,11 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{go_to_artist}
 						{copy_uris}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -604,11 +622,11 @@ class ContextMenu extends React.Component{
 					<div>
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{context.source == 'spotify' ? start_radio : null}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -617,11 +635,11 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
-						{this.canBeInLibrary() ? toggle_in_library : null}
 					</div>
 				)
 				break
@@ -630,11 +648,12 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
 						<div className="divider" />
-						{this.canBeInLibrary() ? toggle_in_library : null}
 						{delete_playlist}
 					</div>
 				)
@@ -644,13 +663,14 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{context.items_count == 1 ? play_queue_item : null}
-						{context.items_count == 1 ? <div className="divider" /> : null}
+						<div className="divider" />
 						{add_to_playlist}
-						{context.items_count == 1 ? toggle_loved : null}
+						{toggle_loved}
+						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
-						<div className="divider" />
 						{copy_uris}
+						<div className="divider" />
 						{remove_from_queue}
 					</div>
 				)
@@ -665,11 +685,12 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="divider" />
 						{add_to_playlist}
-						{context.items_count == 1 ? toggle_loved : null}
+						{toggle_loved}
+						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
-						<div className="divider" />
 						{copy_uris}
+						<div className="divider" />
 						{remove_from_playlist}
 					</div>
 				)
@@ -684,8 +705,10 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="divider" />
 						{add_to_playlist}
-						{context.items_count == 1 ? toggle_loved : null}
+						{toggle_loved}
+						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
+						{context.items_count == 1 ? go_to_album : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="divider" />
 						{copy_uris}

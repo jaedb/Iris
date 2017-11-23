@@ -4,6 +4,66 @@ export let isTouchDevice = function(){
 	return 'ontouchstart' in document.documentElement
 }
 
+
+/**
+ * Storage handler
+ * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
+ **/
+
+var storage = (function() {
+	var uid = new Date;
+	var storage;
+	var result;
+	try {
+		(storage = window.localStorage).setItem(uid, uid);
+		result = storage.getItem(uid) == uid;
+		storage.removeItem(uid);
+		return result && storage;
+	} catch (exception) {}
+}());
+
+export let getStorage = function(key, default_value = {}){
+	if (storage){
+		value = storage.getItem(key);
+		if (value){
+			return JSON.parse(value);
+		} else {
+			return default_value;
+		}
+
+	} else {
+		alert("Local storage not available");
+		return default_value;
+	}
+}
+
+export let setStorage = function(key, value){
+	if (storage){
+		var stored_value = storage.getItem(key);
+		if (stored_value){
+			var new_value = Object.assign(
+				{},
+				JSON.parse(stored_value),
+				value
+			);
+		} else {
+			var new_value = value;
+		}
+		storage.setItem(key, JSON.stringify(new_value));
+	} else {
+		alert("Local storage not available");
+		return false;
+	}
+}
+
+
+/**
+ * Image sizing
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param images = array
+ * @return obj
+ **/
 export let sizedImages = function(images){
 
 	var sizes = {
