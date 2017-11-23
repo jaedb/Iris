@@ -32,7 +32,7 @@ export let getStorage = function(key, default_value = {}){
 		}
 
 	} else {
-		alert("Local storage not available");
+		console.warn("localStorage not available. Using default value for '"+key+"'.");
 		return default_value;
 	}
 }
@@ -51,7 +51,7 @@ export let setStorage = function(key, value){
 		}
 		storage.setItem(key, JSON.stringify(new_value));
 	} else {
-		alert("Local storage not available");
+		console.warn("localStorage not available. '"+key+"'' will not perist when you close your browser.");
 		return false;
 	}
 }

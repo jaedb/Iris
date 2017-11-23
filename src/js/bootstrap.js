@@ -1,6 +1,8 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
+import * as helpers from './helpers'
+
 import core from './services/core/reducer'
 import ui from './services/ui/reducer'
 import pusher from './services/pusher/reducer'

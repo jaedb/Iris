@@ -280,6 +280,61 @@ var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
 	return 'ontouchstart' in document.documentElement;
 };
 
+/**
+ * Storage handler
+ * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
+ **/
+
+var storage = function () {
+	var uid = new Date();
+	var storage;
+	var result;
+	try {
+		(storage = window.localStorage).setItem(uid, uid);
+		result = storage.getItem(uid) == uid;
+		storage.removeItem(uid);
+		return result && storage;
+	} catch (exception) {}
+}();
+
+var getStorage = exports.getStorage = function getStorage(key) {
+	var default_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	if (storage) {
+		value = storage.getItem(key);
+		if (value) {
+			return JSON.parse(value);
+		} else {
+			return default_value;
+		}
+	} else {
+		console.warn("localStorage not available. Using default value for '" + key + "'.");
+		return default_value;
+	}
+};
+
+var setStorage = exports.setStorage = function setStorage(key, value) {
+	if (storage) {
+		var stored_value = storage.getItem(key);
+		if (stored_value) {
+			var new_value = Object.assign({}, JSON.parse(stored_value), value);
+		} else {
+			var new_value = value;
+		}
+		storage.setItem(key, JSON.stringify(new_value));
+	} else {
+		console.warn("localStorage not available. '" + key + "'' will not perist when you close your browser.");
+		return false;
+	}
+};
+
+/**
+ * Image sizing
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param images = array
+ * @return obj
+ **/
 var sizedImages = exports.sizedImages = function sizedImages(images) {
 
 	var sizes = {
@@ -849,7 +904,7 @@ var setWindowTitle = exports.setWindowTitle = function setWindowTitle() {
 	var title = 'No track playing';
 
 	if (track) {
-		var icon = '\u25A0 ';
+		var icon = "\u25A0 ";
 		var artist_string = '';
 
 		if (track.artists) {
@@ -862,7 +917,7 @@ var setWindowTitle = exports.setWindowTitle = function setWindowTitle() {
 		}
 
 		if (play_state && play_state == 'playing') {
-			icon = '\u25B6 ';
+			icon = "\u25B6 ";
 		}
 
 		title = icon + ' ' + track.name + ' - ' + artist_string;
@@ -1424,11 +1479,9 @@ module.exports = exports['default'];
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -1574,12 +1627,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -3224,7 +3275,7 @@ function getLibraryAlbumsProcessor(data) {
         });
     };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 11 */
@@ -3630,33 +3681,6 @@ module.exports = reactProdInvariant;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3750,6 +3774,33 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 
 /***/ }),
@@ -4247,11 +4298,9 @@ module.exports = function() {
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -15108,12 +15157,10 @@ return jQuery;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 if (process.env.NODE_ENV !== 'production') {
@@ -15532,11 +15579,9 @@ module.exports = ReactComponentTreeHook;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  */
@@ -16396,17 +16441,8 @@ exports.default = LazyLoadListener;
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(true)
-		module.exports = factory(__webpack_require__(1), __webpack_require__(25), __webpack_require__(14));
-	else if(typeof define === 'function' && define.amd)
-		define(["react", "prop-types", "object-assign"], factory);
-	else {
-		var a = typeof exports === 'object' ? factory(require("react"), require("prop-types"), require("object-assign")) : factory(root["react"], root["prop-types"], root["object-assign"]);
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_10__, __WEBPACK_EXTERNAL_MODULE_11__, __WEBPACK_EXTERNAL_MODULE_12__) {
-return /******/ (function(modules) { // webpackBootstrap
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -16634,12 +16670,7 @@ function initialize(configs, options) {
     return false;
   }
 
-  (0, _loadGA2.default)();
-  internalGa = function internalGa() {
-    var _window;
-
-    return (_window = window).ga.apply(_window, arguments);
-  };
+  internalGa = (0, _loadGA2.default)();
 
   if (Array.isArray(configs)) {
     configs.forEach(function (config) {
@@ -16672,7 +16703,7 @@ function ga() {
     }
   }
 
-  return window.ga;
+  return internalGa;
 }
 
 /**
@@ -17262,6 +17293,8 @@ exports.default = function () {
     m.parentNode.insertBefore(a, m);
   })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
   /* eslint-enable */
+
+  return window.ga;
 };
 
 /***/ }),
@@ -17396,23 +17429,22 @@ exports.default = OutboundLink;
 /* 10 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
+module.exports = __webpack_require__(1);
 
 /***/ }),
 /* 11 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_11__;
+module.exports = __webpack_require__(25);
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
+module.exports = __webpack_require__(13);
 
 /***/ })
 /******/ ]);
-});
 
 /***/ }),
 /* 33 */
@@ -17812,7 +17844,7 @@ module.exports = ReactCurrentOwner;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(121);
 var PooledClass = __webpack_require__(46);
@@ -18066,7 +18098,7 @@ module.exports = ReactUpdates;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(46);
 
@@ -18447,7 +18479,7 @@ var URILink = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = URILink;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 39 */
@@ -19250,7 +19282,7 @@ exports.default = Parallax;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactCurrentOwner = __webpack_require__(34);
 
@@ -19880,7 +19912,7 @@ exports.default = Dater;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactBaseClasses = __webpack_require__(109);
 var ReactChildren = __webpack_require__(170);
@@ -21661,7 +21693,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AlbumGrid);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 63 */
@@ -21777,7 +21809,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaylistGrid);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 64 */
@@ -21816,11 +21848,9 @@ module.exports = canDefineProperty;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -22640,7 +22670,7 @@ module.exports = escapeTextContentForBrowser;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var EventPluginRegistry = __webpack_require__(66);
 var ReactEventEmitterMixin = __webpack_require__(217);
@@ -23637,12 +23667,10 @@ module.exports = lowPriorityWarning;
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -24606,11 +24634,9 @@ module.exports = ReactComponentEnvironment;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  * 
@@ -25032,7 +25058,7 @@ module.exports = ReactUpdateQueue;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var emptyFunction = __webpack_require__(27);
 var warning = __webpack_require__(9);
@@ -26591,7 +26617,7 @@ exports.default = FilterField;
 
 
 var _prodInvariant = __webpack_require__(49),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var ReactNoopUpdateQueue = __webpack_require__(110);
 
@@ -27153,12 +27179,10 @@ module.exports = ReactElementValidator;
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -27181,12 +27205,10 @@ module.exports = function(isValidElement) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -27194,6 +27216,7 @@ module.exports = function(isValidElement) {
 var emptyFunction = __webpack_require__(27);
 var invariant = __webpack_require__(7);
 var warning = __webpack_require__(9);
+var assign = __webpack_require__(13);
 
 var ReactPropTypesSecret = __webpack_require__(78);
 var checkPropTypes = __webpack_require__(179);
@@ -27292,7 +27315,8 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
     objectOf: createObjectOfTypeChecker,
     oneOf: createEnumTypeChecker,
     oneOfType: createUnionTypeChecker,
-    shape: createShapeTypeChecker
+    shape: createShapeTypeChecker,
+    exact: createStrictShapeTypeChecker,
   };
 
   /**
@@ -27507,7 +27531,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
       if (typeof checker !== 'function') {
         warning(
           false,
-          'Invalid argument supplid to oneOfType. Expected an array of check functions, but ' +
+          'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
           'received %s at index %s.',
           getPostfixForTypeWarning(checker),
           i
@@ -27558,6 +27582,36 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
       }
       return null;
     }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createStrictShapeTypeChecker(shapeTypes) {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== 'object') {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+      }
+      // We need to check all keys in case some are required but missing from
+      // props.
+      var allKeys = assign({}, props[propName], shapeTypes);
+      for (var key in allKeys) {
+        var checker = shapeTypes[key];
+        if (!checker) {
+          return new PropTypeError(
+            'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+            '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
+          );
+        }
+        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+        if (error) {
+          return error;
+        }
+      }
+      return null;
+    }
+
     return createChainableTypeChecker(validate);
   }
 
@@ -27710,7 +27764,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var emptyObject = __webpack_require__(65);
 var _invariant = __webpack_require__(7);
@@ -29144,11 +29198,9 @@ module.exports = setTextContent;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -29601,7 +29653,7 @@ module.exports = ReactPropTypesSecret;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var LinkedValueUtils = __webpack_require__(88);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -29806,7 +29858,7 @@ module.exports = ReactDOMSelect;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var ReactCompositeComponent = __webpack_require__(224);
 var ReactEmptyComponent = __webpack_require__(134);
@@ -30261,11 +30313,9 @@ module.exports = traverseAllChildren;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -30470,11 +30520,9 @@ module.exports = ReactInputSelection;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -34059,7 +34107,7 @@ _reactDom2.default.render(_react2.default.createElement(
 		)
 	)
 ), document.getElementById('app'));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 170 */
@@ -34954,12 +35002,10 @@ module.exports = factory(isValidElement);
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -34993,7 +35039,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
         try {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
+          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
           error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
         } catch (ex) {
           error = ex;
@@ -35785,7 +35831,7 @@ module.exports = BeforeInputEventPlugin;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(46);
 
@@ -36903,11 +36949,9 @@ module.exports = ReactHostOperationHistoryHook;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -36940,11 +36984,9 @@ module.exports = performanceNow;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37421,11 +37463,9 @@ module.exports = Danger;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37511,11 +37551,9 @@ module.exports = createNodesFromMarkup;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -37644,11 +37682,9 @@ module.exports = createArrayFromMixed;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -37790,7 +37826,7 @@ module.exports = ReactDOMIDOperations;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var AutoFocusUtils = __webpack_require__(208);
 var CSSPropertyOperations = __webpack_require__(209);
@@ -39043,11 +39079,9 @@ module.exports = CSSPropertyOperations;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39090,11 +39124,9 @@ module.exports = camelizeStyleName;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39208,11 +39240,9 @@ module.exports = dangerousStyleValue;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39254,11 +39284,9 @@ module.exports = hyphenateStyleName;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -39290,11 +39318,9 @@ module.exports = hyphenate;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  * @typechecks static-only
@@ -39502,7 +39528,7 @@ module.exports = getVendorPrefixedEventName;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var DOMPropertyOperations = __webpack_require__(129);
 var LinkedValueUtils = __webpack_require__(88);
@@ -39792,7 +39818,7 @@ module.exports = ReactDOMInput;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var React = __webpack_require__(48);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -39919,7 +39945,7 @@ module.exports = ReactDOMOption;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var LinkedValueUtils = __webpack_require__(88);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -40690,7 +40716,7 @@ module.exports = ReactChildReconciler;
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var React = __webpack_require__(48);
 var ReactComponentEnvironment = __webpack_require__(89);
@@ -41884,7 +41910,7 @@ module.exports = flattenChildren;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var PooledClass = __webpack_require__(46);
 var Transaction = __webpack_require__(67);
@@ -42121,7 +42147,7 @@ module.exports = ReactServerUpdateQueue;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var DOMLazyTree = __webpack_require__(51);
 var ReactDOMComponentTree = __webpack_require__(15);
@@ -42325,7 +42351,7 @@ module.exports = {
 
 
 var _prodInvariant = __webpack_require__(12),
-    _assign = __webpack_require__(14);
+    _assign = __webpack_require__(13);
 
 var DOMChildrenOperations = __webpack_require__(85);
 var DOMLazyTree = __webpack_require__(51);
@@ -42490,7 +42516,7 @@ module.exports = ReactDOMTextComponent;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var ReactUpdates = __webpack_require__(35);
 var Transaction = __webpack_require__(67);
@@ -42561,7 +42587,7 @@ module.exports = ReactDefaultBatchingStrategy;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var EventListener = __webpack_require__(137);
 var ExecutionEnvironment = __webpack_require__(19);
@@ -42711,11 +42737,9 @@ module.exports = ReactEventListener;
 "use strict";
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -42800,7 +42824,7 @@ module.exports = ReactInjection;
 
 
 
-var _assign = __webpack_require__(14);
+var _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(121);
 var PooledClass = __webpack_require__(46);
@@ -43268,11 +43292,9 @@ module.exports = getNodeForCharacterOffset;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * 
  */
@@ -43313,11 +43335,9 @@ module.exports = containsNode;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -43343,11 +43363,9 @@ module.exports = isTextNode;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @typechecks
  */
@@ -45208,12 +45226,10 @@ function createProvider() {
 
 "use strict";
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -45258,7 +45274,8 @@ module.exports = function() {
     objectOf: getShim,
     oneOf: getShim,
     oneOfType: getShim,
-    shape: getShim
+    shape: getShim,
+    exact: getShim
   };
 
   ReactPropTypes.checkPropTypes = emptyFunction;
@@ -45688,7 +45705,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 /* harmony default export */ __webpack_exports__["a"] = (freeGlobal);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(14)))
 
 /***/ }),
 /* 278 */
@@ -45886,7 +45903,7 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13), __webpack_require__(285)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(285)(module)))
 
 /***/ }),
 /* 285 */
@@ -47706,7 +47723,7 @@ function match(_ref, callback) {
 "use strict";
 
 var strictUriEncode = __webpack_require__(309);
-var objectAssign = __webpack_require__(14);
+var objectAssign = __webpack_require__(13);
 
 function encoderForArrayFormat(opts) {
 	switch (opts.arrayFormat) {
@@ -48662,6 +48679,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(3);
 
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
 var _reducer = __webpack_require__(320);
 
 var _reducer2 = _interopRequireDefault(_reducer);
@@ -48723,6 +48744,8 @@ var _middleware13 = __webpack_require__(353);
 var _middleware14 = _interopRequireDefault(_middleware13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var reducers = (0, _redux.combineReducers)({
 	core: _reducer2.default,
@@ -48786,41 +48809,13 @@ var initialState = {
 	}
 };
 
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('core')) {
-	var storedCore = JSON.parse(localStorage.getItem('core'));
-	initialState.core = Object.assign(initialState.core, storedCore);
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('ui')) {
-	var storedUi = JSON.parse(localStorage.getItem('ui'));
-	initialState.ui = Object.assign(initialState.ui, storedUi);
-}
-
-// if we've got a stored version of mopidy state, load and merge
-if (localStorage.getItem('mopidy')) {
-	var storedMopidy = JSON.parse(localStorage.getItem('mopidy'));
-	initialState.mopidy = Object.assign(initialState.mopidy, storedMopidy);
-}
-
-// if we've got a stored version of pusher state, load and merge
-if (localStorage.getItem('pusher')) {
-	var storedPusher = JSON.parse(localStorage.getItem('pusher'));
-	initialState.pusher = Object.assign(initialState.pusher, storedPusher);
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('spotify')) {
-	var storedSpotify = JSON.parse(localStorage.getItem('spotify'));
-	initialState.spotify = Object.assign(initialState.spotify, storedSpotify);
-}
-
-// if we've got a stored version of lastfm state, load and merge
-if (localStorage.getItem('lastfm')) {
-	var storedLastfm = JSON.parse(localStorage.getItem('lastfm'));
-	initialState.lastfm = Object.assign(initialState.lastfm, storedLastfm);
-}
+// load all our stored values from LocalStorage
+initialState.core = Object.assign({}, initialState.core, helpers.getStorage('core'));
+initialState.ui = Object.assign({}, initialState.ui, helpers.getStorage('ui'));
+initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage('mopidy'));
+initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
+initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
+initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
 
 console.log('Bootstrapping', initialState);
 
@@ -52793,7 +52788,7 @@ var MopidyMiddleware = function () {
 }();
 
 exports.default = MopidyMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 332 */
@@ -56089,6 +56084,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var helpers = __webpack_require__(2);
+
 var localstorageMiddleware = function () {
 
     /**
@@ -56119,51 +56116,42 @@ var localstorageMiddleware = function () {
                 switch (action.type) {
 
                     case 'PUSHER_CONNECTED':
-                        var pusher = JSON.parse(localStorage.getItem('pusher'));
-                        if (!pusher) pusher = {};
-                        Object.assign(pusher, {
+                        helpers.setStorage('pusher', {
                             connection_id: action.connection_id
                         });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
                         break;
 
                     case 'PUSHER_SET_PORT':
-                        var pusher = JSON.parse(localStorage.getItem('pusher'));
-                        if (!pusher) pusher = {};
-                        Object.assign(pusher, { port: action.port });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
+                        helpers.setStorage('pusher', {
+                            port: action.port
+                        });
                         break;
 
                     case 'PUSHER_USERNAME_CHANGED':
-                        var stored_pusher = JSON.parse(localStorage.getItem('pusher'));
-                        var pusher = Object.assign({}, stored_pusher, { username: action.username });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
+                        helpers.setStorage('pusher', {
+                            username: action.username
+                        });
                         break;
 
                     case 'MOPIDY_SET_CONFIG':
-                        var mopidy = {
+                        helpers.setStorage('mopidy', {
                             host: action.config.host,
                             port: action.config.port
-                        };
-                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                        });
                         break;
 
                     case 'MOPIDY_URISCHEMES_FILTERED':
-                        var mopidy = JSON.parse(localStorage.getItem('mopidy'));
-                        if (!mopidy) mopidy = {};
-                        Object.assign(mopidy, { uri_schemes: action.data });
-                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                        helpers.setStorage('mopidy', {
+                            uri_schemes: action.data
+                        });
                         break;
 
                     case 'SPOTIFY_SET_CONFIG':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, {
+                        helpers.setStorage('spotify', {
                             authentication_provider: action.config.authentication_provider,
                             country: action.config.country,
                             locale: action.config.locale
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_IMPORT_AUTHORIZATION':
@@ -56173,57 +56161,43 @@ var localstorageMiddleware = function () {
                         } else if (action.data) {
                             var authorization = action.data;
                         }
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        spotify = Object.assign({}, spotify ? spotify : {}, {
+                        helpers.setStorage('spotify', {
                             authorization: authorization,
                             access_token: authorization.access_token,
                             refresh_token: authorization.refresh_token,
                             token_expiry: authorization.token_expiry
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        spotify = Object.assign({}, spotify ? spotify : {}, {
+                        helpers.setStorage('spotify', {
                             authorization: false,
                             access_token: false,
                             refresh_token: false,
                             token_expiry: false
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_TOKEN_REFRESHED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, {
+                        helpers.setStorage('spotify', {
                             access_token: action.data.access_token,
                             token_expiry: action.data.token_expiry,
                             provider: action.provider
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_ME_LOADED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, { me: action.data });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
+                        helpers.setStorage('spotify', {
+                            me: action.data
+                        });
                         break;
 
                     case 'CORE_SET':
-                        var core = JSON.parse(localStorage.getItem('core'));
-                        if (!core) core = {};
-                        Object.assign(core, action.data);
-                        localStorage.setItem('core', JSON.stringify(core));
+                        helpers.setStorage('core', action.data);
                         break;
 
                     case 'UI_SET':
-                        var ui = JSON.parse(localStorage.getItem('ui'));
-                        if (!ui) ui = {};
-                        Object.assign(ui, action.data);
-                        localStorage.setItem('ui', JSON.stringify(ui));
+                        helpers.setStorage('ui', action.data);
                         break;
 
                     case 'SUPPRESS_BROADCAST':
@@ -56238,19 +56212,15 @@ var localstorageMiddleware = function () {
                         break;
 
                     case 'LASTFM_AUTHORIZATION_GRANTED':
-                        var lastfm = JSON.parse(localStorage.getItem('lastfm'));
-                        lastfm = Object.assign({}, {
+                        helpers.setStorage('lastfm', {
                             session: action.data.session
                         });
-                        localStorage.setItem('lastfm', JSON.stringify(lastfm));
                         break;
 
                     case 'LASTFM_AUTHORIZATION_REVOKED':
-                        var lastfm = JSON.parse(localStorage.getItem('lastfm'));
-                        lastfm = Object.assign({}, {
+                        helpers.setStorage('lastfm', {
                             session: null
                         });
-                        localStorage.setItem('lastfm', JSON.stringify(lastfm));
                         break;
                 }
             };
@@ -56899,7 +56869,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 // We wrap our Sidebar with the Router, and then to the redux store
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)((0, _reactRouter.withRouter)(Sidebar));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 356 */
@@ -58392,6 +58362,16 @@ var ContextMenu = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'goToAlbum',
+		value: function goToAlbum(e) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album) {
+				return null;
+			} else {
+				this.props.uiActions.hideContextMenu();
+				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album.uri);
+			}
+		}
+	}, {
 		key: 'goToUser',
 		value: function goToUser(e) {
 			if (!this.props.menu.items || this.props.menu.items.length <= 0) {
@@ -58783,6 +58763,22 @@ var ContextMenu = function (_React$Component) {
 				)
 			);
 
+			var go_to_album = _react2.default.createElement(
+				'span',
+				{ className: 'menu-item-wrapper' },
+				_react2.default.createElement(
+					'a',
+					{ className: 'menu-item', onClick: function onClick(e) {
+							return _this3.goToAlbum(e);
+						} },
+					_react2.default.createElement(
+						'span',
+						{ className: 'label' },
+						'Go to album'
+					)
+				)
+			);
+
 			var go_to_user = _react2.default.createElement(
 				'span',
 				{ className: 'menu-item-wrapper' },
@@ -58921,10 +58917,11 @@ var ContextMenu = function (_React$Component) {
 						play_uris,
 						play_uris_next,
 						add_to_queue,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						go_to_artist,
-						copy_uris,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58934,11 +58931,11 @@ var ContextMenu = function (_React$Component) {
 						null,
 						context.source == 'spotify' ? play_artist_top_tracks : null,
 						context.source == 'spotify' ? start_radio : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_recommendations : null,
-						copy_uris,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58947,11 +58944,11 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_user : null,
-						copy_uris,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58960,11 +58957,12 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_user : null,
 						copy_uris,
 						_react2.default.createElement('div', { className: 'divider' }),
-						this.canBeInLibrary() ? toggle_in_library : null,
 						delete_playlist
 					);
 					break;
@@ -58974,13 +58972,14 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						context.items_count == 1 ? play_queue_item : null,
-						context.items_count == 1 ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
-						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris,
+						_react2.default.createElement('div', { className: 'divider' }),
 						remove_from_queue
 					);
 					break;
@@ -58995,11 +58994,12 @@ var ContextMenu = function (_React$Component) {
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
-						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris,
+						_react2.default.createElement('div', { className: 'divider' }),
 						remove_from_playlist
 					);
 					break;
@@ -59014,8 +59014,10 @@ var ContextMenu = function (_React$Component) {
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
+						context.items_count == 1 ? go_to_album : null,
 						context.items_count == 1 ? go_to_track : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris
@@ -59102,7 +59104,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ContextMenu);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24), __webpack_require__(14)))
 
 /***/ }),
 /* 393 */
@@ -62690,7 +62692,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Artist);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 410 */
@@ -63930,7 +63932,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Track);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 414 */
@@ -64557,7 +64559,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Queue);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 417 */
@@ -64709,7 +64711,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(QueueHistory);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 418 */
@@ -65631,7 +65633,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Settings);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 419 */
@@ -66349,7 +66351,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Debug);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 421 */
@@ -66920,7 +66922,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapDispatchToProps)(SearchForm);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 423 */
@@ -67774,7 +67776,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverFeatured);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 426 */
@@ -67968,7 +67970,7 @@ var CategoryGrid = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = CategoryGrid;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 428 */
@@ -68382,7 +68384,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverNewReleases);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 430 */
@@ -68720,7 +68722,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryArtists);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 431 */
@@ -69106,7 +69108,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryAlbums);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 432 */
@@ -69631,7 +69633,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryPlaylists);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 434 */
@@ -69963,7 +69965,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryBrowse);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 435 */

@@ -4315,6 +4315,9 @@ aside {
 .list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
   width: 15%; }
 
+.list.queue-track-list .list-item .liner {
+  padding-right: 60px; }
+
 .list.queue-track-list .col.name, .list.queue-track-list .col.artists, .list.queue-track-list .col.album {
   width: 25% !important; }
 
