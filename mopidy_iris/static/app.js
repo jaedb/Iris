@@ -1117,7 +1117,6 @@ function setSelectedTracks() {
 function showContextMenu(data) {
     data.position_x = data.e.clientX;
     data.position_y = data.e.clientY;
-    console.log(data);
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -33389,17 +33388,18 @@ var Track = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					{ className: className },
+					{
+						className: className,
+						onMouseEnter: function onMouseEnter(e) {
+							return _this2.setState({ hover: true });
+						},
+						onMouseLeave: function onMouseLeave(e) {
+							return _this2.setState({ hover: false });
+						} },
 					track_actions,
 					_react2.default.createElement(
 						'div',
-						{ className: 'liner',
-							onMouseEnter: function onMouseEnter(e) {
-								return _this2.setState({ hover: true });
-							},
-							onMouseLeave: function onMouseLeave(e) {
-								return _this2.setState({ hover: false });
-							}
+						{ className: 'liner'
 							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
 							, onMouseDown: function onMouseDown(e) {
 								return _this2.handleMouseDown(e);
