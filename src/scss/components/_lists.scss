@@ -175,6 +175,11 @@
 	}
 
 	&.queue-track-list {
+		.list-item {
+			.liner {
+				padding-right: 60px;
+			}
+		}
 		.col {
 			&.name,
 			&.artists,

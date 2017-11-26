@@ -280,6 +280,81 @@ var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
 	return 'ontouchstart' in document.documentElement;
 };
 
+/**
+ * Storage handler
+ * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
+ **/
+
+var storage = function () {
+	var uid = new Date();
+	var storage;
+	var result;
+	try {
+		(storage = window.localStorage).setItem(uid, uid);
+		result = storage.getItem(uid) == uid;
+		storage.removeItem(uid);
+		return result && storage;
+	} catch (exception) {}
+}();
+
+/**
+ * Get a storage value
+ *
+ * @param key = string
+ * @param default_value = mixed (optional, if localStorage key doesn't exist, return this)
+ **/
+var getStorage = exports.getStorage = function getStorage(key) {
+	var default_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	if (storage) {
+		var value = storage.getItem(key);
+		if (value) {
+			return JSON.parse(value);
+		} else {
+			return default_value;
+		}
+	} else {
+		console.warn("localStorage not available. Using default value for '" + key + "'.");
+		return default_value;
+	}
+};
+
+/**
+ * Set a storage value
+ *
+ * @param key = string
+ * @param value = object
+ * @param replace = boolean (optional, completely replace our local value rather than merging it)
+ **/
+var setStorage = exports.setStorage = function setStorage(key, value) {
+	var replace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+	if (storage) {
+		var stored_value = storage.getItem(key);
+
+		// We have nothing to merge with, or we want to completely replace previous value
+		if (!stored_value || replace) {
+			var new_value = value;
+
+			// Merge new value with existing
+		} else {
+			var new_value = Object.assign({}, JSON.parse(stored_value), value);
+		}
+		storage.setItem(key, JSON.stringify(new_value));
+		return;
+	} else {
+		console.warn("localStorage not available. '" + key + "'' will not perist when you close your browser.");
+		return;
+	}
+};
+
+/**
+ * Image sizing
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param images = array
+ * @return obj
+ **/
 var sizedImages = exports.sizedImages = function sizedImages(images) {
 
 	var sizes = {
@@ -849,7 +924,7 @@ var setWindowTitle = exports.setWindowTitle = function setWindowTitle() {
 	var title = 'No track playing';
 
 	if (track) {
-		var icon = '\u25A0 ';
+		var icon = "\u25A0 ";
 		var artist_string = '';
 
 		if (track.artists) {
@@ -862,7 +937,7 @@ var setWindowTitle = exports.setWindowTitle = function setWindowTitle() {
 		}
 
 		if (play_state && play_state == 'playing') {
-			icon = '\u25B6 ';
+			icon = "\u25B6 ";
 		}
 
 		title = icon + ' ' + track.name + ' - ' + artist_string;
@@ -1042,7 +1117,6 @@ function setSelectedTracks() {
 function showContextMenu(data) {
     data.position_x = data.e.clientX;
     data.position_y = data.e.clientY;
-    console.log(data);
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -33314,17 +33388,18 @@ var Track = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					{ className: className },
+					{
+						className: className,
+						onMouseEnter: function onMouseEnter(e) {
+							return _this2.setState({ hover: true });
+						},
+						onMouseLeave: function onMouseLeave(e) {
+							return _this2.setState({ hover: false });
+						} },
 					track_actions,
 					_react2.default.createElement(
 						'div',
-						{ className: 'liner',
-							onMouseEnter: function onMouseEnter(e) {
-								return _this2.setState({ hover: true });
-							},
-							onMouseLeave: function onMouseLeave(e) {
-								return _this2.setState({ hover: false });
-							}
+						{ className: 'liner'
 							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
 							, onMouseDown: function onMouseDown(e) {
 								return _this2.handleMouseDown(e);
@@ -48662,6 +48737,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(3);
 
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
 var _reducer = __webpack_require__(320);
 
 var _reducer2 = _interopRequireDefault(_reducer);
@@ -48723,6 +48802,8 @@ var _middleware13 = __webpack_require__(353);
 var _middleware14 = _interopRequireDefault(_middleware13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var reducers = (0, _redux.combineReducers)({
 	core: _reducer2.default,
@@ -48786,41 +48867,13 @@ var initialState = {
 	}
 };
 
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('core')) {
-	var storedCore = JSON.parse(localStorage.getItem('core'));
-	initialState.core = Object.assign(initialState.core, storedCore);
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('ui')) {
-	var storedUi = JSON.parse(localStorage.getItem('ui'));
-	initialState.ui = Object.assign(initialState.ui, storedUi);
-}
-
-// if we've got a stored version of mopidy state, load and merge
-if (localStorage.getItem('mopidy')) {
-	var storedMopidy = JSON.parse(localStorage.getItem('mopidy'));
-	initialState.mopidy = Object.assign(initialState.mopidy, storedMopidy);
-}
-
-// if we've got a stored version of pusher state, load and merge
-if (localStorage.getItem('pusher')) {
-	var storedPusher = JSON.parse(localStorage.getItem('pusher'));
-	initialState.pusher = Object.assign(initialState.pusher, storedPusher);
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('spotify')) {
-	var storedSpotify = JSON.parse(localStorage.getItem('spotify'));
-	initialState.spotify = Object.assign(initialState.spotify, storedSpotify);
-}
-
-// if we've got a stored version of lastfm state, load and merge
-if (localStorage.getItem('lastfm')) {
-	var storedLastfm = JSON.parse(localStorage.getItem('lastfm'));
-	initialState.lastfm = Object.assign(initialState.lastfm, storedLastfm);
-}
+// load all our stored values from LocalStorage
+initialState.core = Object.assign({}, initialState.core, helpers.getStorage('core'));
+initialState.ui = Object.assign({}, initialState.ui, helpers.getStorage('ui'));
+initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage('mopidy'));
+initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
+initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
+initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
 
 console.log('Bootstrapping', initialState);
 
@@ -56089,6 +56142,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var helpers = __webpack_require__(2);
+
 var localstorageMiddleware = function () {
 
     /**
@@ -56119,51 +56174,42 @@ var localstorageMiddleware = function () {
                 switch (action.type) {
 
                     case 'PUSHER_CONNECTED':
-                        var pusher = JSON.parse(localStorage.getItem('pusher'));
-                        if (!pusher) pusher = {};
-                        Object.assign(pusher, {
+                        helpers.setStorage('pusher', {
                             connection_id: action.connection_id
                         });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
                         break;
 
                     case 'PUSHER_SET_PORT':
-                        var pusher = JSON.parse(localStorage.getItem('pusher'));
-                        if (!pusher) pusher = {};
-                        Object.assign(pusher, { port: action.port });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
+                        helpers.setStorage('pusher', {
+                            port: action.port
+                        });
                         break;
 
                     case 'PUSHER_USERNAME_CHANGED':
-                        var stored_pusher = JSON.parse(localStorage.getItem('pusher'));
-                        var pusher = Object.assign({}, stored_pusher, { username: action.username });
-                        localStorage.setItem('pusher', JSON.stringify(pusher));
+                        helpers.setStorage('pusher', {
+                            username: action.username
+                        });
                         break;
 
                     case 'MOPIDY_SET_CONFIG':
-                        var mopidy = {
+                        helpers.setStorage('mopidy', {
                             host: action.config.host,
                             port: action.config.port
-                        };
-                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                        });
                         break;
 
                     case 'MOPIDY_URISCHEMES_FILTERED':
-                        var mopidy = JSON.parse(localStorage.getItem('mopidy'));
-                        if (!mopidy) mopidy = {};
-                        Object.assign(mopidy, { uri_schemes: action.data });
-                        localStorage.setItem('mopidy', JSON.stringify(mopidy));
+                        helpers.setStorage('mopidy', {
+                            uri_schemes: action.data
+                        });
                         break;
 
                     case 'SPOTIFY_SET_CONFIG':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, {
+                        helpers.setStorage('spotify', {
                             authentication_provider: action.config.authentication_provider,
                             country: action.config.country,
                             locale: action.config.locale
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_IMPORT_AUTHORIZATION':
@@ -56173,84 +56219,70 @@ var localstorageMiddleware = function () {
                         } else if (action.data) {
                             var authorization = action.data;
                         }
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        spotify = Object.assign({}, spotify ? spotify : {}, {
+                        helpers.setStorage('spotify', {
                             authorization: authorization,
                             access_token: authorization.access_token,
                             refresh_token: authorization.refresh_token,
                             token_expiry: authorization.token_expiry
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        spotify = Object.assign({}, spotify ? spotify : {}, {
+                        helpers.setStorage('spotify', {
                             authorization: false,
                             access_token: false,
                             refresh_token: false,
                             token_expiry: false
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_TOKEN_REFRESHED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, {
+                        helpers.setStorage('spotify', {
                             access_token: action.data.access_token,
                             token_expiry: action.data.token_expiry,
                             provider: action.provider
                         });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
                         break;
 
                     case 'SPOTIFY_ME_LOADED':
-                        var spotify = JSON.parse(localStorage.getItem('spotify'));
-                        if (!spotify) spotify = {};
-                        Object.assign(spotify, { me: action.data });
-                        localStorage.setItem('spotify', JSON.stringify(spotify));
+                        helpers.setStorage('spotify', {
+                            me: action.data
+                        });
                         break;
 
                     case 'CORE_SET':
-                        var core = JSON.parse(localStorage.getItem('core'));
-                        if (!core) core = {};
-                        Object.assign(core, action.data);
-                        localStorage.setItem('core', JSON.stringify(core));
+                        helpers.setStorage('core', action.data);
                         break;
 
                     case 'UI_SET':
-                        var ui = JSON.parse(localStorage.getItem('ui'));
-                        if (!ui) ui = {};
-                        Object.assign(ui, action.data);
-                        localStorage.setItem('ui', JSON.stringify(ui));
+                        helpers.setStorage('ui', action.data);
                         break;
 
                     case 'SUPPRESS_BROADCAST':
-                        var ui = JSON.parse(localStorage.getItem('ui'));
-                        if (!ui) ui = {};
+                        var ui = helpers.getStorage('ui');
+                        if (ui.suppressed_broadcasts !== undefined) {
+                            var suppressed_broadcasts = ui.suppressed_broadcasts;
+                        } else {
+                            var suppressed_broadcasts = [];
+                        }
 
-                        var suppressed_broadcasts = typeof ui.suppressed_broadcasts !== 'undefined' ? ui.suppressed_broadcasts : [];
                         suppressed_broadcasts.push(action.key);
 
-                        Object.assign(ui, { suppressed_broadcasts: suppressed_broadcasts });
-                        localStorage.setItem('ui', JSON.stringify(ui));
+                        helpers.setStorage('ui', {
+                            suppressed_broadcasts: suppressed_broadcasts
+                        });
                         break;
 
                     case 'LASTFM_AUTHORIZATION_GRANTED':
-                        var lastfm = JSON.parse(localStorage.getItem('lastfm'));
-                        lastfm = Object.assign({}, {
+                        helpers.setStorage('lastfm', {
                             session: action.data.session
                         });
-                        localStorage.setItem('lastfm', JSON.stringify(lastfm));
                         break;
 
                     case 'LASTFM_AUTHORIZATION_REVOKED':
-                        var lastfm = JSON.parse(localStorage.getItem('lastfm'));
-                        lastfm = Object.assign({}, {
+                        helpers.setStorage('lastfm', {
                             session: null
                         });
-                        localStorage.setItem('lastfm', JSON.stringify(lastfm));
                         break;
                 }
             };
@@ -58392,6 +58424,16 @@ var ContextMenu = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'goToAlbum',
+		value: function goToAlbum(e) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album) {
+				return null;
+			} else {
+				this.props.uiActions.hideContextMenu();
+				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album.uri);
+			}
+		}
+	}, {
 		key: 'goToUser',
 		value: function goToUser(e) {
 			if (!this.props.menu.items || this.props.menu.items.length <= 0) {
@@ -58783,6 +58825,22 @@ var ContextMenu = function (_React$Component) {
 				)
 			);
 
+			var go_to_album = _react2.default.createElement(
+				'span',
+				{ className: 'menu-item-wrapper' },
+				_react2.default.createElement(
+					'a',
+					{ className: 'menu-item', onClick: function onClick(e) {
+							return _this3.goToAlbum(e);
+						} },
+					_react2.default.createElement(
+						'span',
+						{ className: 'label' },
+						'Go to album'
+					)
+				)
+			);
+
 			var go_to_user = _react2.default.createElement(
 				'span',
 				{ className: 'menu-item-wrapper' },
@@ -58921,10 +58979,11 @@ var ContextMenu = function (_React$Component) {
 						play_uris,
 						play_uris_next,
 						add_to_queue,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						go_to_artist,
-						copy_uris,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58934,11 +58993,11 @@ var ContextMenu = function (_React$Component) {
 						null,
 						context.source == 'spotify' ? play_artist_top_tracks : null,
 						context.source == 'spotify' ? start_radio : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_recommendations : null,
-						copy_uris,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58947,11 +59006,11 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_user : null,
-						copy_uris,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
-						this.canBeInLibrary() ? toggle_in_library : null
+						copy_uris
 					);
 					break;
 
@@ -58960,11 +59019,12 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' ? go_to_user : null,
 						copy_uris,
 						_react2.default.createElement('div', { className: 'divider' }),
-						this.canBeInLibrary() ? toggle_in_library : null,
 						delete_playlist
 					);
 					break;
@@ -58974,13 +59034,14 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						context.items_count == 1 ? play_queue_item : null,
-						context.items_count == 1 ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
-						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris,
+						_react2.default.createElement('div', { className: 'divider' }),
 						remove_from_queue
 					);
 					break;
@@ -58995,11 +59056,12 @@ var ContextMenu = function (_React$Component) {
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
-						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris,
+						_react2.default.createElement('div', { className: 'divider' }),
 						remove_from_playlist
 					);
 					break;
@@ -59014,8 +59076,10 @@ var ContextMenu = function (_React$Component) {
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						add_to_playlist,
-						context.items_count == 1 ? toggle_loved : null,
+						toggle_loved,
+						_react2.default.createElement('div', { className: 'divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
+						context.items_count == 1 ? go_to_album : null,
 						context.items_count == 1 ? go_to_track : null,
 						_react2.default.createElement('div', { className: 'divider' }),
 						copy_uris

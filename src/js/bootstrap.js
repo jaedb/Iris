@@ -1,6 +1,8 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
+import * as helpers from './helpers'
+
 import core from './services/core/reducer'
 import ui from './services/ui/reducer'
 import pusher from './services/pusher/reducer'
@@ -80,41 +82,13 @@ var initialState = {
 	}
 };
 
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('core')){
-	var storedCore = JSON.parse(localStorage.getItem('core') );
-	initialState.core = Object.assign(initialState.core, storedCore );
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('ui')){
-	var storedUi = JSON.parse(localStorage.getItem('ui') );
-	initialState.ui = Object.assign(initialState.ui, storedUi );
-}
-
-// if we've got a stored version of mopidy state, load and merge
-if (localStorage.getItem('mopidy')){
-	var storedMopidy = JSON.parse(localStorage.getItem('mopidy') );
-	initialState.mopidy = Object.assign(initialState.mopidy, storedMopidy );
-}
-
-// if we've got a stored version of pusher state, load and merge
-if (localStorage.getItem('pusher')){
-	var storedPusher = JSON.parse(localStorage.getItem('pusher') );
-	initialState.pusher = Object.assign(initialState.pusher, storedPusher );
-}
-
-// if we've got a stored version of spotify state, load and merge
-if (localStorage.getItem('spotify')){
-	var storedSpotify = JSON.parse(localStorage.getItem('spotify') );
-	initialState.spotify = Object.assign(initialState.spotify, storedSpotify );
-}
-
-// if we've got a stored version of lastfm state, load and merge
-if (localStorage.getItem('lastfm')){
-	var storedLastfm = JSON.parse(localStorage.getItem('lastfm') );
-	initialState.lastfm = Object.assign(initialState.lastfm, storedLastfm );
-}
+// load all our stored values from LocalStorage
+initialState.core = Object.assign({}, initialState.core, helpers.getStorage('core'));
+initialState.ui = Object.assign({}, initialState.ui, helpers.getStorage('ui'));
+initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage('mopidy'));
+initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
+initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
+initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
 
 console.log('Bootstrapping', initialState)
 

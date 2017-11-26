@@ -4,6 +4,84 @@ export let isTouchDevice = function(){
 	return 'ontouchstart' in document.documentElement
 }
 
+
+/**
+ * Storage handler
+ * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
+ **/
+
+var storage = (function() {
+	var uid = new Date;
+	var storage;
+	var result;
+	try {
+		(storage = window.localStorage).setItem(uid, uid);
+		result = storage.getItem(uid) == uid;
+		storage.removeItem(uid);
+		return result && storage;
+	} catch (exception) {}
+}());
+
+/**
+ * Get a storage value
+ *
+ * @param key = string
+ * @param default_value = mixed (optional, if localStorage key doesn't exist, return this)
+ **/
+export let getStorage = function(key, default_value = {}){
+	if (storage){
+		var value = storage.getItem(key);
+		if (value){
+			return JSON.parse(value);
+		} else {
+			return default_value;
+		}
+
+	} else {
+		console.warn("localStorage not available. Using default value for '"+key+"'.");
+		return default_value;
+	}
+}
+
+/**
+ * Set a storage value
+ *
+ * @param key = string
+ * @param value = object
+ * @param replace = boolean (optional, completely replace our local value rather than merging it)
+ **/
+export let setStorage = function(key, value, replace = false){
+	if (storage){
+		var stored_value = storage.getItem(key);
+
+		// We have nothing to merge with, or we want to completely replace previous value
+		if (!stored_value || replace){
+			var new_value = value;
+
+		// Merge new value with existing
+		} else {
+			var new_value = Object.assign(
+				{},
+				JSON.parse(stored_value),
+				value
+			);
+		}
+		storage.setItem(key, JSON.stringify(new_value));
+		return;
+	} else {
+		console.warn("localStorage not available. '"+key+"'' will not perist when you close your browser.");
+		return;
+	}
+}
+
+
+/**
+ * Image sizing
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param images = array
+ * @return obj
+ **/
 export let sizedImages = function(images){
 
 	var sizes = {

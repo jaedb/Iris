@@ -14,7 +14,6 @@ export function setSelectedTracks(keys = []){
 export function showContextMenu(data){
     data.position_x = data.e.clientX;
     data.position_y = data.e.clientY;
-    console.log(data);
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
