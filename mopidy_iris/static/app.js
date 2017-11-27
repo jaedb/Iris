@@ -1117,7 +1117,6 @@ function setSelectedTracks() {
 function showContextMenu(data) {
     data.position_x = data.e.clientX;
     data.position_y = data.e.clientY;
-    console.log(data);
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -33389,17 +33388,18 @@ var Track = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					{ className: className },
+					{
+						className: className,
+						onMouseEnter: function onMouseEnter(e) {
+							return _this2.setState({ hover: true });
+						},
+						onMouseLeave: function onMouseLeave(e) {
+							return _this2.setState({ hover: false });
+						} },
 					track_actions,
 					_react2.default.createElement(
 						'div',
-						{ className: 'liner',
-							onMouseEnter: function onMouseEnter(e) {
-								return _this2.setState({ hover: true });
-							},
-							onMouseLeave: function onMouseLeave(e) {
-								return _this2.setState({ hover: false });
-							}
+						{ className: 'liner'
 							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
 							, onMouseDown: function onMouseDown(e) {
 								return _this2.handleMouseDown(e);
@@ -48838,6 +48838,7 @@ var initialState = {
 		connected: false,
 		host: window.location.hostname,
 		port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
+		ssl: window.location.protocol === 'https:' ? true : false,
 		mute: false,
 		volume: 0,
 		progress: 0,
@@ -49461,9 +49462,9 @@ function reducer() {
 
         case 'MOPIDY_SET_CONFIG':
             return Object.assign({}, mopidy, {
-                host: action.host,
-                port: action.port,
-                ssl: action.ssl
+                host: action.config.host,
+                port: action.config.port,
+                ssl: action.config.ssl
             });
 
         case 'MOPIDY_CHANGE_TRACK':
@@ -51471,7 +51472,7 @@ var MopidyMiddleware = function () {
                         var state = store.getState();
 
                         socket = new _mopidy2.default({
-                            webSocketUrl: 'ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
+                            webSocketUrl: 'ws' + (state.mopidy.ssl ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
                             callingConvention: 'by-position-or-by-name'
                         });
 
@@ -56194,7 +56195,8 @@ var localstorageMiddleware = function () {
                     case 'MOPIDY_SET_CONFIG':
                         helpers.setStorage('mopidy', {
                             host: action.config.host,
-                            port: action.config.port
+                            port: action.config.port,
+                            ssl: action.config.ssl
                         });
                         break;
 
@@ -64893,6 +64895,7 @@ var Settings = function (_React$Component) {
 			locale: _this.props.core.locale,
 			mopidy_host: _this.props.mopidy.host,
 			mopidy_port: _this.props.mopidy.port,
+			mopidy_ssl: _this.props.mopidy.ssl,
 			pusher_username: _this.props.pusher.username,
 			input_in_focus: null
 		};
@@ -64940,11 +64943,17 @@ var Settings = function (_React$Component) {
 			return false;
 		}
 	}, {
-		key: 'setMopidyConfig',
-		value: function setMopidyConfig(e) {
+		key: 'setConfig',
+		value: function setConfig(e) {
 			this.setState({ input_in_focus: null });
 			e.preventDefault();
-			this.props.mopidyActions.setConfig({ host: this.state.mopidy_host, port: this.state.mopidy_port });
+
+			this.props.mopidyActions.setConfig({
+				host: this.state.mopidy_host,
+				port: this.state.mopidy_port,
+				ssl: this.state.mopidy_ssl
+			});
+
 			window.location.reload(true);
 			return false;
 		}
@@ -64970,7 +64979,9 @@ var Settings = function (_React$Component) {
 	}, {
 		key: 'renderApplyButton',
 		value: function renderApplyButton() {
-			if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) return null;
+			if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port && this.props.mopidy.ssl == this.state.mopidy_ssl) {
+				return null;
+			}
 
 			return _react2.default.createElement(
 				'div',
@@ -65227,7 +65238,7 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'form',
 						{ onSubmit: function onSubmit(e) {
-								return _this3.setMopidyConfig(e);
+								return _this3.setConfig(e);
 							} },
 						_react2.default.createElement(
 							'div',
@@ -65277,6 +65288,40 @@ var Settings = function (_React$Component) {
 										return _this3.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_port })
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field checkbox' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'Encryption'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement(
+									'label',
+									null,
+									_react2.default.createElement('input', {
+										type: 'checkbox',
+										name: 'ssl',
+										checked: this.state.mopidy_ssl,
+										onChange: function onChange(e) {
+											return _this3.setState({ mopidy_ssl: !_this3.state.mopidy_ssl });
+										} }),
+									_react2.default.createElement(
+										'span',
+										{ className: 'label has-tooltip' },
+										'Enable SSL',
+										_react2.default.createElement(
+											'span',
+											{ className: 'tooltip' },
+											'Requires SSL proxy'
+										)
+									)
+								)
 							)
 						),
 						this.renderApplyButton()

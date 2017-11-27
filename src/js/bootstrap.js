@@ -53,6 +53,7 @@ var initialState = {
 		connected: false,
 		host: window.location.hostname,
 		port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+		ssl: (window.location.protocol === 'https:' ? true : false),
 		mute: false,
 		volume: 0,
 		progress: 0,

@@ -22,6 +22,9 @@
 	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
 	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
 
+	<!-- Raven Sentry -->
+	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
 
@@ -34,7 +37,7 @@
 <script type="text/javascript">
 
 	// Release details
-	// These are automatically injected by build.sh
+	// These are automatically injected to built HTML
 	var build = "BUILD_HERE";
 	var version = "VERSION_HERE";
 
@@ -55,7 +58,7 @@
 		var test_mode = false;
 	}
 
-	// Test mode, use built (but not minified) code
+	// Test mode, use un-minified code
     if (test_mode){
 	    js.src = '/iris/app.js?v='+build;
 	    css.href = '/iris/app.css?v='+build;

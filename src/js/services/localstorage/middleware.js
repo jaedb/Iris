@@ -63,7 +63,8 @@ const localstorageMiddleware = (function(){
                     'mopidy', 
                     {
                         host: action.config.host,
-                        port: action.config.port
+                        port: action.config.port,
+                        ssl: action.config.ssl
                     }
                 );
                 break;

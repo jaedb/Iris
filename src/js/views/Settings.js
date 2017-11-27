@@ -33,6 +33,7 @@ class Settings extends React.Component {
 			locale: this.props.core.locale,
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
+			mopidy_ssl: this.props.mopidy.ssl,
 			pusher_username: this.props.pusher.username,
 			input_in_focus: null
 		}
@@ -75,10 +76,16 @@ class Settings extends React.Component {
 		return false;
 	}
 
-	setMopidyConfig(e){
-		this.setState({input_in_focus: null})
+	setConfig(e){
+		this.setState({input_in_focus: null});
 		e.preventDefault();
-		this.props.mopidyActions.setConfig({ host: this.state.mopidy_host, port: this.state.mopidy_port });
+		
+		this.props.mopidyActions.setConfig({
+			host: this.state.mopidy_host,
+			port: this.state.mopidy_port,
+			ssl: this.state.mopidy_ssl
+		});
+
 		window.location.reload(true);
 		return false;
 	}
@@ -100,7 +107,11 @@ class Settings extends React.Component {
 	}
 
 	renderApplyButton(){
-		if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) return null
+		if (this.props.mopidy.host == this.state.mopidy_host && 
+			this.props.mopidy.port == this.state.mopidy_port && 
+			this.props.mopidy.ssl == this.state.mopidy_ssl){
+				return null;
+		}
 
 		return (
 			<div className="field">
@@ -280,7 +291,7 @@ class Settings extends React.Component {
 						</div>
 					</div>
 
-					<form onSubmit={(e) => this.setMopidyConfig(e)}>
+					<form onSubmit={(e) => this.setConfig(e)}>
 						<div className="field">
 							<div className="name">Host</div>
 							<div className="input">
@@ -301,6 +312,22 @@ class Settings extends React.Component {
 									onFocus={e => this.setState({input_in_focus: 'mopidy_port'})} 
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_port } />
+							</div>
+						</div>
+						<div className="field checkbox">
+							<div className="name">Encryption</div>
+							<div className="input">
+								<label>
+									<input 
+										type="checkbox"
+										name="ssl"
+										checked={this.state.mopidy_ssl}
+										onChange={e => this.setState({mopidy_ssl: !this.state.mopidy_ssl})} />
+									<span className="label has-tooltip">
+										Enable SSL
+										<span className="tooltip">Requires SSL proxy</span>
+									</span>
+								</label>
 							</div>
 						</div>
 						{this.renderApplyButton()}

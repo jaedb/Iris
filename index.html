@@ -10,17 +10,17 @@
 	<meta name="theme-color" content="#222222" />
 	<meta name="viewport" content="width=device-width">
 
-	<link rel="shortcut icon" type="image/ico" href="/iris/assets/favicon.ico" />
-	<link rel="shortcut icon" type="image/x-icon" href="/iris/assets/favicon.ico" />
-	<link rel="shortcut-icon" href="/iris/assets/favicon.ico" />
+	<link rel="shortcut icon" type="image/ico" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/favicon.ico" />
+	<link rel="shortcut-icon" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/favicon.ico" />
 
 	<!-- Chrome app -->
-	<link rel="manifest" href="/iris/assets/manifest.json">
+	<link rel="manifest" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/manifest.json">
 
 	<!-- Apple app -->
-	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png">
-	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
-	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
+	<link rel="apple-touch-startup-image" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/logo-full-512.png">
+	<link rel="apple-touch-icon" sizes="192x192" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/logo-app-192.png">
+	<link rel="apple-touch-icon" sizes="512x512" href="https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/assets/logo-app-512.png">
 
 	<!-- Raven Sentry -->
 	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
@@ -38,8 +38,8 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1511753926";
-	var version = "3.8.6";
+	var build = "1511724955";
+	var version = "3.8.5";
 
 	// Construct the script tag
     var js = document.createElement("script");
@@ -60,13 +60,13 @@
 
 	// Test mode, use un-minified code
     if (test_mode){
-	    js.src = '/iris/app.js?v='+build;
-	    css.href = '/iris/app.css?v='+build;
+	    js.src = 'https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/app.js?v='+build;
+	    css.href = 'https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/app.css?v='+build;
 
     // Production-grade, minified app
     } else {
-	    js.src = '/iris/app.min.js?v='+build;
-	    css.href = '/iris/app.min.css?v='+build;
+	    js.src = 'https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/app.min.js?v='+build;
+	    css.href = 'https://cdn.rawgit.com/jaedb/Iris/master/mopidy_iris/static/app.min.css?v='+build;
 
 		// Initiate error tracking. This helps catch errors early so 
 		// patches can accurately and quickly fix issues.
