@@ -15,6 +15,7 @@ import LastfmLoveButton from '../components/LastfmLoveButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import URILink from '../components/URILink'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -212,7 +213,9 @@ class Track extends React.Component{
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={track.album.images} />
+					<URILink type="album" uri={track.album.uri}>
+						<Thumbnail size="large" canZoom images={track.images} />
+					</URILink>
 				</div>
 
 				<div className="title">
