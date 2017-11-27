@@ -259,7 +259,7 @@ class Settings extends React.Component {
 
 				<div className="intro">
 					<div className="liner">
-						<Parallax image="/iris/assets/backgrounds/settings.jpg" />
+						<Parallax image="assets/backgrounds/settings.jpg" />
 					</div>
 				</div>
 

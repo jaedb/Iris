@@ -239,7 +239,7 @@ class Discover extends React.Component{
 			<div className="view discover-view">
 				<div className="intro">
 
-					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
+					<Parallax image="assets/backgrounds/discover.jpg" />
 
 					<div className="liner">
 						<h1>Explore new music</h1>
