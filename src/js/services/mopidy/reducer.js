@@ -16,9 +16,9 @@ export default function reducer(mopidy = {}, action){
 
         case 'MOPIDY_SET_CONFIG':
             return Object.assign({}, mopidy, {
-                host: action.host, 
-                port: action.port,
-                ssl: action.ssl
+                host: action.config.host, 
+                port: action.config.port,
+                ssl: action.config.ssl
             });
 
         case 'MOPIDY_CHANGE_TRACK':
