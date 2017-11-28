@@ -66,8 +66,11 @@ class App extends React.Component{
 
 		// Check for url-parsed configuration values
 		var url_vars = this.props.location.query;
-		if (url_vars !== undefined){
-			this.props.mopidyActions.setConfig(url_vars);
+		if (url_vars && url_vars.host && url_vars.port){
+			this.props.mopidyActions.setConfig({
+				host: url_vars.host,
+				port: url_vars.port
+			});
 			hashHistory.push(global.baseURL);
 		}
 	}

@@ -67,15 +67,6 @@
     } else {
 	    js.src = '/iris/app.min.js?v='+build;
 	    css.href = '/iris/app.min.css?v='+build;
-
-		// Initiate error tracking. This helps catch errors early so 
-		// patches can accurately and quickly fix issues.
-		Raven.config(
-			'https://023e3bf7721b48f29948545fc36a4621@sentry.io/219026',
-			{
-				release: version
-			}
-		).install();
     }
 
 	// And finally inject our CSS/JS tags
