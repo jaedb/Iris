@@ -118,7 +118,6 @@ class Queue extends React.Component{
 							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
 						}
 					);
-					tracks[i] = track;
 				}
 
 				// Siphon off this track if it's a full representation of our current track (by tlid)
