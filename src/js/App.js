@@ -63,6 +63,13 @@ class App extends React.Component{
 
 		// Check our slim_mode
 		this.handleWindowResize(null);
+
+		// Check for url-parsed configuration values
+		var url_vars = this.props.location.query;
+		if (url_vars !== undefined){
+			this.props.mopidyActions.setConfig(url_vars);
+			hashHistory.push(global.baseURL);
+		}
 	}
 
 	shouldTriggerShortcut(e){
