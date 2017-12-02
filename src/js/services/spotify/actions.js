@@ -58,12 +58,17 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                                 resolve(response)
                             },
                             (xhr, status, error) => {
-                                dispatch(uiActions.stopLoading(loader_key))
+                                dispatch(uiActions.stopLoading(loader_key));
+
+                                // TODO: Rate limiting
+                                if (xhr.status == 429){
+                                    alert("You hit the Spotify API rate limiter");
+                                }
 
                                 // TODO: Instead of allowing request to fail before renewing the token, once refreshed
                                 // we should retry the original request(s)
-                                if (xhr.responseJSON.error.message == 'The access token expired'){
-                                    dispatch(refreshToken(dispatch, getState))
+                                if (xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message == 'The access token expired'){
+                                    dispatch(refreshToken(dispatch, getState));
                                 }
 
                                 reject({

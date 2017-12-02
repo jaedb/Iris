@@ -30,6 +30,8 @@ const CoreMiddleware = (function(){
                     if (xhr_response.error && xhr_response.error.message){
                         var description = xhr_response.error.message;
                     }
+                } else if (action.data.xhr){
+                    var description = action.data.xhr.status+' '+action.data.xhr.statusText;
                 } else {
                     var description = null;
                 }
