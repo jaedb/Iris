@@ -35,7 +35,8 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                         cached: true,
                         timeout: 30000,
                         headers: {
-                            Authorization: 'Bearer '+ response
+                            Authorization: 'Bearer '+ response,
+                            Accept: 'application/json'
                         }
                     }
 
@@ -313,6 +314,7 @@ export function getFeaturedPlaylists(){
         dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
         var date = new Date();
+        date.setHours(date.getHours() - 1);
         var year = date.getFullYear();
         var month = date.getMonth();
         if (month < 10 ) month = '0'+month;
@@ -327,7 +329,7 @@ export function getFeaturedPlaylists(){
 
         var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().core.country+'&limit=50&locale='+getState().core.locale )
+        sendRequest(dispatch, getState, 'browse/featured-playlists?country='+getState().core.country+'&limit=50&locale='+getState().core.locale+'&timestamp='+timestamp)
             .then(
                 response => {
                     var playlists = []
@@ -944,16 +946,20 @@ export function getRecommendations(uris = [], limit = 20){
                             }
                         }
                     }
+                    
+                    if (albums.length > 0){
+                        dispatch({
+                            type: 'ALBUMS_LOADED',
+                            albums: albums
+                        });
+                    }
 
-                    dispatch({
-                        type: 'ALBUMS_LOADED',
-                        albums: albums
-                    });
-
-                    dispatch({
-                        type: 'TRACKS_LOADED',
-                        tracks: tracks
-                    });
+                    if (tracks.length > 0){
+                        dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks
+                        });
+                    }
 
                     dispatch({
                         type: 'SPOTIFY_RECOMMENDATIONS_LOADED',

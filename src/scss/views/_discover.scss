@@ -15,6 +15,11 @@
 			z-index: 1;
 		}
 
+		h1 {
+			font-size: 3rem;
+			line-height: 3rem;
+		}
+
 		.liner {
 			z-index: 2;
 			position: relative;
@@ -95,6 +100,17 @@
 	section {
 		.grid {
 			padding-bottom: 20px;
+		}
+	}
+
+	@include responsive($bp_medium){
+		
+		.intro {
+			padding: 40px 20px;
+		}
+
+		.seeds {
+			padding-top: 20px;
 		}
 	}
 }
