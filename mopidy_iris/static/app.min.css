@@ -5126,7 +5126,8 @@ main header {
     .autocomplete-field .results .type h4 {
       padding: 10px 14px 4px;
       margin: 0;
-      font-size: 12px; }
+      font-size: 12px;
+      text-transform: uppercase; }
     .autocomplete-field .results .type .result {
       display: block;
       padding: 10px 14px;
@@ -5685,6 +5686,9 @@ main .track-view {
     width: 100%;
     height: 100%;
     z-index: 1; }
+  .discover-view .intro h1 {
+    font-size: 3rem;
+    line-height: 3rem; }
   .discover-view .intro .liner {
     z-index: 2;
     position: relative;
@@ -5741,6 +5745,12 @@ main .track-view {
 
 .discover-view section .grid {
   padding-bottom: 20px; }
+
+@media (max-width: 800px) {
+  .discover-view .intro {
+    padding: 40px 20px; }
+  .discover-view .seeds {
+    padding-top: 20px; } }
 
 .discover-featured-view .intro,
 .discover-new-releases-view .intro {

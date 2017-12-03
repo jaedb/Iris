@@ -319,6 +319,7 @@ export function getFeaturedPlaylists(){
         dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
         var date = new Date();
+        date.setHours(date.getHours());
         var year = date.getFullYear();
         var month = date.getMonth();
         if (month < 10 ) month = '0'+month;
@@ -331,7 +332,7 @@ export function getFeaturedPlaylists(){
         var sec = date.getSeconds();
         if (sec < 10 ) sec = '0'+sec;
 
-        var timestamp = year+'-'+month+'-'+day+'T'+hour+':00:00';
+        var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
 
         sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country='+getState().core.country+'&locale='+getState().core.locale+'timestamp='+timestamp)
             .then(
@@ -950,16 +951,20 @@ export function getRecommendations(uris = [], limit = 20){
                             }
                         }
                     }
+                    
+                    if (albums.length > 0){
+                        dispatch({
+                            type: 'ALBUMS_LOADED',
+                            albums: albums
+                        });
+                    }
 
-                    dispatch({
-                        type: 'ALBUMS_LOADED',
-                        albums: albums
-                    });
-
-                    dispatch({
-                        type: 'TRACKS_LOADED',
-                        tracks: tracks
-                    });
+                    if (tracks.length > 0){
+                        dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks
+                        });
+                    }
 
                     dispatch({
                         type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
