@@ -35,7 +35,8 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                         cached: true,
                         timeout: 30000,
                         headers: {
-                            Authorization: 'Bearer '+ response
+                            Authorization: 'Bearer '+ response,
+                            Accept: 'application/json'
                         }
                     }
 
@@ -330,9 +331,9 @@ export function getFeaturedPlaylists(){
         var sec = date.getSeconds();
         if (sec < 10 ) sec = '0'+sec;
 
-        var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
+        var timestamp = year+'-'+month+'-'+day+'T'+hour+':00:00';
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?timestamp='+timestamp+'&country='+getState().core.country+'&limit=50&locale='+getState().core.locale )
+        sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country='+getState().core.country+'&locale='+getState().core.locale+'timestamp='+timestamp)
             .then(
                 response => {
                     var playlists = []
