@@ -224,7 +224,7 @@ export default class Track extends React.Component{
 			)
 			track_columns.push(
 				<span className="col duration" key="duration">
-					{track.duration ? <Dater type="length" data={track.duration} /> : null}
+					{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 				</span>
 			)
 		}

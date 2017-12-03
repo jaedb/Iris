@@ -565,7 +565,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'tracks',
-                            results: response.tracks.items,
+                            results: helpers.formatTracks(response.tracks.items),
                             more: response.tracks.next,
                         });
                     }

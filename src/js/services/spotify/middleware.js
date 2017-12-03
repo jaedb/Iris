@@ -359,7 +359,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'tracks',
-                    results: action.data.tracks.items,
+                    results: helpers.formatTracks(action.data.tracks.items),
                     more: action.data.tracks.next
                 });
                 break

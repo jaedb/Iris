@@ -838,7 +838,7 @@ const MopidyMiddleware = (function(){
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
                                             context: action.data.context,
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
                                     continue_process();
@@ -873,7 +873,7 @@ const MopidyMiddleware = (function(){
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
                                             context: 'tracks',
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
 
