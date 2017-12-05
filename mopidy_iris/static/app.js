@@ -2234,7 +2234,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'tracks',
-                    results: response.tracks.items,
+                    results: helpers.formatTracks(response.tracks.items),
                     more: response.tracks.next
                 });
             }
@@ -18584,7 +18584,7 @@ var ContextMenuTrigger = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			var className = 'context-menu-trigger';
+			var className = 'context-menu-trigger mouse-contextable touch-contextable';
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
@@ -23603,26 +23603,23 @@ var List = function (_React$Component) {
 
 					return _react2.default.createElement(
 						'div',
-						{ className: class_name, key: row_index },
-						_react2.default.createElement(
-							'div',
-							{
-								className: 'liner',
-								onClick: function onClick(e) {
-									return _this2.handleClick(e, row.uri);
-								},
-								onContextMenu: function onContextMenu(e) {
-									return _this2.handleContextMenu(e, row);
-								} },
-							_this2.props.columns.map(function (col, col_index) {
-								var className = 'col ' + col.name.replace('.', '_');
-								return _react2.default.createElement(
-									'div',
-									{ className: className, key: col_index },
-									_this2.renderValue(row, col.name)
-								);
-							})
-						),
+						{
+							className: class_name,
+							key: row_index,
+							onClick: function onClick(e) {
+								return _this2.handleClick(e, row.uri);
+							},
+							onContextMenu: function onContextMenu(e) {
+								return _this2.handleContextMenu(e, row);
+							} },
+						_this2.props.columns.map(function (col, col_index) {
+							var className = 'col ' + col.name.replace('.', '_');
+							return _react2.default.createElement(
+								'div',
+								{ className: className, key: col_index },
+								_this2.renderValue(row, col.name)
+							);
+						}),
 						_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
 								return _this2.handleContextMenu(e, row);
 							} })
@@ -33092,11 +33089,27 @@ var Track = function (_React$Component) {
 	}
 
 	_createClass(Track, [{
+		key: 'handleMouseEnter',
+		value: function handleMouseEnter(e) {
+			console.log("handleMouseEnter");
+			this.setState({ hover: true });
+		}
+	}, {
+		key: 'handleMouseLeave',
+		value: function handleMouseLeave(e) {
+			console.log("handleMouseLeave");
+			this.setState({ hover: false });
+		}
+	}, {
 		key: 'handleMouseDown',
 		value: function handleMouseDown(e) {
+			console.log("handleMouseDown");
+			var target = $(e.target);
+
+			console.log(e.type);
 
 			// Clicked a nested link (ie Artist name), so no dragging required
-			if (e.target.tagName.toLowerCase() === 'a') {
+			if (target.is('a')) {
 				return false;
 			}
 
@@ -33115,6 +33128,8 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseMove',
 		value: function handleMouseMove(e) {
+			console.log("handleMouseMove");
+			var target = $(e.target);
 
 			// No drag handling means NO
 			if (this.props.handleDrag === undefined) {
@@ -33138,6 +33153,8 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseUp',
 		value: function handleMouseUp(e) {
+			console.log("handleMouseUp");
+			var target = $(e.target);
 
 			// Only listen for left clicks
 			if (e.button === 0) {
@@ -33148,7 +33165,6 @@ var Track = function (_React$Component) {
 						this.props.handleDrop(e);
 					}
 				} else {
-					var target = $(e.target);
 					if (!target.is('a') && target.closest('a').length <= 0) {
 						this.props.handleSelection(e);
 						this.start_position = false;
@@ -33162,19 +33178,47 @@ var Track = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'handleDoubleClick',
+		value: function handleDoubleClick(e) {
+			console.log("handleDoubleClick");
+			var target = $(e.target);
+		}
+	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
+			console.log("handleTouchStart");
+			e.preventDefault();
+			var target = $(e.target);
 
-			// Clicked a nested link (ie Artist name), so no dragging required
-			if (e.target.tagName.toLowerCase() === 'a') {
+			// Touch-drag zone
+			if (target.hasClass('drag-zone')) {
+				this.props.handleTouchDrag(e);
+
+				// Select zone
+			} else if (target.hasClass('select-zone')) {
+				this.props.handleSelection(e);
+
+				// Clicked a nested link (ie Artist name), so no dragging required
+			} else if (target.is('a')) {
 				return false;
+
+				// Touch contextable
+			} else if (target.hasClass('touch-contextable')) {
+				this.props.handleContextMenu(e);
 			}
 
-			this.props.handleTouchDrag(e);
+			return false;
+		}
+	}, {
+		key: 'handleTouchEnd',
+		value: function handleTouchEnd(e) {
+			console.log("handleTouchEnd");
+			e.preventDefault();
 		}
 	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e) {
+			console.log("handleContextMenu");
 			e.preventDefault();
 			e.stopPropagation();
 			e.cancelBubble = true;
@@ -33190,7 +33234,7 @@ var Track = function (_React$Component) {
 			}
 
 			var track = this.props.track;
-			var className = 'list-item track';
+			var className = 'list-item track mouse-draggable mouse-selectable mouse-contextable';
 			if (this.props.selected) className += ' selected';
 			if (this.props.can_sort) className += ' can-sort';
 			if (track.type !== undefined) className += ' ' + track.type;
@@ -33224,7 +33268,7 @@ var Track = function (_React$Component) {
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'uri-placeholder grey-text' },
 						track.uri
 					)
 				));
@@ -33348,7 +33392,7 @@ var Track = function (_React$Component) {
 				track_columns.push(_react2.default.createElement(
 					'span',
 					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : null
+					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 				));
 			}
 
@@ -33363,11 +33407,8 @@ var Track = function (_React$Component) {
 				track_actions.push(_react2.default.createElement(
 					'span',
 					{
-						className: 'select-zone',
-						key: 'select-zone',
-						onClick: function onClick(e) {
-							return _this2.props.handleSelection(e);
-						} },
+						className: 'select-zone touch-selectable mouse-selectable',
+						key: 'select-zone' },
 					this.props.selected ? _react2.default.createElement(_reactFontawesome2.default, { name: 'check', className: 'selected', fixedWidth: true }) : null
 				));
 
@@ -33375,62 +33416,49 @@ var Track = function (_React$Component) {
 					track_actions.push(_react2.default.createElement(
 						'span',
 						{
-							className: 'drag-zone',
-							key: 'drag-zone',
-							onTouchStart: function onTouchStart(e) {
-								return _this2.handleTouchStart(e);
-							} },
+							className: 'drag-zone touch-draggable mouse-draggable',
+							key: 'drag-zone' },
 						_react2.default.createElement(_reactFontawesome2.default, { name: 'bars', fixedWidth: true })
 					));
 				}
-
-				// No events attached directly to the track. Instead events are attached to
-				// the appropriate select/drag zone sub-elements
-				return _react2.default.createElement(
-					'div',
-					{ className: className },
-					track_actions,
-					_react2.default.createElement(
-						'div',
-						{ className: 'liner' },
-						track_columns
-					)
-				);
-			} else {
-				return _react2.default.createElement(
-					'div',
-					{
-						className: className,
-						onMouseEnter: function onMouseEnter(e) {
-							return _this2.setState({ hover: true });
-						},
-						onMouseLeave: function onMouseLeave(e) {
-							return _this2.setState({ hover: false });
-						} },
-					track_actions,
-					_react2.default.createElement(
-						'div',
-						{ className: 'liner'
-							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
-							, onMouseDown: function onMouseDown(e) {
-								return _this2.handleMouseDown(e);
-							} // Click (or potentially a mouse drag start)
-							, onMouseMove: function onMouseMove(e) {
-								return _this2.handleMouseMove(e);
-							} // Any movement over me
-							, onMouseUp: function onMouseUp(e) {
-								return _this2.handleMouseUp(e);
-							} // End of click, or potentially a dragging drop event
-							, onDoubleClick: function onDoubleClick(e) {
-								return _this2.props.handleDoubleClick(e);
-							},
-							onContextMenu: function onContextMenu(e) {
-								_this2.handleContextMenu(e);
-							} },
-						track_columns
-					)
-				);
 			}
+
+			return _react2.default.createElement(
+				'div',
+				{
+					className: className,
+					onMouseEnter: function onMouseEnter(e) {
+						return _this2.handleMouseEnter(e);
+					},
+					onMouseLeave: function onMouseLeave(e) {
+						return _this2.handleMouseLeave(e);
+					},
+					onMouseDown: function onMouseDown(e) {
+						return _this2.handleMouseDown(e);
+					},
+					onMouseUp: function onMouseUp(e) {
+						return _this2.handleMouseUp(e);
+					},
+					onMouseMove: function onMouseMove(e) {
+						return _this2.handleMouseMove(e);
+					},
+
+					onDoubleClick: function onDoubleClick(e) {
+						return _this2.handleDoubleClick(e);
+					},
+					onContextMenu: function onContextMenu(e) {
+						return _this2.handleContextMenu(e);
+					},
+
+					onTouchStart: function onTouchStart(e) {
+						return _this2.handleTouchStart(e);
+					},
+					onTouchEnd: function onTouchEnd(e) {
+						return _this2.handleTouchEnd(e);
+					} },
+				track_actions,
+				track_columns
+			);
 		}
 	}]);
 
@@ -52018,7 +52046,7 @@ var MopidyMiddleware = function () {
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                                             context: action.data.context,
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
                                     continue_process();
@@ -52042,7 +52070,7 @@ var MopidyMiddleware = function () {
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                                             context: 'tracks',
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
 
@@ -56046,7 +56074,7 @@ var SpotifyMiddleware = function () {
                         store.dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'tracks',
-                            results: action.data.tracks.items,
+                            results: helpers.formatTracks(action.data.tracks.items),
                             more: action.data.tracks.next
                         });
                         break;
@@ -66645,6 +66673,18 @@ var Search = function (_React$Component) {
 			//this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 		}
 	}, {
+		key: 'setSort',
+		value: function setSort(value) {
+			var reverse = false;
+			if (this.props.sort == value) reverse = !this.props.sort_reverse;
+
+			var data = {
+				search_results_sort_reverse: reverse,
+				search_results_sort: value
+			};
+			this.props.uiActions.set(data);
+		}
+	}, {
 		key: 'renderResults',
 		value: function renderResults() {
 			var _this2 = this;
@@ -66658,6 +66698,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.artists) {
 				artists = [].concat(_toConsumableArray(artists), _toConsumableArray(helpers.getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)));
 			}
+			artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
 
 			var albums = [];
 			if (this.props.mopidy_search_results.albums) {
@@ -66666,6 +66707,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.albums) {
 				albums = [].concat(_toConsumableArray(albums), _toConsumableArray(helpers.getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)));
 			}
+			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
 
 			var playlists = [];
 			if (this.props.mopidy_search_results.playlists) {
@@ -66674,6 +66716,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.playlists) {
 				playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray(helpers.getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)));
 			}
+			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
 
 			var tracks = [];
 			if (this.props.mopidy_search_results.tracks) {
@@ -66682,6 +66725,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.tracks) {
 				tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
 			}
+			tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse);
 
 			switch (this.props.view) {
 
@@ -66858,9 +66902,26 @@ var Search = function (_React$Component) {
 				label: 'Tracks'
 			}];
 
+			var sort_options = [{
+				value: 'name',
+				label: 'Name'
+			}, {
+				value: 'artists.name',
+				label: 'Artist'
+			}, {
+				value: 'duration',
+				label: 'Duration'
+			}, {
+				value: 'source',
+				label: 'Source'
+			}];
+
 			var options = _react2.default.createElement(
 				'span',
 				null,
+				_react2.default.createElement(_DropdownField2.default, { icon: 'sort', name: 'Sort', value: this.props.sort, options: sort_options, reverse: this.props.sort_reverse, handleChange: function handleChange(val) {
+						_this3.setSort(val);_this3.props.uiActions.hideContextMenu();
+					} }),
 				_react2.default.createElement(_DropdownField2.default, { icon: 'eye', name: 'View', value: this.props.view, options: view_options, handleChange: function handleChange(val) {
 						_this3.props.uiActions.set({ search_view: val });_this3.props.uiActions.hideContextMenu();
 					} }),
@@ -66902,7 +66963,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		tracks: state.core.tracks ? state.core.tracks : [],
 		search_uri_schemes: state.ui.search_uri_schemes ? state.ui.search_uri_schemes : [],
 		mopidy_search_results: state.mopidy.search_results ? state.mopidy.search_results : {},
-		spotify_search_results: state.spotify.search_results ? state.spotify.search_results : {}
+		spotify_search_results: state.spotify.search_results ? state.spotify.search_results : {},
+		sort: state.ui.search_results_sort ? state.ui.search_results_sort : 'name',
+		sort_reverse: state.ui.search_results_sort_reverse ? true : false
 	};
 };
 

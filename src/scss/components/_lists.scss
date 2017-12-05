@@ -1,7 +1,7 @@
 
 .list {
 	.list-item {
-
+		@include clearfix;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		-khtml-user-select: none;
@@ -12,15 +12,11 @@
 		display: block;
 		position: relative;
 		margin: 0 -10px -1px -10px;
+		padding: 14px 30px 13px 10px;
 		cursor: pointer;
 		border-radius: 3px;
 		border-bottom: 1px solid rgba(255,255,255,0.05);
 		border-top: 1px solid rgba(255,255,255,0.05);
-
-		.liner {
-			@include clearfix;
-			padding: 14px 30px 13px 10px;
-		}
 
 		&.selected {
 			background: rgba(255,255,255,0.08) !important;
@@ -40,6 +36,10 @@
 		.select-zone,
 		.drag-zone {
 			display: none;
+
+			* {
+				pointer-events: none;
+			}
 		}
 
 		.context-menu-trigger {
@@ -90,6 +90,10 @@
 				padding: 12px 10px 12px 20px;
 				cursor: pointer;
 			}
+		}
+
+		.uri-placeholder {
+			word-break: break-all;
 		}
 	}
 
@@ -236,15 +240,15 @@
 		}
 	}
 
-	&.track-list.mini-zones {
+	.touch &.track-list {
 		.list-item {	
 
 			&.can-sort {
-				padding-left: 60px !important;
+				padding-left: 70px !important;
 			}
 			
 			&:not(.can-sort){
-				padding-left: 35px !important;
+				padding-left: 45px !important;
 			}
 
 			.select-zone {
@@ -304,10 +308,7 @@
 	@include responsive($bp_medium){
 
 		.list-item {
-
-			.liner {
-				padding: 12px !important;
-			}
+			padding: 12px !important;
 
 			.source {
 				position: static;
