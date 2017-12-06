@@ -177,8 +177,10 @@ class TrackList extends React.Component{
 	}
 
 	handleDoubleClick(e,track_key){
-		if (this.props.context_menu) this.props.uiActions.hideContextMenu()
-		this.playTracks()
+		if (this.props.context_menu){
+			this.props.uiActions.hideContextMenu();
+		}
+		this.playTracks();
 	}
 
 	handleContextMenu(e,track_key = null){
@@ -263,17 +265,21 @@ class TrackList extends React.Component{
 	}
 
 	playTracks(){
-		let selected_tracks = this.digestTracksKeys()
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+		let selected_tracks = this.digestTracksKeys();
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks);
+
+		if (selected_tracks.length <= 0){
+			return this.props.uiActions.createNotification('No tracks selected', 'bad');
+		}
 
 		// Our parent handles playing
 		if (this.props.playTracks !== undefined){
-			return this.props.playTracks(selected_tracks)
+			return this.props.playTracks(selected_tracks);
 
 		// Default to playing the URIs
 		} else {
-			let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
-			return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri)
+			let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks);
+			return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri);
 		}
 	}
 

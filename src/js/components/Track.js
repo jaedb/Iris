@@ -19,6 +19,7 @@ export default class Track extends React.Component{
 			hover: false
 		}
 
+		this.last_touchstart = 0;
 		this.start_position = false
 	}
 
@@ -108,37 +109,56 @@ export default class Track extends React.Component{
 
 	handleDoubleClick(e){
 		console.log("handleDoubleClick");
-		var target = $(e.target);
+		this.props.handleDoubleClick(e);
 	}
 
 	handleTouchStart(e){
 		console.log("handleTouchStart");
-		e.preventDefault();
 		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+
+		// Clicked a nested link (ie Artist name), so no touch intervention required
+		if (target.is('a')){
+			console.log('a');
+			return false;
+
+		// We started a touchstart within 300ms ago, so handle as double-tap
+		} else if ((timestamp - this.last_touchstart) > 0 && (timestamp - this.last_touchstart) <= 300){
+			e.preventDefault();
+			this.props.handleSelection(e);
+			this.props.handleDoubleClick(e);
 
 		// Touch-drag zone
-		if (target.hasClass('drag-zone')){
+		} else if (target.hasClass('drag-zone')){
+			e.preventDefault();
 			this.props.handleTouchDrag(e);
 
 		// Select zone
 		} else if (target.hasClass('select-zone')){
+			e.preventDefault();
 			this.props.handleSelection(e);
-
-		// Clicked a nested link (ie Artist name), so no dragging required
-		} else if (target.is('a')){
-			return false;
 
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
+			e.preventDefault();
 			this.props.handleContextMenu(e);
 		}
+
+		// Save our last tap
+		this.last_touchstart = timestamp;
 
 		return false;
 	}
 
 	handleTouchEnd(e){
 		console.log("handleTouchEnd");
-		e.preventDefault();
+		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+
+		// Clicked a nested link (ie Artist name), so no dragging required
+		if (!target.is('a')){
+			e.preventDefault();
+		}
 	}
 
 	handleContextMenu(e){
