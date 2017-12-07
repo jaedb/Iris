@@ -24,17 +24,14 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseEnter(e){
-		console.log("handleMouseEnter");
 		this.setState({hover: true});
 	}
 
 	handleMouseLeave(e){
-		console.log("handleMouseLeave");
 		this.setState({hover: false});
 	}
 
 	handleMouseDown(e){
-		console.log("handleMouseDown");
 		var target = $(e.target);
 
 		console.log(e.type);
@@ -58,7 +55,6 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseMove(e){
-		console.log("handleMouseMove");
 		var target = $(e.target);
 
 		// No drag handling means NO
@@ -82,7 +78,6 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseUp(e){
-		console.log("handleMouseUp");
 		var target = $(e.target);
 
 		// Only listen for left clicks
@@ -108,40 +103,47 @@ export default class Track extends React.Component{
 	}
 
 	handleDoubleClick(e){
-		console.log("handleDoubleClick");
 		this.props.handleDoubleClick(e);
 	}
 
 	handleTouchStart(e){
-		console.log("handleTouchStart");
 		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
 
 		// Clicked a nested link (ie Artist name), so no touch intervention required
 		if (target.is('a')){
-			console.log('a');
 			return false;
 
 		// We started a touchstart within 300ms ago, so handle as double-tap
 		} else if ((timestamp - this.last_touchstart) > 0 && (timestamp - this.last_touchstart) <= 300){
-			e.preventDefault();
+
+			// Update our selection. By not passing touch = true selection will work like a regular click
 			this.props.handleSelection(e);
-			this.props.handleDoubleClick(e);
+
+			// Wait a moment to give Redux time to update our selected tracks
+			// TODO: Use proper callback, rather than assuming a fixed period of time for store change
+			setTimeout(() => {
+					this.props.handleDoubleClick(e);
+				}, 
+				100
+			);
+			e.preventDefault();
 
 		// Touch-drag zone
 		} else if (target.hasClass('drag-zone')){
-			e.preventDefault();
 			this.props.handleTouchDrag(e);
+			e.preventDefault();
 
 		// Select zone
 		} else if (target.hasClass('select-zone')){
+			this.props.handleSelection(e, true);
 			e.preventDefault();
-			this.props.handleSelection(e);
 
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
+			this.props.handleSelection(e);
+			this.handleContextMenu(e);
 			e.preventDefault();
-			this.props.handleContextMenu(e);
 		}
 
 		// Save our last tap
@@ -151,7 +153,6 @@ export default class Track extends React.Component{
 	}
 
 	handleTouchEnd(e){
-		console.log("handleTouchEnd");
 		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
 
@@ -162,7 +163,6 @@ export default class Track extends React.Component{
 	}
 
 	handleContextMenu(e){
-		console.log("handleContextMenu");
 		e.preventDefault();
 		e.stopPropagation();
 		e.cancelBubble = true;

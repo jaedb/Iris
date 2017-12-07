@@ -3406,7 +3406,8 @@ input[type="submit"] {
     border-radius: 5px;
     background: #FFFFFF;
     display: inline-block;
-    margin: 1px; }
+    margin: 1px;
+    pointer-events: none; }
   .context-menu-trigger:active {
     margin-top: 0px;
     margin-bottom: -1px; }

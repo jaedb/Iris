@@ -12,8 +12,15 @@ export function setSelectedTracks(keys = []){
 }
 
 export function showContextMenu(data){
-    data.position_x = data.e.clientX;
-    data.position_y = data.e.clientY;
+
+    if (data.e.touches){
+        data.position_x = data.e.touches[0].clientX;
+        data.position_y = data.e.touches[0].clientY;
+    } else {
+        data.position_x = data.e.clientX;
+        data.position_y = data.e.clientY;
+    }
+
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data

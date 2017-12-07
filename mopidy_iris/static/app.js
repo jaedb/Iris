@@ -1115,8 +1115,15 @@ function setSelectedTracks() {
 }
 
 function showContextMenu(data) {
-    data.position_x = data.e.clientX;
-    data.position_y = data.e.clientY;
+
+    if (data.e.touches) {
+        data.position_x = data.e.touches[0].clientX;
+        data.position_y = data.e.touches[0].clientY;
+    } else {
+        data.position_x = data.e.clientX;
+        data.position_y = data.e.clientY;
+    }
+
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -16006,8 +16013,6 @@ var TrackList = function (_React$Component) {
 					var siblings = over.parent().children('.track');
 					var dropped_at = siblings.index(over) - 1;
 
-					console.log('touchend', helpers.arrayOf('index', this.digestTracksKeys()), 'to', dropped_at);
-
 					if (this.props.reorderTracks !== undefined) {
 						this.props.reorderTracks(helpers.arrayOf('index', this.digestTracksKeys()), dropped_at);
 						this.props.uiActions.setSelectedTracks([]);
@@ -16023,7 +16028,9 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'handleDoubleClick',
 		value: function handleDoubleClick(e, track_key) {
-			if (this.props.context_menu) this.props.uiActions.hideContextMenu();
+			if (this.props.context_menu) {
+				this.props.uiActions.hideContextMenu();
+			}
 			this.playTracks();
 		}
 	}, {
@@ -16051,14 +16058,17 @@ var TrackList = function (_React$Component) {
 				uris: selected_tracks_uris,
 				indexes: selected_tracks_indexes
 			};
+
 			this.props.uiActions.showContextMenu(data);
 		}
 	}, {
 		key: 'handleSelection',
 		value: function handleSelection(e, track_key) {
+			var touched = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
 			var selected_tracks = this.props.selected_tracks;
 
-			if (e.ctrlKey || e.metaKey || this.props.slim_mode || helpers.isTouchDevice()) {
+			if (e.ctrlKey || e.metaKey || touched) {
 
 				// Already selected, so unselect it
 				if (selected_tracks.includes(track_key)) {
@@ -16114,6 +16124,10 @@ var TrackList = function (_React$Component) {
 		value: function playTracks() {
 			var selected_tracks = this.digestTracksKeys();
 			var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+
+			if (selected_tracks.length <= 0) {
+				return this.props.uiActions.createNotification('No tracks selected', 'bad');
+			}
 
 			// Our parent handles playing
 			if (this.props.playTracks !== undefined) {
@@ -16343,7 +16357,8 @@ var TrackList = function (_React$Component) {
 						selected: _this2.props.selected_tracks.includes(track_key),
 						dragger: _this2.props.dragger,
 						handleSelection: function handleSelection(e) {
-							return _this2.handleSelection(e, track_key);
+							var touched = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+							return _this2.handleSelection(e, track_key, touched);
 						},
 						handleDoubleClick: function handleDoubleClick(e) {
 							return _this2.handleDoubleClick(e, track_key);
@@ -33084,6 +33099,7 @@ var Track = function (_React$Component) {
 			hover: false
 		};
 
+		_this.last_touchstart = 0;
 		_this.start_position = false;
 		return _this;
 	}
@@ -33091,19 +33107,16 @@ var Track = function (_React$Component) {
 	_createClass(Track, [{
 		key: 'handleMouseEnter',
 		value: function handleMouseEnter(e) {
-			console.log("handleMouseEnter");
 			this.setState({ hover: true });
 		}
 	}, {
 		key: 'handleMouseLeave',
 		value: function handleMouseLeave(e) {
-			console.log("handleMouseLeave");
 			this.setState({ hover: false });
 		}
 	}, {
 		key: 'handleMouseDown',
 		value: function handleMouseDown(e) {
-			console.log("handleMouseDown");
 			var target = $(e.target);
 
 			console.log(e.type);
@@ -33128,7 +33141,6 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseMove',
 		value: function handleMouseMove(e) {
-			console.log("handleMouseMove");
 			var target = $(e.target);
 
 			// No drag handling means NO
@@ -33153,7 +33165,6 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseUp',
 		value: function handleMouseUp(e) {
-			console.log("handleMouseUp");
 			var target = $(e.target);
 
 			// Only listen for left clicks
@@ -33180,45 +33191,69 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleDoubleClick',
 		value: function handleDoubleClick(e) {
-			console.log("handleDoubleClick");
-			var target = $(e.target);
+			this.props.handleDoubleClick(e);
 		}
 	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
-			console.log("handleTouchStart");
-			e.preventDefault();
-			var target = $(e.target);
+			var _this2 = this;
 
-			// Touch-drag zone
-			if (target.hasClass('drag-zone')) {
+			var target = $(e.target);
+			var timestamp = Math.floor(Date.now());
+
+			// Clicked a nested link (ie Artist name), so no touch intervention required
+			if (target.is('a')) {
+				return false;
+
+				// We started a touchstart within 300ms ago, so handle as double-tap
+			} else if (timestamp - this.last_touchstart > 0 && timestamp - this.last_touchstart <= 300) {
+
+				// Update our selection. By not passing touch = true selection will work like a regular click
+				this.props.handleSelection(e);
+
+				// Wait a moment to give Redux time to update our selected tracks
+				// TODO: Use proper callback, rather than assuming a fixed period of time for store change
+				setTimeout(function () {
+					_this2.props.handleDoubleClick(e);
+				}, 100);
+				e.preventDefault();
+
+				// Touch-drag zone
+			} else if (target.hasClass('drag-zone')) {
 				this.props.handleTouchDrag(e);
+				e.preventDefault();
 
 				// Select zone
 			} else if (target.hasClass('select-zone')) {
-				this.props.handleSelection(e);
-
-				// Clicked a nested link (ie Artist name), so no dragging required
-			} else if (target.is('a')) {
-				return false;
+				this.props.handleSelection(e, true);
+				e.preventDefault();
 
 				// Touch contextable
 			} else if (target.hasClass('touch-contextable')) {
-				this.props.handleContextMenu(e);
+				this.props.handleSelection(e);
+				this.handleContextMenu(e);
+				e.preventDefault();
 			}
+
+			// Save our last tap
+			this.last_touchstart = timestamp;
 
 			return false;
 		}
 	}, {
 		key: 'handleTouchEnd',
 		value: function handleTouchEnd(e) {
-			console.log("handleTouchEnd");
-			e.preventDefault();
+			var target = $(e.target);
+			var timestamp = Math.floor(Date.now());
+
+			// Clicked a nested link (ie Artist name), so no dragging required
+			if (!target.is('a')) {
+				e.preventDefault();
+			}
 		}
 	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e) {
-			console.log("handleContextMenu");
 			e.preventDefault();
 			e.stopPropagation();
 			e.cancelBubble = true;
@@ -33227,7 +33262,7 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
+			var _this3 = this;
 
 			if (!this.props.track) {
 				return null;
@@ -33397,7 +33432,7 @@ var Track = function (_React$Component) {
 			}
 
 			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { key: 'context', onTrigger: function onTrigger(e) {
-					return _this2.handleContextMenu(e);
+					return _this3.handleContextMenu(e);
 				} }));
 
 			if (this.props.mini_zones) {
@@ -33428,33 +33463,33 @@ var Track = function (_React$Component) {
 				{
 					className: className,
 					onMouseEnter: function onMouseEnter(e) {
-						return _this2.handleMouseEnter(e);
+						return _this3.handleMouseEnter(e);
 					},
 					onMouseLeave: function onMouseLeave(e) {
-						return _this2.handleMouseLeave(e);
+						return _this3.handleMouseLeave(e);
 					},
 					onMouseDown: function onMouseDown(e) {
-						return _this2.handleMouseDown(e);
+						return _this3.handleMouseDown(e);
 					},
 					onMouseUp: function onMouseUp(e) {
-						return _this2.handleMouseUp(e);
+						return _this3.handleMouseUp(e);
 					},
 					onMouseMove: function onMouseMove(e) {
-						return _this2.handleMouseMove(e);
+						return _this3.handleMouseMove(e);
 					},
 
 					onDoubleClick: function onDoubleClick(e) {
-						return _this2.handleDoubleClick(e);
+						return _this3.handleDoubleClick(e);
 					},
 					onContextMenu: function onContextMenu(e) {
-						return _this2.handleContextMenu(e);
+						return _this3.handleContextMenu(e);
 					},
 
 					onTouchStart: function onTouchStart(e) {
-						return _this2.handleTouchStart(e);
+						return _this3.handleTouchStart(e);
 					},
 					onTouchEnd: function onTouchEnd(e) {
-						return _this2.handleTouchEnd(e);
+						return _this3.handleTouchEnd(e);
 					} },
 				track_actions,
 				track_columns

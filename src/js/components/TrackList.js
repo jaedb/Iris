@@ -158,14 +158,12 @@ class TrackList extends React.Component{
 				over = over.closest('.track')
 			}
 			if (over.length > 0){
-				let siblings = over.parent().children('.track')
-				let dropped_at = siblings.index(over) - 1
-
-				console.log('touchend',helpers.arrayOf('index',this.digestTracksKeys()),'to',dropped_at)
+				let siblings = over.parent().children('.track');
+				let dropped_at = siblings.index(over) - 1;
 
 				if (this.props.reorderTracks !== undefined){
-					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at)
-					this.props.uiActions.setSelectedTracks([])
+					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at);
+					this.props.uiActions.setSelectedTracks([]);
 				}
 			}
 
@@ -204,13 +202,14 @@ class TrackList extends React.Component{
 			uris: selected_tracks_uris,
 			indexes: selected_tracks_indexes
 		}
+
 		this.props.uiActions.showContextMenu(data);
 	}
 
-	handleSelection(e,track_key){
+	handleSelection(e, track_key, touched = false){
 		let selected_tracks = this.props.selected_tracks
 
-		if ((e.ctrlKey || e.metaKey) || this.props.slim_mode || helpers.isTouchDevice()){
+		if ((e.ctrlKey || e.metaKey) || touched){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
@@ -253,7 +252,7 @@ class TrackList extends React.Component{
 			selected_tracks = [track_key]
 		}
 
-		this.props.uiActions.setSelectedTracks(selected_tracks)
+		this.props.uiActions.setSelectedTracks(selected_tracks);
 	}
 
 	isRightClick(e){
@@ -436,7 +435,7 @@ class TrackList extends React.Component{
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									dragger={this.props.dragger} 
-									handleSelection={e => this.handleSelection(e, track_key)}
+									handleSelection={(e, touched = false) => this.handleSelection(e, track_key, touched)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
 									handleContextMenu={e => this.handleContextMenu(e, track_key)}
 									handleDrag={e => this.handleDrag(e, track_key)}
