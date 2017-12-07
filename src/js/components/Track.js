@@ -34,8 +34,6 @@ export default class Track extends React.Component{
 	handleMouseDown(e){
 		var target = $(e.target);
 
-		console.log(e.type);
-
 		// Clicked a nested link (ie Artist name), so no dragging required
 		if (target.is('a')){
 			return false;
@@ -141,9 +139,8 @@ export default class Track extends React.Component{
 
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
-			this.props.handleSelection(e);
-			this.handleContextMenu(e);
-			e.preventDefault();
+			// Don't interfere as the ContextMenuTrigger element handles click/touch
+
 		}
 
 		// Save our last tap
