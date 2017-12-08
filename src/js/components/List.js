@@ -23,14 +23,24 @@ class List extends React.Component{
 
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
+			e.preventDefault();
+			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+		}
+	}
+
+	handleMouseDown(e, uri){
+
+		// make sure we haven't clicked a nested link (ie Artist name)
+		if (e.target.tagName.toLowerCase() !== 'a'){
+			e.preventDefault();
 			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 		}
 	}
 
 	handleContextMenu(e,item){
 		if (this.props.handleContextMenu){
-			e.preventDefault()
-			this.props.handleContextMenu(e,item)
+			e.preventDefault();
+			this.props.handleContextMenu(e,item);
 		}
 	}
 

@@ -139,7 +139,18 @@ export default class Track extends React.Component{
 
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
-			// Don't interfere as the ContextMenuTrigger element handles click/touch
+
+			// Update our selection. By not passing touch = true selection will work like a regular click
+			this.props.handleSelection(e);
+
+			// Wait a moment to give Redux time to update our selected tracks
+			// TODO: Use proper callback, rather than assuming a fixed period of time for store change
+			setTimeout(() => {
+					this.handleContextMenu(e);
+				}, 
+				100
+			);
+			e.preventDefault();
 
 		}
 

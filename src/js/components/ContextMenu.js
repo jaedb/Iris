@@ -86,8 +86,6 @@ class ContextMenu extends React.Component{
 
 	handleTouchStart(e){
 
-		console.log(this.props)
-
 		// if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
 		if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0){
 			this.props.uiActions.hideContextMenu();
