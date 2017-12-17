@@ -140,10 +140,8 @@ export default class Track extends React.Component{
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
 
-			console.log('touch-contextable');
-
 			// Update our selection. By not passing touch = true selection will work like a regular click
-			this.props.handleSelection(e);
+			//this.props.handleSelection(e);
 			this.handleContextMenu(e);
 		}
 

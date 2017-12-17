@@ -274,8 +274,11 @@ class App extends React.Component{
 		        	uiActions={this.props.uiActions} 
 		        	notifications={this.props.notifications} 
 		        	processes={this.props.processes}
-		        	broadcasts={this.props.broadcasts} />
+		        	broadcasts={this.props.broadcasts}
+		        />
+
 		        {this.props.debug_info ? <DebugInfo /> : null}
+		        
 	        </div>
 		);
 	}
