@@ -19,7 +19,7 @@ export default class Track extends React.Component{
 			hover: false
 		}
 
-		this.last_touchstart = 0;
+		this.start_time = 0;
 		this.start_position = false
 	}
 
@@ -113,7 +113,7 @@ export default class Track extends React.Component{
 			return false;
 
 		// We started a touchstart within 300ms ago, so handle as double-tap
-		} else if ((timestamp - this.last_touchstart) > 0 && (timestamp - this.last_touchstart) <= 300){
+		} else if ((timestamp - this.start_time) > 0 && (timestamp - this.start_time) <= 300){
 
 			// Update our selection. By not passing touch = true selection will work like a regular click
 			this.props.handleSelection(e);
@@ -140,22 +140,19 @@ export default class Track extends React.Component{
 		// Touch contextable
 		} else if (target.hasClass('touch-contextable')){
 
+			console.log('touch-contextable');
+
 			// Update our selection. By not passing touch = true selection will work like a regular click
 			this.props.handleSelection(e);
-
-			// Wait a moment to give Redux time to update our selected tracks
-			// TODO: Use proper callback, rather than assuming a fixed period of time for store change
-			setTimeout(() => {
-					this.handleContextMenu(e);
-				}, 
-				100
-			);
-			e.preventDefault();
-
+			this.handleContextMenu(e);
 		}
 
-		// Save our last tap
-		this.last_touchstart = timestamp;
+		// Save touch start details
+		this.start_time = timestamp;
+		this.start_position = {
+			x: e.touches[0].clientX,
+			y: e.touches[0].clientY
+		}
 
 		return false;
 	}
