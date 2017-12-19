@@ -118,6 +118,29 @@
 				margin-top: -3px;
 				background: transparent;
 			}
+
+			&.has-touch-drag-zone {
+				padding-left: 45px;				
+
+				.drag-zone {
+					position: absolute;
+					top: 0;
+					left: 0;
+					height: 100%;
+					width: 34px;
+					font-size: 14px;
+					display: block;
+					color: $mid_grey;
+					
+					.fa {
+						position: absolute;
+						top: 50%;
+						left: 10px;
+						margin-top: -6px;
+						pointer-events: none;
+					}
+				}
+			}
 		}
 	}
 
@@ -236,71 +259,6 @@
 			.thumbnail {
 				border-color: $turquoise;
 				opacity: 1;
-			}
-		}
-	}
-
-	.touch &.track-list {
-		.list-item {	
-
-			&.can-sort {
-				padding-left: 70px !important;
-			}
-			
-			&:not(.can-sort){
-				padding-left: 45px !important;
-			}
-
-			.select-zone {
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 100%;
-				width: 34px;
-				font-size: 8px;
-				display: block;
-				
-				.fa {
-					position: absolute;
-					top: 50%;
-					left: 17px;
-					margin-top: -3px;
-					pointer-events: none;
-					color: $white;
-					z-index: 1;
-				}
-
-				&:after {
-					display: block;
-					content: '';
-					border: 1px solid $mid_grey;
-					border-radius: 50%;
-					width: 14px;
-					height: 14px;
-					position: absolute;
-					top: 50%;
-					left: 14px;
-					margin-top: -7px;
-				}
-			}
-
-			.drag-zone {
-				position: absolute;
-				top: 0;
-				left: 34px;
-				height: 100%;
-				width: 34px;
-				font-size: 14px;
-				display: block;
-				color: $mid_grey;
-				
-				.fa {
-					position: absolute;
-					top: 50%;
-					left: 6px;
-					margin-top: -6px;
-					pointer-events: none;
-				}
 			}
 		}
 	}

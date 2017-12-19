@@ -158,10 +158,28 @@ export default class Track extends React.Component{
 	handleTouchEnd(e){
 		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
+		var tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
+		var tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
+		var end_position = {
+			x: e.changedTouches[0].clientX,
+			y: e.changedTouches[0].clientY
+		}
 
 		// Clicked a nested link (ie Artist name), so no dragging required
 		if (!target.is('a')){
 			e.preventDefault();
+		}
+
+		// Too long between touchstart and touchend
+		if (this.start_time + tap_time_threshold < timestamp){
+			return false;
+		}
+
+		if (this.start_position.x + tap_distance_threshold > end_position.x &&
+			this.start_position.x - tap_distance_threshold < end_position.x &&
+			this.start_position.y + tap_distance_threshold > end_position.y &&
+			this.start_position.y - tap_distance_threshold < end_position.y){
+				this.props.handleSelection(e, true);
 		}
 	}
 
@@ -299,27 +317,17 @@ export default class Track extends React.Component{
 			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
 		)
 
-		if (this.props.mini_zones){
+		// If we're touchable, and can sort this tracklist
+		if (helpers.isTouchDevice() && this.props.can_sort){
+			className += " has-touch-drag-zone"
 
-			// Select zone handles selection events only
-			// We use onClick to capture touch as well as mouse events in one tidy parcel
 			track_actions.push(
 				<span 
-					className="select-zone touch-selectable mouse-selectable"
-					key="select-zone">
-						{this.props.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
+					className="drag-zone touch-draggable mouse-draggable"
+					key="drag-zone">
+						<FontAwesome name="bars" fixedWidth />
 				</span>
 			)
-
-			if (this.props.can_sort){
-				track_actions.push(
-					<span 
-						className="drag-zone touch-draggable mouse-draggable"
-						key="drag-zone">
-							<FontAwesome name="bars" fixedWidth />
-					</span>
-				)
-			}
 		}
 
 		return (

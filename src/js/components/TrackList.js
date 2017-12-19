@@ -184,8 +184,6 @@ class TrackList extends React.Component{
 	handleContextMenu(e, track_key = null){
 		let selected_tracks = this.props.selected_tracks;
 
-		console.log(selected_tracks);
-
 		// Not already selected, so select it prior to triggering menu
 		if (track_key && !selected_tracks.includes(track_key)){
 			selected_tracks = [track_key];
