@@ -248,6 +248,18 @@ const CoreMiddleware = (function(){
                 });
                 break;
 
+            case 'PLAYLIST_TRACKS':
+                var tracks = helpers.formatTracks(action.tracks);
+                action.tracks_uris = helpers.arrayOf('uri', tracks);
+
+                store.dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: tracks
+                });
+                
+                next(action);
+                break;
+
             case 'PLAYLIST_TRACKS_REORDERED':
                 var playlists = Object.assign({}, core.playlists);
                 var playlist = Object.assign({}, playlists[action.key]);

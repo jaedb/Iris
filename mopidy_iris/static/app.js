@@ -49176,7 +49176,7 @@ function reducer() {
 
         case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], core.playlists);
-            var playlist = Object.assign({}, playlists[action.key], { tracks: helpers.formatTracks(action.tracks) });
+            var playlist = Object.assign({}, playlists[action.key], { tracks_uris: action.tracks_uris });
 
             playlists[action.key] = playlist;
             return Object.assign({}, core, { playlists: playlists });
@@ -50378,6 +50378,18 @@ var CoreMiddleware = function () {
                             type: 'UPDATE_PLAYLISTS_INDEX',
                             playlists: playlists
                         });
+                        break;
+
+                    case 'PLAYLIST_TRACKS':
+                        var tracks = helpers.formatTracks(action.tracks);
+                        action.tracks_uris = helpers.arrayOf('uri', tracks);
+
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks
+                        });
+
+                        next(action);
                         break;
 
                     case 'PLAYLIST_TRACKS_REORDERED':
@@ -52515,7 +52527,6 @@ var MopidyMiddleware = function () {
                             // update playlist
                             playlist = Object.assign({}, playlist, { tracks: tracks });
                             instruct(socket, store, 'playlists.save', { playlist: playlist }).then(function (response) {
-
                                 store.dispatch({
                                     type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS',
                                     tracks: playlist.tracks,
