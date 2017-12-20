@@ -19,13 +19,24 @@ export default class Track extends React.Component{
 			hover: false
 		}
 
+		this.start_time = 0;
+		this.end_time = 0;
 		this.start_position = false
 	}
 
+	handleMouseEnter(e){
+		this.setState({hover: true});
+	}
+
+	handleMouseLeave(e){
+		this.setState({hover: false});
+	}
+
 	handleMouseDown(e){
+		var target = $(e.target);
 
 		// Clicked a nested link (ie Artist name), so no dragging required
-		if (e.target.tagName.toLowerCase() === 'a'){
+		if (target.is('a')){
 			return false;
 		}
 
@@ -43,6 +54,7 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseMove(e){
+		var target = $(e.target);
 
 		// No drag handling means NO
 		if (this.props.handleDrag === undefined){
@@ -65,6 +77,7 @@ export default class Track extends React.Component{
 	}
 
 	handleMouseUp(e){
+		var target = $(e.target);
 
 		// Only listen for left clicks
 		if (e.button === 0){
@@ -75,9 +88,8 @@ export default class Track extends React.Component{
 					this.props.handleDrop(e);
 				}
 			} else {
-				var target = $(e.target);
 				if (!target.is('a') && target.closest('a').length <= 0){
-					this.props.handleSelection(e);
+					this.props.handleClick(e);
 					this.start_position = false;
 				}
 			}
@@ -89,21 +101,74 @@ export default class Track extends React.Component{
 		}
 	}
 
+	handleDoubleClick(e){
+		this.props.handleDoubleClick(e);
+	}
+
 	handleTouchStart(e){
+		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+
+		// Touch-drag zone
+		if (target.hasClass('drag-zone')){
+			this.props.handleTouchDrag(e);
+			e.preventDefault();
+		}
+
+		// Save touch start details
+		this.start_time = timestamp;
+		this.start_position = {
+			x: e.touches[0].clientX,
+			y: e.touches[0].clientY
+		}
+
+		return false;
+	}
+
+	handleTouchEnd(e){
+		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+		var tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
+		var tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
+		var end_position = {
+			x: e.changedTouches[0].clientX,
+			y: e.changedTouches[0].clientY
+		}
 
 		// Clicked a nested link (ie Artist name), so no dragging required
-		if (e.target.tagName.toLowerCase() === 'a'){
+		if (!target.is('a')){
+			e.preventDefault();
+		}
+
+		// Context trigger
+		if (target.hasClass('touch-contextable')){
+
+			// Update our selection. By not passing touch = true selection will work like a regular click
+			//this.props.handleSelection(e);
+			this.props.handleContextMenu(e);
 			return false;
 		}
 
-		this.props.handleTouchDrag(e);
-	}
+		// We received a touchend within 300ms ago, so handle as double-tap
+		if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
+			this.props.handleDoubleTap(e);
+			e.preventDefault();
+			return false;
+		}
 
-	handleContextMenu(e){
-		e.preventDefault();
-		e.stopPropagation();
-		e.cancelBubble = true;
-		this.props.handleContextMenu(e);
+		// Too long between touchstart and touchend
+		if (this.start_time + tap_time_threshold < timestamp){
+			return false;
+		}
+
+		if (this.start_position.x + tap_distance_threshold > end_position.x &&
+			this.start_position.x - tap_distance_threshold < end_position.x &&
+			this.start_position.y + tap_distance_threshold > end_position.y &&
+			this.start_position.y - tap_distance_threshold < end_position.y){
+				this.props.handleTap(e);
+		}
+
+		this.end_time = timestamp;
 	}
 
 	render(){
@@ -112,7 +177,7 @@ export default class Track extends React.Component{
 		}
 
 		var track = this.props.track;
-		var className = 'list-item track';
+		var className = 'list-item track mouse-draggable mouse-selectable mouse-contextable';
 		if (this.props.selected) className += ' selected';
 		if (this.props.can_sort) className += ' can-sort';
 		if (track.type !== undefined) className += ' '+track.type;
@@ -135,7 +200,7 @@ export default class Track extends React.Component{
 
 			track_columns.push(
 				<span className="col name" key="name">
-					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+					{track.name ? track.name : <span className="uri-placeholder grey-text">{track.uri}</span>}
 				</span>
 			)
 			track_columns.push(
@@ -230,61 +295,39 @@ export default class Track extends React.Component{
 		}
 
 		track_actions.push(
-			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
+			<ContextMenuTrigger key="context" onTrigger={e => this.props.handleContextMenu(e)} />
 		)
 
-		if (this.props.mini_zones){
+		// If we're touchable, and can sort this tracklist
+		if (helpers.isTouchDevice() && this.props.can_sort){
+			className += " has-touch-drag-zone"
 
-			// Select zone handles selection events only
-			// We use onClick to capture touch as well as mouse events in one tidy parcel
 			track_actions.push(
 				<span 
-					className="select-zone"
-					key="select-zone"
-					onClick={e => this.props.handleSelection(e)}>
-						{this.props.selected ? <FontAwesome name="check" className="selected" fixedWidth /> : null}
+					className="drag-zone touch-draggable mouse-draggable"
+					key="drag-zone">
+						<FontAwesome name="bars" fixedWidth />
 				</span>
 			)
-
-			if (this.props.can_sort){
-				track_actions.push(
-					<span 
-						className="drag-zone"
-						key="drag-zone"
-						onTouchStart={e => this.handleTouchStart(e)}>
-							<FontAwesome name="bars" fixedWidth />
-					</span>
-				)
-			}
-
-			// No events attached directly to the track. Instead events are attached to
-			// the appropriate select/drag zone sub-elements
-			return (
-				<div className={className}>
-					{track_actions}
-					<div className="liner">
-						{track_columns}
-					</div>
-				</div>
-			)
-		} else {
-			return (
-				<div 
-					className={className}				
-					onMouseEnter={e => this.setState({hover: true})}
-					onMouseLeave={e => this.setState({hover: false})}>
-						{track_actions}
-						<div className="liner"
-							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
-							onMouseDown={e => this.handleMouseDown(e)}			// Click (or potentially a mouse drag start)
-							onMouseMove={e => this.handleMouseMove(e)}			// Any movement over me
-							onMouseUp={e => this.handleMouseUp(e)}				// End of click, or potentially a dragging drop event
-							onDoubleClick={e => this.props.handleDoubleClick(e)}
-							onContextMenu={e => {this.handleContextMenu(e)}}>
-								{track_columns}
-						</div>
-				</div>
-			)
 		}
+
+		return (
+			<div 
+				className={className}
+				onMouseEnter={e => this.handleMouseEnter(e)}
+				onMouseLeave={e => this.handleMouseLeave(e)}
+				onMouseDown={e => this.handleMouseDown(e)}
+				onMouseUp={e => this.handleMouseUp(e)}
+				onMouseMove={e => this.handleMouseMove(e)}
+
+				onDoubleClick={e => this.handleDoubleClick(e)}
+				onContextMenu={e => this.props.handleContextMenu(e)}
+
+				onTouchStart={e => this.handleTouchStart(e)}
+				onTouchEnd={e => this.handleTouchEnd(e)}>
+					{track_actions}
+					{track_columns}
+			</div>
+		);
 	}
 }

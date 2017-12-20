@@ -15,12 +15,13 @@ export default class ContextMenuTrigger extends React.Component{
 	}
 
 	render(){
-		var className = 'context-menu-trigger'
+		var className = 'context-menu-trigger mouse-contextable touch-contextable'
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
 		return (
-			<span className={className}
+			<span
+				className={className}
 				onClick={e => this.handleClick(e)}>
 					<span className="dot"></span>
 					<span className="dot"></span>

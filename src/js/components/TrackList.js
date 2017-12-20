@@ -132,67 +132,87 @@ class TrackList extends React.Component{
 	handleTouchMove(e){
 		if (this.touch_dragging_tracks_keys){
 			
-			let touch = e.touches[0]
-			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
+			let touch = e.touches[0];
+			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
 			if (!over.is('.track')){
-				over = over.closest('.track')
+				over = over.closest('.track');
 			}
-			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover')
+			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
 			if (over.length > 0){
-				over.addClass('touch-drag-hover')
+				over.addClass('touch-drag-hover');
 			}
 
-	        e.returnValue = false
-	        e.cancelBubble = true
-            e.preventDefault()
-            e.stopPropagation()
-	        return false
+	        e.returnValue = false;
+	        e.cancelBubble = true;
+            e.preventDefault();
+            e.stopPropagation();
+	        return false;
 		}
 	}
 
 	handleTouchEnd(e){
 		if (this.touch_dragging_tracks_keys){
-			let touch = e.changedTouches[0]
-			let over = $(document.elementFromPoint(touch.clientX, touch.clientY))
+			let touch = e.changedTouches[0];
+			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
 			if (!over.is('.track')){
-				over = over.closest('.track')
+				over = over.closest('.track');
 			}
 			if (over.length > 0){
-				let siblings = over.parent().children('.track')
-				let dropped_at = siblings.index(over) - 1
-
-				console.log('touchend',helpers.arrayOf('index',this.digestTracksKeys()),'to',dropped_at)
+				let siblings = over.parent().children('.track');
+				let dropped_at = siblings.index(over) - 1;
 
 				if (this.props.reorderTracks !== undefined){
-					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at)
-					this.props.uiActions.setSelectedTracks([])
+					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at);
+					this.props.uiActions.setSelectedTracks([]);
 				}
 			}
 
-			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover')
-			$('body').removeClass('touch-dragging')
+			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
+			$('body').removeClass('touch-dragging');
 		}
 		
-		this.touch_dragging_tracks_keys = false
+		this.touch_dragging_tracks_keys = false;
+	}
+
+	handleTap(e, track_key){
+		this.updateSelection(e, track_key, true);
+	}
+
+	handleDoubleTap(e,track_key){
+		this.playTracks([track_key]);
+		this.updateSelection(e, track_key);
+	}
+
+	handleClick(e, track_key){
+		this.updateSelection(e, track_key);
 	}
 
 	handleDoubleClick(e,track_key){
-		if (this.props.context_menu) this.props.uiActions.hideContextMenu()
-		this.playTracks()
+		if (this.props.context_menu){
+			this.props.uiActions.hideContextMenu();
+		}
+		this.playTracks([track_key]);
+		this.updateSelection(e, track_key);
 	}
 
-	handleContextMenu(e,track_key = null){
-		let selected_tracks = this.props.selected_tracks
+	handleContextMenu(e, track_key = null){
+
+		// Do our best to stop any flow-on events
+		e.preventDefault();
+		e.stopPropagation();
+		e.cancelBubble = true;
+
+		let selected_tracks = this.props.selected_tracks;
 
 		// Not already selected, so select it prior to triggering menu
 		if (track_key && !selected_tracks.includes(track_key)){
-			selected_tracks = [track_key]
-			this.props.uiActions.setSelectedTracks(selected_tracks)
+			selected_tracks = [track_key];
+			this.props.uiActions.setSelectedTracks(selected_tracks);
 		}
 
-		let selected_tracks_digested = this.digestTracksKeys(selected_tracks)
-		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks_digested)
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks_digested)
+		let selected_tracks_digested = this.digestTracksKeys(selected_tracks);
+		let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks_digested);
+		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks_digested);
 
 		let data = {
 			e: e,
@@ -202,78 +222,88 @@ class TrackList extends React.Component{
 			uris: selected_tracks_uris,
 			indexes: selected_tracks_indexes
 		}
+
 		this.props.uiActions.showContextMenu(data);
 	}
 
-	handleSelection(e,track_key){
-		let selected_tracks = this.props.selected_tracks
+	updateSelection(e, track_key, touched = false){
+		let selected_tracks = this.props.selected_tracks;
 
-		if ((e.ctrlKey || e.metaKey) || this.props.slim_mode || helpers.isTouchDevice()){
+		if ((e.ctrlKey || e.metaKey) || touched){
 
 			// Already selected, so unselect it
 			if (selected_tracks.includes(track_key)){
-				var index = selected_tracks.indexOf(track_key)
-				selected_tracks.splice(index,1)
+				var index = selected_tracks.indexOf(track_key);
+				selected_tracks.splice(index, 1);
 
 			// Not selected, so add it
 			} else {
-				selected_tracks.push(track_key)
+				selected_tracks.push(track_key);
 			}
 
 		} else if (e.shiftKey){
 
-			let last_selected_track = this.digestTracksKeys(selected_tracks[selected_tracks.length-1])
-			let last_selected_track_index = last_selected_track.index
-			let newly_selected_track = this.digestTracksKeys(track_key)
-			let newly_selected_track_index = newly_selected_track.index
+			let last_selected_track = this.digestTracksKeys(selected_tracks[selected_tracks.length-1]);
+			let last_selected_track_index = last_selected_track.index;
+			let newly_selected_track = this.digestTracksKeys(track_key);
+			let newly_selected_track_index = newly_selected_track.index;
 
 			// We've selected a track further down the list, 
 			// so proceed normally
 			if (last_selected_track_index < newly_selected_track_index){
-				var start = last_selected_track_index+1
-				var end = newly_selected_track_index
+				var start = last_selected_track_index + 1;
+				var end = newly_selected_track_index;
 
 			// Selected a track up the list, so 
 			// our last selected is the END of our range
 			} else {
-				var start = newly_selected_track_index
-				var end = last_selected_track_index-1
+				var start = newly_selected_track_index;
+				var end = last_selected_track_index - 1;
 			}
 
 			if (start !== false && start >= 0 && end !== false && end >= 0){
 				for (let i = start; i <= end; i++){
-					selected_tracks.push(this.buildTrackKey(this.props.tracks[i], i))
+					selected_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
 				}
 			}
 
 		// Regular, unmodified left click
 		} else {
-			selected_tracks = [track_key]
+			selected_tracks = [track_key];
 		}
 
-		this.props.uiActions.setSelectedTracks(selected_tracks)
+		this.props.uiActions.setSelectedTracks(selected_tracks);
 	}
 
 	isRightClick(e){
-		if ('which' in e ) 
+		if ('which' in e ){
 			return e.which == 3
-		if ('button' in e ) 
-			return e.button == 2
-		return false
+		} else if ('button' in e){
+			return e.button == 2;
+		}
+		return false;
 	}
 
-	playTracks(){
-		let selected_tracks = this.digestTracksKeys()
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
+	playTracks(tracks_keys = null){
+		if (tracks_keys !== null){
+			var selected_tracks = this.digestTracksKeys(tracks_keys);
+		} else {
+			var selected_tracks = this.digestTracksKeys();
+		}
+		var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+
+		if (selected_tracks.length <= 0){
+			return this.props.uiActions.createNotification('No tracks selected', 'bad');
+		}
 
 		// Our parent handles playing
 		if (this.props.playTracks !== undefined){
-			return this.props.playTracks(selected_tracks)
+			return this.props.playTracks(selected_tracks);
 
 		// Default to playing the URIs
 		} else {
-			let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks)
-			return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri)
+			let selected_tracks_uris = helpers.arrayOf('uri',selected_tracks);
+			return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri);
 		}
 	}
 
@@ -406,11 +436,6 @@ class TrackList extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
-		var mini_zones = false
-		if (this.props.slim_mode || helpers.isTouchDevice()){
-			mini_zones = true
-			className += ' mini-zones'
-		}
 
 		return (
 			<div className={className}>
@@ -424,17 +449,19 @@ class TrackList extends React.Component{
 								<Track
 									show_source_icon={this.props.show_source_icon}
 									key={track_key} 
-									mini_zones={mini_zones}
+									mini_zones={this.props.slim_mode || helpers.isTouchDevice()}
 									track={track} 
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									dragger={this.props.dragger} 
-									handleSelection={e => this.handleSelection(e, track_key)}
+									handleClick={(e) => this.handleClick(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
 									handleContextMenu={e => this.handleContextMenu(e, track_key)}
 									handleDrag={e => this.handleDrag(e, track_key)}
 									handleDrop={e => this.handleDrop(e, track_key)}
+									handleTap={e => this.handleTap(e, track_key)}
+									handleDoubleTap={e => this.handleDoubleTap(e, track_key)}
 									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
 								/>
 							)
