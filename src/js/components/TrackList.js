@@ -174,14 +174,34 @@ class TrackList extends React.Component{
 		this.touch_dragging_tracks_keys = false;
 	}
 
+	handleTap(e, track_key){
+		this.updateSelection(e, track_key, true);
+	}
+
+	handleDoubleTap(e,track_key){
+		this.playTracks([track_key]);
+		this.updateSelection(e, track_key);
+	}
+
+	handleClick(e, track_key){
+		this.updateSelection(e, track_key);
+	}
+
 	handleDoubleClick(e,track_key){
 		if (this.props.context_menu){
 			this.props.uiActions.hideContextMenu();
 		}
-		this.playTracks();
+		this.playTracks([track_key]);
+		this.updateSelection(e, track_key);
 	}
 
 	handleContextMenu(e, track_key = null){
+
+		// Do our best to stop any flow-on events
+		e.preventDefault();
+		e.stopPropagation();
+		e.cancelBubble = true;
+
 		let selected_tracks = this.props.selected_tracks;
 
 		// Not already selected, so select it prior to triggering menu
@@ -206,7 +226,7 @@ class TrackList extends React.Component{
 		this.props.uiActions.showContextMenu(data);
 	}
 
-	handleSelection(e, track_key, touched = false){
+	updateSelection(e, track_key, touched = false){
 		let selected_tracks = this.props.selected_tracks;
 
 		if ((e.ctrlKey || e.metaKey) || touched){
@@ -264,9 +284,13 @@ class TrackList extends React.Component{
 		return false;
 	}
 
-	playTracks(){
-		let selected_tracks = this.digestTracksKeys();
-		let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks);
+	playTracks(tracks_keys = null){
+		if (tracks_keys !== null){
+			var selected_tracks = this.digestTracksKeys(tracks_keys);
+		} else {
+			var selected_tracks = this.digestTracksKeys();
+		}
+		var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
 		if (selected_tracks.length <= 0){
 			return this.props.uiActions.createNotification('No tracks selected', 'bad');
@@ -431,11 +455,13 @@ class TrackList extends React.Component{
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									dragger={this.props.dragger} 
-									handleSelection={(e, touched = false) => this.handleSelection(e, track_key, touched)}
+									handleClick={(e) => this.handleClick(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
 									handleContextMenu={e => this.handleContextMenu(e, track_key)}
 									handleDrag={e => this.handleDrag(e, track_key)}
 									handleDrop={e => this.handleDrop(e, track_key)}
+									handleTap={e => this.handleTap(e, track_key)}
+									handleDoubleTap={e => this.handleDoubleTap(e, track_key)}
 									handleTouchDrag={e => this.handleTouchDrag(e, track_key)}
 								/>
 							)

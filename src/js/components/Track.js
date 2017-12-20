@@ -20,6 +20,7 @@ export default class Track extends React.Component{
 		}
 
 		this.start_time = 0;
+		this.end_time = 0;
 		this.start_position = false
 	}
 
@@ -88,7 +89,7 @@ export default class Track extends React.Component{
 				}
 			} else {
 				if (!target.is('a') && target.closest('a').length <= 0){
-					this.props.handleSelection(e);
+					this.props.handleClick(e);
 					this.start_position = false;
 				}
 			}
@@ -108,41 +109,10 @@ export default class Track extends React.Component{
 		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
 
-		// Clicked a nested link (ie Artist name), so no touch intervention required
-		if (target.is('a')){
-			return false;
-
-		// We started a touchstart within 300ms ago, so handle as double-tap
-		} else if ((timestamp - this.start_time) > 0 && (timestamp - this.start_time) <= 300){
-
-			// Update our selection. By not passing touch = true selection will work like a regular click
-			this.props.handleSelection(e);
-
-			// Wait a moment to give Redux time to update our selected tracks
-			// TODO: Use proper callback, rather than assuming a fixed period of time for store change
-			setTimeout(() => {
-					this.props.handleDoubleClick(e);
-				}, 
-				100
-			);
-			e.preventDefault();
-
 		// Touch-drag zone
-		} else if (target.hasClass('drag-zone')){
+		if (target.hasClass('drag-zone')){
 			this.props.handleTouchDrag(e);
 			e.preventDefault();
-
-		// Select zone
-		} else if (target.hasClass('select-zone')){
-			this.props.handleSelection(e, true);
-			e.preventDefault();
-
-		// Touch contextable
-		} else if (target.hasClass('touch-contextable')){
-
-			// Update our selection. By not passing touch = true selection will work like a regular click
-			//this.props.handleSelection(e);
-			this.handleContextMenu(e);
 		}
 
 		// Save touch start details
@@ -170,6 +140,22 @@ export default class Track extends React.Component{
 			e.preventDefault();
 		}
 
+		// Context trigger
+		if (target.hasClass('touch-contextable')){
+
+			// Update our selection. By not passing touch = true selection will work like a regular click
+			//this.props.handleSelection(e);
+			this.props.handleContextMenu(e);
+			return false;
+		}
+
+		// We received a touchend within 300ms ago, so handle as double-tap
+		if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
+			this.props.handleDoubleTap(e);
+			e.preventDefault();
+			return false;
+		}
+
 		// Too long between touchstart and touchend
 		if (this.start_time + tap_time_threshold < timestamp){
 			return false;
@@ -179,15 +165,10 @@ export default class Track extends React.Component{
 			this.start_position.x - tap_distance_threshold < end_position.x &&
 			this.start_position.y + tap_distance_threshold > end_position.y &&
 			this.start_position.y - tap_distance_threshold < end_position.y){
-				this.props.handleSelection(e, true);
+				this.props.handleTap(e);
 		}
-	}
 
-	handleContextMenu(e){
-		e.preventDefault();
-		e.stopPropagation();
-		e.cancelBubble = true;
-		this.props.handleContextMenu(e);
+		this.end_time = timestamp;
 	}
 
 	render(){
@@ -314,7 +295,7 @@ export default class Track extends React.Component{
 		}
 
 		track_actions.push(
-			<ContextMenuTrigger key="context" onTrigger={e => this.handleContextMenu(e)} />
+			<ContextMenuTrigger key="context" onTrigger={e => this.props.handleContextMenu(e)} />
 		)
 
 		// If we're touchable, and can sort this tracklist
@@ -340,7 +321,7 @@ export default class Track extends React.Component{
 				onMouseMove={e => this.handleMouseMove(e)}
 
 				onDoubleClick={e => this.handleDoubleClick(e)}
-				onContextMenu={e => this.handleContextMenu(e)}
+				onContextMenu={e => this.props.handleContextMenu(e)}
 
 				onTouchStart={e => this.handleTouchStart(e)}
 				onTouchEnd={e => this.handleTouchEnd(e)}>

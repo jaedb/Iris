@@ -273,55 +273,6 @@
 				float: none;
 			}
 
-			.select-zone {
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 100%;
-				width: 34px;
-				font-size: 8px;
-				display: block;
-				
-				.fa {
-					position: absolute;
-					top: 27px;
-					left: 17px;
-					pointer-events: none;
-					color: $white;
-					z-index: 1;
-				}
-
-				&:after {
-					display: block;
-					content: '';
-					border: 1px solid $mid_grey;
-					border-radius: 50%;
-					width: 14px;
-					height: 14px;
-					position: absolute;
-					top: 16px;
-					left: 14px;
-				}
-			}
-
-			.drag-zone {
-				position: absolute;
-				top: 0;
-				left: 34px;
-				height: 100%;
-				width: 34px;
-				font-size: 14px;
-				display: block;
-				color: $mid_grey;
-				
-				.fa {
-					position: absolute;
-					top: 24px;
-					left: 6px;
-					pointer-events: none;
-				}
-			}
-
 			.context-zone {
 				top: 14px;
 			}
@@ -400,10 +351,7 @@
 
 		&.track-list {
 			.list-item.can-sort {
-				padding-left: 70px !important;
-			}
-			.list-item:not(.can-sort){
-				padding-left: 42px !important;
+				padding-left: 40px !important;
 			}
 		}
 	}

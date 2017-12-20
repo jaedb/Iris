@@ -4290,6 +4290,24 @@ aside {
   margin-top: -3px;
   background: transparent; }
 
+.list.track-list .list-item.has-touch-drag-zone {
+  padding-left: 45px; }
+  .list.track-list .list-item.has-touch-drag-zone .drag-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 34px;
+    font-size: 14px;
+    display: block;
+    color: #a3a19f; }
+    .list.track-list .list-item.has-touch-drag-zone .drag-zone .fa {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      margin-top: -6px;
+      pointer-events: none; }
+
 .list.playlist-list .list-item .col.name {
   width: 50%; }
 
@@ -4362,101 +4380,12 @@ aside {
     border-color: #08d58f;
     opacity: 1; }
 
-.touch .list.track-list .list-item.can-sort {
-  padding-left: 70px !important; }
-
-.touch .list.track-list .list-item:not(.can-sort) {
-  padding-left: 45px !important; }
-
-.touch .list.track-list .list-item .select-zone {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 34px;
-  font-size: 8px;
-  display: block; }
-  .touch .list.track-list .list-item .select-zone .fa {
-    position: absolute;
-    top: 50%;
-    left: 17px;
-    margin-top: -3px;
-    pointer-events: none;
-    color: #FFFFFF;
-    z-index: 1; }
-  .touch .list.track-list .list-item .select-zone:after {
-    display: block;
-    content: '';
-    border: 1px solid #a3a19f;
-    border-radius: 50%;
-    width: 14px;
-    height: 14px;
-    position: absolute;
-    top: 50%;
-    left: 14px;
-    margin-top: -7px; }
-
-.touch .list.track-list .list-item .drag-zone {
-  position: absolute;
-  top: 0;
-  left: 34px;
-  height: 100%;
-  width: 34px;
-  font-size: 14px;
-  display: block;
-  color: #a3a19f; }
-  .touch .list.track-list .list-item .drag-zone .fa {
-    position: absolute;
-    top: 50%;
-    left: 6px;
-    margin-top: -6px;
-    pointer-events: none; }
-
 @media (max-width: 800px) {
   .list .list-item {
     padding: 12px !important; }
     .list .list-item .source {
       position: static;
       float: none; }
-    .list .list-item .select-zone {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 34px;
-      font-size: 8px;
-      display: block; }
-      .list .list-item .select-zone .fa {
-        position: absolute;
-        top: 27px;
-        left: 17px;
-        pointer-events: none;
-        color: #FFFFFF;
-        z-index: 1; }
-      .list .list-item .select-zone:after {
-        display: block;
-        content: '';
-        border: 1px solid #a3a19f;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        position: absolute;
-        top: 16px;
-        left: 14px; }
-    .list .list-item .drag-zone {
-      position: absolute;
-      top: 0;
-      left: 34px;
-      height: 100%;
-      width: 34px;
-      font-size: 14px;
-      display: block;
-      color: #a3a19f; }
-      .list .list-item .drag-zone .fa {
-        position: absolute;
-        top: 24px;
-        left: 6px;
-        pointer-events: none; }
     .list .list-item .context-zone {
       top: 14px; }
     .list .list-item .col.name {
@@ -4495,9 +4424,7 @@ aside {
   .list.queue-history-track-list .list-item .source {
     display: none !important; }
   .list.track-list .list-item.can-sort {
-    padding-left: 70px !important; }
-  .list.track-list .list-item:not(.can-sort) {
-    padding-left: 42px !important; } }
+    padding-left: 40px !important; } }
 
 .grid .grid-item-wrapper {
   display: inline-block; }
