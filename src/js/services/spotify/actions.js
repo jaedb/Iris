@@ -59,12 +59,17 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                                 resolve(response)
                             },
                             (xhr, status, error) => {
-                                dispatch(uiActions.stopLoading(loader_key))
+                                dispatch(uiActions.stopLoading(loader_key));
+
+                                // TODO: Rate limiting
+                                if (xhr.status == 429){
+                                    alert("You hit the Spotify API rate limiter");
+                                }
 
                                 // TODO: Instead of allowing request to fail before renewing the token, once refreshed
                                 // we should retry the original request(s)
-                                if (xhr.responseJSON.error.message == 'The access token expired'){
-                                    dispatch(refreshToken(dispatch, getState))
+                                if (xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message == 'The access token expired'){
+                                    dispatch(refreshToken(dispatch, getState));
                                 }
 
                                 reject({
@@ -314,7 +319,7 @@ export function getFeaturedPlaylists(){
         dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
         var date = new Date();
-        date.setHours(date.getHours() - 1);
+        date.setHours(date.getHours());
         var year = date.getFullYear();
         var month = date.getMonth();
         if (month < 10 ) month = '0'+month;
@@ -329,7 +334,7 @@ export function getFeaturedPlaylists(){
 
         var timestamp = year+'-'+month+'-'+day+'T'+hour+':'+min+':'+sec;
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?country='+getState().core.country+'&limit=50&locale='+getState().core.locale+'&timestamp='+timestamp)
+        sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country='+getState().core.country+'&locale='+getState().core.locale+'timestamp='+timestamp)
             .then(
                 response => {
                     var playlists = []
@@ -560,7 +565,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'tracks',
-                            results: response.tracks.items,
+                            results: helpers.formatTracks(response.tracks.items),
                             more: response.tracks.next,
                         });
                     }

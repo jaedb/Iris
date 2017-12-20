@@ -838,7 +838,7 @@ const MopidyMiddleware = (function(){
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
                                             context: action.data.context,
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
                                     continue_process();
@@ -873,7 +873,7 @@ const MopidyMiddleware = (function(){
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
                                             context: 'tracks',
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
 
@@ -1270,7 +1270,7 @@ const MopidyMiddleware = (function(){
                     });
                 break
 
-            case 'MOPIDY_REORDER_PLAYLIST_TRACKS':                
+            case 'MOPIDY_REORDER_PLAYLIST_TRACKS':
                 instruct(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
 
@@ -1303,13 +1303,12 @@ const MopidyMiddleware = (function(){
                         playlist = Object.assign({}, playlist, { tracks: tracks })
                         instruct(socket, store, 'playlists.save', { playlist: playlist } )
                             .then(response => {
-
                                 store.dispatch({ 
                                     type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
                                     tracks: playlist.tracks, 
                                     key: playlist.uri
-                                })
-                            })
+                                });
+                            });
                     });
                 break
 

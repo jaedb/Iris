@@ -66,7 +66,7 @@ class App extends React.Component{
 
 		// Check for url-parsed configuration values
 		var url_vars = this.props.location.query;
-		if (url_vars && url_vars.host && url_vars.port){
+		if (url_vars !== undefined && url_vars.host !== undefined && url_vars.port !== undefined){
 			this.props.mopidyActions.setConfig({
 				host: url_vars.host,
 				port: url_vars.port
@@ -274,8 +274,11 @@ class App extends React.Component{
 		        	uiActions={this.props.uiActions} 
 		        	notifications={this.props.notifications} 
 		        	processes={this.props.processes}
-		        	broadcasts={this.props.broadcasts} />
+		        	broadcasts={this.props.broadcasts}
+		        />
+
 		        {this.props.debug_info ? <DebugInfo /> : null}
+		        
 	        </div>
 		);
 	}

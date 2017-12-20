@@ -1,7 +1,7 @@
 
 .list {
 	.list-item {
-
+		@include clearfix;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		-khtml-user-select: none;
@@ -12,15 +12,11 @@
 		display: block;
 		position: relative;
 		margin: 0 -10px -1px -10px;
+		padding: 14px 30px 13px 10px;
 		cursor: pointer;
 		border-radius: 3px;
 		border-bottom: 1px solid rgba(255,255,255,0.05);
 		border-top: 1px solid rgba(255,255,255,0.05);
-
-		.liner {
-			@include clearfix;
-			padding: 14px 30px 13px 10px;
-		}
 
 		&.selected {
 			background: rgba(255,255,255,0.08) !important;
@@ -40,6 +36,10 @@
 		.select-zone,
 		.drag-zone {
 			display: none;
+
+			* {
+				pointer-events: none;
+			}
 		}
 
 		.context-menu-trigger {
@@ -91,6 +91,10 @@
 				cursor: pointer;
 			}
 		}
+
+		.uri-placeholder {
+			word-break: break-all;
+		}
 	}
 
 	&.track-list {
@@ -113,6 +117,29 @@
 				border-top: 3px solid $blue;
 				margin-top: -3px;
 				background: transparent;
+			}
+
+			&.has-touch-drag-zone {
+				padding-left: 45px;				
+
+				.drag-zone {
+					position: absolute;
+					top: 0;
+					left: 0;
+					height: 100%;
+					width: 34px;
+					font-size: 14px;
+					display: block;
+					color: $mid_grey;
+					
+					.fa {
+						position: absolute;
+						top: 50%;
+						left: 10px;
+						margin-top: -6px;
+						pointer-events: none;
+					}
+				}
 			}
 		}
 	}
@@ -236,131 +263,14 @@
 		}
 	}
 
-	&.track-list.mini-zones {
-		.list-item {	
-
-			&.can-sort {
-				padding-left: 60px !important;
-			}
-			
-			&:not(.can-sort){
-				padding-left: 35px !important;
-			}
-
-			.select-zone {
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 100%;
-				width: 34px;
-				font-size: 8px;
-				display: block;
-				
-				.fa {
-					position: absolute;
-					top: 50%;
-					left: 17px;
-					margin-top: -3px;
-					pointer-events: none;
-					color: $white;
-					z-index: 1;
-				}
-
-				&:after {
-					display: block;
-					content: '';
-					border: 1px solid $mid_grey;
-					border-radius: 50%;
-					width: 14px;
-					height: 14px;
-					position: absolute;
-					top: 50%;
-					left: 14px;
-					margin-top: -7px;
-				}
-			}
-
-			.drag-zone {
-				position: absolute;
-				top: 0;
-				left: 34px;
-				height: 100%;
-				width: 34px;
-				font-size: 14px;
-				display: block;
-				color: $mid_grey;
-				
-				.fa {
-					position: absolute;
-					top: 50%;
-					left: 6px;
-					margin-top: -6px;
-					pointer-events: none;
-				}
-			}
-		}
-	}
-
 	@include responsive($bp_medium){
 
 		.list-item {
-
-			.liner {
-				padding: 12px !important;
-			}
+			padding: 12px !important;
 
 			.source {
 				position: static;
 				float: none;
-			}
-
-			.select-zone {
-				position: absolute;
-				top: 0;
-				left: 0;
-				height: 100%;
-				width: 34px;
-				font-size: 8px;
-				display: block;
-				
-				.fa {
-					position: absolute;
-					top: 27px;
-					left: 17px;
-					pointer-events: none;
-					color: $white;
-					z-index: 1;
-				}
-
-				&:after {
-					display: block;
-					content: '';
-					border: 1px solid $mid_grey;
-					border-radius: 50%;
-					width: 14px;
-					height: 14px;
-					position: absolute;
-					top: 16px;
-					left: 14px;
-				}
-			}
-
-			.drag-zone {
-				position: absolute;
-				top: 0;
-				left: 34px;
-				height: 100%;
-				width: 34px;
-				font-size: 14px;
-				display: block;
-				color: $mid_grey;
-				
-				.fa {
-					position: absolute;
-					top: 24px;
-					left: 6px;
-					pointer-events: none;
-				}
 			}
 
 			.context-zone {
@@ -441,10 +351,7 @@
 
 		&.track-list {
 			.list-item.can-sort {
-				padding-left: 70px !important;
-			}
-			.list-item:not(.can-sort){
-				padding-left: 42px !important;
+				padding-left: 40px !important;
 			}
 		}
 	}

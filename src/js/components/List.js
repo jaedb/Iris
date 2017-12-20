@@ -23,14 +23,24 @@ class List extends React.Component{
 
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
+			e.preventDefault();
+			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+		}
+	}
+
+	handleMouseDown(e, uri){
+
+		// make sure we haven't clicked a nested link (ie Artist name)
+		if (e.target.tagName.toLowerCase() !== 'a'){
+			e.preventDefault();
 			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 		}
 	}
 
 	handleContextMenu(e,item){
 		if (this.props.handleContextMenu){
-			e.preventDefault()
-			this.props.handleContextMenu(e,item)
+			e.preventDefault();
+			this.props.handleContextMenu(e,item);
 		}
 	}
 
@@ -91,23 +101,22 @@ class List extends React.Component{
 						if (row.type ) class_name += ' '+row.type
 
 						return (
-							<div className={class_name} key={row_index}>
-								<div 
-									className="liner"
-									onClick={e => this.handleClick(e, row.uri)}
-									onContextMenu={e => this.handleContextMenu(e,row)}>
-										{
-											this.props.columns.map((col, col_index) => {
-												var className = 'col '+col.name.replace('.','_')
-												return (
-													<div className={className} key={col_index}>
-														{ this.renderValue(row, col.name) }
-													</div>
-												)
-											})
-										}
-								</div>
-								{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
+							<div
+								className={class_name} 
+								key={row_index}
+								onClick={e => this.handleClick(e, row.uri)}
+								onContextMenu={e => this.handleContextMenu(e,row)}>
+									{
+										this.props.columns.map((col, col_index) => {
+											var className = 'col '+col.name.replace('.','_')
+											return (
+												<div className={className} key={col_index}>
+													{ this.renderValue(row, col.name) }
+												</div>
+											)
+										})
+									}
+									{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
 							</div>
 						)
 					})

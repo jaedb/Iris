@@ -1115,8 +1115,23 @@ function setSelectedTracks() {
 }
 
 function showContextMenu(data) {
-    data.position_x = data.e.clientX;
-    data.position_y = data.e.clientY;
+
+    // Touchend
+    if (data.e.changedTouches) {
+        data.position_x = data.e.changedTouches[0].clientX;
+        data.position_y = data.e.changedTouches[0].clientY;
+
+        // Touchstart
+    } else if (data.e.touches) {
+        data.position_x = data.e.touches[0].clientX;
+        data.position_y = data.e.touches[0].clientY;
+
+        // Click/mousedown/mouseup/etc
+    } else {
+        data.position_x = data.e.clientX;
+        data.position_y = data.e.clientY;
+    }
+
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data
@@ -1813,7 +1828,8 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
                 cached: true,
                 timeout: 30000,
                 headers: {
-                    Authorization: 'Bearer ' + response
+                    Authorization: 'Bearer ' + response,
+                    Accept: 'application/json'
                 }
 
                 // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
@@ -1835,9 +1851,14 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
             }, function (xhr, status, error) {
                 dispatch(uiActions.stopLoading(loader_key));
 
+                // TODO: Rate limiting
+                if (xhr.status == 429) {
+                    alert("You hit the Spotify API rate limiter");
+                }
+
                 // TODO: Instead of allowing request to fail before renewing the token, once refreshed
                 // we should retry the original request(s)
-                if (xhr.responseJSON.error.message == 'The access token expired') {
+                if (xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message == 'The access token expired') {
                     dispatch(refreshToken(dispatch, getState));
                 }
 
@@ -2040,6 +2061,7 @@ function getFeaturedPlaylists() {
         dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
         var date = new Date();
+        date.setHours(date.getHours());
         var year = date.getFullYear();
         var month = date.getMonth();
         if (month < 10) month = '0' + month;
@@ -2054,7 +2076,7 @@ function getFeaturedPlaylists() {
 
         var timestamp = year + '-' + month + '-' + day + 'T' + hour + ':' + min + ':' + sec;
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?timestamp=' + timestamp + '&country=' + getState().core.country + '&limit=50&locale=' + getState().core.locale).then(function (response) {
+        sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country=' + getState().core.country + '&locale=' + getState().core.locale + 'timestamp=' + timestamp).then(function (response) {
             var playlists = [];
             for (var i = 0; i < response.playlists.items.length; i++) {
                 playlists.push(Object.assign({}, response.playlists.items[i], {
@@ -2227,7 +2249,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'tracks',
-                    results: response.tracks.items,
+                    results: helpers.formatTracks(response.tracks.items),
                     more: response.tracks.next
                 });
             }
@@ -2574,15 +2596,19 @@ function getRecommendations() {
                 }
             }
 
-            dispatch({
-                type: 'ALBUMS_LOADED',
-                albums: albums
-            });
+            if (albums.length > 0) {
+                dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: albums
+                });
+            }
 
-            dispatch({
-                type: 'TRACKS_LOADED',
-                tracks: tracks
-            });
+            if (tracks.length > 0) {
+                dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: tracks
+                });
+            }
 
             dispatch({
                 type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
@@ -15995,8 +16021,6 @@ var TrackList = function (_React$Component) {
 					var siblings = over.parent().children('.track');
 					var dropped_at = siblings.index(over) - 1;
 
-					console.log('touchend', helpers.arrayOf('index', this.digestTracksKeys()), 'to', dropped_at);
-
 					if (this.props.reorderTracks !== undefined) {
 						this.props.reorderTracks(helpers.arrayOf('index', this.digestTracksKeys()), dropped_at);
 						this.props.uiActions.setSelectedTracks([]);
@@ -16010,15 +16034,40 @@ var TrackList = function (_React$Component) {
 			this.touch_dragging_tracks_keys = false;
 		}
 	}, {
+		key: 'handleTap',
+		value: function handleTap(e, track_key) {
+			this.updateSelection(e, track_key, true);
+		}
+	}, {
+		key: 'handleDoubleTap',
+		value: function handleDoubleTap(e, track_key) {
+			this.playTracks([track_key]);
+			this.updateSelection(e, track_key);
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e, track_key) {
+			this.updateSelection(e, track_key);
+		}
+	}, {
 		key: 'handleDoubleClick',
 		value: function handleDoubleClick(e, track_key) {
-			if (this.props.context_menu) this.props.uiActions.hideContextMenu();
-			this.playTracks();
+			if (this.props.context_menu) {
+				this.props.uiActions.hideContextMenu();
+			}
+			this.playTracks([track_key]);
+			this.updateSelection(e, track_key);
 		}
 	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e) {
 			var track_key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+
+			// Do our best to stop any flow-on events
+			e.preventDefault();
+			e.stopPropagation();
+			e.cancelBubble = true;
 
 			var selected_tracks = this.props.selected_tracks;
 
@@ -16040,14 +16089,17 @@ var TrackList = function (_React$Component) {
 				uris: selected_tracks_uris,
 				indexes: selected_tracks_indexes
 			};
+
 			this.props.uiActions.showContextMenu(data);
 		}
 	}, {
-		key: 'handleSelection',
-		value: function handleSelection(e, track_key) {
+		key: 'updateSelection',
+		value: function updateSelection(e, track_key) {
+			var touched = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
 			var selected_tracks = this.props.selected_tracks;
 
-			if (e.ctrlKey || e.metaKey || this.props.slim_mode || helpers.isTouchDevice()) {
+			if (e.ctrlKey || e.metaKey || touched) {
 
 				// Already selected, so unselect it
 				if (selected_tracks.includes(track_key)) {
@@ -16094,15 +16146,28 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'isRightClick',
 		value: function isRightClick(e) {
-			if ('which' in e) return e.which == 3;
-			if ('button' in e) return e.button == 2;
+			if ('which' in e) {
+				return e.which == 3;
+			} else if ('button' in e) {
+				return e.button == 2;
+			}
 			return false;
 		}
 	}, {
 		key: 'playTracks',
 		value: function playTracks() {
-			var selected_tracks = this.digestTracksKeys();
+			var tracks_keys = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+			if (tracks_keys !== null) {
+				var selected_tracks = this.digestTracksKeys(tracks_keys);
+			} else {
+				var selected_tracks = this.digestTracksKeys();
+			}
 			var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+
+			if (selected_tracks.length <= 0) {
+				return this.props.uiActions.createNotification('No tracks selected', 'bad');
+			}
 
 			// Our parent handles playing
 			if (this.props.playTracks !== undefined) {
@@ -16309,11 +16374,6 @@ var TrackList = function (_React$Component) {
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
-			var mini_zones = false;
-			if (this.props.slim_mode || helpers.isTouchDevice()) {
-				mini_zones = true;
-				className += ' mini-zones';
-			}
 
 			return _react2.default.createElement(
 				'div',
@@ -16325,14 +16385,14 @@ var TrackList = function (_React$Component) {
 					return _react2.default.createElement(_Track2.default, {
 						show_source_icon: _this2.props.show_source_icon,
 						key: track_key,
-						mini_zones: mini_zones,
+						mini_zones: _this2.props.slim_mode || helpers.isTouchDevice(),
 						track: track,
 						context: _this2.props.context,
 						can_sort: _this2.props.context == 'queue' || _this2.props.context == 'editable-playlist',
 						selected: _this2.props.selected_tracks.includes(track_key),
 						dragger: _this2.props.dragger,
-						handleSelection: function handleSelection(e) {
-							return _this2.handleSelection(e, track_key);
+						handleClick: function handleClick(e) {
+							return _this2.handleClick(e, track_key);
 						},
 						handleDoubleClick: function handleDoubleClick(e) {
 							return _this2.handleDoubleClick(e, track_key);
@@ -16345,6 +16405,12 @@ var TrackList = function (_React$Component) {
 						},
 						handleDrop: function handleDrop(e) {
 							return _this2.handleDrop(e, track_key);
+						},
+						handleTap: function handleTap(e) {
+							return _this2.handleTap(e, track_key);
+						},
+						handleDoubleTap: function handleDoubleTap(e) {
+							return _this2.handleDoubleTap(e, track_key);
 						},
 						handleTouchDrag: function handleTouchDrag(e) {
 							return _this2.handleTouchDrag(e, track_key);
@@ -18573,13 +18639,14 @@ var ContextMenuTrigger = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			var className = 'context-menu-trigger';
+			var className = 'context-menu-trigger mouse-contextable touch-contextable';
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
 			return _react2.default.createElement(
 				'span',
-				{ className: className,
+				{
+					className: className,
 					onClick: function onClick(e) {
 						return _this2.handleClick(e);
 					} },
@@ -23488,6 +23555,17 @@ var List = function (_React$Component) {
 
 			// make sure we haven't clicked a nested link (ie Artist name)
 			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
+				_reactRouter.hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			}
+		}
+	}, {
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e, uri) {
+
+			// make sure we haven't clicked a nested link (ie Artist name)
+			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
 				_reactRouter.hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 			}
 		}
@@ -23592,26 +23670,23 @@ var List = function (_React$Component) {
 
 					return _react2.default.createElement(
 						'div',
-						{ className: class_name, key: row_index },
-						_react2.default.createElement(
-							'div',
-							{
-								className: 'liner',
-								onClick: function onClick(e) {
-									return _this2.handleClick(e, row.uri);
-								},
-								onContextMenu: function onContextMenu(e) {
-									return _this2.handleContextMenu(e, row);
-								} },
-							_this2.props.columns.map(function (col, col_index) {
-								var className = 'col ' + col.name.replace('.', '_');
-								return _react2.default.createElement(
-									'div',
-									{ className: className, key: col_index },
-									_this2.renderValue(row, col.name)
-								);
-							})
-						),
+						{
+							className: class_name,
+							key: row_index,
+							onClick: function onClick(e) {
+								return _this2.handleClick(e, row.uri);
+							},
+							onContextMenu: function onContextMenu(e) {
+								return _this2.handleContextMenu(e, row);
+							} },
+						_this2.props.columns.map(function (col, col_index) {
+							var className = 'col ' + col.name.replace('.', '_');
+							return _react2.default.createElement(
+								'div',
+								{ className: className, key: col_index },
+								_this2.renderValue(row, col.name)
+							);
+						}),
 						_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
 								return _this2.handleContextMenu(e, row);
 							} })
@@ -33076,16 +33151,29 @@ var Track = function (_React$Component) {
 			hover: false
 		};
 
+		_this.start_time = 0;
+		_this.end_time = 0;
 		_this.start_position = false;
 		return _this;
 	}
 
 	_createClass(Track, [{
+		key: 'handleMouseEnter',
+		value: function handleMouseEnter(e) {
+			this.setState({ hover: true });
+		}
+	}, {
+		key: 'handleMouseLeave',
+		value: function handleMouseLeave(e) {
+			this.setState({ hover: false });
+		}
+	}, {
 		key: 'handleMouseDown',
 		value: function handleMouseDown(e) {
+			var target = $(e.target);
 
 			// Clicked a nested link (ie Artist name), so no dragging required
-			if (e.target.tagName.toLowerCase() === 'a') {
+			if (target.is('a')) {
 				return false;
 			}
 
@@ -33104,6 +33192,7 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseMove',
 		value: function handleMouseMove(e) {
+			var target = $(e.target);
 
 			// No drag handling means NO
 			if (this.props.handleDrag === undefined) {
@@ -33127,6 +33216,7 @@ var Track = function (_React$Component) {
 	}, {
 		key: 'handleMouseUp',
 		value: function handleMouseUp(e) {
+			var target = $(e.target);
 
 			// Only listen for left clicks
 			if (e.button === 0) {
@@ -33137,9 +33227,8 @@ var Track = function (_React$Component) {
 						this.props.handleDrop(e);
 					}
 				} else {
-					var target = $(e.target);
 					if (!target.is('a') && target.closest('a').length <= 0) {
-						this.props.handleSelection(e);
+						this.props.handleClick(e);
 						this.start_position = false;
 					}
 				}
@@ -33151,23 +33240,73 @@ var Track = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'handleDoubleClick',
+		value: function handleDoubleClick(e) {
+			this.props.handleDoubleClick(e);
+		}
+	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
+			var target = $(e.target);
+			var timestamp = Math.floor(Date.now());
 
-			// Clicked a nested link (ie Artist name), so no dragging required
-			if (e.target.tagName.toLowerCase() === 'a') {
+			// Touch-drag zone
+			if (target.hasClass('drag-zone')) {
+				this.props.handleTouchDrag(e);
+				e.preventDefault();
+			}
+
+			// Save touch start details
+			this.start_time = timestamp;
+			this.start_position = {
+				x: e.touches[0].clientX,
+				y: e.touches[0].clientY
+			};
+
+			return false;
+		}
+	}, {
+		key: 'handleTouchEnd',
+		value: function handleTouchEnd(e) {
+			var target = $(e.target);
+			var timestamp = Math.floor(Date.now());
+			var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
+			var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
+			var end_position = {
+				x: e.changedTouches[0].clientX,
+				y: e.changedTouches[0].clientY
+
+				// Clicked a nested link (ie Artist name), so no dragging required
+			};if (!target.is('a')) {
+				e.preventDefault();
+			}
+
+			// Context trigger
+			if (target.hasClass('touch-contextable')) {
+
+				// Update our selection. By not passing touch = true selection will work like a regular click
+				//this.props.handleSelection(e);
+				this.props.handleContextMenu(e);
 				return false;
 			}
 
-			this.props.handleTouchDrag(e);
-		}
-	}, {
-		key: 'handleContextMenu',
-		value: function handleContextMenu(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			e.cancelBubble = true;
-			this.props.handleContextMenu(e);
+			// We received a touchend within 300ms ago, so handle as double-tap
+			if (timestamp - this.end_time > 0 && timestamp - this.end_time <= 300) {
+				this.props.handleDoubleTap(e);
+				e.preventDefault();
+				return false;
+			}
+
+			// Too long between touchstart and touchend
+			if (this.start_time + tap_time_threshold < timestamp) {
+				return false;
+			}
+
+			if (this.start_position.x + tap_distance_threshold > end_position.x && this.start_position.x - tap_distance_threshold < end_position.x && this.start_position.y + tap_distance_threshold > end_position.y && this.start_position.y - tap_distance_threshold < end_position.y) {
+				this.props.handleTap(e);
+			}
+
+			this.end_time = timestamp;
 		}
 	}, {
 		key: 'render',
@@ -33179,7 +33318,7 @@ var Track = function (_React$Component) {
 			}
 
 			var track = this.props.track;
-			var className = 'list-item track';
+			var className = 'list-item track mouse-draggable mouse-selectable mouse-contextable';
 			if (this.props.selected) className += ' selected';
 			if (this.props.can_sort) className += ' can-sort';
 			if (track.type !== undefined) className += ' ' + track.type;
@@ -33213,7 +33352,7 @@ var Track = function (_React$Component) {
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'uri-placeholder grey-text' },
 						track.uri
 					)
 				));
@@ -33337,89 +33476,63 @@ var Track = function (_React$Component) {
 				track_columns.push(_react2.default.createElement(
 					'span',
 					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : null
+					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 				));
 			}
 
 			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { key: 'context', onTrigger: function onTrigger(e) {
-					return _this2.handleContextMenu(e);
+					return _this2.props.handleContextMenu(e);
 				} }));
 
-			if (this.props.mini_zones) {
+			// If we're touchable, and can sort this tracklist
+			if (helpers.isTouchDevice() && this.props.can_sort) {
+				className += " has-touch-drag-zone";
 
-				// Select zone handles selection events only
-				// We use onClick to capture touch as well as mouse events in one tidy parcel
 				track_actions.push(_react2.default.createElement(
 					'span',
 					{
-						className: 'select-zone',
-						key: 'select-zone',
-						onClick: function onClick(e) {
-							return _this2.props.handleSelection(e);
-						} },
-					this.props.selected ? _react2.default.createElement(_reactFontawesome2.default, { name: 'check', className: 'selected', fixedWidth: true }) : null
+						className: 'drag-zone touch-draggable mouse-draggable',
+						key: 'drag-zone' },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'bars', fixedWidth: true })
 				));
-
-				if (this.props.can_sort) {
-					track_actions.push(_react2.default.createElement(
-						'span',
-						{
-							className: 'drag-zone',
-							key: 'drag-zone',
-							onTouchStart: function onTouchStart(e) {
-								return _this2.handleTouchStart(e);
-							} },
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'bars', fixedWidth: true })
-					));
-				}
-
-				// No events attached directly to the track. Instead events are attached to
-				// the appropriate select/drag zone sub-elements
-				return _react2.default.createElement(
-					'div',
-					{ className: className },
-					track_actions,
-					_react2.default.createElement(
-						'div',
-						{ className: 'liner' },
-						track_columns
-					)
-				);
-			} else {
-				return _react2.default.createElement(
-					'div',
-					{
-						className: className,
-						onMouseEnter: function onMouseEnter(e) {
-							return _this2.setState({ hover: true });
-						},
-						onMouseLeave: function onMouseLeave(e) {
-							return _this2.setState({ hover: false });
-						} },
-					track_actions,
-					_react2.default.createElement(
-						'div',
-						{ className: 'liner'
-							//onTouchEnd={e => this.handleTouchEnd(e)}			// When touch dragging is dropped on me
-							, onMouseDown: function onMouseDown(e) {
-								return _this2.handleMouseDown(e);
-							} // Click (or potentially a mouse drag start)
-							, onMouseMove: function onMouseMove(e) {
-								return _this2.handleMouseMove(e);
-							} // Any movement over me
-							, onMouseUp: function onMouseUp(e) {
-								return _this2.handleMouseUp(e);
-							} // End of click, or potentially a dragging drop event
-							, onDoubleClick: function onDoubleClick(e) {
-								return _this2.props.handleDoubleClick(e);
-							},
-							onContextMenu: function onContextMenu(e) {
-								_this2.handleContextMenu(e);
-							} },
-						track_columns
-					)
-				);
 			}
+
+			return _react2.default.createElement(
+				'div',
+				{
+					className: className,
+					onMouseEnter: function onMouseEnter(e) {
+						return _this2.handleMouseEnter(e);
+					},
+					onMouseLeave: function onMouseLeave(e) {
+						return _this2.handleMouseLeave(e);
+					},
+					onMouseDown: function onMouseDown(e) {
+						return _this2.handleMouseDown(e);
+					},
+					onMouseUp: function onMouseUp(e) {
+						return _this2.handleMouseUp(e);
+					},
+					onMouseMove: function onMouseMove(e) {
+						return _this2.handleMouseMove(e);
+					},
+
+					onDoubleClick: function onDoubleClick(e) {
+						return _this2.handleDoubleClick(e);
+					},
+					onContextMenu: function onContextMenu(e) {
+						return _this2.props.handleContextMenu(e);
+					},
+
+					onTouchStart: function onTouchStart(e) {
+						return _this2.handleTouchStart(e);
+					},
+					onTouchEnd: function onTouchEnd(e) {
+						return _this2.handleTouchEnd(e);
+					} },
+				track_actions,
+				track_columns
+			);
 		}
 	}]);
 
@@ -49063,7 +49176,7 @@ function reducer() {
 
         case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], core.playlists);
-            var playlist = Object.assign({}, playlists[action.key], { tracks: helpers.formatTracks(action.tracks) });
+            var playlist = Object.assign({}, playlists[action.key], { tracks_uris: action.tracks_uris });
 
             playlists[action.key] = playlist;
             return Object.assign({}, core, { playlists: playlists });
@@ -50064,6 +50177,8 @@ var CoreMiddleware = function () {
                             if (xhr_response.error && xhr_response.error.message) {
                                 var description = xhr_response.error.message;
                             }
+                        } else if (action.data.xhr) {
+                            var description = action.data.xhr.status + ' ' + action.data.xhr.statusText;
                         } else {
                             var description = null;
                         }
@@ -50263,6 +50378,18 @@ var CoreMiddleware = function () {
                             type: 'UPDATE_PLAYLISTS_INDEX',
                             playlists: playlists
                         });
+                        break;
+
+                    case 'PLAYLIST_TRACKS':
+                        var tracks = helpers.formatTracks(action.tracks);
+                        action.tracks_uris = helpers.arrayOf('uri', tracks);
+
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks
+                        });
+
+                        next(action);
                         break;
 
                     case 'PLAYLIST_TRACKS_REORDERED':
@@ -52005,7 +52132,7 @@ var MopidyMiddleware = function () {
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                                             context: action.data.context,
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
                                     continue_process();
@@ -52029,7 +52156,7 @@ var MopidyMiddleware = function () {
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                                             context: 'tracks',
-                                            results: tracks
+                                            results: helpers.formatTracks(tracks)
                                         });
                                     }
 
@@ -52400,7 +52527,6 @@ var MopidyMiddleware = function () {
                             // update playlist
                             playlist = Object.assign({}, playlist, { tracks: tracks });
                             instruct(socket, store, 'playlists.save', { playlist: playlist }).then(function (response) {
-
                                 store.dispatch({
                                     type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS',
                                     tracks: playlist.tracks,
@@ -56033,7 +56159,7 @@ var SpotifyMiddleware = function () {
                         store.dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'tracks',
-                            results: action.data.tracks.items,
+                            results: helpers.formatTracks(action.data.tracks.items),
                             more: action.data.tracks.next
                         });
                         break;
@@ -56438,7 +56564,7 @@ var App = function (_React$Component) {
 
 			// Check for url-parsed configuration values
 			var url_vars = this.props.location.query;
-			if (url_vars && url_vars.host && url_vars.port) {
+			if (url_vars !== undefined && url_vars.host !== undefined && url_vars.port !== undefined) {
 				this.props.mopidyActions.setConfig({
 					host: url_vars.host,
 					port: url_vars.port
@@ -56661,7 +56787,8 @@ var App = function (_React$Component) {
 					uiActions: this.props.uiActions,
 					notifications: this.props.notifications,
 					processes: this.props.processes,
-					broadcasts: this.props.broadcasts }),
+					broadcasts: this.props.broadcasts
+				}),
 				this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
 			);
 		}
@@ -58162,6 +58289,7 @@ var ContextMenu = function (_React$Component) {
 		};
 		_this.handleScroll = _this.handleScroll.bind(_this);
 		_this.handleMouseDown = _this.handleMouseDown.bind(_this);
+		_this.handleTouchStart = _this.handleTouchStart.bind(_this);
 		return _this;
 	}
 
@@ -58170,12 +58298,14 @@ var ContextMenu = function (_React$Component) {
 		value: function componentDidMount() {
 			window.addEventListener("scroll", this.handleScroll, false);
 			window.addEventListener("mousedown", this.handleMouseDown, false);
+			window.addEventListener("touchstart", this.handleTouchStart, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			window.removeEventListener("scroll", this.handleScroll, false);
 			window.removeEventListener("mousedown", this.handleMouseDown, false);
+			window.removeEventListener("touchstart", this.handleTouchStart, false);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -58221,6 +58351,15 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'handleMouseDown',
 		value: function handleMouseDown(e) {
+			// if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
+			if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+				this.props.uiActions.hideContextMenu();
+			}
+		}
+	}, {
+		key: 'handleTouchStart',
+		value: function handleTouchStart(e) {
+
 			// if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
 			if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
 				this.props.uiActions.hideContextMenu();
@@ -66632,6 +66771,18 @@ var Search = function (_React$Component) {
 			//this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 		}
 	}, {
+		key: 'setSort',
+		value: function setSort(value) {
+			var reverse = false;
+			if (this.props.sort == value) reverse = !this.props.sort_reverse;
+
+			var data = {
+				search_results_sort_reverse: reverse,
+				search_results_sort: value
+			};
+			this.props.uiActions.set(data);
+		}
+	}, {
 		key: 'renderResults',
 		value: function renderResults() {
 			var _this2 = this;
@@ -66645,6 +66796,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.artists) {
 				artists = [].concat(_toConsumableArray(artists), _toConsumableArray(helpers.getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)));
 			}
+			artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
 
 			var albums = [];
 			if (this.props.mopidy_search_results.albums) {
@@ -66653,6 +66805,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.albums) {
 				albums = [].concat(_toConsumableArray(albums), _toConsumableArray(helpers.getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)));
 			}
+			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
 
 			var playlists = [];
 			if (this.props.mopidy_search_results.playlists) {
@@ -66661,6 +66814,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.playlists) {
 				playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray(helpers.getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)));
 			}
+			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
 
 			var tracks = [];
 			if (this.props.mopidy_search_results.tracks) {
@@ -66669,6 +66823,7 @@ var Search = function (_React$Component) {
 			if (this.props.spotify_search_results.tracks) {
 				tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
 			}
+			tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse);
 
 			switch (this.props.view) {
 
@@ -66845,9 +67000,26 @@ var Search = function (_React$Component) {
 				label: 'Tracks'
 			}];
 
+			var sort_options = [{
+				value: 'name',
+				label: 'Name'
+			}, {
+				value: 'artists.name',
+				label: 'Artist'
+			}, {
+				value: 'duration',
+				label: 'Duration'
+			}, {
+				value: 'source',
+				label: 'Source'
+			}];
+
 			var options = _react2.default.createElement(
 				'span',
 				null,
+				_react2.default.createElement(_DropdownField2.default, { icon: 'sort', name: 'Sort', value: this.props.sort, options: sort_options, reverse: this.props.sort_reverse, handleChange: function handleChange(val) {
+						_this3.setSort(val);_this3.props.uiActions.hideContextMenu();
+					} }),
 				_react2.default.createElement(_DropdownField2.default, { icon: 'eye', name: 'View', value: this.props.view, options: view_options, handleChange: function handleChange(val) {
 						_this3.props.uiActions.set({ search_view: val });_this3.props.uiActions.hideContextMenu();
 					} }),
@@ -66889,7 +67061,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		tracks: state.core.tracks ? state.core.tracks : [],
 		search_uri_schemes: state.ui.search_uri_schemes ? state.ui.search_uri_schemes : [],
 		mopidy_search_results: state.mopidy.search_results ? state.mopidy.search_results : {},
-		spotify_search_results: state.spotify.search_results ? state.spotify.search_results : {}
+		spotify_search_results: state.spotify.search_results ? state.spotify.search_results : {},
+		sort: state.ui.search_results_sort ? state.ui.search_results_sort : 'name',
+		sort_reverse: state.ui.search_results_sort_reverse ? true : false
 	};
 };
 

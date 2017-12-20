@@ -12,8 +12,23 @@ export function setSelectedTracks(keys = []){
 }
 
 export function showContextMenu(data){
-    data.position_x = data.e.clientX;
-    data.position_y = data.e.clientY;
+
+    // Touchend
+    if (data.e.changedTouches){
+        data.position_x = data.e.changedTouches[0].clientX;
+        data.position_y = data.e.changedTouches[0].clientY;
+
+    // Touchstart
+    } else if (data.e.touches){
+        data.position_x = data.e.touches[0].clientX;
+        data.position_y = data.e.touches[0].clientY;
+
+    // Click/mousedown/mouseup/etc
+    } else {
+        data.position_x = data.e.clientX;
+        data.position_y = data.e.clientY;
+    }
+
     return {
         type: 'SHOW_CONTEXT_MENU',
         data: data

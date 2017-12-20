@@ -188,7 +188,7 @@ export default function reducer(core = {}, action){
 
         case 'PLAYLIST_TRACKS':
             var playlists = Object.assign([], core.playlists)
-            var playlist = Object.assign({}, playlists[action.key], { tracks: helpers.formatTracks(action.tracks) })
+            var playlist = Object.assign({}, playlists[action.key], { tracks_uris: action.tracks_uris })
 
             playlists[action.key] = playlist
             return Object.assign({}, core, { playlists: playlists });

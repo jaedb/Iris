@@ -296,6 +296,7 @@
 		background: $white;
 		display: inline-block;
 		margin: 1px;
+		pointer-events: none;
 	}
 
 	&:active {

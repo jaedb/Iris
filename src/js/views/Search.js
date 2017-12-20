@@ -73,6 +73,17 @@ class Search extends React.Component{
 		//this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
 	}
 
+	setSort(value){
+		var reverse = false
+		if (this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			search_results_sort_reverse: reverse,
+			search_results_sort: value
+		}
+		this.props.uiActions.set(data)
+	}
+
 	renderResults(){
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
 
@@ -83,14 +94,16 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.artists){
 			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)]
 		}
+		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
 
 		var albums = []
 		if (this.props.mopidy_search_results.albums){
-			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.mopidy_search_results.albums)]
+			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.mopidy_search_results.albums)];
 		}
 		if (this.props.spotify_search_results.albums){
 			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
-		}
+		}		
+		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
 
 		var playlists = []
 		if (this.props.mopidy_search_results.playlists){
@@ -99,6 +112,7 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.playlists){
 			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)]
 		}
+		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
 
 		var tracks = []
 		if (this.props.mopidy_search_results.tracks){
@@ -107,6 +121,7 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.tracks){
 			tracks = [...tracks, ...this.props.spotify_search_results.tracks]
 		}
+		tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse);
 
 		switch (this.props.view){
 
@@ -244,8 +259,28 @@ class Search extends React.Component{
 			}
 		]
 
+		var sort_options = [
+			{
+				value: 'name',
+				label: 'Name'
+			},
+			{
+				value: 'artists.name',
+				label: 'Artist'
+			},
+			{
+				value: 'duration',
+				label: 'Duration'
+			},
+			{
+				value: 'source',
+				label: 'Source'
+			}
+		]
+
 		var options = (
 			<span>
+				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ search_view: val }); this.props.uiActions.hideContextMenu() }} />
 				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_uri_schemes', {query: this.props.params.query})}>
 					<FontAwesome name="wrench" />&nbsp;
@@ -277,7 +312,9 @@ const mapStateToProps = (state, ownProps) => {
 		tracks: (state.core.tracks ? state.core.tracks : []),
 		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
-		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {})
+		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
+		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'name'),
+		sort_reverse: (state.ui.search_results_sort_reverse ? true : false),
 	}
 }
 
