@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import FontAwesome from 'react-fontawesome'
+import Sortable from 'react-sortablejs';
 
 import Icon from '../Icon'
 import * as helpers from '../../helpers'
@@ -10,7 +11,8 @@ export default class SearchURISchemesModal extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			schemes: []
+			schemes: [],
+			available_schemes: this.props.available_uri_schemes
 		}
 	}
 
@@ -43,24 +45,31 @@ export default class SearchURISchemesModal extends React.Component{
 				<h2 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches. Please note that not all backends support searching by artist, album or playlist.</h2>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
-					<div className="list small">
-						{
-							this.props.available_uri_schemes.map(scheme => {
-								return (								
-									<div className="list-item field checkbox white" key={scheme}>
-										<label>
-											<input 
-												type="checkbox"
-												name={scheme}
-												checked={this.state.schemes.indexOf(scheme) > -1}
-												onChange={ e => this.handleToggle(scheme)} />
-											<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
-										</label>
-									</div>
-								)
-							})
-						}
-						</div>
+					<Sortable
+						className="list"
+						onChange={(order, sortable, e) => {
+							this.setState({schemes: order})
+						}}>
+							{
+								this.state.schemes.map(scheme => {
+									return (								
+										<div 
+											className="list-item field checkbox white"
+											key={scheme}
+											data-id={scheme}>
+												<label>
+													<input 
+														type="checkbox"
+														name={scheme}
+														checked={this.state.schemes.indexOf(scheme) > -1}
+														onChange={ e => this.handleToggle(scheme)} />
+													<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
+												</label>
+										</div>
+									)
+								})
+							}
+					</Sortable>
 
 					<div className="actions centered-text">
 						<button type="submit" className="primary wide">Save</button>
