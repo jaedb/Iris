@@ -39,37 +39,60 @@ export default class SearchURISchemesModal extends React.Component{
 	}
 
 	render(){
+		var unselected_schemes = [];
+		for (var i = 0; i < this.props.available_uri_schemes.length; i++){
+			var scheme = this.props.available_uri_schemes[i];
+			if (!this.state.schemes.includes(scheme)){
+				unselected_schemes.push(scheme);
+			}
+		}
+
 		return (
 			<div>
 				<h1 className="no-bottom-padding">Search sources</h1>
-				<h2 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches. Please note that not all backends support searching by artist, album or playlist.</h2>
+				<h2 className="grey-text bottom-padding">Customise the providers used when searching. Reduce the number of providers to speed up your searches.</h2>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<Sortable
 						className="list"
+						options={{
+							handle: '.drag-handle'
+						}}
 						onChange={(order, sortable, e) => {
 							this.setState({schemes: order})
 						}}>
 							{
 								this.state.schemes.map(scheme => {
-									return (								
-										<div 
-											className="list-item field checkbox white"
-											key={scheme}
-											data-id={scheme}>
-												<label>
-													<input 
-														type="checkbox"
-														name={scheme}
-														checked={this.state.schemes.indexOf(scheme) > -1}
-														onChange={ e => this.handleToggle(scheme)} />
-													<span className="label">{scheme.replace(':','')} &nbsp;<FontAwesome className="grey-text" name={helpers.sourceIcon(scheme)} /></span>
-												</label>
+									return (
+										<div className="list-item draggable" key={scheme} data-id={scheme}>
+											<FontAwesome className="grey-text drag-handle" name="bars" />
+											{scheme.replace(':','')}
+											<button className="discrete remove-uri no-hover" onClick={e => this.handleToggle(scheme)}>
+												<FontAwesome name="trash" />
+											</button>
 										</div>
 									)
 								})
 							}
 					</Sortable>
+
+					<div className="available-schemes">
+						<h4>Add more schemes</h4>
+						{
+							unselected_schemes.map(scheme => {
+								return (
+									<div 
+										className="scheme flag large blue" 
+										key={scheme}
+										onClick={e => this.handleToggle(scheme)}>
+											{scheme.replace(':','')}
+											&nbsp;&nbsp;
+											<FontAwesome name="plus" />
+									</div>
+								)
+							})
+						}
+					</div>
 
 					<div className="actions centered-text">
 						<button type="submit" className="primary wide">Save</button>

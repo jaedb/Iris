@@ -168,7 +168,7 @@ export default class EditRadioModal extends React.Component{
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
 										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
-											<FontAwesome name="close" />&nbsp;Remove
+											<FontAwesome name="trash" />
 										</button>
 									</div>
 								)
