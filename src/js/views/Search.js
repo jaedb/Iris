@@ -85,44 +85,50 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
-		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify)
+		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
-		var artists = []
+		if (this.props.sort == 'uri'){
+			var sort_map = this.props.search_uri_schemes;
+		} else {
+			var sort_map = null;
+		}
+
+		var artists = [];
 		if (this.props.mopidy_search_results.artists){
-			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.mopidy_search_results.artists)]
+			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.mopidy_search_results.artists)];
 		}
 		if (this.props.spotify_search_results.artists){
-			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)]
+			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)];
 		}
-		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
+		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse, sort_map);
 
-		var albums = []
+		var albums = [];
 		if (this.props.mopidy_search_results.albums){
 			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.mopidy_search_results.albums)];
 		}
 		if (this.props.spotify_search_results.albums){
 			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
 		}		
-		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse, sort_map);
 
 		var playlists = []
 		if (this.props.mopidy_search_results.playlists){
-			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.mopidy_search_results.playlists)]
+			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.mopidy_search_results.playlists)];
 		}
 		if (this.props.spotify_search_results.playlists){
-			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)]
+			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)];
 		}
-		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse, sort_map);
 
-		var tracks = []
+		var tracks = [];
 		if (this.props.mopidy_search_results.tracks){
-			tracks = [...tracks, ...this.props.mopidy_search_results.tracks]
+			tracks = [...tracks, ...this.props.mopidy_search_results.tracks];
 		}
 		if (this.props.spotify_search_results.tracks){
-			tracks = [...tracks, ...this.props.spotify_search_results.tracks]
+			tracks = [...tracks, ...this.props.spotify_search_results.tracks];
 		}
-		tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse);
-
+		tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse, sort_map);
+		
 		switch (this.props.view){
 
 			case 'artists':
@@ -134,7 +140,7 @@ class Search extends React.Component{
 						</section>
 					</div>
 				)
-				break
+				break;
 
 			case 'albums':
 				return (
@@ -145,7 +151,7 @@ class Search extends React.Component{
 						</section>
 					</div>
 				)
-				break
+				break;
 
 			case 'playlists':
 				return (
@@ -156,7 +162,7 @@ class Search extends React.Component{
 						</section>
 					</div>
 				)
-				break
+				break;
 
 			case 'tracks':
 				return (
@@ -167,7 +173,7 @@ class Search extends React.Component{
 						</section>
 					</div>
 				)
-				break
+				break;
 
 			default:
 			
@@ -181,7 +187,7 @@ class Search extends React.Component{
 						</section>
 					)
 				} else {
-					var artists_section = null
+					var artists_section = null;
 				}
 
 				if (albums.length > 0){
@@ -194,7 +200,7 @@ class Search extends React.Component{
 						</section>
 					)
 				} else {
-					var albums_section = null
+					var albums_section = null;
 				}
 			
 				if (playlists.length > 0){
@@ -207,7 +213,7 @@ class Search extends React.Component{
 						</section>
 					)
 				} else {
-					var playlists_section = null
+					var playlists_section = null;
 				}
 
 				if (tracks.length > 0){
@@ -219,7 +225,7 @@ class Search extends React.Component{
 						</section>
 					)
 				} else {
-					var tracks_section = null
+					var tracks_section = null;
 				}
 
 				return (
@@ -273,7 +279,7 @@ class Search extends React.Component{
 				label: 'Duration'
 			},
 			{
-				value: 'source',
+				value: 'uri',
 				label: 'Source'
 			}
 		]

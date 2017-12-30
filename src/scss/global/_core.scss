@@ -394,6 +394,11 @@ footer {
 		color: $mid_grey;
 	}
 
+	&.large {
+		padding: 8px 10px 7px;
+		font-size: 12px;
+	}
+
 	h1 &,
 	h2 & {
 		line-height: 1.4em;

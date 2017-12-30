@@ -44,6 +44,7 @@
 #context-menu {
 	.filter-field {
 		display: block;
+		border-bottom: 1px solid lighten($grey, 5%);
 
 		.fa {
 			top: 17px;
@@ -51,10 +52,14 @@
 			color: $white !important;
 		}
 
-		input {
-			padding: 14px 18px 14px 42px;
+		form {
 			width: 100%;
-			box-sizing: border-box;
+
+			input {
+				padding: 14px 18px 14px 42px;
+				width: 100%;
+				box-sizing: border-box;
+			}			
 		}
 	}
 }
