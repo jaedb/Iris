@@ -104,6 +104,30 @@
 			}
 		}
 
+		.add-uri,
+		.remove-uri {
+			position: absolute;
+			top: 6px;
+			right: 6px;
+			padding: 8px;
+			margin: 0;
+			min-width: 0;
+			color: #FFFFFF;
+			background: transparent;
+
+			&:before {
+				display: none !important;
+			}
+
+			&:hover {
+				color: $turquoise;
+
+				&.remove-uri {
+					color: $red;
+				}
+			}
+		}
+
 		.list {
 			@include clearfix();
 
@@ -111,7 +135,7 @@
 				@include animate();
 				box-sizing: border-box;
 				display: block;
-				padding: 14px 12px;
+				padding: 14px 12px 12px;
 				position: relative;
 				border: 0;
 				border-radius: 3px;
@@ -126,6 +150,17 @@
 
 				&:hover {
 					background: rgba(255,255,255,0.1);
+				}
+
+				&.draggable {
+					padding-left: 35px !important;
+
+					.drag-handle {
+						position: absolute;
+						top: 0;
+						left: 0;
+						padding: 16px 12px;
+					}
 				}
 			}
 
@@ -187,30 +222,6 @@
 					padding-right: 80px;
 				}
 			}			
-		}
-
-		.add-uri,
-		.remove-uri {
-			position: absolute;
-			top: 5px;
-			right: 0;
-			padding: 8px;
-			margin: 0;
-			min-width: 0;
-			color: #FFFFFF;
-			background: transparent;
-
-			&:before {
-				display: none !important;
-			}
-
-			&:hover {
-				color: $turquoise;
-
-				&.remove-uri {
-					color: $red;
-				}
-			}
 		}
 	}
 
@@ -289,6 +300,23 @@
 		}
 	}
 
+	&.search_uri_schemes {
+		.available-schemes {
+			padding-top: 40px;
+
+			.scheme {
+				@include animate();
+				margin-left: 0;
+				margin-bottom: 8px;
+
+				&:hover {
+					cursor: pointer;
+					background: darken($blue, 8%);
+				}
+			}
+		}
+	}
+
 	.actions {
 		padding-top: 50px;
 		text-align: center;
@@ -313,9 +341,15 @@
 					border-top: 0;
 					width: auto !important;
 					margin: 0;
+
+					&.draggable {
+						.drag-handle {
+							padding-top: 14px;
+							padding-bottom: 14px;
+						}
+					}
 				}
 			}
-
 		}
 	}
 }

@@ -247,7 +247,7 @@ export function albumsLoaded(albums){
 
 export function artistsLoaded(artists){
     return {
-        type: 'ALBUMS_LOADED',
+        type: 'ARTISTS_LOADED',
         artists: artists
     }
 }
