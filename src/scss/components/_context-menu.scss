@@ -144,18 +144,18 @@
 			height: 1px;
 			padding: 0;
 			margin: 0;
-			background: lighten($grey, 8%);
+			background: lighten($grey, 5%);
 		}
 
 		& > span {
 			display: block;
+			margin-bottom: -1px;
 
 			button,
 			.button,
 			.dropdown-field {
 				text-decoration: none;
 				display: block;
-				border: 0;
 				margin: 0;
 				min-width: 100% !important;
 				max-width: 100% !important;
@@ -165,10 +165,7 @@
 				text-transform: none;
 				font-weight: 300;
 				color: inherit;
-
-				&:not(:first-child):not(.dropdown-field){
-					border-top: 1px solid lighten($dark_grey, 8%);
-				}
+				border-bottom: 1px solid lighten($grey, 5%) !important;
 
 				.fa {
 					display: none;
@@ -187,29 +184,34 @@
 			}	
 
 			.dropdown-field {
-				padding: 0;
-				box-shadow: none;
+				padding: 16px 20px;
 
 				.label {
-					padding: 16px 20px;
+					padding: 0 0 3px 0;
+					font-weight: 800;
 				}
 
 				.options {
 					display: block;
 					position: static;
-					background: $darkest_grey;
+					background: transparent;
 					border-radius: 0;
 					border: 0;
 					color: $white !important;
+					box-shadow: none;
 
 					.option {
-						padding: 12px 20px 12px 50px;
+						display: inline-block;
+						padding: 3px 5px;
 						border-radius: 0;
+						opacity: 0.6;
 
 						.fa {
 							display: inline-block;
-							left: 25px;
-							top: 14px;
+							position: relative;
+							padding-right: 5px;
+							top: auto;
+							left: auto;
 						}
 					}
 

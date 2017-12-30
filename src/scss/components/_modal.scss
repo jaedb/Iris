@@ -153,7 +153,7 @@
 				}
 
 				&.draggable {
-					padding-left: 35px;
+					padding-left: 35px !important;
 
 					.drag-handle {
 						position: absolute;
@@ -341,9 +341,15 @@
 					border-top: 0;
 					width: auto !important;
 					margin: 0;
+
+					&.draggable {
+						.drag-handle {
+							padding-top: 14px;
+							padding-bottom: 14px;
+						}
+					}
 				}
 			}
-
 		}
 	}
 }

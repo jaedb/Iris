@@ -595,55 +595,76 @@ export let createRange = function (indexes){
  * @param array = array to sort
  * @param property = string to sort by
  * @param reverse = boolean
+ * @param sort_map = array of value ordering (rather than alphabetical, numerical, etc)
  * @return array
  **/
-export let sortItems = function (array, property, reverse = false){
+export let sortItems = function (array, property, reverse = false, sort_map = null){
 
 	function compare(a,b){
 
-		var a_value = a
-		var a_property_split = property.split('.')
+		var a_value = a;
+		var a_property_split = property.split('.');
 		for (var i = 0; i < a_property_split.length; i++){
 			if (typeof(a_value[a_property_split[i]]) === 'undefined'){
-				a_value = false
-				break
+				a_value = false;
+				break;
 			} else {
-				a_value = a_value[a_property_split[i]]
+				a_value = a_value[a_property_split[i]];
 			}
 		}
 
-		var b_value = b
-		var b_property_split = property.split('.')
-		for(var i = 0; i < b_property_split.length; i++){
+		var b_value = b;
+		var b_property_split = property.split('.');
+		for (var i = 0; i < b_property_split.length; i++){
 			if (typeof(b_value[b_property_split[i]]) === 'undefined'){
-				b_value = false
-				break
+				b_value = false;
+				break;
 			} else {
-				b_value = b_value[b_property_split[i]]
+				b_value = b_value[b_property_split[i]];
 			}
 		}
 
-		if (typeof(a_value) === 'boolean'){
-			if (a_value && !b_value) return -1
-			if (!a_value && b_value) return 1
+		// Sorting by URI as a reference for sorting by uri source (first component of URI)
+		if (property == 'uri'){
+			a_value = uriSource(a_value);
+			b_value = uriSource(b_value);
+		}
+
+		// Map sorting
+		// Use the index of the string as a sorting mechanism
+		if (sort_map){
+
+			var a_index = sort_map.indexOf(a_value+':');
+			var b_index = sort_map.indexOf(b_value+':');
+			if (a_index < b_index) return 1;
+			if (a_index > b_index) return -1;
+
+		// Boolean sorting
+		} else if (typeof(a_value) === 'boolean'){
+			if (a_value && !b_value) return -1;
+			if (!a_value && b_value) return 1;
 			return 0
 
-		}else if (typeof(a_value) === 'string'){
-			if (!a_value || !b_value ) return 0
-			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1
-			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1
+		// Alphabetic sorting
+		} else if (typeof(a_value) === 'string'){
+			if (!a_value || !b_value ) return 0;
+			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
+			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
 			return 0
 
+		// Numeric sorting
 		} else {
-			if (parseInt(a_value) > parseInt(b_value)) return 1
-			if (parseInt(a_value) < parseInt(b_value)) return -1
+			if (parseInt(a_value) > parseInt(b_value)) return 1;
+			if (parseInt(a_value) < parseInt(b_value)) return -1;
 			return 0
 		}
 	}
 
-	var sorted = Object.assign([], array.sort(compare))
-	if (reverse ) sorted.reverse()
-	return sorted
+	var sorted = Object.assign([], array.sort(compare));
+	if (reverse){
+		sorted.reverse();
+	}
+	return sorted;
 }
 
 /**
