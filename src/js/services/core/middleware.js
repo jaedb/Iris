@@ -423,6 +423,7 @@ const CoreMiddleware = (function(){
 
                 for (var i = 0; i < action.albums.length; i++){
                     var album = Object.assign({}, action.albums[i]);
+                    helpers.formatAlbum(album)
 
                     if (albums[album.uri]){
                         album = Object.assign({}, albums[album.uri], album);

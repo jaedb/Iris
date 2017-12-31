@@ -244,6 +244,20 @@ export let getTrackIcon = function(current_track = false, core = false){
 
 
 /**
+ * Format our album objects into a universal format
+ *
+ * @param album obj
+ * @return album obj
+ **/
+export let formatAlbum = function(album){
+	if (album.release_date !== undefined){
+		album.date = album.release_date;
+	}
+	return album;
+}
+
+
+/**
  * Format tracks into our universal format
  *
  * @param tracks = array

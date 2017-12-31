@@ -15,6 +15,7 @@ import ArtistGrid from '../components/ArtistGrid'
 import RelatedArtists from '../components/RelatedArtists'
 import FollowButton from '../components/FollowButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import DropdownField from '../components/DropdownField'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -93,6 +94,17 @@ class Artist extends React.Component{
 		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
 	}
 
+	setSort(value){
+		var reverse = false
+		if (this.props.sort == value ) reverse = !this.props.sort_reverse
+
+		var data = {
+			artist_albums_sort_reverse: reverse,
+			artist_albums_sort: value
+		}
+		this.props.uiActions.set(data)
+	}
+
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
@@ -112,7 +124,7 @@ class Artist extends React.Component{
 			)
 		}
 		
-		var scheme = helpers.uriSource(this.props.params.uri );
+		var scheme = helpers.uriSource(this.props.params.uri);
 
 		var related_artists = []
 		if (this.props.artist.related_artists_uris){
@@ -124,14 +136,15 @@ class Artist extends React.Component{
 			}
 		}
 
-		var albums = []
+		var albums = [];
 		if (this.props.artist.albums_uris){
 			for (var i = 0; i < this.props.artist.albums_uris.length; i++){
-				var uri = this.props.artist.albums_uris[i]
+				var uri = this.props.artist.albums_uris[i];
 				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
+					albums.push(this.props.albums[uri]);
 				}
 			}
+			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
 		}
 
 		switch (this.props.params.sub_view){
@@ -179,6 +192,21 @@ class Artist extends React.Component{
 					}
 				}
 
+				var sort_options = [
+					{
+						value: 'name',
+						label: 'Name'
+					},
+					{
+						value: 'date',
+						label: 'Date'
+					},
+					{
+						value: 'tracks_total',
+						label: 'Tracks'
+					}
+				];
+
 				return (
 					<div className="body overview">
 						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
@@ -194,7 +222,17 @@ class Artist extends React.Component{
 
 						<div className="cf"></div>
 
-						<h4>Albums</h4>
+						<h4>
+							Albums
+							<DropdownField 
+								icon="sort" 
+								name="Sort" 
+								value={this.props.sort} 
+								options={sort_options} 
+								reverse={this.props.sort_reverse} 
+								handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
+						</h4>
+
 						<section className="grid-wrapper no-top-padding">
 							<AlbumGrid albums={albums} />
 							<LazyLoadListener loading={this.props.artist.albums_more} loadMore={() => this.loadMore()} />
@@ -288,6 +326,8 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_artists: state.spotify.library_artists,
 		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
+		sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : 'name'),
+		sort_reverse: (state.ui.artist_albums_sort_reverse ? true : false),
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
 	}
