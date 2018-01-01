@@ -209,7 +209,7 @@ class Artist extends React.Component{
 
 				return (
 					<div className="body overview">
-						<div className={related_artists.length > 0 ? "col w70" : "col w100"}>
+						<div className={"top-tracks col w"+(related_artists.length > 0 ? "70" : "100")}>
 							<h4>Top tracks</h4>
 							<div className="list-wrapper">
 								<TrackList className="artist-track-list" uri={this.props.params.uri} tracks={tracks} />
@@ -222,21 +222,23 @@ class Artist extends React.Component{
 
 						<div className="cf"></div>
 
-						<h4>
-							Albums
-							<DropdownField 
-								icon="sort" 
-								name="Sort" 
-								value={this.props.sort} 
-								options={sort_options} 
-								reverse={this.props.sort_reverse} 
-								handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
-						</h4>
+						<div className="albums">
+							<h4>
+								Albums
+								<DropdownField 
+									icon="sort" 
+									name="Sort" 
+									value={this.props.sort} 
+									options={sort_options} 
+									reverse={this.props.sort_reverse} 
+									handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
+							</h4>
 
-						<section className="grid-wrapper no-top-padding">
-							<AlbumGrid albums={albums} />
-							<LazyLoadListener loading={this.props.artist.albums_more} loadMore={() => this.loadMore()} />
-						</section>
+							<section className="grid-wrapper no-top-padding">
+								<AlbumGrid albums={albums} />
+								<LazyLoadListener loading={this.props.artist.albums_more} loadMore={() => this.loadMore()} />
+							</section>
+						</div>
 					</div>
 				)
 		}

@@ -867,6 +867,7 @@ const MopidyMiddleware = (function(){
                         instruct(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => {
+                                    console.log(response)
                                     if (response.length > 0 && response[0].tracks !== undefined){
                                         var tracks = response[0].tracks
 
