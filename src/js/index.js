@@ -67,7 +67,7 @@ ReactDOM.render(
 				<Route path="settings/debug" component={Debug} />
 				<Route path="settings(/:sub_view)" component={Settings} />
 				
-				<Route path="search(/iris::search::query)" component={Search} />
+				<Route path="search(/search::view::query)" component={Search} />
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri(/:sub_view)" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />

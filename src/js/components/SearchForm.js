@@ -26,8 +26,9 @@ class SearchForm extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps){
-		if (newProps.query && newProps.query != this.state.query && newProps.query != this.props.query && !this.state.in_focus){
-			this.setState({query: newProps.query})
+		if (newProps.query && newProps.query != this.state.query && !this.state.in_focus){
+			this.setState({query: newProps.query});
+			console.log(newProps.query);
 		}
 	}
 
@@ -50,7 +51,7 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				hashHistory.push(global.baseURL+'search/iris:search:'+encodeURIComponent(this.state.query))
+				hashHistory.push(global.baseURL+'search/search:'+this.props.view+':'+encodeURIComponent(this.state.query));
 				break
 		}
 

@@ -16,7 +16,10 @@ export default class URILink extends React.Component{
 
 	render(){
 		var to = null;
-		var uri = encodeURIComponent(this.props.uri);
+		var uri = this.props.uri;
+		if (!this.props.unencoded){
+			uri = encodeURIComponent(uri);
+		}
 
 		switch (this.props.type){
 			
@@ -42,6 +45,10 @@ export default class URILink extends React.Component{
 
 			case 'recommendations':
 				to = global.baseURL+'discover/recommendations/'+uri;
+				break;
+
+			case 'search':
+				to = global.baseURL+'search/'+uri;
 				break;
 
 			default:
