@@ -48,9 +48,9 @@ class ArtistGrid extends React.Component{
 											<Thumbnail size="medium" images={artist.images} />
 											<div className="name">
 												{artist.name}
-												{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(artist.uri)} className="source" fixedWidth /> : null}
 											</div>
 											<div className="secondary">
+												{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(artist.uri)} className="source" /> : null}
 												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
 												{artist.albums_uris && !artist.followers ? artist.albums_uris.length+' albums' : null}
 											</div>
