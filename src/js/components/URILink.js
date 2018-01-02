@@ -8,6 +8,12 @@ export default class URILink extends React.Component{
 		super(props);
 	}
 
+	handleContextMenu(e){
+		if (this.props.onContextMenu){
+			this.props.onContextMenu(e);
+		}
+	}
+
 	render(){
 		var to = null;
 		var uri = encodeURIComponent(this.props.uri);
@@ -45,7 +51,8 @@ export default class URILink extends React.Component{
 		return (
 			<Link 
 				className={this.props.className ? this.props.className : null} 
-				to={to}>
+				to={to}
+				onContextMenu={e => this.handleContextMenu(e)}>
 					{this.props.children}
 			</Link>
 		);
