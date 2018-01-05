@@ -2518,6 +2518,8 @@ h4 {
     border-bottom: 1px solid #383734; }
   h4:not(:first-child) {
     padding-top: 40px; }
+  h4 .dropdown-field {
+    margin-left: 10px; }
 
 .no-results {
   text-align: center;
@@ -2767,6 +2769,9 @@ footer {
   .flag.dark {
     background: #323232;
     color: #a3a19f; }
+  .flag.large {
+    padding: 8px 10px 7px;
+    font-size: 12px; }
   h1 .flag,
   h2 .flag {
     line-height: 1.4em;
@@ -2947,6 +2952,12 @@ input[type="submit"] {
   input[type="submit"].white {
     color: #000000;
     background: #FFFFFF; }
+  .button.grey,
+  button.grey,
+  input[type="button"].grey,
+  input[type="submit"].grey {
+    color: #FFFFFF;
+    background: #383734; }
   .button.confirming, .button.destructive,
   button.confirming,
   button.destructive,
@@ -3270,15 +3281,15 @@ input[type="submit"] {
       height: 1px;
       padding: 0;
       margin: 0;
-      background: #4d4c48; }
+      background: #454440; }
     #context-menu .liner > span {
-      display: block; }
+      display: block;
+      margin-bottom: -1px; }
       #context-menu .liner > span button,
       #context-menu .liner > span .button,
       #context-menu .liner > span .dropdown-field {
         text-decoration: none;
         display: block;
-        border: 0;
         margin: 0;
         min-width: 100% !important;
         max-width: 100% !important;
@@ -3287,11 +3298,8 @@ input[type="submit"] {
         text-align: left;
         text-transform: none;
         font-weight: 300;
-        color: inherit; }
-        #context-menu .liner > span button:not(:first-child):not(.dropdown-field),
-        #context-menu .liner > span .button:not(:first-child):not(.dropdown-field),
-        #context-menu .liner > span .dropdown-field:not(:first-child):not(.dropdown-field) {
-          border-top: 1px solid #2c2c2c; }
+        color: inherit;
+        border-bottom: 1px solid #454440 !important; }
         #context-menu .liner > span button .fa,
         #context-menu .liner > span .button .fa,
         #context-menu .liner > span .dropdown-field .fa {
@@ -3306,24 +3314,29 @@ input[type="submit"] {
         min-width: 100% !important;
         max-width: 100% !important; }
       #context-menu .liner > span .dropdown-field {
-        padding: 0;
-        box-shadow: none; }
+        padding: 16px 20px; }
         #context-menu .liner > span .dropdown-field .label {
-          padding: 16px 20px; }
+          padding: 0 0 3px 0;
+          font-weight: 800; }
         #context-menu .liner > span .dropdown-field .options {
           display: block;
           position: static;
-          background: #121212;
+          background: transparent;
           border-radius: 0;
           border: 0;
-          color: #FFFFFF !important; }
+          color: #FFFFFF !important;
+          box-shadow: none; }
           #context-menu .liner > span .dropdown-field .options .option {
-            padding: 12px 20px 12px 50px;
-            border-radius: 0; }
+            display: inline-block;
+            padding: 3px 5px;
+            border-radius: 0;
+            opacity: 0.6; }
             #context-menu .liner > span .dropdown-field .options .option .fa {
               display: inline-block;
-              left: 25px;
-              top: 14px; }
+              position: relative;
+              padding-right: 5px;
+              top: auto;
+              left: auto; }
           #context-menu .liner > span .dropdown-field .options:before {
             display: none; }
   @media (max-width: 800px) {
@@ -3539,6 +3552,25 @@ input[type="submit"] {
           padding-top: 8px; }
       .modal .content form button[type="submit"] {
         margin-top: 50px; }
+    .modal .content .add-uri,
+    .modal .content .remove-uri {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 8px;
+      margin: 0;
+      min-width: 0;
+      color: #FFFFFF;
+      background: transparent; }
+      .modal .content .add-uri:before,
+      .modal .content .remove-uri:before {
+        display: none !important; }
+      .modal .content .add-uri:hover,
+      .modal .content .remove-uri:hover {
+        color: #08d58f; }
+        .modal .content .add-uri:hover.remove-uri,
+        .modal .content .remove-uri:hover.remove-uri {
+          color: #cf2d2d; }
     .modal .content .list::after {
       content: '';
       clear: both;
@@ -3550,7 +3582,7 @@ input[type="submit"] {
       transition: all 0.2s ease-in-out;
       box-sizing: border-box;
       display: block;
-      padding: 14px 12px;
+      padding: 14px 12px 12px;
       position: relative;
       border: 0;
       border-radius: 3px;
@@ -3562,6 +3594,13 @@ input[type="submit"] {
         left: 10px; }
       .modal .content .list .list-item:hover {
         background: rgba(255, 255, 255, 0.1); }
+      .modal .content .list .list-item.draggable {
+        padding-left: 35px !important; }
+        .modal .content .list .list-item.draggable .drag-handle {
+          position: absolute;
+          top: 0;
+          left: 0;
+          padding: 16px 12px; }
     .modal .content .list.playlists {
       padding-top: 40px; }
       .modal .content .list.playlists .list-item {
@@ -3595,25 +3634,6 @@ input[type="submit"] {
     margin-top: 50px; }
     .modal.edit_radio form .field input[type="text"] {
       padding-right: 80px; }
-  .modal.edit_radio .add-uri,
-  .modal.edit_radio .remove-uri {
-    position: absolute;
-    top: 5px;
-    right: 0;
-    padding: 8px;
-    margin: 0;
-    min-width: 0;
-    color: #FFFFFF;
-    background: transparent; }
-    .modal.edit_radio .add-uri:before,
-    .modal.edit_radio .remove-uri:before {
-      display: none !important; }
-    .modal.edit_radio .add-uri:hover,
-    .modal.edit_radio .remove-uri:hover {
-      color: #08d58f; }
-      .modal.edit_radio .add-uri:hover.remove-uri,
-      .modal.edit_radio .remove-uri:hover.remove-uri {
-        color: #cf2d2d; }
   .modal.kiosk_mode {
     background: #000000;
     overflow: hidden; }
@@ -3665,6 +3685,18 @@ input[type="submit"] {
   .modal.track_info .lyrics {
     font-size: 1.2em;
     padding: 60px 0; }
+  .modal.search_uri_schemes .available-schemes {
+    padding-top: 40px; }
+    .modal.search_uri_schemes .available-schemes .scheme {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      margin-left: 0;
+      margin-bottom: 8px; }
+      .modal.search_uri_schemes .available-schemes .scheme:hover {
+        cursor: pointer;
+        background: #0fa6ec; }
   .modal .actions {
     padding-top: 50px;
     text-align: center; }
@@ -3681,7 +3713,10 @@ input[type="submit"] {
         margin-left: 0 !important;
         border-top: 0;
         width: auto !important;
-        margin: 0; } }
+        margin: 0; }
+        .modal .content .list .list-item.draggable .drag-handle {
+          padding-top: 14px;
+          padding-bottom: 14px; } }
 
 .dragging * {
   cursor: grabbing !important;
@@ -4263,9 +4298,8 @@ aside {
     font-size: 10px;
     color: #383734;
     text-transform: uppercase;
-    border-top: 0; }
-    .list .list-item.header .liner {
-      padding-bottom: 2px; }
+    border-top: 0;
+    padding-bottom: 2px; }
   .list .list-item.field {
     padding: 0 !important; }
     .list .list-item.field > label {
@@ -4338,14 +4372,12 @@ aside {
 .list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
   width: 15%; }
 
-.list.queue-track-list .list-item .liner {
+.list.queue-track-list .list-item {
   padding-right: 60px; }
-
-.list.queue-track-list .col.name, .list.queue-track-list .col.artists, .list.queue-track-list .col.album {
-  width: 25% !important; }
-
-.list.queue-track-list .col.added {
-  width: 20%; }
+  .list.queue-track-list .list-item .col.name, .list.queue-track-list .list-item .col.artists, .list.queue-track-list .list-item .col.album {
+    width: 25% !important; }
+  .list.queue-track-list .list-item .col.added {
+    width: 20%; }
 
 .list.queue-history-track-list .list-item .col.name {
   width: 60%; }
@@ -4451,9 +4483,8 @@ aside {
     text-overflow: ellipsis;
     padding-top: 2px;
     color: #888888; }
-  .grid .grid-item .source {
-    color: #888888;
-    padding-left: 2px; }
+    .grid .grid-item .secondary .source {
+      padding-right: 6px; }
   .grid .grid-item:hover {
     cursor: pointer; }
     .grid .grid-item:hover .thumbnail {
@@ -5107,15 +5138,18 @@ main header {
   background: #383734; }
 
 #context-menu .filter-field {
-  display: block; }
+  display: block;
+  border-bottom: 1px solid #454440; }
   #context-menu .filter-field .fa {
     top: 17px;
     left: 24px;
     color: #FFFFFF !important; }
-  #context-menu .filter-field input {
-    padding: 14px 18px 14px 42px;
-    width: 100%;
-    box-sizing: border-box; }
+  #context-menu .filter-field form {
+    width: 100%; }
+    #context-menu .filter-field form input {
+      padding: 14px 18px 14px 42px;
+      width: 100%;
+      box-sizing: border-box; }
 
 .sub-views .option {
   font-family: "Overpass";
@@ -5228,6 +5262,9 @@ main header {
       .artist-view .intro .liner .actions .context-menu-trigger {
         color: #FFFFFF; }
 
+.artist-view .body.overview .albums {
+  padding-top: 30px; }
+
 .artist-view .body.about::after {
   content: '';
   clear: both;
@@ -5272,8 +5309,11 @@ main header {
         margin-left: 5px; }
         .artist-view .intro .liner .sub-views .option {
           margin: 0 8px; }
-  .artist-view .body.overview h4 {
+  .artist-view .body.overview .top-tracks h4 {
     display: none; }
+  .artist-view .body.overview .albums h4 {
+    padding: 0;
+    margin: 0 0 -30px; }
   .artist-view .body.overview .col.w70 {
     width: 100%; }
   .artist-view .body.overview .col.w5,
@@ -5547,7 +5587,7 @@ main .track-view {
     font-weight: 700;
     height: 3.1rem;
     background: transparent;
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid #383734;
     border-radius: 0;
     /* handle Safari's ridiculous non-vertical centering */ }
     .search-view .search-form input:not(:root:root) {
@@ -5555,6 +5595,29 @@ main .track-view {
       margin-top: -1rem; }
     .search-view .search-form input:focus, .search-view .search-form input:active {
       border-color: #08d58f; }
+
+.search-view .search-result-sections {
+  padding-bottom: 30px; }
+  .search-view .search-result-sections section {
+    width: 31%;
+    float: left;
+    margin-right: 3.5%; }
+    .search-view .search-result-sections section:last-child {
+      margin-right: 0; }
+    .search-view .search-result-sections section .grid-item {
+      width: 48%;
+      box-sizing: border-box;
+      margin: 0 2% 3%; }
+      .search-view .search-result-sections section .grid-item:nth-child(2n-2) {
+        margin-right: 0; }
+        .search-view .search-result-sections section .grid-item:nth-child(2n-2)::after {
+          content: '';
+          clear: both;
+          display: block; }
+      .search-view .search-result-sections section .grid-item:nth-child(2n-1) {
+        margin-left: 0; }
+      .search-view .search-result-sections section .grid-item:nth-child(1n+5) {
+        display: none; }
 
 @media (max-width: 800px) {
   .search-view .search-form {
