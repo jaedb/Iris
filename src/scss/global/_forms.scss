@@ -112,6 +112,11 @@ input[type="submit"] {
 		background: $white;
 	}
 
+	&.grey {
+		color: $white;
+		background: $grey;
+	}
+
 	&.confirming,
 	&.destructive {
 		background: $red;

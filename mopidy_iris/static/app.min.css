@@ -2518,6 +2518,8 @@ h4 {
     border-bottom: 1px solid #383734; }
   h4:not(:first-child) {
     padding-top: 40px; }
+  h4 .dropdown-field {
+    margin-left: 10px; }
 
 .no-results {
   text-align: center;
@@ -2950,6 +2952,12 @@ input[type="submit"] {
   input[type="submit"].white {
     color: #000000;
     background: #FFFFFF; }
+  .button.grey,
+  button.grey,
+  input[type="button"].grey,
+  input[type="submit"].grey {
+    color: #FFFFFF;
+    background: #383734; }
   .button.confirming, .button.destructive,
   button.confirming,
   button.destructive,
@@ -4290,9 +4298,8 @@ aside {
     font-size: 10px;
     color: #383734;
     text-transform: uppercase;
-    border-top: 0; }
-    .list .list-item.header .liner {
-      padding-bottom: 2px; }
+    border-top: 0;
+    padding-bottom: 2px; }
   .list .list-item.field {
     padding: 0 !important; }
     .list .list-item.field > label {
@@ -4365,14 +4372,12 @@ aside {
 .list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
   width: 15%; }
 
-.list.queue-track-list .list-item .liner {
+.list.queue-track-list .list-item {
   padding-right: 60px; }
-
-.list.queue-track-list .col.name, .list.queue-track-list .col.artists, .list.queue-track-list .col.album {
-  width: 25% !important; }
-
-.list.queue-track-list .col.added {
-  width: 20%; }
+  .list.queue-track-list .list-item .col.name, .list.queue-track-list .list-item .col.artists, .list.queue-track-list .list-item .col.album {
+    width: 25% !important; }
+  .list.queue-track-list .list-item .col.added {
+    width: 20%; }
 
 .list.queue-history-track-list .list-item .col.name {
   width: 60%; }
@@ -4478,9 +4483,8 @@ aside {
     text-overflow: ellipsis;
     padding-top: 2px;
     color: #888888; }
-  .grid .grid-item .source {
-    color: #888888;
-    padding-left: 2px; }
+    .grid .grid-item .secondary .source {
+      padding-right: 6px; }
   .grid .grid-item:hover {
     cursor: pointer; }
     .grid .grid-item:hover .thumbnail {
@@ -5258,6 +5262,9 @@ main header {
       .artist-view .intro .liner .actions .context-menu-trigger {
         color: #FFFFFF; }
 
+.artist-view .body.overview .albums {
+  padding-top: 30px; }
+
 .artist-view .body.about::after {
   content: '';
   clear: both;
@@ -5302,8 +5309,11 @@ main header {
         margin-left: 5px; }
         .artist-view .intro .liner .sub-views .option {
           margin: 0 8px; }
-  .artist-view .body.overview h4 {
+  .artist-view .body.overview .top-tracks h4 {
     display: none; }
+  .artist-view .body.overview .albums h4 {
+    padding: 0;
+    margin: 0 0 -30px; }
   .artist-view .body.overview .col.w70 {
     width: 100%; }
   .artist-view .body.overview .col.w5,
@@ -5577,7 +5587,7 @@ main .track-view {
     font-weight: 700;
     height: 3.1rem;
     background: transparent;
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid #383734;
     border-radius: 0;
     /* handle Safari's ridiculous non-vertical centering */ }
     .search-view .search-form input:not(:root:root) {
@@ -5585,6 +5595,29 @@ main .track-view {
       margin-top: -1rem; }
     .search-view .search-form input:focus, .search-view .search-form input:active {
       border-color: #08d58f; }
+
+.search-view .search-result-sections {
+  padding-bottom: 30px; }
+  .search-view .search-result-sections section {
+    width: 31%;
+    float: left;
+    margin-right: 3.5%; }
+    .search-view .search-result-sections section:last-child {
+      margin-right: 0; }
+    .search-view .search-result-sections section .grid-item {
+      width: 48%;
+      box-sizing: border-box;
+      margin: 0 2% 3%; }
+      .search-view .search-result-sections section .grid-item:nth-child(2n-2) {
+        margin-right: 0; }
+        .search-view .search-result-sections section .grid-item:nth-child(2n-2)::after {
+          content: '';
+          clear: both;
+          display: block; }
+      .search-view .search-result-sections section .grid-item:nth-child(2n-1) {
+        margin-left: 0; }
+      .search-view .search-result-sections section .grid-item:nth-child(1n+5) {
+        display: none; }
 
 @media (max-width: 800px) {
   .search-view .search-form {

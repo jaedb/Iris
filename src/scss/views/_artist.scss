@@ -41,16 +41,25 @@
 
 	}
 
-	.body.about {		
-		@include clearfix();
+	.body {
 
-		.biography {
-			padding-left: 40px;
-			box-sizing: border-box;
+		&.overview {
+			.albums {
+				padding-top: 30px;
+			}
+		}
 
-			.biography-text {
-				overflow-wrap: break-word;
-			}			
+		&.about {		
+			@include clearfix();
+
+			.biography {
+				padding-left: 40px;
+				box-sizing: border-box;
+
+				.biography-text {
+					overflow-wrap: break-word;
+				}			
+			}
 		}
 	}
 
@@ -105,11 +114,15 @@
 				}
 			}
 		}
-		.body {
 
+		.body {
 			&.overview {
-				h4 {
+				.top-tracks h4 {
 					display: none;
+				}
+				.albums h4 {
+					padding: 0;
+					margin: 0 0 -30px;
 				}
 				.col.w70 {
 					width: 100%;

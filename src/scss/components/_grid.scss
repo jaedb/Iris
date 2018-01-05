@@ -25,11 +25,10 @@
 			@include one_line_text;
 			padding-top: 2px;
 			color: $secondary_grey;
-		}
 
-		.source {
-			color: $secondary_grey;
-			padding-left: 2px;
+			.source {
+				padding-right: 6px;
+			}
 		}
 
 		&:hover{
