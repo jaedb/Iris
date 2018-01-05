@@ -21,13 +21,14 @@ class SearchForm extends React.Component{
 
 	componentDidMount(){
 		if (this.props.query){
-			this.setState({query: this.props.query})
+			var query = this.props.query.replace("search:","");
+			this.setState({query: query});
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (newProps.query && newProps.query != this.state.query && newProps.query != this.props.query && !this.state.in_focus){
-			this.setState({query: newProps.query})
+		if (newProps.query && newProps.query != this.state.query && !this.state.in_focus){
+			this.setState({query: newProps.query.replace("search:","")});
 		}
 	}
 
@@ -50,7 +51,21 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				hashHistory.push(global.baseURL+'search/iris:search:'+encodeURIComponent(this.state.query))
+				var available_views = ["artist","album","playlist","track"];
+				var view_defined = false;
+				var query = this.state.query;
+
+				for (var i = 0; i < available_views.length; i++){
+					if (query.startsWith(available_views[i]+':')){
+						view_defined = true;
+					}
+				}
+
+				if (!view_defined){
+					query = "all:"+query;
+				}
+
+				hashHistory.push(global.baseURL+'search/search:'+query);
 				break
 		}
 

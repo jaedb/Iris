@@ -75,10 +75,7 @@
 			color: $grey;
 			text-transform: uppercase;
 			border-top: 0;
-
-			.liner {
-				padding-bottom: 2px;
-			}
+			padding-bottom: 2px;
 		}
 
 		&.field {
@@ -203,18 +200,16 @@
 
 	&.queue-track-list {
 		.list-item {
-			.liner {
-				padding-right: 60px;
-			}
-		}
-		.col {
-			&.name,
-			&.artists,
-			&.album { 
-				width: 25% !important;
-			}
-			&.added { 
-				width: 20%;
+			padding-right: 60px;
+			.col {
+				&.name,
+				&.artists,
+				&.album { 
+					width: 25% !important;
+				}
+				&.added { 
+					width: 20%;
+				}
 			}
 		}
 	}

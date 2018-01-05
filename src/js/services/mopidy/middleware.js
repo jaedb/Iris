@@ -649,10 +649,15 @@ const MopidyMiddleware = (function(){
                         instruct(socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => {
-                                    if (response.length > 0){
+                                    if (response.length > 0){                                        
+                                        var albums = [];
 
-                                        // collate all our different sources into one array
-                                        var albums = []
+                                        // Merge our proper album response container
+                                        if (response[0].albums){
+                                            albums = [...response[0].albums, ...albums];
+                                        }
+
+                                        // Pull the Album objects from our track responses
                                         if (response[0].tracks){
                                             for (var i = 0; i < response[0].tracks.length; i++){
                                                 if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined){
@@ -661,7 +666,6 @@ const MopidyMiddleware = (function(){
                                             }
                                         }
 
-                                        // TODO: limit uris at the loop, rather than post loop for performance
                                         var albums_uris = helpers.arrayOf('uri',albums)
                                         albums_uris = helpers.removeDuplicates(albums_uris)
 
@@ -715,7 +719,16 @@ const MopidyMiddleware = (function(){
                             .then(
                                 response => { 
                                     if (response.length > 0){
-                                        var artists_uris = []
+                                        var artists_uris = [];
+
+                                        // Pull actual artist objects
+                                        if (response[0].artists){
+                                            for (var i = 0; i < response[0].artists.length; i++){
+                                                artists_uris.push(response[0].artists.uri);
+                                            }
+                                        }
+
+                                        // Digest track artists into actual artist results
                                         if (response[0].tracks){
                                             for (var i = 0; i < response[0].tracks.length; i++){
                                                 if (response[0].tracks[i].artists){
@@ -729,12 +742,11 @@ const MopidyMiddleware = (function(){
                                             }
                                         }
 
-                                        // TODO: limit uris at the loop, rather than post loop for performance
-                                        artists_uris = helpers.removeDuplicates(artists_uris)
+                                        artists_uris = helpers.removeDuplicates(artists_uris);
 
                                         // load each artist
                                         for (var i = 0; i < artists_uris.length; i++){
-                                            store.dispatch(mopidyActions.getArtist(artists_uris[i]))
+                                            store.dispatch(mopidyActions.getArtist(artists_uris[i]));
                                         }
 
                                         // and plug in their URIs
@@ -773,16 +785,14 @@ const MopidyMiddleware = (function(){
                             .then(
                                 response => {
                                     if (response.length > 0){
+                                        var playlists_uris = [];
 
-                                        var playlists_uris = []
                                         for (var i = 0; i < response.length; i++){
                                             var playlist = response[i]
                                             if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(helpers.uriSource(playlist.uri)+':')){
                                                 playlists_uris.push(playlist.uri)
                                             }
                                         }
-
-                                        playlists_uris = playlists_uris
 
                                         // load each playlist
                                         for (var i = 0; i < playlists_uris.length; i++){
@@ -833,7 +843,7 @@ const MopidyMiddleware = (function(){
                             .then(
                                 response => {
                                     if (response.length > 0 && response[0].tracks !== undefined){
-                                        var tracks = response[0].tracks
+                                        var tracks = response[0].tracks;
 
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
@@ -868,7 +878,7 @@ const MopidyMiddleware = (function(){
                             .then(
                                 response => {
                                     if (response.length > 0 && response[0].tracks !== undefined){
-                                        var tracks = response[0].tracks
+                                        var tracks = response[0].tracks;
 
                                         store.dispatch({ 
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED', 
@@ -900,9 +910,14 @@ const MopidyMiddleware = (function(){
                                 .then(
                                     response => { 
                                         if (response.length > 0){
+                                            var albums = [];
 
-                                            // collate all our different sources into one array
-                                            var albums = []
+                                            // Merge actual album responses first
+                                            if (response[0].albums){
+                                                albums = [...response[0].albums, ...albums];
+                                            }
+
+                                            // Then digest tracks albums
                                             if (response[0].tracks){
                                                 for (var i = 0; i < response[0].tracks.length; i++){
                                                     if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined){
@@ -911,7 +926,6 @@ const MopidyMiddleware = (function(){
                                                 }
                                             }
 
-                                            // TODO: limit uris at the loop, rather than post loop for performance
                                             var albums_uris = helpers.arrayOf('uri',albums)
                                             albums_uris = helpers.removeDuplicates(albums_uris)
 
@@ -952,7 +966,16 @@ const MopidyMiddleware = (function(){
                                 .then(
                                     response => { 
                                         if (response.length > 0){
-                                            var artists_uris = []
+                                            var artists_uris = [];
+
+                                            // Pull our actual artists objects
+                                            if (response[0].artists){
+                                                for (var i = 0; i < response[0].artists.length; i++){
+                                                    artists_uris.push(response[0].artists.uri);
+                                                }
+                                            }
+
+                                            // Digest tracks artists
                                             if (response[0].tracks){
                                                 for (var i = 0; i < response[0].tracks.length; i++){
                                                     if (response[0].tracks[i].artists){
@@ -966,7 +989,6 @@ const MopidyMiddleware = (function(){
                                                 }
                                             }
 
-                                            // TODO: limit uris at the loop, rather than post loop for performance
                                             artists_uris = helpers.removeDuplicates(artists_uris)
 
                                             // load each artist

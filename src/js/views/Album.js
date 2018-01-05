@@ -150,7 +150,7 @@ class Album extends React.Component{
 					<ul className="details">
 						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
 						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
-						{ this.props.album.release_date ? <li><Dater type="date" data={ this.props.album.release_date } /></li> : null }
+						{ this.props.album.date ? <li><Dater type="date" data={ this.props.album.date } /></li> : null }
 						<li>
 							{tracks ? <span>{tracks.length} tracks, <Dater type="total-time" data={tracks} /></span> : '0 tracks, 0 mins' }
 						</li>

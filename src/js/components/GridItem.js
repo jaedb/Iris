@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import { Router, Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
+import * as helpers from '../helpers'
 import Thumbnail from './Thumbnail'
 import ArtistSentence from './ArtistSentence'
 
@@ -36,38 +37,38 @@ export default class GridItem extends React.Component{
 
 			case 'playlist':
 				return (
-					<div className="secondary">
+					<span>
 						{item.tracks_total ? item.tracks_total : 0} tracks
-					</div>
+					</span>
 				)
 				break
 
 			case 'artist':
 				return (
-					<div className="secondary">
+					<span>
 						{item.followers ? item.followers.total.toLocaleString()+' followers' : item.albums_uris.length+' albums'}
-					</div>
+					</span>
 				)
 				break
 
 			case 'album':
 				return (
-					<div className="secondary">
+					<span>
 						{item.artists ? <ArtistSentence artists={item.artists} /> : null}
-					</div>
+					</span>
 				)
 				break
 
 			default:
 				return (
-					<div className="secondary">
+					<span>
 						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
 						{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
-					</div>
+					</span>
 				)
 		}
 
-		return output
+		return output;
 	}
 
 	render(){
@@ -88,8 +89,13 @@ export default class GridItem extends React.Component{
 		return (
 			<div className="grid-item" onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
 				<Thumbnail size="medium" images={images} />
-				<div className="name">{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}</div>
-				{ this.renderSecondary(item) }
+				<div className="name">
+					{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}
+				</div>
+				<div className="secondary">					
+					{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(item.uri)} className="source" /> : null}
+					{this.renderSecondary(item)}
+				</div>
 			</div>
 		);
 	}

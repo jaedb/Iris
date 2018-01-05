@@ -8,9 +8,18 @@ export default class URILink extends React.Component{
 		super(props);
 	}
 
+	handleContextMenu(e){
+		if (this.props.onContextMenu){
+			this.props.onContextMenu(e);
+		}
+	}
+
 	render(){
 		var to = null;
-		var uri = encodeURIComponent(this.props.uri);
+		var uri = this.props.uri;
+		if (!this.props.unencoded){
+			uri = encodeURIComponent(uri);
+		}
 
 		switch (this.props.type){
 			
@@ -38,6 +47,10 @@ export default class URILink extends React.Component{
 				to = global.baseURL+'discover/recommendations/'+uri;
 				break;
 
+			case 'search':
+				to = global.baseURL+'search/'+uri;
+				break;
+
 			default:
 				to = null;
 		}
@@ -45,7 +58,8 @@ export default class URILink extends React.Component{
 		return (
 			<Link 
 				className={this.props.className ? this.props.className : null} 
-				to={to}>
+				to={to}
+				onContextMenu={e => this.handleContextMenu(e)}>
 					{this.props.children}
 			</Link>
 		);

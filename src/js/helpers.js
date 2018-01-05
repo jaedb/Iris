@@ -244,6 +244,20 @@ export let getTrackIcon = function(current_track = false, core = false){
 
 
 /**
+ * Format our album objects into a universal format
+ *
+ * @param album obj
+ * @return album obj
+ **/
+export let formatAlbum = function(album){
+	if (album.release_date !== undefined){
+		album.date = album.release_date;
+	}
+	return album;
+}
+
+
+/**
  * Format tracks into our universal format
  *
  * @param tracks = array
@@ -366,7 +380,7 @@ export let sourceIcon = function(uri,source = null){
  * @param element = string, the element we wish to extract
  * @param uri = string
  **/
-export let getFromUri = function(element,uri){
+export let getFromUri = function(element, uri = ""){
     var exploded = uri.split(':');
     var namespace = exploded[0]
 
@@ -423,6 +437,22 @@ export let getFromUri = function(element,uri){
     	case 'seeds':
     		if (exploded[1] == 'discover'){
     			return exploded[2]
+    		}
+    		break
+
+    	case 'searchcontext':
+    		if (exploded[0] == "search"){
+				var available_views = ["all","artist","album","playlist","track"];
+				var view = available_views.indexOf(exploded[1]);
+	    		if (view > -1){
+	    			return exploded[1];
+	    		}
+    		}
+    		break
+
+    	case 'searchterm':
+    		if (exploded[0] == "search"){
+				return exploded[2];
     		}
     		break
     }
