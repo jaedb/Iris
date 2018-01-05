@@ -29,63 +29,64 @@ class Search extends React.Component{
 	}
 
 	componentDidMount(){
-		var view = 'all';
-		if (this.props.params && this.props.params.view){
-			view = this.props.params.view;
-		}
-
-		var query = false;
+		var context = "all";
+		var term = null;
 		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
-			query = this.props.params.query;
+			context = helpers.getFromUri("searchcontext",this.props.params.query);
+			term = helpers.getFromUri("searchterm",this.props.params.query);
 		}
 
 		// Auto-focus on the input field
-		//$(document).find('.search-form input').focus();
+		$(document).find('.search-form input').focus();
 
-		if (query){
+		if (context && term){
 			if (this.props.mopidy_connected && this.props.search_uri_schemes){
-				this.props.mopidyActions.getSearchResults(view, query)
+				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
 			if (this.props.spotify_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
-				this.props.spotifyActions.getSearchResults(view, query)
+				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
 	}
 
 	componentWillReceiveProps(newProps){
-		if (newProps.params && newProps.params.view){
-			var view = newProps.params.view;
+		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
+			var old_context = helpers.getFromUri("searchcontext",this.props.params.query);
+			var old_term = helpers.getFromUri("searchterm",this.props.params.query);
 		} else {
-			var view = 'all';
+			var old_context = "all";
+			var old_term = null;
 		}
 
 		if (newProps.params && newProps.params.query && newProps.params.query !== ''){
-			var query = newProps.params.query;
+			var context = helpers.getFromUri("searchcontext",newProps.params.query);
+			var term = helpers.getFromUri("searchterm",newProps.params.query);
 		} else {
-			var query = null;
+			var context = "all";
+			var term = null;
 		}
 
-		if (query && !this.props.mopidy_connected && newProps.mopidy_connected){
-			this.props.mopidyActions.getSearchResults(view, query)		
+		if (term && !this.props.mopidy_connected && newProps.mopidy_connected){
+			this.props.mopidyActions.getSearchResults(context, term);
 		}
 
-		if (query && !this.props.spotify_connected && newProps.spotify_connected && newProps.search_uri_schemes.includes('spotify:')){		
-			this.props.spotifyActions.getSearchResults(view, query)	
+		if (term && !this.props.spotify_connected && newProps.spotify_connected && newProps.search_uri_schemes.includes('spotify:')){		
+			this.props.spotifyActions.getSearchResults(context, term);
 		}
 
 		// Search changed 
-		if (query && query !== this.props.params.query){
+		if (term && context && term !== old_term){
 			
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
 
 			if (this.props.mopidy_connected && this.props.search_uri_schemes){
-				this.props.mopidyActions.getSearchResults(view, query)
+				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
 			if (this.props.mopidy_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
-				this.props.spotifyActions.getSearchResults(view, query)
+				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
 	}
@@ -107,6 +108,12 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
+
+		var context = helpers.getFromUri("searchcontext",this.props.params.query);
+		var term = helpers.getFromUri("searchterm",this.props.params.query);
+		if (!context){
+			context = "all";
+		}
 
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
@@ -152,16 +159,17 @@ class Search extends React.Component{
 		}
 		tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse, sort_map);
 		
-		switch (this.props.params.view){
+		switch (context){
 
 			case 'artist':
 				return (
 					<div>
 						<h4>
-							Artists
-							<URILink unencoded type="search" uri={"search:all:"+this.props.params.query}>
-								Back to all
+							<URILink unencoded type="search" uri={"search:all:"+term}>
+								Search
 							</URILink>
+							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							Artists
 						</h4>
 						<section className="grid-wrapper">
 							<ArtistGrid artists={artists} show_source_icon />
@@ -175,10 +183,11 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							Albums
-							<URILink unencoded type="search" uri={"search:all:"+this.props.params.query}>
-								Back to all
+							<URILink unencoded type="search" uri={"search:all:"+term}>
+								Search
 							</URILink>
+							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							Albums
 						</h4>
 						<section className="grid-wrapper">
 							<AlbumGrid albums={albums} show_source_icon />
@@ -192,10 +201,11 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							Playlists
-							<URILink unencoded type="search" uri={"search:all:"+this.props.params.query}>
-								Back to all
+							<URILink unencoded type="search" uri={"search:all:"+term}>
+								Search
 							</URILink>
+							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							Playlists
 						</h4>
 						<section className="grid-wrapper">
 							<PlaylistGrid playlists={playlists} show_source_icon />
@@ -209,13 +219,14 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							Tracks
-							<URILink unencoded type="search" uri={"search:all:"+this.props.params.query}>
-								Back to all
+							<URILink unencoded type="search" uri={"search:all:"+term}>
+								Search
 							</URILink>
+							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -228,14 +239,14 @@ class Search extends React.Component{
 				if (artists.length > 0){
 					var artists_section = (					
 						<section>
-							<div className="inner">
-								<h4>
-									Artists
-									<URILink unencoded type="search" uri={"search:artist:"+this.props.params.query}>
-										More
-									</URILink>
-								</h4>
-								<ArtistGrid show_source_icon single_row artists={artists.slice(0,5)} />
+							<div className="inner">								
+								<URILink unencoded type="search" uri={"search:artist:"+term}>
+									<h4>Artists</h4>
+								</URILink>
+								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
+								{artists.length > 4 ? <URILink unencoded type="search" uri={"search:artist:"+term} className="button grey">
+									All artists ({artists.length})
+								</URILink> : null}
 							</div>
 						</section>
 					)
@@ -246,14 +257,14 @@ class Search extends React.Component{
 				if (albums.length > 0){
 					var albums_section = (					
 						<section>
-							<div className="inner">
-								<h4>
-									Albums
-									<URILink unencoded type="search" uri={"search:album:"+this.props.params.query}>
-										More
-									</URILink>
-								</h4>
-								<AlbumGrid show_source_icon single_row albums={albums.slice(0,5)} />
+							<div className="inner">						
+								<URILink unencoded type="search" uri={"search:album:"+term}>
+									<h4>Albums</h4>
+								</URILink>
+								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
+								{albums.length > 4 ? <URILink unencoded type="search" uri={"search:album:"+term} className="button grey">
+									All albums ({albums.length})
+								</URILink> : null}
 							</div>
 						</section>
 					)
@@ -264,14 +275,14 @@ class Search extends React.Component{
 				if (playlists.length > 0){
 					var playlists_section = (					
 						<section>
-							<div className="inner">
-								<h4>
-									Playlists
-									<URILink unencoded type="search" uri={"search:playlist:"+this.props.params.query}>
-										More
-									</URILink>
-								</h4>
-								<PlaylistGrid show_source_icon single_row playlists={playlists.slice(0,5)} />
+							<div className="inner">						
+								<URILink unencoded type="search" uri={"search:playlist:"+term}>
+									<h4>Playlists</h4>
+								</URILink>
+								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
+								{playlists.length > 4 ? <URILink unencoded type="search" uri={"search:playlist:"+term} className="button grey">
+									All playlists ({playlists.length})
+								</URILink> : null}
 							</div>
 						</section>
 					)
@@ -282,8 +293,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<h4>Tracks</h4>
-							<TrackList tracks={tracks} uri={'iris:search:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)

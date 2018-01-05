@@ -15,7 +15,7 @@
 			font-weight: 700;
 			height: 3.1rem;
 			background: transparent;
-			border-bottom: 2px solid transparent;
+			border-bottom: 2px solid $grey;
 			border-radius: 0;
 
 			/* handle Safari's ridiculous non-vertical centering */
@@ -31,12 +31,25 @@
 		}
 	}
 
-	h4 {
-		margin-bottom: 20px;
+	.search-result-sections {
+		padding-bottom: 30px;
 
-		a {
-			font-size: 14px;
-			margin-left: 10px;
+		section {
+			width: 31%;
+			float: left;
+			margin-right: 3.5%;
+
+			&:last-child {
+				margin-right: 0;
+			}
+
+			.grid-item {
+				@include grid_item(2);
+
+				&:nth-child(1n+5){
+					display: none;
+				}
+			}
 		}
 	}
 
