@@ -16,6 +16,7 @@ Features
 * Improved support for local libraries using SQLite extension
 * Browse and manage your playlists, along with top tracks, new releases and genre browser
 * Discover new and related music, powered by Spotify
+* Freely hosted, auto-updated interface available ([beta](https://jaedb.github.io/Iris/#/))
 
 ![Overview](https://raw.githubusercontent.com/jaedb/iris/master/screenshot.jpg)
 
