@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
+import InputRange from 'react-input-range';
 
 import Header from '../../components/Header'
 import ArtistSentence from '../../components/ArtistSentence'
@@ -12,8 +13,12 @@ import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
 import AddSeedField from '../../components/AddSeedField'
 import URILink from '../../components/URILink'
+import ContextMenuTrigger from '../../components/ContextMenuTrigger'
+import RelatedArtists from '../../components/RelatedArtists'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class Discover extends React.Component{
@@ -24,11 +29,15 @@ class Discover extends React.Component{
 		this._autocomplete_timer = false
 
 		this.state = {
-			seeds: [
-				'spotify:genre:chill'
-			],
 			add_seed: '',
-			adding_seed: false
+			adding_seed: false,
+			seeds: [],
+			tunabilities: {
+				loudness: {
+					min: 0,
+					max: 100
+				}
+			}
 		}
 	}
 
@@ -36,12 +45,8 @@ class Discover extends React.Component{
 
 		// We have seeds provided in the URL
 		if (this.props.params.seeds){
-			this.handleURLSeeds(this.props.params.seeds)
-
-		// BAU
-		} else {
-			this.props.spotifyActions.getFavorites()
-		}
+			this.handleURLSeeds(this.props.params.seeds);
+		} 
 	}
 
 	componentWillReceiveProps(newProps, newState){
@@ -50,17 +55,38 @@ class Discover extends React.Component{
 		if (newProps.params.seeds != this.props.params.seeds){
 			this.handleURLSeeds(newProps.params.seeds)
 		}
+	}
 
-		// When we've loaded favorite_artists.
-		// This indirectly listens for when the action has
-		// loaded new data.
-		if (this.props.favorite_artists.length <= 0 && newProps.favorite_artists.length > 0){
-			var initial_seeds = newProps.favorite_artists.sort(() => .5 - Math.random())
-			initial_seeds = initial_seeds.slice(0,2)
+	handleContextMenu(e){
 
-			this.setState({seeds: initial_seeds})
-			this.getRecommendations(initial_seeds)
+		var uri = 'iris:discover';
+		if (this.state.seeds){
+			uri += ':';
+			for (var i = 0; i < this.state.seeds.length; i++){
+				if (i > 0){
+					uri += ',';
+				}
+				uri += this.state.seeds[i].split(':').join('_');
+			}
 		}
+
+		var tracks = [];
+		if (this.props.recommendations.tracks_uris && this.props.tracks){
+			for (var i = 0; i < this.props.recommendations.tracks_uris.length; i++){
+				var uri = this.props.recommendations.tracks_uris[i];
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri]);
+				}
+			}
+		}
+
+		var data = {
+			e: e,
+			context: 'track',
+			items: tracks,
+			uris: [uri]
+		}
+		this.props.uiActions.showContextMenu(data);
 	}
 
 	handleURLSeeds(seeds_string = this.props.params.seeds){
@@ -87,10 +113,14 @@ class Discover extends React.Component{
 		this.getRecommendations(seeds)
 	}
 
-	getRecommendations(seeds = this.state.seeds){
+	getRecommendations(seeds = this.state.seeds, tunabilities = this.state.tunabilities){
 		if (seeds.length > 0){
-			this.props.spotifyActions.getRecommendations(seeds, 50)
+			this.props.spotifyActions.getRecommendations(seeds, 50, tunabilities)
 		}
+	}
+
+	playTracks(){
+		this.props.mopidyActions.playURIs(this.props.recommendations.tracks_uris);
 	}
 
 	removeSeed(index){
@@ -168,6 +198,49 @@ class Discover extends React.Component{
 		)
 	}
 
+	setTunability(name, value){
+		var tunabilities = this.state.tunabilities;
+		tunabilities[name] = value;
+		console.log(tunabilities);
+		this.setState({ tunabilities: tunabilities });
+	}
+
+	renderTunabilities(){
+
+		var tunabilities = [];
+		for (var key in this.state.tunabilities){
+			if (this.state.tunabilities.hasOwnProperty(key)){
+				var tunability = {
+					name: key,
+					value: this.state.tunabilities[key]
+				};
+				tunabilities.push(tunability);
+			}
+		}
+
+		return (
+			<div className="tunabilities">
+				{
+					tunabilities.map(tunability => {
+						return (
+							<div className="field tunability range" key={tunability.name}>
+								<label>
+									{tunability.name}
+								</label>
+								<InputRange
+									maxValue={100}
+									minValue={0}
+									value={tunability.value}
+									onChange={value => this.setTunability(tunability.name, value)}
+								/>
+							</div>
+						);
+					})
+				}
+			</div>
+		);
+	}
+
 	renderResults(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_recommendations'])){
 			return (
@@ -177,16 +250,16 @@ class Discover extends React.Component{
 			)
 		}
 		
-		if (!this.props.recommendations || typeof(this.props.recommendations.albums_uris) === 'undefined' || typeof(this.props.recommendations.artists_uris) === 'undefined'){
+		if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined){
 			return null;
 		}
 
-		var albums = [];
-		if (this.props.recommendations.albums_uris && this.props.albums){
-			for (var i = 0; i < this.props.recommendations.albums_uris.length; i++){
-				var uri = this.props.recommendations.albums_uris[i];
-				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri]);
+		var tracks = [];
+		if (this.props.recommendations.tracks_uris && this.props.tracks){
+			for (var i = 0; i < this.props.recommendations.tracks_uris.length; i++){
+				var uri = this.props.recommendations.tracks_uris[i];
+				if (this.props.tracks.hasOwnProperty(uri)){
+					tracks.push(this.props.tracks[uri]);
 				}
 			}
 		}
@@ -201,35 +274,54 @@ class Discover extends React.Component{
 			}
 		}
 
-		var tracks = [];
-		if (this.props.recommendations.tracks_uris && this.props.tracks){
-			for (var i = 0; i < this.props.recommendations.tracks_uris.length; i++){
-				var uri = this.props.recommendations.tracks_uris[i];
-				if (this.props.tracks.hasOwnProperty(uri)){
-					tracks.push(this.props.tracks[uri]);
+		var albums = [];
+		if (this.props.recommendations.albums_uris && this.props.albums){
+			for (var i = 0; i < this.props.recommendations.albums_uris.length; i++){
+				var uri = this.props.recommendations.albums_uris[i];
+				if (this.props.albums.hasOwnProperty(uri)){
+					albums.push(this.props.albums[uri]);
 				}
 			}
 		}
 
 		var uri = 'iris:discover';
-		if (this.props.params.seeds){
-			uri += ':'+this.props.params.seeds.split(':').join('_');
+		if (this.state.seeds){
+			uri += ':';
+			for (var i = 0; i < this.state.seeds.length; i++){
+				if (i > 0){
+					uri += ',';
+				}
+				uri += this.state.seeds[i].split(':').join('_');
+			}
 		}
 		
 		return (
-			<div className="content-wrapper recommendations-results">
-				<section>
-					<h4>Artists</h4>
-					<ArtistGrid single_row artists={artists} />
-				</section>
-				<section>
-					<h4>Albums</h4>
-					<AlbumGrid single_row albums={albums} />
-				</section>
-				<section>
-					<h4>Tracks</h4>
+			<div className="content-wrapper recommendations-results cf">
+
+				<section className="col w70">
+					<h4>
+						Tracks
+						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+						<button className="primary pull-right" onClick={e => this.playTracks(e)}>Play all</button>
+					</h4>
 					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
 				</section>
+
+				<div className="col w5"></div>
+
+				<div className="col w25">
+					<section>
+						<h4>Artists</h4>
+						<RelatedArtists artists={artists} />
+					</section>
+					<br />
+					<br />
+					<section>
+						<h4>Albums</h4>
+						<AlbumGrid className="mini" albums={albums} />
+					</section>
+				</div>
+
 			</div>
 		)
 	}
@@ -244,10 +336,10 @@ class Discover extends React.Component{
 					<div className="liner">
 						<h1>Explore new music</h1>
 						<h2 className="grey-text">
-							Add seeds below to build your sound
-							{!this.props.params.seeds ? ". Let's start with two of your favorite artists." : null}
+							Add seeds and musical properties below to build your sound
 						</h2>
 						{this.renderSeeds()}
+						{this.renderTunabilities()}
 					</div>
 
 				</div>
@@ -283,6 +375,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

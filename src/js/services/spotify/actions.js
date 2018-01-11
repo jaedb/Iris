@@ -923,7 +923,7 @@ export function getRecommendations(uris = [], limit = 20){
                     // anyway so we can proceed in the meantime
                     var artists_uris = []
                     if (tracks.length > artists_ids.length && tracks.length > 10){
-                        while (artists_uris.length < 5){
+                        while (artists_uris.length < 6){
                             var random_index = Math.round(Math.random() * (tracks.length - 1))
                             var artist = tracks[random_index].artists[0]
 
@@ -940,7 +940,7 @@ export function getRecommendations(uris = [], limit = 20){
                     var albums = []
                     var albums_uris = []
                     if (tracks.length > 10){
-                        while (albums.length < 5){
+                        while (albums.length < 6){
                             var random_index = Math.round(Math.random() * (tracks.length - 1))
                             var album = tracks[random_index].album
 

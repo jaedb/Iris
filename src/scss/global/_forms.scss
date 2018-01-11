@@ -99,6 +99,15 @@ input[type="submit"] {
 		margin-bottom: 9px;
 	}
 
+	&.small {
+		padding: 6px 18px 4px;
+	}
+
+	&.pull-right {
+		margin-right: 0;
+		margin-left: 30px;
+	}
+
 	&.primary {
 		background: $turquoise;
 		color: $white;
@@ -281,6 +290,13 @@ input[type="submit"] {
 
 		input:checked + .label:before {
 			content: '\f00c';
+		}
+	}
+
+	&.range {
+		.input-range__track,
+		.input-range__slider-container {
+			transition: none;
 		}
 	}
 
