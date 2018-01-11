@@ -298,6 +298,19 @@ input[type="submit"] {
 		.input-range__slider-container {
 			transition: none;
 		}
+
+		.input-range__track--background {
+			background: $mid_grey;
+		}
+
+		.input-range__track--active {
+			background: $blue;
+		}
+
+		.input-range__slider {
+			background: $blue;
+			border-color: $blue;
+		}
 	}
 
 	.description {

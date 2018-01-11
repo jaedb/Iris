@@ -96,6 +96,26 @@
 			}
 		}
 	}
+
+	.tunabilities {
+		margin: 10px -10px;
+
+		.tunability {
+			width: 25%;
+			box-sizing: border-box;
+			padding: 10px;
+
+			label {
+				text-transform: capitalize;
+			}
+
+			.input-range {
+				.input-range__label-container {
+					display: none;
+				}
+			}
+		}
+	}
 	
 	section {
 		.grid {

@@ -33,9 +33,115 @@ class Discover extends React.Component{
 			adding_seed: false,
 			seeds: [],
 			tunabilities: {
-				loudness: {
+				acousticness: {
+					enabled: false,
+					convert_to_decimal: true,
 					min: 0,
-					max: 100
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				danceability: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				energy: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				instrumentalness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				key: {
+					enabled: false,
+					min: 0,
+					max: 11,
+					value: {
+						min: 0,
+						max: 11
+					}
+				},
+				liveness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				loudness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				popularity: {
+					enabled: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				speechiness: {
+					enabled: false,
+					convert_to_decimal: true,
+					description: "The presence of spoken words in a track",
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				tempo: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				valence: {
+					enabled: false,
+					convert_to_decimal: true,
+					description: "The musical positiveness conveyed by a track",
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
 				}
 			}
 		}
@@ -115,7 +221,21 @@ class Discover extends React.Component{
 
 	getRecommendations(seeds = this.state.seeds, tunabilities = this.state.tunabilities){
 		if (seeds.length > 0){
-			this.props.spotifyActions.getRecommendations(seeds, 50, tunabilities)
+			var digested_tunabilities = {};
+			for (var key in tunabilities){
+				if (tunabilities.hasOwnProperty(key) && tunabilities[key].enabled){
+					var tunability = tunabilities[key];
+
+					if (tunability.convert_to_decimal){
+						tunability.value.max = tunability.max / 100;
+						tunability.value.min = tunability.min / 100;
+					}
+
+					digested_tunabilities[key+"_max"] = tunability.value.max;
+					digested_tunabilities[key+"_min"] = tunability.value.min;
+				}
+			}
+			this.props.spotifyActions.getRecommendations(seeds, 50, digested_tunabilities)
 		}
 	}
 
@@ -124,17 +244,15 @@ class Discover extends React.Component{
 	}
 
 	removeSeed(index){
-		var seeds = this.state.seeds
-		seeds.splice(index,1)
-		this.setState({seeds: seeds})
-		this.getRecommendations(seeds)
+		var seeds = this.state.seeds;
+		seeds.splice(index,1);
+		this.setState({seeds: seeds});
 	}
 
 	handleSelect(e,uri){
-		var seeds = this.state.seeds
-		seeds.push(uri)
-		this.setState({seeds: seeds})
-		this.getRecommendations(seeds)
+		var seeds = this.state.seeds;
+		seeds.push(uri);
+		this.setState({seeds: seeds});
 	}
 
 	renderSeeds(){
@@ -200,8 +318,13 @@ class Discover extends React.Component{
 
 	setTunability(name, value){
 		var tunabilities = this.state.tunabilities;
-		tunabilities[name] = value;
-		console.log(tunabilities);
+		tunabilities[name].value = value;
+		this.setState({ tunabilities: tunabilities });
+	}
+
+	toggleTunability(name){
+		var tunabilities = this.state.tunabilities;
+		tunabilities[name].enabled = !tunabilities[name].enabled;
 		this.setState({ tunabilities: tunabilities });
 	}
 
@@ -210,11 +333,16 @@ class Discover extends React.Component{
 		var tunabilities = [];
 		for (var key in this.state.tunabilities){
 			if (this.state.tunabilities.hasOwnProperty(key)){
-				var tunability = {
-					name: key,
-					value: this.state.tunabilities[key]
-				};
-				tunabilities.push(tunability);
+				var tunability = Object.assign(
+					{},
+					this.state.tunabilities[key],
+					{
+						name: key
+					}
+				);
+				if (tunability.enabled){
+					tunabilities.push(tunability);
+				}
 			}
 		}
 
@@ -225,14 +353,20 @@ class Discover extends React.Component{
 						return (
 							<div className="field tunability range" key={tunability.name}>
 								<label>
-									{tunability.name}
+									<span className="has-tooltip sentence">
+										{tunability.name}
+										<span className="tooltip">{tunability.description}</span>
+									</span>
 								</label>
-								<InputRange
-									maxValue={100}
-									minValue={0}
-									value={tunability.value}
-									onChange={value => this.setTunability(tunability.name, value)}
-								/>
+								<div className="input">
+									<InputRange
+										disabled={!tunability.enabled}
+										minValue={tunability.min}
+										maxValue={tunability.max}
+										value={tunability.value}
+										onChange={value => this.setTunability(tunability.name, value)}
+									/>
+								</div>
 							</div>
 						);
 					})
@@ -340,6 +474,7 @@ class Discover extends React.Component{
 						</h2>
 						{this.renderSeeds()}
 						{this.renderTunabilities()}
+						<span className="button primary" onClick={e => this.getRecommendations()}>Apply</span>
 					</div>
 
 				</div>

@@ -873,7 +873,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
  *
  * @param uris = array of artist or track URIs or a genre string
  **/
-export function getRecommendations(uris = [], limit = 20){
+export function getRecommendations(uris = [], limit = 20, tunabilities = null){
     return (dispatch, getState) => {
 
         dispatch({type: 'CLEAR_SPOTIFY_RECOMMENDATIONS'});
@@ -912,6 +912,16 @@ export function getRecommendations(uris = [], limit = 20){
         endpoint += '&seed_tracks='+tracks_ids.join(',')
         endpoint += '&seed_genres='+genres.join(',')
         endpoint += '&limit='+limit
+
+        console.log(tunabilities);
+
+        if (tunabilities){
+            for (var key in tunabilities){
+                if (tunabilities.hasOwnProperty(key)){
+                    endpoint += '&'+key+'='+tunabilities[key];
+                }
+            }
+        }
 
         sendRequest(dispatch, getState, endpoint)
             .then(

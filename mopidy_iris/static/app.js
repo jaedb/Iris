@@ -2574,6 +2574,7 @@ function getFavorites() {
 function getRecommendations() {
     var uris = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var limit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+    var tunabilities = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     return function (dispatch, getState) {
 
@@ -2613,6 +2614,16 @@ function getRecommendations() {
         endpoint += '&seed_tracks=' + tracks_ids.join(',');
         endpoint += '&seed_genres=' + genres.join(',');
         endpoint += '&limit=' + limit;
+
+        console.log(tunabilities);
+
+        if (tunabilities) {
+            for (var key in tunabilities) {
+                if (tunabilities.hasOwnProperty(key)) {
+                    endpoint += '&' + key + '=' + tunabilities[key];
+                }
+            }
+        }
 
         sendRequest(dispatch, getState, endpoint).then(function (response) {
             var tracks = Object.assign([], response.tracks);
@@ -69613,9 +69624,115 @@ var Discover = function (_React$Component) {
 			adding_seed: false,
 			seeds: [],
 			tunabilities: {
-				loudness: {
+				acousticness: {
+					enabled: false,
+					convert_to_decimal: true,
 					min: 0,
-					max: 100
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				danceability: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				energy: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				instrumentalness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				key: {
+					enabled: false,
+					min: 0,
+					max: 11,
+					value: {
+						min: 0,
+						max: 11
+					}
+				},
+				liveness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				loudness: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				popularity: {
+					enabled: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				speechiness: {
+					enabled: false,
+					convert_to_decimal: true,
+					description: "The presence of spoken words in a track",
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				tempo: {
+					enabled: false,
+					convert_to_decimal: true,
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
+				},
+				valence: {
+					enabled: false,
+					convert_to_decimal: true,
+					description: "The musical positiveness conveyed by a track",
+					min: 0,
+					max: 100,
+					value: {
+						min: 0,
+						max: 100
+					}
 				}
 			}
 		};
@@ -69707,7 +69824,21 @@ var Discover = function (_React$Component) {
 			var tunabilities = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.tunabilities;
 
 			if (seeds.length > 0) {
-				this.props.spotifyActions.getRecommendations(seeds, 50, tunabilities);
+				var digested_tunabilities = {};
+				for (var key in tunabilities) {
+					if (tunabilities.hasOwnProperty(key) && tunabilities[key].enabled) {
+						var tunability = tunabilities[key];
+
+						if (tunability.convert_to_decimal) {
+							tunability.value.max = tunability.max / 100;
+							tunability.value.min = tunability.min / 100;
+						}
+
+						digested_tunabilities[key + "_max"] = tunability.value.max;
+						digested_tunabilities[key + "_min"] = tunability.value.min;
+					}
+				}
+				this.props.spotifyActions.getRecommendations(seeds, 50, digested_tunabilities);
 			}
 		}
 	}, {
@@ -69721,7 +69852,6 @@ var Discover = function (_React$Component) {
 			var seeds = this.state.seeds;
 			seeds.splice(index, 1);
 			this.setState({ seeds: seeds });
-			this.getRecommendations(seeds);
 		}
 	}, {
 		key: 'handleSelect',
@@ -69729,7 +69859,6 @@ var Discover = function (_React$Component) {
 			var seeds = this.state.seeds;
 			seeds.push(uri);
 			this.setState({ seeds: seeds });
-			this.getRecommendations(seeds);
 		}
 	}, {
 		key: 'renderSeeds',
@@ -69807,8 +69936,14 @@ var Discover = function (_React$Component) {
 		key: 'setTunability',
 		value: function setTunability(name, value) {
 			var tunabilities = this.state.tunabilities;
-			tunabilities[name] = value;
-			console.log(tunabilities);
+			tunabilities[name].value = value;
+			this.setState({ tunabilities: tunabilities });
+		}
+	}, {
+		key: 'toggleTunability',
+		value: function toggleTunability(name) {
+			var tunabilities = this.state.tunabilities;
+			tunabilities[name].enabled = !tunabilities[name].enabled;
 			this.setState({ tunabilities: tunabilities });
 		}
 	}, {
@@ -69819,11 +69954,12 @@ var Discover = function (_React$Component) {
 			var tunabilities = [];
 			for (var key in this.state.tunabilities) {
 				if (this.state.tunabilities.hasOwnProperty(key)) {
-					var tunability = {
-						name: key,
-						value: this.state.tunabilities[key]
-					};
-					tunabilities.push(tunability);
+					var tunability = Object.assign({}, this.state.tunabilities[key], {
+						name: key
+					});
+					if (tunability.enabled) {
+						tunabilities.push(tunability);
+					}
 				}
 			}
 
@@ -69837,16 +69973,30 @@ var Discover = function (_React$Component) {
 						_react2.default.createElement(
 							'label',
 							null,
-							tunability.name
+							_react2.default.createElement(
+								'span',
+								{ className: 'has-tooltip sentence' },
+								tunability.name,
+								_react2.default.createElement(
+									'span',
+									{ className: 'tooltip' },
+									tunability.description
+								)
+							)
 						),
-						_react2.default.createElement(_reactInputRange2.default, {
-							maxValue: 100,
-							minValue: 0,
-							value: tunability.value,
-							onChange: function onChange(value) {
-								return _this3.setTunability(tunability.name, value);
-							}
-						})
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_reactInputRange2.default, {
+								disabled: !tunability.enabled,
+								minValue: tunability.min,
+								maxValue: tunability.max,
+								value: tunability.value,
+								onChange: function onChange(value) {
+									return _this3.setTunability(tunability.name, value);
+								}
+							})
+						)
 					);
 				})
 			);
@@ -69964,6 +70114,8 @@ var Discover = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
+			var _this5 = this;
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view discover-view' },
@@ -69985,7 +70137,14 @@ var Discover = function (_React$Component) {
 							'Add seeds and musical properties below to build your sound'
 						),
 						this.renderSeeds(),
-						this.renderTunabilities()
+						this.renderTunabilities(),
+						_react2.default.createElement(
+							'span',
+							{ className: 'button primary', onClick: function onClick(e) {
+									return _this5.getRecommendations();
+								} },
+							'Apply'
+						)
 					)
 				),
 				this.renderResults()
