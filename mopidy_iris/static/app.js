@@ -69957,9 +69957,7 @@ var Discover = function (_React$Component) {
 					var tunability = Object.assign({}, this.state.tunabilities[key], {
 						name: key
 					});
-					if (tunability.enabled) {
-						tunabilities.push(tunability);
-					}
+					tunabilities.push(tunability);
 				}
 			}
 
@@ -69969,34 +69967,54 @@ var Discover = function (_React$Component) {
 				tunabilities.map(function (tunability) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'field tunability range', key: tunability.name },
+						{ className: 'field tunability', key: tunability.name },
 						_react2.default.createElement(
-							'label',
-							null,
+							'div',
+							{ className: 'field sub-field checkbox' },
 							_react2.default.createElement(
-								'span',
-								{ className: 'has-tooltip sentence' },
-								tunability.name,
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: "tunability_" + tunability.name,
+									checked: tunability.enabled,
+									onChange: function onChange(e) {
+										return _this3.toggleTunability(tunability.name);
+									} }),
+								_react2.default.createElement(
+									'div',
+									{ className: 'label' },
+									tunability.name
+								),
 								_react2.default.createElement(
 									'span',
-									{ className: 'tooltip' },
-									tunability.description
+									{ className: 'has-tooltip info' },
+									_react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle' }),
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										tunability.description
+									)
 								)
 							)
 						),
-						_react2.default.createElement(
+						tunability.enabled ? _react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							_react2.default.createElement(_reactInputRange2.default, {
-								disabled: !tunability.enabled,
-								minValue: tunability.min,
-								maxValue: tunability.max,
-								value: tunability.value,
-								onChange: function onChange(value) {
-									return _this3.setTunability(tunability.name, value);
-								}
-							})
-						)
+							_react2.default.createElement(
+								'div',
+								{ className: 'field sub-field range' },
+								_react2.default.createElement(_reactInputRange2.default, {
+									disabled: !tunability.enabled,
+									minValue: tunability.min,
+									maxValue: tunability.max,
+									value: tunability.value,
+									onChange: function onChange(value) {
+										return _this3.setTunability(tunability.name, value);
+									}
+								})
+							)
+						) : null
 					);
 				})
 			);

@@ -247,7 +247,7 @@ input[type="submit"] {
 			display: inline-block;
 			float: none;
 			width: auto;
-			padding: 5px 30px 5px 30px;
+			padding: 5px 5px 5px 26px;
 			position: relative;
 			cursor: pointer;
 		}
@@ -311,6 +311,10 @@ input[type="submit"] {
 			background: $blue;
 			border-color: $blue;
 		}
+	}
+
+	&.sub-field {
+		padding: 0;
 	}
 
 	.description {

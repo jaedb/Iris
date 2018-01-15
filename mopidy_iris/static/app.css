@@ -3185,7 +3185,7 @@ input[type="submit"] {
     display: inline-block;
     float: none;
     width: auto;
-    padding: 5px 30px 5px 30px;
+    padding: 5px 5px 5px 26px;
     position: relative;
     cursor: pointer; }
   .field.radio input + .label:before {
@@ -3226,6 +3226,8 @@ input[type="submit"] {
   .field.range .input-range__slider {
     background: #32b5f2;
     border-color: #32b5f2; }
+  .field.sub-field {
+    padding: 0; }
   .field .description {
     display: inline-block;
     padding: 10px 14px;
@@ -5330,6 +5332,8 @@ main header {
   .has-tooltip:hover .tooltip {
     opacity: 1;
     bottom: 35px; }
+  .has-tooltip.info .fa {
+    opacity: 0.3; }
   .has-tooltip.large-tooltip .tooltip {
     padding: 8px 12px;
     font-size: 12px;

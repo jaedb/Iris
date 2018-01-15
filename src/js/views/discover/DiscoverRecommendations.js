@@ -340,9 +340,7 @@ class Discover extends React.Component{
 						name: key
 					}
 				);
-				if (tunability.enabled){
-					tunabilities.push(tunability);
-				}
+				tunabilities.push(tunability);
 			}
 		}
 
@@ -351,22 +349,34 @@ class Discover extends React.Component{
 				{
 					tunabilities.map(tunability => {
 						return (
-							<div className="field tunability range" key={tunability.name}>
-								<label>
-									<span className="has-tooltip sentence">
-										{tunability.name}
-										<span className="tooltip">{tunability.description}</span>
-									</span>
-								</label>
-								<div className="input">
-									<InputRange
-										disabled={!tunability.enabled}
-										minValue={tunability.min}
-										maxValue={tunability.max}
-										value={tunability.value}
-										onChange={value => this.setTunability(tunability.name, value)}
-									/>
+							<div className="field tunability" key={tunability.name}>
+								<div className="field sub-field checkbox">
+									<label>
+										<input 
+											type="checkbox"
+											name={"tunability_"+tunability.name}
+											checked={tunability.enabled}
+											onChange={e => this.toggleTunability(tunability.name)} />
+										<div className="label">
+											{tunability.name}
+										</div>
+										<span className="has-tooltip info">
+											<FontAwesome name="info-circle" />
+											<span className="tooltip">{tunability.description}</span>
+										</span>
+									</label>
 								</div>
+								{tunability.enabled ? <div className="input">
+									<div className="field sub-field range">
+										<InputRange
+											disabled={!tunability.enabled}
+											minValue={tunability.min}
+											maxValue={tunability.max}
+											value={tunability.value}
+											onChange={value => this.setTunability(tunability.name, value)}
+										/>
+									</div>
+								</div> : null}
 							</div>
 						);
 					})
