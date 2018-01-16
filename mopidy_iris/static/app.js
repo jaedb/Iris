@@ -1058,6 +1058,16 @@ var getIndexedRecords = exports.getIndexedRecords = function getIndexedRecords(i
 	return records;
 };
 
+/**
+ * Uppercase-ify the first character of a string
+ *
+ * @param string = string
+ * @return string
+ **/
+var titleCase = exports.titleCase = function titleCase(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 /***/ }),
 /* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -2614,8 +2624,6 @@ function getRecommendations() {
         endpoint += '&seed_tracks=' + tracks_ids.join(',');
         endpoint += '&seed_genres=' + genres.join(',');
         endpoint += '&limit=' + limit;
-
-        console.log(tunabilities);
 
         if (tunabilities) {
             for (var key in tunabilities) {
@@ -21973,16 +21981,24 @@ var DropdownField = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			if (!this.props.options) return null;
+			if (!this.props.options) {
+				return null;
+			}
 
-			var classname = 'dropdown-field';
-			if (this.state.expanded) classname += ' expanded';
-
+			var className = 'dropdown-field';
+			if (this.state.expanded) {
+				className += ' expanded';
+			}
+			if (this.props.no_status_icon) {
+				className += ' no-status-icon';
+			}
 			var current_value = this.props.options[0].value;
-			if (this.props.value) current_value = this.props.value;
+			if (this.props.value) {
+				current_value = this.props.value;
+			}
 
 			var icon = _react2.default.createElement(_reactFontawesome2.default, { name: 'check' });
-			if (typeof this.props.reverse !== 'undefined') {
+			if (this.props.reverse !== undefined) {
 				if (this.props.reverse) {
 					icon = _react2.default.createElement(_reactFontawesome2.default, { className: 'reverse', name: 'caret-down' });
 				} else {
@@ -21992,7 +22008,7 @@ var DropdownField = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: classname, 'data-key': this.props.name.replace(' ', '_').toLowerCase() },
+				{ className: className, 'data-key': this.props.name.replace(' ', '_').toLowerCase() },
 				_react2.default.createElement(
 					'div',
 					{ className: 'label', onClick: function onClick() {
@@ -22019,7 +22035,7 @@ var DropdownField = function (_React$Component) {
 							{ className: 'option', key: option.value, onClick: function onClick(e) {
 									return _this2.handleChange(option.value);
 								} },
-							option.value == current_value ? icon : null,
+							!_this2.props.no_status_icon && option.value == current_value ? icon : null,
 							option.label
 						);
 					})
@@ -69567,6 +69583,10 @@ var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
+var _DropdownField = __webpack_require__(63);
+
+var _DropdownField2 = _interopRequireDefault(_DropdownField);
+
 var _AddSeedField = __webpack_require__(446);
 
 var _AddSeedField2 = _interopRequireDefault(_AddSeedField);
@@ -69829,13 +69849,18 @@ var Discover = function (_React$Component) {
 					if (tunabilities.hasOwnProperty(key) && tunabilities[key].enabled) {
 						var tunability = tunabilities[key];
 
+						var max = tunability.value.max;
+						var min = tunability.value.min;
+
 						if (tunability.convert_to_decimal) {
-							tunability.value.max = tunability.max / 100;
-							tunability.value.min = tunability.min / 100;
+							max = max / 100;
+							min = min / 100;
 						}
 
-						digested_tunabilities[key + "_max"] = tunability.value.max;
-						digested_tunabilities[key + "_min"] = tunability.value.min;
+						console.log(key, max, min);
+
+						digested_tunabilities[key + "_max"] = max.toString();
+						digested_tunabilities[key + "_min"] = min.toString();
 					}
 				}
 				this.props.spotifyActions.getRecommendations(seeds, 50, digested_tunabilities);
@@ -69909,6 +69934,11 @@ var Discover = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'seeds' },
+				_react2.default.createElement(
+					'h3',
+					null,
+					'Seeds'
+				),
 				seeds_objects.map(function (seed, index) {
 					var type = helpers.uriType(seed.uri);
 					return _react2.default.createElement(
@@ -69951,72 +69981,71 @@ var Discover = function (_React$Component) {
 		value: function renderTunabilities() {
 			var _this3 = this;
 
-			var tunabilities = [];
+			var enabled_tunabilities = [];
+			var addable_tunabilities = [];
 			for (var key in this.state.tunabilities) {
 				if (this.state.tunabilities.hasOwnProperty(key)) {
+
 					var tunability = Object.assign({}, this.state.tunabilities[key], {
 						name: key
 					});
-					tunabilities.push(tunability);
+
+					if (tunability.enabled) {
+						enabled_tunabilities.push(tunability);
+					} else {
+						addable_tunabilities.push({
+							label: helpers.titleCase(tunability.name),
+							value: tunability.name
+						});
+					}
 				}
 			}
 
 			return _react2.default.createElement(
 				'div',
 				{ className: 'tunabilities' },
-				tunabilities.map(function (tunability) {
+				_react2.default.createElement(
+					'h3',
+					null,
+					'Musical properties'
+				),
+				enabled_tunabilities.map(function (tunability) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'field tunability', key: tunability.name },
+						{ className: 'field tunability range', key: tunability.name },
 						_react2.default.createElement(
 							'div',
-							{ className: 'field sub-field checkbox' },
+							{ className: 'label' },
+							helpers.titleCase(tunability.name),
 							_react2.default.createElement(
-								'label',
-								null,
-								_react2.default.createElement('input', {
-									type: 'checkbox',
-									name: "tunability_" + tunability.name,
-									checked: tunability.enabled,
-									onChange: function onChange(e) {
-										return _this3.toggleTunability(tunability.name);
-									} }),
-								_react2.default.createElement(
-									'div',
-									{ className: 'label' },
-									tunability.name
-								),
+								'span',
+								{ className: 'has-tooltip info' },
+								_react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle' }),
 								_react2.default.createElement(
 									'span',
-									{ className: 'has-tooltip info' },
-									_react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle' }),
-									_react2.default.createElement(
-										'span',
-										{ className: 'tooltip' },
-										tunability.description
-									)
+									{ className: 'tooltip' },
+									tunability.description
 								)
 							)
 						),
-						tunability.enabled ? _react2.default.createElement(
+						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'field sub-field range' },
-								_react2.default.createElement(_reactInputRange2.default, {
-									disabled: !tunability.enabled,
-									minValue: tunability.min,
-									maxValue: tunability.max,
-									value: tunability.value,
-									onChange: function onChange(value) {
-										return _this3.setTunability(tunability.name, value);
-									}
-								})
-							)
-						) : null
+							_react2.default.createElement(_reactInputRange2.default, {
+								disabled: !tunability.enabled,
+								minValue: tunability.min,
+								maxValue: tunability.max,
+								value: tunability.value,
+								onChange: function onChange(value) {
+									return _this3.setTunability(tunability.name, value);
+								}
+							})
+						)
 					);
-				})
+				}),
+				_react2.default.createElement(_DropdownField2.default, { icon: 'plus', name: 'Add', options: addable_tunabilities, no_status_icon: true, handleChange: function handleChange(val) {
+						_this3.toggleTunability(val);
+					} })
 			);
 		}
 	}, {

@@ -294,6 +294,14 @@ input[type="submit"] {
 	}
 
 	&.range {
+		.label {
+			padding-bottom: 4px;
+
+			.has-tooltip {
+				padding-left: 4px;
+			}
+		}
+
 		.input-range__track,
 		.input-range__slider-container {
 			transition: none;

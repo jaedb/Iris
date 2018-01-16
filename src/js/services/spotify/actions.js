@@ -907,13 +907,11 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null){
         }
 
         // construct our endpoint URL with all the appropriate arguments
-        var endpoint = 'recommendations'
-        endpoint += '?seed_artists='+artists_ids.join(',')
-        endpoint += '&seed_tracks='+tracks_ids.join(',')
-        endpoint += '&seed_genres='+genres.join(',')
-        endpoint += '&limit='+limit
-
-        console.log(tunabilities);
+        var endpoint = 'recommendations';
+        endpoint += '?seed_artists='+artists_ids.join(',');
+        endpoint += '&seed_tracks='+tracks_ids.join(',');
+        endpoint += '&seed_genres='+genres.join(',');
+        endpoint += '&limit='+limit;
 
         if (tunabilities){
             for (var key in tunabilities){

@@ -11,6 +11,7 @@ import ArtistGrid from '../../components/ArtistGrid'
 import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
 import Parallax from '../../components/Parallax'
+import DropdownField from '../../components/DropdownField'
 import AddSeedField from '../../components/AddSeedField'
 import URILink from '../../components/URILink'
 import ContextMenuTrigger from '../../components/ContextMenuTrigger'
@@ -226,13 +227,18 @@ class Discover extends React.Component{
 				if (tunabilities.hasOwnProperty(key) && tunabilities[key].enabled){
 					var tunability = tunabilities[key];
 
+					var max = tunability.value.max;
+					var min = tunability.value.min;
+
 					if (tunability.convert_to_decimal){
-						tunability.value.max = tunability.max / 100;
-						tunability.value.min = tunability.min / 100;
+						max = max / 100;
+						min = min / 100;
 					}
 
-					digested_tunabilities[key+"_max"] = tunability.value.max;
-					digested_tunabilities[key+"_min"] = tunability.value.min;
+					console.log(key,max,min);
+
+					digested_tunabilities[key+"_max"] = max.toString();
+					digested_tunabilities[key+"_min"] = min.toString();
 				}
 			}
 			this.props.spotifyActions.getRecommendations(seeds, 50, digested_tunabilities)
@@ -299,6 +305,7 @@ class Discover extends React.Component{
 
 		return (
 			<div className="seeds">
+				<h3>Seeds</h3>
 				{
 					seeds_objects.map((seed,index) => {
 						var type = helpers.uriType(seed.uri)
@@ -329,10 +336,11 @@ class Discover extends React.Component{
 	}
 
 	renderTunabilities(){
-
-		var tunabilities = [];
+		var enabled_tunabilities = [];
+		var addable_tunabilities = [];
 		for (var key in this.state.tunabilities){
 			if (this.state.tunabilities.hasOwnProperty(key)){
+
 				var tunability = Object.assign(
 					{},
 					this.state.tunabilities[key],
@@ -340,47 +348,46 @@ class Discover extends React.Component{
 						name: key
 					}
 				);
-				tunabilities.push(tunability);
+
+				if (tunability.enabled){
+					enabled_tunabilities.push(tunability);
+				} else {
+					addable_tunabilities.push({
+						label: helpers.titleCase(tunability.name),
+						value: tunability.name
+					});
+				}
 			}
 		}
 
 		return (
 			<div className="tunabilities">
+				<h3>Musical properties</h3>
 				{
-					tunabilities.map(tunability => {
+					enabled_tunabilities.map(tunability => {
 						return (
-							<div className="field tunability" key={tunability.name}>
-								<div className="field sub-field checkbox">
-									<label>
-										<input 
-											type="checkbox"
-											name={"tunability_"+tunability.name}
-											checked={tunability.enabled}
-											onChange={e => this.toggleTunability(tunability.name)} />
-										<div className="label">
-											{tunability.name}
-										</div>
-										<span className="has-tooltip info">
-											<FontAwesome name="info-circle" />
-											<span className="tooltip">{tunability.description}</span>
-										</span>
-									</label>
+							<div className="field tunability range" key={tunability.name}>
+								<div className="label">
+									{helpers.titleCase(tunability.name)}
+									<span className="has-tooltip info">
+										<FontAwesome name="info-circle" />
+										<span className="tooltip">{tunability.description}</span>
+									</span>
 								</div>
-								{tunability.enabled ? <div className="input">
-									<div className="field sub-field range">
-										<InputRange
-											disabled={!tunability.enabled}
-											minValue={tunability.min}
-											maxValue={tunability.max}
-											value={tunability.value}
-											onChange={value => this.setTunability(tunability.name, value)}
-										/>
-									</div>
-								</div> : null}
+								<div className="input">
+									<InputRange
+										disabled={!tunability.enabled}
+										minValue={tunability.min}
+										maxValue={tunability.max}
+										value={tunability.value}
+										onChange={value => this.setTunability(tunability.name, value)}
+									/>
+								</div>
 							</div>
 						);
 					})
 				}
+				<DropdownField icon="plus" name="Add" options={addable_tunabilities} no_status_icon handleChange={val => {this.toggleTunability(val)}} />
 			</div>
 		);
 	}

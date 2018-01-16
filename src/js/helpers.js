@@ -792,3 +792,14 @@ export let getIndexedRecords = function(index, uris){
 
 	return records
 }
+
+
+/**
+ * Uppercase-ify the first character of a string
+ *
+ * @param string = string
+ * @return string
+ **/
+export let titleCase = function(string){
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}

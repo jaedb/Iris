@@ -28,17 +28,19 @@
 			h2 {
 				padding-bottom: 8px;
 			}
+		}
+	}
 
-			h3 {
-				padding-bottom: 40px;
-				opacity: 0.5;
-			}
+	.seeds,
+	.tunabilities {
+		padding-top: 40px;
+
+		h3 {
+			padding-bottom: 6px;
 		}
 	}
 
 	.seeds {
-		padding-top: 40px;
-
 		.seed {
 			display: inline-block;
 			background: $blue;
@@ -68,6 +70,23 @@
 		}
 	}
 
+	.tunabilities {
+		@include clearfix();
+		
+		.tunability {
+			width: 200px;
+			float: left;
+			box-sizing: border-box;
+			padding-right: 20px;
+
+			.input-range {
+				.input-range__label-container {
+					display: none;
+				}
+			}
+		}
+	}
+
 	.autocomplete-field {
 		width: 250px;
 		display: inline-block;
@@ -93,26 +112,6 @@
 
 			&:after {
 				background: $blue;
-			}
-		}
-	}
-
-	.tunabilities {
-		margin: 10px -10px;
-
-		.tunability {
-			width: 25%;
-			box-sizing: border-box;
-			padding: 10px;
-
-			label {
-				text-transform: capitalize;
-			}
-
-			.input-range {
-				.input-range__label-container {
-					display: none;
-				}
 			}
 		}
 	}

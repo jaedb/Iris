@@ -3216,6 +3216,10 @@ input[type="submit"] {
     left: 0; }
   .field.checkbox input:checked + .label:before {
     content: '\F00C'; }
+  .field.range .label {
+    padding-bottom: 4px; }
+    .field.range .label .has-tooltip {
+      padding-left: 4px; }
   .field.range .input-range__track,
   .field.range .input-range__slider-container {
     transition: none; }
@@ -5105,6 +5109,8 @@ main header {
     color: #32b5f2; }
   .dropdown-field.expanded .options {
     display: block; }
+  .dropdown-field.no-status-icon .options .option {
+    padding-left: 12px; }
   .dropdown-field .options {
     color: #000000;
     position: absolute;
@@ -5798,34 +5804,49 @@ main .track-view {
     color: #FFFFFF; }
     .discover-view .intro .liner h2 {
       padding-bottom: 8px; }
-    .discover-view .intro .liner h3 {
-      padding-bottom: 40px;
-      opacity: 0.5; }
 
-.discover-view .seeds {
+.discover-view .seeds,
+.discover-view .tunabilities {
   padding-top: 40px; }
-  .discover-view .seeds .seed {
+  .discover-view .seeds h3,
+  .discover-view .tunabilities h3 {
+    padding-bottom: 6px; }
+
+.discover-view .seeds .seed {
+  display: inline-block;
+  background: #32b5f2;
+  color: #FFFFFF;
+  padding: 8px 26px 8px 14px;
+  font-size: 16px;
+  position: relative;
+  vertical-align: top;
+  margin: 0 10px 10px 0;
+  border-radius: 3px; }
+  .discover-view .seeds .seed .type {
     display: inline-block;
-    background: #32b5f2;
-    color: #FFFFFF;
-    padding: 8px 26px 8px 14px;
-    font-size: 16px;
-    position: relative;
-    vertical-align: top;
-    margin: 0 10px 10px 0;
-    border-radius: 3px; }
-    .discover-view .seeds .seed .type {
-      display: inline-block;
-      font-size: 12px;
-      opacity: 0.5;
-      padding: 0 10px 0 5px; }
-    .discover-view .seeds .seed .remove {
-      font-size: 10px;
-      padding: 12px;
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer; }
+    font-size: 12px;
+    opacity: 0.5;
+    padding: 0 10px 0 5px; }
+  .discover-view .seeds .seed .remove {
+    font-size: 10px;
+    padding: 12px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer; }
+
+.discover-view .tunabilities::after {
+  content: '';
+  clear: both;
+  display: block; }
+
+.discover-view .tunabilities .tunability {
+  width: 200px;
+  float: left;
+  box-sizing: border-box;
+  padding-right: 20px; }
+  .discover-view .tunabilities .tunability .input-range .input-range__label-container {
+    display: none; }
 
 .discover-view .autocomplete-field {
   width: 250px;
@@ -5845,17 +5866,6 @@ main .track-view {
         border-color: #32b5f2; }
     .discover-view .autocomplete-field .input:after {
       background: #32b5f2; }
-
-.discover-view .tunabilities {
-  margin: 10px -10px; }
-  .discover-view .tunabilities .tunability {
-    width: 25%;
-    box-sizing: border-box;
-    padding: 10px; }
-    .discover-view .tunabilities .tunability label {
-      text-transform: capitalize; }
-    .discover-view .tunabilities .tunability .input-range .input-range__label-container {
-      display: none; }
 
 .discover-view section .grid {
   padding-bottom: 20px; }

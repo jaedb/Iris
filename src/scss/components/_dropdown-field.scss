@@ -25,6 +25,14 @@
 		}
 	}
 
+	&.no-status-icon {
+		.options {
+			.option {
+				padding-left: 12px;
+			}
+		}
+	}
+
 	.options {
 		color: $black;
 		position: absolute;
