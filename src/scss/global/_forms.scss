@@ -294,30 +294,50 @@ input[type="submit"] {
 	}
 
 	&.range {
-		.label {
-			padding-bottom: 4px;
+		position: relative;
 
-			.has-tooltip {
-				padding-left: 4px;
-			}
+		.label {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			z-index: 3;
+			pointer-events: none;
 		}
 
 		.input-range__track,
 		.input-range__slider-container {
 			transition: none;
+			height: 30px;
+			border-radius: 3px;
+			cursor: col-resize;
 		}
 
 		.input-range__track--background {
-			background: $mid_grey;
+			background: rgba(134, 201, 232, 0.5);
 		}
 
 		.input-range__track--active {
 			background: $blue;
+			cursor: grab;
 		}
 
-		.input-range__slider {
-			background: $blue;
-			border-color: $blue;
+		.input-range__slider-container {			
+			.input-range__slider {
+				cursor: col-resize;
+				background: $blue;
+				border: none;
+				top: 0;
+				height: 100%;
+				width: 20px;
+				margin: -30px 0 0 0;
+				border-radius: 3px;
+			}
+
+			&:last-child {
+				.input-range__slider {
+					margin-left: -20px;
+				}
+			}
 		}
 	}
 

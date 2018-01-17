@@ -79,6 +79,11 @@
 			box-sizing: border-box;
 			padding-right: 20px;
 
+			.input {
+				float: none;
+				width: 100%;
+			}
+
 			.input-range {
 				.input-range__label-container {
 					display: none;

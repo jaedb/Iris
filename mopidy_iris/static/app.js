@@ -69650,8 +69650,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				danceability: {
@@ -69660,8 +69660,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				energy: {
@@ -69670,8 +69670,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				instrumentalness: {
@@ -69680,8 +69680,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				key: {
@@ -69689,8 +69689,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 11,
 					value: {
-						min: 0,
-						max: 11
+						min: 3,
+						max: 8
 					}
 				},
 				liveness: {
@@ -69699,8 +69699,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				loudness: {
@@ -69709,8 +69709,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				popularity: {
@@ -69718,8 +69718,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				speechiness: {
@@ -69729,8 +69729,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				tempo: {
@@ -69739,8 +69739,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				valence: {
@@ -69750,8 +69750,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				}
 			}
@@ -69856,8 +69856,6 @@ var Discover = function (_React$Component) {
 							max = max / 100;
 							min = min / 100;
 						}
-
-						console.log(key, max, min);
 
 						digested_tunabilities[key + "_max"] = max.toString();
 						digested_tunabilities[key + "_min"] = min.toString();
@@ -70016,17 +70014,7 @@ var Discover = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'label' },
-							helpers.titleCase(tunability.name),
-							_react2.default.createElement(
-								'span',
-								{ className: 'has-tooltip info' },
-								_react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle' }),
-								_react2.default.createElement(
-									'span',
-									{ className: 'tooltip' },
-									tunability.description
-								)
-							)
+							helpers.titleCase(tunability.name)
 						),
 						_react2.default.createElement(
 							'div',
@@ -70036,6 +70024,7 @@ var Discover = function (_React$Component) {
 								minValue: tunability.min,
 								maxValue: tunability.max,
 								value: tunability.value,
+								draggableTrack: true,
 								onChange: function onChange(value) {
 									return _this3.setTunability(tunability.name, value);
 								}

@@ -3216,20 +3216,36 @@ input[type="submit"] {
     left: 0; }
   .field.checkbox input:checked + .label:before {
     content: '\F00C'; }
-  .field.range .label {
-    padding-bottom: 4px; }
-    .field.range .label .has-tooltip {
-      padding-left: 4px; }
-  .field.range .input-range__track,
-  .field.range .input-range__slider-container {
-    transition: none; }
-  .field.range .input-range__track--background {
-    background: #a3a19f; }
-  .field.range .input-range__track--active {
-    background: #32b5f2; }
-  .field.range .input-range__slider {
-    background: #32b5f2;
-    border-color: #32b5f2; }
+  .field.range {
+    position: relative; }
+    .field.range .label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+      pointer-events: none; }
+    .field.range .input-range__track,
+    .field.range .input-range__slider-container {
+      transition: none;
+      height: 30px;
+      border-radius: 3px;
+      cursor: col-resize; }
+    .field.range .input-range__track--background {
+      background: rgba(134, 201, 232, 0.5); }
+    .field.range .input-range__track--active {
+      background: #32b5f2;
+      cursor: grab; }
+    .field.range .input-range__slider-container .input-range__slider {
+      cursor: col-resize;
+      background: #32b5f2;
+      border: none;
+      top: 0;
+      height: 100%;
+      width: 20px;
+      margin: -30px 0 0 0;
+      border-radius: 3px; }
+    .field.range .input-range__slider-container:last-child .input-range__slider {
+      margin-left: -20px; }
   .field.sub-field {
     padding: 0; }
   .field .description {
@@ -5845,6 +5861,9 @@ main .track-view {
   float: left;
   box-sizing: border-box;
   padding-right: 20px; }
+  .discover-view .tunabilities .tunability .input {
+    float: none;
+    width: 100%; }
   .discover-view .tunabilities .tunability .input-range .input-range__label-container {
     display: none; }
 

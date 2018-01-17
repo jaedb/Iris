@@ -40,8 +40,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				danceability: {
@@ -50,8 +50,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				energy: {
@@ -60,8 +60,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				instrumentalness: {
@@ -70,8 +70,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				key: {
@@ -79,8 +79,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 11,
 					value: {
-						min: 0,
-						max: 11
+						min: 3,
+						max: 8
 					}
 				},
 				liveness: {
@@ -89,8 +89,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				loudness: {
@@ -99,8 +99,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				popularity: {
@@ -108,8 +108,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				speechiness: {
@@ -119,8 +119,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				tempo: {
@@ -129,8 +129,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				},
 				valence: {
@@ -140,8 +140,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 0,
-						max: 100
+						min: 25,
+						max: 75
 					}
 				}
 			}
@@ -234,8 +234,6 @@ class Discover extends React.Component{
 						max = max / 100;
 						min = min / 100;
 					}
-
-					console.log(key,max,min);
 
 					digested_tunabilities[key+"_max"] = max.toString();
 					digested_tunabilities[key+"_min"] = min.toString();
@@ -369,10 +367,6 @@ class Discover extends React.Component{
 							<div className="field tunability range" key={tunability.name}>
 								<div className="label">
 									{helpers.titleCase(tunability.name)}
-									<span className="has-tooltip info">
-										<FontAwesome name="info-circle" />
-										<span className="tooltip">{tunability.description}</span>
-									</span>
 								</div>
 								<div className="input">
 									<InputRange
@@ -380,6 +374,7 @@ class Discover extends React.Component{
 										minValue={tunability.min}
 										maxValue={tunability.max}
 										value={tunability.value}
+										draggableTrack={true}
 										onChange={value => this.setTunability(tunability.name, value)}
 									/>
 								</div>
