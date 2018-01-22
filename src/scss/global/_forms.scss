@@ -296,6 +296,10 @@ input[type="submit"] {
 	&.range {
 		position: relative;
 
+		.input-range {
+			height: auto;
+		}
+
 		.label {
 			position: absolute;
 			top: 10px;
@@ -307,13 +311,14 @@ input[type="submit"] {
 		.input-range__track,
 		.input-range__slider-container {
 			transition: none;
-			height: 30px;
+			height: 36px;
 			border-radius: 3px;
 			cursor: col-resize;
 		}
 
 		.input-range__track--background {
-			background: rgba(134, 201, 232, 0.5);
+			margin: 0;
+			background: rgba(100,100,100,0.5);
 		}
 
 		.input-range__track--active {
@@ -329,7 +334,7 @@ input[type="submit"] {
 				top: 0;
 				height: 100%;
 				width: 20px;
-				margin: -30px 0 0 0;
+				margin: -36px 0 0 0;
 				border-radius: 3px;
 			}
 

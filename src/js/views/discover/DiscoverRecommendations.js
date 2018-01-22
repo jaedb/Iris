@@ -378,11 +378,12 @@ class Discover extends React.Component{
 										onChange={value => this.setTunability(tunability.name, value)}
 									/>
 								</div>
+								<FontAwesome name="close" onClick={e => this.toggleTunability(tunability.name)} />
 							</div>
 						);
 					})
 				}
-				<DropdownField icon="plus" name="Add" options={addable_tunabilities} no_status_icon handleChange={val => {this.toggleTunability(val)}} />
+				<DropdownField icon="plus" name="Add" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
 			</div>
 		);
 	}
@@ -486,7 +487,9 @@ class Discover extends React.Component{
 						</h2>
 						{this.renderSeeds()}
 						{this.renderTunabilities()}
-						<span className="button primary" onClick={e => this.getRecommendations()}>Apply</span>
+						<div className="actions">
+							<span className="button primary" onClick={e => this.getRecommendations()}>Apply</span>
+						</div>
 					</div>
 
 				</div>

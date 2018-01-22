@@ -33,7 +33,7 @@
 
 	.seeds,
 	.tunabilities {
-		padding-top: 40px;
+		padding-top: 20px;
 
 		h3 {
 			padding-bottom: 6px;
@@ -119,6 +119,10 @@
 				background: $blue;
 			}
 		}
+	}
+
+	.actions {
+		padding-top: 30px;
 	}
 	
 	section {

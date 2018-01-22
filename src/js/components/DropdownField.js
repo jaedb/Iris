@@ -51,6 +51,9 @@ export default class DropdownField extends React.Component{
 		if (this.props.no_status_icon){
 			className += ' no-status-icon';
 		}
+		if (this.props.button){
+			className += ' buttonify';
+		}
 		var current_value = this.props.options[0].value
 		if (this.props.value){
 			current_value = this.props.value;
@@ -67,7 +70,7 @@ export default class DropdownField extends React.Component{
 
 		return (
 			<div className={className} data-key={this.props.name.replace(' ','_').toLowerCase()}>
-				<div className="label" onClick={ () => this.handleToggle() }>
+				<div className={"label"+(this.props.button ? " button "+this.props.button : "")} onClick={ () => this.handleToggle() }>
 					{this.props.icon ? <span><FontAwesome name={this.props.icon} />&nbsp; </span> : null}
 					<span className="text">{ this.props.name }</span>
 				</div>

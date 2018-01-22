@@ -1,10 +1,11 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
+import md5 from 'md5';
 
-var helpers = require('./../../helpers')
-var spotifyActions = require('./actions')
-var uiActions = require('../ui/actions')
-var pusherActions = require('../pusher/actions')
+var helpers = require('./../../helpers');
+var spotifyActions = require('./actions');
+var uiActions = require('../ui/actions');
+var pusherActions = require('../pusher/actions');
 
 const SpotifyMiddleware = (function(){
 
@@ -17,15 +18,12 @@ const SpotifyMiddleware = (function(){
         switch(action.type){
 
             case 'SPOTIFY_CONNECTED':
-                var label = null
+                var hashed_username = null
                 if (store.getState().spotify.me){
-                    if (store.getState().core.anonymise_analytics){
-                        label = "anonymised_"+store.getState().pusher.client_id;
-                    } else {
-                        label = store.getState().spotify.me.id;
-                    }
+                    hashed_username = md5(store.getState().spotify.me.id);
+                    ReactGA.set({userId: hashed_username});
                 }
-                ReactGA.event({ category: 'Spotify', action: 'Connected', label: label })
+                ReactGA.event({category: 'Spotify', action: 'Connected', label: hashed_username})
 
                 // TODO: remove this so we don't tap out our API limits before we even get started
                 // Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
@@ -37,7 +35,7 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
-                ReactGA.event({ category: 'Spotify', action: 'Authorization granted'});
+                ReactGA.event({category: 'Spotify', action: 'Authorization granted'});
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
@@ -46,15 +44,12 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                var label = null
+                var hashed_username = null
                 if (store.getState().spotify.me){
-                    if (store.getState().core.anonymise_analytics){
-                        label = "anonymised_"+store.getState().pusher.client_id;
-                    } else {
-                        label = store.getState().spotify.me.id;
-                    }
+                    hashed_username = md5(store.getState().spotify.me);
+                    ReactGA.set({userId: hashed_username});
                 }
-                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: label})
+                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username})
                 next(action)
 
                 // Now dispatch a getMe to get the backend-provided user
@@ -66,15 +61,12 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_IMPORT_AUTHORIZATION':
-                var label = null;
-                if (action.me && action.me.id){
-                    if (store.getState().core.anonymise_analytics){
-                        label = "anonymised_"+store.getState().pusher.client_id;
-                    } else {
-                        label = action.me.id;
-                    }
+                var hashed_username = null
+                if (store.getState().spotify.me){
+                    hashed_username = md5(store.getState().spotify.me);
+                    ReactGA.set({userId: hashed_username});
                 }
-                ReactGA.event({ category: 'Spotify', action: 'Authorization imported', label: label });
+                ReactGA.event({category: 'Spotify', action: 'Authorization imported', label: hashed_username});
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
@@ -435,14 +427,9 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(pusherActions.setUsername(name));
                 }
 
-                var label = null;
-                if (store.getState().core.anonymise_analytics){
-                    label = "anonymised_"+store.getState().pusher.client_id;
-                } else {    
-                    ReactGA.set({userId: action.data.id});
-                    label = action.data.id;
-                }
-                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: label});
+                var hashed_username = md5(action.data.id);
+                ReactGA.set({userId: hashed_username});
+                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
 
                 store.dispatch({
                     type: 'USERS_LOADED',

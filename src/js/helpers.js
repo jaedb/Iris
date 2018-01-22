@@ -803,3 +803,19 @@ export let getIndexedRecords = function(index, uris){
 export let titleCase = function(string){
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+
+
+/**
+ * Hash a string
+ * Included from http://coursesweb.net/javascript/md5-hash-string_cs
+ *
+ * @param string
+ * @return string
+ **/
+export let hash = function md5(string){
+
+	return string;
+}
+
+
