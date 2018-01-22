@@ -805,17 +805,3 @@ export let titleCase = function(string){
 }
 
 
-
-/**
- * Hash a string
- * Included from http://coursesweb.net/javascript/md5-hash-string_cs
- *
- * @param string
- * @return string
- **/
-export let hash = function md5(string){
-
-	return string;
-}
-
-
