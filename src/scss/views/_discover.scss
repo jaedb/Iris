@@ -33,7 +33,7 @@
 
 	.seeds,
 	.tunabilities {
-		padding-top: 20px;
+		padding-top: 30px;
 
 		h3 {
 			padding-bottom: 6px;
@@ -78,6 +78,7 @@
 			float: left;
 			box-sizing: border-box;
 			padding-right: 20px;
+			position: relative;
 
 			.input {
 				float: none;
@@ -87,6 +88,18 @@
 			.input-range {
 				.input-range__label-container {
 					display: none;
+				}
+			}
+
+			.remove {
+				@include animate();
+				cursor: pointer;
+				font-size: 10px;
+				padding: 4px;
+				margin-left: 4px;
+
+				&:hover {
+					color: $red;
 				}
 			}
 		}
@@ -122,7 +135,8 @@
 	}
 
 	.actions {
-		padding-top: 30px;
+		padding-top: 60px;
+		text-align: center;
 	}
 	
 	section {
@@ -139,6 +153,29 @@
 
 		.seeds {
 			padding-top: 20px;
+		}
+
+		.tunabilities {
+			.tunability {
+				width: 100%;
+				float: none;
+				padding: 15px 0;
+			}
+
+			.dropdown-field {
+				margin-top: 20px;
+			}
+		}
+
+		.col {
+			&.tracks {
+				width: 100%;
+			}
+
+			&.others,
+			&.w5 {
+				display: none;
+			}
 		}
 	}
 }

@@ -303,7 +303,7 @@ class Discover extends React.Component{
 
 		return (
 			<div className="seeds">
-				<h3>Seeds</h3>
+				<h4 className="underline">Seeds</h4>
 				{
 					seeds_objects.map((seed,index) => {
 						var type = helpers.uriType(seed.uri)
@@ -334,8 +334,8 @@ class Discover extends React.Component{
 	}
 
 	renderTunabilities(){
-		var enabled_tunabilities = [];
 		var addable_tunabilities = [];
+		var enabled_tunabilities = [];
 		for (var key in this.state.tunabilities){
 			if (this.state.tunabilities.hasOwnProperty(key)){
 
@@ -360,13 +360,16 @@ class Discover extends React.Component{
 
 		return (
 			<div className="tunabilities">
-				<h3>Musical properties</h3>
+				<h4 className="underline">Musical properties</h4>
 				{
 					enabled_tunabilities.map(tunability => {
 						return (
 							<div className="field tunability range" key={tunability.name}>
 								<div className="label">
 									{helpers.titleCase(tunability.name)}
+									<span className="remove" onClick={e => this.toggleTunability(tunability.name)}>
+										<FontAwesome name="close" />
+									</span>
 								</div>
 								<div className="input">
 									<InputRange
@@ -374,16 +377,14 @@ class Discover extends React.Component{
 										minValue={tunability.min}
 										maxValue={tunability.max}
 										value={tunability.value}
-										draggableTrack={true}
 										onChange={value => this.setTunability(tunability.name, value)}
 									/>
 								</div>
-								<FontAwesome name="close" onClick={e => this.toggleTunability(tunability.name)} />
 							</div>
 						);
 					})
 				}
-				<DropdownField icon="plus" name="Add" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
+				<DropdownField name="Add" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
 			</div>
 		);
 	}
@@ -445,7 +446,7 @@ class Discover extends React.Component{
 		return (
 			<div className="content-wrapper recommendations-results cf">
 
-				<section className="col w70">
+				<section className="col w70 tracks">
 					<h4>
 						Tracks
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
@@ -456,7 +457,7 @@ class Discover extends React.Component{
 
 				<div className="col w5"></div>
 
-				<div className="col w25">
+				<div className="col w25 others">
 					<section>
 						<h4>Artists</h4>
 						<RelatedArtists artists={artists} />
@@ -474,6 +475,27 @@ class Discover extends React.Component{
 	}
 
 	render(){
+		var addable_tunabilities = [];
+		for (var key in this.state.tunabilities){
+			if (this.state.tunabilities.hasOwnProperty(key)){
+
+				var tunability = Object.assign(
+					{},
+					this.state.tunabilities[key],
+					{
+						name: key
+					}
+				);
+
+				if (!tunability.enabled){
+					addable_tunabilities.push({
+						label: helpers.titleCase(tunability.name),
+						value: tunability.name
+					});
+				}
+			}
+		}
+
 		return (
 			<div className="view discover-view">
 				<div className="intro">
@@ -488,7 +510,10 @@ class Discover extends React.Component{
 						{this.renderSeeds()}
 						{this.renderTunabilities()}
 						<div className="actions">
-							<span className="button primary" onClick={e => this.getRecommendations()}>Apply</span>
+							<span className="button primary large" onClick={e => this.getRecommendations()}>
+								<FontAwesome name="compass" />&nbsp; 
+								Find recommendations
+							</span>
 						</div>
 					</div>
 

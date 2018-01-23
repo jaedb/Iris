@@ -103,6 +103,10 @@ input[type="submit"] {
 		padding: 6px 18px 4px;
 	}
 
+	&.large {
+		padding: 16px 50px 14px;
+	}
+
 	&.pull-right {
 		margin-right: 0;
 		margin-left: 30px;
@@ -301,17 +305,13 @@ input[type="submit"] {
 		}
 
 		.label {
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			z-index: 3;
-			pointer-events: none;
+			padding-bottom: 6px;
 		}
 
 		.input-range__track,
 		.input-range__slider-container {
 			transition: none;
-			height: 36px;
+			height: 6px;
 			border-radius: 3px;
 			cursor: col-resize;
 		}
@@ -323,7 +323,6 @@ input[type="submit"] {
 
 		.input-range__track--active {
 			background: $blue;
-			cursor: grab;
 		}
 
 		.input-range__slider-container {			
@@ -332,15 +331,16 @@ input[type="submit"] {
 				background: $blue;
 				border: none;
 				top: 0;
-				height: 100%;
+				height: 6px;
 				width: 20px;
-				margin: -36px 0 0 0;
-				border-radius: 3px;
+				margin: -6px 0 0 0;
+				border-radius: 3px 0 0 3px;
 			}
 
 			&:last-child {
 				.input-range__slider {
-					margin-left: -20px;
+					border-radius: 0 3px 3px 0;
+					margin-left: -12px;
 				}
 			}
 		}

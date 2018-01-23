@@ -3020,6 +3020,11 @@ input[type="submit"] {
   input[type="button"].small,
   input[type="submit"].small {
     padding: 6px 18px 4px; }
+  .button.large,
+  button.large,
+  input[type="button"].large,
+  input[type="submit"].large {
+    padding: 16px 50px 14px; }
   .button.pull-right,
   button.pull-right,
   input[type="button"].pull-right,
@@ -3218,34 +3223,33 @@ input[type="submit"] {
     content: '\F00C'; }
   .field.range {
     position: relative; }
+    .field.range .input-range {
+      height: auto; }
     .field.range .label {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 3;
-      pointer-events: none; }
+      padding-bottom: 6px; }
     .field.range .input-range__track,
     .field.range .input-range__slider-container {
       transition: none;
-      height: 30px;
+      height: 6px;
       border-radius: 3px;
       cursor: col-resize; }
     .field.range .input-range__track--background {
-      background: rgba(134, 201, 232, 0.5); }
+      margin: 0;
+      background: rgba(100, 100, 100, 0.5); }
     .field.range .input-range__track--active {
-      background: #32b5f2;
-      cursor: grab; }
+      background: #32b5f2; }
     .field.range .input-range__slider-container .input-range__slider {
       cursor: col-resize;
       background: #32b5f2;
       border: none;
       top: 0;
-      height: 100%;
+      height: 6px;
       width: 20px;
-      margin: -30px 0 0 0;
-      border-radius: 3px; }
+      margin: -6px 0 0 0;
+      border-radius: 3px 0 0 3px; }
     .field.range .input-range__slider-container:last-child .input-range__slider {
-      margin-left: -20px; }
+      border-radius: 0 3px 3px 0;
+      margin-left: -12px; }
   .field.sub-field {
     padding: 0; }
   .field .description {
@@ -5112,16 +5116,16 @@ main header {
   font-family: "Overpass";
   position: relative;
   display: inline-block; }
-  .dropdown-field .label {
+  .dropdown-field .label:not(.button) {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     padding: 14px 10px;
     cursor: pointer; }
-    .notouch .dropdown-field .label:hover {
+    .notouch .dropdown-field .label:not(.button):hover {
       color: #32b5f2; }
-  .dropdown-field.expanded .label {
+  .dropdown-field.expanded .label:not(.button) {
     color: #32b5f2; }
   .dropdown-field.expanded .options {
     display: block; }
@@ -5823,7 +5827,7 @@ main .track-view {
 
 .discover-view .seeds,
 .discover-view .tunabilities {
-  padding-top: 40px; }
+  padding-top: 30px; }
   .discover-view .seeds h3,
   .discover-view .tunabilities h3 {
     padding-bottom: 6px; }
@@ -5860,12 +5864,24 @@ main .track-view {
   width: 200px;
   float: left;
   box-sizing: border-box;
-  padding-right: 20px; }
+  padding-right: 20px;
+  position: relative; }
   .discover-view .tunabilities .tunability .input {
     float: none;
     width: 100%; }
   .discover-view .tunabilities .tunability .input-range .input-range__label-container {
     display: none; }
+  .discover-view .tunabilities .tunability .remove {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 4px;
+    margin-left: 4px; }
+    .discover-view .tunabilities .tunability .remove:hover {
+      color: #cf2d2d; }
 
 .discover-view .autocomplete-field {
   width: 250px;
@@ -5886,6 +5902,10 @@ main .track-view {
     .discover-view .autocomplete-field .input:after {
       background: #32b5f2; }
 
+.discover-view .actions {
+  padding-top: 60px;
+  text-align: center; }
+
 .discover-view section .grid {
   padding-bottom: 20px; }
 
@@ -5893,7 +5913,17 @@ main .track-view {
   .discover-view .intro {
     padding: 40px 20px; }
   .discover-view .seeds {
-    padding-top: 20px; } }
+    padding-top: 20px; }
+  .discover-view .tunabilities .tunability {
+    width: 100%;
+    float: none;
+    padding: 15px 0; }
+  .discover-view .tunabilities .dropdown-field {
+    margin-top: 20px; }
+  .discover-view .col.tracks {
+    width: 100%; }
+  .discover-view .col.others, .discover-view .col.w5 {
+    display: none; } }
 
 .discover-featured-view .intro,
 .discover-new-releases-view .intro {
