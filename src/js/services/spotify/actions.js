@@ -653,7 +653,7 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                 response => {
                     var genres = []
                     if (genre_included){
-                        var available_genres = getState().ui.genres
+                        var available_genres = getState().spotify.genres
                         if (available_genres){
                             for (var i = 0; i < available_genres.length; i++){
                                 if (available_genres[i].includes(query)){
@@ -666,6 +666,35 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                             }
                         }
                     }
+                    
+                    if (response.artists && response.artists.items){
+                        dispatch({
+                            type: 'ARTISTS_LOADED',
+                            artists: response.artists.items
+                        });
+                    }
+
+                    if (response.albums && response.albums.items){
+                        dispatch({
+                            type: 'ALBUMS_LOADED',
+                            albums: response.albums.items
+                        });
+                    }
+
+                    if (response.playlists && response.playlists.items){
+                        dispatch({
+                            type: 'PLAYLISTS_LOADED',
+                            playlists: response.playlists.items
+                        });
+                    }
+
+                    if (response.tracks && response.tracks.items){
+                        dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: response.tracks.items
+                        });
+                    }
+
                     dispatch({
                         type: 'SPOTIFY_AUTOCOMPLETE_LOADED',
                         field_id: field_id,

@@ -168,6 +168,8 @@ input[type="submit"] {
 	&.working {
 		position: relative;
 		cursor: wait !important;
+		background: $grey;
+		color: $mid_grey;
 
 		&:after {
 			pointer-events: none;
@@ -175,7 +177,7 @@ input[type="submit"] {
 			display: block;
 			content: '';
 		    animation: slideloader 1s infinite;
-			background: rgba(200,200,200,0.4);
+			background: rgba(200,200,200,0.3);
 			top: 0;
 			left: 0;
 			bottom: 0;

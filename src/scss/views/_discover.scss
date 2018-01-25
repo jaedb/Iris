@@ -31,12 +31,12 @@
 		}
 	}
 
-	.seeds,
-	.tunabilities {
+	.parameters {
 		padding-top: 30px;
 
-		h3 {
-			padding-bottom: 6px;
+		.seeds,
+		.tunabilities {
+			display: inline-block;
 		}
 	}
 
@@ -45,7 +45,7 @@
 			display: inline-block;
 			background: $blue;
 			color: $white;
-			padding: 8px 26px 8px 14px;
+			padding: 8px 26px 6px 14px;
 			font-size: 16px;
 			position: relative;
 			vertical-align: top;
@@ -118,7 +118,7 @@
 			input {
 				background: rgba(100,100,100,0.5);
 				color: $white;
-				padding: 7px 13px;
+				padding: 8px 13px 6px;
 				font-size: 16px;
 				border: 1px solid transparent;
 

@@ -162,6 +162,14 @@ export default function reducer(spotify = {}, action){
                     autocomplete_results: autocomplete_results
                 })
 
+        case 'SPOTIFY_GENRES_LOADED':
+            return Object.assign(
+                {}, 
+                spotify, 
+                {
+                    genres: action.genres
+                })
+
 
         /**
          * Library

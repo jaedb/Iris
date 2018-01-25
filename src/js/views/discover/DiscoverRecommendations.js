@@ -108,8 +108,8 @@ class Discover extends React.Component{
 					min: 0,
 					max: 100,
 					value: {
-						min: 25,
-						max: 75
+						min: 0,
+						max: 100
 					}
 				},
 				speechiness: {
@@ -303,7 +303,6 @@ class Discover extends React.Component{
 
 		return (
 			<div className="seeds">
-				<h4 className="underline">Seeds</h4>
 				{
 					seeds_objects.map((seed,index) => {
 						var type = helpers.uriType(seed.uri)
@@ -360,7 +359,6 @@ class Discover extends React.Component{
 
 		return (
 			<div className="tunabilities">
-				<h4 className="underline">Musical properties</h4>
 				{
 					enabled_tunabilities.map(tunability => {
 						return (
@@ -390,14 +388,8 @@ class Discover extends React.Component{
 	}
 
 	renderResults(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_recommendations'])){
-			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-		
+
+		// Results not in
 		if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined){
 			return null;
 		}
@@ -430,6 +422,11 @@ class Discover extends React.Component{
 					albums.push(this.props.albums[uri]);
 				}
 			}
+		}
+
+		// Complete records not yet in our index
+		if (tracks.length <= 0 && artists.length <= 0 && albums.length <= 0){
+			return null;
 		}
 
 		var uri = 'iris:discover';
@@ -475,6 +472,7 @@ class Discover extends React.Component{
 	}
 
 	render(){
+		var is_loading = helpers.isLoading(this.props.load_queue,['spotify_recommendations']);
 		var addable_tunabilities = [];
 		for (var key in this.state.tunabilities){
 			if (this.state.tunabilities.hasOwnProperty(key)){
@@ -507,10 +505,12 @@ class Discover extends React.Component{
 						<h2 className="grey-text">
 							Add seeds and musical properties below to build your sound
 						</h2>
-						{this.renderSeeds()}
-						{this.renderTunabilities()}
+						<div className="parameters">
+							{this.renderSeeds()}
+							{this.renderTunabilities()}
+						</div>
 						<div className="actions">
-							<span className="button primary large" onClick={e => this.getRecommendations()}>
+							<span className={"button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>
 								<FontAwesome name="compass" />&nbsp; 
 								Find recommendations
 							</span>
@@ -542,9 +542,7 @@ const mapStateToProps = (state, ownProps) => {
 		authorized: state.spotify.authorization,
 		load_queue: state.ui.load_queue,
 		quick_search_results: (state.spotify.quick_search_results ? state.spotify.quick_search_results : {artists: [], tracks: []}),
-		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : {}),
-		favorite_artists: (state.spotify.favorite_artists ? state.spotify.favorite_artists : []),
-		favorite_tracks: (state.spotify.favorite_tracks ? state.spotify.favorite_tracks : [])
+		recommendations: (state.spotify.recommendations ? state.spotify.recommendations : {})
 	}
 }
 
