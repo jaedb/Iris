@@ -10,6 +10,7 @@ import ArtistSentence from '../../components/ArtistSentence'
 import ArtistGrid from '../../components/ArtistGrid'
 import AlbumGrid from '../../components/AlbumGrid'
 import TrackList from '../../components/TrackList'
+import Thumbnail from '../../components/Thumbnail'
 import Parallax from '../../components/Parallax'
 import DropdownField from '../../components/DropdownField'
 import AddSeedField from '../../components/AddSeedField'
@@ -270,7 +271,7 @@ class Discover extends React.Component{
 
 					case 'track':
 						if (typeof(this.props.tracks[uri]) !== 'undefined'){
-							seeds_objects.push(this.props.tracks[uri])
+							seeds_objects.push(this.props.tracks[uri]);
 						} else {
 							seeds_objects.push({
 								name: 'Loading...',
@@ -281,7 +282,7 @@ class Discover extends React.Component{
 
 					case 'artist':
 						if (typeof(this.props.artists[uri]) !== 'undefined'){
-							seeds_objects.push(this.props.artists[uri])
+							seeds_objects.push(this.props.artists[uri]);
 						} else {
 							seeds_objects.push({
 								name: 'Loading...',
@@ -307,15 +308,17 @@ class Discover extends React.Component{
 					seeds_objects.map((seed,index) => {
 						var type = helpers.uriType(seed.uri)
 						return (
-							<span className="seed" key={seed.uri}>
-								{seed.name}
-								<URILink className="type" type={type} uri={seed.uri}>({type})</URILink>
-								<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
-							</span>
+							<div className={"seed"+(seed.images ? " has-thumbnail" : "")} key={seed.uri}>
+								{seed.images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={seed.images} circle={seed.type == "artist"} size="small" /></URILink> : null}
+								<div className="label">
+									{helpers.titleCase(type)}
+									<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
+								</div>
+								<div className="name">{seed.name}</div>
+							</div>
 						)
 					})
 				}
-				<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
 			</div>
 		)
 	}
@@ -382,7 +385,6 @@ class Discover extends React.Component{
 						);
 					})
 				}
-				<DropdownField name="Add" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
 			</div>
 		);
 	}
@@ -506,8 +508,15 @@ class Discover extends React.Component{
 							Add seeds and musical properties below to build your sound
 						</h2>
 						<div className="parameters">
+
 							{this.renderSeeds()}
 							{this.renderTunabilities()}
+
+							<div className="add">
+								<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
+								<DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
+							</div>
+
 						</div>
 						<div className="actions">
 							<span className={"button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>

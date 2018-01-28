@@ -32,40 +32,60 @@
 	}
 
 	.parameters {
-		padding-top: 30px;
+		@include clearfix();
+		padding-top: 50px;
 
 		.seeds,
 		.tunabilities {
-			display: inline-block;
+			float: left;
+		}
+
+		.add {
+			clear: both;
+			padding-top: 30px;
+
+			.add-seed-field {
+				margin-right: 20px;
+			}
 		}
 	}
 
 	.seeds {
 		.seed {
-			display: inline-block;
-			background: $blue;
-			color: $white;
-			padding: 8px 26px 6px 14px;
-			font-size: 16px;
-			position: relative;
-			vertical-align: top;
-			margin: 0 10px 10px 0;
-			border-radius: 3px;
+			color: $white;			
+			padding-right: 30px;
+			float: left;
 
-			.type {
-				display: inline-block;
-				font-size: 12px;
-				opacity: 0.5;
-				padding: 0 10px 0 5px;
+			.thumbnail-wrapper {
+				float: left;
+				width: 44px;
+				border: 0 !important;
 			}
 
-			.remove {
-				font-size: 10px;
-				padding: 12px;
-				position: absolute;
-				top: 0;
-				right: 0;
-				cursor: pointer;
+			.label {
+				.remove {
+					@include animate();
+					cursor: pointer;
+					font-size: 10px;
+					padding: 4px;
+					margin-left: 4px;
+
+					&:hover {
+						color: $red;
+					}
+				}
+			}
+
+			.name {
+				font-size: 16px;
+				padding-top: 3px;
+			}
+
+			&.has-thumbnail {
+				.label,
+				.name {
+					padding-left: 52px;
+				}
 			}
 		}
 	}
@@ -77,12 +97,13 @@
 			width: 200px;
 			float: left;
 			box-sizing: border-box;
-			padding-right: 20px;
+			padding-right: 30px;
 			position: relative;
 
 			.input {
 				float: none;
 				width: 100%;
+				padding-top: 4px;
 			}
 
 			.input-range {
@@ -151,19 +172,31 @@
 			padding: 40px 20px;
 		}
 
-		.seeds {
-			padding-top: 20px;
-		}
+		.parameters {
 
-		.tunabilities {
-			.tunability {
-				width: 100%;
+			.seeds {
+				padding-top: 20px;
 				float: none;
-				padding: 15px 0;
+
+				.seed {
+					float: none;
+				}
 			}
 
-			.dropdown-field {
-				margin-top: 20px;
+			.tunabilities {
+				float: none;
+
+				.tunability {
+					width: 100%;
+					float: none;
+					padding: 15px 0;
+				}
+			}
+
+			.add {
+				.add-properties {
+					margin-right: 0;
+				}
 			}
 		}
 
