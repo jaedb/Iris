@@ -192,7 +192,7 @@ class Discover extends React.Component{
 			e: e,
 			context: 'track',
 			items: tracks,
-			uris: [uri]
+			uris: helpers.arrayOf('uri',tracks)
 		}
 		this.props.uiActions.showContextMenu(data);
 	}
@@ -511,18 +511,18 @@ class Discover extends React.Component{
 
 							{this.renderSeeds()}
 							{this.renderTunabilities()}
-
-							<div className="add">
-								<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
-								<DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="alternative" handleChange={val => {this.toggleTunability(val)}} />
-							</div>
+							{this.state.seeds.length > 5 ? <p className="message error">Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.</p> : null}
 
 						</div>
 						<div className="actions">
-							<span className={"button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>
+
+							<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
+							<DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="default" handleChange={val => {this.toggleTunability(val)}} />
+							<span className={"submit button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>
 								<FontAwesome name="compass" />&nbsp; 
 								Find recommendations
 							</span>
+
 						</div>
 					</div>
 

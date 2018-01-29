@@ -388,6 +388,7 @@ footer {
 		color: $white;
 	}
 
+	&.error,
 	&.bad {
 		background: $red;
 		color: $white;
@@ -407,6 +408,35 @@ footer {
 	h2 & {
 		line-height: 1.4em;
 		vertical-align: middle;
+	}
+}
+
+.message {
+	padding: 10px 12px 8px;
+	background: $yellow;
+	color: $dark_grey;
+	clear: both;
+	font-size: 14px;
+	border-radius: 3px;
+
+	&.info {
+		background: $yellow;
+	}
+
+	&.notice {
+		background: $blue;
+		color: $white;
+	}
+
+	&.warning {
+		background: $orange;
+		color: $white;
+	}
+
+	&.error,
+	&.bad {
+		background: $red;
+		color: $white;
 	}
 }
 

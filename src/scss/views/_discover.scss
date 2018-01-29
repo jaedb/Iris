@@ -39,21 +39,12 @@
 		.tunabilities {
 			float: left;
 		}
-
-		.add {
-			clear: both;
-			padding-top: 30px;
-
-			.add-seed-field {
-				margin-right: 20px;
-			}
-		}
 	}
 
 	.seeds {
 		.seed {
 			color: $white;			
-			padding-right: 30px;
+			padding: 0 30px 30px 0;
 			float: left;
 
 			.thumbnail-wrapper {
@@ -97,7 +88,7 @@
 			width: 200px;
 			float: left;
 			box-sizing: border-box;
-			padding-right: 30px;
+			padding: 0 30px 30px 0;
 			position: relative;
 
 			.input {
@@ -126,38 +117,63 @@
 		}
 	}
 
-	.autocomplete-field {
-		width: 250px;
-		display: inline-block;
-		vertical-align: top;
-		padding: 0;
+	.actions {
+		padding-top: 40px;
 
-		.input {
-			float: none;
-			margin: 0 10px 10px 0;
+		.autocomplete-field {
+			width: 250px;
+			display: inline-block;
+			vertical-align: top;
+			padding: 0;
+			margin-right: 1px;
 
-			input {
-				background: rgba(100,100,100,0.5);
-				color: $white;
-				padding: 8px 13px 6px;
-				font-size: 16px;
-				border: 1px solid transparent;
+			.input {
+				float: none;
+				margin: 0 10px 10px 0;
 
-				&:focus,
-				&:active {
-					border-color: $blue;
+				input {
+					background: rgba(100,100,100,0.5);
+					color: $white;
+					padding: 15px 13px 10px;
+					font-size: 16px;
+					border: 1px solid transparent;
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
+
+					&:focus,
+					&:active {
+						border-color: $blue;
+					}
+				}
+
+				&:after {
+					background: $blue;
 				}
 			}
 
-			&:after {
-				background: $blue;
+			.results {
+				top: 49px;
 			}
 		}
-	}
 
-	.actions {
-		padding-top: 60px;
-		text-align: center;
+		.dropdown-field {
+			.button {
+				background: rgba(100,100,100,0.5);
+				color: $white;
+				padding: 16px 20px 14px 20px;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+
+			.options {
+				top: 50px;
+				right: 20px;
+			}
+		}
+
+		.submit {
+
+		}
 	}
 	
 	section {
@@ -189,7 +205,6 @@
 				.tunability {
 					width: 100%;
 					float: none;
-					padding: 15px 0;
 				}
 			}
 
