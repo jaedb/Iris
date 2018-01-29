@@ -427,17 +427,6 @@ class Settings extends React.Component {
 									<span className="tooltip">Playing one or more URIs will clear the current play queue first</span>
 								</span>
 							</label>
-							<label>
-								<input 
-									type="checkbox"
-									name="log_actions"
-									checked={ this.props.core.anonymise_analytics }
-									onChange={ e => this.props.coreActions.set({ anonymise_analytics: !this.props.core.anonymise_analytics })} />
-								<span className="label has-tooltip">
-									Exclude personal data from collection
-									<span className="tooltip">Personal data used for debugging Iris is not collected by Google Analytics</span>
-								</span>
-							</label>
 						</div>
 					</div>
 
@@ -480,7 +469,7 @@ class Settings extends React.Component {
 							<em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em> is an open-source project by <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
 								<br />
 								<br />
-								Google Analytics is used to help trace issues and provide valuable insight into how we can continue to make improvements. This may include personal information (eg Spotify Username). For more information, see <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use" target="_blank">terms and conditions</a>.
+								Google Analytics is used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. Personal information is anonymized prior to collection. For more information, see <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use" target="_blank">terms and conditions</a>.
 								<br />
 						</div>
 						<br /><br />

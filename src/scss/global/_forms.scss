@@ -99,6 +99,19 @@ input[type="submit"] {
 		margin-bottom: 9px;
 	}
 
+	&.small {
+		padding: 6px 18px 4px;
+	}
+
+	&.large {
+		padding: 16px 50px 14px;
+	}
+
+	&.pull-right {
+		margin-right: 0;
+		margin-left: 30px;
+	}
+
 	&.primary {
 		background: $turquoise;
 		color: $white;
@@ -155,6 +168,8 @@ input[type="submit"] {
 	&.working {
 		position: relative;
 		cursor: wait !important;
+		background: $grey;
+		color: $mid_grey;
 
 		&:after {
 			pointer-events: none;
@@ -162,7 +177,7 @@ input[type="submit"] {
 			display: block;
 			content: '';
 		    animation: slideloader 1s infinite;
-			background: rgba(200,200,200,0.4);
+			background: rgba(200,200,200,0.3);
 			top: 0;
 			left: 0;
 			bottom: 0;
@@ -238,7 +253,7 @@ input[type="submit"] {
 			display: inline-block;
 			float: none;
 			width: auto;
-			padding: 5px 30px 5px 30px;
+			padding: 5px 5px 5px 26px;
 			position: relative;
 			cursor: pointer;
 		}
@@ -282,6 +297,59 @@ input[type="submit"] {
 		input:checked + .label:before {
 			content: '\f00c';
 		}
+	}
+
+	&.range {
+		position: relative;
+
+		.input-range {
+			height: auto;
+		}
+
+		.label {
+			padding-bottom: 6px;
+		}
+
+		.input-range__track,
+		.input-range__slider-container {
+			transition: none;
+			height: 6px;
+			border-radius: 3px;
+			cursor: col-resize;
+		}
+
+		.input-range__track--background {
+			margin: 0;
+			background: rgba(100,100,100,0.5);
+		}
+
+		.input-range__track--active {
+			background: $blue;
+		}
+
+		.input-range__slider-container {			
+			.input-range__slider {
+				cursor: col-resize;
+				background: $blue;
+				border: none;
+				top: 0;
+				height: 6px;
+				width: 20px;
+				margin: -6px 0 0 0;
+				border-radius: 3px 0 0 3px;
+			}
+
+			&:last-child {
+				.input-range__slider {
+					border-radius: 0 3px 3px 0;
+					margin-left: -12px;
+				}
+			}
+		}
+	}
+
+	&.sub-field {
+		padding: 0;
 	}
 
 	.description {

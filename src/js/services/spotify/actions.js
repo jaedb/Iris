@@ -653,7 +653,7 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                 response => {
                     var genres = []
                     if (genre_included){
-                        var available_genres = getState().ui.genres
+                        var available_genres = getState().spotify.genres
                         if (available_genres){
                             for (var i = 0; i < available_genres.length; i++){
                                 if (available_genres[i].includes(query)){
@@ -666,6 +666,35 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                             }
                         }
                     }
+                    
+                    if (response.artists && response.artists.items){
+                        dispatch({
+                            type: 'ARTISTS_LOADED',
+                            artists: response.artists.items
+                        });
+                    }
+
+                    if (response.albums && response.albums.items){
+                        dispatch({
+                            type: 'ALBUMS_LOADED',
+                            albums: response.albums.items
+                        });
+                    }
+
+                    if (response.playlists && response.playlists.items){
+                        dispatch({
+                            type: 'PLAYLISTS_LOADED',
+                            playlists: response.playlists.items
+                        });
+                    }
+
+                    if (response.tracks && response.tracks.items){
+                        dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: response.tracks.items
+                        });
+                    }
+
                     dispatch({
                         type: 'SPOTIFY_AUTOCOMPLETE_LOADED',
                         field_id: field_id,
@@ -873,7 +902,7 @@ export function getFavorites(limit = 50, term = 'long_term'){
  *
  * @param uris = array of artist or track URIs or a genre string
  **/
-export function getRecommendations(uris = [], limit = 20){
+export function getRecommendations(uris = [], limit = 20, tunabilities = null){
     return (dispatch, getState) => {
 
         dispatch({type: 'CLEAR_SPOTIFY_RECOMMENDATIONS'});
@@ -907,11 +936,19 @@ export function getRecommendations(uris = [], limit = 20){
         }
 
         // construct our endpoint URL with all the appropriate arguments
-        var endpoint = 'recommendations'
-        endpoint += '?seed_artists='+artists_ids.join(',')
-        endpoint += '&seed_tracks='+tracks_ids.join(',')
-        endpoint += '&seed_genres='+genres.join(',')
-        endpoint += '&limit='+limit
+        var endpoint = 'recommendations';
+        endpoint += '?seed_artists='+artists_ids.join(',');
+        endpoint += '&seed_tracks='+tracks_ids.join(',');
+        endpoint += '&seed_genres='+genres.join(',');
+        endpoint += '&limit='+limit;
+
+        if (tunabilities){
+            for (var key in tunabilities){
+                if (tunabilities.hasOwnProperty(key)){
+                    endpoint += '&'+key+'='+tunabilities[key];
+                }
+            }
+        }
 
         sendRequest(dispatch, getState, endpoint)
             .then(
@@ -923,7 +960,7 @@ export function getRecommendations(uris = [], limit = 20){
                     // anyway so we can proceed in the meantime
                     var artists_uris = []
                     if (tracks.length > artists_ids.length && tracks.length > 10){
-                        while (artists_uris.length < 5){
+                        while (artists_uris.length < 6){
                             var random_index = Math.round(Math.random() * (tracks.length - 1))
                             var artist = tracks[random_index].artists[0]
 
@@ -940,7 +977,7 @@ export function getRecommendations(uris = [], limit = 20){
                     var albums = []
                     var albums_uris = []
                     if (tracks.length > 10){
-                        while (albums.length < 5){
+                        while (albums.length < 6){
                             var random_index = Math.round(Math.random() * (tracks.length - 1))
                             var album = tracks[random_index].album
 

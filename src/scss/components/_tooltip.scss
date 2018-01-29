@@ -46,6 +46,12 @@
 		}
 	}
 
+	&.info {
+		.fa {
+			opacity: 0.3;
+		}
+	}
+
 	&.large-tooltip {
 		.tooltip {
 			padding: 8px 12px;
