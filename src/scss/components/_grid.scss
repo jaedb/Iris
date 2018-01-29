@@ -75,7 +75,7 @@
 	@include responsive(null, 1900px){
 		&.mini {
 			.grid-item {
-				@include grid_item(3 )
+				@include grid_item(3)
 			}
 			&.single-row {
 				.grid-item:nth-child(1n+4){

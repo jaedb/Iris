@@ -78,12 +78,12 @@ class AddSeedField extends React.Component{
 	}
 
 	results(){
-		if (this.props.results === undefined){
-			return null;
-		} else if (this.props.results[this.id] === undefined){
-			return null;
+		if (typeof(this.props.results) === 'undefined'){
+			return null
+		} else if (typeof(this.props.results[this.id]) === 'undefined'){
+			return null
 		} else {
-			return this.props.results[this.id];
+			return this.props.results[this.id]
 		}
 	}
 
@@ -137,7 +137,7 @@ class AddSeedField extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		genres: (state.spotify.genres ? state.spotify.genres : null),
+		genres: (state.ui.genres ? state.ui.genres : null),
 		results: (state.spotify.autocomplete_results ? state.spotify.autocomplete_results : {})
 	}
 }

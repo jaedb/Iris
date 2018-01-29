@@ -108,7 +108,7 @@ class ContextMenu extends React.Component{
 				case 'playlist':
 				case 'editable-playlist':
 					context.nice_name = 'playlist';
-					break
+					break;
 
 				case 'track':
 				case 'queue-track':
@@ -116,7 +116,7 @@ class ContextMenu extends React.Component{
 				case 'editable-playlist-track':
 					context.nice_name = 'track';
 					context.is_track = true;
-					break
+					break;
 			}
 
 			// Consider the object(s) themselves
@@ -138,21 +138,21 @@ class ContextMenu extends React.Component{
 
 	inLibrary(item = null){
 		if (!item){
-			return false
+			return false;
 		}
 
 		switch (helpers.uriType(item.uri)){
 			case 'artist':
-				return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1)
-				break
+				return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1);
+				break;
 			case 'album':
-				return (this.props.spotify_library_albums && this.props.spotify_library_albums.indexOf(item.uri) > -1)
-				break
+				return (this.props.spotify_library_albums && this.props.spotify_library_albums.indexOf(item.uri) > -1);
+				break;
 			case 'playlist':
-				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1)
-				break
+				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1);
+				break;
 		}
-		return false
+		return false;
 	}
 
 	/**
@@ -191,7 +191,7 @@ class ContextMenu extends React.Component{
 	playQueueItem(e){
 		this.props.uiActions.hideContextMenu()
 		var tracks = this.props.menu.items;
-		this.props.mopidyActions.changeTrack(tracks[0].tlid )
+		this.props.mopidyActions.changeTrack(tracks[0].tlid);
 	}
 
 	removeFromQueue(e){
@@ -201,102 +201,102 @@ class ContextMenu extends React.Component{
 		for(var i = 0; i < tracks.length; i++){
 			tracks_tlids.push(tracks[i].tlid );
 		}
-		this.props.mopidyActions.removeTracks(tracks_tlids )
+		this.props.mopidyActions.removeTracks(tracks_tlids);
 	}
 
 	playURIs(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri)
+		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri);
 	}
 
 	playPlaylist(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0])
+		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
 	}
 
 	playArtistTopTracks(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0])
+		this.props.uiActions.hideContextMenu();
+		this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0]);
 	}
 
 	addToQueue(e, next = false){
-		this.props.uiActions.hideContextMenu()
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, next)
+		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, next);
 	}
 
 	addTracksToPlaylist(e, playlist_uri){
-		this.props.uiActions.hideContextMenu()
-		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris)
+		this.props.uiActions.hideContextMenu();
+		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris);
 	}
 
 	toggleLoved(e, is_loved){
-		this.props.uiActions.hideContextMenu()
+		this.props.uiActions.hideContextMenu();
 		if (is_loved){
-			this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri)
+			this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri);
 		} else {
-			this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri)
+			this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri);
 		}
 	}
 
 	unloveTrack(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.lastfmActions.unloveTrack(this.props.menu.items[0])
+		this.props.uiActions.hideContextMenu();
+		this.props.lastfmActions.unloveTrack(this.props.menu.items[0]);
 	}
 
 	removeFromPlaylist(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes)
+		this.props.uiActions.hideContextMenu();
+		this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes);
 	}
 
 	deletePlaylist(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.coreActions.deletePlaylist(this.props.menu.uris[0])
+		this.props.uiActions.hideContextMenu();
+		this.props.coreActions.deletePlaylist(this.props.menu.uris[0]);
 	}
 
 	startRadio(e){
-		this.props.uiActions.hideContextMenu()
-		this.props.pusherActions.startRadio(this.props.menu.uris)
+		this.props.uiActions.hideContextMenu();
+		this.props.pusherActions.startRadio(this.props.menu.uris);
 	}
 
 	goToRecommendations(e){
-		this.props.uiActions.hideContextMenu()
-		var uris_string = helpers.arrayOf('uri',this.props.menu.items).join(',')
-		hashHistory.push(global.baseURL +'discover/recommendations/'+ uris_string )
+		this.props.uiActions.hideContextMenu();
+		var uris_string = helpers.arrayOf('uri',this.props.menu.items).join(',');
+		hashHistory.push(global.baseURL +'discover/recommendations/'+ uris_string );
 	}
 
 	goToArtist(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0){
-			return null
+			return null;
 		} else {
-			this.props.uiActions.hideContextMenu()
-			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri )
+			this.props.uiActions.hideContextMenu();
+			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri);
 		}
 	}
 
 	goToAlbum(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album){
-			return null
+			return null;
 		} else {
-			this.props.uiActions.hideContextMenu()
-			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album.uri )
+			this.props.uiActions.hideContextMenu();
+			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album.uri);
 		}
 	}
 
 	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0){
-			return null
+			return null;
 		} else {
-			this.props.uiActions.hideContextMenu()
-			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].owner.uri )
+			this.props.uiActions.hideContextMenu();
+			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].owner.uri);
 		}
 	}
 
 	goToTrack(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0){
-			return null
+			return null;
 		} else {
-			this.props.uiActions.hideContextMenu()
-			hashHistory.push(global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri))
+			this.props.uiActions.hideContextMenu();
+			hashHistory.push(global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri));
 		}
 	}
 
