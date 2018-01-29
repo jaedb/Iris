@@ -2393,7 +2393,7 @@ function getAutocompleteResults(field_id, query) {
         sendRequest(dispatch, getState, endpoint).then(function (response) {
             var genres = [];
             if (genre_included) {
-                var available_genres = getState().ui.genres;
+                var available_genres = getState().spotify.genres;
                 if (available_genres) {
                     for (var i = 0; i < available_genres.length; i++) {
                         if (available_genres[i].includes(query)) {
@@ -2406,6 +2406,35 @@ function getAutocompleteResults(field_id, query) {
                     }
                 }
             }
+
+            if (response.artists && response.artists.items) {
+                dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: response.artists.items
+                });
+            }
+
+            if (response.albums && response.albums.items) {
+                dispatch({
+                    type: 'ALBUMS_LOADED',
+                    albums: response.albums.items
+                });
+            }
+
+            if (response.playlists && response.playlists.items) {
+                dispatch({
+                    type: 'PLAYLISTS_LOADED',
+                    playlists: response.playlists.items
+                });
+            }
+
+            if (response.tracks && response.tracks.items) {
+                dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: response.tracks.items
+                });
+            }
+
             dispatch({
                 type: 'SPOTIFY_AUTOCOMPLETE_LOADED',
                 field_id: field_id,
@@ -3931,6 +3960,159 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(3);
+
+var _reactFontawesome = __webpack_require__(6);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(5);
+
+var uiActions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Thumbnail = function (_React$Component) {
+	_inherits(Thumbnail, _React$Component);
+
+	function Thumbnail(props) {
+		_classCallCheck(this, Thumbnail);
+
+		return _possibleConstructorReturn(this, (Thumbnail.__proto__ || Object.getPrototypeOf(Thumbnail)).call(this, props));
+	}
+	/*
+ 	// TODO: ascertain whether this is improving or hindering performance
+ 	// The UI appears to work perfectly fine without this
+ 	shouldComponentUpdate(nextProps, nextState){
+ 
+ 		// no images at all, and we already know it
+ 		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
+ 
+ 		// image changed
+ 		if (!this.props.image && nextProps.image) return true
+ 		if (this.props.image && nextProps.image) return true
+ 		if (this.props.image != nextProps.image) return true
+ 
+ 		// images array changed
+ 		if (this.props.images === undefined && nextProps.images ) return true
+ 		if (this.props.images && nextProps.images === undefined) return true
+ 		if (this.props.images && !nextProps.images || this.props.images.length != nextProps.images.length ) return true
+ 
+ 		// image item changed	
+ 		var size = 'medium'
+ 		var images = helpers.sizedImages(nextProps.images )
+ 		if (this.props.size ) size = this.props.size
+ 		if (this.props.images[size] != images[size]) return true
+ 
+ 		return false
+ 	}
+ 	*/
+
+	_createClass(Thumbnail, [{
+		key: 'mapImageSizes',
+		value: function mapImageSizes() {
+			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
+
+
+			// no images
+			if (!this.props.image && (!this.props.images || this.props.images.length <= 0)) {
+				return __webpack_require__(396);
+
+				// single image
+			} else if (this.props.image) {
+				return this.props.image;
+
+				// multiple images
+			} else if (this.props.images && this.props.images.length > 0) {
+				var images = helpers.sizedImages(this.props.images);
+				var size = 'medium';
+				if (this.props.size) size = this.props.size;
+				return images[size];
+			}
+		}
+	}, {
+		key: 'zoom',
+		value: function zoom(e, image) {
+			e.preventDefault();
+			this.props.uiActions.openModal('image_zoom', { url: image });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var image = this.mapImageSizes();
+			var class_name = 'thumbnail ';
+			if (this.props.size) class_name += ' ' + this.props.size;
+			if (this.props.circle) class_name += ' circle';
+			if (this.props.className) class_name += ' ' + this.props.className;
+
+			var zoom_icon = null;
+			if (this.props.canZoom) {
+				zoom_icon = _react2.default.createElement(
+					'span',
+					{ className: 'zoom', onClick: function onClick(e) {
+							return _this2.zoom(e, image);
+						} },
+					_react2.default.createElement(_reactFontawesome2.default, { name: 'search' })
+				);
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: class_name },
+				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + image + '")' } }),
+				zoom_icon
+			);
+		}
+	}]);
+
+	return Thumbnail;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Thumbnail);
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -4124,159 +4306,6 @@ var ReactDOMComponentTree = {
 
 module.exports = ReactDOMComponentTree;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(4);
-
-var _redux = __webpack_require__(3);
-
-var _reactFontawesome = __webpack_require__(6);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _helpers = __webpack_require__(2);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-var _actions = __webpack_require__(5);
-
-var uiActions = _interopRequireWildcard(_actions);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Thumbnail = function (_React$Component) {
-	_inherits(Thumbnail, _React$Component);
-
-	function Thumbnail(props) {
-		_classCallCheck(this, Thumbnail);
-
-		return _possibleConstructorReturn(this, (Thumbnail.__proto__ || Object.getPrototypeOf(Thumbnail)).call(this, props));
-	}
-	/*
- 	// TODO: ascertain whether this is improving or hindering performance
- 	// The UI appears to work perfectly fine without this
- 	shouldComponentUpdate(nextProps, nextState){
- 
- 		// no images at all, and we already know it
- 		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
- 
- 		// image changed
- 		if (!this.props.image && nextProps.image) return true
- 		if (this.props.image && nextProps.image) return true
- 		if (this.props.image != nextProps.image) return true
- 
- 		// images array changed
- 		if (this.props.images === undefined && nextProps.images ) return true
- 		if (this.props.images && nextProps.images === undefined) return true
- 		if (this.props.images && !nextProps.images || this.props.images.length != nextProps.images.length ) return true
- 
- 		// image item changed	
- 		var size = 'medium'
- 		var images = helpers.sizedImages(nextProps.images )
- 		if (this.props.size ) size = this.props.size
- 		if (this.props.images[size] != images[size]) return true
- 
- 		return false
- 	}
- 	*/
-
-	_createClass(Thumbnail, [{
-		key: 'mapImageSizes',
-		value: function mapImageSizes() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-
-			// no images
-			if (!this.props.image && (!this.props.images || this.props.images.length <= 0)) {
-				return __webpack_require__(396);
-
-				// single image
-			} else if (this.props.image) {
-				return this.props.image;
-
-				// multiple images
-			} else if (this.props.images && this.props.images.length > 0) {
-				var images = helpers.sizedImages(this.props.images);
-				var size = 'medium';
-				if (this.props.size) size = this.props.size;
-				return images[size];
-			}
-		}
-	}, {
-		key: 'zoom',
-		value: function zoom(e, image) {
-			e.preventDefault();
-			this.props.uiActions.openModal('image_zoom', { url: image });
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			var image = this.mapImageSizes();
-			var class_name = 'thumbnail ';
-			if (this.props.size) class_name += ' ' + this.props.size;
-			if (this.props.circle) class_name += ' circle';
-			if (this.props.className) class_name += ' ' + this.props.className;
-
-			var zoom_icon = null;
-			if (this.props.canZoom) {
-				zoom_icon = _react2.default.createElement(
-					'span',
-					{ className: 'zoom', onClick: function onClick(e) {
-							return _this2.zoom(e, image);
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'search' })
-				);
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: class_name },
-				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + image + '")' } }),
-				zoom_icon
-			);
-		}
-	}]);
-
-	return Thumbnail;
-}(_react2.default.Component);
-
-var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {};
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
-	};
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Thumbnail);
 
 /***/ }),
 /* 17 */
@@ -20973,7 +21002,7 @@ var _reactFontawesome = __webpack_require__(6);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -23467,7 +23496,7 @@ var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -24482,7 +24511,7 @@ module.exports = getEventModifierState;
 
 var DOMLazyTree = __webpack_require__(51);
 var Danger = __webpack_require__(207);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(28);
 
 var createMicrosoftUnsafeLocalFunction = __webpack_require__(88);
@@ -29343,7 +29372,7 @@ module.exports = ReactFeatureFlags;
 
 
 
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 function isCheckable(elem) {
   var type = elem.type;
@@ -29797,7 +29826,7 @@ module.exports = CSSProperty;
 
 
 var DOMProperty = __webpack_require__(40);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(28);
 
 var quoteAttributeValueForBrowser = __webpack_require__(221);
@@ -30058,7 +30087,7 @@ module.exports = ReactPropTypesSecret;
 var _assign = __webpack_require__(14);
 
 var LinkedValueUtils = __webpack_require__(89);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(36);
 
 var warning = __webpack_require__(9);
@@ -30981,7 +31010,7 @@ var DOMProperty = __webpack_require__(40);
 var React = __webpack_require__(48);
 var ReactBrowserEventEmitter = __webpack_require__(73);
 var ReactCurrentOwner = __webpack_require__(35);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMContainerInfo = __webpack_require__(263);
 var ReactDOMFeatureFlags = __webpack_require__(264);
 var ReactFeatureFlags = __webpack_require__(124);
@@ -33903,7 +33932,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -33999,7 +34028,7 @@ var _reactFontawesome = __webpack_require__(6);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -35794,7 +35823,7 @@ module.exports = onlyChild;
 
 
 
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDefaultInjection = __webpack_require__(189);
 var ReactMount = __webpack_require__(142);
 var ReactReconciler = __webpack_require__(50);
@@ -35915,7 +35944,7 @@ var EnterLeaveEventPlugin = __webpack_require__(204);
 var HTMLDOMPropertyConfig = __webpack_require__(205);
 var ReactComponentBrowserEnvironment = __webpack_require__(206);
 var ReactDOMComponent = __webpack_require__(212);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMEmptyComponent = __webpack_require__(238);
 var ReactDOMTreeTraversal = __webpack_require__(239);
 var ReactDOMTextComponent = __webpack_require__(240);
@@ -36640,7 +36669,7 @@ module.exports = SyntheticInputEvent;
 var EventPluginHub = __webpack_require__(58);
 var EventPropagators = __webpack_require__(57);
 var ExecutionEnvironment = __webpack_require__(20);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(36);
 var SyntheticEvent = __webpack_require__(38);
 
@@ -37681,7 +37710,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 var EventPropagators = __webpack_require__(57);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var SyntheticMouseEvent = __webpack_require__(70);
 
 var eventTypes = {
@@ -38427,7 +38456,7 @@ module.exports = getMarkupWrap;
 
 
 var DOMChildrenOperations = __webpack_require__(86);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 /**
  * Operations used to process updates to DOM nodes.
@@ -38477,7 +38506,7 @@ var EventPluginHub = __webpack_require__(58);
 var EventPluginRegistry = __webpack_require__(68);
 var ReactBrowserEventEmitter = __webpack_require__(73);
 var ReactDOMComponentFlags = __webpack_require__(119);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMInput = __webpack_require__(224);
 var ReactDOMOption = __webpack_require__(225);
 var ReactDOMSelect = __webpack_require__(133);
@@ -39480,7 +39509,7 @@ module.exports = ReactDOMComponent;
 
 
 
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 var focusNode = __webpack_require__(129);
 
@@ -40181,7 +40210,7 @@ var _prodInvariant = __webpack_require__(12),
 
 var DOMPropertyOperations = __webpack_require__(131);
 var LinkedValueUtils = __webpack_require__(89);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(36);
 
 var invariant = __webpack_require__(7);
@@ -40470,7 +40499,7 @@ module.exports = ReactDOMInput;
 var _assign = __webpack_require__(14);
 
 var React = __webpack_require__(48);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMSelect = __webpack_require__(133);
 
 var warning = __webpack_require__(9);
@@ -40597,7 +40626,7 @@ var _prodInvariant = __webpack_require__(12),
     _assign = __webpack_require__(14);
 
 var LinkedValueUtils = __webpack_require__(89);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(36);
 
 var invariant = __webpack_require__(7);
@@ -42799,7 +42828,7 @@ module.exports = ReactServerUpdateQueue;
 var _assign = __webpack_require__(14);
 
 var DOMLazyTree = __webpack_require__(51);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 var ReactDOMEmptyComponent = function (instantiate) {
   // ReactCompositeComponent uses this:
@@ -43004,7 +43033,7 @@ var _prodInvariant = __webpack_require__(12),
 
 var DOMChildrenOperations = __webpack_require__(86);
 var DOMLazyTree = __webpack_require__(51);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 
 var escapeTextContentForBrowser = __webpack_require__(72);
 var invariant = __webpack_require__(7);
@@ -43241,7 +43270,7 @@ var _assign = __webpack_require__(14);
 var EventListener = __webpack_require__(139);
 var ExecutionEnvironment = __webpack_require__(20);
 var PooledClass = __webpack_require__(46);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactUpdates = __webpack_require__(36);
 
 var getEventTarget = __webpack_require__(83);
@@ -44361,7 +44390,7 @@ module.exports = SVGDOMPropertyConfig;
 
 var EventPropagators = __webpack_require__(57);
 var ExecutionEnvironment = __webpack_require__(20);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInputSelection = __webpack_require__(140);
 var SyntheticEvent = __webpack_require__(38);
 
@@ -44555,7 +44584,7 @@ var _prodInvariant = __webpack_require__(12);
 
 var EventListener = __webpack_require__(139);
 var EventPropagators = __webpack_require__(57);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var SyntheticAnimationEvent = __webpack_require__(254);
 var SyntheticClipboardEvent = __webpack_require__(255);
 var SyntheticEvent = __webpack_require__(38);
@@ -45466,7 +45495,7 @@ module.exports = '15.6.2';
 var _prodInvariant = __webpack_require__(12);
 
 var ReactCurrentOwner = __webpack_require__(35);
-var ReactDOMComponentTree = __webpack_require__(15);
+var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstanceMap = __webpack_require__(60);
 
 var getHostComponentFromComposite = __webpack_require__(143);
@@ -50416,6 +50445,11 @@ function reducer() {
             }
             return Object.assign({}, spotify, {
                 autocomplete_results: autocomplete_results
+            });
+
+        case 'SPOTIFY_GENRES_LOADED':
+            return Object.assign({}, spotify, {
+                genres: action.genres
             });
 
         /**
@@ -57664,7 +57698,7 @@ var _Dropzones = __webpack_require__(393);
 
 var _Dropzones2 = _interopRequireDefault(_Dropzones);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -58396,7 +58430,7 @@ var _ArtistSentence = __webpack_require__(29);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -60552,7 +60586,7 @@ var _Icon = __webpack_require__(21);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -61798,7 +61832,7 @@ var _Icon = __webpack_require__(21);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -64063,7 +64097,7 @@ var _Icon = __webpack_require__(21);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -64601,7 +64635,7 @@ var _TrackList = __webpack_require__(30);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -64949,7 +64983,7 @@ var _AlbumGrid = __webpack_require__(63);
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -65541,7 +65575,7 @@ var _TrackList = __webpack_require__(30);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -65972,7 +66006,7 @@ var _reactFontawesome = __webpack_require__(6);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -66227,7 +66261,7 @@ var _TrackList = __webpack_require__(30);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -66995,7 +67029,7 @@ var _ArtistSentence = __webpack_require__(29);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -67511,7 +67545,7 @@ var _Icon = __webpack_require__(21);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -68421,7 +68455,7 @@ var _reactFontawesome = __webpack_require__(6);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -68629,7 +68663,7 @@ var _Header = __webpack_require__(18);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -69885,6 +69919,10 @@ var _TrackList = __webpack_require__(30);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
+var _Thumbnail = __webpack_require__(15);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
 var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
@@ -70024,8 +70062,8 @@ var Discover = function (_React$Component) {
 					min: 0,
 					max: 100,
 					value: {
-						min: 25,
-						max: 75
+						min: 0,
+						max: 100
 					}
 				},
 				speechiness: {
@@ -70112,7 +70150,7 @@ var Discover = function (_React$Component) {
 				e: e,
 				context: 'track',
 				items: tracks,
-				uris: [uri]
+				uris: helpers.arrayOf('uri', tracks)
 			};
 			this.props.uiActions.showContextMenu(data);
 		}
@@ -70238,32 +70276,31 @@ var Discover = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'seeds' },
-				_react2.default.createElement(
-					'h4',
-					{ className: 'underline' },
-					'Seeds'
-				),
 				seeds_objects.map(function (seed, index) {
 					var type = helpers.uriType(seed.uri);
 					return _react2.default.createElement(
-						'span',
-						{ className: 'seed', key: seed.uri },
-						seed.name,
-						_react2.default.createElement(
+						'div',
+						{ className: "seed" + (seed.images ? " has-thumbnail" : ""), key: seed.uri },
+						seed.images ? _react2.default.createElement(
 							_URILink2.default,
-							{ className: 'type', type: type, uri: seed.uri },
-							'(',
-							type,
-							')'
+							{ className: 'thumbnail-wrapper', type: type, uri: seed.uri },
+							_react2.default.createElement(_Thumbnail2.default, { images: seed.images, circle: seed.type == "artist", size: 'small' })
+						) : null,
+						_react2.default.createElement(
+							'div',
+							{ className: 'label' },
+							helpers.titleCase(type),
+							_react2.default.createElement(_reactFontawesome2.default, { name: 'close', className: 'remove', onClick: function onClick() {
+									return _this2.removeSeed(index);
+								} })
 						),
-						_react2.default.createElement(_reactFontawesome2.default, { name: 'close', className: 'remove', onClick: function onClick() {
-								return _this2.removeSeed(index);
-							} })
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							seed.name
+						)
 					);
-				}),
-				_react2.default.createElement(_AddSeedField2.default, { onSelect: function onSelect(e, uri) {
-						return _this2.handleSelect(e, uri);
-					} })
+				})
 			);
 		}
 	}, {
@@ -70308,11 +70345,6 @@ var Discover = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'tunabilities' },
-				_react2.default.createElement(
-					'h4',
-					{ className: 'underline' },
-					'Musical properties'
-				),
 				enabled_tunabilities.map(function (tunability) {
 					return _react2.default.createElement(
 						'div',
@@ -70343,10 +70375,7 @@ var Discover = function (_React$Component) {
 							})
 						)
 					);
-				}),
-				_react2.default.createElement(_DropdownField2.default, { name: 'Add', options: addable_tunabilities, no_status_icon: true, button: 'alternative', handleChange: function handleChange(val) {
-						_this3.toggleTunability(val);
-					} })
+				})
 			);
 		}
 	}, {
@@ -70354,14 +70383,7 @@ var Discover = function (_React$Component) {
 		value: function renderResults() {
 			var _this4 = this;
 
-			if (helpers.isLoading(this.props.load_queue, ['spotify_recommendations'])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
-			}
-
+			// Results not in
 			if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined) {
 				return null;
 			}
@@ -70394,6 +70416,11 @@ var Discover = function (_React$Component) {
 						albums.push(this.props.albums[uri]);
 					}
 				}
+			}
+
+			// Complete records not yet in our index
+			if (tracks.length <= 0 && artists.length <= 0 && albums.length <= 0) {
+				return null;
 			}
 
 			var uri = 'iris:discover';
@@ -70464,6 +70491,7 @@ var Discover = function (_React$Component) {
 		value: function render() {
 			var _this5 = this;
 
+			var is_loading = helpers.isLoading(this.props.load_queue, ['spotify_recommendations']);
 			var addable_tunabilities = [];
 			for (var key in this.state.tunabilities) {
 				if (this.state.tunabilities.hasOwnProperty(key)) {
@@ -70501,14 +70529,29 @@ var Discover = function (_React$Component) {
 							{ className: 'grey-text' },
 							'Add seeds and musical properties below to build your sound'
 						),
-						this.renderSeeds(),
-						this.renderTunabilities(),
+						_react2.default.createElement(
+							'div',
+							{ className: 'parameters' },
+							this.renderSeeds(),
+							this.renderTunabilities(),
+							this.state.seeds.length > 5 ? _react2.default.createElement(
+								'p',
+								{ className: 'message error' },
+								'Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.'
+							) : null
+						),
 						_react2.default.createElement(
 							'div',
 							{ className: 'actions' },
+							_react2.default.createElement(_AddSeedField2.default, { onSelect: function onSelect(e, uri) {
+									return _this5.handleSelect(e, uri);
+								} }),
+							_react2.default.createElement(_DropdownField2.default, { className: 'add-properties', name: 'Properties', options: addable_tunabilities, no_status_icon: true, button: 'default', handleChange: function handleChange(val) {
+									_this5.toggleTunability(val);
+								} }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'button primary large', onClick: function onClick(e) {
+								{ className: "submit button primary large" + (is_loading ? " working" : ""), onClick: function onClick(e) {
 										return _this5.getRecommendations();
 									} },
 								_react2.default.createElement(_reactFontawesome2.default, { name: 'compass' }),
@@ -70540,9 +70583,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		authorized: state.spotify.authorization,
 		load_queue: state.ui.load_queue,
 		quick_search_results: state.spotify.quick_search_results ? state.spotify.quick_search_results : { artists: [], tracks: [] },
-		recommendations: state.spotify.recommendations ? state.spotify.recommendations : {},
-		favorite_artists: state.spotify.favorite_artists ? state.spotify.favorite_artists : [],
-		favorite_tracks: state.spotify.favorite_tracks ? state.spotify.favorite_tracks : []
+		recommendations: state.spotify.recommendations ? state.spotify.recommendations : {}
 	};
 };
 
@@ -72833,9 +72874,9 @@ var AddSeedField = function (_React$Component) {
 	}, {
 		key: 'results',
 		value: function results() {
-			if (typeof this.props.results === 'undefined') {
+			if (this.props.results === undefined) {
 				return null;
-			} else if (typeof this.props.results[this.id] === 'undefined') {
+			} else if (this.props.results[this.id] === undefined) {
 				return null;
 			} else {
 				return this.props.results[this.id];
@@ -72916,7 +72957,7 @@ var AddSeedField = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		genres: state.ui.genres ? state.ui.genres : null,
+		genres: state.spotify.genres ? state.spotify.genres : null,
 		results: state.spotify.autocomplete_results ? state.spotify.autocomplete_results : {}
 	};
 };
@@ -72967,7 +73008,7 @@ var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -73548,7 +73589,7 @@ var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
@@ -74138,7 +74179,7 @@ var _Header = __webpack_require__(18);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _Thumbnail = __webpack_require__(16);
+var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
