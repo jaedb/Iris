@@ -1,4 +1,84 @@
-@charset "UTF-8";
+.input-range__slider {
+  appearance: none;
+  background: #3f51b5;
+  border: 1px solid #3f51b5;
+  border-radius: 100%;
+  cursor: pointer;
+  display: block;
+  height: 1rem;
+  margin-left: -0.5rem;
+  margin-top: -0.65rem;
+  outline: none;
+  position: absolute;
+  top: 50%;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+  width: 1rem; }
+  .input-range__slider:active {
+    transform: scale(1.3); }
+  .input-range__slider:focus {
+    box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.2); }
+  .input-range--disabled .input-range__slider {
+    background: #cccccc;
+    border: 1px solid #cccccc;
+    box-shadow: none;
+    transform: none; }
+
+.input-range__slider-container {
+  transition: left 0.3s ease-out; }
+
+.input-range__label {
+  color: #aaaaaa;
+  font-family: "Helvetica Neue", san-serif;
+  font-size: 0.8rem;
+  transform: translateZ(0);
+  white-space: nowrap; }
+
+.input-range__label--min,
+.input-range__label--max {
+  bottom: -1.4rem;
+  position: absolute; }
+
+.input-range__label--min {
+  left: 0; }
+
+.input-range__label--max {
+  right: 0; }
+
+.input-range__label--value {
+  position: absolute;
+  top: -1.8rem; }
+
+.input-range__label-container {
+  left: -50%;
+  position: relative; }
+  .input-range__label--max .input-range__label-container {
+    left: 50%; }
+
+.input-range__track {
+  background: #eeeeee;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  display: block;
+  height: 0.3rem;
+  position: relative;
+  transition: left 0.3s ease-out, width 0.3s ease-out; }
+  .input-range--disabled .input-range__track {
+    background: #eeeeee; }
+
+.input-range__track--background {
+  left: 0;
+  margin-top: -0.15rem;
+  position: absolute;
+  right: 0;
+  top: 50%; }
+
+.input-range__track--active {
+  background: #3f51b5; }
+
+.input-range {
+  height: 1rem;
+  position: relative;
+  width: 100%; }@charset "UTF-8";
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -2360,13 +2440,16 @@
 @keyframes slideloader {
   0% {
     left: 0%;
-    right: 100%; }
+    right: 100%;
+    border-radius: 3px 0 0 3px; }
   50% {
     left: 0%;
-    right: 0%; }
+    right: 0%;
+    border-radius: 3px; }
   100% {
     left: 100%;
-    right: 0%; } }
+    right: 0%;
+    border-radius: 0 3px 3px 0; } }
 
 /**
  * Grid layout
@@ -2763,7 +2846,7 @@ footer {
   .flag.warning {
     background: #f16f19;
     color: #FFFFFF; }
-  .flag.bad {
+  .flag.error, .flag.bad {
     background: #cf2d2d;
     color: #FFFFFF; }
   .flag.dark {
@@ -2776,6 +2859,25 @@ footer {
   h2 .flag {
     line-height: 1.4em;
     vertical-align: middle; }
+
+.message {
+  padding: 10px 12px 8px;
+  background: #FFF39C;
+  color: #181818;
+  clear: both;
+  font-size: 14px;
+  border-radius: 3px; }
+  .message.info {
+    background: #FFF39C; }
+  .message.notice {
+    background: #32b5f2;
+    color: #FFFFFF; }
+  .message.warning {
+    background: #f16f19;
+    color: #FFFFFF; }
+  .message.error, .message.bad {
+    background: #cf2d2d;
+    color: #FFFFFF; }
 
 @media (max-width: 800px) {
   h1 {
@@ -2935,6 +3037,22 @@ input[type="submit"] {
     background: #f2f2f2;
     margin-top: 1px;
     margin-bottom: 9px; }
+  .button.small,
+  button.small,
+  input[type="button"].small,
+  input[type="submit"].small {
+    padding: 6px 18px 4px; }
+  .button.large,
+  button.large,
+  input[type="button"].large,
+  input[type="submit"].large {
+    padding: 16px 50px 14px; }
+  .button.pull-right,
+  button.pull-right,
+  input[type="button"].pull-right,
+  input[type="submit"].pull-right {
+    margin-right: 0;
+    margin-left: 30px; }
   .button.primary,
   button.primary,
   input[type="button"].primary,
@@ -3011,7 +3129,9 @@ input[type="submit"] {
   input[type="button"].working,
   input[type="submit"].working {
     position: relative;
-    cursor: wait !important; }
+    cursor: wait !important;
+    background: #383734;
+    color: #a3a19f; }
     .button.working:after,
     button.working:after,
     input[type="button"].working:after,
@@ -3021,7 +3141,7 @@ input[type="submit"] {
       display: block;
       content: '';
       animation: slideloader 1s infinite;
-      background: rgba(200, 200, 200, 0.4);
+      background: rgba(200, 200, 200, 0.3);
       top: 0;
       left: 0;
       bottom: 0;
@@ -3094,7 +3214,7 @@ input[type="submit"] {
     display: inline-block;
     float: none;
     width: auto;
-    padding: 5px 30px 5px 30px;
+    padding: 5px 5px 5px 26px;
     position: relative;
     cursor: pointer; }
   .field.radio input + .label:before {
@@ -3125,6 +3245,37 @@ input[type="submit"] {
     left: 0; }
   .field.checkbox input:checked + .label:before {
     content: '\F00C'; }
+  .field.range {
+    position: relative; }
+    .field.range .input-range {
+      height: auto; }
+    .field.range .label {
+      padding-bottom: 6px; }
+    .field.range .input-range__track,
+    .field.range .input-range__slider-container {
+      transition: none;
+      height: 6px;
+      border-radius: 3px;
+      cursor: col-resize; }
+    .field.range .input-range__track--background {
+      margin: 0;
+      background: rgba(100, 100, 100, 0.5); }
+    .field.range .input-range__track--active {
+      background: #32b5f2; }
+    .field.range .input-range__slider-container .input-range__slider {
+      cursor: col-resize;
+      background: #32b5f2;
+      border: none;
+      top: 0;
+      height: 6px;
+      width: 20px;
+      margin: -6px 0 0 0;
+      border-radius: 3px 0 0 3px; }
+    .field.range .input-range__slider-container:last-child .input-range__slider {
+      border-radius: 0 3px 3px 0;
+      margin-left: -12px; }
+  .field.sub-field {
+    padding: 0; }
   .field .description {
     display: inline-block;
     padding: 10px 14px;
@@ -3413,6 +3564,9 @@ input[type="submit"] {
     background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
     background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
     background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+  h4 .context-menu-trigger,
+  h4 .context-menu-trigger:active {
+    margin: -8px 0 0 10px; }
   .context-menu-trigger .dot {
     width: 6px;
     height: 6px;
@@ -4986,19 +5140,21 @@ main header {
   font-family: "Overpass";
   position: relative;
   display: inline-block; }
-  .dropdown-field .label {
+  .dropdown-field .label:not(.button) {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     padding: 14px 10px;
     cursor: pointer; }
-    .notouch .dropdown-field .label:hover {
+    .notouch .dropdown-field .label:not(.button):hover {
       color: #32b5f2; }
-  .dropdown-field.expanded .label {
+  .dropdown-field.expanded .label:not(.button) {
     color: #32b5f2; }
   .dropdown-field.expanded .options {
     display: block; }
+  .dropdown-field.no-status-icon .options .option {
+    padding-left: 12px; }
   .dropdown-field .options {
     color: #000000;
     position: absolute;
@@ -5226,6 +5382,8 @@ main header {
   .has-tooltip:hover .tooltip {
     opacity: 1;
     bottom: 35px; }
+  .has-tooltip.info .fa {
+    opacity: 0.3; }
   .has-tooltip.large-tooltip .tooltip {
     padding: 8px 12px;
     font-size: 12px;
@@ -5690,53 +5848,106 @@ main .track-view {
     color: #FFFFFF; }
     .discover-view .intro .liner h2 {
       padding-bottom: 8px; }
-    .discover-view .intro .liner h3 {
-      padding-bottom: 40px;
-      opacity: 0.5; }
 
-.discover-view .seeds {
-  padding-top: 40px; }
-  .discover-view .seeds .seed {
-    display: inline-block;
-    background: #32b5f2;
-    color: #FFFFFF;
-    padding: 8px 26px 8px 14px;
+.discover-view .parameters {
+  padding-top: 50px; }
+  .discover-view .parameters::after {
+    content: '';
+    clear: both;
+    display: block; }
+  .discover-view .parameters .seeds,
+  .discover-view .parameters .tunabilities {
+    float: left; }
+
+.discover-view .seeds .seed {
+  color: #FFFFFF;
+  padding: 0 30px 30px 0;
+  float: left; }
+  .discover-view .seeds .seed .thumbnail-wrapper {
+    float: left;
+    width: 44px;
+    border: 0 !important; }
+  .discover-view .seeds .seed .label .remove {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 4px;
+    margin-left: 4px; }
+    .discover-view .seeds .seed .label .remove:hover {
+      color: #cf2d2d; }
+  .discover-view .seeds .seed .name {
     font-size: 16px;
-    position: relative;
-    vertical-align: top;
-    margin: 0 10px 10px 0;
-    border-radius: 3px; }
-    .discover-view .seeds .seed .type {
-      display: inline-block;
-      font-size: 12px;
-      opacity: 0.5;
-      padding: 0 10px 0 5px; }
-    .discover-view .seeds .seed .remove {
-      font-size: 10px;
-      padding: 12px;
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer; }
+    padding-top: 3px; }
+  .discover-view .seeds .seed.has-thumbnail .label,
+  .discover-view .seeds .seed.has-thumbnail .name {
+    padding-left: 52px; }
 
-.discover-view .autocomplete-field {
-  width: 250px;
-  display: inline-block;
-  vertical-align: top;
-  padding: 0; }
-  .discover-view .autocomplete-field .input {
+.discover-view .tunabilities::after {
+  content: '';
+  clear: both;
+  display: block; }
+
+.discover-view .tunabilities .tunability {
+  width: 200px;
+  float: left;
+  box-sizing: border-box;
+  padding: 0 30px 30px 0;
+  position: relative; }
+  .discover-view .tunabilities .tunability .input {
     float: none;
-    margin: 0 10px 10px 0; }
-    .discover-view .autocomplete-field .input input {
-      background: rgba(100, 100, 100, 0.5);
-      color: #FFFFFF;
-      padding: 7px 13px;
-      font-size: 16px;
-      border: 1px solid transparent; }
-      .discover-view .autocomplete-field .input input:focus, .discover-view .autocomplete-field .input input:active {
-        border-color: #32b5f2; }
-    .discover-view .autocomplete-field .input:after {
-      background: #32b5f2; }
+    width: 100%;
+    padding-top: 4px; }
+  .discover-view .tunabilities .tunability .input-range .input-range__label-container {
+    display: none; }
+  .discover-view .tunabilities .tunability .remove {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 4px;
+    margin-left: 4px; }
+    .discover-view .tunabilities .tunability .remove:hover {
+      color: #cf2d2d; }
+
+.discover-view .actions {
+  padding-top: 40px; }
+  .discover-view .actions .autocomplete-field {
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0;
+    margin-right: 1px; }
+    .discover-view .actions .autocomplete-field .input {
+      float: none;
+      margin: 0 10px 10px 0; }
+      .discover-view .actions .autocomplete-field .input input {
+        background: rgba(100, 100, 100, 0.5);
+        color: #FFFFFF;
+        padding: 15px 13px 10px;
+        font-size: 16px;
+        border: 1px solid transparent;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0; }
+        .discover-view .actions .autocomplete-field .input input:focus, .discover-view .actions .autocomplete-field .input input:active {
+          border-color: #32b5f2; }
+      .discover-view .actions .autocomplete-field .input:after {
+        background: #32b5f2; }
+    .discover-view .actions .autocomplete-field .results {
+      top: 49px; }
+  .discover-view .actions .dropdown-field .button {
+    background: rgba(100, 100, 100, 0.5);
+    color: #FFFFFF;
+    padding: 16px 20px 14px 20px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0; }
+  .discover-view .actions .dropdown-field .options {
+    top: 50px;
+    right: 20px; }
 
 .discover-view section .grid {
   padding-bottom: 20px; }
@@ -5744,8 +5955,22 @@ main .track-view {
 @media (max-width: 800px) {
   .discover-view .intro {
     padding: 40px 20px; }
-  .discover-view .seeds {
-    padding-top: 20px; } }
+  .discover-view .parameters .seeds {
+    padding-top: 20px;
+    float: none; }
+    .discover-view .parameters .seeds .seed {
+      float: none; }
+  .discover-view .parameters .tunabilities {
+    float: none; }
+    .discover-view .parameters .tunabilities .tunability {
+      width: 100%;
+      float: none; }
+  .discover-view .parameters .add .add-properties {
+    margin-right: 0; }
+  .discover-view .col.tracks {
+    width: 100%; }
+  .discover-view .col.others, .discover-view .col.w5 {
+    display: none; } }
 
 .discover-featured-view .intro,
 .discover-new-releases-view .intro {
