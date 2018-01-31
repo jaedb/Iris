@@ -1,8 +1,8 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Link } from 'react-router'
-import { createStore, bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import { createStore, bindActionCreators } from 'redux';
 
 import * as uiActions from '../../services/ui/actions'
 import * as helpers from '../../helpers'
@@ -43,8 +43,8 @@ export default class extends React.Component{
 				</div>
 
 				<div className="actions centered-text">
-					<button onClick={e => this.props.uiActions.closeModal()}>Ignore</button>
-					<button className="primary" onClick={e => this.handleImport(e)}>Import authorization</button>
+					<button className="large" onClick={e => this.props.uiActions.closeModal()}>Ignore</button>
+					<button className="primary large" onClick={e => this.handleImport(e)}>Import authorization</button>
 				</div>
 			</div>
 		)

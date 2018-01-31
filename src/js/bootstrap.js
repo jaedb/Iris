@@ -44,6 +44,7 @@ var initialState = {
 		tracks: {}
 	},
 	ui: {
+		show_initial_setup: true,
 		slim_mode: false,
 		selected_tracks: [],
 		notifications: [],
@@ -61,7 +62,7 @@ var initialState = {
 	},
 	pusher: {
 		connected: false,
-		username: 'Anonymous',
+		username: false,
 		connections: {},
 		version: {
 			current: '0.0.0'

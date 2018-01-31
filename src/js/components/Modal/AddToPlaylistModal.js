@@ -1,10 +1,10 @@
 
-import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 
-import Icon from '../Icon'
-import Thumbnail from '../Thumbnail'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import Thumbnail from '../Thumbnail';
+import * as helpers from '../../helpers';
 
 export default class AddToPlaylistModal extends React.Component{
 

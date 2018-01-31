@@ -2440,13 +2440,16 @@
 @keyframes slideloader {
   0% {
     left: 0%;
-    right: 100%; }
+    right: 100%;
+    border-radius: 3px 0 0 3px; }
   50% {
     left: 0%;
-    right: 0%; }
+    right: 0%;
+    border-radius: 3px; }
   100% {
     left: 100%;
-    right: 0%; } }
+    right: 0%;
+    border-radius: 0 3px 3px 0; } }
 
 /**
  * Grid layout
@@ -2843,7 +2846,7 @@ footer {
   .flag.warning {
     background: #f16f19;
     color: #FFFFFF; }
-  .flag.bad {
+  .flag.error, .flag.bad {
     background: #cf2d2d;
     color: #FFFFFF; }
   .flag.dark {
@@ -2856,6 +2859,25 @@ footer {
   h2 .flag {
     line-height: 1.4em;
     vertical-align: middle; }
+
+.message {
+  padding: 10px 12px 8px;
+  background: #FFF39C;
+  color: #181818;
+  clear: both;
+  font-size: 14px;
+  border-radius: 3px; }
+  .message.info {
+    background: #FFF39C; }
+  .message.notice {
+    background: #32b5f2;
+    color: #FFFFFF; }
+  .message.warning {
+    background: #f16f19;
+    color: #FFFFFF; }
+  .message.error, .message.bad {
+    background: #cf2d2d;
+    color: #FFFFFF; }
 
 @media (max-width: 800px) {
   h1 {
@@ -3107,7 +3129,9 @@ input[type="submit"] {
   input[type="button"].working,
   input[type="submit"].working {
     position: relative;
-    cursor: wait !important; }
+    cursor: wait !important;
+    background: #383734;
+    color: #a3a19f; }
     .button.working:after,
     button.working:after,
     input[type="button"].working:after,
@@ -3117,7 +3141,7 @@ input[type="submit"] {
       display: block;
       content: '';
       animation: slideloader 1s infinite;
-      background: rgba(200, 200, 200, 0.4);
+      background: rgba(200, 200, 200, 0.3);
       top: 0;
       left: 0;
       bottom: 0;
@@ -5825,35 +5849,41 @@ main .track-view {
     .discover-view .intro .liner h2 {
       padding-bottom: 8px; }
 
-.discover-view .seeds,
-.discover-view .tunabilities {
-  padding-top: 30px; }
-  .discover-view .seeds h3,
-  .discover-view .tunabilities h3 {
-    padding-bottom: 6px; }
+.discover-view .parameters {
+  padding-top: 50px; }
+  .discover-view .parameters::after {
+    content: '';
+    clear: both;
+    display: block; }
+  .discover-view .parameters .seeds,
+  .discover-view .parameters .tunabilities {
+    float: left; }
 
 .discover-view .seeds .seed {
-  display: inline-block;
-  background: #32b5f2;
   color: #FFFFFF;
-  padding: 8px 26px 8px 14px;
-  font-size: 16px;
-  position: relative;
-  vertical-align: top;
-  margin: 0 10px 10px 0;
-  border-radius: 3px; }
-  .discover-view .seeds .seed .type {
-    display: inline-block;
-    font-size: 12px;
-    opacity: 0.5;
-    padding: 0 10px 0 5px; }
-  .discover-view .seeds .seed .remove {
+  padding: 0 30px 30px 0;
+  float: left; }
+  .discover-view .seeds .seed .thumbnail-wrapper {
+    float: left;
+    width: 44px;
+    border: 0 !important; }
+  .discover-view .seeds .seed .label .remove {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
     font-size: 10px;
-    padding: 12px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer; }
+    padding: 4px;
+    margin-left: 4px; }
+    .discover-view .seeds .seed .label .remove:hover {
+      color: #cf2d2d; }
+  .discover-view .seeds .seed .name {
+    font-size: 16px;
+    padding-top: 3px; }
+  .discover-view .seeds .seed.has-thumbnail .label,
+  .discover-view .seeds .seed.has-thumbnail .name {
+    padding-left: 52px; }
 
 .discover-view .tunabilities::after {
   content: '';
@@ -5864,11 +5894,12 @@ main .track-view {
   width: 200px;
   float: left;
   box-sizing: border-box;
-  padding-right: 20px;
+  padding: 0 30px 30px 0;
   position: relative; }
   .discover-view .tunabilities .tunability .input {
     float: none;
-    width: 100%; }
+    width: 100%;
+    padding-top: 4px; }
   .discover-view .tunabilities .tunability .input-range .input-range__label-container {
     display: none; }
   .discover-view .tunabilities .tunability .remove {
@@ -5883,28 +5914,40 @@ main .track-view {
     .discover-view .tunabilities .tunability .remove:hover {
       color: #cf2d2d; }
 
-.discover-view .autocomplete-field {
-  width: 250px;
-  display: inline-block;
-  vertical-align: top;
-  padding: 0; }
-  .discover-view .autocomplete-field .input {
-    float: none;
-    margin: 0 10px 10px 0; }
-    .discover-view .autocomplete-field .input input {
-      background: rgba(100, 100, 100, 0.5);
-      color: #FFFFFF;
-      padding: 7px 13px;
-      font-size: 16px;
-      border: 1px solid transparent; }
-      .discover-view .autocomplete-field .input input:focus, .discover-view .autocomplete-field .input input:active {
-        border-color: #32b5f2; }
-    .discover-view .autocomplete-field .input:after {
-      background: #32b5f2; }
-
 .discover-view .actions {
-  padding-top: 60px;
-  text-align: center; }
+  padding-top: 40px; }
+  .discover-view .actions .autocomplete-field {
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0;
+    margin-right: 1px; }
+    .discover-view .actions .autocomplete-field .input {
+      float: none;
+      margin: 0 10px 10px 0; }
+      .discover-view .actions .autocomplete-field .input input {
+        background: rgba(100, 100, 100, 0.5);
+        color: #FFFFFF;
+        padding: 15px 13px 10px;
+        font-size: 16px;
+        border: 1px solid transparent;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0; }
+        .discover-view .actions .autocomplete-field .input input:focus, .discover-view .actions .autocomplete-field .input input:active {
+          border-color: #32b5f2; }
+      .discover-view .actions .autocomplete-field .input:after {
+        background: #32b5f2; }
+    .discover-view .actions .autocomplete-field .results {
+      top: 49px; }
+  .discover-view .actions .dropdown-field .button {
+    background: rgba(100, 100, 100, 0.5);
+    color: #FFFFFF;
+    padding: 16px 20px 14px 20px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0; }
+  .discover-view .actions .dropdown-field .options {
+    top: 50px;
+    right: 20px; }
 
 .discover-view section .grid {
   padding-bottom: 20px; }
@@ -5912,14 +5955,18 @@ main .track-view {
 @media (max-width: 800px) {
   .discover-view .intro {
     padding: 40px 20px; }
-  .discover-view .seeds {
-    padding-top: 20px; }
-  .discover-view .tunabilities .tunability {
-    width: 100%;
-    float: none;
-    padding: 15px 0; }
-  .discover-view .tunabilities .dropdown-field {
-    margin-top: 20px; }
+  .discover-view .parameters .seeds {
+    padding-top: 20px;
+    float: none; }
+    .discover-view .parameters .seeds .seed {
+      float: none; }
+  .discover-view .parameters .tunabilities {
+    float: none; }
+    .discover-view .parameters .tunabilities .tunability {
+      width: 100%;
+      float: none; }
+  .discover-view .parameters .add .add-properties {
+    margin-right: 0; }
   .discover-view .col.tracks {
     width: 100%; }
   .discover-view .col.others, .discover-view .col.w5 {

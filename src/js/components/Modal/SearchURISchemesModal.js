@@ -1,10 +1,10 @@
 
-import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 import Sortable from 'react-sortablejs';
 
-import Icon from '../Icon'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class SearchURISchemesModal extends React.Component{
 
@@ -95,7 +95,7 @@ export default class SearchURISchemesModal extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary wide">Save</button>
+						<button type="submit" className="primary large">Save</button>
 					</div>
 				</form>
 			</div>

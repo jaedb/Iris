@@ -1,13 +1,12 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Link } from 'react-router'
-import { createStore, bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import { createStore, bindActionCreators } from 'redux';
 
-import * as uiActions from '../../services/ui/actions'
-import * as helpers from '../../helpers'
-
-import Icon from '../Icon'
+import Icon from '../Icon';
+import * as uiActions from '../../services/ui/actions';
+import * as helpers from '../../helpers';
 
 class ImageZoomModal extends React.Component{
 

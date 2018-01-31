@@ -73,6 +73,12 @@ class App extends React.Component{
 			});
 			hashHistory.push(global.baseURL);
 		}
+
+		// show initial setup if required
+		/*
+		if (this.props.show_initial_setup){
+			this.props.uiActions.openModal('initial_setup');
+		}*/
 	}
 
 	shouldTriggerShortcut(e){
@@ -293,6 +299,7 @@ class App extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		touch_dragging: state.ui.touch_dragging,
+		show_initial_setup: state.ui.show_initial_setup,
 		slim_mode: state.ui.slim_mode,
 		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
 		volume: (state.mopidy.volume ? state.mopidy.volume : false),

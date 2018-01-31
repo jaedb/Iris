@@ -14,7 +14,7 @@ import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
 import SearchURISchemesModal from './SearchURISchemesModal'
-import VolumeModal from './VolumeModal'
+import InitialSetupModal from './InitialSetupModal'
 import AuthorizationModal_Send from './AuthorizationModal_Send'
 import AuthorizationModal_Receive from './AuthorizationModal_Receive'
 
@@ -131,11 +131,9 @@ class Modal extends React.Component{
 						available_uri_schemes={this.props.uri_schemes} 
 						data={this.props.modal.data} /> : null }
 
-					{ this.props.modal.name == 'volume' ? <VolumeModal
+					{ this.props.modal.name == 'initial_setup' ? <InitialSetupModal
 						uiActions={this.props.uiActions}
-						mopidyActions={this.props.mopidyActions} 
-						volume={this.props.volume} 
-						mute={this.props.mute} /> : null }
+						pusherActions={this.props.pusherActions} /> : null }
 
 				</div>
 			</div>

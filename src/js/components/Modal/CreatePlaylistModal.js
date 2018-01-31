@@ -1,8 +1,9 @@
 
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 
-import Icon from '../Icon'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class CreatePlaylistModal extends React.Component{
 
@@ -122,7 +123,7 @@ export default class CreatePlaylistModal extends React.Component{
 					{this.renderFields()}
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary wide">Create</button>
+						<button type="submit" className="primary large">Create playlist</button>
 					</div>
 
 				</form>
