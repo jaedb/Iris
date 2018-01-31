@@ -331,7 +331,38 @@ class Settings extends React.Component {
 							</div>
 						</div>
 						{this.renderApplyButton()}
-					</form>
+					</form>					
+
+					<h4 className="underline">Streaming</h4>
+
+					<div className="field checkbox">
+						<div className="name">Enable</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="ssl"
+									checked={this.props.core.http_streaming_enabled}
+									onChange={e => this.props.coreActions.set({http_streaming_enabled: !this.props.core.http_streaming_enabled})} />
+								<span className="label has-tooltip">
+									Enable HTTP streaming
+									<span className="tooltip">Requires streaming service like Icecast2</span>
+								</span>
+							</label>
+						</div>
+					</div>
+					<div className="field">
+						<div className="name">Stream location</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.props.coreActions.set({http_streaming_url: e.target.value})}
+								value={this.props.core.http_streaming_url} />
+							<div className="description">
+								The full URL to your stream endpoint
+							</div>
+						</div>
+					</div>
 
 					<h4 className="underline">Localization</h4>
 

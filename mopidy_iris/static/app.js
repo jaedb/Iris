@@ -49455,7 +49455,9 @@ var initialState = {
 		artists: {},
 		playlists: {},
 		users: {},
-		tracks: {}
+		tracks: {},
+		http_streaming_enabled: false,
+		http_streaming_url: "http://" + window.location.hostname + ":8000/mopidy"
 	},
 	ui: {
 		show_initial_setup: true,
@@ -58619,6 +58621,11 @@ var PlaybackControls = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: this.state.expanded ? "expanded playback-controls" : "playback-controls" },
+				this.props.http_streaming ? _react2.default.createElement(
+					'audio',
+					{ className: 'http-streaming', autoPlay: true },
+					_react2.default.createElement('source', { src: this.props.http_streaming, type: 'audio/mpeg' })
+				) : null,
 				_react2.default.createElement(
 					'div',
 					{ className: 'current-track' },
@@ -58730,6 +58737,7 @@ var PlaybackControls = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		http_streaming: state.core.http_streaming_enabled && state.core.http_streaming_url ? state.core.http_streaming_url : '',
 		current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
 		radio_enabled: state.ui.radio && state.ui.radio.enabled ? true : false,
 		play_state: state.mopidy.play_state,
@@ -60367,7 +60375,7 @@ var _SearchURISchemesModal = __webpack_require__(410);
 
 var _SearchURISchemesModal2 = _interopRequireDefault(_SearchURISchemesModal);
 
-var _InitialSetupModal = __webpack_require__(481);
+var _InitialSetupModal = __webpack_require__(414);
 
 var _InitialSetupModal2 = _interopRequireDefault(_InitialSetupModal);
 
@@ -63827,7 +63835,139 @@ exports.default = Sortable;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(22)))
 
 /***/ }),
-/* 414 */,
+/* 414 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactFontawesome = __webpack_require__(6);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+var _Icon = __webpack_require__(21);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var InitialSetupModal = function (_React$Component) {
+	_inherits(InitialSetupModal, _React$Component);
+
+	function InitialSetupModal(props) {
+		_classCallCheck(this, InitialSetupModal);
+
+		var _this = _possibleConstructorReturn(this, (InitialSetupModal.__proto__ || Object.getPrototypeOf(InitialSetupModal)).call(this, props));
+
+		_this.state = {
+			username: 'Anonymous'
+		};
+		return _this;
+	}
+
+	_createClass(InitialSetupModal, [{
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			// save and falseify show_initial_setup
+		}
+	}, {
+		key: 'handleCancel',
+		value: function handleCancel(e) {
+			// falseify show_initial_setup
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'h1',
+					null,
+					'Welcome to Iris'
+				),
+				_react2.default.createElement(
+					'form',
+					{ onSubmit: function onSubmit(e) {
+							return _this2.handleSubmit(e);
+						} },
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Username'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this2.setState({ username: e.target.value.replace(/\W/g, '') });
+								},
+								value: this.state.username }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'A non-unique string used to identify this client (no special characters)'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'actions centered-text' },
+						_react2.default.createElement(
+							'button',
+							{ className: 'large', onClick: function onClick(e) {
+									return _this2.handleCancel(e);
+								} },
+							'Skip'
+						),
+						_react2.default.createElement(
+							'button',
+							{ className: 'primary large', onClick: function onClick(e) {
+									return _this2.handleSubmit(e);
+								} },
+							'Save'
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return InitialSetupModal;
+}(_react2.default.Component);
+
+exports.default = InitialSetupModal;
+
+/***/ }),
 /* 415 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -67942,6 +68082,69 @@ var Settings = function (_React$Component) {
 							)
 						),
 						this.renderApplyButton()
+					),
+					_react2.default.createElement(
+						'h4',
+						{ className: 'underline' },
+						'Streaming'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field checkbox' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Enable'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'ssl',
+									checked: this.props.core.http_streaming_enabled,
+									onChange: function onChange(e) {
+										return _this3.props.coreActions.set({ http_streaming_enabled: !_this3.props.core.http_streaming_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Enable HTTP streaming',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Requires streaming service like Icecast2'
+									)
+								)
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Stream location'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this3.props.coreActions.set({ http_streaming_url: e.target.value });
+								},
+								value: this.props.core.http_streaming_url }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'The full URL to your stream endpoint'
+							)
+						)
 					),
 					_react2.default.createElement(
 						'h4',
@@ -75304,158 +75507,6 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 462 */,
-/* 463 */,
-/* 464 */,
-/* 465 */,
-/* 466 */,
-/* 467 */,
-/* 468 */,
-/* 469 */,
-/* 470 */,
-/* 471 */,
-/* 472 */,
-/* 473 */,
-/* 474 */,
-/* 475 */,
-/* 476 */,
-/* 477 */,
-/* 478 */,
-/* 479 */,
-/* 480 */,
-/* 481 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactFontawesome = __webpack_require__(6);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _Icon = __webpack_require__(21);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _helpers = __webpack_require__(2);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var InitialSetupModal = function (_React$Component) {
-	_inherits(InitialSetupModal, _React$Component);
-
-	function InitialSetupModal(props) {
-		_classCallCheck(this, InitialSetupModal);
-
-		var _this = _possibleConstructorReturn(this, (InitialSetupModal.__proto__ || Object.getPrototypeOf(InitialSetupModal)).call(this, props));
-
-		_this.state = {
-			username: 'Anonymous'
-		};
-		return _this;
-	}
-
-	_createClass(InitialSetupModal, [{
-		key: 'handleSubmit',
-		value: function handleSubmit(e) {
-			// save and falseify show_initial_setup
-		}
-	}, {
-		key: 'handleCancel',
-		value: function handleCancel(e) {
-			// falseify show_initial_setup
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			return _react2.default.createElement(
-				'div',
-				null,
-				_react2.default.createElement(
-					'h1',
-					null,
-					'Welcome to Iris'
-				),
-				_react2.default.createElement(
-					'form',
-					{ onSubmit: function onSubmit(e) {
-							return _this2.handleSubmit(e);
-						} },
-					_react2.default.createElement(
-						'div',
-						{ className: 'field' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'name' },
-							'Username'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'input' },
-							_react2.default.createElement('input', {
-								type: 'text',
-								onChange: function onChange(e) {
-									return _this2.setState({ username: e.target.value.replace(/\W/g, '') });
-								},
-								value: this.state.username }),
-							_react2.default.createElement(
-								'div',
-								{ className: 'description' },
-								'A non-unique string used to identify this client (no special characters)'
-							)
-						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'actions centered-text' },
-						_react2.default.createElement(
-							'button',
-							{ className: 'large', onClick: function onClick(e) {
-									return _this2.handleCancel(e);
-								} },
-							'Skip'
-						),
-						_react2.default.createElement(
-							'button',
-							{ className: 'primary large', onClick: function onClick(e) {
-									return _this2.handleSubmit(e);
-								} },
-							'Save'
-						)
-					)
-				)
-			);
-		}
-	}]);
-
-	return InitialSetupModal;
-}(_react2.default.Component);
-
-exports.default = InitialSetupModal;
 
 /***/ })
 /******/ ]);
