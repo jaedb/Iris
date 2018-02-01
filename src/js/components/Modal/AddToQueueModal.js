@@ -1,9 +1,9 @@
 
-import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 
-import Icon from '../Icon'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class AddToQueueModal extends React.Component{
 
@@ -57,7 +57,7 @@ export default class AddToQueueModal extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary wide">Add</button>
+						<button type="submit" className="primary large">Add</button>
 					</div>
 				</form>
 			</div>

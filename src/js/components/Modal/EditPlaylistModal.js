@@ -1,8 +1,8 @@
 
-import React from 'react'
+import React from 'react';
 
-import Icon from '../Icon'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class EditPlaylistModal extends React.Component{
 
@@ -98,7 +98,7 @@ export default class EditPlaylistModal extends React.Component{
 					{this.renderFields()}
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary wide">Save</button>
+						<button type="submit" className="primary large">Save</button>
 					</div>
 				</form>
 			</div>

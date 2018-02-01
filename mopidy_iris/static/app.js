@@ -49455,9 +49455,12 @@ var initialState = {
 		artists: {},
 		playlists: {},
 		users: {},
-		tracks: {}
+		tracks: {},
+		http_streaming_enabled: false,
+		http_streaming_url: "http://" + window.location.hostname + ":8000/mopidy"
 	},
 	ui: {
+		show_initial_setup: true,
 		slim_mode: false,
 		selected_tracks: [],
 		notifications: [],
@@ -49475,7 +49478,7 @@ var initialState = {
 	},
 	pusher: {
 		connected: false,
-		username: 'Anonymous',
+		username: false,
 		connections: {},
 		version: {
 			current: '0.0.0'
@@ -57400,6 +57403,12 @@ var App = function (_React$Component) {
 				});
 				_reactRouter.hashHistory.push(global.baseURL);
 			}
+
+			// show initial setup if required
+			/*
+   if (this.props.show_initial_setup){
+   	this.props.uiActions.openModal('initial_setup');
+   }*/
 		}
 	}, {
 		key: 'shouldTriggerShortcut',
@@ -57635,6 +57644,7 @@ var App = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		touch_dragging: state.ui.touch_dragging,
+		show_initial_setup: state.ui.show_initial_setup,
 		slim_mode: state.ui.slim_mode,
 		broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
 		volume: state.mopidy.volume ? state.mopidy.volume : false,
@@ -58611,6 +58621,11 @@ var PlaybackControls = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: this.state.expanded ? "expanded playback-controls" : "playback-controls" },
+				this.props.http_streaming ? _react2.default.createElement(
+					'audio',
+					{ className: 'http-streaming', autoPlay: true },
+					_react2.default.createElement('source', { src: this.props.http_streaming, type: 'audio/mpeg' })
+				) : null,
 				_react2.default.createElement(
 					'div',
 					{ className: 'current-track' },
@@ -58722,6 +58737,7 @@ var PlaybackControls = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		http_streaming: state.core.http_streaming_enabled && state.core.http_streaming_url ? state.core.http_streaming_url : '',
 		current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
 		radio_enabled: state.ui.radio && state.ui.radio.enabled ? true : false,
 		play_state: state.mopidy.play_state,
@@ -60359,9 +60375,9 @@ var _SearchURISchemesModal = __webpack_require__(410);
 
 var _SearchURISchemesModal2 = _interopRequireDefault(_SearchURISchemesModal);
 
-var _VolumeModal = __webpack_require__(414);
+var _InitialSetupModal = __webpack_require__(414);
 
-var _VolumeModal2 = _interopRequireDefault(_VolumeModal);
+var _InitialSetupModal2 = _interopRequireDefault(_InitialSetupModal);
 
 var _AuthorizationModal_Send = __webpack_require__(415);
 
@@ -60513,11 +60529,9 @@ var Modal = function (_React$Component) {
 						search_uri_schemes: this.props.search_uri_schemes,
 						available_uri_schemes: this.props.uri_schemes,
 						data: this.props.modal.data }) : null,
-					this.props.modal.name == 'volume' ? _react2.default.createElement(_VolumeModal2.default, {
+					this.props.modal.name == 'initial_setup' ? _react2.default.createElement(_InitialSetupModal2.default, {
 						uiActions: this.props.uiActions,
-						mopidyActions: this.props.mopidyActions,
-						volume: this.props.volume,
-						mute: this.props.mute }) : null
+						pusherActions: this.props.pusherActions }) : null
 				)
 			);
 		}
@@ -60869,7 +60883,7 @@ var AddToQueueModal = function (_React$Component) {
 						{ className: 'actions centered-text' },
 						_react2.default.createElement(
 							'button',
-							{ type: 'submit', className: 'primary wide' },
+							{ type: 'submit', className: 'primary large' },
 							'Add'
 						)
 					)
@@ -60899,6 +60913,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactFontawesome = __webpack_require__(6);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
 var _Icon = __webpack_require__(21);
 
@@ -61125,8 +61143,8 @@ var CreatePlaylistModal = function (_React$Component) {
 						{ className: 'actions centered-text' },
 						_react2.default.createElement(
 							'button',
-							{ type: 'submit', className: 'primary wide' },
-							'Create'
+							{ type: 'submit', className: 'primary large' },
+							'Create playlist'
 						)
 					)
 				)
@@ -61342,7 +61360,7 @@ var EditPlaylistModal = function (_React$Component) {
 						{ className: 'actions centered-text' },
 						_react2.default.createElement(
 							'button',
-							{ type: 'submit', className: 'primary wide' },
+							{ type: 'submit', className: 'primary large' },
 							'Save'
 						)
 					)
@@ -61682,20 +61700,20 @@ var EditRadioModal = function (_React$Component) {
 						{ className: 'actions centered-text' },
 						this.state.enabled ? _react2.default.createElement(
 							'button',
-							{ className: 'destructive wide', onClick: function onClick(e) {
+							{ className: 'destructive large', onClick: function onClick(e) {
 									return _this3.handleStop(e);
 								} },
 							'Stop'
 						) : null,
 						this.state.enabled ? _react2.default.createElement(
 							'button',
-							{ className: 'primary wide', onClick: function onClick(e) {
+							{ className: 'primary large', onClick: function onClick(e) {
 									return _this3.handleUpdate(e);
 								} },
 							'Save'
 						) : _react2.default.createElement(
 							'button',
-							{ className: 'primary wide', onClick: function onClick(e) {
+							{ className: 'primary large', onClick: function onClick(e) {
 									return _this3.handleStart(e);
 								} },
 							'Start'
@@ -61734,6 +61752,10 @@ var _reactRouter = __webpack_require__(8);
 
 var _redux = __webpack_require__(3);
 
+var _Icon = __webpack_require__(21);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
 var _actions = __webpack_require__(5);
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -61741,10 +61763,6 @@ var uiActions = _interopRequireWildcard(_actions);
 var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
-
-var _Icon = __webpack_require__(21);
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -62075,7 +62093,7 @@ var SearchURISchemesModal = function (_React$Component) {
 						{ className: 'actions centered-text' },
 						_react2.default.createElement(
 							'button',
-							{ type: 'submit', className: 'primary wide' },
+							{ type: 'submit', className: 'primary large' },
 							'Save'
 						)
 					)
@@ -63855,30 +63873,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var VolumeModal = function (_React$Component) {
-	_inherits(VolumeModal, _React$Component);
+var InitialSetupModal = function (_React$Component) {
+	_inherits(InitialSetupModal, _React$Component);
 
-	function VolumeModal(props) {
-		_classCallCheck(this, VolumeModal);
+	function InitialSetupModal(props) {
+		_classCallCheck(this, InitialSetupModal);
 
-		return _possibleConstructorReturn(this, (VolumeModal.__proto__ || Object.getPrototypeOf(VolumeModal)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (InitialSetupModal.__proto__ || Object.getPrototypeOf(InitialSetupModal)).call(this, props));
+
+		_this.state = {
+			username: 'Anonymous'
+		};
+		return _this;
 	}
 
-	_createClass(VolumeModal, [{
-		key: 'changeVolume',
-		value: function changeVolume(e) {
-			var slider = e.target;
-
-			var sliderY = e.clientY - slider.getBoundingClientRect().top;
-			var sliderHeight = slider.getBoundingClientRect().height;
-			var percent = 100 - parseInt(sliderY / sliderHeight * 100);
-
-			this.props.mopidyActions.setVolume(percent);
+	_createClass(InitialSetupModal, [{
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			// save and falseify show_initial_setup
 		}
 	}, {
-		key: 'toggleMute',
-		value: function toggleMute(e) {
-			this.props.mopidyActions.setMute(!this.props.mute);
+		key: 'handleCancel',
+		value: function handleCancel(e) {
+			// falseify show_initial_setup
 		}
 	}, {
 		key: 'render',
@@ -63889,31 +63906,66 @@ var VolumeModal = function (_React$Component) {
 				'div',
 				null,
 				_react2.default.createElement(
-					'a',
-					{ className: 'toggle-mute', onClick: function onClick(e) {
-							return _this2.toggleMute(e);
-						} },
-					this.props.mute ? _react2.default.createElement(_reactFontawesome2.default, { className: 'muted', name: 'volume-off' }) : _react2.default.createElement(_reactFontawesome2.default, { name: 'volume-down' })
+					'h1',
+					null,
+					'Welcome to Iris'
 				),
 				_react2.default.createElement(
-					'div',
-					{ className: this.props.mute ? "slider vertical disabled" : "slider vertical", onClick: function onClick(e) {
-							return _this2.changeVolume(e);
+					'form',
+					{ onSubmit: function onSubmit(e) {
+							return _this2.handleSubmit(e);
 						} },
 					_react2.default.createElement(
 						'div',
-						{ className: 'track' },
-						_react2.default.createElement('div', { className: 'progress', style: { height: this.props.volume + '%' } })
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Username'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this2.setState({ username: e.target.value.replace(/\W/g, '') });
+								},
+								value: this.state.username }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'A non-unique string used to identify this client (no special characters)'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'actions centered-text' },
+						_react2.default.createElement(
+							'button',
+							{ className: 'large', onClick: function onClick(e) {
+									return _this2.handleCancel(e);
+								} },
+							'Skip'
+						),
+						_react2.default.createElement(
+							'button',
+							{ className: 'primary large', onClick: function onClick(e) {
+									return _this2.handleSubmit(e);
+								} },
+							'Save'
+						)
 					)
 				)
 			);
 		}
 	}]);
 
-	return VolumeModal;
+	return InitialSetupModal;
 }(_react2.default.Component);
 
-exports.default = VolumeModal;
+exports.default = InitialSetupModal;
 
 /***/ }),
 /* 415 */
@@ -64181,14 +64233,14 @@ var _class = function (_React$Component) {
 					{ className: 'actions centered-text' },
 					_react2.default.createElement(
 						'button',
-						{ onClick: function onClick(e) {
+						{ className: 'large', onClick: function onClick(e) {
 								return _this2.props.uiActions.closeModal();
 							} },
 						'Ignore'
 					),
 					_react2.default.createElement(
 						'button',
-						{ className: 'primary', onClick: function onClick(e) {
+						{ className: 'primary large', onClick: function onClick(e) {
 								return _this2.handleImport(e);
 							} },
 						'Import authorization'
@@ -68030,6 +68082,69 @@ var Settings = function (_React$Component) {
 							)
 						),
 						this.renderApplyButton()
+					),
+					_react2.default.createElement(
+						'h4',
+						{ className: 'underline' },
+						'Streaming'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field checkbox' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Enable'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'ssl',
+									checked: this.props.core.http_streaming_enabled,
+									onChange: function onChange(e) {
+										return _this3.props.coreActions.set({ http_streaming_enabled: !_this3.props.core.http_streaming_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Enable HTTP streaming',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Requires streaming service like Icecast2'
+									)
+								)
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Stream location'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this3.props.coreActions.set({ http_streaming_url: e.target.value });
+								},
+								value: this.props.core.http_streaming_url }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'The full URL to your stream endpoint'
+							)
+						)
 					),
 					_react2.default.createElement(
 						'h4',

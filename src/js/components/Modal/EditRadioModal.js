@@ -1,9 +1,9 @@
 
-import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 
-import Icon from '../Icon'
-import * as helpers from '../../helpers'
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class EditRadioModal extends React.Component{
 
@@ -214,8 +214,8 @@ export default class EditRadioModal extends React.Component{
 
 				<form>
 					<div className="actions centered-text">
-						{this.state.enabled ? <button className="destructive wide" onClick={e => this.handleStop(e)}>Stop</button> : null}
-						{this.state.enabled ? <button className="primary wide" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary wide" onClick={e => this.handleStart(e)}>Start</button>}
+						{this.state.enabled ? <button className="destructive large" onClick={e => this.handleStop(e)}>Stop</button> : null}
+						{this.state.enabled ? <button className="primary large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary large" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
 			</div>
