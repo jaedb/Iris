@@ -71,8 +71,8 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 
-				{this.props.http_streaming ? <audio className="http-streaming" autoPlay>
-					<source src={this.props.http_streaming} type="audio/mpeg" />
+				{this.props.http_streaming_enabled && this.props.play_state == 'playing' ? <audio id="http-streamer" autoPlay preload="none">
+					<source src={this.props.http_streaming_url} type={"audio/"+this.props.http_streaming_encoding} />
 				</audio> : null}
 				
 				<div className="current-track">
@@ -139,7 +139,9 @@ class PlaybackControls extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		http_streaming: (state.core.http_streaming_enabled && state.core.http_streaming_url ? state.core.http_streaming_url : ''),
+		http_streaming_enabled: state.core.http_streaming_enabled,
+		http_streaming_encoding: state.core.http_streaming_encoding,
+		http_streaming_url: state.core.http_streaming_url,
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
 		play_state: state.mopidy.play_state,

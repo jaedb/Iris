@@ -43,6 +43,7 @@ var initialState = {
 		users: {},
 		tracks: {},
 		http_streaming_enabled: false,
+		http_streaming_encoding: 'mpeg',
 		http_streaming_url: "http://"+window.location.hostname+":8000/mopidy"
 	},
 	ui: {
