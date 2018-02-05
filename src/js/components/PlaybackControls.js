@@ -13,6 +13,7 @@ import Thumbnail from './Thumbnail'
 import Icon from './Icon'
 
 import * as uiActions from '../services/ui/actions'
+import * as coreActions from '../services/core/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
 class PlaybackControls extends React.Component{
@@ -57,6 +58,18 @@ class PlaybackControls extends React.Component{
 		return button;
 	}
 
+	renderStreamingButton(){
+		var button = null;
+		if (this.props.http_streaming_enabled){
+			if (this.props.http_streaming_active){
+				button = <a className="control active has-tooltip" onClick={() => this.props.coreActions.set({http_streaming_active: false})}><FontAwesome name="rss" /><span className="tooltip">HTTP Streaming</span></a>
+			} else {
+				button = <a className="control has-tooltip" onClick={() => this.props.coreActions.set({http_streaming_active: true})}><FontAwesome name="rss" /><span className="tooltip">HTTP Streaming</span></a>;
+			}
+		}
+		return button;
+	}
+
 	handleThumbnailClick(e){
 		e.preventDefault();
 		this.props.uiActions.openModal('kiosk_mode');
@@ -71,7 +84,7 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 
-				{this.props.http_streaming_enabled && this.props.play_state == 'playing' ? <audio id="http-streamer" autoPlay preload="none">
+				{this.props.http_streaming_enabled && this.props.http_streaming_active && this.props.play_state == 'playing' ? <audio id="http-streamer" autoPlay preload="none">
 					<source src={this.props.http_streaming_url} type={"audio/"+this.props.http_streaming_encoding} />
 				</audio> : null}
 				
@@ -101,6 +114,7 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="settings">
+					{this.renderStreamingButton()}
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
@@ -139,6 +153,7 @@ class PlaybackControls extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		http_streaming_active: state.core.http_streaming_active,
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_encoding: state.core.http_streaming_encoding,
 		http_streaming_url: state.core.http_streaming_url,
@@ -155,6 +170,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
