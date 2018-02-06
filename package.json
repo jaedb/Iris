@@ -1,6 +1,10 @@
 {
   "name": "mopidy-iris",
+<<<<<<< HEAD
   "version": "3.12.3",
+=======
+  "version": "3.12.4",
+>>>>>>> develop
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",

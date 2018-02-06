@@ -35,7 +35,7 @@ class LibraryPlaylists extends React.Component{
 			this.props.mopidyActions.getLibraryPlaylists()
 		}
 
-		if (this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryPlaylists()
 		}
 	}
@@ -54,7 +54,7 @@ class LibraryPlaylists extends React.Component{
 			}			
 		}
 
-		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+		if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// We've just connected
 			if (!this.props.spotify_connected){
@@ -192,12 +192,15 @@ class LibraryPlaylists extends React.Component{
 			{
 				value: 'local',
 				label: 'Local'
-			},
-			{
+			}
+		];		
+
+		if (this.props.mopidy_uri_schemes.includes('spotify:')){
+			source_options.push({
 				value: 'spotify',
 				label: 'Spotify'
-			}
-		]
+			});
+		}
 
 		var view_options = [
 			{
@@ -208,7 +211,7 @@ class LibraryPlaylists extends React.Component{
 				value: 'list',
 				label: 'List'
 			}
-		]
+		];
 
 		var sort_options = [
 			{
@@ -231,7 +234,7 @@ class LibraryPlaylists extends React.Component{
 				value: 'source',
 				label: 'Source'
 			}
-		]
+		];
 
 		var options = (
 			<span>
@@ -267,6 +270,7 @@ const mapStateToProps = (state, ownProps) => {
 		slim_mode: state.ui.slim_mode,
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
+		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_playlists: state.mopidy.library_playlists,
 		mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
 		spotify_library_playlists: state.spotify.library_playlists,
