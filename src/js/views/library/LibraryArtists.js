@@ -33,7 +33,7 @@ class LibraryArtists extends React.Component{
 			this.props.mopidyActions.getLibraryArtists()
 		}
 
-		if (this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryArtists()
 		}
 	}
@@ -52,7 +52,7 @@ class LibraryArtists extends React.Component{
 			}			
 		}
 
-		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+		if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// We've just connected
 			if (!this.props.spotify_connected){
@@ -178,12 +178,15 @@ class LibraryArtists extends React.Component{
 			{
 				value: 'local',
 				label: 'Local'
-			},
-			{
+			}
+		];
+
+		if (this.props.mopidy_uri_schemes.includes('spotify:')){
+			source_options.push({
 				value: 'spotify',
 				label: 'Spotify'
-			}
-		]
+			});
+		}
 
 		var view_options = [
 			{
@@ -194,7 +197,7 @@ class LibraryArtists extends React.Component{
 				label: 'List',
 				value: 'list'
 			}
-		]
+		];
 
 		var sort_options = [
 			{
@@ -209,7 +212,7 @@ class LibraryArtists extends React.Component{
 				label: 'Popularity',
 				value: 'popularity'
 			}
-		]
+		];
 
 		var options = (
 			<span>
@@ -240,6 +243,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		spotify_connected: state.spotify.connected,
+		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),
 		spotify_library_artists: state.spotify.library_artists,
