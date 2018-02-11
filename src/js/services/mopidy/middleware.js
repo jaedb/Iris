@@ -1629,22 +1629,24 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         if (response.length <= 0) return
                                           
-                        var albums = []
-                        for(var i = 0; i < response.length; i++){
-                            var album = Object.assign(
-                                {},
-                                response[i].album,
-                                {
-                                    uri: response[i].album.uri,
-                                }
-                            );
-                            if (album){
-                                function getByURI(albumToCheck){
-                                    return album.uri == albumToCheck.uri
-                                }
-                                var existingAlbum = albums.find(getByURI);
-                                if (!existingAlbum){
-                                    albums.push(album);
+                        var albums = [];
+                        for (var i = 0; i < response.length; i++){
+                            if (response[i].album){
+                                var album = Object.assign(
+                                    {},
+                                    response[i].album,
+                                    {
+                                        uri: response[i].album.uri,
+                                    }
+                                );
+                                if (album){
+                                    function getByURI(albumToCheck){
+                                        return album.uri == albumToCheck.uri
+                                    }
+                                    var existingAlbum = albums.find(getByURI);
+                                    if (!existingAlbum){
+                                        albums.push(album);
+                                    }
                                 }
                             }
                         }
@@ -1652,7 +1654,7 @@ const MopidyMiddleware = (function(){
                             store.dispatch({
                                 type: 'ALBUMS_LOADED',
                                 albums: albums
-                            })
+                            });
                         }
 
                         var artist = Object.assign(
@@ -1668,7 +1670,7 @@ const MopidyMiddleware = (function(){
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
                             artist: artist 
-                        })
+                        });
 
                         // load artwork from LastFM
                         if (!artist.images || artist.images.length <= 0){
