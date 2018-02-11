@@ -12,6 +12,7 @@ var fs = require('fs');
 var copydir = require('copy-dir');
 
 var version = fs.readFileSync("VERSION.md", "utf8");
+version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');
 

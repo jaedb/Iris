@@ -56,7 +56,7 @@ class LibraryAlbums extends React.Component{
 			}			
 		}
 
-		if (newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
+		if (newProps.spotify_connected && newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// We've just connected
 			if (!this.props.spotify_connected){
@@ -207,12 +207,15 @@ class LibraryAlbums extends React.Component{
 			{
 				value: 'local',
 				label: 'Local'
-			},
-			{
+			}
+		];
+
+		if (this.props.mopidy_uri_schemes.includes('spotify:')){
+			source_options.push({
 				value: 'spotify',
 				label: 'Spotify'
-			}
-		]
+			});
+		}
 
 		var view_options = [
 			{
@@ -276,6 +279,7 @@ class LibraryAlbums extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
+		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,

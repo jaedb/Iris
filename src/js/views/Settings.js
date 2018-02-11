@@ -345,7 +345,7 @@ class Settings extends React.Component {
 									checked={this.props.core.http_streaming_enabled}
 									onChange={e => this.props.coreActions.set({http_streaming_enabled: !this.props.core.http_streaming_enabled})} />
 								<span className="label has-tooltip">
-									Enable HTTP streaming
+									Stream audio to this browser
 									<span className="tooltip">Requires streaming service like Icecast2</span>
 								</span>
 							</label>
