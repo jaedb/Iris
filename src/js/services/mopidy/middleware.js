@@ -1740,7 +1740,7 @@ const MopidyMiddleware = (function(){
                     var track = helpers.formatTracks(action.data);
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
+                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
                         store.dispatch(spotifyActions.getTrack(track.uri))
 
                     // Some other source, rely on Mopidy backends to do their work
@@ -1789,16 +1789,20 @@ const MopidyMiddleware = (function(){
                 instruct(socket, store, 'library.getImages', {uris: action.uris})
                     .then(response => {
 
-                        var records = []
+                        var records = [];
                         for (var uri in response){
                             if (response.hasOwnProperty(uri)){
                                 var images = response[uri];
                                 images = helpers.digestMopidyImages(store.getState().mopidy, images);
+
                                 if (images && images.length > 0){
                                     records.push({
                                         uri: uri,
                                         images: images
                                     });
+
+                                } else {
+                                    store.dispatch(lastfmActions.getImages(action.context, uri));
                                 }
                             }
                         }
