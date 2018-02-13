@@ -307,14 +307,14 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
+                        store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
                         break
                     }
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
+                    store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
                     break
 
                 // Not in index, and Spotify HTTP not enabled, so just play it as-is

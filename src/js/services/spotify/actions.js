@@ -1549,15 +1549,95 @@ export function getPlaylist(uri){
 }
 
 /**
+ * Get all library tracks
+ *
+ * Recursively get .next until we have all tracks
+ **/
+
+export function getLibraryTracksAndPlay(uri){
+    return (dispatch, getState) => {
+        dispatch(uiActions.startProcess(
+            'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
+            'Loading library tracks', 
+            {
+                uri: uri,
+                next: 'me/tracks'
+            }
+        ))
+    }
+}
+
+export function getLibraryTracksAndPlayProcessor(data){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, data.next)
+            .then(
+                response => {
+
+                    // Check to see if we've been cancelled
+                    if (getState().ui.processes['SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'] !== undefined){
+                        var processor = getState().ui.processes['SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR']
+
+                        if (processor.status == 'cancelling'){
+                            dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'))
+                            return false
+                        }
+                    }
+
+                    // Add on our new batch of loaded tracks
+                    var uris = [];
+                    var new_uris = [];
+                    for (var i = 0; i < response.items.length; i++){
+                        new_uris.push(response.items[i].track.uri)
+                    }
+                    if (data.uris){
+                        uris = [...data.uris, ...new_uris];
+                    } else {
+                        uris = new_uris;
+                    }
+
+                    // We got a next link, so we've got more work to be done
+                    if (response.next){
+                        dispatch(uiActions.updateProcess(
+                            'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR', 
+                            'Loading '+(response.total-uris.length)+' library tracks', 
+                            {
+                                next: response.next,
+                                total: response.total,
+                                remaining: response.total - uris.length
+                            }
+                        ))
+                        dispatch(uiActions.runProcess(
+                            'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR', 
+                            {
+                                next: response.next,
+                                uris: uris
+                            }
+                        ))
+                    } else {
+                        dispatch(mopidyActions.playURIs(uris, data.uri));
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'))
+                    }
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not load library tracks',
+                        error
+                    ));
+                }
+            );
+    }
+}
+
+/**
  * Get all tracks for a playlist
  *
  * Recursively get .next until we have all tracks
  **/
 
-export function getPlaylistTracksForPlaying(uri){
+export function getPlaylistTracksAndPlay(uri){
     return (dispatch, getState) => {
         dispatch(uiActions.startProcess(
-            'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR',
+            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR',
             'Loading playlist tracks', 
             {
                 uri: uri,
@@ -1567,18 +1647,18 @@ export function getPlaylistTracksForPlaying(uri){
     }
 }
 
-export function getPlaylistTracksForPlayingProcessor(data){
+export function getPlaylistTracksAndPlayProcessor(data){
     return (dispatch, getState) => {
         sendRequest(dispatch, getState, data.next)
             .then(
                 response => {
 
                     // Check to see if we've been cancelled
-                    if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'] !== undefined){
-                        var processor = getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR']
+                    if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'] !== undefined){
+                        var processor = getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR']
 
                         if (processor.status == 'cancelling'){
-                            dispatch(uiActions.processCancelled('SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'))
+                            dispatch(uiActions.processCancelled('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
                             return false
                         }
                     }
@@ -1598,7 +1678,7 @@ export function getPlaylistTracksForPlayingProcessor(data){
                     // We got a next link, so we've got more work to be done
                     if (response.next){
                         dispatch(uiActions.updateProcess(
-                            'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR', 
+                            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 
                             'Loading '+(response.total-uris.length)+' playlist tracks', 
                             {
                                 next: response.next,
@@ -1607,7 +1687,7 @@ export function getPlaylistTracksForPlayingProcessor(data){
                             }
                         ))
                         dispatch(uiActions.runProcess(
-                            'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR', 
+                            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 
                             {
                                 next: response.next,
                                 uris: uris
@@ -1615,7 +1695,7 @@ export function getPlaylistTracksForPlayingProcessor(data){
                         ))
                     } else {
                         dispatch(mopidyActions.playURIs(uris, data.uri))
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR'))
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
                     }
                 },
                 error => {

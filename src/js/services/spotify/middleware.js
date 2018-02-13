@@ -264,8 +264,12 @@ const SpotifyMiddleware = (function(){
                 store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data))
                 break
 
-            case 'SPOTIFY_GET_PLAYLIST_TRACKS_FOR_PLAYING_PROCESSOR':
-                store.dispatch(spotifyActions.getPlaylistTracksForPlayingProcessor(action.data))
+            case 'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR':
+                store.dispatch(spotifyActions.getPlaylistTracksAndPlayProcessor(action.data))
+                break
+
+            case 'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR':
+                store.dispatch(spotifyActions.getLibraryTracksAndPlayProcessor(action.data))
                 break
 
             case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
