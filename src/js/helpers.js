@@ -471,14 +471,22 @@ export let uriType = function(uri){
     	return 'playlist'
     }
 
+    if (exploded[0] == 'iris'){
+    	switch (exploded[1]){
+	    	case 'search':
+	    	case 'discover':
+	    	case 'browse':
+	    		return exploded[1];
+	    		break;
+	    }
+    }
+
     switch (exploded[1]){
     	case 'track':
     	case 'artist':
     	case 'album':
     	case 'playlist':
-    	case 'search':
     	case 'genre':
-    	case 'discover':
     		return exploded[1]
     		break
 

@@ -357,7 +357,8 @@ class Search extends React.Component{
 				<Header
 					icon="search" 
 					options={options} 
-					uiActions={this.props.uiActions} />
+					uiActions={this.props.uiActions}
+				/>
 
 				<SearchForm 
 					query={(this.props.params.query ? this.props.params.query : '')}

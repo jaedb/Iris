@@ -3,17 +3,17 @@
 
 	.search-form {
 		position: absolute;
-		top: 40px;
+		top: 30px;
 		left: 90px;
 		right: 250px;
 
 		input {
 			@include feature_font();
-			padding: 0;
+			padding: 6px 0 4px 0;
 			width: 100%;
 			font-size: 3rem;
 			font-weight: 700;
-			height: 3.1rem;
+			height: 4rem;
 			background: transparent;
 			border-bottom: 2px solid $grey;
 			border-radius: 0;
@@ -55,14 +55,20 @@
 
 	@include responsive($bp_medium){
 
+		header {
+			.icon {
+				margin-top: 8px;
+			}
+		}
+
 		.search-form {
-			top: 18px;
-			left: 50px;
+			top: 10px;
+			left: 40px;
 			right: 60px;
 
 			input {
 				font-size: 1.8rem;
-				height: 1.8rem;
+				height: 2.5rem;
 			}
 		}
 

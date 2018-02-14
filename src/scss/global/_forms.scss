@@ -247,6 +247,10 @@ input[type="submit"] {
 
 		.input {
 			padding-top: 4px;
+
+			label:not(:last-child){
+				padding-right: 14px;
+			}
 		}
 
 		.label {
@@ -380,13 +384,7 @@ input[type="submit"] {
 			width: auto;
 
 			.text {
-				padding: 0 0 0 20px;
-			}
-		}
-
-		&.checkbox {
-			.input {
-				padding: 0 0 0 20px;
+				padding: 0 20px 0 0;
 			}
 		}
 	}

@@ -217,12 +217,21 @@ export default class Track extends React.Component{
 		} else if (this.props.context == 'queue'){
 
 			if (track.added_from && track.added_by){
-				var type = (track.added_from ? helpers.uriType(track.added_from) : null)
-				if (type == 'discover'){
-					var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',track.added_from)}>discover</URILink>
-				} else {
-					var link = <URILink type={type} uri={track.added_from}>{type}</URILink>
+				var type = (track.added_from ? helpers.uriType(track.added_from) : null);
+
+				switch (type){
+					case "discover":
+						var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',track.added_from)}>discover</URILink>
+						break;
+
+					case "browse":
+						var link = <URILink type="browse" uri={track.added_from.replace("iris:browse:","")}>browse</URILink>
+						break;
+
+					default:
+						var link = <URILink type={type} uri={track.added_from}>{type}{track.added_from}</URILink>;
 				}
+
 				var added = <span>{track.added_by} <span className="grey-text"> (from {link})</span></span>
 
 			} else if (track.added_by){

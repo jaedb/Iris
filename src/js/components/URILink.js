@@ -21,8 +21,7 @@ export default class URILink extends React.Component{
 			uri = encodeURIComponent(uri);
 		}
 
-		switch (this.props.type){
-			
+		switch (this.props.type){			
 			case 'playlist':
 				to = global.baseURL+'playlist/'+uri;
 				break;
@@ -43,6 +42,10 @@ export default class URILink extends React.Component{
 				to = global.baseURL+'user/'+uri;
 				break;
 
+			case 'browse':
+				to = global.baseURL+'library/browse/'+uri;
+				break;
+
 			case 'recommendations':
 				to = global.baseURL+'discover/recommendations/'+uri;
 				break;
@@ -55,13 +58,21 @@ export default class URILink extends React.Component{
 				to = null;
 		}
 
-		return (
-			<Link 
-				className={this.props.className ? this.props.className : null} 
-				to={to}
-				onContextMenu={e => this.handleContextMenu(e)}>
+		if (uri){
+			return (
+				<Link 
+					className={this.props.className ? this.props.className : null} 
+					to={to}
+					onContextMenu={e => this.handleContextMenu(e)}>
+						{this.props.children}
+				</Link>
+			);
+		} else {
+			return (
+				<span className={this.props.className ? this.props.className : null}>
 					{this.props.children}
-			</Link>
-		);
+				</span>
+			);
+		}
 	}
 }

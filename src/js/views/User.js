@@ -32,7 +32,7 @@ class User extends React.Component{
 	}
 
 	loadUser(props = this.props){
-		if (!props.user){
+		if (!props.user || props.user.playlists_uris === undefined){
 			this.props.spotifyActions.getUser(props.params.uri, true);
 			this.props.spotifyActions.following(props.params.uri);
 		}

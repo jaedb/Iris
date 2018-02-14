@@ -52,7 +52,7 @@ class LibraryBrowse extends React.Component{
 		var tracks = this.arrangeDirectory().tracks;
 		var tracks_uris = helpers.arrayOf('uri',tracks);
 
-		this.props.mopidyActions.playURIs(tracks_uris, this.props.params.uri);
+		this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:"+this.props.params.uri);
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -131,7 +131,8 @@ class LibraryBrowse extends React.Component{
 						link_prefix={global.baseURL+'library/browse/'}
 					/>
 					<TrackList 
-						tracks={items.tracks} 
+						tracks={items.tracks}
+						uri={"iris:browse:"+this.props.params.uri}
 						className="library-local-track-list" 
 						noheader />
 				</section>

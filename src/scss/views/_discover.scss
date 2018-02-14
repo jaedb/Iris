@@ -144,6 +144,11 @@
 					&:active {
 						border-color: $blue;
 					}
+
+					&:not(*:root){
+						padding-top: 16px;
+						padding-bottom: 11px;
+					}
 				}
 
 				&:after {
