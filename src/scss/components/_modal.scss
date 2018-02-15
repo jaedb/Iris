@@ -29,16 +29,12 @@
 			cursor: pointer;
 			padding: 20px;
 
-			img {
-				width: 30px;
-			}
-
 			&:hover {
 				opacity: 1;
 			}
 
-			.fa {
-				font-size: 24px;
+			.icon svg {
+				height: 35px;
 			}
 		}
 	}

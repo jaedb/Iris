@@ -223,6 +223,12 @@ input[type="submit"] {
 		display: inline-block;
 	}
 
+	.label {
+		.tooltip {
+			left: -4px;
+		}
+	}
+
 	.input {
 		width: 80%;
 		float: left;

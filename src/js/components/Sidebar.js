@@ -91,8 +91,8 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="cog" />
 								Settings
-								{ this.props.test_mode ? <FontAwesome name="info-circle" className="orange-text pull-right" />: null}
-								{ !this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null }
+								{this.props.test_mode ? <span className="has-tooltip right-tooltip pull-right"><FontAwesome name="info-circle" className="orange-text" /><span className="tooltip">Test mode active</span></span>: null}
+								{!this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <FontAwesome name="exclamation-triangle" className="red-text pull-right" /> : null}
 							</Link>
 						</section>
 

@@ -17,13 +17,13 @@ export default class Icon extends React.Component{
 
 	componentWillReceiveProps(newProps){
 		if (this.props.name !== newProps.name){
-			this.load();
+			this.load(newProps.name);
 		}
 	}
 
-	load(){		
+	load(name = this.props.name){		
 		var self = this;
-		var url = 'assets/icons/'+this.props.name+'.svg';
+		var url = 'assets/icons/'+name+'.svg';
 		var xmlHttp = new XMLHttpRequest();
 
 		xmlHttp.onreadystatechange = function(){ 
