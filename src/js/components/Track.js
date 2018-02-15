@@ -229,7 +229,7 @@ export default class Track extends React.Component{
 						break;
 
 					default:
-						var link = <URILink type={type} uri={track.added_from}>{type}{track.added_from}</URILink>;
+						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
 
 				var added = <span>{track.added_by} <span className="grey-text"> (from {link})</span></span>
