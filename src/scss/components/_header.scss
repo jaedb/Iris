@@ -9,13 +9,15 @@ main {
 			display: inline-block;
 		}
 
-		.icon {
-			@include invert();
+		.header-icon {
 			display: inline-block;
 			padding-right: 14px;
-			height: 2.6rem;
 			vertical-align: bottom;
 			margin-bottom: 8px;
+
+			svg {
+				height: 2.6rem;
+			}
 		}
 
 		.options {

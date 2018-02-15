@@ -92,22 +92,25 @@
 		opacity: 0.8;
 
 		.icon {
-			width: 12px;
-			height: 12px;
-			@include invert();
+			svg {
+				height: 12px;
+			}
 		}
 
 		&.play {
 			margin-bottom: -6px;
 
 			.icon {
-				width: 24px;
-				height: 24px;
+				svg {
+					height: 24px;
+				}
 			}
 		}
 
 		&.active {
-			color: $turquoise !important;
+			svg {
+				fill: $turquoise !important;
+			}
 		}
 
 		&:hover {
