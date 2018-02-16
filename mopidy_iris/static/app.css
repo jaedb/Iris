@@ -3196,6 +3196,8 @@ input[type="submit"] {
     float: left; }
   .field label {
     display: inline-block; }
+  .field .label .tooltip {
+    left: -4px; }
   .field .input {
     width: 80%;
     float: left; }
@@ -3664,12 +3666,10 @@ input[type="submit"] {
       opacity: 0.5;
       cursor: pointer;
       padding: 20px; }
-      .modal .controls .control img {
-        width: 30px; }
       .modal .controls .control:hover {
         opacity: 1; }
-      .modal .controls .control .fa {
-        font-size: 24px; }
+      .modal .controls .control .icon svg {
+        height: 35px; }
   .modal .content {
     padding: 80px 25%;
     margin: 0 auto;
@@ -4143,17 +4143,20 @@ input[type="submit"] {
     .playback-controls .control .icon svg {
       height: 12px; }
     .playback-controls .control.play {
-      margin-bottom: -6px; }
+      margin-bottom: -4px; }
       .playback-controls .control.play .icon svg {
         height: 24px; }
-    .playback-controls .control.active svg {
-      fill: #08d58f !important; }
+    .playback-controls .control.active {
+      color: #08d58f !important; }
+      .playback-controls .control.active svg {
+        fill: #08d58f !important; }
     .playback-controls .control:hover {
       opacity: 1; }
   .playback-controls section {
     position: absolute;
     bottom: 8px; }
     .playback-controls section.playback {
+      bottom: 6px;
       left: 10px;
       width: 125px;
       text-align: center; }
@@ -4339,7 +4342,7 @@ aside {
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
       aside nav a .icon {
-        padding-right: 12px;
+        padding-right: 10px;
         vertical-align: top;
         margin-top: 0; }
         aside nav a .icon svg {
@@ -5347,21 +5350,21 @@ main header {
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    opacity: 0;
+    display: inline-block;
     position: absolute;
-    pointer-events: none;
-    background: rgba(0, 0, 0, 0.88);
-    display: block;
-    max-width: 200px;
-    padding: 5px 8px;
-    color: #FFFFFF;
-    font-size: 11px;
-    line-height: 12px;
     bottom: 37px;
     left: 1px;
-    z-index: 97;
+    right: auto;
+    opacity: 0;
+    padding: 8px 10px 6px;
     border-radius: 3px;
-    white-space: wrap; }
+    pointer-events: none;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 11px;
+    z-index: 97;
+    white-space: nowrap;
+    text-align: left; }
     .has-tooltip .tooltip:first-letter {
       text-transform: uppercase; }
     .has-tooltip .tooltip:after {
@@ -5369,7 +5372,7 @@ main header {
       display: block;
       width: 6px;
       height: 6px;
-      background: rgba(0, 0, 0, 0.88);
+      background: #FFFFFF;
       -ms-transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
@@ -5379,13 +5382,19 @@ main header {
   .has-tooltip:hover .tooltip {
     opacity: 1;
     bottom: 35px; }
-  .has-tooltip.info .fa {
-    opacity: 0.3; }
+  .has-tooltip.right-tooltip .tooltip {
+    left: auto;
+    right: -5px; }
+    .has-tooltip.right-tooltip .tooltip:after {
+      right: 9px;
+      left: auto; }
   .has-tooltip.large-tooltip .tooltip {
     padding: 8px 12px;
     font-size: 12px;
     line-height: 14px;
-    bottom: 50px; }
+    bottom: 50px;
+    white-space: wrap;
+    max-width: 200px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
@@ -6103,28 +6112,26 @@ main .track-view {
       .settings-view .services .service .icon .fa {
         font-size: 16px; }
 
-.settings-view .field.current-user .text {
-  padding: 14px 14px 14px 0px; }
-  .settings-view .field.current-user .text .user {
-    border: 0;
-    position: relative; }
-    .settings-view .field.current-user .text .user .thumbnail {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      position: absolute;
-      display: block;
-      top: -14px;
-      left: 0;
-      max-width: 40px;
-      border: 2px solid transparent;
-      border-radius: 50%; }
-    .settings-view .field.current-user .text .user .user-name {
-      padding: 2px 14px 2px 55px; }
-    .settings-view .field.current-user .text .user[href]:hover .thumbnail {
-      cursor: pointer;
-      border-color: #08d58f; }
+.settings-view .field.current-user .text .user {
+  border: 0;
+  position: relative; }
+  .settings-view .field.current-user .text .user .thumbnail {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    position: absolute;
+    display: block;
+    top: -14px;
+    left: 0;
+    max-width: 40px;
+    border: 2px solid transparent;
+    border-radius: 50%; }
+  .settings-view .field.current-user .text .user .user-name {
+    padding: 2px 14px 2px 55px; }
+  .settings-view .field.current-user .text .user[href]:hover .thumbnail {
+    cursor: pointer;
+    border-color: #08d58f; }
 
 .settings-view .field.pusher-connections .connection.me {
   color: #08d58f; }

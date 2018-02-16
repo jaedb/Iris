@@ -98,7 +98,7 @@
 		}
 
 		&.play {
-			margin-bottom: -6px;
+			margin-bottom: -4px;
 
 			.icon {
 				svg {
@@ -108,6 +108,8 @@
 		}
 
 		&.active {
+			color: $turquoise !important;
+			
 			svg {
 				fill: $turquoise !important;
 			}
@@ -123,6 +125,7 @@
 		bottom: 8px;
 
 		&.playback {
+			bottom: 6px;
 			left: 10px;
 			width: 125px;
 			text-align: center;

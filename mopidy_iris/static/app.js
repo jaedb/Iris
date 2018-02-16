@@ -4586,7 +4586,7 @@ var Icon = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
 
 		_this.state = {
-			data: null
+			data: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve"></svg>'
 		};
 		return _this;
 	}
@@ -4600,14 +4600,16 @@ var Icon = function (_React$Component) {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(newProps) {
 			if (this.props.name !== newProps.name) {
-				this.load();
+				this.load(newProps.name);
 			}
 		}
 	}, {
 		key: 'load',
 		value: function load() {
+			var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.name;
+
 			var self = this;
-			var url = 'assets/icons/' + this.props.name + '.svg';
+			var url = 'assets/icons/' + name + '.svg';
 			var xmlHttp = new XMLHttpRequest();
 
 			xmlHttp.onreadystatechange = function () {
@@ -34273,8 +34275,7 @@ var Track = function (_React$Component) {
 							var link = _react2.default.createElement(
 								_URILink2.default,
 								{ type: type, uri: track.added_from },
-								type,
-								track.added_from
+								type
 							);
 					}
 
@@ -35113,7 +35114,7 @@ module.exports = exports['default'];
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($, global) {
+/* WEBPACK VAR INJECTION */(function(global) {
 
 var _react = __webpack_require__(1);
 
@@ -35240,8 +35241,6 @@ _reactGa2.default.initialize('UA-64701652-3');
 function handleUpdate() {
 	_reactGa2.default.set({ page: window.location.hash });
 	_reactGa2.default.pageview(window.location.hash);
-	$(window).scrollTop(0);
-	_bootstrap2.default.dispatch({ type: 'HIDE_CONTEXT_MENU' });
 }
 
 global.baseURL = '/';
@@ -35280,7 +35279,7 @@ _reactDom2.default.render(_react2.default.createElement(
 		)
 	)
 ), document.getElementById('app'));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 179 */
@@ -58501,7 +58500,7 @@ exports.default = localstorageMiddleware;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
+/* WEBPACK VAR INJECTION */(function(global, $) {
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -58653,6 +58652,20 @@ var App = function (_React$Component) {
    if (this.props.show_initial_setup){
    	this.props.uiActions.openModal('initial_setup');
    }*/
+		}
+	}, {
+		key: 'componentDidUpdate',
+		value: function componentDidUpdate(prevProps) {
+
+			// We've navigated to a new location
+			if (this.props.location !== prevProps.location) {
+
+				// Close context menu
+				this.props.uiActions.hideContextMenu();
+
+				console.log(prevProps.location);
+				$(window).scrollTop(0);
+			}
 		}
 	}, {
 		key: 'shouldTriggerShortcut',
@@ -58919,7 +58932,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13), __webpack_require__(23)))
 
 /***/ }),
 /* 371 */
@@ -59106,7 +59119,16 @@ var Sidebar = function (_React$Component) {
 								{ className: this.linkClassName('settings'), to: global.baseURL + "settings" },
 								_react2.default.createElement(_Icon2.default, { name: 'cog' }),
 								'Settings',
-								this.props.test_mode ? _react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle', className: 'orange-text pull-right' }) : null,
+								this.props.test_mode ? _react2.default.createElement(
+									'span',
+									{ className: 'has-tooltip right-tooltip pull-right' },
+									_react2.default.createElement(_reactFontawesome2.default, { name: 'info-circle', className: 'orange-text' }),
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Test mode active'
+									)
+								) : null,
 								!this.props.mopidy_connected || !this.props.spotify_connected && this.props.spotify_enabled || !this.props.pusher_connected ? _react2.default.createElement(_reactFontawesome2.default, { name: 'exclamation-triangle', className: 'red-text pull-right' }) : null
 							)
 						)
@@ -67231,7 +67253,7 @@ var User = function (_React$Component) {
 			if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'body-loader' },
+					{ className: 'body-loader loading' },
 					_react2.default.createElement('div', { className: 'loader' })
 				);
 			}

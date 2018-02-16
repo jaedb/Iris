@@ -81,6 +81,19 @@ class App extends React.Component{
 		}*/
 	}
 
+	componentDidUpdate(prevProps){
+
+		// We've navigated to a new location
+	    if (this.props.location !== prevProps.location) {
+
+			// Close context menu
+			this.props.uiActions.hideContextMenu();
+		
+			console.log(prevProps.location);
+			$(window).scrollTop(0)
+		}
+	}
+
 	shouldTriggerShortcut(e){
 
 		// When we're focussed on certian elements, don't fire any shortcuts
