@@ -57,7 +57,7 @@ aside{
 			line-height: 18px;
 
 			.icon {
-				padding-right: 10px;
+				padding-right: 6px;
 				vertical-align: top;
 				margin-top: 0;
 
@@ -138,6 +138,16 @@ aside{
 
 		.close {
 			display: block;
+		}
+
+		nav {
+			section {
+				padding-bottom: 10px;
+
+				title {
+					padding-bottom: 2px;
+				}
+			}
 		}
 	}
 }

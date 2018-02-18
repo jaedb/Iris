@@ -235,8 +235,9 @@
 						margin-bottom: 0;
 
 						.icon {
-							width: 12px;
-							height: 12px;
+							svg {
+								height: 12px;
+							}
 						}
 					}
 					&.previous {

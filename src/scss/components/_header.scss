@@ -67,10 +67,13 @@ main {
 			margin-bottom: -10px;
 
 			.icon {
-				height: 1.2rem;
-				margin-bottom: 5px;
-				padding-right: 10px;
+				margin-bottom: 6px;
+				padding-right: 6px;
 				margin-left: 10px;
+
+				svg {
+					height: 1.2rem;
+				}
 			}
 
 			h1 {
