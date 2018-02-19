@@ -3196,6 +3196,8 @@ input[type="submit"] {
     float: left; }
   .field label {
     display: inline-block; }
+  .field .label .tooltip {
+    left: -4px; }
   .field .input {
     width: 80%;
     float: left; }
@@ -3210,6 +3212,8 @@ input[type="submit"] {
     display: none; }
   .field.radio .input, .field.checkbox .input {
     padding-top: 4px; }
+    .field.radio .input label:not(:last-child), .field.checkbox .input label:not(:last-child) {
+      padding-right: 14px; }
   .field.radio .label, .field.checkbox .label {
     display: inline-block;
     float: none;
@@ -3295,9 +3299,7 @@ input[type="submit"] {
     float: none;
     width: auto; }
     .field .input .text {
-      padding: 0 0 0 20px; }
-  .field.checkbox .input {
-    padding: 0 0 0 20px; } }
+      padding: 0 20px 0 0; } }
 
 @media (max-width: 800px) {
   body.context-menu-open .body {
@@ -3664,12 +3666,10 @@ input[type="submit"] {
       opacity: 0.5;
       cursor: pointer;
       padding: 20px; }
-      .modal .controls .control img {
-        width: 30px; }
       .modal .controls .control:hover {
         opacity: 1; }
-      .modal .controls .control .fa {
-        font-size: 24px; }
+      .modal .controls .control .icon svg {
+        height: 35px; }
   .modal .content {
     padding: 80px 25%;
     margin: 0 auto;
@@ -4007,10 +4007,13 @@ input[type="submit"] {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
 
-.icon.white {
-  -webkit-filter: invert(1);
-  -moz-filter: invert(1);
-  filter: invert(1); }
+.icon {
+  margin-top: -0.2em;
+  vertical-align: middle; }
+  .icon svg {
+    height: 1.4em;
+    fill: #FFFFFF;
+    vertical-align: middle; }
 
 .slider {
   position: relative;
@@ -4137,24 +4140,23 @@ input[type="submit"] {
     display: inline-block;
     vertical-align: bottom;
     opacity: 0.8; }
-    .playback-controls .control .icon {
-      width: 12px;
-      height: 12px;
-      -webkit-filter: invert(1);
-      filter: invert(1); }
+    .playback-controls .control .icon svg {
+      height: 12px; }
     .playback-controls .control.play {
-      margin-bottom: -6px; }
-      .playback-controls .control.play .icon {
-        width: 24px;
+      margin-bottom: -4px; }
+      .playback-controls .control.play .icon svg {
         height: 24px; }
     .playback-controls .control.active {
       color: #08d58f !important; }
+      .playback-controls .control.active svg {
+        fill: #08d58f !important; }
     .playback-controls .control:hover {
       opacity: 1; }
   .playback-controls section {
     position: absolute;
     bottom: 8px; }
     .playback-controls section.playback {
+      bottom: 6px;
       left: 10px;
       width: 125px;
       text-align: center; }
@@ -4224,8 +4226,7 @@ input[type="submit"] {
       width: 60px; }
       .playback-controls section.playback .control.play {
         margin-bottom: 0; }
-        .playback-controls section.playback .control.play .icon {
-          width: 12px;
+        .playback-controls section.playback .control.play .icon svg {
           height: 12px; }
       .playback-controls section.playback .control.previous {
         display: none; }
@@ -4340,12 +4341,11 @@ aside {
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
       aside nav a .icon {
-        -webkit-filter: invert(1);
-        filter: invert(1);
-        height: 14px;
-        padding-right: 12px;
+        padding-right: 6px;
         vertical-align: top;
         margin-top: 0; }
+        aside nav a .icon svg {
+          height: 14px; }
       aside nav a.active {
         background: #08d58f;
         color: #FFFFFF; }
@@ -4396,7 +4396,11 @@ aside {
       aside .thumbnail {
         display: none; }
       aside .close {
-        display: block; } }
+        display: block; }
+      aside nav section {
+        padding-bottom: 10px; }
+        aside nav section title {
+          padding-bottom: 2px; } }
 
 .list .list-item {
   -webkit-touch-callout: none;
@@ -4949,14 +4953,13 @@ main header {
   margin-bottom: -40px; }
   main header h1 {
     display: inline-block; }
-  main header .icon {
-    -webkit-filter: invert(1);
-    filter: invert(1);
+  main header .header-icon {
     display: inline-block;
     padding-right: 14px;
-    height: 2.6rem;
     vertical-align: bottom;
     margin-bottom: 8px; }
+    main header .header-icon svg {
+      height: 2.6rem; }
   main header .options {
     position: absolute;
     top: 2.6rem;
@@ -4994,10 +4997,11 @@ main header {
       padding: 10px 10px 10px 0;
       margin-bottom: -10px; }
       main header .icon {
-        height: 1.2rem;
-        margin-bottom: 5px;
-        padding-right: 10px;
+        margin-bottom: 6px;
+        padding-right: 6px;
         margin-left: 10px; }
+        main header .icon svg {
+          height: 1.2rem; }
       main header h1 {
         vertical-align: top;
         padding-top: 6px; }
@@ -5350,21 +5354,21 @@ main header {
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    opacity: 0;
+    display: inline-block;
     position: absolute;
-    pointer-events: none;
-    background: rgba(0, 0, 0, 0.88);
-    display: block;
-    max-width: 200px;
-    padding: 5px 8px;
-    color: #FFFFFF;
-    font-size: 11px;
-    line-height: 12px;
     bottom: 37px;
     left: 1px;
-    z-index: 97;
+    right: auto;
+    opacity: 0;
+    padding: 8px 10px 6px;
     border-radius: 3px;
-    white-space: wrap; }
+    pointer-events: none;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 11px;
+    z-index: 97;
+    white-space: nowrap;
+    text-align: left; }
     .has-tooltip .tooltip:first-letter {
       text-transform: uppercase; }
     .has-tooltip .tooltip:after {
@@ -5372,7 +5376,7 @@ main header {
       display: block;
       width: 6px;
       height: 6px;
-      background: rgba(0, 0, 0, 0.88);
+      background: #FFFFFF;
       -ms-transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
@@ -5382,13 +5386,19 @@ main header {
   .has-tooltip:hover .tooltip {
     opacity: 1;
     bottom: 35px; }
-  .has-tooltip.info .fa {
-    opacity: 0.3; }
+  .has-tooltip.right-tooltip .tooltip {
+    left: auto;
+    right: -5px; }
+    .has-tooltip.right-tooltip .tooltip:after {
+      right: 9px;
+      left: auto; }
   .has-tooltip.large-tooltip .tooltip {
     padding: 8px 12px;
     font-size: 12px;
     line-height: 14px;
-    bottom: 50px; }
+    bottom: 50px;
+    white-space: wrap;
+    max-width: 200px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
@@ -5732,18 +5742,18 @@ main .track-view {
 
 .search-view .search-form {
   position: absolute;
-  top: 40px;
+  top: 30px;
   left: 90px;
   right: 250px; }
   .search-view .search-form input {
     font-family: "Overpass";
     letter-spacing: -0.04em;
     font-weight: 600;
-    padding: 0;
+    padding: 6px 0 4px 0;
     width: 100%;
     font-size: 3rem;
     font-weight: 700;
-    height: 3.1rem;
+    height: 4rem;
     background: transparent;
     border-bottom: 2px solid #383734;
     border-radius: 0;
@@ -5778,13 +5788,15 @@ main .track-view {
         display: none; }
 
 @media (max-width: 800px) {
+  .search-view header .icon {
+    margin-top: 8px; }
   .search-view .search-form {
-    top: 18px;
-    left: 50px;
+    top: 10px;
+    left: 40px;
     right: 60px; }
     .search-view .search-form input {
       font-size: 1.8rem;
-      height: 1.8rem; }
+      height: 2.5rem; }
   .search-view .search-result-sections {
     padding: 10px 10px 0; }
     .search-view .search-result-sections section {
@@ -5935,6 +5947,9 @@ main .track-view {
         border-bottom-right-radius: 0; }
         .discover-view .actions .autocomplete-field .input input:focus, .discover-view .actions .autocomplete-field .input input:active {
           border-color: #32b5f2; }
+        .discover-view .actions .autocomplete-field .input input:not(*:root) {
+          padding-top: 16px;
+          padding-bottom: 11px; }
       .discover-view .actions .autocomplete-field .input:after {
         background: #32b5f2; }
     .discover-view .actions .autocomplete-field .results {
@@ -6101,28 +6116,26 @@ main .track-view {
       .settings-view .services .service .icon .fa {
         font-size: 16px; }
 
-.settings-view .field.current-user .text {
-  padding: 14px 14px 14px 0px; }
-  .settings-view .field.current-user .text .user {
-    border: 0;
-    position: relative; }
-    .settings-view .field.current-user .text .user .thumbnail {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      position: absolute;
-      display: block;
-      top: -14px;
-      left: 0;
-      max-width: 40px;
-      border: 2px solid transparent;
-      border-radius: 50%; }
-    .settings-view .field.current-user .text .user .user-name {
-      padding: 2px 14px 2px 55px; }
-    .settings-view .field.current-user .text .user[href]:hover .thumbnail {
-      cursor: pointer;
-      border-color: #08d58f; }
+.settings-view .field.current-user .text .user {
+  border: 0;
+  position: relative; }
+  .settings-view .field.current-user .text .user .thumbnail {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    position: absolute;
+    display: block;
+    top: -14px;
+    left: 0;
+    max-width: 40px;
+    border: 2px solid transparent;
+    border-radius: 50%; }
+  .settings-view .field.current-user .text .user .user-name {
+    padding: 2px 14px 2px 55px; }
+  .settings-view .field.current-user .text .user[href]:hover .thumbnail {
+    cursor: pointer;
+    border-color: #08d58f; }
 
 .settings-view .field.pusher-connections .connection.me {
   color: #08d58f; }
@@ -6149,6 +6162,9 @@ main .track-view {
     width: auto;
     display: inline-block;
     padding-right: 10px; }
+  .settings-view .field.current-user .text {
+    padding-top: 10px;
+    padding-bottom: 10px; }
   .settings-view section {
     padding: 20px; } }
 

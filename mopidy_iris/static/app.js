@@ -1137,7 +1137,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -1154,6 +1154,7 @@ exports.dragStart = dragStart;
 exports.dragActive = dragActive;
 exports.dragEnd = dragEnd;
 exports.set = set;
+exports.getIcon = getIcon;
 exports.openModal = openModal;
 exports.closeModal = closeModal;
 exports.createBrowserNotification = createBrowserNotification;
@@ -1284,6 +1285,30 @@ function set(data) {
     return {
         type: 'UI_SET',
         data: data
+    };
+}
+
+function getIcon(name) {
+    return function (dispatch, getState) {
+        var config = {
+            method: 'GET',
+            timeout: 15000,
+            url: 'assets/icons/' + name + '.svg'
+        };
+        $.ajax(config).then(function (response) {
+            dispatch({
+                type: 'ICON_LOADED',
+                key: name,
+                icon: new XMLSerializer().serializeToString(response)
+            });
+        }, function (xhr, status, error) {
+            dispatch(handleException('Could not load ' + name + ' icon', {
+                config: config,
+                xhr: xhr,
+                status: status,
+                error: error
+            }));
+        });
     };
 }
 
@@ -1431,6 +1456,7 @@ function processFinished(key) {
         key: key
     };
 }
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)))
 
 /***/ }),
 /* 6 */
@@ -4569,6 +4595,20 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(3);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(5);
+
+var uiActions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4583,42 +4623,22 @@ var Icon = function (_React$Component) {
 	function Icon(props) {
 		_classCallCheck(this, Icon);
 
-		var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
-
-		_this.state = {
-			data: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve"></svg>'
-		};
-		return _this;
+		return _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
 	}
 
 	_createClass(Icon, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.load();
+			if (!this.props.icons[this.props.name]) {
+				this.props.uiActions.getIcon(this.props.name);
+			}
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(newProps) {
-			if (this.props.name !== newProps.name) {
-				this.load(newProps.name);
+			if (this.props.name !== newProps.name && !newProps.icons[newProps.name]) {
+				this.props.uiActions.getIcon(newProps.name);
 			}
-		}
-	}, {
-		key: 'load',
-		value: function load() {
-			var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.name;
-
-			var self = this;
-			var url = 'assets/icons/' + name + '.svg';
-			var xmlHttp = new XMLHttpRequest();
-
-			xmlHttp.onreadystatechange = function () {
-				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-					self.setState({ data: xmlHttp.responseText });
-				}
-			};
-			xmlHttp.open("GET", url, true);
-			xmlHttp.send(null);
 		}
 	}, {
 		key: 'render',
@@ -4628,14 +4648,32 @@ var Icon = function (_React$Component) {
 				className += ' ' + this.props.className;
 			}
 
-			return _react2.default.createElement('span', { className: className, dangerouslySetInnerHTML: { __html: this.state.data } });
+			var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve"></svg>';
+
+			if (this.props.icons[this.props.name]) {
+				svg = this.props.icons[this.props.name];
+			}
+
+			return _react2.default.createElement('span', { className: className, dangerouslySetInnerHTML: { __html: svg } });
 		}
 	}]);
 
 	return Icon;
 }(_react2.default.Component);
 
-exports.default = Icon;
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		icons: state.ui.icons ? state.ui.icons : {}
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Icon);
 
 /***/ }),
 /* 21 */
@@ -51079,6 +51117,11 @@ function reducer() {
         case 'SET_SELECTED_TRACKS':
             return Object.assign({}, ui, { selected_tracks: Object.assign([], action.keys) });
 
+        case 'ICON_LOADED':
+            var icons = Object.assign({}, ui.icons);
+            icons[action.key] = action.icon;
+            return Object.assign({}, ui, { icons: icons });
+
         /**
          * Context menu
          **/
@@ -58663,7 +58706,10 @@ var App = function (_React$Component) {
 				// Close context menu
 				this.props.uiActions.hideContextMenu();
 
-				console.log(prevProps.location);
+				// Restore scroll to top
+				// TODO: Detect if we've gone BACK, and then restore to previous
+				// scroll position. We'll need to keep a running history of locations
+				// and scroll positions, which may be performance-hindering
 				$(window).scrollTop(0);
 			}
 		}
