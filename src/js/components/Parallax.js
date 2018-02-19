@@ -166,21 +166,21 @@ export default class Parallax extends React.Component{
 			image.y = ((this.state.canvas.height / 2 ) - (image.height / 2 ) ) + ((percent / 100 ) * 100);
 
 			// Actually draw the image on the canvas
-			context.drawImage(image.object, image.x, image.y, image.width, image.height)
+			context.drawImage(image.object, image.x, image.y, image.width, image.height);
 
 			// now update our component
 			self.setState({ image: image });
 		}
 
 		// Construct a gradient overlay
-		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
-		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height)
-		gradient.addColorStop(0, 'rgba(24,24,24,0)')
-		gradient.addColorStop(0.9, 'rgba(24,24,24,1)')
-		context.fillStyle = gradient
+		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
+		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height);
+		gradient.addColorStop(0, 'rgba(24,24,24,0)');
+		gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
+		context.fillStyle = gradient;
 
 		// And now drop it into place
-		context.fill()
+		context.fill();
 	}
 
 	render(){

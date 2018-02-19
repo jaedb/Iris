@@ -254,29 +254,85 @@ export function getArtist(uri, artist, mbid = false){
 
 export function getAlbum(artist, album, mbid = false){
     return (dispatch, getState) => {
-
-        dispatch({ type: 'LASTFM_ALBUM_LOADED', data: false });
-
         if (mbid){
-            var params = 'method=album.getInfo&mbid='+mbid
+            var params = 'method=album.getInfo&mbid='+mbid;
         } else {
-            artist = encodeURIComponent(artist )
-            album = encodeURIComponent(album )
-            var params = 'method=album.getInfo&album='+album+'&artist='+artist
+            artist = encodeURIComponent(artist);
+            album = encodeURIComponent(album);
+            var params = 'method=album.getInfo&album='+album+'&artist='+artist;
         }
         sendRequest(dispatch, getState, params)
             .then(
                 response => {
                     if (response.album){
-                        dispatch({
-                            type: 'LASTFM_ALBUM_LOADED',
-                            data: response.album
-                        });
+                        dispatch(coreActions.albumsLoaded([response.album]));
                     }
                 }
-            )
+            );
     }
 }
+
+
+export function getImages(context, uri){
+    return (dispatch, getState) => {
+
+        var record = getState().core[context][uri];
+        if (record){
+            switch (context){
+
+                case "tracks":
+
+                    if (record.mbid){
+                        var params = 'method=album.getInfo&mbid='+record.mbid;
+                    } else if (record.artists && record.artists.length > 0 && record.album){
+                        var artist = encodeURIComponent(record.artists[0].name);
+                        var album = encodeURIComponent(record.album.name);
+                        var params = 'method=album.getInfo&album='+album+'&artist='+artist;
+                    }
+
+                    if (params){
+                        sendRequest(dispatch, getState, params)
+                            .then(
+                                response => {
+                                    if (response.album){
+                                        record = Object.assign({}, record, {images: response.album.image});
+                                        dispatch(coreActions.tracksLoaded([record]));
+                                        dispatch(coreActions.albumsLoaded([response.album]));
+                                    }
+                                }
+                            );
+                    }
+                    break;
+
+                case "albums":
+
+                    if (record.mbid){
+                        var params = 'method=album.getInfo&mbid='+record.mbid;
+                    } else if (record.artists && record.artists.length > 0){
+                        var artist = encodeURIComponent(record.artists[0].name);
+                        var album = encodeURIComponent(record.name);
+                        var params = 'method=album.getInfo&album='+album+'&artist='+artist;
+                    }
+
+                    if (params){
+                        sendRequest(dispatch, getState, params)
+                            .then(
+                                response => {
+                                    if (response.album){
+                                        record = Object.assign({}, record, {images: response.album.image});
+                                        dispatch(coreActions.albumsLoaded([record]));
+                                    }
+                                }
+                            );
+                    }
+                    break;
+            }
+        }
+    }
+}
+
+
+
 
 
 

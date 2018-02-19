@@ -4529,7 +4529,7 @@ aside {
 .list.queue-track-list .list-item {
   padding-right: 60px; }
   .list.queue-track-list .list-item .col.name, .list.queue-track-list .list-item .col.artists, .list.queue-track-list .list-item .col.album {
-    width: 25% !important; }
+    width: 25%; }
   .list.queue-track-list .list-item .col.added {
     width: 20%; }
 

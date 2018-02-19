@@ -5,6 +5,7 @@ import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import Icon from '../components/Icon'
 import Parallax from '../components/Parallax'
 import TrackList from '../components/TrackList'
 import Track from '../components/Track'
@@ -141,7 +142,7 @@ class Queue extends React.Component{
 		var options = (
 			<span>
 				{this.props.spotify_enabled ? <button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
-					<FontAwesome name="podcast" />&nbsp;
+					<Icon name="broadcast" />&nbsp;
 					Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
 				</button> : null}

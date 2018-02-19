@@ -81,6 +81,22 @@ class App extends React.Component{
 		}*/
 	}
 
+	componentDidUpdate(prevProps){
+
+		// We've navigated to a new location
+	    if (this.props.location !== prevProps.location){
+
+			// Close context menu
+			this.props.uiActions.hideContextMenu();
+
+			// Restore scroll to top
+			// TODO: Detect if we've gone BACK, and then restore to previous
+			// scroll position. We'll need to keep a running history of locations
+			// and scroll positions, which may be performance-hindering
+			$(window).scrollTop(0)
+		}
+	}
+
 	shouldTriggerShortcut(e){
 
 		// When we're focussed on certian elements, don't fire any shortcuts

@@ -307,14 +307,14 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
+                        store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
                         break
                     }
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getPlaylistTracksForPlaying(action.uri))
+                    store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
                     break
 
                 // Not in index, and Spotify HTTP not enabled, so just play it as-is
@@ -1629,22 +1629,24 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         if (response.length <= 0) return
                                           
-                        var albums = []
-                        for(var i = 0; i < response.length; i++){
-                            var album = Object.assign(
-                                {},
-                                response[i].album,
-                                {
-                                    uri: response[i].album.uri,
-                                }
-                            );
-                            if (album){
-                                function getByURI(albumToCheck){
-                                    return album.uri == albumToCheck.uri
-                                }
-                                var existingAlbum = albums.find(getByURI);
-                                if (!existingAlbum){
-                                    albums.push(album);
+                        var albums = [];
+                        for (var i = 0; i < response.length; i++){
+                            if (response[i].album){
+                                var album = Object.assign(
+                                    {},
+                                    response[i].album,
+                                    {
+                                        uri: response[i].album.uri,
+                                    }
+                                );
+                                if (album){
+                                    function getByURI(albumToCheck){
+                                        return album.uri == albumToCheck.uri
+                                    }
+                                    var existingAlbum = albums.find(getByURI);
+                                    if (!existingAlbum){
+                                        albums.push(album);
+                                    }
                                 }
                             }
                         }
@@ -1652,7 +1654,7 @@ const MopidyMiddleware = (function(){
                             store.dispatch({
                                 type: 'ALBUMS_LOADED',
                                 albums: albums
-                            })
+                            });
                         }
 
                         var artist = Object.assign(
@@ -1668,7 +1670,7 @@ const MopidyMiddleware = (function(){
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
                             artist: artist 
-                        })
+                        });
 
                         // load artwork from LastFM
                         if (!artist.images || artist.images.length <= 0){
@@ -1738,7 +1740,7 @@ const MopidyMiddleware = (function(){
                     var track = helpers.formatTracks(action.data);
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (helpers.uriSource(track.uri) == 'spotify' && store.getState().spotify.enabled){
+                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
                         store.dispatch(spotifyActions.getTrack(track.uri))
 
                     // Some other source, rely on Mopidy backends to do their work
@@ -1787,16 +1789,20 @@ const MopidyMiddleware = (function(){
                 instruct(socket, store, 'library.getImages', {uris: action.uris})
                     .then(response => {
 
-                        var records = []
+                        var records = [];
                         for (var uri in response){
                             if (response.hasOwnProperty(uri)){
                                 var images = response[uri];
                                 images = helpers.digestMopidyImages(store.getState().mopidy, images);
+
                                 if (images && images.length > 0){
                                     records.push({
                                         uri: uri,
                                         images: images
                                     });
+
+                                } else {
+                                    store.dispatch(lastfmActions.getImages(action.context, uri));
                                 }
                             }
                         }

@@ -92,22 +92,27 @@
 		opacity: 0.8;
 
 		.icon {
-			width: 12px;
-			height: 12px;
-			@include invert();
+			svg {
+				height: 12px;
+			}
 		}
 
 		&.play {
-			margin-bottom: -6px;
+			margin-bottom: -4px;
 
 			.icon {
-				width: 24px;
-				height: 24px;
+				svg {
+					height: 24px;
+				}
 			}
 		}
 
 		&.active {
 			color: $turquoise !important;
+			
+			svg {
+				fill: $turquoise !important;
+			}
 		}
 
 		&:hover {
@@ -120,6 +125,7 @@
 		bottom: 8px;
 
 		&.playback {
+			bottom: 6px;
 			left: 10px;
 			width: 125px;
 			text-align: center;
@@ -229,8 +235,9 @@
 						margin-bottom: 0;
 
 						.icon {
-							width: 12px;
-							height: 12px;
+							svg {
+								height: 12px;
+							}
 						}
 					}
 					&.previous {

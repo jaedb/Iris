@@ -32,7 +32,7 @@ class User extends React.Component{
 	}
 
 	loadUser(props = this.props){
-		if (!props.user){
+		if (!props.user || props.user.playlists_uris === undefined){
 			this.props.spotifyActions.getUser(props.params.uri, true);
 			this.props.spotifyActions.following(props.params.uri);
 		}
@@ -55,10 +55,10 @@ class User extends React.Component{
 	}
 
 	render(){
-		var user_id = helpers.getFromUri('userid',this.props.params.uri)
+		var user_id = helpers.getFromUri('userid',this.props.params.uri);
 		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
 			return (
-				<div className="body-loader">
+				<div className="body-loader loading">
 					<div className="loader"></div>
 				</div>
 			)

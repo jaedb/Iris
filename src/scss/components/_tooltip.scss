@@ -4,21 +4,21 @@
 
 	.tooltip {
 		@include animate();
-		opacity: 0;
+		display: inline-block;
 		position: absolute;
-		pointer-events: none;
-		background: $overlay_dark;
-		display: block;
-		max-width: 200px;
-		padding: 5px 8px;
-		color: $white;
-		font-size: 11px;
-		line-height: 12px;
 		bottom: 37px;
 		left: 1px;
-		z-index: 97;
+		right: auto;
+		opacity: 0;
+		padding: 8px 10px 6px;
 		border-radius: 3px;
-		white-space: wrap;
+		pointer-events: none;
+		background: $white;
+		color: $black;
+		font-size: 11px;
+		z-index: 97;
+		white-space: nowrap;
+		text-align: left;
 
 		&:first-letter {
 			text-transform: uppercase;
@@ -29,7 +29,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: $overlay_dark;
+			background: $white;
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -46,9 +46,15 @@
 		}
 	}
 
-	&.info {
-		.fa {
-			opacity: 0.3;
+	&.right-tooltip {
+		.tooltip {
+			left: auto;
+			right: -5px;
+
+			&:after {
+				right: 9px;
+				left: auto;
+			}
 		}
 	}
 
@@ -58,6 +64,8 @@
 			font-size: 12px;
 			line-height: 14px;
 			bottom: 50px;
+			white-space: wrap;
+			max-width: 200px;
 		}
 	}
 }

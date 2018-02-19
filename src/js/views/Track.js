@@ -125,11 +125,14 @@ class Track extends React.Component{
 	}
 
 	renderLyricsSelector(){
-		if (!this.props.track.lyrics_results){
+		if (this.props.track.lyrics_results === undefined || this.props.track.lyrics_results === null){
+			return null;
+
+		} else if (this.props.track.lyrics_results.length <= 0){
 			return (
 				<div className="field lyrics-selector">
 					<div className="input">
-						<input type="text" disabled="disabled" value="Loading..." />
+						<input type="text" disabled="disabled" value="No results" />
 						<div className="description">
 							Switch to another lyrics seach result
 						</div>
@@ -213,7 +216,7 @@ class Track extends React.Component{
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<URILink type="album" uri={track.album.uri}>
+					<URILink type="album" uri={track.album ? track.album.uri : null}>
 						<Thumbnail size="large" canZoom images={track.images} />
 					</URILink>
 				</div>
@@ -221,7 +224,12 @@ class Track extends React.Component{
 				<div className="title">
 
 					<h1>{track.name}</h1>
-					<h2 className="grey-text">{track.album ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : "Unknown album"} by <ArtistSentence artists={track.artists} /></h2>
+					<h2 className="grey-text">
+						{track.album && track.album.uri ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : null}
+						{track.album && !track.album.uri ? track.album.name : null}
+						{!track.album ? "Unknown album" : null}
+						&nbsp;by <ArtistSentence artists={track.artists} />
+					</h2>
 
 					<ul className="details">
 						{!this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri)} /><span className="tooltip">{helpers.uriSource(this.props.params.uri)} track</span></li> : null}

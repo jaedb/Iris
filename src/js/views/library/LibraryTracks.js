@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
+import FontAwesome from 'react-fontawesome'
 
 import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
@@ -35,6 +36,10 @@ class LibraryTracks extends React.Component{
 		);
 	}
 
+	playAll(){
+		this.props.spotifyActions.getLibraryTracksAndPlay();
+	}
+
 	render(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_me/tracks'])){
 			return (
@@ -57,9 +62,18 @@ class LibraryTracks extends React.Component{
 			}
 		}
 
+		var options = (
+			<span>
+				<button className="no-hover" onClick={e => this.playAll(e)}>
+					<FontAwesome name="play" />&nbsp;
+					Play all
+				</button>
+			</span>
+		);
+
 		return (
 			<div className="view library-tracks-view">
-				<Header icon="music" title="My tracks" />
+				<Header icon="music" title="My tracks" options={options} uiActions={this.props.uiActions} />
 				<section className="content-wrapper">
 					<TrackList tracks={tracks} />
 					<LazyLoadListener loading={this.props.library_tracks_more} loadMore={() => this.loadMore()}/>

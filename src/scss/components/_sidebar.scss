@@ -57,11 +57,13 @@ aside{
 			line-height: 18px;
 
 			.icon {
-				@include invert();
-				height: 14px;
-				padding-right: 12px;
+				padding-right: 6px;
 				vertical-align: top;
 				margin-top: 0;
+
+				svg {
+					height: 14px;
+				}
 			}
 
 			&.active {
@@ -136,6 +138,16 @@ aside{
 
 		.close {
 			display: block;
+		}
+
+		nav {
+			section {
+				padding-bottom: 10px;
+
+				title {
+					padding-bottom: 2px;
+				}
+			}
 		}
 	}
 }

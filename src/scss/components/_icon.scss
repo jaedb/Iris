@@ -1,8 +1,11 @@
 
 .icon {
-	&.white{
-		-webkit-filter: invert(1);
-		-moz-filter: invert(1);
-		filter: invert(1);
+	margin-top: -0.2em;
+	vertical-align: middle;
+
+	svg {
+		height: 1.4em;
+		fill: $white;
+		vertical-align: middle;
 	}
 }

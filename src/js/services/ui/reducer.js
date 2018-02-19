@@ -24,6 +24,11 @@ export default function reducer(ui = {}, action){
         case 'SET_SELECTED_TRACKS':
             return Object.assign({}, ui, { selected_tracks : Object.assign([],action.keys) })
 
+        case 'ICON_LOADED':
+            var icons = Object.assign({}, ui.icons);
+            icons[action.key] = action.icon;
+            return Object.assign({}, ui, {icons : icons});
+
 
         /**
          * Context menu
