@@ -4226,8 +4226,7 @@ input[type="submit"] {
       width: 60px; }
       .playback-controls section.playback .control.play {
         margin-bottom: 0; }
-        .playback-controls section.playback .control.play .icon {
-          width: 12px;
+        .playback-controls section.playback .control.play .icon svg {
           height: 12px; }
       .playback-controls section.playback .control.previous {
         display: none; }
@@ -4342,7 +4341,7 @@ aside {
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
       aside nav a .icon {
-        padding-right: 10px;
+        padding-right: 6px;
         vertical-align: top;
         margin-top: 0; }
         aside nav a .icon svg {
@@ -4397,7 +4396,11 @@ aside {
       aside .thumbnail {
         display: none; }
       aside .close {
-        display: block; } }
+        display: block; }
+      aside nav section {
+        padding-bottom: 10px; }
+        aside nav section title {
+          padding-bottom: 2px; } }
 
 .list .list-item {
   -webkit-touch-callout: none;
@@ -4994,10 +4997,11 @@ main header {
       padding: 10px 10px 10px 0;
       margin-bottom: -10px; }
       main header .icon {
-        height: 1.2rem;
-        margin-bottom: 5px;
-        padding-right: 10px;
+        margin-bottom: 6px;
+        padding-right: 6px;
         margin-left: 10px; }
+        main header .icon svg {
+          height: 1.2rem; }
       main header h1 {
         vertical-align: top;
         padding-top: 6px; }
@@ -6158,6 +6162,9 @@ main .track-view {
     width: auto;
     display: inline-block;
     padding-right: 10px; }
+  .settings-view .field.current-user .text {
+    padding-top: 10px;
+    padding-bottom: 10px; }
   .settings-view section {
     padding: 20px; } }
 
