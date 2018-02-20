@@ -14,6 +14,16 @@ export default class GridItem extends React.Component{
 		super(props)
 	}
 
+	componentDidMount(){
+		if (this.props.item && !this.props.item.images){
+			switch (this.props.item.type){
+				case 'artist':
+					this.props.lastfmActions.getArtist(this.props.item.uri, this.props.item.name);
+					break;
+			}
+		}
+	}
+
 	handleClick(e){
 		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
 			this.props.onClick(e)
@@ -27,7 +37,7 @@ export default class GridItem extends React.Component{
 	}
 
 	shouldComponentUpdate(nextProps, nextState){
-		return nextProps.item != this.props.item
+		return nextProps.item != this.props.item;
 	}
 
 	renderSecondary(item){
@@ -46,7 +56,8 @@ export default class GridItem extends React.Component{
 			case 'artist':
 				return (
 					<span>
-						{item.followers ? item.followers.total.toLocaleString()+' followers' : item.albums_uris.length+' albums'}
+						{item.followers ? item.followers.total.toLocaleString()+' followers' : null}
+						{item.albums_uris ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
 				break

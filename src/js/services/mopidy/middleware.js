@@ -1544,8 +1544,6 @@ const MopidyMiddleware = (function(){
              * =============================================================== ARTIST(S) ============
              * ======================================================================================
              **/
-
-             /*
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
                 instruct(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                     .then(response => {
@@ -1562,25 +1560,14 @@ const MopidyMiddleware = (function(){
                             type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
                             uris: uris
                         });
-
-                        // TODO: Load LastFM artwork?
-                        console.log(response);
-
-                        // Get artwork for first 20
-                        for (var i = 0; i < response.length && i < 20; i++){
-                            store.dispatch(lastfmActions.getArtist(response[i].uri, response[i].name));
-                        }
-
                     });
                 break;
-            */
 
             /**
              * TODO: Fetch and process library artists
              *
              * We can't get specific artist artwork from Mopidy. Perhaps we fetch additional
              * artist metadata via LastFM? Their API limits will make this quite slow. 
-             **/
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
 
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
@@ -1630,6 +1617,7 @@ const MopidyMiddleware = (function(){
                 }
 
                 break;
+             **/
 
             case 'MOPIDY_GET_ARTIST':
                 instruct(socket, store, 'library.lookup', action.data )
@@ -1672,7 +1660,7 @@ const MopidyMiddleware = (function(){
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
-                        );                        
+                        );
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
@@ -1680,9 +1668,10 @@ const MopidyMiddleware = (function(){
                         });
 
                         // load artwork from LastFM
-                        if (!artist.images || artist.images.length <= 0){
+                        var existing_artist = store.getState().core.artists[artist.uri];
+                        if (existing_artist && !existing_artist.images){
                             if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
+                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
                             } else {
                                 store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
                             }
@@ -1707,15 +1696,6 @@ const MopidyMiddleware = (function(){
                                     }
                                 );
                                 artists.push(artist);
-
-                                // load artwork from LastFM
-                                if (!artist.images || artist.images.length <= 0){
-                                    if (artist.musicbrainz_id){
-                                        store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
-                                    } else {
-                                        store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
-                                    }
-                                }
                             }
                         }
                         

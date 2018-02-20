@@ -29,7 +29,7 @@ class LibraryArtists extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.mopidy_library_artists_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
+		if (!this.props.mopidy_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryArtists();
 		}
 
@@ -47,7 +47,7 @@ class LibraryArtists extends React.Component{
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_artists_status != 'finished'){
+			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_artists){
 				this.props.mopidyActions.getLibraryArtists();
 			}			
 		}
@@ -77,7 +77,7 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		console.log('Load more')
+		console.log('Load more');
 		this.setState({limit: this.state.limit + this.state.per_page});
 	}
 
@@ -89,11 +89,11 @@ class LibraryArtists extends React.Component{
 			library_artists_sort_reverse: reverse,
 			library_artists_sort: value
 		}
-		this.props.uiActions.set(data)
+		this.props.uiActions.set(data);
 	}
 
 	renderView(){
-		var artists = []
+		var artists = [];
 
 		// Mopidy library items
 		if (this.props.mopidy_library_artists && (this.props.source == 'all' || this.props.source == 'local')){
