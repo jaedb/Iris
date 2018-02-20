@@ -30,11 +30,11 @@ class LibraryArtists extends React.Component{
 
 	componentDidMount(){
 		if (this.props.mopidy_library_artists_status != 'finished' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
-			this.props.mopidyActions.getLibraryArtists()
+			this.props.mopidyActions.getLibraryArtists();
 		}
 
 		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
-			this.props.spotifyActions.getLibraryArtists()
+			this.props.spotifyActions.getLibraryArtists();
 		}
 	}
 
@@ -43,12 +43,12 @@ class LibraryArtists extends React.Component{
 
 			// We've just connected
 			if (!this.props.mopidy_connected){
-				this.props.mopidyActions.getLibraryArtists()
+				this.props.mopidyActions.getLibraryArtists();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_artists_status != 'finished'){
-				this.props.mopidyActions.getLibraryArtists()
+				this.props.mopidyActions.getLibraryArtists();
 			}			
 		}
 
@@ -56,12 +56,12 @@ class LibraryArtists extends React.Component{
 
 			// We've just connected
 			if (!this.props.spotify_connected){
-				this.props.spotifyActions.getLibraryArtists()
+				this.props.spotifyActions.getLibraryArtists();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished'){
-				this.props.spotifyActions.getLibraryArtists()
+				this.props.spotifyActions.getLibraryArtists();
 			}
 		}
 	}
@@ -74,6 +74,11 @@ class LibraryArtists extends React.Component{
 			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
+	}
+
+	loadMore(){
+		console.log('Load more')
+		this.setState({limit: this.state.limit + this.state.per_page});
 	}
 
 	setSort(value){
@@ -154,7 +159,7 @@ class LibraryArtists extends React.Component{
 						columns={columns} 
 						className="artist-list"
 						link_prefix={global.baseURL+"artist/"} />
-					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.loadMore()} />
 				</section>
 			)
 		} else {
@@ -163,7 +168,7 @@ class LibraryArtists extends React.Component{
 					<ArtistGrid 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />
-					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.loadMore()} />
 				</section>				
 			)
 		}
