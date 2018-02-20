@@ -224,11 +224,13 @@ export function getTrack(uri){
 }
 
 export function getArtist(uri, artist, mbid = false){
+
     return (dispatch, getState) => {
         if (mbid){
             var params = 'method=artist.getInfo&mbid='+mbid
         } else {
-            artist = encodeURIComponent(artist );
+            artist = artist.replace("&","and");
+            artist = encodeURIComponent(artist);
             var params = 'method=artist.getInfo&artist='+artist
         }
         sendRequest(dispatch, getState, params)

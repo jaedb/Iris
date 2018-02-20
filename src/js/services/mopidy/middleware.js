@@ -1684,7 +1684,7 @@ const MopidyMiddleware = (function(){
                             if (artist.musicbrainz_id){
                                 store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
                             } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and') ) )
+                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
                             }
                         }
                     })
@@ -1708,8 +1708,13 @@ const MopidyMiddleware = (function(){
                                 );
                                 artists.push(artist);
 
-                                if (!artist.images){
-                                    store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                                // load artwork from LastFM
+                                if (!artist.images || artist.images.length <= 0){
+                                    if (artist.musicbrainz_id){
+                                        store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
+                                    } else {
+                                        store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
+                                    }
                                 }
                             }
                         }
