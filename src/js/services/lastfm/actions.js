@@ -242,6 +242,7 @@ export function getArtist(uri, artist, mbid = false){
                             artist: {
                                 uri: uri,
                                 images: response.artist.image,
+                                mbid: response.artist.mbid,
                                 bio: response.artist.bio,
                                 listeners: parseInt(response.artist.stats.listeners),
                                 play_count: parseInt(response.artist.stats.playcount),
