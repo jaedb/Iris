@@ -224,11 +224,13 @@ export function getTrack(uri){
 }
 
 export function getArtist(uri, artist, mbid = false){
+
     return (dispatch, getState) => {
         if (mbid){
             var params = 'method=artist.getInfo&mbid='+mbid
         } else {
-            artist = encodeURIComponent(artist );
+            artist = artist.replace("&","and");
+            artist = encodeURIComponent(artist);
             var params = 'method=artist.getInfo&artist='+artist
         }
         sendRequest(dispatch, getState, params)
@@ -240,6 +242,7 @@ export function getArtist(uri, artist, mbid = false){
                             artist: {
                                 uri: uri,
                                 images: response.artist.image,
+                                mbid: response.artist.mbid,
                                 bio: response.artist.bio,
                                 listeners: parseInt(response.artist.stats.listeners),
                                 play_count: parseInt(response.artist.stats.playcount),

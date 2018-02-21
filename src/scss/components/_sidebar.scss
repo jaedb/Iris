@@ -66,6 +66,11 @@ aside{
 				}
 			}
 
+			.status {
+				margin-left: 5px;
+				float: right;
+			}
+
 			&.active {
 				background: $turquoise;
 				color: $white;

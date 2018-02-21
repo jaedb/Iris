@@ -2,13 +2,15 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
+import { hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
-import URILink from './URILink'
+import GridItem from './GridItem'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
+import * as lastfmActions from '../services/lastfm/actions'
 
 class ArtistGrid extends React.Component{
 
@@ -40,22 +42,16 @@ class ArtistGrid extends React.Component{
 						this.props.artists.map(
 							(artist, index) => {
 								return (
-									<URILink 
-										className="grid-item"
+									<GridItem
+										key={artist.uri}
 										type="artist"
-										uri={artist.uri}
-										key={index} 
-										onContextMenu={e => this.handleContextMenu(e,artist)}>
-											<Thumbnail size="medium" images={artist.images} />
-											<div className="name">
-												{artist.name}
-											</div>
-											<div className="secondary">
-												{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(artist.uri)} className="source" /> : null}
-												{artist.followers ? artist.followers.total.toLocaleString()+' followers' : null}
-												{artist.albums_uris && !artist.followers ? artist.albums_uris.length+' albums' : null}
-											</div>
-									</URILink>
+										item={artist}
+										show_source_icon={this.props.show_source_icon}
+										onClick={e => {hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(artist.uri))}}
+										onLoad={() => this.handleLoad(artist.uri)}
+										lastfmActions={this.props.lastfmActions}
+										onContextMenu={e => this.handleContextMenu(e,artist)}
+									/>
 								)
 							}
 						)
@@ -73,7 +69,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		uiActions: bindActionCreators(uiActions, dispatch)
+		uiActions: bindActionCreators(uiActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch)
 	}
 }
 

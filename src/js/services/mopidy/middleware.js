@@ -1544,7 +1544,6 @@ const MopidyMiddleware = (function(){
              * =============================================================== ARTIST(S) ============
              * ======================================================================================
              **/
-
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
                 instruct(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                     .then(response => {
@@ -1555,15 +1554,13 @@ const MopidyMiddleware = (function(){
                         store.dispatch({ 
                             type: 'ARTISTS_LOADED', 
                             artists: response
-                        })
+                        });
 
                         store.dispatch({ 
                             type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
                             uris: uris
-                        })
-
-                    })
-
+                        });
+                    });
                 break;
 
             /**
@@ -1571,7 +1568,6 @@ const MopidyMiddleware = (function(){
              *
              * We can't get specific artist artwork from Mopidy. Perhaps we fetch additional
              * artist metadata via LastFM? Their API limits will make this quite slow. 
-             *
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
 
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
@@ -1579,9 +1575,9 @@ const MopidyMiddleware = (function(){
                 if (!last_run){
                     instruct(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                         .then(response => {
-                            if (response.length <= 0) return
+                            if (response.length <= 0) return;
 
-                            var uris = helpers.arrayOf('uri',response)
+                            var uris = helpers.arrayOf('uri',response);
 
                             store.dispatch({ 
                                 type: 'MOPIDY_LIBRARY_ARTISTS_LOADED', 
@@ -1589,7 +1585,7 @@ const MopidyMiddleware = (function(){
                             });
 
                             // Start our process to load the full album objects
-                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}))
+                            store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}));
                         })
 
                 } else if (last_run.status == 'cancelled'){
@@ -1602,11 +1598,11 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR':
                 if (store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
-                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR']
+                    var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'];
 
                     if (processor.status == 'cancelling'){
-                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
-                        return false
+                        store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                        return false;
                     }
                 }
 
@@ -1614,15 +1610,14 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50)
 
                 if (uris_to_load.length > 0){
-                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}))
-                    store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}))
+                    store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
+                    store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
                 } else {
-                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
+                    store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
                 }
 
-                break
-
-            */
+                break;
+             **/
 
             case 'MOPIDY_GET_ARTIST':
                 instruct(socket, store, 'library.lookup', action.data )
@@ -1665,7 +1660,7 @@ const MopidyMiddleware = (function(){
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response.slice(0,10)
                             }
-                        );                        
+                        );
                         store.dispatch({ 
                             type: 'ARTIST_LOADED',
                             key: artist.uri,
@@ -1673,11 +1668,12 @@ const MopidyMiddleware = (function(){
                         });
 
                         // load artwork from LastFM
-                        if (!artist.images || artist.images.length <= 0){
+                        var existing_artist = store.getState().core.artists[artist.uri];
+                        if (existing_artist && !existing_artist.images){
                             if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id ) )
+                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
                             } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and') ) )
+                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
                             }
                         }
                     })
@@ -1698,8 +1694,8 @@ const MopidyMiddleware = (function(){
                                     {
                                         is_mopidy: true
                                     }
-                                )
-                                artists.push(artist)
+                                );
+                                artists.push(artist);
                             }
                         }
                         

@@ -131,17 +131,13 @@ export let sizedImages = function(images){
 			switch(image.size){
 				case 'mega':
 				case 'extralarge':
-					sizes.huge = image['#text']
-					break
 				case 'large':
-					sizes.large = image['#text']
-					break
-				case 'medium':
 					sizes.medium = image['#text']
-					break
+					break;
+				case 'medium':
 				case 'small':
 					sizes.small = image['#text']
-					break
+					break;
 			}
 		}
 	}

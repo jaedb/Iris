@@ -68,7 +68,7 @@ class Artist extends React.Component{
 
 			default:
 				if (props.mopidy_connected){
-					if (props.artist && props.artist.images){
+					if (props.artist && props.artist.images && props.artist.albums_uris){
 						console.info('Loading local artist from index');
 					} else {
 						this.props.mopidyActions.getArtist(props.params.uri);
