@@ -4346,6 +4346,9 @@ aside {
         margin-top: 0; }
         aside nav a .icon svg {
           height: 14px; }
+      aside nav a .status {
+        margin-left: 5px;
+        float: right; }
       aside nav a.active {
         background: #08d58f;
         color: #FFFFFF; }
