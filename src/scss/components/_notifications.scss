@@ -54,10 +54,13 @@
 			background: $green;
 		}
 
-		&.broadcast,
-		&.info {
+		&.broadcast {
 			background: $yellow;
 			color: $black;
+		}
+
+		&.info {
+			background: $grey;
 		}
 
 		&.warning {

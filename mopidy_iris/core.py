@@ -101,7 +101,16 @@ class IrisCore(object):
         callback = kwargs.get('callback', None)
 
         for connection in self.connections.itervalues():
-            connection['connection'].write_message( json_encode(data) )
+
+            send_to_this_connection = True
+
+            # Don't send the broadcast to the origin, naturally
+            if 'connection_id' in data:
+                if connection['connection_id'] == data["connection_id"]:
+                    send_to_this_connection = False
+
+            if send_to_this_connection:
+                connection['connection'].write_message(json_encode(data))
 
         response = {
             'message': 'Broadcast to '+str(len(self.connections))+' connections'
@@ -141,6 +150,7 @@ class IrisCore(object):
 
         new_connection = {
             'client': client,
+            'connection_id': connection_id,
             'connection': connection
         }
         self.connections[connection_id] = new_connection

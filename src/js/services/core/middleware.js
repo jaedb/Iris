@@ -87,13 +87,7 @@ const CoreMiddleware = (function(){
                     nonInteraction: true
                 });
 
-                store.dispatch(uiActions.createNotification(
-                    message, 
-                    'bad',
-                    null, 
-                    null, 
-                    description
-                ));
+                store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
                 console.error(message, description, data);
                 break;
 
@@ -176,7 +170,7 @@ const CoreMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification('Added '+action.tracks_uris.length+' tracks to playlist'))                
+                store.dispatch(uiActions.createNotification({content: 'Added '+action.tracks_uris.length+' tracks to playlist'}))                
                 switch(helpers.uriSource(action.key)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.key))

@@ -1456,7 +1456,7 @@ export function createPlaylist(name, description, is_public, is_collaborative){
                     uris: [response.uri]
                 })
 
-                dispatch(uiActions.createNotification('Created playlist'))
+                dispatch(uiActions.createNotification({content: 'Created playlist'}));
             },
             error => {
                 dispatch(coreActions.handleException(
@@ -1491,7 +1491,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
                         description: description
                     }
                 })
-                dispatch(uiActions.createNotification('Saved'))
+                dispatch(uiActions.createNotification({content: 'Saved'}));
             },
             error => {
                 dispatch(coreActions.handleException(

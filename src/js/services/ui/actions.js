@@ -175,20 +175,22 @@ export function createBrowserNotification(data){
     }
 }
 
-export function createNotification(content, type = 'default', key = null, title = null, description = null, sticky = false){
-    if (!key){
-        key = helpers.generateGuid()
-    }
+// content, type = 'default', key = null, title = null, description = null, sticky = false
+
+export function createNotification(data){
     return { 
         type: 'CREATE_NOTIFICATION',
-        notification: {
-            key: key,
-            type: type,
-            title: title,
-            description: description,
-            content: content,
-            sticky: sticky
-        }
+        notification: Object.assign(
+            {
+                key: helpers.generateGuid(),
+                type: 'default',
+                title: null,
+                content: null,
+                description: null,
+                sticky: false
+            },
+            data
+        )
     }
 }
 
