@@ -301,7 +301,7 @@ const MopidyMiddleware = (function(){
                     key: 'playback',
                     type: 'notification',
                     notification_type: 'info',
-                    body: store.getState().pusher.username +' stopped playback',
+                    content: store.getState().pusher.username +' stopped playback',
                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
                 store.dispatch(pusherActions.deliverBroadcast(data));
@@ -493,6 +493,15 @@ const MopidyMiddleware = (function(){
                     this.props.uiActions.createNotification({content: "No URIs to play", type: "warning"});
                     break;
                 }
+
+                var broadcast_data = {
+                    key: 'playback',
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' is playing '+action.uris.length+' URIs',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
 
                 // Stop the radio
                 if (store.getState().core.radio && store.getState().core.radio.enabled){
