@@ -35,25 +35,25 @@ class PlaybackControls extends React.Component{
 	}
 
 	renderConsumeButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [true])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		if (this.props.consume){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setConsume', [false])}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
 		}
 		return button;
 	}
 
 	renderRandomButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [true])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		if (this.props.random){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRandom', [false])}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
 		}
 		return button;
 	}
 
 	renderRepeatButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [true])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		if (this.props.repeat){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.instruct('tracklist.setRepeat', [false])}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
 		}
 		return button;
 	}

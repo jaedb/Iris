@@ -26,48 +26,48 @@ export default function reducer(mopidy = {}, action){
                 tlid: action.tlid
             });
 
-        case 'MOPIDY_URISCHEMES_FILTERED':
+        case 'MOPIDY_URI_SCHEMES':
             return Object.assign({}, mopidy, {
-                uri_schemes: action.data
+                uri_schemes: action.uri_schemes
             });
 
 
         /**
          * State-oriented actions
          **/
-        case 'MOPIDY_STATE':
+        case 'MOPIDY_PLAY_STATE':
             return Object.assign({}, mopidy, {
-                play_state: action.data 
+                play_state: action.play_state 
             });
 
         case 'MOPIDY_CONSUME':
             return Object.assign({}, mopidy, {
-                consume: action.data 
+                consume: action.consume 
             });
 
         case 'MOPIDY_RANDOM':
             return Object.assign({}, mopidy, {
-                random: action.data 
+                random: action.random 
             });
 
         case 'MOPIDY_REPEAT':
             return Object.assign({}, mopidy, {
-                repeat: action.data 
+                repeat: action.repeat 
             });
 
         case 'MOPIDY_VOLUME':
             return Object.assign({}, mopidy, {
-                volume: action.data   
+                volume: action.volume   
             });
 
         case 'MOPIDY_MUTE':
             return Object.assign({}, mopidy, {
-                mute: action.data
+                mute: action.mute
             });
 
-        case 'MOPIDY_TIMEPOSITION':
+        case 'MOPIDY_TIME_POSITION':
             return Object.assign({}, mopidy, {
-                time_position: action.data
+                time_position: action.time_position
             });
 
         case 'MOPIDY_HISTORY':

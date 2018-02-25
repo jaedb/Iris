@@ -32,16 +32,17 @@ const MopidyMiddleware = (function(){
 
             case 'state:online':
                 store.dispatch({ type: 'MOPIDY_CONNECTED' });
-                instruct(ws, store, 'playback.getState' );
-                instruct(ws, store, 'playback.getVolume' );
-                instruct(ws, store, 'mixer.getMute' );
-                instruct(ws, store, 'tracklist.getConsume' );
-                instruct(ws, store, 'tracklist.getRandom' );
-                instruct(ws, store, 'tracklist.getRepeat' );
-                instruct(ws, store, 'tracklist.getTlTracks' );
-                instruct(ws, store, 'playback.getCurrentTlTrack' );
-                instruct(ws, store, 'playback.getTimePosition' );
-                instruct(ws, store, 'getUriSchemes' );
+
+                store.dispatch(mopidyActions.getPlayState());
+                store.dispatch(mopidyActions.getVolume());
+                store.dispatch(mopidyActions.getMute());
+                store.dispatch(mopidyActions.getConsume());
+                store.dispatch(mopidyActions.getRandom());
+                store.dispatch(mopidyActions.getRepeat());
+                store.dispatch(mopidyActions.getQueue());
+                store.dispatch(mopidyActions.getCurrentTrack());
+                store.dispatch(mopidyActions.getTimePosition());
+                store.dispatch(mopidyActions.getUriSchemes());
 
                 // every 1000s update our play position (when playing)
                 progress_interval = setInterval(() => {
@@ -71,38 +72,38 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:tracklistChanged':
-                instruct(ws, store, 'tracklist.getTlTracks' );
+                store.dispatch(mopidyActions.getQueueTracks())
                 break;
 
             case 'event:playbackStateChanged':
-                instruct(ws, store, 'playback.getState' );
-                instruct(ws, store, 'playback.getTimePosition' );
+                store.dispatch(mopidyActions.getPlayState());
+                store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:seeked':
-                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position });
+                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position});
                 break;
 
             case 'event:trackPlaybackEnded':
-                instruct(ws, store, 'playback.getTimePosition' );
+                store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:trackPlaybackStarted':
-                instruct(ws, store, 'playback.getCurrentTlTrack' );
+                store.dispatch(mopidyActions.getCurrentTrack());
                 break;
 
             case 'event:volumeChanged':
-                store.dispatch({ type: 'MOPIDY_VOLUME', data: data.volume });
+                store.dispatch({type: 'MOPIDY_VOLUME', data: data.volume});
                 break;
 
             case 'event:muteChanged':
-                store.dispatch({ type: 'MOPIDY_MUTE', data: data.mute });
+                store.dispatch({type: 'MOPIDY_MUTE', data: data.mute});
                 break;
 
             case 'event:optionsChanged':
-                instruct(ws, store, 'tracklist.getConsume' );
-                instruct(ws, store, 'tracklist.getRandom' );
-                instruct(ws, store, 'tracklist.getRepeat' );
+                store.dispatch(mopidyActions.getConsume());
+                store.dispatch(mopidyActions.getRandom());
+                store.dispatch(mopidyActions.getRepeat());
                 break;
 
             default:
@@ -131,16 +132,16 @@ const MopidyMiddleware = (function(){
         var method = callParts[1];
 
         return new Promise((resolve, reject) => {
-            if (model in ws){
-                if (method in ws[model]){
-                    var mopidyObject = ws[model][method]
-                    var property = method;       
-                } else {                
-                    var mopidyObject = ws[model]
-                    var property = model;   
-                }
+            if (method in ws[model]){
+                var mopidyObject = ws[model][method];
+                var property = method;       
+            } else {                
+                var mopidyObject = ws[model];
+                var property = model;   
+            }
 
-            } else {
+            // Detect invalid model.method calls, which result in an empty mopidyObject
+            if (!mopidyObject || typeof(mopidyObject) !== 'function'){
                 var error = {
                     message: 'Call to an invalid object. Check you are calling a valid Mopidy object.',
                     call: call,
@@ -152,11 +153,8 @@ const MopidyMiddleware = (function(){
                     error
                 ));
 
-                reject(error)
+                reject(error);
             }
-
-            property = property.replace('get','');
-            property = property.replace('set','');
 
             var loader_key = helpers.generateGuid()
             store.dispatch(uiActions.startLoading(loader_key, 'mopidy_'+property))
@@ -175,7 +173,6 @@ const MopidyMiddleware = (function(){
                     response => {
                         clearTimeout(timeout);
                         store.dispatch(uiActions.stopLoading(loader_key));
-                        store.dispatch({ type: 'MOPIDY_'+property.toUpperCase(), call: call, data: response });
                         resolve(response);
                     },
                     error => {
@@ -200,142 +197,274 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CONNECT':
 
-                if (socket != null) socket.close()
-                store.dispatch({ type: 'MOPIDY_CONNECTING' })
-                var state = store.getState()
+                if (socket != null) socket.close();
+                store.dispatch({ type: 'MOPIDY_CONNECTING'});
+                var state = store.getState();
 
                 socket = new Mopidy({
                     webSocketUrl: 'ws'+(state.mopidy.ssl ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
                     callingConvention: 'by-position-or-by-name'
-                })
+                });
 
-                socket.on((type, data) => handleMessage(socket, store, type, data ) )
-                break
+                socket.on((type, data) => handleMessage(socket, store, type, data));
+                break;
 
             case 'MOPIDY_CONNECTED':
-                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname })
-                next(action)
-                break
+                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname });
+                next(action);
+                break;
 
             case 'MOPIDY_DISCONNECT':
                 if (socket != null) socket.close()
                 socket = null
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' })
-                break
-
-            // send an instruction to the websocket
-            case 'MOPIDY_INSTRUCT':
-                instruct(socket, store, action.call, action.value )
-                break
+                break;
 
             case 'MOPIDY_DEBUG':
                 instruct(socket, store, action.call, action.value )
                     .then(response => {
-                        store.dispatch({ type: 'DEBUG', response: response })
+                        store.dispatch({type: 'DEBUG', response: response});
                     })
-                break
-
-            case 'MOPIDY_URISCHEMES':
-                var uri_schemes = action.data
-                var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','yt']
-
-                // remove all our ignored types
-                for(var i = 0; i < remove.length; i++){
-                    var index = uri_schemes.indexOf(remove[i])
-                    if (index > -1 ) uri_schemes.splice(index, 1);
-                }
-
-                // append with ':' to make them a mopidy URI
-                for(var i = 0; i < uri_schemes.length; i++){
-                    uri_schemes[i] = uri_schemes[i] +':'
-                }
-
-                // Enable Iris providers when the backend is available
-                if (uri_schemes.includes('spotify:')){
-                    store.dispatch({
-                        type: 'SPOTIFY_SET',
-                        data: {
-                            enabled: true
-                        }
-                    })
-                    store.dispatch(spotifyActions.connect());
-                }
-
-                // If we haven't customised our search schemes, add all to search
-                if (store.getState().ui.search_uri_schemes === undefined){
-                    store.dispatch(uiActions.set({search_uri_schemes: uri_schemes}));
-                }
-
-                store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
-                break
+                break;
 
 
             /**
              * General playback
              **/
 
-            case 'MOPIDY_TRIGGER_PLAY':
+            case 'MOPIDY_GET_PLAY_STATE':
+                instruct(socket, store, 'playback.getState')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_PLAY_STATE',
+                                play_state: response
+                            })
+                        }
+                    )
+                break
+
+            case 'MOPIDY_PLAY':
                 instruct(socket, store, 'playback.play');
-                var data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(data));
+
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
                 break
 
             case 'MOPIDY_PAUSE':
-                var data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' paused playback',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(data));
+                instruct(socket, store, 'playback.pause');
+
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +' paused playback',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
                 break
 
             case 'MOPIDY_NEXT':
-                var data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(data));
+                instruct(socket, store, 'playback.next');
+
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
                 break
 
             case 'MOPIDY_STOP':
-                var data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' stopped playback',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(data));
+                instruct(socket, store, 'playback.stop');
+
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +' stopped playback',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
                 break
 
             case 'MOPIDY_CHANGE_TRACK':
                 instruct(socket, store, 'playback.play', {tlid: action.tlid});
 
-                var broadcast_data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' changed track'
-                }
-                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +' changed track'
+                    }
+                ));
                 break;
 
             case 'MOPIDY_REMOVE_TRACKS':
                 instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
-
-                var broadcast_data = {
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
-                }
-                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
+                    }
+                ));
                 break;
+
+            case 'MOPIDY_GET_REPEAT':
+                instruct(socket, store, 'tracklist.getRepeat')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_REPEAT',
+                                repeat: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_SET_REPEAT':
+                instruct(socket, store, 'tracklist.setRepeat', [action.repeat]);
+                break;
+
+            case 'MOPIDY_GET_RANDOM':
+                instruct(socket, store, 'tracklist.getRandom')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_RANDOM',
+                                random: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_SET_RANDOM':
+                instruct(socket, store, 'tracklist.setRandom', [action.random]);
+                break;
+
+            case 'MOPIDY_GET_CONSUME':
+                instruct(socket, store, 'tracklist.getConsume')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_CONSUME',
+                                consume: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_SET_CONSUME':
+                instruct(socket, store, 'tracklist.setConsume', [action.consume]);
+                break;
+
+            case 'MOPIDY_GET_MUTE':
+                instruct(socket, store, 'mixer.getMute')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_MUTE',
+                                mute: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_SET_MUTE':
+                instruct(socket, store, 'mixer.setMute', [action.mute]);
+                store.dispatch(pusherActions.deliverBroadcast(
+                    {
+                        type: 'notification',
+                        notification_type: 'info',
+                        content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
+                    }
+                ));
+                break;
+
+            case 'MOPIDY_GET_VOLUME':
+                instruct(socket, store, 'playback.getVolume')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_VOLUME', 
+                                volume: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_SET_VOLUME':
+                instruct(socket, store, 'playback.setVolume', {volume: action.volume});
+                break;
+
+            case 'MOPIDY_SEEK':
+                instruct(socket, store, 'playback.seek', {time_position: action.time_position});
+                break;
+
+            case 'MOPIDY_GET_TIME_POSITION':
+                instruct(socket, store, 'playback.getTimePosition')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_TIME_POSITION',
+                                time_position: response
+                            });
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_GET_URI_SCHEMES':
+                instruct(socket, store, 'getUriSchemes')
+                    .then(
+                        response => {
+                            var uri_schemes = response;
+                            var remove = ['http','https','mms','rtmp','rtmps','rtsp','sc','yt'];
+
+                            // remove all our ignored types
+                            for(var i = 0; i < remove.length; i++){
+                                var index = uri_schemes.indexOf(remove[i]);
+                                if (index > -1 ) uri_schemes.splice(index, 1);
+                            }
+
+                            // append with ':' to make them a mopidy URI
+                            for(var i = 0; i < uri_schemes.length; i++){
+                                uri_schemes[i] = uri_schemes[i] +':';
+                            }
+
+                            // Enable Iris providers when the backend is available
+                            if (uri_schemes.includes('spotify:')){
+                                store.dispatch({
+                                    type: 'SPOTIFY_SET',
+                                    data: {
+                                        enabled: true
+                                    }
+                                })
+                                store.dispatch(spotifyActions.connect());
+                            }
+
+                            // If we haven't customised our search schemes, add all to search
+                            if (store.getState().ui.search_uri_schemes === undefined){
+                                store.dispatch(uiActions.set({search_uri_schemes: uri_schemes}));
+                            }
+
+                            store.dispatch({type: 'MOPIDY_URI_SCHEMES', uri_schemes: uri_schemes});
+                        }
+                    );
+                break;
+
+
+            /**
+             * Advanced playback events
+             **/
 
             case 'MOPIDY_PLAY_PLAYLIST':
 
@@ -1775,33 +1904,43 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
 
-            case 'MOPIDY_TLTRACKS':
-                store.dispatch({
-                    type: 'QUEUE_LOADED',
-                    tracks: helpers.formatTracks(action.data)
-                })
+            case 'MOPIDY_GET_QUEUE':
+                instruct(socket, store, 'tracklist.getTlTracks')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'QUEUE_LOADED',
+                                tracks: helpers.formatTracks(response)
+                            });
+                        }
+                    );
                 break;
 
-            case 'MOPIDY_CURRENTTLTRACK':
-                if (action.data && action.data.track){
-                    var track = helpers.formatTracks(action.data);
+            case 'MOPIDY_GET_CURRENT_TRACK':
+                instruct(socket, store, 'playback.getCurrentTlTrack')
+                    .then(
+                        response => {
+                            if (response && response.track){
+                                var track = helpers.formatTracks(response);
 
-                    // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
-                        store.dispatch(spotifyActions.getTrack(track.uri))
+                                // We've got Spotify running, and it's a spotify track - go straight to the source!
+                                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+                                    store.dispatch(spotifyActions.getTrack(track.uri))
 
-                    // Some other source, rely on Mopidy backends to do their work
-                    } else {
-                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
-                    }
+                                // Some other source, rely on Mopidy backends to do their work
+                                } else {
+                                    store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
+                                }
 
-                    // Set our window title to the track title
-                    helpers.setWindowTitle(track, store.getState().mopidy.play_state);
-                    store.dispatch({
-                        type: 'CURRENT_TRACK_LOADED',
-                        current_track: track
-                    });
-                }
+                                // Set our window title to the track title
+                                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+                                store.dispatch({
+                                    type: 'CURRENT_TRACK_LOADED',
+                                    current_track: track
+                                });
+                            }
+                        }
+                    );
                 break;
 
             case 'MOPIDY_GET_TRACK':
