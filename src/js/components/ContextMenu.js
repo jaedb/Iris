@@ -307,7 +307,7 @@ class ContextMenu extends React.Component{
 		document.execCommand("copy");
 		temp.remove();
 
-		this.props.uiActions.createNotification("Copied "+this.props.menu.uris.length+" URIs" )
+		this.props.uiActions.createNotification({content: "Copied "+this.props.menu.uris.length+" URIs"});
 		this.props.uiActions.hideContextMenu()
 	}
 

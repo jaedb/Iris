@@ -11,7 +11,6 @@ const UIMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
-
         switch(action.type){
 
             case 'MOPIDY_STATE':
@@ -117,14 +116,14 @@ const UIMiddleware = (function(){
 
                     if (!suppressed_broadcasts.includes(broadcast.key)){
                         if (broadcast.message){
-                            store.dispatch(uiActions.createNotification(
-                                broadcast.message,
-                                'broadcast',
-                                (broadcast.key ? broadcast.key : null),
-                                (broadcast.title ? broadcast.title : null),
-                                null,
-                                true
-                            )) 
+                            var data = {
+                                key: (broadcast.key ? broadcast.key : null),
+                                title: (broadcast.title ? broadcast.title : null),
+                                content: broadcast.message,
+                                type: 'broadcast',
+                                sticky: true
+                            }
+                            store.dispatch(uiActions.createNotification(data)); 
                         }
                     }
                 }

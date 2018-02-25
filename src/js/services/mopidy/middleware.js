@@ -274,25 +274,68 @@ const MopidyMiddleware = (function(){
              * General playback
              **/
 
-            case 'MOPIDY_NEXT':
+            case 'MOPIDY_TRIGGER_PLAY':
+                instruct(socket, store, 'playback.play');
                 var data = {
-                    type: 'browser_notification',
-                    title: 'Track skipped',
-                    body: store.getState().pusher.username +' skipped this track',
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
-                store.dispatch(pusherActions.deliverBroadcast(data) )
+                store.dispatch(pusherActions.deliverBroadcast(data));
+                break
+
+            case 'MOPIDY_PAUSE':
+                var data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' paused playback',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(data));
+                break
+
+            case 'MOPIDY_NEXT':
+                var data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(data));
                 break
 
             case 'MOPIDY_STOP':
                 var data = {
-                    type: 'browser_notification',
-                    title: 'Playback stopped',
-                    body: store.getState().pusher.username +' stopped playback',
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' stopped playback',
                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                 }
-                store.dispatch(pusherActions.deliverBroadcast(data) )
+                store.dispatch(pusherActions.deliverBroadcast(data));
                 break
+
+            case 'MOPIDY_CHANGE_TRACK':
+                instruct(socket, store, 'playback.play', {tlid: action.tlid});
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' changed track'
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                break;
+
+            case 'MOPIDY_REMOVE_TRACKS':
+                instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                break;
 
             case 'MOPIDY_PLAY_PLAYLIST':
 
@@ -326,7 +369,7 @@ const MopidyMiddleware = (function(){
                     .then(
                         response => {
                             if (response.tracks === undefined){
-                                store.dispatch(uiActions.createNotification('Failed to load playlist tracks','bad'))
+                                store.dispatch(uiActions.createNotification({content: 'Failed to load playlist tracks', type: 'bad'}));
                             } else {
                                 var tracks_uris = helpers.arrayOf('uri',response.tracks)
                                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
@@ -344,9 +387,17 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_ENQUEUE_URIS':
 
                 if (!action.uris || action.uris.length <= 0){
-                    this.props.uiActions.createNotification("No URIs to enqueue","warning");
+                    this.props.uiActions.createNotification({content: "No URIs to enqueue", type: "warning"});
                     break;
                 }
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
 
                 // split into batches
                 var uris = Object.assign([], action.uris)
@@ -477,7 +528,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_PLAY_URIS':
 
                 if (!action.uris || action.uris.length <= 0){
-                    this.props.uiActions.createNotification("No URIs to play","warning");
+                    this.props.uiActions.createNotification({content: "No URIs to play", type: "warning"});
                     break;
                 }
 
@@ -491,7 +542,7 @@ const MopidyMiddleware = (function(){
                     store.dispatch(mopidyActions.clearTracklist());
                 }
 
-                var first_uri = action.uris[0]
+                var first_uri = action.uris[0];
 
                 // add our first track
                 instruct(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
@@ -576,7 +627,7 @@ const MopidyMiddleware = (function(){
                 var uri_scheme = uri_schemes.shift();
 
                 if (uri_schemes_total <= 0){
-                    store.dispatch(uiActions.createNotification('No sources selected', 'warning'));
+                    store.dispatch(uiActions.createNotification({content: 'No sources selected', type: 'warning'}));
                 } else {
                     store.dispatch(uiActions.startProcess(
                         'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1287,7 +1338,7 @@ const MopidyMiddleware = (function(){
                                     hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification('Saved'));
+                                store.dispatch(uiActions.createNotification({content: 'Saved'}));
                             })
                     });
                 break
@@ -1337,7 +1388,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CREATE_PLAYLIST':
                 instruct(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
                     .then(response => {            
-                        store.dispatch(uiActions.createNotification('Created playlist'))
+                        store.dispatch(uiActions.createNotification({content: 'Created playlist'}))
 
                         store.dispatch({
                             type: 'PLAYLIST_LOADED',
@@ -1356,7 +1407,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_DELETE_PLAYLIST':
                 instruct(socket, store, 'playlists.delete', { uri: action.uri })
                     .then(response => {
-                        store.dispatch(uiActions.createNotification('Deleted playlist'))
+                        store.dispatch(uiActions.createNotification({content: 'Deleted playlist'}))
                         store.dispatch({
                             type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
                             key: action.uri

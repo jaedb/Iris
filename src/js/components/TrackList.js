@@ -293,7 +293,7 @@ class TrackList extends React.Component{
 		var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
 		if (selected_tracks.length <= 0){
-			return this.props.uiActions.createNotification('No tracks selected', 'bad');
+			return this.props.uiActions.createNotification({content: 'No tracks selected', type: 'bad'});
 		}
 
 		// Our parent handles playing

@@ -228,7 +228,7 @@ const PusherMiddleware = (function(){
                 request(store, 'deliver_message', action.data)
                     .then(
                         response => {
-                            store.dispatch(uiActions.createNotification('Message delivered') )
+                            store.dispatch(uiActions.createNotification({content: 'Message delivered'}));
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -278,9 +278,9 @@ const PusherMiddleware = (function(){
                             }
 
                             if (response.upgrade_successful){
-                                store.dispatch(uiActions.createNotification('Upgrade complete') )
+                                store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
                             } else {
-                                store.dispatch(uiActions.createNotification('Upgrade failed, please upgrade manually','bad') )
+                                store.dispatch(uiActions.createNotification({content: 'Upgrade failed, please upgrade manually', type: 'bad'}));
                             }
 
                             response.type = 'PUSHER_VERSION'
@@ -381,7 +381,7 @@ const PusherMiddleware = (function(){
                         response => {
                             store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
                             if (response.status == 0){
-                                store.dispatch(uiActions.createNotification(response.message, 'bad'));
+                                store.dispatch(uiActions.createNotification({content: response.message, type: 'bad'}));
                             }
                         },
                         error => {       
@@ -395,8 +395,8 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_STOP_RADIO':
-                store.dispatch(uiActions.createNotification('Stopping radio'))
-                ReactGA.event({ category: 'Pusher', action: 'Stop radio' })
+                store.dispatch(uiActions.createNotification({content: 'Stopping radio'}));
+                ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
 
                 var data = {
                     seed_artists: [],
@@ -420,6 +420,16 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
 
+            case 'PUSHER_NOTIFICATION':
+                var data = Object.assign(
+                    {}, 
+                    action, {
+                        type: action.notification_type
+                    }
+                );
+                store.dispatch(uiActions.createNotification(data));
+                break
+
             case 'PUSHER_RESTART':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
@@ -430,7 +440,7 @@ const PusherMiddleware = (function(){
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
 
                 if (action.version.upgrade_available){
-                    store.dispatch(uiActions.createNotification('Version '+action.version.latest+' is available. See settings to upgrade.' ) )
+                    store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
                 }
                 next(action )
                 break

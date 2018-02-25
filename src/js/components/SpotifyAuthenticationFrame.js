@@ -39,13 +39,13 @@ class SpotifyAuthenticationFrame extends React.Component{
 		// Only allow incoming data from our authorized authenticator proxy
 		var authorization_domain = this.props.authorization_url.substring(0,this.props.authorization_url.indexOf('/',8))
 		if (event.origin != authorization_domain){
-			this.props.uiActions.createNotification('Authorization failed. '+event.origin+' is not the configured authorization_url.','bad')
+			this.props.uiActions.createNotification({content: 'Authorization failed. '+event.origin+' is not the configured authorization_url.', type: 'bad'});
 			return false
 		}
 
 		// Spotify bounced with an error
 		if (data.error !== undefined){
-			this.props.uiActions.createNotification(data.error,'bad')
+			this.props.uiActions.createNotification({content: data.error, type: 'bad'});
 
 		// No errors? We're in!
 		} else {
@@ -95,7 +95,7 @@ class SpotifyAuthenticationFrame extends React.Component{
 
             // Popup does not exist, so must have been blocked
             } else {
-				self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.','bad')
+				self.props.uiActions.createNotification({content: 'Popup blocked. Please allow popups and try again.', type: 'bad'});
 				self.setState({authorizing: false})
                 clearInterval(timer);
             }
