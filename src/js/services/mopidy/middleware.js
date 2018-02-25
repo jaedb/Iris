@@ -276,7 +276,6 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PAUSE':
                 var data = {
-                    key: 'playback',
                     type: 'notification',
                     notification_type: 'info',
                     content: store.getState().pusher.username +' paused playback',
@@ -287,7 +286,6 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_NEXT':
                 var data = {
-                    key: 'playback',
                     type: 'notification',
                     notification_type: 'info',
                     content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
@@ -298,7 +296,6 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_STOP':
                 var data = {
-                    key: 'playback',
                     type: 'notification',
                     notification_type: 'info',
                     content: store.getState().pusher.username +' stopped playback',
@@ -306,6 +303,28 @@ const MopidyMiddleware = (function(){
                 }
                 store.dispatch(pusherActions.deliverBroadcast(data));
                 break
+
+            case 'MOPIDY_CHANGE_TRACK':
+                instruct(socket, store, 'playback.play', {tlid: action.tlid});
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' changed track'
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                break;
+
+            case 'MOPIDY_REMOVE_TRACKS':
+                instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                break;
 
             case 'MOPIDY_PLAY_PLAYLIST':
 
@@ -360,6 +379,14 @@ const MopidyMiddleware = (function(){
                     this.props.uiActions.createNotification({content: "No URIs to enqueue", type: "warning"});
                     break;
                 }
+
+                var broadcast_data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
 
                 // split into batches
                 var uris = Object.assign([], action.uris)
@@ -494,15 +521,6 @@ const MopidyMiddleware = (function(){
                     break;
                 }
 
-                var broadcast_data = {
-                    key: 'playback',
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' is playing '+action.uris.length+' URIs',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
-
                 // Stop the radio
                 if (store.getState().core.radio && store.getState().core.radio.enabled){
                     store.dispatch(pusherActions.stopRadio());
@@ -513,7 +531,7 @@ const MopidyMiddleware = (function(){
                     store.dispatch(mopidyActions.clearTracklist());
                 }
 
-                var first_uri = action.uris[0]
+                var first_uri = action.uris[0];
 
                 // add our first track
                 instruct(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })

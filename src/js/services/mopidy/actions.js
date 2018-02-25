@@ -42,7 +42,10 @@ export function debug(call, value){
  **/
 
 export function changeTrack(tlid){
-	return instruct('playback.play', {tlid: tlid})
+	return {
+		type: 'MOPIDY_CHANGE_TRACK',
+		tlid: tlid
+	}
 }
 
 export function playURIs(uris, from_uri = null){
@@ -85,7 +88,10 @@ export function playAlbum(uri){
 }
 
 export function removeTracks(tlids){
-	return instruct('tracklist.remove', {tlid: tlids})
+	return {
+		type: 'MOPIDY_REMOVE_TRACKS',
+		tlids: tlids
+	}
 }
 
 export function reorderTracklist(indexes, insert_before){
