@@ -2433,9 +2433,11 @@
 
 @keyframes fadein {
   0% {
-    opacity: 0; }
+    opacity: 0;
+    transform: translateY(5px); }
   100% {
-    opacity: 1; } }
+    opacity: 1;
+    transform: translateY(0px); } }
 
 @keyframes slideloader {
   0% {
@@ -5059,9 +5061,11 @@ main header {
         opacity: 1; }
     .notifications .notification.good {
       background: #47af2a; }
-    .notifications .notification.broadcast, .notifications .notification.info {
+    .notifications .notification.broadcast {
       background: #FFF39C;
       color: #000000; }
+    .notifications .notification.info {
+      background: #383734; }
     .notifications .notification.warning {
       background: #f16f19; }
     .notifications .notification.bad {
