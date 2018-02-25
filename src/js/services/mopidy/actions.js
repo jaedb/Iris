@@ -110,7 +110,9 @@ export function clearTracklist(){
 }
 
 export function play(){
-	return instruct('playback.play')
+	return {
+		type: 'MOPIDY_TRIGGER_PLAY'
+	}
 }
 
 export function pause(){

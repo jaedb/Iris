@@ -274,6 +274,17 @@ const MopidyMiddleware = (function(){
              * General playback
              **/
 
+            case 'MOPIDY_TRIGGER_PLAY':
+                instruct(socket, store, 'playback.play');
+                var data = {
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }
+                store.dispatch(pusherActions.deliverBroadcast(data));
+                break
+
             case 'MOPIDY_PAUSE':
                 var data = {
                     type: 'notification',
