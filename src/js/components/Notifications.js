@@ -18,14 +18,14 @@ export default class Notifications extends React.Component{
 						switch (notification.type){
 							case 'shortcut':
 								return (
-									<div className="shortcut-notification" key={notification.key}>
+									<div className="notification shortcut-notification" key={notification.key} data-duration={notification.duration}>
 										<FontAwesome name={notification.content} />
 									</div>
 								)
 
 							default:
 								return (
-									<div className={notification.type+" notification"} key={notification.key} data-key={notification.key}>
+									<div className={notification.type+" notification"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>

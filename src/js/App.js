@@ -157,13 +157,13 @@ class App extends React.Component{
 			case 32: // spacebar
 				if (e.ctrlKey || e.metaKey){
 					this.props.mopidyActions.stop();
-					this.props.uiActions.createNotification({content: 'stop', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'stop', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause();
-					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else {
 					this.props.mopidyActions.play();
-					this.props.uiActions.createNotification({content: 'play', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'play', type: 'shortcut', key: 'shortcut', duration: 1});
 				}
 				break;
 
@@ -179,7 +179,7 @@ class App extends React.Component{
 			case 40: // down
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
 					this.props.mopidyActions.setMute(true);
-					this.props.uiActions.createNotification({content: 'volume-off', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else if (e.ctrlKey){
 					var volume = this.props.volume;
 					if (volume !== 'false'){
@@ -191,7 +191,7 @@ class App extends React.Component{
 						if (this.props.mute){
 							this.props.mopidyActions.setMute(false);
 						}
-					this.props.uiActions.createNotification({content: 'volume-down', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'volume-down', type: 'shortcut', key: 'shortcut', duration: 1});
 					}
 				}
 				break;
@@ -202,7 +202,7 @@ class App extends React.Component{
 					if (this.props.mute){
 						this.props.mopidyActions.setMute(false);
 					}
-					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else if (e.ctrlKey || e.metaKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
@@ -214,7 +214,7 @@ class App extends React.Component{
 						if (this.props.mute){
 							this.props.mopidyActions.setMute(false);
 						}
-					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1});
 					}
 				}
 				break;
@@ -226,20 +226,20 @@ class App extends React.Component{
 						new_position = 0;;
 					}
 					this.props.mopidyActions.seek(new_position);
-					this.props.uiActions.createNotification({content: 'fast-backward', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else if (e.ctrlKey || e.metaKey){
 					this.props.mopidyActions.previous();
-					this.props.uiActions.createNotification({content: 'step-backward', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1});
 				}
 				break;
 
 			case 39: // right
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
 					this.props.mopidyActions.seek(this.props.play_time_position + 30000);
-					this.props.uiActions.createNotification({content: 'fast-forward', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1});
 				} else if (e.ctrlKey || e.metaKey){
 					this.props.mopidyActions.next();
-					this.props.uiActions.createNotification({content: 'step-forward', type: 'shortcut', key: 'shortcut'});
+					this.props.uiActions.createNotification({content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1});
 				}
 				break;
 

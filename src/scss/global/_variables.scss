@@ -104,19 +104,45 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
-@keyframes fadein {
-    0% {
-    	opacity: 0;
-    	transform: translateY(5px);
-    }
-    100% {
-    	opacity: 1;
-    	transform: translateY(0px);
-    }
+@mixin fadein($duration: 0.2s){
+	@keyframes fadein {
+	    0% {
+	    	opacity: 0;
+	    	transform: translateY(5px);
+	    }
+	    100% {
+	    	opacity: 1;
+	    	transform: translateY(0px);
+	    }
+	}
+
+    animation-name: fadein;
+    animation-duration: $duration;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
 }
 
-@mixin fadein($duration: 0.2s){
-    animation-name: fadein;
+@mixin fadeinout($duration: 3s){
+	@keyframes fadeinout {
+	    0% {
+	    	opacity: 0;
+	    	transform: translateY(5px);
+	    }
+	    6% {
+	    	opacity: 1;
+	    	transform: translateY(0px);
+	    }
+	    94% {
+	    	opacity: 1;
+	    	transform: translateY(0px);
+	    }
+	    100% {
+	    	opacity: 0;
+	    	transform: translateY(5px);
+	    }
+	}
+
+    animation-name: fadeinout;
     animation-duration: $duration;
     animation-timing-function: linear;
     animation-iteration-count: 1;

@@ -76,7 +76,7 @@ const UIMiddleware = (function(){
                         function(){
                             store.dispatch(uiActions.removeNotification(action.notification.key))
                         },
-                        (action.notification.type == 'shortcut' ? 1000 : 3000)
+                        action.notification.duration * 1000
                     )
                 }
 

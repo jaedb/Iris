@@ -183,6 +183,7 @@ export function createNotification(data){
         notification: Object.assign(
             {
                 key: helpers.generateGuid(),
+                duration: 3,
                 type: 'default',
                 title: null,
                 content: null,

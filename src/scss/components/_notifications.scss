@@ -9,15 +9,22 @@
 	width: 300px;
 
 	.notification {
-		@include fadein();
 		display: block;
 		position: relative;
 		background: $blue;
 		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
 		color: $white;
-		pointer-events: all;
+		pointer-events: all; 
 		border-radius: 3px;
+
+		&[data-duration="1"]{
+			@include fadeinout(1s);
+		}
+
+		&[data-duration="3"]{
+			@include fadeinout(3s);
+		}
 		
 		h4 {
 			padding-top: 0;
