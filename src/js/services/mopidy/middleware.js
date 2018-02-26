@@ -72,7 +72,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:tracklistChanged':
-                store.dispatch(mopidyActions.getQueueTracks())
+                store.dispatch(mopidyActions.getQueue())
                 break;
 
             case 'event:playbackStateChanged':
