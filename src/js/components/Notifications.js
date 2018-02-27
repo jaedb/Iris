@@ -56,7 +56,7 @@ export default class Notifications extends React.Component{
 		switch (process.status){
 			case 'running':
 				return(
-					<div className={"process notification"+(notification.closing ? ' closing' : '')} key={process.key}>
+					<div className={"process notification"+(process.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader">
 							<div className="progress">
 								<div className="fill" style={{width: progress+'%'}}></div>
@@ -69,7 +69,7 @@ export default class Notifications extends React.Component{
 
 			case 'cancelling':
 				return(
-					<div className={"process notification cancelling"+(notification.closing ? ' closing' : '')} key={process.key}>
+					<div className={"process notification cancelling"+(process.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader"></div>
 						Cancelling
 					</div>

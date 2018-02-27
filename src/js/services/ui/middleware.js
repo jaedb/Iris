@@ -158,12 +158,26 @@ const UIMiddleware = (function(){
                 next(action)
                 break
 
+            case 'PROCESS_FINISHING':
+
+                // start a timeout to remove this notification
+                // This gives us time to animate out the notification before we remove the data
+                var timeout = setTimeout(
+                    function(){
+                        store.dispatch(uiActions.processFinished(action.key))
+                    },
+                    200
+                )
+
+                next(action);
+                break;
+
             case 'PROCESS_FINISHED':
                 store.dispatch({
                     type: action.key+'_FINISHED'
-                })
-                next(action)
-                break
+                });
+                next(action);
+                break;
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

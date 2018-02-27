@@ -277,6 +277,13 @@ export function processCancelled(key){
     }
 }
 
+export function processFinishing(key){
+    return { 
+        type: 'PROCESS_FINISHING',
+        key: key
+    }
+}
+
 export function processFinished(key){
     return { 
         type: 'PROCESS_FINISHED',

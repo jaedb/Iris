@@ -71,7 +71,8 @@
 			background: $red;
 		}
 
-		&.closing {
+		&.closing,
+		&.finishing {
 			@include fadeout();
 		}
 

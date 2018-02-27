@@ -170,10 +170,17 @@ export default function reducer(ui = {}, action){
             }
             return Object.assign({}, ui, {processes: processes})
 
+         case 'PROCESS_FINISHING':
+            var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
+            if (processes[action.key]){
+                processes[action.key] = Object.assign({}, processes[action.key], {closing: true})
+            }
+            return Object.assign({}, ui, {processes: processes})
+
          case 'PROCESS_FINISHED':
             var processes = Object.assign({}, (ui.processes ? ui.processes : {}))
             if (processes[action.key]){
-                processes[action.key] = Object.assign({}, processes[action.key], {status: 'finished'})
+                processes[action.key] = Object.assign({}, processes[action.key], {status: 'finished', closing: false})
             }
             return Object.assign({}, ui, {processes: processes})
 
