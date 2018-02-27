@@ -11,21 +11,28 @@ export default class Notifications extends React.Component{
 	renderNotifications(){
 		if (!this.props.notifications || this.props.notifications.length <= 0) return null
 
+		var notifications = []
+		for (var key in this.props.notifications){
+			if (this.props.notifications.hasOwnProperty(key)){
+				notifications.push(this.props.notifications[key])
+			}
+		}
+
 		return (
 			<span>
 				{
-					this.props.notifications.map(notification => {
+					notifications.map(notification => {
 						switch (notification.type){
 							case 'shortcut':
 								return (
-									<div className="notification shortcut-notification" key={notification.key} data-duration={notification.duration}>
+									<div className={"notification shortcut-notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
 										<FontAwesome name={notification.content} />
 									</div>
 								)
 
 							default:
 								return (
-									<div className={notification.type+" notification"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
+									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
@@ -49,7 +56,7 @@ export default class Notifications extends React.Component{
 		switch (process.status){
 			case 'running':
 				return(
-					<div className="process notification" key={process.key}>
+					<div className={"process notification"+(notification.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader">
 							<div className="progress">
 								<div className="fill" style={{width: progress+'%'}}></div>
@@ -62,7 +69,7 @@ export default class Notifications extends React.Component{
 
 			case 'cancelling':
 				return(
-					<div className="process notification cancelling" key={process.key}>
+					<div className={"process notification cancelling"+(notification.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader"></div>
 						Cancelling
 					</div>

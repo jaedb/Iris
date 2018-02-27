@@ -98,18 +98,21 @@ export default function reducer(ui = {}, action){
          **/
 
         case 'CREATE_NOTIFICATION':
-            var notifications = [...ui.notifications, action.notification]
-            notifications = helpers.mergeDuplicates(notifications,'key')
-            return Object.assign({}, ui, { notifications: notifications })
+            var notifications = Object.assign({}, ui.notifications);
+            notifications[action.notification.key] = action.notification;
+            return Object.assign({}, ui, { notifications: notifications });
+
+        case 'CLOSE_NOTIFICATION':
+            var notifications = Object.assign({}, ui.notifications);
+            if (notifications[action.key]){
+                notifications[action.key].closing = true;
+            }
+            return Object.assign({}, ui, { notifications: notifications });
 
         case 'REMOVE_NOTIFICATION':
-            var notifications = Object.assign([], ui.notifications)
-            
-            if (action.index > -1){
-                notifications.splice(action.index, 1)
-            }
-
-            return Object.assign({}, ui, {notifications: notifications})
+            var notifications = Object.assign({}, ui.notifications);
+            delete notifications[action.key];
+            return Object.assign({}, ui, {notifications: notifications});
 
 
 

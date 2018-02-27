@@ -122,17 +122,9 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
-@mixin fadeinout($duration: 3s){
-	@keyframes fadeinout {
+@mixin fadeout($duration: 0.2s){
+	@keyframes fadeout {
 	    0% {
-	    	opacity: 0;
-	    	transform: translateY(5px);
-	    }
-	    6% {
-	    	opacity: 1;
-	    	transform: translateY(0px);
-	    }
-	    94% {
 	    	opacity: 1;
 	    	transform: translateY(0px);
 	    }
@@ -142,7 +134,7 @@ $bp_shallow: 650px;
 	    }
 	}
 
-    animation-name: fadeinout;
+    animation-name: fadeout;
     animation-duration: $duration;
     animation-timing-function: linear;
     animation-iteration-count: 1;

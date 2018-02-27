@@ -188,10 +188,18 @@ export function createNotification(data){
                 title: null,
                 content: null,
                 description: null,
-                sticky: false
+                sticky: false,
+                closing: false
             },
             data
         )
+    }
+}
+
+export function closeNotification(key){
+    return { 
+        type: 'CLOSE_NOTIFICATION',
+        key: key
     }
 }
 

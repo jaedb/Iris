@@ -9,6 +9,7 @@
 	width: 300px;
 
 	.notification {
+		@include fadein();
 		display: block;
 		position: relative;
 		background: $blue;
@@ -17,14 +18,6 @@
 		color: $white;
 		pointer-events: all; 
 		border-radius: 3px;
-
-		&[data-duration="1"]{
-			@include fadeinout(1s);
-		}
-
-		&[data-duration="3"]{
-			@include fadeinout(3s);
-		}
 		
 		h4 {
 			padding-top: 0;
@@ -76,6 +69,10 @@
 
 		&.bad {
 			background: $red;
+		}
+
+		&.closing {
+			@include fadeout();
 		}
 
 		&.process {
