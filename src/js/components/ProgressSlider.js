@@ -21,7 +21,7 @@ class ProgressSlider extends React.Component{
 		
 		if (this.props.connected && this.props.current_track){
 			var destination_time = this.props.current_track.duration * percent;
-			this.props.mopidyActions.seek(destination_time);
+			this.props.mopidyActions.setTimePosition(destination_time);
 			this.setState({ animating: false });
 		}
 	} 

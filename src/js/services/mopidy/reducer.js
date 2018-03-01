@@ -65,7 +65,6 @@ export default function reducer(mopidy = {}, action){
                 mute: action.mute
             });
 
-        case 'MOPIDY_SET_TIME_POSITION':
         case 'MOPIDY_TIME_POSITION':
             return Object.assign({}, mopidy, {
                 time_position: action.time_position

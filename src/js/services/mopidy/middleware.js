@@ -49,12 +49,12 @@ const MopidyMiddleware = (function(){
                     if (store.getState().mopidy.play_state == 'playing'){
 
                         // every 10s get real position from server
-                        if (progress_interval_counter % 10 == 0){
-                            store.dispatch(mopidyActions.getTimePosition())
+                        if (progress_interval_counter % 5 == 0){
+                            store.dispatch(mopidyActions.getTimePosition());
 
                         // otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
-                            store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000 ))              
+                            store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
 
                         progress_interval_counter++
@@ -76,12 +76,19 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:playbackStateChanged':
-                store.dispatch(mopidyActions.getPlayState());
+                console.log(type,data);
+                store.dispatch({
+                    type: 'MOPIDY_PLAY_STATE',
+                    play_state: data.new_state
+                });
                 store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:seeked':
-                store.dispatch({ type: 'MOPIDY_TIME_POSITION', time_position: data.time_position});
+                store.dispatch({
+                    type: 'MOPIDY_TIME_POSITION', 
+                    time_position: data.time_position
+                });
                 break;
 
             case 'event:trackPlaybackEnded':
@@ -156,8 +163,8 @@ const MopidyMiddleware = (function(){
                 reject(error);
             }
 
-            var loader_key = helpers.generateGuid()
-            store.dispatch(uiActions.startLoading(loader_key, 'mopidy_'+property))
+            var loader_key = helpers.generateGuid();
+            store.dispatch(uiActions.startLoading(loader_key, 'mopidy_'+property));
 
             // Start our 15 second timeout
             var timeout = setTimeout(
@@ -245,78 +252,82 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_PLAY':
-                instruct(socket, store, 'playback.play');
+                instruct(socket, store, 'playback.play')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_PLAY_STATE',
+                                play_state: 'playing'
+                            })
+                        }
+                    );
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
-                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                    }
-                ));
-                break
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }));
+            break;
 
             case 'MOPIDY_PAUSE':
-                instruct(socket, store, 'playback.pause');
+                instruct(socket, store, 'playback.pause')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'MOPIDY_PLAY_STATE',
+                                play_state: 'paused'
+                            })
+                        }
+                    );
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +' paused playback',
-                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' paused playback',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }));
                 break
 
             case 'MOPIDY_NEXT':
                 instruct(socket, store, 'playback.next');
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
-                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }));
                 break
 
             case 'MOPIDY_STOP':
                 instruct(socket, store, 'playback.stop');
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +' stopped playback',
-                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' stopped playback',
+                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                }));
                 break
 
             case 'MOPIDY_CHANGE_TRACK':
                 instruct(socket, store, 'playback.play', {tlid: action.tlid});
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +' changed track'
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' changed track'
+                }));
                 break;
 
             case 'MOPIDY_REMOVE_TRACKS':
                 instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
+                }));
                 break;
 
             case 'MOPIDY_GET_REPEAT':
@@ -381,13 +392,11 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_SET_MUTE':
                 instruct(socket, store, 'mixer.setMute', [action.mute]);
-                store.dispatch(pusherActions.deliverBroadcast(
-                    {
-                        type: 'notification',
-                        notification_type: 'info',
-                        content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
-                    }
-                ));
+                store.dispatch(pusherActions.deliverBroadcast({
+                    type: 'notification',
+                    notification_type: 'info',
+                    content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
+                }));
                 break;
 
             case 'MOPIDY_GET_VOLUME':
@@ -414,7 +423,7 @@ const MopidyMiddleware = (function(){
                     );
                 break;
 
-            case 'MOPIDY_SEEK':
+            case 'MOPIDY_SET_TIME_POSITION':
                 instruct(socket, store, 'playback.seek', {time_position: action.time_position})
                     .then(
                         response => {
@@ -430,6 +439,7 @@ const MopidyMiddleware = (function(){
                 instruct(socket, store, 'playback.getTimePosition')
                     .then(
                         response => {
+                            console.log('playback.getTimePosition',response);
                             store.dispatch({
                                 type: 'MOPIDY_TIME_POSITION',
                                 time_position: response
@@ -536,13 +546,12 @@ const MopidyMiddleware = (function(){
                     break;
                 }
 
-                var broadcast_data = {
+                store.dispatch(pusherActions.deliverBroadcast({
                     type: 'notification',
                     notification_type: 'info',
                     content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }
-                store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
+                }));
 
                 // split into batches
                 var uris = Object.assign([], action.uris)
