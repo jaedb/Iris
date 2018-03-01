@@ -65,19 +65,20 @@ export default function reducer(mopidy = {}, action){
                 mute: action.mute
             });
 
+        case 'MOPIDY_SET_TIME_POSITION':
         case 'MOPIDY_TIME_POSITION':
             return Object.assign({}, mopidy, {
                 time_position: action.time_position
             });
 
-        case 'MOPIDY_HISTORY':
-            var history = []
-            for (var i = 0; i < action.data.length; i++){
+        case 'MOPIDY_QUEUE_HISTORY':
+            var history = [];
+            for (var i = 0; i < action.tracks.length; i++){
                 history.push(Object.assign(
                     {},
-                    action.data[i][1],
+                    action.tracks[i][1],
                     {
-                        played_at: action.data[i][0],
+                        played_at: action.tracks[i][0],
                         type: 'history'
                     }
                 ))

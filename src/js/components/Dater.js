@@ -27,7 +27,7 @@ export default class Dater extends React.Component{
 		// get left-over number of seconds
 		seconds = total_seconds - (total_minutes * 60 )
 		if (seconds <= 9) seconds = '0'+ seconds
-		if (seconds == 0) seconds = '0'
+		if (seconds == 0) seconds = '00'
 
 		// get left-over number of minutes
 		minutes = total_minutes - (total_hours * 60 )

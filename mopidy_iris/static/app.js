@@ -1155,6 +1155,7 @@ exports.openModal = openModal;
 exports.closeModal = closeModal;
 exports.createBrowserNotification = createBrowserNotification;
 exports.createNotification = createNotification;
+exports.closeNotification = closeNotification;
 exports.removeNotification = removeNotification;
 exports.startLoading = startLoading;
 exports.stopLoading = stopLoading;
@@ -1164,6 +1165,7 @@ exports.updateProcess = updateProcess;
 exports.runProcess = runProcess;
 exports.cancelProcess = cancelProcess;
 exports.processCancelled = processCancelled;
+exports.processFinishing = processFinishing;
 exports.processFinished = processFinished;
 
 var _helpers = __webpack_require__(2);
@@ -1343,26 +1345,28 @@ function createBrowserNotification(data) {
     };
 }
 
-function createNotification(content) {
-    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'default';
-    var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var title = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-    var description = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
-    var sticky = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
+// content, type = 'default', key = null, title = null, description = null, sticky = false
 
-    if (!key) {
-        key = helpers.generateGuid();
-    }
+function createNotification(data) {
     return {
         type: 'CREATE_NOTIFICATION',
-        notification: {
-            key: key,
-            type: type,
-            title: title,
-            description: description,
-            content: content,
-            sticky: sticky
-        }
+        notification: Object.assign({
+            key: helpers.generateGuid(),
+            duration: 3,
+            type: 'default',
+            title: null,
+            content: null,
+            description: null,
+            sticky: false,
+            closing: false
+        }, data)
+    };
+}
+
+function closeNotification(key) {
+    return {
+        type: 'CLOSE_NOTIFICATION',
+        key: key
     };
 }
 
@@ -1442,6 +1446,13 @@ function cancelProcess(key) {
 function processCancelled(key) {
     return {
         type: 'PROCESS_CANCELLED',
+        key: key
+    };
+}
+
+function processFinishing(key) {
+    return {
+        type: 'PROCESS_FINISHING',
         key: key
     };
 }
@@ -2398,7 +2409,7 @@ function getSearchResults(type, query) {
                 });
             }
 
-            dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+            dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load search results', error));
         });
@@ -3079,7 +3090,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
                 uris: [response.uri]
             });
 
-            dispatch(uiActions.createNotification('Created playlist'));
+            dispatch(uiActions.createNotification({ content: 'Created playlist' }));
         }, function (error) {
             dispatch(coreActions.handleException('Could not create playlist', error));
         });
@@ -3107,7 +3118,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative) {
                     description: description
                 }
             });
-            dispatch(uiActions.createNotification('Saved'));
+            dispatch(uiActions.createNotification({ content: 'Saved' }));
         }, function (error) {
             dispatch(coreActions.handleException('Could not save playlist', error));
         });
@@ -3202,7 +3213,7 @@ function getLibraryTracksAndPlayProcessor(data) {
                 }));
             } else {
                 dispatch(mopidyActions.playURIs(uris, data.uri));
-                dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
+                dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load library tracks', error));
@@ -3264,7 +3275,7 @@ function getPlaylistTracksAndPlayProcessor(data) {
                 }));
             } else {
                 dispatch(mopidyActions.playURIs(uris, data.uri));
-                dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'));
+                dispatch(uiActions.processFinishing('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load tracks to play playlist', error));
@@ -3397,7 +3408,7 @@ function getLibraryPlaylistsProcessor(data) {
                 }));
                 dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
             } else {
-                dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+                dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
                 dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
             }
         }, function (error) {
@@ -3456,7 +3467,7 @@ function getLibraryArtistsProcessor(data) {
                 }));
                 dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
             } else {
-                dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+                dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load library artists', error));
@@ -3514,7 +3525,7 @@ function getLibraryAlbumsProcessor(data) {
                 }));
                 dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
             } else {
-                dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+                dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load library albums', error));
@@ -3538,6 +3549,28 @@ exports.connect = connect;
 exports.disconnect = disconnect;
 exports.instruct = instruct;
 exports.debug = debug;
+exports.getPlayState = getPlayState;
+exports.play = play;
+exports.pause = pause;
+exports.stop = stop;
+exports.next = next;
+exports.previous = previous;
+exports.getMute = getMute;
+exports.setMute = setMute;
+exports.getVolume = getVolume;
+exports.setVolume = setVolume;
+exports.getConsume = getConsume;
+exports.setConsume = setConsume;
+exports.getRepeat = getRepeat;
+exports.setRepeat = setRepeat;
+exports.getRandom = getRandom;
+exports.setRandom = setRandom;
+exports.seek = seek;
+exports.getTimePosition = getTimePosition;
+exports.timePosition = timePosition;
+exports.getUriSchemes = getUriSchemes;
+exports.getCurrentTrack = getCurrentTrack;
+exports.getQueue = getQueue;
 exports.changeTrack = changeTrack;
 exports.playURIs = playURIs;
 exports.enqueueURIs = enqueueURIs;
@@ -3547,16 +3580,6 @@ exports.playAlbum = playAlbum;
 exports.removeTracks = removeTracks;
 exports.reorderTracklist = reorderTracklist;
 exports.clearTracklist = clearTracklist;
-exports.play = play;
-exports.pause = pause;
-exports.stop = stop;
-exports.next = next;
-exports.previous = previous;
-exports.setMute = setMute;
-exports.setVolume = setVolume;
-exports.seek = seek;
-exports.getTimePosition = getTimePosition;
-exports.setTimePosition = setTimePosition;
 exports.getImages = getImages;
 exports.createPlaylist = createPlaylist;
 exports.deletePlaylist = deletePlaylist;
@@ -3619,11 +3642,157 @@ function debug(call, value) {
 }
 
 /**
- * Playback-oriented actions
+ * Core play actions
  **/
 
+function getPlayState() {
+	return {
+		type: 'MOPIDY_GET_PLAY_STATE'
+	};
+}
+
+function play() {
+	return {
+		type: 'MOPIDY_PLAY'
+	};
+}
+
+function pause() {
+	return {
+		type: 'MOPIDY_PAUSE'
+	};
+}
+
+function stop() {
+	return {
+		type: 'MOPIDY_PAUSE'
+	};
+}
+
+function next() {
+	return {
+		type: 'MOPIDY_NEXT'
+	};
+}
+
+function previous() {
+	return {
+		type: 'MOPIDY_PREVIOUS'
+	};
+}
+
+function getMute() {
+	return {
+		type: 'MOPIDY_GET_MUTE'
+	};
+}
+
+function setMute(mute) {
+	return {
+		type: 'MOPIDY_SET_MUTE',
+		mute: mute
+	};
+}
+
+function getVolume() {
+	return {
+		type: 'MOPIDY_GET_VOLUME'
+	};
+}
+
+function setVolume(volume) {
+	return {
+		type: 'MOPIDY_SET_VOLUME',
+		volume: volume
+	};
+}
+
+function getConsume() {
+	return {
+		type: 'MOPIDY_GET_CONSUME'
+	};
+}
+
+function setConsume(consume) {
+	return {
+		type: 'MOPIDY_SET_CONSUME',
+		consume: consume
+	};
+}
+
+function getRepeat() {
+	return {
+		type: 'MOPIDY_GET_REPEAT'
+	};
+}
+
+function setRepeat(repeat) {
+	return {
+		type: 'MOPIDY_SET_REPEAT',
+		repeat: repeat
+	};
+}
+
+function getRandom() {
+	return {
+		type: 'MOPIDY_GET_RANDOM'
+	};
+}
+
+function setRandom(random) {
+	return {
+		type: 'MOPIDY_SET_RANDOM',
+		random: random
+	};
+}
+
+function seek(time_position) {
+	return {
+		type: 'MOPIDY_SEEK',
+		time_position: parseInt(time_position)
+	};
+}
+
+function getTimePosition() {
+	return {
+		type: 'MOPIDY_GET_TIME_POSITION'
+	};
+}
+
+function timePosition(time_position) {
+	return {
+		type: 'MOPIDY_TIME_POSITION',
+		time_position: time_position
+	};
+}
+
+function getUriSchemes() {
+	return {
+		type: 'MOPIDY_GET_URI_SCHEMES'
+	};
+}
+
+/**
+ * Advanced playback actions
+ **/
+
+function getCurrentTrack() {
+	return {
+		type: 'MOPIDY_GET_CURRENT_TRACK'
+	};
+}
+
+function getQueue() {
+	return {
+		type: 'MOPIDY_GET_QUEUE'
+	};
+}
+
 function changeTrack(tlid) {
-	return instruct('playback.play', { tlid: tlid });
+	return {
+		type: 'MOPIDY_CHANGE_TRACK',
+		tlid: tlid
+	};
 }
 
 function playURIs(uris) {
@@ -3673,7 +3842,10 @@ function playAlbum(uri) {
 }
 
 function removeTracks(tlids) {
-	return instruct('tracklist.remove', { tlid: tlids });
+	return {
+		type: 'MOPIDY_REMOVE_TRACKS',
+		tlids: tlids
+	};
 }
 
 function reorderTracklist(indexes, insert_before) {
@@ -3689,49 +3861,6 @@ function reorderTracklist(indexes, insert_before) {
 
 function clearTracklist() {
 	return instruct('tracklist.clear');
-}
-
-function play() {
-	return instruct('playback.play');
-}
-
-function pause() {
-	return instruct('playback.pause');
-}
-
-function stop() {
-	return instruct('playback.stop');
-}
-
-function next() {
-	return instruct('playback.next');
-}
-
-function previous() {
-	return instruct('playback.previous');
-}
-
-function setMute(mute) {
-	return instruct('mixer.setMute', { mute: mute });
-}
-
-function setVolume(volume) {
-	return instruct('playback.setVolume', { volume: volume });
-}
-
-function seek(time_position) {
-	return instruct('playback.seek', { time_position: parseInt(time_position) });
-}
-
-function getTimePosition() {
-	return instruct('playback.getTimePosition');
-}
-
-function setTimePosition(time_position) {
-	return {
-		type: 'MOPIDY_TIMEPOSITION',
-		data: time_position
-	};
 }
 
 /**
@@ -3880,7 +4009,9 @@ function getSearchResults(context, query) {
  **/
 
 function getQueueHistory() {
-	return instruct('history.getHistory');
+	return {
+		type: 'MOPIDY_GET_QUEUE_HISTORY'
+	};
 }
 
 /***/ }),
@@ -16920,7 +17051,7 @@ var TrackList = function (_React$Component) {
 			var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
 			if (selected_tracks.length <= 0) {
-				return this.props.uiActions.createNotification('No tracks selected', 'bad');
+				return this.props.uiActions.createNotification({ content: 'No tracks selected', type: 'bad' });
 			}
 
 			// Our parent handles playing
@@ -20371,7 +20502,7 @@ var Dater = function (_React$Component) {
 			// get left-over number of seconds
 			seconds = total_seconds - total_minutes * 60;
 			if (seconds <= 9) seconds = '0' + seconds;
-			if (seconds == 0) seconds = '0';
+			if (seconds == 0) seconds = '00';
 
 			// get left-over number of minutes
 			minutes = total_minutes - total_hours * 60;
@@ -22452,7 +22583,7 @@ var FollowButton = function (_React$Component) {
 				return _react2.default.createElement(
 					'button',
 					{ className: className + ' disabled', onClick: function onClick(e) {
-							return _this2.props.uiActions.createNotification('You must authorize Spotify first', 'warning');
+							return _this2.props.uiActions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' });
 						} },
 					this.props.addText
 				);
@@ -34653,13 +34784,13 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
 			if (event.origin != authorization_domain) {
-				this.props.uiActions.createNotification('Authorization failed. ' + event.origin + ' is not the configured authorization_url.', 'bad');
+				this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
 				return false;
 			}
 
 			// Spotify bounced with an error
 			if (data.error !== undefined) {
-				this.props.uiActions.createNotification(data.error, 'bad');
+				this.props.uiActions.createNotification({ content: data.error, type: 'bad' });
 
 				// No errors? We're in!
 			} else {
@@ -34696,7 +34827,7 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 
 					// Popup does not exist, so must have been blocked
 				} else {
-					self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.', 'bad');
+					self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
 					self.setState({ authorizing: false });
 					clearInterval(timer);
 				}
@@ -50746,7 +50877,7 @@ var initialState = {
 		show_initial_setup: true,
 		slim_mode: false,
 		selected_tracks: [],
-		notifications: [],
+		notifications: {},
 		processes: {}
 	},
 	mopidy: {
@@ -51100,8 +51231,6 @@ var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function reducer() {
     var ui = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -51195,17 +51324,20 @@ function reducer() {
          **/
 
         case 'CREATE_NOTIFICATION':
-            var notifications = [].concat(_toConsumableArray(ui.notifications), [action.notification]);
-            notifications = helpers.mergeDuplicates(notifications, 'key');
+            var notifications = Object.assign({}, ui.notifications);
+            notifications[action.notification.key] = action.notification;
+            return Object.assign({}, ui, { notifications: notifications });
+
+        case 'CLOSE_NOTIFICATION':
+            var notifications = Object.assign({}, ui.notifications);
+            if (notifications[action.key]) {
+                notifications[action.key].closing = true;
+            }
             return Object.assign({}, ui, { notifications: notifications });
 
         case 'REMOVE_NOTIFICATION':
-            var notifications = Object.assign([], ui.notifications);
-
-            if (action.index > -1) {
-                notifications.splice(action.index, 1);
-            }
-
+            var notifications = Object.assign({}, ui.notifications);
+            delete notifications[action.key];
             return Object.assign({}, ui, { notifications: notifications });
 
         /**
@@ -51261,10 +51393,17 @@ function reducer() {
             }
             return Object.assign({}, ui, { processes: processes });
 
+        case 'PROCESS_FINISHING':
+            var processes = Object.assign({}, ui.processes ? ui.processes : {});
+            if (processes[action.key]) {
+                processes[action.key] = Object.assign({}, processes[action.key], { closing: true });
+            }
+            return Object.assign({}, ui, { processes: processes });
+
         case 'PROCESS_FINISHED':
             var processes = Object.assign({}, ui.processes ? ui.processes : {});
             if (processes[action.key]) {
-                processes[action.key] = Object.assign({}, processes[action.key], { status: 'finished' });
+                processes[action.key] = Object.assign({}, processes[action.key], { status: 'finished', closing: false });
             }
             return Object.assign({}, ui, { processes: processes });
 
@@ -51392,54 +51531,55 @@ function reducer() {
                 tlid: action.tlid
             });
 
-        case 'MOPIDY_URISCHEMES_FILTERED':
+        case 'MOPIDY_URI_SCHEMES':
             return Object.assign({}, mopidy, {
-                uri_schemes: action.data
+                uri_schemes: action.uri_schemes
             });
 
         /**
          * State-oriented actions
          **/
-        case 'MOPIDY_STATE':
+        case 'MOPIDY_PLAY_STATE':
             return Object.assign({}, mopidy, {
-                play_state: action.data
+                play_state: action.play_state
             });
 
         case 'MOPIDY_CONSUME':
             return Object.assign({}, mopidy, {
-                consume: action.data
+                consume: action.consume
             });
 
         case 'MOPIDY_RANDOM':
             return Object.assign({}, mopidy, {
-                random: action.data
+                random: action.random
             });
 
         case 'MOPIDY_REPEAT':
             return Object.assign({}, mopidy, {
-                repeat: action.data
+                repeat: action.repeat
             });
 
         case 'MOPIDY_VOLUME':
             return Object.assign({}, mopidy, {
-                volume: action.data
+                volume: action.volume
             });
 
         case 'MOPIDY_MUTE':
             return Object.assign({}, mopidy, {
-                mute: action.data
+                mute: action.mute
             });
 
-        case 'MOPIDY_TIMEPOSITION':
+        case 'MOPIDY_SET_TIME_POSITION':
+        case 'MOPIDY_TIME_POSITION':
             return Object.assign({}, mopidy, {
-                time_position: action.data
+                time_position: action.time_position
             });
 
-        case 'MOPIDY_HISTORY':
+        case 'MOPIDY_QUEUE_HISTORY':
             var history = [];
-            for (var i = 0; i < action.data.length; i++) {
-                history.push(Object.assign({}, action.data[i][1], {
-                    played_at: action.data[i][0],
+            for (var i = 0; i < action.tracks.length; i++) {
+                history.push(Object.assign({}, action.tracks[i][1], {
+                    played_at: action.tracks[i][0],
                     type: 'history'
                 }));
             }
@@ -52038,7 +52178,7 @@ var CoreMiddleware = function () {
                             nonInteraction: true
                         });
 
-                        store.dispatch(uiActions.createNotification(message, 'bad', null, null, description));
+                        store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
                         console.error(message, description, data);
                         break;
 
@@ -52121,7 +52261,7 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'PLAYLIST_TRACKS_ADDED':
-                        store.dispatch(uiActions.createNotification('Added ' + action.tracks_uris.length + ' tracks to playlist'));
+                        store.dispatch(uiActions.createNotification({ content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
                         switch (helpers.uriSource(action.key)) {
                             case 'spotify':
                                 store.dispatch(spotifyActions.getPlaylist(action.key));
@@ -52622,7 +52762,6 @@ var UIMiddleware = function () {
     return function (store) {
         return function (next) {
             return function (action) {
-
                 switch (action.type) {
 
                     case 'MOPIDY_STATE':
@@ -52682,35 +52821,32 @@ var UIMiddleware = function () {
 
                     case 'CREATE_NOTIFICATION':
 
-                        // start a timeout to remove this notification
+                        // start a timeout to close this notification
                         if (!action.notification.sticky) {
                             var timeout = setTimeout(function () {
-                                store.dispatch(uiActions.removeNotification(action.notification.key));
-                            }, action.notification.type == 'shortcut' ? 1000 : 3000);
+                                store.dispatch(uiActions.closeNotification(action.notification.key));
+                            }, action.notification.duration * 1000);
                         }
 
                         next(action);
                         break;
 
-                    case 'REMOVE_NOTIFICATION':
-                        var notifications = Object.assign([], store.getState().ui.notifications);
-
-                        var getByKey = function getByKey(notification) {
-                            return notification.key === action.key;
-                        };
-
-                        var index = notifications.findIndex(getByKey);
-
-                        // Save our index for the reducer to use. Saves us from re-finding by key
-                        action.index = index;
+                    case 'CLOSE_NOTIFICATION':
+                        var notifications = Object.assign({}, store.getState().ui.notifications);
 
                         // If a broadcast, add to suppressed_broadcasts
-                        if (index > -1 && typeof notifications[index] !== 'undefined' && notifications[index].type == 'broadcast') {
+                        if (notifications[action.key] && notifications[action.key].type == 'broadcast') {
                             store.dispatch({
                                 type: 'SUPPRESS_BROADCAST',
-                                key: notifications[index].key
+                                key: action.key
                             });
                         }
+
+                        // start a timeout to remove this notification
+                        // This gives us time to animate out the notification before we remove the data
+                        var timeout = setTimeout(function () {
+                            store.dispatch(uiActions.removeNotification(action.key));
+                        }, 200);
 
                         next(action);
                         break;
@@ -52726,7 +52862,14 @@ var UIMiddleware = function () {
 
                             if (!suppressed_broadcasts.includes(broadcast.key)) {
                                 if (broadcast.message) {
-                                    store.dispatch(uiActions.createNotification(broadcast.message, 'broadcast', broadcast.key ? broadcast.key : null, broadcast.title ? broadcast.title : null, null, true));
+                                    var data = {
+                                        key: broadcast.key ? broadcast.key : null,
+                                        title: broadcast.title ? broadcast.title : null,
+                                        content: broadcast.message,
+                                        type: 'broadcast',
+                                        sticky: true
+                                    };
+                                    store.dispatch(uiActions.createNotification(data));
                                 }
                             }
                         }
@@ -52757,6 +52900,17 @@ var UIMiddleware = function () {
                         store.dispatch({
                             type: action.key + '_CANCELLED'
                         });
+                        next(action);
+                        break;
+
+                    case 'PROCESS_FINISHING':
+
+                        // start a timeout to remove this notification
+                        // This gives us time to animate out the notification before we remove the data
+                        var timeout = setTimeout(function () {
+                            store.dispatch(uiActions.processFinished(action.key));
+                        }, 200);
+
                         next(action);
                         break;
 
@@ -52985,7 +53139,7 @@ var PusherMiddleware = function () {
 
                     case 'PUSHER_DELIVER_MESSAGE':
                         request(store, 'deliver_message', action.data).then(function (response) {
-                            store.dispatch(uiActions.createNotification('Message delivered'));
+                            store.dispatch(uiActions.createNotification({ content: 'Message delivered' }));
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not deliver message', error));
                         });
@@ -53021,9 +53175,9 @@ var PusherMiddleware = function () {
                             }
 
                             if (response.upgrade_successful) {
-                                store.dispatch(uiActions.createNotification('Upgrade complete'));
+                                store.dispatch(uiActions.createNotification({ content: 'Upgrade complete' }));
                             } else {
-                                store.dispatch(uiActions.createNotification('Upgrade failed, please upgrade manually', 'bad'));
+                                store.dispatch(uiActions.createNotification({ content: 'Upgrade failed, please upgrade manually', type: 'bad' }));
                             }
 
                             response.type = 'PUSHER_VERSION';
@@ -53101,18 +53255,18 @@ var PusherMiddleware = function () {
                         }
 
                         request(store, 'change_radio', data).then(function (response) {
-                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
                             if (response.status == 0) {
-                                store.dispatch(uiActions.createNotification(response.message, 'bad'));
+                                store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
                             }
                         }, function (error) {
-                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
                             store.dispatch(coreActions.handleException('Could not change radio', error));
                         });
                         break;
 
                     case 'PUSHER_STOP_RADIO':
-                        store.dispatch(uiActions.createNotification('Stopping radio'));
+                        store.dispatch(uiActions.createNotification({ content: 'Stopping radio' }));
                         _reactGa2.default.event({ category: 'Pusher', action: 'Stop radio' });
 
                         var data = {
@@ -53136,6 +53290,13 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.createBrowserNotification(action));
                         break;
 
+                    case 'PUSHER_NOTIFICATION':
+                        var data = Object.assign({}, action, {
+                            type: action.notification_type
+                        });
+                        store.dispatch(uiActions.createNotification(data));
+                        break;
+
                     case 'PUSHER_RESTART':
                         // Hard reload. This doesn't strictly clear the cache, but our compiler's
                         // cache buster should handle that 
@@ -53146,7 +53307,7 @@ var PusherMiddleware = function () {
                         _reactGa2.default.event({ category: 'Pusher', action: 'Version', label: action.version.current });
 
                         if (action.version.upgrade_available) {
-                            store.dispatch(uiActions.createNotification('Version ' + action.version.latest + ' is available. See settings to upgrade.'));
+                            store.dispatch(uiActions.createNotification({ content: 'Version ' + action.version.latest + ' is available. See settings to upgrade.' }));
                         }
                         next(action);
                         break;
@@ -53248,16 +53409,17 @@ var MopidyMiddleware = function () {
 
             case 'state:online':
                 store.dispatch({ type: 'MOPIDY_CONNECTED' });
-                instruct(ws, store, 'playback.getState');
-                instruct(ws, store, 'playback.getVolume');
-                instruct(ws, store, 'mixer.getMute');
-                instruct(ws, store, 'tracklist.getConsume');
-                instruct(ws, store, 'tracklist.getRandom');
-                instruct(ws, store, 'tracklist.getRepeat');
-                instruct(ws, store, 'tracklist.getTlTracks');
-                instruct(ws, store, 'playback.getCurrentTlTrack');
-                instruct(ws, store, 'playback.getTimePosition');
-                instruct(ws, store, 'getUriSchemes');
+
+                store.dispatch(mopidyActions.getPlayState());
+                store.dispatch(mopidyActions.getVolume());
+                store.dispatch(mopidyActions.getMute());
+                store.dispatch(mopidyActions.getConsume());
+                store.dispatch(mopidyActions.getRandom());
+                store.dispatch(mopidyActions.getRepeat());
+                store.dispatch(mopidyActions.getQueue());
+                store.dispatch(mopidyActions.getCurrentTrack());
+                store.dispatch(mopidyActions.getTimePosition());
+                store.dispatch(mopidyActions.getUriSchemes());
 
                 // every 1000s update our play position (when playing)
                 progress_interval = setInterval(function () {
@@ -53269,7 +53431,7 @@ var MopidyMiddleware = function () {
 
                             // otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
-                            store.dispatch(mopidyActions.setTimePosition(store.getState().mopidy.time_position + 1000));
+                            store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
 
                         progress_interval_counter++;
@@ -53287,38 +53449,38 @@ var MopidyMiddleware = function () {
                 break;
 
             case 'event:tracklistChanged':
-                instruct(ws, store, 'tracklist.getTlTracks');
+                store.dispatch(mopidyActions.getQueue());
                 break;
 
             case 'event:playbackStateChanged':
-                instruct(ws, store, 'playback.getState');
-                instruct(ws, store, 'playback.getTimePosition');
+                store.dispatch(mopidyActions.getPlayState());
+                store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:seeked':
-                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position });
+                store.dispatch({ type: 'MOPIDY_TIME_POSITION', time_position: data.time_position });
                 break;
 
             case 'event:trackPlaybackEnded':
-                instruct(ws, store, 'playback.getTimePosition');
+                store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:trackPlaybackStarted':
-                instruct(ws, store, 'playback.getCurrentTlTrack');
+                store.dispatch(mopidyActions.getCurrentTrack());
                 break;
 
             case 'event:volumeChanged':
-                store.dispatch({ type: 'MOPIDY_VOLUME', data: data.volume });
+                store.dispatch({ type: 'MOPIDY_VOLUME', volume: data.volume });
                 break;
 
             case 'event:muteChanged':
-                store.dispatch({ type: 'MOPIDY_MUTE', data: data.mute });
+                store.dispatch({ type: 'MOPIDY_MUTE', mute: data.mute });
                 break;
 
             case 'event:optionsChanged':
-                instruct(ws, store, 'tracklist.getConsume');
-                instruct(ws, store, 'tracklist.getRandom');
-                instruct(ws, store, 'tracklist.getRepeat');
+                store.dispatch(mopidyActions.getConsume());
+                store.dispatch(mopidyActions.getRandom());
+                store.dispatch(mopidyActions.getRepeat());
                 break;
 
             default:
@@ -53348,15 +53510,16 @@ var MopidyMiddleware = function () {
         var method = callParts[1];
 
         return new Promise(function (resolve, reject) {
-            if (model in ws) {
-                if (method in ws[model]) {
-                    var mopidyObject = ws[model][method];
-                    var property = method;
-                } else {
-                    var mopidyObject = ws[model];
-                    var property = model;
-                }
+            if (method in ws[model]) {
+                var mopidyObject = ws[model][method];
+                var property = method;
             } else {
+                var mopidyObject = ws[model];
+                var property = model;
+            }
+
+            // Detect invalid model.method calls, which result in an empty mopidyObject
+            if (!mopidyObject || typeof mopidyObject !== 'function') {
                 var error = {
                     message: 'Call to an invalid object. Check you are calling a valid Mopidy object.',
                     call: call,
@@ -53367,9 +53530,6 @@ var MopidyMiddleware = function () {
 
                 reject(error);
             }
-
-            property = property.replace('get', '');
-            property = property.replace('set', '');
 
             var loader_key = helpers.generateGuid();
             store.dispatch(uiActions.startLoading(loader_key, 'mopidy_' + property));
@@ -53383,7 +53543,6 @@ var MopidyMiddleware = function () {
             mopidyObject(value).then(function (response) {
                 clearTimeout(timeout);
                 store.dispatch(uiActions.stopLoading(loader_key));
-                store.dispatch({ type: 'MOPIDY_' + property.toUpperCase(), call: call, data: response });
                 resolve(response);
             }, function (error) {
                 clearTimeout(timeout);
@@ -53432,74 +53591,220 @@ var MopidyMiddleware = function () {
                         store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
                         break;
 
-                    // send an instruction to the websocket
-                    case 'MOPIDY_INSTRUCT':
-                        instruct(socket, store, action.call, action.value);
-                        break;
-
                     case 'MOPIDY_DEBUG':
                         instruct(socket, store, action.call, action.value).then(function (response) {
                             store.dispatch({ type: 'DEBUG', response: response });
                         });
                         break;
 
-                    case 'MOPIDY_URISCHEMES':
-                        var uri_schemes = action.data;
-                        var remove = ['http', 'https', 'mms', 'rtmp', 'rtmps', 'rtsp', 'sc', 'yt'];
-
-                        // remove all our ignored types
-                        for (var i = 0; i < remove.length; i++) {
-                            var index = uri_schemes.indexOf(remove[i]);
-                            if (index > -1) uri_schemes.splice(index, 1);
-                        }
-
-                        // append with ':' to make them a mopidy URI
-                        for (var i = 0; i < uri_schemes.length; i++) {
-                            uri_schemes[i] = uri_schemes[i] + ':';
-                        }
-
-                        // Enable Iris providers when the backend is available
-                        if (uri_schemes.includes('spotify:')) {
-                            store.dispatch({
-                                type: 'SPOTIFY_SET',
-                                data: {
-                                    enabled: true
-                                }
-                            });
-                            store.dispatch(spotifyActions.connect());
-                        }
-
-                        // If we haven't customised our search schemes, add all to search
-                        if (store.getState().ui.search_uri_schemes === undefined) {
-                            store.dispatch(uiActions.set({ search_uri_schemes: uri_schemes }));
-                        }
-
-                        store.dispatch({ type: 'MOPIDY_URISCHEMES_FILTERED', data: uri_schemes });
-                        break;
-
                     /**
                      * General playback
                      **/
 
-                    case 'MOPIDY_NEXT':
-                        var data = {
-                            type: 'browser_notification',
-                            title: 'Track skipped',
-                            body: store.getState().pusher.username + ' skipped this track',
+                    case 'MOPIDY_GET_PLAY_STATE':
+                        instruct(socket, store, 'playback.getState').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_PLAY_STATE',
+                                play_state: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_PLAY':
+                        instruct(socket, store, 'playback.play');
+
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + (store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started') + ' playback',
                             icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
-                        };
-                        store.dispatch(pusherActions.deliverBroadcast(data));
+                        }));
+                        break;
+
+                    case 'MOPIDY_PAUSE':
+                        instruct(socket, store, 'playback.pause');
+
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' paused playback',
+                            icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                        }));
+                        break;
+
+                    case 'MOPIDY_NEXT':
+                        instruct(socket, store, 'playback.next');
+
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' skipped <em>' + store.getState().core.current_track.name + '</em>',
+                            icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                        }));
                         break;
 
                     case 'MOPIDY_STOP':
-                        var data = {
-                            type: 'browser_notification',
-                            title: 'Playback stopped',
-                            body: store.getState().pusher.username + ' stopped playback',
+                        instruct(socket, store, 'playback.stop');
+
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' stopped playback',
                             icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
-                        };
-                        store.dispatch(pusherActions.deliverBroadcast(data));
+                        }));
                         break;
+
+                    case 'MOPIDY_CHANGE_TRACK':
+                        instruct(socket, store, 'playback.play', { tlid: action.tlid });
+
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' changed track'
+                        }));
+                        break;
+
+                    case 'MOPIDY_REMOVE_TRACKS':
+                        instruct(socket, store, 'tracklist.remove', { tlid: action.tlids });
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
+                        }));
+                        break;
+
+                    case 'MOPIDY_GET_REPEAT':
+                        instruct(socket, store, 'tracklist.getRepeat').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_REPEAT',
+                                repeat: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SET_REPEAT':
+                        instruct(socket, store, 'tracklist.setRepeat', [action.repeat]);
+                        break;
+
+                    case 'MOPIDY_GET_RANDOM':
+                        instruct(socket, store, 'tracklist.getRandom').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_RANDOM',
+                                random: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SET_RANDOM':
+                        instruct(socket, store, 'tracklist.setRandom', [action.random]);
+                        break;
+
+                    case 'MOPIDY_GET_CONSUME':
+                        instruct(socket, store, 'tracklist.getConsume').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_CONSUME',
+                                consume: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SET_CONSUME':
+                        instruct(socket, store, 'tracklist.setConsume', [action.consume]);
+                        break;
+
+                    case 'MOPIDY_GET_MUTE':
+                        instruct(socket, store, 'mixer.getMute').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_MUTE',
+                                mute: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SET_MUTE':
+                        instruct(socket, store, 'mixer.setMute', [action.mute]);
+                        store.dispatch(pusherActions.deliverBroadcast({
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + (action.mute ? ' muted' : ' unmuted') + ' playback'
+                        }));
+                        break;
+
+                    case 'MOPIDY_GET_VOLUME':
+                        instruct(socket, store, 'playback.getVolume').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_VOLUME',
+                                volume: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SET_VOLUME':
+                        instruct(socket, store, 'playback.setVolume', { volume: action.volume }).then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_VOLUME',
+                                volume: action.volume
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_SEEK':
+                        instruct(socket, store, 'playback.seek', { time_position: action.time_position }).then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_TIME_POSITION',
+                                time_position: action.time_position
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_GET_TIME_POSITION':
+                        instruct(socket, store, 'playback.getTimePosition').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_TIME_POSITION',
+                                time_position: response
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_GET_URI_SCHEMES':
+                        instruct(socket, store, 'getUriSchemes').then(function (response) {
+                            var uri_schemes = response;
+                            var remove = ['http', 'https', 'mms', 'rtmp', 'rtmps', 'rtsp', 'sc', 'yt'];
+
+                            // remove all our ignored types
+                            for (var i = 0; i < remove.length; i++) {
+                                var index = uri_schemes.indexOf(remove[i]);
+                                if (index > -1) uri_schemes.splice(index, 1);
+                            }
+
+                            // append with ':' to make them a mopidy URI
+                            for (var i = 0; i < uri_schemes.length; i++) {
+                                uri_schemes[i] = uri_schemes[i] + ':';
+                            }
+
+                            // Enable Iris providers when the backend is available
+                            if (uri_schemes.includes('spotify:')) {
+                                store.dispatch({
+                                    type: 'SPOTIFY_SET',
+                                    data: {
+                                        enabled: true
+                                    }
+                                });
+                                store.dispatch(spotifyActions.connect());
+                            }
+
+                            // If we haven't customised our search schemes, add all to search
+                            if (store.getState().ui.search_uri_schemes === undefined) {
+                                store.dispatch(uiActions.set({ search_uri_schemes: uri_schemes }));
+                            }
+
+                            store.dispatch({ type: 'MOPIDY_URI_SCHEMES', uri_schemes: uri_schemes });
+                        });
+                        break;
+
+                    /**
+                     * Advanced playback events
+                     **/
 
                     case 'MOPIDY_PLAY_PLAYLIST':
 
@@ -53531,7 +53836,7 @@ var MopidyMiddleware = function () {
                         // add each track by URI
                         instruct(socket, store, 'playlists.lookup', { uri: action.uri }).then(function (response) {
                             if (response.tracks === undefined) {
-                                store.dispatch(uiActions.createNotification('Failed to load playlist tracks', 'bad'));
+                                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
                             } else {
                                 var tracks_uris = helpers.arrayOf('uri', response.tracks);
                                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri));
@@ -53544,9 +53849,17 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_ENQUEUE_URIS':
 
                         if (!action.uris || action.uris.length <= 0) {
-                            _this.props.uiActions.createNotification("No URIs to enqueue", "warning");
+                            _this.props.uiActions.createNotification({ content: "No URIs to enqueue", type: "warning" });
                             break;
                         }
+
+                        var broadcast_data = {
+                            type: 'notification',
+                            notification_type: 'info',
+                            content: store.getState().pusher.username + ' is adding ' + action.uris.length + ' URIs to queue',
+                            icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                        };
+                        store.dispatch(pusherActions.deliverBroadcast(broadcast_data));
 
                         // split into batches
                         var uris = Object.assign([], action.uris);
@@ -53599,7 +53912,7 @@ var MopidyMiddleware = function () {
 
                             // no batches means we're done here
                         } else {
-                            store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
+                            store.dispatch(uiActions.processFinishing('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
                             break;
                         }
 
@@ -53659,7 +53972,7 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_PLAY_URIS':
 
                         if (!action.uris || action.uris.length <= 0) {
-                            _this.props.uiActions.createNotification("No URIs to play", "warning");
+                            _this.props.uiActions.createNotification({ content: "No URIs to play", type: "warning" });
                             break;
                         }
 
@@ -53736,7 +54049,7 @@ var MopidyMiddleware = function () {
                         var uri_scheme = uri_schemes.shift();
 
                         if (uri_schemes_total <= 0) {
-                            store.dispatch(uiActions.createNotification('No sources selected', 'warning'));
+                            store.dispatch(uiActions.createNotification({ content: 'No sources selected', type: 'warning' }));
                         } else {
                             store.dispatch(uiActions.startProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + uri_schemes_total + ' Mopidy providers', {
                                 context: action.context,
@@ -53761,7 +54074,7 @@ var MopidyMiddleware = function () {
 
                             // No more schemes, so we're done!
                         } else if (!action.data.uri_scheme) {
-                            store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                            store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                             return;
                         }
 
@@ -53900,7 +54213,7 @@ var MopidyMiddleware = function () {
                                 store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching playlists'));
 
                                 var continue_process = function continue_process() {
-                                    store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                                    store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                                 };
 
                                 instruct(socket, store, 'playlists.asList').then(function (response) {
@@ -54326,7 +54639,7 @@ var MopidyMiddleware = function () {
                                     _reactRouter.hashHistory.push(global.baseURL + 'playlist/' + encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification('Saved'));
+                                store.dispatch(uiActions.createNotification({ content: 'Saved' }));
                             });
                         });
                         break;
@@ -54373,7 +54686,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_CREATE_PLAYLIST':
                         instruct(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-                            store.dispatch(uiActions.createNotification('Created playlist'));
+                            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
 
                             store.dispatch({
                                 type: 'PLAYLIST_LOADED',
@@ -54391,7 +54704,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_DELETE_PLAYLIST':
                         instruct(socket, store, 'playlists.delete', { uri: action.uri }).then(function (response) {
-                            store.dispatch(uiActions.createNotification('Deleted playlist'));
+                            store.dispatch(uiActions.createNotification({ content: 'Deleted playlist' }));
                             store.dispatch({
                                 type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
                                 key: action.uri
@@ -54452,7 +54765,7 @@ var MopidyMiddleware = function () {
                             }));
                             store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
                         } else {
-                            store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+                            store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
                         }
 
                         break;
@@ -54609,7 +54922,7 @@ var MopidyMiddleware = function () {
                             store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
                             store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
                         } else {
-                            store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                            store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
                         }
                           break;
                      **/
@@ -54702,33 +55015,46 @@ var MopidyMiddleware = function () {
                      * ======================================================================================
                      **/
 
-                    case 'MOPIDY_TLTRACKS':
-                        store.dispatch({
-                            type: 'QUEUE_LOADED',
-                            tracks: helpers.formatTracks(action.data)
+                    case 'MOPIDY_GET_QUEUE':
+                        instruct(socket, store, 'tracklist.getTlTracks').then(function (response) {
+                            store.dispatch({
+                                type: 'QUEUE_LOADED',
+                                tracks: helpers.formatTracks(response)
+                            });
                         });
                         break;
 
-                    case 'MOPIDY_CURRENTTLTRACK':
-                        if (action.data && action.data.track) {
-                            var track = helpers.formatTracks(action.data);
-
-                            // We've got Spotify running, and it's a spotify track - go straight to the source!
-                            if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
-                                store.dispatch(spotifyActions.getTrack(track.uri));
-
-                                // Some other source, rely on Mopidy backends to do their work
-                            } else {
-                                store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
-                            }
-
-                            // Set our window title to the track title
-                            helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+                    case 'MOPIDY_GET_QUEUE_HISTORY':
+                        instruct(socket, store, 'history.getHistory').then(function (response) {
                             store.dispatch({
-                                type: 'CURRENT_TRACK_LOADED',
-                                current_track: track
+                                type: 'MOPIDY_QUEUE_HISTORY',
+                                tracks: helpers.formatTracks(response)
                             });
-                        }
+                        });
+                        break;
+
+                    case 'MOPIDY_GET_CURRENT_TRACK':
+                        instruct(socket, store, 'playback.getCurrentTlTrack').then(function (response) {
+                            if (response && response.track) {
+                                var track = helpers.formatTracks(response);
+
+                                // We've got Spotify running, and it's a spotify track - go straight to the source!
+                                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                                    store.dispatch(spotifyActions.getTrack(track.uri));
+
+                                    // Some other source, rely on Mopidy backends to do their work
+                                } else {
+                                    store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                                }
+
+                                // Set our window title to the track title
+                                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+                                store.dispatch({
+                                    type: 'CURRENT_TRACK_LOADED',
+                                    current_track: track
+                                });
+                            }
+                        });
                         break;
 
                     case 'MOPIDY_GET_TRACK':
@@ -58788,13 +59114,13 @@ var App = function (_React$Component) {
 					// spacebar
 					if (e.ctrlKey || e.metaKey) {
 						this.props.mopidyActions.stop();
-						this.props.uiActions.createNotification('stop', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'stop', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else if (this.props.play_state == 'playing') {
 						this.props.mopidyActions.pause();
-						this.props.uiActions.createNotification('pause', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else {
 						this.props.mopidyActions.play();
-						this.props.uiActions.createNotification('play', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'play', type: 'shortcut', key: 'shortcut', duration: 1 });
 					}
 					break;
 
@@ -58812,7 +59138,7 @@ var App = function (_React$Component) {
 					// down
 					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
 						this.props.mopidyActions.setMute(true);
-						this.props.uiActions.createNotification('volume-off', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else if (e.ctrlKey) {
 						var volume = this.props.volume;
 						if (volume !== 'false') {
@@ -58824,7 +59150,7 @@ var App = function (_React$Component) {
 							if (this.props.mute) {
 								this.props.mopidyActions.setMute(false);
 							}
-							this.props.uiActions.createNotification('volume-down', 'shortcut', 'shortcut');
+							this.props.uiActions.createNotification({ content: 'volume-down', type: 'shortcut', key: 'shortcut', duration: 1 });
 						}
 					}
 					break;
@@ -58836,7 +59162,7 @@ var App = function (_React$Component) {
 						if (this.props.mute) {
 							this.props.mopidyActions.setMute(false);
 						}
-						this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else if (e.ctrlKey || e.metaKey) {
 						var volume = this.props.volume;
 						if (volume !== 'false') {
@@ -58848,7 +59174,7 @@ var App = function (_React$Component) {
 							if (this.props.mute) {
 								this.props.mopidyActions.setMute(false);
 							}
-							this.props.uiActions.createNotification('volume-up', 'shortcut', 'shortcut');
+							this.props.uiActions.createNotification({ content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1 });
 						}
 					}
 					break;
@@ -58861,10 +59187,10 @@ var App = function (_React$Component) {
 							new_position = 0;;
 						}
 						this.props.mopidyActions.seek(new_position);
-						this.props.uiActions.createNotification('fast-backward', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else if (e.ctrlKey || e.metaKey) {
 						this.props.mopidyActions.previous();
-						this.props.uiActions.createNotification('step-backward', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					}
 					break;
 
@@ -58872,10 +59198,10 @@ var App = function (_React$Component) {
 					// right
 					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
 						this.props.mopidyActions.seek(this.props.play_time_position + 30000);
-						this.props.uiActions.createNotification('fast-forward', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					} else if (e.ctrlKey || e.metaKey) {
 						this.props.mopidyActions.next();
-						this.props.uiActions.createNotification('step-forward', 'shortcut', 'shortcut');
+						this.props.uiActions.createNotification({ content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					}
 					break;
 
@@ -59643,7 +59969,7 @@ var PlaybackControls = function (_React$Component) {
 			var button = _react2.default.createElement(
 				'a',
 				{ className: 'control has-tooltip', onClick: function onClick() {
-						return _this3.props.mopidyActions.instruct('tracklist.setConsume', [true]);
+						return _this3.props.mopidyActions.setConsume(true);
 					} },
 				_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' }),
 				_react2.default.createElement(
@@ -59656,7 +59982,7 @@ var PlaybackControls = function (_React$Component) {
 				button = _react2.default.createElement(
 					'a',
 					{ className: 'control active has-tooltip', onClick: function onClick() {
-							return _this3.props.mopidyActions.instruct('tracklist.setConsume', [false]);
+							return _this3.props.mopidyActions.setConsume(false);
 						} },
 					_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' }),
 					_react2.default.createElement(
@@ -59676,7 +60002,7 @@ var PlaybackControls = function (_React$Component) {
 			var button = _react2.default.createElement(
 				'a',
 				{ className: 'control has-tooltip', onClick: function onClick() {
-						return _this4.props.mopidyActions.instruct('tracklist.setRandom', [true]);
+						return _this4.props.mopidyActions.setRandom(true);
 					} },
 				_react2.default.createElement(_reactFontawesome2.default, { name: 'random' }),
 				_react2.default.createElement(
@@ -59689,7 +60015,7 @@ var PlaybackControls = function (_React$Component) {
 				button = _react2.default.createElement(
 					'a',
 					{ className: 'control active has-tooltip', onClick: function onClick() {
-							return _this4.props.mopidyActions.instruct('tracklist.setRandom', [false]);
+							return _this4.props.mopidyActions.setRandom(false);
 						} },
 					_react2.default.createElement(_reactFontawesome2.default, { name: 'random' }),
 					_react2.default.createElement(
@@ -59709,7 +60035,7 @@ var PlaybackControls = function (_React$Component) {
 			var button = _react2.default.createElement(
 				'a',
 				{ className: 'control has-tooltip', onClick: function onClick() {
-						return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [true]);
+						return _this5.props.mopidyActions.setRepeat(true);
 					} },
 				_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' }),
 				_react2.default.createElement(
@@ -59722,7 +60048,7 @@ var PlaybackControls = function (_React$Component) {
 				button = _react2.default.createElement(
 					'a',
 					{ className: 'control active has-tooltip', onClick: function onClick() {
-							return _this5.props.mopidyActions.instruct('tracklist.setRepeat', [false]);
+							return _this5.props.mopidyActions.setRepeat(false);
 						} },
 					_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' }),
 					_react2.default.createElement(
@@ -60633,7 +60959,7 @@ var ContextMenu = function (_React$Component) {
 			document.execCommand("copy");
 			temp.remove();
 
-			this.props.uiActions.createNotification("Copied " + this.props.menu.uris.length + " URIs");
+			this.props.uiActions.createNotification({ content: "Copied " + this.props.menu.uris.length + " URIs" });
 			this.props.uiActions.hideContextMenu();
 		}
 	}, {
@@ -65474,22 +65800,29 @@ var Notifications = function (_React$Component) {
 
 			if (!this.props.notifications || this.props.notifications.length <= 0) return null;
 
+			var notifications = [];
+			for (var key in this.props.notifications) {
+				if (this.props.notifications.hasOwnProperty(key)) {
+					notifications.push(this.props.notifications[key]);
+				}
+			}
+
 			return _react2.default.createElement(
 				'span',
 				null,
-				this.props.notifications.map(function (notification) {
+				notifications.map(function (notification) {
 					switch (notification.type) {
 						case 'shortcut':
 							return _react2.default.createElement(
 								'div',
-								{ className: 'shortcut-notification', key: notification.key },
+								{ className: "notification shortcut-notification" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_reactFontawesome2.default, { name: notification.content })
 							);
 
 						default:
 							return _react2.default.createElement(
 								'div',
-								{ className: notification.type + " notification", key: notification.key, 'data-key': notification.key },
+								{ className: notification.type + " notification" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_reactFontawesome2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
 										return _this2.props.uiActions.removeNotification(notification.key);
 									} }),
@@ -65519,7 +65852,7 @@ var Notifications = function (_React$Component) {
 				case 'running':
 					return _react2.default.createElement(
 						'div',
-						{ className: 'process notification', key: process.key },
+						{ className: "process notification" + (process.closing ? ' closing' : ''), key: process.key },
 						_react2.default.createElement(
 							'div',
 							{ className: 'loader' },
@@ -65538,7 +65871,7 @@ var Notifications = function (_React$Component) {
 				case 'cancelling':
 					return _react2.default.createElement(
 						'div',
-						{ className: 'process notification cancelling', key: process.key },
+						{ className: "process notification cancelling" + (process.closing ? ' closing' : ''), key: process.key },
 						_react2.default.createElement('div', { className: 'loader' }),
 						'Cancelling'
 					);
@@ -68022,7 +68355,7 @@ var FollowButton = function (_React$Component) {
 				return _react2.default.createElement(
 					'button',
 					{ className: className + ' disabled', onClick: function onClick(e) {
-							return _this2.props.uiActions.createNotification('You must authorize LastFM first', 'warning');
+							return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', type: 'warning' });
 						} },
 					this.props.addText
 				);
@@ -69855,13 +70188,13 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
 			if (event.origin != authorization_domain) {
-				this.props.uiActions.createNotification('Authorization failed. ' + event.origin + ' is not the configured authorization_url.', 'bad');
+				this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
 				return false;
 			}
 
 			// Bounced with an error
 			if (data.error !== undefined) {
-				this.props.uiActions.createNotification(data.message, 'bad');
+				this.props.uiActions.createNotification({ content: data.message, type: 'bad' });
 
 				// No errors? We're in!
 			} else {
@@ -69897,7 +70230,7 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 
 					// Popup does not exist, so must have been blocked
 				} else {
-					self.props.uiActions.createNotification('Popup blocked. Please allow popups and try again.', 'bad');
+					self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
 					self.setState({ authorizing: false });
 					clearInterval(timer);
 				}
@@ -70213,7 +70546,7 @@ var Debug = function (_React$Component) {
 								_react2.default.createElement(
 									'a',
 									{ className: 'button secondary', onClick: function onClick(e) {
-											return _this2.props.uiActions.createNotification('Test notification');
+											return _this2.props.uiActions.createNotification({ content: 'Test notification' });
 										} },
 									'Create notification'
 								),
@@ -70227,7 +70560,7 @@ var Debug = function (_React$Component) {
 								_react2.default.createElement(
 									'a',
 									{ className: 'button secondary', onClick: function onClick(e) {
-											return _this2.props.uiActions.processFinished('test_process');
+											return _this2.props.uiActions.processFinishing('test_process');
 										} },
 									'Stop process'
 								)
@@ -70374,7 +70707,12 @@ var Debug = function (_React$Component) {
 									_react2.default.createElement(
 										'option',
 										{ value: '{"method":"broadcast","data":{"type":"browser_notification","title":"Testing","body":"This is my message"}}' },
-										'Broadcast to all clients'
+										'Broadcast to all clients (browser)'
+									),
+									_react2.default.createElement(
+										'option',
+										{ value: '{"method":"broadcast","data":{"type":"notification","notification_type":"info","title":"Testing","content":"This is my message"}}' },
+										'Broadcast to all clients (notification)'
 									),
 									_react2.default.createElement(
 										'option',

@@ -154,9 +154,9 @@ export function getTimePosition(){
 	}
 }
 
-export function setTimePosition(time_position){
+export function timePosition(time_position){
 	return {
-		type: 'MOPIDY_SET_TIME_POSITION',
+		type: 'MOPIDY_TIME_POSITION',
 		time_position: time_position
 	}
 }
@@ -396,8 +396,7 @@ export function getSearchResults(context, query, limit = 100){
 
 export function getQueueHistory(){
 	return {
-		type: 'MOPIDY_GET_HISTORY'
+		type: 'MOPIDY_GET_QUEUE_HISTORY'
 	}
-	return instruct('history.getHistory')
 }
  
