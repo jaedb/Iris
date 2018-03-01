@@ -3567,7 +3567,7 @@ exports.getRandom = getRandom;
 exports.setRandom = setRandom;
 exports.seek = seek;
 exports.getTimePosition = getTimePosition;
-exports.setTimePosition = setTimePosition;
+exports.timePosition = timePosition;
 exports.getUriSchemes = getUriSchemes;
 exports.getCurrentTrack = getCurrentTrack;
 exports.getQueue = getQueue;
@@ -3759,9 +3759,9 @@ function getTimePosition() {
 	};
 }
 
-function setTimePosition(time_position) {
+function timePosition(time_position) {
 	return {
-		type: 'MOPIDY_SET_TIME_POSITION',
+		type: 'MOPIDY_TIME_POSITION',
 		time_position: time_position
 	};
 }
@@ -4010,9 +4010,8 @@ function getSearchResults(context, query) {
 
 function getQueueHistory() {
 	return {
-		type: 'MOPIDY_GET_HISTORY'
+		type: 'MOPIDY_GET_QUEUE_HISTORY'
 	};
-	return instruct('history.getHistory');
 }
 
 /***/ }),
@@ -20503,7 +20502,7 @@ var Dater = function (_React$Component) {
 			// get left-over number of seconds
 			seconds = total_seconds - total_minutes * 60;
 			if (seconds <= 9) seconds = '0' + seconds;
-			if (seconds == 0) seconds = '0';
+			if (seconds == 0) seconds = '00';
 
 			// get left-over number of minutes
 			minutes = total_minutes - total_hours * 60;
@@ -51570,16 +51569,17 @@ function reducer() {
                 mute: action.mute
             });
 
+        case 'MOPIDY_SET_TIME_POSITION':
         case 'MOPIDY_TIME_POSITION':
             return Object.assign({}, mopidy, {
                 time_position: action.time_position
             });
 
-        case 'MOPIDY_HISTORY':
+        case 'MOPIDY_QUEUE_HISTORY':
             var history = [];
-            for (var i = 0; i < action.data.length; i++) {
-                history.push(Object.assign({}, action.data[i][1], {
-                    played_at: action.data[i][0],
+            for (var i = 0; i < action.tracks.length; i++) {
+                history.push(Object.assign({}, action.tracks[i][1], {
+                    played_at: action.tracks[i][0],
                     type: 'history'
                 }));
             }
@@ -53431,7 +53431,7 @@ var MopidyMiddleware = function () {
 
                             // otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
-                            store.dispatch(mopidyActions.setTimePosition(store.getState().mopidy.time_position + 1000));
+                            store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
 
                         progress_interval_counter++;
@@ -53458,7 +53458,7 @@ var MopidyMiddleware = function () {
                 break;
 
             case 'event:seeked':
-                store.dispatch({ type: 'MOPIDY_TIMEPOSITION', data: data.time_position });
+                store.dispatch({ type: 'MOPIDY_TIME_POSITION', time_position: data.time_position });
                 break;
 
             case 'event:trackPlaybackEnded':
@@ -53470,11 +53470,11 @@ var MopidyMiddleware = function () {
                 break;
 
             case 'event:volumeChanged':
-                store.dispatch({ type: 'MOPIDY_VOLUME', data: data.volume });
+                store.dispatch({ type: 'MOPIDY_VOLUME', volume: data.volume });
                 break;
 
             case 'event:muteChanged':
-                store.dispatch({ type: 'MOPIDY_MUTE', data: data.mute });
+                store.dispatch({ type: 'MOPIDY_MUTE', mute: data.mute });
                 break;
 
             case 'event:optionsChanged':
@@ -53740,11 +53740,21 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_SET_VOLUME':
-                        instruct(socket, store, 'playback.setVolume', { volume: action.volume });
+                        instruct(socket, store, 'playback.setVolume', { volume: action.volume }).then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_VOLUME',
+                                volume: action.volume
+                            });
+                        });
                         break;
 
                     case 'MOPIDY_SEEK':
-                        instruct(socket, store, 'playback.seek', { time_position: action.time_position });
+                        instruct(socket, store, 'playback.seek', { time_position: action.time_position }).then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_TIME_POSITION',
+                                time_position: action.time_position
+                            });
+                        });
                         break;
 
                     case 'MOPIDY_GET_TIME_POSITION':
@@ -55009,6 +55019,15 @@ var MopidyMiddleware = function () {
                         instruct(socket, store, 'tracklist.getTlTracks').then(function (response) {
                             store.dispatch({
                                 type: 'QUEUE_LOADED',
+                                tracks: helpers.formatTracks(response)
+                            });
+                        });
+                        break;
+
+                    case 'MOPIDY_GET_QUEUE_HISTORY':
+                        instruct(socket, store, 'history.getHistory').then(function (response) {
+                            store.dispatch({
+                                type: 'MOPIDY_QUEUE_HISTORY',
                                 tracks: helpers.formatTracks(response)
                             });
                         });
