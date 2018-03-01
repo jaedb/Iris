@@ -379,13 +379,13 @@ const PusherMiddleware = (function(){
                 request(store, 'change_radio', data)
                     .then(
                         response => {
-                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
                             if (response.status == 0){
                                 store.dispatch(uiActions.createNotification({content: response.message, type: 'bad'}));
                             }
                         },
                         error => {       
-                            store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));                     
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));                     
                             store.dispatch(coreActions.handleException(
                                 'Could not change radio',
                                 error

@@ -183,14 +183,23 @@ export function createNotification(data){
         notification: Object.assign(
             {
                 key: helpers.generateGuid(),
+                duration: 3,
                 type: 'default',
                 title: null,
                 content: null,
                 description: null,
-                sticky: false
+                sticky: false,
+                closing: false
             },
             data
         )
+    }
+}
+
+export function closeNotification(key){
+    return { 
+        type: 'CLOSE_NOTIFICATION',
+        key: key
     }
 }
 
@@ -264,6 +273,13 @@ export function cancelProcess(key){
 export function processCancelled(key){
     return { 
         type: 'PROCESS_CANCELLED',
+        key: key
+    }
+}
+
+export function processFinishing(key){
+    return { 
+        type: 'PROCESS_FINISHING',
         key: key
     }
 }

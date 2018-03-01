@@ -621,7 +621,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         });
                     }
 
-                    dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'))
+                    dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'))
                 },
                 error => {
                     dispatch(coreActions.handleException(
@@ -1615,7 +1615,7 @@ export function getLibraryTracksAndPlayProcessor(data){
                         ))
                     } else {
                         dispatch(mopidyActions.playURIs(uris, data.uri));
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'))
+                        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'))
                     }
                 },
                 error => {
@@ -1695,7 +1695,7 @@ export function getPlaylistTracksAndPlayProcessor(data){
                         ))
                     } else {
                         dispatch(mopidyActions.playURIs(uris, data.uri))
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
+                        dispatch(uiActions.processFinishing('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
                     }
                 },
                 error => {
@@ -1870,7 +1870,7 @@ export function getLibraryPlaylistsProcessor(data){
                         ))
                         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', {next: response.next}))
                     } else {
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
+                        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'))
                         dispatch({type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL'})
                     }
                 },
@@ -1941,7 +1941,7 @@ export function getLibraryArtistsProcessor(data){
                         ))
                         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', {next: response.artists.next}))
                     } else {
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
+                        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'))
                     }
                 },
                 error => {
@@ -2011,7 +2011,7 @@ export function getLibraryAlbumsProcessor(data){
                         ))
                         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', {next: response.next}))
                     } else {
-                        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
+                        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'))
                     }
                 },
                 error => {

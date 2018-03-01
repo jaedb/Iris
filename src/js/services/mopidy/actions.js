@@ -36,10 +36,154 @@ export function debug(call, value){
 	}
 }
 
+/**
+ * Core play actions
+ **/
+
+export function getPlayState(){
+	return {
+		type: 'MOPIDY_GET_PLAY_STATE'
+	}
+}
+
+export function play(){
+	return {
+		type: 'MOPIDY_PLAY'
+	}
+}
+
+export function pause(){
+	return {
+		type: 'MOPIDY_PAUSE'
+	}
+}
+
+export function stop(){
+	return {
+		type: 'MOPIDY_PAUSE'
+	}
+}
+
+export function next(){
+	return {
+		type: 'MOPIDY_NEXT'
+	}
+}
+
+export function previous(){
+	return {
+		type: 'MOPIDY_PREVIOUS'
+	}
+}
+
+export function getMute(){
+	return {
+		type: 'MOPIDY_GET_MUTE'
+	}
+}
+
+export function setMute(mute){
+	return {
+		type: 'MOPIDY_SET_MUTE',
+		mute: mute
+	}
+}
+
+export function getVolume(){
+	return {
+		type: 'MOPIDY_GET_VOLUME'
+	}
+}
+
+export function setVolume(volume){
+	return {
+		type: 'MOPIDY_SET_VOLUME',
+		volume: volume
+	}
+}
+
+export function getConsume(){
+	return {
+		type: 'MOPIDY_GET_CONSUME'
+	}
+}
+
+export function setConsume(consume){
+	return {
+		type: 'MOPIDY_SET_CONSUME',
+		consume: consume
+	}
+}
+
+export function getRepeat(){
+	return {
+		type: 'MOPIDY_GET_REPEAT'
+	}
+}
+
+export function setRepeat(repeat){
+	return {
+		type: 'MOPIDY_SET_REPEAT',
+		repeat: repeat
+	}
+}
+
+export function getRandom(){
+	return {
+		type: 'MOPIDY_GET_RANDOM'
+	}
+}
+
+export function setRandom(random){
+	return {
+		type: 'MOPIDY_SET_RANDOM',
+		random: random
+	}
+}
+
+export function seek(time_position){
+	return {
+		type: 'MOPIDY_SEEK',
+		time_position: parseInt(time_position)
+	}
+}
+
+export function getTimePosition(){
+	return {
+		type: 'MOPIDY_GET_TIME_POSITION'
+	}
+}
+
+export function setTimePosition(time_position){
+	return {
+		type: 'MOPIDY_SET_TIME_POSITION',
+		time_position: time_position
+	}
+}
+
+export function getUriSchemes(){
+	return {
+		type: 'MOPIDY_GET_URI_SCHEMES'
+	}
+}
+
+
 
 /**
- * Playback-oriented actions
+ * Advanced playback actions
  **/
+
+export function getCurrentTrack(){
+	return {
+		type: 'MOPIDY_GET_CURRENT_TRACK'
+	}
+}
+
+export function getQueue(){
+	return {
+		type: 'MOPIDY_GET_QUEUE'
+	}
+}
 
 export function changeTrack(tlid){
 	return {
@@ -107,51 +251,6 @@ export function reorderTracklist(indexes, insert_before){
 
 export function clearTracklist(){
 	return instruct('tracklist.clear')
-}
-
-export function play(){
-	return {
-		type: 'MOPIDY_TRIGGER_PLAY'
-	}
-}
-
-export function pause(){
-	return instruct('playback.pause')
-}
-
-export function stop(){
-	return instruct('playback.stop')
-}
-
-export function next(){
-	return instruct('playback.next')
-}
-
-export function previous(){
-	return instruct('playback.previous')
-}
-
-export function setMute(mute){
-	return instruct('mixer.setMute', {mute: mute})
-}
-
-export function setVolume(volume){
-	return instruct('playback.setVolume', {volume: volume})
-}
-
-export function seek(time_position){
-	return instruct('playback.seek', {time_position: parseInt(time_position)})
-}
-
-export function getTimePosition(){
-	return instruct('playback.getTimePosition')
-}
-
-export function setTimePosition(time_position){
-	return {
-		type: 'MOPIDY_TIMEPOSITION',
-		data: time_position
-	}
 }
 
 
@@ -296,6 +395,9 @@ export function getSearchResults(context, query, limit = 100){
  **/
 
 export function getQueueHistory(){
+	return {
+		type: 'MOPIDY_GET_HISTORY'
+	}
 	return instruct('history.getHistory')
 }
  

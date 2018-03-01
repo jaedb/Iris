@@ -50,7 +50,7 @@ var initialState = {
 		show_initial_setup: true,
 		slim_mode: false,
 		selected_tracks: [],
-		notifications: [],
+		notifications: {},
 		processes: {}
 	},
 	mopidy: {

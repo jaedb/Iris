@@ -16,7 +16,7 @@
 		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
 		color: $white;
-		pointer-events: all;
+		pointer-events: all; 
 		border-radius: 3px;
 		
 		h4 {
@@ -69,6 +69,11 @@
 
 		&.bad {
 			background: $red;
+		}
+
+		&.closing,
+		&.finishing {
+			@include fadeout();
 		}
 
 		&.process {
