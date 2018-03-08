@@ -13,6 +13,8 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
+import socket
+
 if sys.platform == 'win32':
     import ctypes
 
@@ -37,6 +39,122 @@ class IrisCore(object):
         "seed_tracks": [],
         "results": []
     }
+    snapcast_listener = False
+
+
+    ##
+    # Create a new snapcast TCP connection
+    #
+    # @return socket
+    ##
+    def new_snapcast_socket(self):
+        try:
+            snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
+        except socket.gaierror, e:
+            logger.error("Iris could not connect to Snapcast: %s" % e)
+            raise e;
+        except socket.error, e:
+            logger.error("Iris could not connect to Snapcast: %s" % e)
+            raise e;
+        
+        return snapcast
+
+
+    def snapcast_disconnect(self):
+        if (self.snapcast_listener):
+            self.snapcast_listener.close()
+
+
+    ##
+    # Handle a message from the Snapcast Telnet API
+    #
+    # @param data = string
+    ##
+    def snapcast_handle_message(self, data):
+        logger.info("Iris received Snapcast message: "+data)
+
+        try:
+            data = json.loads(data)
+        except:
+            logger.error("Iris could not digest Snapcast message: "+data)
+
+        print "broadcasting..."
+        broadcast_data = data['params']
+        broadcast_data['type'] = "snapcast_"+data['method'].replace('.','_').lower()
+        self.broadcast(data=broadcast_data)
+
+
+    ## 
+    # Send a request to Snapcast
+    ##
+    def snapcast_instruct(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+        request_id = kwargs.get('request_id', None)
+        data = kwargs.get('data', {})
+
+        # Pass our request_id as the jsonrpc ID
+        request_id = data['id']
+
+        if 'jsonrpc' not in data:
+            data['jsonrpc'] = "2.0"
+
+        # Convert to string. For some really nuts reason we need an extra trailing curly brace...
+        data = json.dumps(data)+'}'
+
+        # Create our connection
+        try:
+            snapcast_socket = self.new_snapcast_socket()
+        except e:            
+            callback(error={
+                'status': 0,
+                'message': "Could not connect to Snapcast",
+                'data': e
+            })
+            return
+
+        # Attempt to send the request
+        try:
+            snapcast_socket.send(data.encode('ascii')+b"\n")
+        except socket.error, e:
+            logger.error("Iris could not send request to Snapcast: %s" % e)
+            callback(error={
+                'status': 0,
+                'message': "Failed to send request to Snapcast"
+            })
+            return
+
+        # Wait for response
+        while True:
+            try:
+                response = snapcast_socket.recv(8192)
+            except socket.error, e:
+                logger.error("Iris failed to receive Snapcast response: %s" % e)
+                callback(error={
+                    'status': 0,
+                    'message': "Failed to receive Snapcast response"
+                })
+            
+            snapcast_socket.close()
+
+            if not len(response):
+                break
+
+            try:
+                response = json.loads(response)
+                callback(response=response)
+            except:
+                logger.error("Iris received malformed Snapcast response: "+response)
+                callback(error={
+                    'status': 0,
+                    'message': "Malformed Snapcast response",
+                    'data': response
+                })
+                return
+
+            return
+
+
 
 
     ##
@@ -272,7 +390,8 @@ class IrisCore(object):
                 "country": self.config['iris']['country'],
                 "locale": self.config['iris']['locale'],
                 "spotify_authorization_url": self.config['iris']['spotify_authorization_url'],
-                "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url']
+                "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url'],
+                "snapcast_enabled": self.config['iris']['snapcast_enabled']
             }
         }
 
