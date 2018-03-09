@@ -20,11 +20,8 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         logger.info('Starting Iris '+mem.iris.version)
 
         #if mem.iris.config['iris']['snapcast_enabed']:
-        try:
-            mem.iris.snapcast_listener = mem.iris.new_snapcast_socket()
-            logger.info("Iris connected to Snapcast")
-        except e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
+        # Create our listening socket for Snapcast notifications
+        mem.iris.create_snapcast_listener()
 
     def on_stop(self):
         mem.iris.snapcast_disconnect()

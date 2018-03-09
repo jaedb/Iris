@@ -43,6 +43,20 @@ class IrisCore(object):
 
 
     ##
+    # Create our ongoing notification listener
+    #
+    # TODO: Make non-blocking
+    ##
+    def create_snapcast_listener(self):
+        try:
+            listener = self.new_snapcast_socket()
+            self.snapcast_listener = listener
+            logger.info("Iris connected to Snapcast")
+        except Exception, e:
+            logger.error("Iris could not connect to Snapcast: %s" % e)
+
+
+    ##
     # Create a new snapcast TCP connection
     #
     # @return socket
@@ -53,14 +67,16 @@ class IrisCore(object):
             snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
         except socket.gaierror, e:
             logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise e;
+            raise Exception(e);
         except socket.error, e:
             logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise e;
+            raise Exception(e);
         
         return snapcast
 
-
+    ##
+    # Disconnect our Snapcast listener
+    ##
     def snapcast_disconnect(self):
         if (self.snapcast_listener):
             self.snapcast_listener.close()
@@ -68,6 +84,8 @@ class IrisCore(object):
 
     ##
     # Handle a message from the Snapcast Telnet API
+    # We create a connection for this request, and then drop it once completed. This is because
+    # we have a separate socket for monitoring notifications
     #
     # @param data = string
     ##
@@ -87,6 +105,9 @@ class IrisCore(object):
 
     ## 
     # Send a request to Snapcast
+    #
+    # We create a connection for this request, and then drop it once completed. This is because
+    # we have a separate socket for monitoring notifications
     ##
     def snapcast_instruct(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
