@@ -20,24 +20,24 @@ const PusherMiddleware = (function(){
     const handleMessage = (ws, store, message) => {
 
         if (store.getState().ui.log_pusher){
-            console.log('Pusher', message);
+            console.log('Pusher log', message);
         }
 
         // Response with request_id
-        if (message.request_id !== undefined && message.request_id){
+        if (message.id !== undefined && message.id){
 
             // Response matches a pending request
-            if (deferredRequests[message.request_id] !== undefined){
+            if (deferredRequests[message.id] !== undefined){
 
-                store.dispatch(uiActions.stopLoading(message.request_id));
+                store.dispatch(uiActions.stopLoading(message.id));
 
                 // Response is an error
-                if (message.status <= 0){
-                    deferredRequests[message.request_id].reject(message);
+                if (message.error !== undefined){
+                    deferredRequests[message.id].reject(message.error);
 
                 // Successful response
                 } else {
-                    deferredRequests[message.request_id].resolve(message);
+                    deferredRequests[message.id].resolve(message.result);
                 }
 
             // Hmm, the response doesn't appear to be for us?
@@ -52,27 +52,34 @@ const PusherMiddleware = (function(){
         } else {
 
             // Broadcast of an error
-            if (message.status !== undefined && message.status <= 0){
+            if (message.error !== undefined){
                 store.dispatch(coreActions.handleException(
-                    'Pusher: '+message.message, 
+                    'Pusher: '+message.error.message, 
                     message
                 ));
             } else {
-                message.type = 'PUSHER_'+message.method.toUpperCase();
-                store.dispatch(message);  
+                store.dispatch(Object.assign(
+                    {}, 
+                    message.params, 
+                    {
+                        type: message.method.toUpperCase()
+                    }
+                ));
             }
         }
     }
 
-    const request = (store, method, params = {}) => {
+    const request = (store, method, params = null) => {
         return new Promise((resolve, reject) => {
 
             var id = helpers.generateGuid();
             var message = {
-                jsonrpc: 2.0,
+                jsonrpc: '2.0',
                 id: id,
-                method: method,
-                params: params,
+                method: method
+            }
+            if (params){
+                message.params = params;
             }
             socket.send(JSON.stringify(message));
 
@@ -83,13 +90,9 @@ const PusherMiddleware = (function(){
                 function(){
                     store.dispatch(uiActions.stopLoading(id));
                     reject({
-                        jsonrpc: 2.0, 
                         id: id, 
-                        error: {
-                            id: id, 
-                            code: 32300, 
-                            message: "Request timed out"
-                        }
+                        code: 32300, 
+                        message: "Request timed out"
                     });
                 },
                 30000
@@ -113,7 +116,7 @@ const PusherMiddleware = (function(){
                     socket.close();
                 }
 
-                store.dispatch({ type: 'PUSHER_CONNECTING' });
+                store.dispatch({type: 'PUSHER_CONNECTING'});
 
                 var state = store.getState();
                 var connection = {
@@ -131,9 +134,10 @@ const PusherMiddleware = (function(){
                     [ connection.client_id, connection.connection_id, connection.username ]
                 );
 
-                socket.onmessage = (message) => {
-                    var message = JSON.parse(message.data);
-                    handleMessage(socket, store, message )
+                socket.onopen = () => {
+                    store.dispatch({
+                        type: 'PUSHER_CONNECTED'
+                    });
                 };
 
                 socket.onclose = () => {
@@ -145,6 +149,11 @@ const PusherMiddleware = (function(){
                     setTimeout(() => {
                         store.dispatch(pusherActions.connect())
                     }, 5000);
+                };
+
+                socket.onmessage = (message) => {
+                    var message = JSON.parse(message.data);
+                    handleMessage(socket, store, message);
                 };
 
                 break;
@@ -277,7 +286,7 @@ const PusherMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_VERSION',
-                                version: response.result
+                                version: response.version
                             })
                         },
                         error => {                        
@@ -297,14 +306,14 @@ const PusherMiddleware = (function(){
                             console.log(response)
                             store.dispatch({
                                 type: 'PUSHER_CONFIG',
-                                config: response.result
+                                config: response.config
                             });
 
                             var core = store.getState().core;
                             if (!core.country || !core.locale){
                                 store.dispatch(coreActions.set({
-                                    country: response.result.country,
-                                    locale: response.result.locale
+                                    country: response.config.country,
+                                    locale: response.config.locale
                                 }))
                             }
                         },
@@ -323,7 +332,7 @@ const PusherMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_CONNECTIONS',
-                                connections: response.result
+                                connections: response.connections
                             })
                         },
                         error => {                            
@@ -346,7 +355,7 @@ const PusherMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_RADIO',
-                                radio: response.result.radio
+                                radio: response.radio
                             });
                         },
                         error => {                            

@@ -32,9 +32,9 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { connections: connections });
 
         case 'PUSHER_CONNECTION_ADDED':
-        case 'PUSHER_CONNECTION_UPDATED':
+        case 'PUSHER_CONNECTION_CHANGED':
             var connections = Object.assign({}, pusher.connections)
-            connections[action.connection.connection_id] = action.connection
+            connections[action.connection.connection_id] = action.connection;
             return Object.assign({}, pusher, { connections: connections });
 
         case 'PUSHER_CONNECTION_REMOVED':

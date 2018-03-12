@@ -305,10 +305,12 @@ class IrisCore(object):
             message={
                 'method': "pusher_connection_added",
                 'params': {
-                    'connection_id': connection_id,
-                    'client_id': client['client_id'],
-                    'username': client['username'],
-                    'ip': client['ip']
+                    'connection': {
+                        'connection_id': connection_id,
+                        'client_id': client['client_id'],
+                        'username': client['username'],
+                        'ip': client['ip']
+                    }
                 }
             }
         )

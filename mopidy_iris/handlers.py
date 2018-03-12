@@ -75,19 +75,22 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         if 'jsonrpc' not in message:
             self.handle_response(id=id, error={'id': id, 'code': 32602, 'message': 'Invalid JSON-RPC request (missing property "jsonrpc")'})
         
-        params = message['params']
+        if 'params' in message:
+            params = message['params']
 
-        # Handle hard-coded connection_id in messages
-        # Otherwise include the origin connection of this message
-        if 'connection_id' not in params:
-            params['connection_id'] = self.connection_id
+            # Handle hard-coded connection_id in messages
+            # Otherwise include the origin connection of this message
+            if 'connection_id' not in params:
+                message['params']['connection_id'] = self.connection_id
+        else:
+            params = {}
 
         # call the method, as specified in payload
         if 'method' in message:
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
-                getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_response(id=id, response=response, error=error))
+                getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_response(id=id, method=message['method'], response=response, error=error))
 
             else:
                 self.handle_response(error={'id': id, 'code': 32601, 'message': 'Method "'+message['method']+'" does not exist'}, id=id)
@@ -105,12 +108,14 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
     # This is just our callback from an Async request
     ##
     def handle_response(self, *args, **kwargs):
+        id = kwargs.get('id', False)
+        method = kwargs.get('method', None)
         response = kwargs.get('response', None)
         error = kwargs.get('error', None)
-        id = kwargs.get('id', False)
         request_response = {
             'id': id,
-            'jsonrpc': '2.0'
+            'jsonrpc': '2.0',
+            'method': method
         }
 
         # We've been given an error
@@ -131,7 +136,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             request_response['result'] = response
         
         # Respond to the original request
-        mem.iris.send_message(connection_id=self.connection_id, data=request_response)
+        mem.iris.send_message(connection_id=self.connection_id, message=request_response)
 
 
 
@@ -161,7 +166,7 @@ class HttpHandler(tornado.web.RequestHandler):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-            getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_response(id=id, response=response, error=error))
+            getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_response(id=id, method=slug, response=response, error=error))
 
         else:
             self.handle_response(id=self.request_id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
@@ -181,7 +186,7 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(mem.iris, slug):
             try:
-                getattr(mem.iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_response(id=id, response=response, error=error))
+                getattr(mem.iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_response(id=id, method=slug, response=response, error=error))
 
             except urllib2.HTTPError as e:
                 self.handle_response(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
@@ -197,11 +202,13 @@ class HttpHandler(tornado.web.RequestHandler):
     ##
     def handle_response(self, *args, **kwargs):
         id = kwargs.get('id', None)
+        method = kwargs.get('method', None)
         response = kwargs.get('response', None)
         error = kwargs.get('error', None)
         request_response = {
             'id': id,
-            'jsonrpc': '2.0'
+            'jsonrpc': '2.0',
+            'method': method
         }
 
         if error:
