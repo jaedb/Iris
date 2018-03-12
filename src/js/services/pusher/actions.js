@@ -48,6 +48,18 @@ export function instruct(data = null){
 	}
 }
 
+export function getConfig(){
+	return {
+		type: 'PUSHER_GET_CONFIG'
+	}
+}
+
+export function getVersion(){
+	return {
+		type: 'PUSHER_GET_VERSION'
+	}
+}
+
 export function deliverBroadcast(data = null){
 	return {
 		type: 'PUSHER_DELIVER_BROADCAST',
@@ -66,6 +78,12 @@ export function sendAuthorization(recipient_connectionid, authorization, me){
 				me: me
 			}
 		}
+	}
+}
+
+export function getRadio(){
+	return {
+		type: 'PUSHER_GET_RADIO'
 	}
 }
 
@@ -109,3 +127,35 @@ export function addQueueMetadata(tlids = [], from_uri = null){
 		from_uri: from_uri
 	}
 }
+
+/**
+ * Snapcast actions
+ * TODO: Figure out how to cleanly split this out to it's own service
+ * but still share the pusher middleware connection
+ **/
+
+export function getSnapcast(){
+	return {
+		type: 'PUSHER_GET_SNAPCAST',
+		data: {
+			method: 'Server.GetStatus'
+		}
+	}
+}
+
+export function setSnapcastClientVolume(id, muted, percent){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
+		data: {
+			method: 'Client.SetVolume',
+			params: {
+				id: id,
+				volume: {
+					muted: muted,
+					percent: percent
+				}
+			}
+		}
+	}
+}
+

@@ -51,6 +51,9 @@ export default function reducer(pusher = {}, action){
         case 'PUSHER_START_UPGRADE':
             return Object.assign({}, pusher, { upgrading: true });
 
+        case 'PUSHER_SNAPCAST':
+            return Object.assign({}, pusher, { snapcast: action.snapcast });
+
         default:
             return pusher
     }

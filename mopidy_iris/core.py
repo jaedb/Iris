@@ -98,9 +98,9 @@ class IrisCore(object):
             logger.error("Iris could not digest Snapcast message: "+data)
 
         print "broadcasting..."
-        broadcast_data = data['params']
-        broadcast_data['type'] = "snapcast_"+data['method'].replace('.','_').lower()
-        self.broadcast(data=broadcast_data)
+        print data
+
+        self.broadcast(data)
 
 
     ## 
@@ -114,8 +114,8 @@ class IrisCore(object):
         request_id = kwargs.get('request_id', None)
         data = kwargs.get('data', {})
 
-        # Pass our request_id as the jsonrpc ID
-        request_id = data['id']
+        if 'id' not in data:
+            data['id'] = request_id
 
         if 'jsonrpc' not in data:
             data['jsonrpc'] = "2.0"
@@ -227,32 +227,38 @@ class IrisCore(object):
 
     def send_message(self, *args, **kwargs):        
         connection_id = kwargs.get('connection_id', None)
-        data = kwargs.get('data', {})
+        message = kwargs.get('message', None)
+
+        if 'jsonrpc' not in message:
+            message['jsonrpc'] = '2.0'
 
         try:
-            self.connections[connection_id]['connection'].write_message( json_encode(data) )
+            self.connections[connection_id]['connection'].write_message(json_encode(message))
         except:
             logger.error('Failed to send message to '+ connection_id)
 
 
     def broadcast(self, *args, **kwargs):
-        data = kwargs.get('data', {})
         callback = kwargs.get('callback', None)
+        message = kwargs.get('message', None)
+
+        if 'jsonrpc' not in message:
+            message['jsonrpc'] = '2.0'
 
         for connection in self.connections.itervalues():
 
             send_to_this_connection = True
 
             # Don't send the broadcast to the origin, naturally
-            if 'connection_id' in data:
-                if connection['connection_id'] == data["connection_id"]:
+            if 'connection_id' in message:
+                if connection['connection_id'] == message["connection_id"]:
                     send_to_this_connection = False
 
             if send_to_this_connection:
-                connection['connection'].write_message(json_encode(data))
+                connection['connection'].write_message(json_encode(message))
 
         response = {
-            'message': 'Broadcast to '+str(len(self.connections))+' connections'
+            'result': 'Broadcast to '+str(len(self.connections))+' connections'
         }
         if (callback):
             callback(response)
@@ -296,35 +302,37 @@ class IrisCore(object):
 
         self.send_message(
             connection_id=connection_id,
-            data={
-                'type': 'connected',
-                'connection_id': connection_id,
-                'client_id': client['client_id'],
-                'username': client['username'],
-                'ip': client['ip']
+            message={
+                'method': "pusher_connection_added",
+                'params': {
+                    'connection_id': connection_id,
+                    'client_id': client['client_id'],
+                    'username': client['username'],
+                    'ip': client['ip']
+                }
             }
         )
 
-        self.broadcast(
-            data={
-                'type': 'connection_added',
+        self.broadcast(message={
+            'method': 'pusher_connection_added',
+            'params': {
                 'connection': client
             }
-        )
+        })
     
     def remove_connection(self, connection_id):
         if connection_id in self.connections:
             try:
                 client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
-                self.broadcast(
-                    data={
-                        'type': 'connection_removed',
+                self.broadcast(message={
+                    'method': "pusher_connection_removed",
+                    'params': {
                         'connection': client
                     }
-                )
+                })
             except:
-                logger.error('Failed to close connection to '+ connection_id)           
+                logger.error('Failed to close connection to '+ connection_id)
 
     def set_username(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
@@ -333,12 +341,12 @@ class IrisCore(object):
 
         if connection_id in self.connections:
             self.connections[connection_id]['client']['username'] = data['username']
-            self.broadcast(
-                data={
-                    'type': 'connection_updated',
+            self.broadcast(message={
+                'method': "pusher_connection_updated",
+                'params': {
                     'connection': self.connections[connection_id]['client']
                 }
-            )
+            })
             response = {
                 'connection_id': connection_id,
                 'username': data['username']
@@ -358,16 +366,19 @@ class IrisCore(object):
             if (callback):
                 callback(False, error)
             else:
-                return error   
+                return error
 
     def deliver_message(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         data = kwargs.get('data', {})
 
         if data['connection_id'] in self.connections:
-            self.send_message(connection_id=data['connection_id'], data=data['message'])
+            self.send_message(
+                connection_id=data['connection_id'],
+                message=data['message']
+            )
             response = {
-                'message': 'Sent message to '+data['connection_id']
+                'result': 'Sent message to '+data['connection_id']
             }
             if (callback):
                 callback(response)
@@ -458,7 +469,7 @@ class IrisCore(object):
         try:
             subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
             response = {
-                'message': "Upgrade started"
+                'result': "Upgrade started"
             }
             if (callback):
                 callback(response)
@@ -467,7 +478,7 @@ class IrisCore(object):
 
         except subprocess.CalledProcessError as e:
             error = {
-                'message': "Could not start upgrade"
+                'result': "Could not start upgrade"
             }
             if (callback):
                 callback(False, error)
@@ -542,19 +553,19 @@ class IrisCore(object):
 
             if starting:
                 self.core.playback.play()
-                self.broadcast(
-                    data={
-                        'type': 'radio_started',
+                self.broadcast(message={
+                    'method': "radio_started",
+                    'params': {
                         'radio': self.radio
                     }
-                )
+                })
             else:
-                self.broadcast(
-                    data={
-                        'type': 'radio_changed',
+                self.broadcast(message={
+                    'method': "radio_changed",
+                    'params': {
                         'radio': self.radio
                     }
-                )
+                })
 
             self.get_radio(callback=callback)
             return
@@ -564,8 +575,11 @@ class IrisCore(object):
             logger.error("No recommendations returned by Spotify")
             self.radio['enabled'] = 0;
             error = {
+                'code': 32500,
                 'message': 'Could not start radio',
-                'radio': self.radio
+                'data': {
+                    'radio': self.radio
+                }
             }
             if (callback):
                 callback(False, error)
@@ -588,12 +602,12 @@ class IrisCore(object):
         self.core.tracklist.set_consume(self.initial_consume)
         self.core.playback.stop()        
 
-        self.broadcast(
-            data={
-                'type': 'radio_stopped',
+        self.broadcast(message={
+            'method': "radio_stopped",
+            'params': {
                 'radio': self.radio
             }
-        )
+        })
         
         response = {
             'message': 'Stopped radio'
@@ -690,12 +704,12 @@ class IrisCore(object):
             }
             self.queue_metadata['tlid_'+str(tlid)] = item
 
-        self.broadcast(
-            data={
-                'type': 'queue_metadata_changed',
+        self.broadcast(message={
+            'method': 'queue_metadata_changed',
+            'params': {
                 'queue_metadata': self.queue_metadata
             }
-        )
+        })
         
         response = {
             'message': 'Added queue metadata'
@@ -763,12 +777,12 @@ class IrisCore(object):
             token['expires_at'] = time.time() + token['expires_in']
             self.spotify_token = token
 
-            self.broadcast(
-                data={
-                    'type': 'spotify_token_changed',
+            self.broadcast(message={
+                'method': 'spotify_token_changed',
+                'params': {
                     'spotify_token': self.spotify_token
                 }
-            )
+            })
 
             response = {
                 'spotify_token': token
