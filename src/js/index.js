@@ -45,7 +45,10 @@ console.error = function(message, error){
 */
 
 // setup our analytics tracking
-ReactGA.initialize('UA-64701652-3');
+if (window._iris_config && !window._iris_config['privacy']) {
+    ReactGA.initialize('UA-64701652-3');
+}
+
 function handleUpdate(){
 	ReactGA.set({ page: window.location.hash });
 	ReactGA.pageview(window.location.hash);
