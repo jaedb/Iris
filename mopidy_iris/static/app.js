@@ -53209,11 +53209,6 @@ var PusherMiddleware = function () {
                     case 'PUSHER_START_UPGRADE':
                         _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
                         request(store, 'upgrade').then(function (response) {
-                            if (response.error) {
-                                console.error(response.error);
-                                return false;
-                            }
-
                             if (response.upgrade_successful) {
                                 store.dispatch(uiActions.createNotification({ content: 'Upgrade complete' }));
                             } else {
@@ -53232,10 +53227,6 @@ var PusherMiddleware = function () {
                         request(store, 'set_username', {
                             username: action.username
                         }).then(function (response) {
-                            if (response.error) {
-                                console.error(response.error);
-                                return false;
-                            }
                             response.type = 'PUSHER_USERNAME_CHANGED';
                             store.dispatch(response);
                         }, function (error) {
@@ -53256,9 +53247,7 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_GET_CONFIG':
-                        console.log(action);
                         request(store, 'get_config').then(function (response) {
-                            console.log(response);
                             store.dispatch({
                                 type: 'PUSHER_CONFIG',
                                 config: response.config

@@ -43,6 +43,30 @@ class IrisCore(object):
 
 
     ##
+    # Create a new snapcast TCP connection
+    #
+    # @return socket
+    ##
+    def new_snapcast_socket(self):
+
+        if not self.config['iris'].get('snapcast_enabled'):
+            logger.error("Iris Snapcast not enabled")
+            raise Exception("Snapcast not enabled")
+
+        try:
+            snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
+        except socket.gaierror, e:
+            logger.error("Iris could not connect to Snapcast: %s" % e)
+            raise Exception(e);
+        except socket.error, e:
+            logger.error("Iris could not connect to Snapcast: %s" % e)
+            raise Exception(e);
+        
+        return snapcast
+
+
+    ##
     # Create our ongoing notification listener
     #
     # TODO: Make non-blocking
@@ -57,29 +81,12 @@ class IrisCore(object):
 
 
     ##
-    # Create a new snapcast TCP connection
-    #
-    # @return socket
-    ##
-    def new_snapcast_socket(self):
-        try:
-            snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
-        except socket.gaierror, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-        except socket.error, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-        
-        return snapcast
-
-    ##
     # Disconnect our Snapcast listener
     ##
-    def snapcast_disconnect(self):
-        if (self.snapcast_listener):
+    def snapcast_disconnect_listener(self):
+        if self.snapcast_listener:
             self.snapcast_listener.close()
+            self.snapcast_listener = None
 
 
     ##
@@ -90,7 +97,7 @@ class IrisCore(object):
     # @param data = string
     ##
     def snapcast_handle_message(self, data):
-        logger.info("Iris received Snapcast message: "+data)
+        logger.debug("Iris received Snapcast message: "+data)
 
         try:
             data = json.loads(data)
@@ -126,11 +133,10 @@ class IrisCore(object):
         # Create our connection
         try:
             snapcast_socket = self.new_snapcast_socket()
-        except e:            
-            callback(error={
-                'status': 0,
+        except Exception, e:            
+            callback(response=None, error={
                 'message': "Could not connect to Snapcast",
-                'data': e
+                'data': str(e)
             })
             return
 
@@ -139,9 +145,9 @@ class IrisCore(object):
             snapcast_socket.send(data.encode('ascii')+b"\n")
         except socket.error, e:
             logger.error("Iris could not send request to Snapcast: %s" % e)
-            callback(error={
-                'status': 0,
-                'message': "Failed to send request to Snapcast"
+            callback(response=None, error={
+                'message': "Failed to send request to Snapcast",
+                'data': str(e)
             })
             return
 
@@ -151,9 +157,9 @@ class IrisCore(object):
                 response = snapcast_socket.recv(8192)
             except socket.error, e:
                 logger.error("Iris failed to receive Snapcast response: %s" % e)
-                callback(error={
-                    'status': 0,
-                    'message': "Failed to receive Snapcast response"
+                callback(response=None, error={
+                    'message': "Failed to receive Snapcast response",
+                    'data': str(e)
                 })
             
             snapcast_socket.close()
@@ -166,8 +172,7 @@ class IrisCore(object):
                 callback(response=response)
             except:
                 logger.error("Iris received malformed Snapcast response: "+response)
-                callback(error={
-                    'status': 0,
+                callback(response=None, error={
                     'message': "Malformed Snapcast response",
                     'data': response
                 })
@@ -240,30 +245,31 @@ class IrisCore(object):
 
     def broadcast(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
-        message = kwargs.get('message', None)
+        data = kwargs.get('data', None)
 
-        if 'jsonrpc' not in message:
-            message['jsonrpc'] = '2.0'
+        if 'jsonrpc' not in data:
+            data['jsonrpc'] = '2.0'
 
         for connection in self.connections.itervalues():
 
             send_to_this_connection = True
 
             # Don't send the broadcast to the origin, naturally
-            if 'connection_id' in message:
-                if connection['connection_id'] == message["connection_id"]:
+            if 'connection_id' in data:
+                if connection['connection_id'] == data["connection_id"]:
                     send_to_this_connection = False
 
             if send_to_this_connection:
-                connection['connection'].write_message(json_encode(message))
+                connection['connection'].write_message(json_encode(data))
 
         response = {
-            'result': 'Broadcast to '+str(len(self.connections))+' connections'
+            'message': 'Broadcast to '+str(len(self.connections))+' connections'
         }
         if (callback):
             callback(response)
         else:
-            return response  
+            return response 
+
     
     ##
     # Connections
@@ -315,7 +321,7 @@ class IrisCore(object):
             }
         )
 
-        self.broadcast(message={
+        self.broadcast(data={
             'method': 'pusher_connection_added',
             'params': {
                 'connection': client
@@ -327,7 +333,7 @@ class IrisCore(object):
             try:
                 client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
-                self.broadcast(message={
+                self.broadcast(data={
                     'method': "pusher_connection_removed",
                     'params': {
                         'connection': client
@@ -343,7 +349,7 @@ class IrisCore(object):
 
         if connection_id in self.connections:
             self.connections[connection_id]['client']['username'] = data['username']
-            self.broadcast(message={
+            self.broadcast(data={
                 'method': "pusher_connection_updated",
                 'params': {
                     'connection': self.connections[connection_id]['client']
@@ -555,14 +561,14 @@ class IrisCore(object):
 
             if starting:
                 self.core.playback.play()
-                self.broadcast(message={
+                self.broadcast(data={
                     'method': "radio_started",
                     'params': {
                         'radio': self.radio
                     }
                 })
             else:
-                self.broadcast(message={
+                self.broadcast(data={
                     'method': "radio_changed",
                     'params': {
                         'radio': self.radio
@@ -604,7 +610,7 @@ class IrisCore(object):
         self.core.tracklist.set_consume(self.initial_consume)
         self.core.playback.stop()        
 
-        self.broadcast(message={
+        self.broadcast(data={
             'method': "radio_stopped",
             'params': {
                 'radio': self.radio
@@ -701,12 +707,12 @@ class IrisCore(object):
         for tlid in data['tlids']:
             item = {
                 'tlid': tlid,
-                'added_from': data['added_from'],
-                'added_by': data['added_by']
+                'added_from': data['added_from'] if 'added_from' in data else None,
+                'added_by': data['added_by'] if 'added_by' in data else None
             }
             self.queue_metadata['tlid_'+str(tlid)] = item
 
-        self.broadcast(message={
+        self.broadcast(data={
             'method': 'queue_metadata_changed',
             'params': {
                 'queue_metadata': self.queue_metadata
@@ -779,7 +785,7 @@ class IrisCore(object):
             token['expires_at'] = time.time() + token['expires_in']
             self.spotify_token = token
 
-            self.broadcast(message={
+            self.broadcast(data={
                 'method': 'spotify_token_changed',
                 'params': {
                     'spotify_token': self.spotify_token

@@ -233,11 +233,6 @@ const PusherMiddleware = (function(){
                 request(store, 'upgrade')
                     .then(
                         response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
-
                             if (response.upgrade_successful){
                                 store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
                             } else {
@@ -263,10 +258,6 @@ const PusherMiddleware = (function(){
                 })
                     .then(
                         response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
                             response.type = 'PUSHER_USERNAME_CHANGED'
                             store.dispatch(response)
                         },
@@ -299,11 +290,9 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_GET_CONFIG':
-                console.log(action)
                 request(store, 'get_config')
                     .then(
                         response => {
-                            console.log(response)
                             store.dispatch({
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
