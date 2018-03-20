@@ -86,14 +86,6 @@ const UIMiddleware = (function(){
             case 'CLOSE_NOTIFICATION':
                 var notifications = Object.assign({}, store.getState().ui.notifications);
 
-                // If a broadcast, add to suppressed_broadcasts
-                if (notifications[action.key] && notifications[action.key].type == 'broadcast'){
-                    store.dispatch({
-                        type: 'SUPPRESS_BROADCAST',
-                        key: action.key
-                    })
-                }
-
                 // start a timeout to remove this notification
                 // This gives us time to animate out the notification before we remove the data
                 var timeout = setTimeout(
@@ -102,6 +94,24 @@ const UIMiddleware = (function(){
                     },
                     200
                 )
+
+                next(action);
+                break;
+
+            case 'REMOVE_NOTIFICATION':
+
+                // Manual removal
+                if (action.manual){
+                    var notifications = Object.assign({}, store.getState().ui.notifications);
+
+                    // If a broadcast, add to suppressed_broadcasts
+                    if (notifications[action.key] && notifications[action.key].type == 'broadcast'){
+                        store.dispatch({
+                            type: 'SUPPRESS_BROADCAST',
+                            key: action.key
+                        })
+                    }
+                }
 
                 next(action);
                 break;

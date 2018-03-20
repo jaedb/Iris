@@ -247,8 +247,17 @@ class IrisCore(object):
         callback = kwargs.get('callback', None)
         data = kwargs.get('data', None)
 
-        if 'jsonrpc' not in data:
-            data['jsonrpc'] = '2.0'
+        if 'error' in data:
+            message = {
+                'jsonrpc': '2.0',
+                'error': data['error']
+            }
+        else:
+            message = {
+                'jsonrpc': '2.0',
+                'method': data['method'] if 'method' in data else None,
+                'params': data['params'] if 'params' in data else None
+            }
 
         for connection in self.connections.itervalues():
 
@@ -260,7 +269,7 @@ class IrisCore(object):
                     send_to_this_connection = False
 
             if send_to_this_connection:
-                connection['connection'].write_message(json_encode(data))
+                connection['connection'].write_message(json_encode(message))
 
         response = {
             'message': 'Broadcast to '+str(len(self.connections))+' connections'

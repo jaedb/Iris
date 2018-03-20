@@ -1376,9 +1376,12 @@ function closeNotification(key) {
 }
 
 function removeNotification(key) {
+    var manual = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'REMOVE_NOTIFICATION',
-        key: key
+        key: key,
+        manual: manual
     };
 }
 
@@ -2049,16 +2052,26 @@ function refreshToken(dispatch, getState) {
                 timeout: 10000
             };
 
-            $.ajax(config).then(function (response) {
-                var token = response.spotify_token;
-                token.token_expiry = new Date().getTime() + token.expires_in * 1000;
-                token.source = 'mopidy';
-                dispatch({
-                    type: 'SPOTIFY_TOKEN_REFRESHED',
-                    access_token_provider: 'backend',
-                    data: token
-                });
-                resolve(token);
+            $.ajax(config).then(function (response, status, xhr) {
+                if (response.error) {
+                    dispatch({ type: 'SPOTIFY_DISCONNECTED' });
+                    reject({
+                        config: config,
+                        xhr: xhr,
+                        status: status,
+                        error: response.error
+                    });
+                } else {
+                    var token = response.result.spotify_token;
+                    token.token_expiry = new Date().getTime() + token.expires_in * 1000;
+                    token.source = 'mopidy';
+                    dispatch({
+                        type: 'SPOTIFY_TOKEN_REFRESHED',
+                        access_token_provider: 'backend',
+                        data: token
+                    });
+                    resolve(token);
+                }
             }, function (xhr, status, error) {
                 dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 reject({
@@ -15619,12 +15632,13 @@ function getVersion() {
 	};
 }
 
-function deliverBroadcast() {
-	var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
+function deliverBroadcast(method, params) {
 	return {
 		type: 'PUSHER_DELIVER_BROADCAST',
-		data: data
+		data: {
+			method: method,
+			params: params
+		}
 	};
 }
 
@@ -52896,19 +52910,29 @@ var UIMiddleware = function () {
                     case 'CLOSE_NOTIFICATION':
                         var notifications = Object.assign({}, store.getState().ui.notifications);
 
-                        // If a broadcast, add to suppressed_broadcasts
-                        if (notifications[action.key] && notifications[action.key].type == 'broadcast') {
-                            store.dispatch({
-                                type: 'SUPPRESS_BROADCAST',
-                                key: action.key
-                            });
-                        }
-
                         // start a timeout to remove this notification
                         // This gives us time to animate out the notification before we remove the data
                         var timeout = setTimeout(function () {
                             store.dispatch(uiActions.removeNotification(action.key));
                         }, 200);
+
+                        next(action);
+                        break;
+
+                    case 'REMOVE_NOTIFICATION':
+
+                        // Manual removal
+                        if (action.manual) {
+                            var notifications = Object.assign({}, store.getState().ui.notifications);
+
+                            // If a broadcast, add to suppressed_broadcasts
+                            if (notifications[action.key] && notifications[action.key].type == 'broadcast') {
+                                store.dispatch({
+                                    type: 'SUPPRESS_BROADCAST',
+                                    key: action.key
+                                });
+                            }
+                        }
 
                         next(action);
                         break;
@@ -53135,7 +53159,10 @@ var PusherMiddleware = function () {
 
                         socket.onopen = function () {
                             store.dispatch({
-                                type: 'PUSHER_CONNECTED'
+                                type: 'PUSHER_CONNECTED',
+                                connection_id: connection.connection_id,
+                                client_id: connection.client_id,
+                                username: connection.username
                             });
                         };
 
@@ -53547,7 +53574,6 @@ var MopidyMiddleware = function () {
                 break;
 
             case 'event:playbackStateChanged':
-                console.log(type, data);
                 store.dispatch({
                     type: 'MOPIDY_PLAY_STATE',
                     play_state: data.new_state
@@ -53719,8 +53745,7 @@ var MopidyMiddleware = function () {
                             });
                         });
 
-                        store.dispatch(pusherActions.deliverBroadcast({
-                            type: 'notification',
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification_type: 'info',
                             content: store.getState().pusher.username + (store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started') + ' playback',
                             icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
@@ -53735,8 +53760,7 @@ var MopidyMiddleware = function () {
                             });
                         });
 
-                        store.dispatch(pusherActions.deliverBroadcast({
-                            type: 'notification',
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification_type: 'info',
                             content: store.getState().pusher.username + ' paused playback',
                             icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
@@ -53746,8 +53770,7 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_NEXT':
                         instruct(socket, store, 'playback.next');
 
-                        store.dispatch(pusherActions.deliverBroadcast({
-                            type: 'notification',
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification_type: 'info',
                             content: store.getState().pusher.username + ' skipped <em>' + store.getState().core.current_track.name + '</em>',
                             icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
@@ -53768,8 +53791,7 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_CHANGE_TRACK':
                         instruct(socket, store, 'playback.play', { tlid: action.tlid });
 
-                        store.dispatch(pusherActions.deliverBroadcast({
-                            type: 'notification',
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification_type: 'info',
                             content: store.getState().pusher.username + ' changed track'
                         }));
@@ -53777,8 +53799,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_REMOVE_TRACKS':
                         instruct(socket, store, 'tracklist.remove', { tlid: action.tlids });
-                        store.dispatch(pusherActions.deliverBroadcast({
-                            type: 'notification',
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification_type: 'info',
                             content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
                         }));
@@ -53870,7 +53891,6 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_GET_TIME_POSITION':
                         instruct(socket, store, 'playback.getTimePosition').then(function (response) {
-                            console.log('playback.getTimePosition', response);
                             store.dispatch({
                                 type: 'MOPIDY_TIME_POSITION',
                                 time_position: response
@@ -65935,7 +65955,7 @@ var Notifications = function (_React$Component) {
 								'div',
 								{ className: notification.type + " notification" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_reactFontawesome2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
-										return _this2.props.uiActions.removeNotification(notification.key);
+										return _this2.props.uiActions.removeNotification(notification.key, true);
 									} }),
 								notification.title ? _react2.default.createElement(
 									'h4',

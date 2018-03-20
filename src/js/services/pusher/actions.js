@@ -60,10 +60,13 @@ export function getVersion(){
 	}
 }
 
-export function deliverBroadcast(data = null){
+export function deliverBroadcast(method, params){
 	return {
 		type: 'PUSHER_DELIVER_BROADCAST',
-		data: data
+		data: {
+			method: method,
+			params: params
+		}
 	}
 }
 

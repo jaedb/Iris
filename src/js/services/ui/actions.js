@@ -203,10 +203,11 @@ export function closeNotification(key){
     }
 }
 
-export function removeNotification(key){
+export function removeNotification(key, manual = false){
     return { 
         type: 'REMOVE_NOTIFICATION',
-        key: key
+        key: key,
+        manual: manual
     }
 }
 
