@@ -44,21 +44,21 @@ export function getConnections(){
 export function connectionAdded(connection){
 	return {
 		type: 'PUSHER_CONNECTION_ADDED',
-		connection: connection.connection
+		connection: connection
 	}
 }
 
 export function connectionChanged(connection){
 	return {
 		type: 'PUSHER_CONNECTION_CHANGED',
-		connection: connection.connection
+		connection: connection
 	}
 }
 
 export function connectionRemoved(connection){
 	return {
 		type: 'PUSHER_CONNECTION_REMOVED',
-		connection: connection.connection
+		connection: connection
 	}
 }
 
@@ -144,7 +144,7 @@ export function getQueueMetadata(){
 export function queueMetadataChanged(queue_metadata){
 	return {
 		type: 'PUSHER_QUEUE_METADATA_CHANGED',
-		queue_metadata: queue_metadata.queue_metadata
+		queue_metadata: queue_metadata
 	}
 }
 

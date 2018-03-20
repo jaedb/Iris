@@ -59,39 +59,28 @@ const PusherMiddleware = (function(){
                 ));
             } else {
 
-                // Split our method into our action creator reference (eg pusherActions.createNotification(params))
-                var method = message.method.split('.');
-                var actions_library = method[0]+'Actions';
-
-                switch (method[0]){
-                    case 'core':
-                        var action = coreActions[method[1]];
+                switch (message.method){
+                    case 'connection_added':
+                        store.dispatch(pusherActions.connectionAdded(message.params.connection));
                         break;
-                    case 'ui':
-                        var action = uiActions[method[1]];
+                    case 'connection_changed':
+                        store.dispatch(pusherActions.connectionChanged(message.params.connection));
                         break;
-                    case 'pusher':
-                        var action = pusherActions[method[1]];
+                    case 'connection_removed':
+                        store.dispatch(pusherActions.connectionRemoved(message.params.connection));
                         break;
-                    case 'lastfm':
-                        var action = lastfmActions[method[1]];
+                    case 'queue_metadata_changed':
+                        store.dispatch(pusherActions.queueMetadataChanged(message.params.queue_metadata));
                         break;
-                    case 'mopidy':
-                        var action = mopidyActions[method[1]];
+                    case 'spotify_token_changed':
+                        store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
-                    case 'spotify':
-                        var action = spotifyActions[method[1]];
+                    case 'spotify_authorization_received':
+                        store.dispatch(uiActions.openModal('receive_authorization', message.params));
                         break;
-                }
-
-                if (!action){
-                    return;
-                }
-
-                if (message.params){
-                    store.dispatch(action(message.params));
-                } else {
-                    store.dispatch(action());
+                    case 'notification':
+                        store.dispatch(uiActions.createNotification(message.params.notification));
+                        break;
                 }
             }
         }

@@ -3447,8 +3447,11 @@ input[type="submit"] {
         font-weight: 300;
         color: inherit;
         border-bottom: 1px solid #454440 !important; }
+        #context-menu .liner > span button .icon,
         #context-menu .liner > span button .fa,
+        #context-menu .liner > span .button .icon,
         #context-menu .liner > span .button .fa,
+        #context-menu .liner > span .dropdown-field .icon,
         #context-menu .liner > span .dropdown-field .fa {
           display: none; }
         .notouch #context-menu .liner > span button:hover, .notouch
