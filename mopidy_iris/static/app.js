@@ -471,18 +471,21 @@ var digestMopidyImages = exports.digestMopidyImages = function digestMopidyImage
 };
 
 var generateGuid = exports.generateGuid = function generateGuid() {
-	var format = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'xxxxxxxxxxxx';
+	var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'numeric';
 
 	// numeric
-	return new Date().valueOf() + Math.random();
-
-	// alpha-numeric
-	/*
- return format.replace(/[xy]/g, function(c){
- 	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
- 	return v.toString(16);
- });
- */
+	if (type == 'numeric') {
+		var date = new Date().valueOf().toString();
+		var random_number = Math.floor(Math.random() * 100).toString();
+		return parseInt(date + random_number);
+	} else {
+		var format = 'xxxxxxxxxx';
+		return format.replace(/[xy]/g, function (c) {
+			var r = Math.random() * 16 | 0,
+			    v = c == 'x' ? r : r & 0x3 | 0x8;
+			return v.toString(16);
+		});
+	}
 };
 
 var getCurrentPusherConnection = exports.getCurrentPusherConnection = function getCurrentPusherConnection(connections, connectionid) {
