@@ -15554,6 +15554,9 @@ exports.connect = connect;
 exports.disconnect = disconnect;
 exports.startUpgrade = startUpgrade;
 exports.getConnections = getConnections;
+exports.connectionAdded = connectionAdded;
+exports.connectionChanged = connectionChanged;
+exports.connectionRemoved = connectionRemoved;
 exports.instruct = instruct;
 exports.getConfig = getConfig;
 exports.getVersion = getVersion;
@@ -15608,6 +15611,27 @@ function startUpgrade() {
 function getConnections() {
 	return {
 		type: 'PUSHER_GET_CONNECTIONS'
+	};
+}
+
+function connectionAdded(connection) {
+	return {
+		type: 'PUSHER_CONNECTION_ADDED',
+		connection: connection
+	};
+}
+
+function connectionChanged(connection) {
+	return {
+		type: 'PUSHER_CONNECTION_CHANGED',
+		connection: connection
+	};
+}
+
+function connectionRemoved(connection) {
+	return {
+		type: 'PUSHER_CONNECTION_REMOVED',
+		connection: connection
 	};
 }
 
@@ -53087,9 +53111,45 @@ var PusherMiddleware = function () {
             if (message.error !== undefined) {
                 store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message));
             } else {
-                store.dispatch(Object.assign({}, message.params, {
-                    type: message.method.toUpperCase()
-                }));
+
+                console.log(message.method);
+
+                // Split our method into our action creator reference (eg pusherActions.createNotification(params))
+                var method = message.method.split('.');
+                var actions_library = method[0] + 'Actions';
+
+                switch (method[0]) {
+                    case 'core':
+                        var action = coreActions[method[1]];
+                        break;
+                    case 'ui':
+                        var action = uiActions[method[1]];
+                        break;
+                    case 'pusher':
+                        var action = pusherActions[method[1]];
+                        break;
+                    case 'lastfm':
+                        var action = lastfmActions[method[1]];
+                        break;
+                    case 'mopidy':
+                        var action = mopidyActions[method[1]];
+                        break;
+                    case 'spotify':
+                        var action = spotifyActions[method[1]];
+                        break;
+                }
+
+                if (!action) {
+                    return;
+                }
+
+                console.log(action);
+
+                if (message.params) {
+                    store.dispatch(action(message.params));
+                } else {
+                    store.dispatch(action());
+                }
             }
         }
     };

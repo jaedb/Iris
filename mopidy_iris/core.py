@@ -318,7 +318,7 @@ class IrisCore(object):
         self.send_message(
             connection_id=connection_id,
             message={
-                'method': "pusher_connection_added",
+                'method': 'pusher.connectionAdded',
                 'params': {
                     'connection': {
                         'connection_id': connection_id,
@@ -331,7 +331,7 @@ class IrisCore(object):
         )
 
         self.broadcast(data={
-            'method': 'pusher_connection_added',
+            'method': 'pusher.connectionAdded',
             'params': {
                 'connection': client
             }
@@ -343,7 +343,7 @@ class IrisCore(object):
                 client = self.connections[connection_id]['client']  
                 del self.connections[connection_id]
                 self.broadcast(data={
-                    'method': "pusher_connection_removed",
+                    'method': "pusher.connectionRemoved",
                     'params': {
                         'connection': client
                     }
@@ -359,7 +359,7 @@ class IrisCore(object):
         if connection_id in self.connections:
             self.connections[connection_id]['client']['username'] = data['username']
             self.broadcast(data={
-                'method': "pusher_connection_updated",
+                'method': "pusher.connectionChanged",
                 'params': {
                     'connection': self.connections[connection_id]['client']
                 }
@@ -571,14 +571,14 @@ class IrisCore(object):
             if starting:
                 self.core.playback.play()
                 self.broadcast(data={
-                    'method': "radio_started",
+                    'method': "pusher.radioStarted",
                     'params': {
                         'radio': self.radio
                     }
                 })
             else:
                 self.broadcast(data={
-                    'method': "radio_changed",
+                    'method': "pusher.radioChanged",
                     'params': {
                         'radio': self.radio
                     }
@@ -620,7 +620,7 @@ class IrisCore(object):
         self.core.playback.stop()        
 
         self.broadcast(data={
-            'method': "radio_stopped",
+            'method': "pusher.radioStopped",
             'params': {
                 'radio': self.radio
             }
@@ -722,7 +722,7 @@ class IrisCore(object):
             self.queue_metadata['tlid_'+str(tlid)] = item
 
         self.broadcast(data={
-            'method': 'queue_metadata_changed',
+            'method': 'pusher.queueMetadataChanged',
             'params': {
                 'queue_metadata': self.queue_metadata
             }
@@ -795,7 +795,7 @@ class IrisCore(object):
             self.spotify_token = token
 
             self.broadcast(data={
-                'method': 'spotify_token_changed',
+                'method': 'spotify.tokenChanged',
                 'params': {
                     'spotify_token': self.spotify_token
                 }

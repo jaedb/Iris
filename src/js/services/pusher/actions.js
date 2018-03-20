@@ -41,6 +41,27 @@ export function getConnections(){
 	}
 }
 
+export function connectionAdded(connection){
+	return {
+		type: 'PUSHER_CONNECTION_ADDED',
+		connection: connection
+	}
+}
+
+export function connectionChanged(connection){
+	return {
+		type: 'PUSHER_CONNECTION_CHANGED',
+		connection: connection
+	}
+}
+
+export function connectionRemoved(connection){
+	return {
+		type: 'PUSHER_CONNECTION_REMOVED',
+		connection: connection
+	}
+}
+
 export function instruct(data = null){
 	return {
 		type: 'PUSHER_INSTRUCT',

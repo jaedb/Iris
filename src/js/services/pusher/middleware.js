@@ -58,13 +58,45 @@ const PusherMiddleware = (function(){
                     message
                 ));
             } else {
-                store.dispatch(Object.assign(
-                    {}, 
-                    message.params, 
-                    {
-                        type: message.method.toUpperCase()
-                    }
-                ));
+
+                console.log(message.method);
+
+                // Split our method into our action creator reference (eg pusherActions.createNotification(params))
+                var method = message.method.split('.');
+                var actions_library = method[0]+'Actions';
+
+                switch (method[0]){
+                    case 'core':
+                        var action = coreActions[method[1]];
+                        break;
+                    case 'ui':
+                        var action = uiActions[method[1]];
+                        break;
+                    case 'pusher':
+                        var action = pusherActions[method[1]];
+                        break;
+                    case 'lastfm':
+                        var action = lastfmActions[method[1]];
+                        break;
+                    case 'mopidy':
+                        var action = mopidyActions[method[1]];
+                        break;
+                    case 'spotify':
+                        var action = spotifyActions[method[1]];
+                        break;
+                }
+
+                if (!action){
+                    return;
+                }
+
+                console.log(action);
+
+                if (message.params){
+                    store.dispatch(action(message.params));
+                } else {
+                    store.dispatch(action());
+                }
             }
         }
     }
