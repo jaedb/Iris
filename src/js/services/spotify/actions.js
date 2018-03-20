@@ -235,6 +235,14 @@ export function refreshingToken(){
     }
 }
 
+export function authorizationReceived(data){
+
+    console.log(data);
+
+    // This is just an alias to open the modal
+    return uiActions.openModal('receive_authorization', data);
+}
+
 export function importAuthorization(data){
     return {
         type: 'SPOTIFY_IMPORT_AUTHORIZATION',

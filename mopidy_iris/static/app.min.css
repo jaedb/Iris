@@ -4266,6 +4266,9 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
+.snapcast .group .clients {
+  padding-left: 20px; }
+
 aside {
   position: fixed;
   top: 0;

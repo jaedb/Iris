@@ -17,7 +17,14 @@ class AuthorizationModal_Send extends React.Component{
 
 	handleClick(e, connection_id){		
 		e.preventDefault()
-		this.props.pusherActions.sendAuthorization(connection_id, this.props.authorization, this.props.me )
+		this.props.pusherActions.deliverMessage(
+			connection_id,
+			'spotify.authorizationReceived',
+			{
+				authorization: this.props.authorization, 
+				me: this.props.me
+			}
+		);
 		this.props.uiActions.closeModal()
 		return false;
 	}

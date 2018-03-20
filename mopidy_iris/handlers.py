@@ -135,7 +135,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             request_response['result'] = response
         
         # Respond to the original request
-        mem.iris.send_message(connection_id=self.connection_id, message=request_response)
+        data = request_response
+        data['recipient'] = self.connection_id
+        mem.iris.send_message(data=data)
 
 
 

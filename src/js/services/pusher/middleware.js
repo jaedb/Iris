@@ -20,7 +20,7 @@ const PusherMiddleware = (function(){
     const handleMessage = (ws, store, message) => {
 
         if (store.getState().ui.log_pusher){
-            console.log('Pusher log', message);
+            console.log('Pusher log (incoming)', message);
         }
 
         // Response with request_id
@@ -59,8 +59,6 @@ const PusherMiddleware = (function(){
                 ));
             } else {
 
-                console.log(message.method);
-
                 // Split our method into our action creator reference (eg pusherActions.createNotification(params))
                 var method = message.method.split('.');
                 var actions_library = method[0]+'Actions';
@@ -90,8 +88,6 @@ const PusherMiddleware = (function(){
                     return;
                 }
 
-                console.log(action);
-
                 if (message.params){
                     store.dispatch(action(message.params));
                 } else {
@@ -103,6 +99,10 @@ const PusherMiddleware = (function(){
 
     const request = (store, method, params = null) => {
         return new Promise((resolve, reject) => {
+
+            if (store.getState().ui.log_pusher){
+                console.log('Pusher log (outgoing)', {method: method, params: params});
+            }
 
             var id = helpers.generateGuid();
             var message = {
@@ -199,10 +199,10 @@ const PusherMiddleware = (function(){
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getVersion());
                 store.dispatch(pusherActions.getRadio());
-                store.dispatch(pusherActions.getSnapcast());
+                //store.dispatch(pusherActions.getSnapcast());
                 store.dispatch(pusherActions.getQueueMetadata());
                 
-                return next(action);
+                next(action);
                 break;
 
             case 'PUSHER_INSTRUCT':
@@ -221,7 +221,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELIVER_MESSAGE':
-                request(store, 'deliver_message', action.data)
+                request(store, 'send_message', action.data)
                     .then(
                         response => {
                             store.dispatch(uiActions.createNotification({content: 'Message delivered'}));
@@ -288,9 +288,7 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_SET_USERNAME':
-                request(store, 'set_username', {
-                    username: action.username
-                })
+                request(store, 'set_username', {username: action.username})
                     .then(
                         response => {
                             response.type = 'PUSHER_USERNAME_CHANGED'
@@ -367,11 +365,7 @@ const PusherMiddleware = (function(){
                         }
                     );
                 return next(action);
-                break
-
-            case 'PUSHER_SPOTIFY_AUTHORIZATION':
-                store.dispatch(uiActions.openModal('receive_authorization', {authorization: action.authorization, user: action.me}))
-                break
+                break;
 
             case 'PUSHER_GET_RADIO':
                 request(store, 'get_radio')

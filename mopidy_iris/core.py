@@ -230,22 +230,75 @@ class IrisCore(object):
         }
 
 
-    def send_message(self, *args, **kwargs):        
-        connection_id = kwargs.get('connection_id', None)
-        message = kwargs.get('message', None)
+    def send_message(self, *args, **kwargs): 
+        callback = kwargs.get('callback', None)     
+        data = kwargs.get('data', None)
 
-        if 'jsonrpc' not in message:
-            message['jsonrpc'] = '2.0'
+        logger.debug(data)
 
+
+        # Catch invalid recipient
+        if data['recipient'] not in self.connections:
+            error = 'Connection "'+data['recipient']+'" not found'
+            logger.error(error)
+
+            error = {
+                'message': error
+            }
+            if (callback):
+                callback(False, error)
+            else:
+                return error
+
+        # Sending of an error
+        if 'error' in data:
+            message = {
+                'jsonrpc': '2.0',
+                'error': data['error']
+            }
+
+        # Sending of a regular message
+        else:
+            message = {
+                'jsonrpc': '2.0',
+                'method': data['method'] if 'method' in data else None
+            }
+            if 'id' in data:
+                message['id'] = data['id']
+            if 'params' in data:
+                message['params'] = data['params']
+            if 'result' in data:
+                message['result'] = data['result']
+
+        # Dispatch the message
         try:
-            self.connections[connection_id]['connection'].write_message(json_encode(message))
+            self.connections[data['recipient']]['connection'].write_message(json_encode(message))
+
+            response = {
+                'message': 'Sent message to '+data['recipient']
+            }
+            if (callback):
+                callback(response)
+            else:
+                return response 
         except:
-            logger.error('Failed to send message to '+ connection_id)
+            error = 'Failed to send message to '+ data['recipient']
+            logger.error(error)
+
+            error = {
+                'message': error
+            }
+            if (callback):
+                callback(False, error)
+            else:
+                return error
 
 
     def broadcast(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
         data = kwargs.get('data', None)
+
+        logger.debug(data)
 
         if 'error' in data:
             message = {
@@ -315,20 +368,18 @@ class IrisCore(object):
         }
         self.connections[connection_id] = new_connection
 
-        self.send_message(
-            connection_id=connection_id,
-            message={
-                'method': 'pusher.connectionAdded',
-                'params': {
-                    'connection': {
-                        'connection_id': connection_id,
-                        'client_id': client['client_id'],
-                        'username': client['username'],
-                        'ip': client['ip']
-                    }
+        self.send_message(data={
+            'recipient': connection_id,
+            'method': 'pusher.connectionAdded',
+            'params': {
+                'connection': {
+                    'connection_id': connection_id,
+                    'client_id': client['client_id'],
+                    'username': client['username'],
+                    'ip': client['ip']
                 }
             }
-        )
+        })
 
         self.broadcast(data={
             'method': 'pusher.connectionAdded',
@@ -372,35 +423,6 @@ class IrisCore(object):
                 callback(response)
             else:
                 return response  
-
-        else:
-            error = 'Connection "'+data['connection_id']+'" not found'
-            logger.error(error)
-
-            error = {
-                'message': error
-            }
-            if (callback):
-                callback(False, error)
-            else:
-                return error
-
-    def deliver_message(self, *args, **kwargs):
-        callback = kwargs.get('callback', False)
-        data = kwargs.get('data', {})
-
-        if data['connection_id'] in self.connections:
-            self.send_message(
-                connection_id=data['connection_id'],
-                message=data['message']
-            )
-            response = {
-                'result': 'Sent message to '+data['connection_id']
-            }
-            if (callback):
-                callback(response)
-            else:
-                return response
 
         else:
             error = 'Connection "'+data['connection_id']+'" not found'

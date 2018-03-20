@@ -262,9 +262,9 @@ const MopidyMiddleware = (function(){
                     );
 
                 store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
+                    'ui.createNotification',
                     {
-                        notification_type: 'info',
+                        type: 'info',
                         content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
                         icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                     }
@@ -283,9 +283,9 @@ const MopidyMiddleware = (function(){
                     );
 
                 store.dispatch(pusherActions.deliverBroadcast(
-                    'notification', 
+                    'ui.createNotification',
                     {
-                        notification_type: 'info',
+                        type: 'info',
                         content: store.getState().pusher.username +' paused playback',
                         icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                     }
@@ -296,9 +296,9 @@ const MopidyMiddleware = (function(){
                 instruct(socket, store, 'playback.next');
 
                 store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
+                    'ui.createNotification',
                     {
-                        notification_type: 'info',
+                        type: 'info',
                         content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
                         icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                     }
@@ -308,21 +308,23 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_STOP':
                 instruct(socket, store, 'playback.stop');
 
-                store.dispatch(pusherActions.deliverBroadcast({
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' stopped playback',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }));
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'ui.createNotification',
+                    {
+                        type: 'info',
+                        content: store.getState().pusher.username +' stopped playback',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
                 break
 
             case 'MOPIDY_CHANGE_TRACK':
                 instruct(socket, store, 'playback.play', {tlid: action.tlid});
 
                 store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
+                    'ui.createNotification',
                     {
-                        notification_type: 'info',
+                        type: 'info',
                         content: store.getState().pusher.username +' changed track'
                     }
                 ));
@@ -331,9 +333,9 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_REMOVE_TRACKS':
                 instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
                 store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
+                    'ui.createNotification',
                     {
-                        notification_type: 'info',
+                        type: 'info',
                         content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
                     }
                 ));
@@ -401,11 +403,13 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_SET_MUTE':
                 instruct(socket, store, 'mixer.setMute', [action.mute]);
-                store.dispatch(pusherActions.deliverBroadcast({
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
-                }));
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'ui.createNotification',
+                    {
+                        type: 'info',
+                        content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
+                    }
+                ));
                 break;
 
             case 'MOPIDY_GET_VOLUME':
@@ -554,12 +558,14 @@ const MopidyMiddleware = (function(){
                     break;
                 }
 
-                store.dispatch(pusherActions.deliverBroadcast({
-                    type: 'notification',
-                    notification_type: 'info',
-                    content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
-                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                }));
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'ui.createNotification',
+                    {
+                        type: 'info',
+                        content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
+                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                    }
+                ));
 
                 // split into batches
                 var uris = Object.assign([], action.uris)

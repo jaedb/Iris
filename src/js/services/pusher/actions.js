@@ -44,21 +44,21 @@ export function getConnections(){
 export function connectionAdded(connection){
 	return {
 		type: 'PUSHER_CONNECTION_ADDED',
-		connection: connection
+		connection: connection.connection
 	}
 }
 
 export function connectionChanged(connection){
 	return {
 		type: 'PUSHER_CONNECTION_CHANGED',
-		connection: connection
+		connection: connection.connection
 	}
 }
 
 export function connectionRemoved(connection){
 	return {
 		type: 'PUSHER_CONNECTION_REMOVED',
-		connection: connection
+		connection: connection.connection
 	}
 }
 
@@ -91,16 +91,13 @@ export function deliverBroadcast(method, params){
 	}
 }
 
-export function sendAuthorization(recipient_connectionid, authorization, me){
+export function deliverMessage(recipient, method, params){
 	return {
 		type: 'PUSHER_DELIVER_MESSAGE',
 		data: {
-			connection_id: recipient_connectionid,
-			message: {
-				type: 'spotify_authorization',
-				authorization: authorization,
-				me: me
-			}
+			recipient: recipient,
+			method: method,
+			params: params
 		}
 	}
 }
@@ -141,6 +138,13 @@ export function debug(message = null){
 export function getQueueMetadata(){
 	return {
 		type: 'PUSHER_GET_QUEUE_METADATA'
+	}
+}
+
+export function queueMetadataChanged(queue_metadata){
+	return {
+		type: 'PUSHER_QUEUE_METADATA_CHANGED',
+		queue_metadata: queue_metadata.queue_metadata
 	}
 }
 
