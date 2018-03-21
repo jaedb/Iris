@@ -188,7 +188,6 @@ const PusherMiddleware = (function(){
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getVersion());
                 store.dispatch(pusherActions.getRadio());
-                //store.dispatch(pusherActions.getSnapcast());
                 store.dispatch(pusherActions.getQueueMetadata());
                 
                 next(action);

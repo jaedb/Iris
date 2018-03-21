@@ -17,6 +17,18 @@ class Snapcast extends React.Component{
 		super(props)
 	}
 
+	componentDidMount(){
+		if (this.props.pusher_connected){
+			this.props.pusherActions.getSnapcast();
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		if (!this.props.pusher_connected && newProps.pusher_connected){
+			this.props.pusherActions.getSnapcast();
+		}
+	}
+
 	render(){
 		if (!this.props.snapcast){
 			return null;
@@ -51,6 +63,7 @@ class Snapcast extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		pusher_connected: state.pusher.connected,
 		snapcast: state.pusher.snapcast
 	}
 }

@@ -65,7 +65,13 @@ export default function reducer(spotify = {}, action){
                 refreshing_token: false,
                 access_token: action.data.access_token,
                 token_expiry: action.data.token_expiry
-            })
+            });
+
+        case 'SPOTIFY_TOKEN_CHANGED':
+            return Object.assign({}, spotify, {
+                access_token: action.spotify_token.access_token,
+                token_expiry: action.spotify_token.token_expiry
+            });
 
         case 'SPOTIFY_DISCONNECTED':
             return Object.assign({}, spotify, { connected: false, connecting: false })
