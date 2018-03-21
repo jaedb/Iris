@@ -517,7 +517,7 @@ const PusherMiddleware = (function(){
                 request(store, 'snapcast_instruct', action.data)
                     .then(
                         response => {
-                            store.dispatch({type: 'PUSHER_SNAPCAST', snapcast: response.result.server})
+                            store.dispatch({type: 'PUSHER_SNAPCAST', snapcast: response.server})
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(

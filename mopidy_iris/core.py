@@ -121,14 +121,15 @@ class IrisCore(object):
         request_id = kwargs.get('request_id', None)
         data = kwargs.get('data', {})
 
-        if 'id' not in data:
-            data['id'] = request_id
-
-        if 'jsonrpc' not in data:
-            data['jsonrpc'] = "2.0"
+        request = {
+            'id': self.generateGuid(),
+            'jsonrpc': '2.0',
+            'method': data['method'],
+            'params': data['params'] if 'params' in data else {}
+        }
 
         # Convert to string. For some really nuts reason we need an extra trailing curly brace...
-        data = json.dumps(data)+'}'
+        request = json.dumps(request)+'}'
 
         # Create our connection
         try:
@@ -142,7 +143,7 @@ class IrisCore(object):
 
         # Attempt to send the request
         try:
-            snapcast_socket.send(data.encode('ascii')+b"\n")
+            snapcast_socket.send(request.encode('ascii')+b"\n")
         except socket.error, e:
             logger.error("Iris could not send request to Snapcast: %s" % e)
             callback(response=None, error={
@@ -169,7 +170,10 @@ class IrisCore(object):
 
             try:
                 response = json.loads(response)
-                callback(response=response)
+                if 'result' in response:
+                    callback(response=response['result'])
+                else:
+                    callback(error=response['error'])                    
             except:
                 logger.error("Iris received malformed Snapcast response: "+response)
                 callback(response=None, error={
@@ -189,8 +193,9 @@ class IrisCore(object):
     # Used for connection_ids where none is provided by client
     # @return string
     ##
-    def generateGuid(self, length):
-       return ''.join(random.choice(string.lowercase) for i in range(length))
+    def generateGuid(self):
+        length = 12
+        return ''.join(random.choice(string.lowercase) for i in range(length))
     
 
     ##
