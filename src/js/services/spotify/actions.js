@@ -235,9 +235,14 @@ export function refreshingToken(){
     }
 }
 
-export function authorizationReceived(data){
+export function tokenChanged(spotify_token){
+    return {
+        type: 'SPOTIFY_TOKEN_CHANGED',
+        spotify_token: spotify_token
+    }
+}
 
-    console.log(data);
+export function authorizationReceived(data){
 
     // This is just an alias to open the modal
     return uiActions.openModal('receive_authorization', data);
