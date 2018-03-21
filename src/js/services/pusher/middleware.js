@@ -516,7 +516,37 @@ const PusherMiddleware = (function(){
                 request(store, 'snapcast_instruct', action.data)
                     .then(
                         response => {
-                            store.dispatch({type: 'PUSHER_SNAPCAST', snapcast: response.server})
+                            var groups = {};
+                            var clients = {};
+
+                            // Loop all the groups
+                            for (var i = 0; i < response.server.groups.length; i++){
+                                var group = response.server.groups[i];
+                                groups[group.id] = {
+                                    id: group.id,
+                                    muted: group.muted,
+                                    name: group.name,
+                                    stream_id: group.stream_id
+                                }
+
+                                // And now this groups' clients
+                                for (var i = 0; i < group.clients.length; i++){
+                                    var client = group.clients[i];
+                                    clients[client.id] = Object.assign(
+                                        {},
+                                        client,
+                                        {
+                                            group_id: group.id
+                                        }
+                                    )
+                                }
+                            }
+
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST', 
+                                snapcast_clients: clients,
+                                snapcast_groups: groups
+                            })
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -536,7 +566,11 @@ const PusherMiddleware = (function(){
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
                                 key: response.client.id,
-                                client: response.client
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
                             })
                         },
                         error => {                            

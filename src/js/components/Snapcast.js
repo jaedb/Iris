@@ -34,6 +34,36 @@ class Snapcast extends React.Component{
 			return null;
 		}
 
+		var clients = [];
+		for (var client_id in this.props.snapcast_clients){
+			if (this.props.snapcast_clients.hasOwnProperty(client_id)){
+				clients.push(this.props.snapcast_clients[client_id]);
+			}
+		}
+
+		return (
+			<div className="snapcast">
+				<div className="clients">
+					{
+						clients.map(client => {
+							return (
+								<div key={client.id}>
+									{client.config.volume.muted ? <FontAwesome name="volume-off" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)} /> : <FontAwesome name="volume-up" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)} />} {client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
+								</div>
+							);
+						})
+					}
+				</div>
+			</div>
+		);
+
+		var groups = [];
+		for (var group_id in this.props.snapcast_groups){
+			if (this.props.connections.hasOwnProperty(group_id)){
+				groups.push(this.props.snapcast_groups[group_id]);
+			}
+		}
+
 		return (
 			<div className="snapcast">
 				{
@@ -46,7 +76,7 @@ class Snapcast extends React.Component{
 										group.clients.map(client => {
 											return (
 												<div key={client.id}>
-													{client.config.volume.muted ? <FontAwesome name="volume-off" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)} /> : <FontAwesome name="volume-up" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)} />} {client.config.name} {client.config.volume.percent}
+													{client.config.volume.muted ? <FontAwesome name="volume-off" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)} /> : <FontAwesome name="volume-up" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)} />} {client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
 												</div>
 											);
 										})
@@ -64,7 +94,8 @@ class Snapcast extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		pusher_connected: state.pusher.connected,
-		snapcast: state.pusher.snapcast
+		snapcast_groups: state.pusher.snapcast_groups,
+		snapcast_clients: state.pusher.snapcast_clients
 	}
 }
 

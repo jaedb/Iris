@@ -1860,6 +1860,7 @@ exports.connect = connect;
 exports.authorizationGranted = authorizationGranted;
 exports.revokeAuthorization = revokeAuthorization;
 exports.refreshingToken = refreshingToken;
+exports.tokenChanged = tokenChanged;
 exports.authorizationReceived = authorizationReceived;
 exports.importAuthorization = importAuthorization;
 exports.getMe = getMe;
@@ -2120,9 +2121,14 @@ function refreshingToken() {
     };
 }
 
-function authorizationReceived(data) {
+function tokenChanged(spotify_token) {
+    return {
+        type: 'SPOTIFY_TOKEN_CHANGED',
+        spotify_token: spotify_token
+    };
+}
 
-    console.log(data);
+function authorizationReceived(data) {
 
     // This is just an alias to open the modal
     return uiActions.openModal('receive_authorization', data);
@@ -50670,7 +50676,12 @@ function reducer() {
             return Object.assign({}, pusher, { upgrading: true });
 
         case 'PUSHER_SNAPCAST':
-            return Object.assign({}, pusher, { snapcast: action.snapcast });
+            return Object.assign({}, pusher, { snapcast_clients: action.snapcast_clients, snapcast_groups: action.snapcast_groups });
+
+        case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
+            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
+            snapcast_clients[action.key] = Object.assign({}, snapcast_clients[action.key], action.client);
+            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
 
         default:
             return pusher;
@@ -50997,6 +51008,12 @@ function reducer() {
                 refreshing_token: false,
                 access_token: action.data.access_token,
                 token_expiry: action.data.token_expiry
+            });
+
+        case 'SPOTIFY_TOKEN_CHANGED':
+            return Object.assign({}, spotify, {
+                access_token: action.spotify_token.access_token,
+                token_expiry: action.spotify_token.token_expiry
             });
 
         case 'SPOTIFY_DISCONNECTED':
@@ -52332,7 +52349,6 @@ var PusherMiddleware = function () {
                         store.dispatch(pusherActions.getConfig());
                         store.dispatch(pusherActions.getVersion());
                         store.dispatch(pusherActions.getRadio());
-                        //store.dispatch(pusherActions.getSnapcast());
                         store.dispatch(pusherActions.getQueueMetadata());
 
                         next(action);
@@ -52576,7 +52592,32 @@ var PusherMiddleware = function () {
                      **/
                     case 'PUSHER_GET_SNAPCAST':
                         request(store, 'snapcast_instruct', action.data).then(function (response) {
-                            store.dispatch({ type: 'PUSHER_SNAPCAST', snapcast: response.server });
+                            var groups = {};
+                            var clients = {};
+
+                            // Loop all the groups
+                            for (var i = 0; i < response.server.groups.length; i++) {
+                                var group = response.server.groups[i];
+                                groups[group.id] = {
+                                    id: group.id,
+                                    muted: group.muted,
+                                    name: group.name,
+                                    stream_id: group.stream_id
+
+                                    // And now this groups' clients
+                                };for (var i = 0; i < group.clients.length; i++) {
+                                    var client = group.clients[i];
+                                    clients[client.id] = Object.assign({}, client, {
+                                        group_id: group.id
+                                    });
+                                }
+                            }
+
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST',
+                                snapcast_clients: clients,
+                                snapcast_groups: groups
+                            });
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not get Snapcast server', error, error.message));
                         });
@@ -52588,7 +52629,11 @@ var PusherMiddleware = function () {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
                                 key: response.client.id,
-                                client: response.client
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
                             });
                         }, function (error) {
                             store.dispatch(coreActions.handleException('ERR', error, error.message));
@@ -70187,12 +70232,64 @@ var Snapcast = function (_React$Component) {
 	}
 
 	_createClass(Snapcast, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.pusher_connected) {
+				this.props.pusherActions.getSnapcast();
+			}
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(newProps) {
+			if (!this.props.pusher_connected && newProps.pusher_connected) {
+				this.props.pusherActions.getSnapcast();
+			}
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
 			if (!this.props.snapcast) {
 				return null;
+			}
+
+			var clients = [];
+			for (var client_id in this.props.snapcast_clients) {
+				if (this.props.snapcast_clients.hasOwnProperty(client_id)) {
+					clients.push(this.props.snapcast_clients[client_id]);
+				}
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'snapcast' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'clients' },
+					clients.map(function (client) {
+						return _react2.default.createElement(
+							'div',
+							{ key: client.id },
+							client.config.volume.muted ? _react2.default.createElement(_reactFontawesome2.default, { name: 'volume-off', onClick: function onClick(e) {
+									return _this2.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent);
+								} }) : _react2.default.createElement(_reactFontawesome2.default, { name: 'volume-up', onClick: function onClick(e) {
+									return _this2.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent);
+								} }),
+							' ',
+							client.config.name ? client.config.name : client.host.name,
+							' ',
+							client.config.volume.percent
+						);
+					})
+				)
+			);
+
+			var groups = [];
+			for (var group_id in this.props.snapcast_groups) {
+				if (this.props.connections.hasOwnProperty(group_id)) {
+					groups.push(this.props.snapcast_groups[group_id]);
+				}
 			}
 
 			return _react2.default.createElement(
@@ -70218,7 +70315,7 @@ var Snapcast = function (_React$Component) {
 											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent);
 										} }),
 									' ',
-									client.config.name,
+									client.config.name ? client.config.name : client.host.name,
 									' ',
 									client.config.volume.percent
 								);
@@ -70235,7 +70332,9 @@ var Snapcast = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		snapcast: state.pusher.snapcast
+		pusher_connected: state.pusher.connected,
+		snapcast_groups: state.pusher.snapcast_groups,
+		snapcast_clients: state.pusher.snapcast_clients
 	};
 };
 
