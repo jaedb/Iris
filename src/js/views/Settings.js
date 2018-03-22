@@ -16,6 +16,7 @@ import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 import URILink from '../components/URILink'
+import Snapcast from '../components/Snapcast'
 
 import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
@@ -265,6 +266,63 @@ class Settings extends React.Component {
 
 				<section className="content-wrapper">
 
+					<h4 className="underline">Audio output</h4>
+					<div className="field">
+						<Snapcast />
+					</div>
+					<h4 className="underline">Streaming</h4>
+
+					<div className="field checkbox">
+						<div className="name">Enable</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="ssl"
+									checked={this.props.core.http_streaming_enabled}
+									onChange={e => this.props.coreActions.set({http_streaming_enabled: !this.props.core.http_streaming_enabled})} />
+								<span className="label has-tooltip">
+									Stream audio to this browser
+									<span className="tooltip">Requires streaming service like Icecast2</span>
+								</span>
+							</label>
+						</div>
+					</div>
+					<div className="field radio">
+						<div className="name">Encoding</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="http_streaming_encoding"
+									checked={this.props.core.http_streaming_encoding == 'mpeg'}
+									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'mpeg'})} />
+								<span className="label">mpeg (mp3)</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="http_streaming_encoding"
+									checked={this.props.core.http_streaming_encoding == 'ogg'}
+									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'ogg'})} />
+								<span className="label">ogg</span>
+							</label>
+						</div>
+					</div>
+
+					<div className="field">
+						<div className="name">Location</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.props.coreActions.set({http_streaming_url: e.target.value})}
+								value={this.props.core.http_streaming_url} />
+							<div className="description">
+								The full URL to your stream endpoint
+							</div>
+						</div>
+					</div>
+
 					<h4 className="underline">Server</h4>
 
 					<div className="field">
@@ -332,58 +390,6 @@ class Settings extends React.Component {
 						</div>
 						{this.renderApplyButton()}
 					</form>					
-
-					<h4 className="underline">Streaming</h4>
-
-					<div className="field checkbox">
-						<div className="name">Enable</div>
-						<div className="input">
-							<label>
-								<input 
-									type="checkbox"
-									name="ssl"
-									checked={this.props.core.http_streaming_enabled}
-									onChange={e => this.props.coreActions.set({http_streaming_enabled: !this.props.core.http_streaming_enabled})} />
-								<span className="label has-tooltip">
-									Stream audio to this browser
-									<span className="tooltip">Requires streaming service like Icecast2</span>
-								</span>
-							</label>
-						</div>
-					</div>
-					<div className="field radio">
-						<div className="name">Encoding</div>
-						<div className="input">
-							<label>
-								<input 
-									type="radio"
-									name="http_streaming_encoding"
-									checked={this.props.core.http_streaming_encoding == 'mpeg'}
-									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'mpeg'})} />
-								<span className="label">mpeg (mp3)</span>
-							</label>
-							<label>
-								<input 
-									type="radio"
-									name="http_streaming_encoding"
-									checked={this.props.core.http_streaming_encoding == 'ogg'}
-									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'ogg'})} />
-								<span className="label">ogg</span>
-							</label>
-						</div>
-					</div>
-					<div className="field">
-						<div className="name">Location</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.props.coreActions.set({http_streaming_url: e.target.value})}
-								value={this.props.core.http_streaming_url} />
-							<div className="description">
-								The full URL to your stream endpoint
-							</div>
-						</div>
-					</div>
 
 					<h4 className="underline">Localization</h4>
 

@@ -1,8 +1,25 @@
 
 .snapcast {
+
+	.mute-button {
+		display: inline-block;
+		padding: 10px;
+		cursor: pointer;
+
+		&:hover {
+			color: $turquoise;
+		}
+	}
+
 	.group {
+		padding: 10px 0;
+		border-bottom: 1px solid $grey;
+
 		.clients {
-			padding-left: 20px;
+			.client {
+				padding: 10px 0 10px 20px;
+				border-top: 1px solid $grey;
+			}
 		}
 	}
 }

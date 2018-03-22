@@ -58,18 +58,6 @@ class PlaybackControls extends React.Component{
 		return button;
 	}
 
-	renderStreamingButton(){
-		var button = null;
-		if (this.props.http_streaming_enabled){
-			if (this.props.http_streaming_active){
-				button = <a className="control active has-tooltip" onClick={() => this.props.coreActions.set({http_streaming_active: false})}><FontAwesome name="rss" /><span className="tooltip">Mute local stream</span></a>
-			} else {
-				button = <a className="control has-tooltip" onClick={() => this.props.coreActions.set({http_streaming_active: true})}><FontAwesome name="rss" /><span className="tooltip">Un-mute local stream</span></a>;
-			}
-		}
-		return button;
-	}
-
 	handleThumbnailClick(e){
 		e.preventDefault();
 		this.props.uiActions.openModal('kiosk_mode');
@@ -114,7 +102,6 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="settings">
-					{this.renderStreamingButton()}
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}

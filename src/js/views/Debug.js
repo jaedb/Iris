@@ -12,7 +12,6 @@ import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
-import Snapcast from '../components/Snapcast'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -57,11 +56,6 @@ class Debug extends React.Component{
 				<Header icon="cog" title="Debugger" options={options} uiActions={this.props.uiActions} />
 
 				<div className="content-wrapper">
-
-					<h4 className="underline">Output</h4>
-					<div className="field">
-						<Snapcast />
-					</div>
 
 					<h4 className="underline">User interface</h4>
 					<form>

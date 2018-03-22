@@ -55,6 +55,7 @@ class IrisCore(object):
 
         try:
             snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            snapcast.settimeout(10)
             snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
         except socket.gaierror, e:
             logger.error("Iris could not connect to Snapcast: %s" % e)

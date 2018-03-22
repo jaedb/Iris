@@ -4160,7 +4160,7 @@ input[type="submit"] {
     .playback-controls section.progress {
       bottom: 10px;
       left: 140px;
-      right: 280px;
+      right: 260px;
       padding-left: 20px;
       padding-right: 20px;
       color: #a3a19f; }
@@ -4184,7 +4184,7 @@ input[type="submit"] {
         width: 50px; }
     .playback-controls section.settings {
       right: 170px;
-      width: 120px;
+      width: 100px;
       text-align: center; }
     .playback-controls section.volume {
       bottom: 10px;
@@ -4269,8 +4269,19 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
-.snapcast .group .clients {
-  padding-left: 20px; }
+.snapcast .mute-button {
+  display: inline-block;
+  padding: 10px;
+  cursor: pointer; }
+  .snapcast .mute-button:hover {
+    color: #08d58f; }
+
+.snapcast .group {
+  padding: 10px 0;
+  border-bottom: 1px solid #383734; }
+  .snapcast .group .clients .client {
+    padding: 10px 0 10px 20px;
+    border-top: 1px solid #383734; }
 
 aside {
   position: fixed;

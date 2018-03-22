@@ -29,45 +29,55 @@ class Snapcast extends React.Component{
 		}
 	}
 
+	renderMuteToggle(client){
+		if (client.config.volume.muted){
+			return (
+				<span className="mute-button" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)}>
+					<FontAwesome name="volume-off" />
+				</span>
+			);
+		} else {
+			return (
+				<span className="mute-button" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)}>
+					<FontAwesome name="volume-up" />
+				</span>
+			);
+		}
+	}
+
 	render(){
-		if (!this.props.snapcast){
+		if (!this.props.snapcast_clients || !this.props.snapcast_groups){
 			return null;
 		}
 
-		var clients = [];
-		for (var client_id in this.props.snapcast_clients){
-			if (this.props.snapcast_clients.hasOwnProperty(client_id)){
-				clients.push(this.props.snapcast_clients[client_id]);
-			}
-		}
-
-		return (
-			<div className="snapcast">
-				<div className="clients">
-					{
-						clients.map(client => {
-							return (
-								<div key={client.id}>
-									{client.config.volume.muted ? <FontAwesome name="volume-off" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)} /> : <FontAwesome name="volume-up" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)} />} {client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
-								</div>
-							);
-						})
-					}
-				</div>
-			</div>
-		);
-
+		// Construct a simple array of our groups index
 		var groups = [];
 		for (var group_id in this.props.snapcast_groups){
-			if (this.props.connections.hasOwnProperty(group_id)){
-				groups.push(this.props.snapcast_groups[group_id]);
+			if (this.props.snapcast_groups.hasOwnProperty(group_id)){
+				var group = this.props.snapcast_groups[group_id];
+
+				// Merge the group's clients into this group (also as a simple array)
+				var clients = [];
+				for (var i = 0; i < group.clients_ids.length; i++){
+					if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])){
+						clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
+					}
+				}
+
+				groups.push(Object.assign(
+					{},
+					group,
+					{
+						clients: clients
+					}
+				));
 			}
 		}
 
 		return (
 			<div className="snapcast">
 				{
-					this.props.snapcast.groups.map(group => {
+					groups.map(group => {
 						return (
 							<div className="group" key={group.id}>
 								{group.muted ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-up" />} {group.name ? group.name : 'Untitled'}
@@ -75,8 +85,9 @@ class Snapcast extends React.Component{
 									{
 										group.clients.map(client => {
 											return (
-												<div key={client.id}>
-													{client.config.volume.muted ? <FontAwesome name="volume-off" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)} /> : <FontAwesome name="volume-up" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)} />} {client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
+												<div className="client" key={client.id}>
+													{this.renderMuteToggle(client)}
+													{client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
 												</div>
 											);
 										})
