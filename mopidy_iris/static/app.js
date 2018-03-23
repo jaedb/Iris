@@ -15591,6 +15591,7 @@ exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getSnapcast = getSnapcast;
 exports.setSnapcastClientVolume = setSnapcastClientVolume;
+exports.setSnapcastClientName = setSnapcastClientName;
 
 /**
  * Actions and Action Creators
@@ -15782,6 +15783,19 @@ function setSnapcastClientVolume(id, muted, percent) {
 					muted: muted,
 					percent: percent
 				}
+			}
+		}
+	};
+}
+
+function setSnapcastClientName(id, name) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
+		data: {
+			method: 'Client.SetName',
+			params: {
+				id: id,
+				name: name
 			}
 		}
 	};
@@ -51612,7 +51626,9 @@ function reducer() {
 
         case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
             var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
-            snapcast_clients[action.key] = Object.assign({}, snapcast_clients[action.key], action.client);
+            var client = snapcast_clients[action.key];
+            client.config = Object.assign({}, client.config, action.client.config);
+            snapcast_clients[action.key] = client;
             return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
 
         default:
@@ -53566,6 +53582,22 @@ var PusherMiddleware = function () {
                                 client: {
                                     config: {
                                         volume: response.volume
+                                    }
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
+                        request(store, 'snapcast_instruct', action.data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        name: response.name
                                     }
                                 }
                             });
@@ -60417,7 +60449,16 @@ var PlaybackControls = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'volume' },
-					_react2.default.createElement(_VolumeControl2.default, null)
+					_react2.default.createElement(_VolumeControl2.default, {
+						volume: this.props.volume,
+						mute: this.props.mute,
+						onVolumeChange: function onVolumeChange(percent) {
+							return _this6.props.mopidyActions.setVolume(percent);
+						},
+						onMuteChange: function onMuteChange(mute) {
+							return _this6.props.mopidyActions.setMute(mute);
+						}
+					})
 				),
 				_react2.default.createElement(
 					'section',
@@ -60463,6 +60504,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		consume: state.mopidy.consume,
 		repeat: state.mopidy.repeat,
 		random: state.mopidy.random,
+		volume: state.mopidy.volume,
+		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open
 	};
 };
@@ -60608,25 +60651,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(4);
-
-var _redux = __webpack_require__(3);
-
-var _reactRouter = __webpack_require__(8);
-
 var _reactFontawesome = __webpack_require__(6);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _actions = __webpack_require__(11);
-
-var mopidyActions = _interopRequireWildcard(_actions);
-
-var _actions2 = __webpack_require__(5);
-
-var uiActions = _interopRequireWildcard(_actions2);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60661,7 +60688,7 @@ var VolumeControl = function (_React$Component) {
 				percent = 0;
 			}
 
-			this.props.mopidyActions.setVolume(percent);
+			this.props.onVolumeChange(percent);
 		}
 	}, {
 		key: 'handleWheel',
@@ -60681,8 +60708,7 @@ var VolumeControl = function (_React$Component) {
 				percent = 0;
 			}
 
-			this.props.mopidyActions.setVolume(percent);
-
+			this.props.onVolumeChange(percent);
 			e.preventDefault();
 		}
 	}, {
@@ -60693,10 +60719,10 @@ var VolumeControl = function (_React$Component) {
 			if (this.props.mute) {
 				return _react2.default.createElement(
 					'a',
-					{ className: 'control has-tooltip', onClick: function onClick() {
-							return _this2.props.mopidyActions.setMute(false);
+					{ className: 'control mute-control has-tooltip', onClick: function onClick() {
+							return _this2.props.onMuteChange(false);
 						} },
-					_react2.default.createElement(_reactFontawesome2.default, { className: 'red-text', name: 'volume-down' }),
+					_react2.default.createElement(_reactFontawesome2.default, { className: 'red-text', name: 'volume-off' }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'tooltip' },
@@ -60706,8 +60732,8 @@ var VolumeControl = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'a',
-					{ className: 'control has-tooltip', onClick: function onClick() {
-							return _this2.props.mopidyActions.setMute(true);
+					{ className: 'control mute-control has-tooltip', onClick: function onClick() {
+							return _this2.props.onMuteChange(true);
 						} },
 					_react2.default.createElement(_reactFontawesome2.default, { className: 'muted', name: 'volume-off' }),
 					_react2.default.createElement(
@@ -60755,21 +60781,7 @@ var VolumeControl = function (_React$Component) {
 	return VolumeControl;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {
-		volume: state.mopidy.volume,
-		mute: state.mopidy.mute
-	};
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
-	};
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(VolumeControl);
+exports.default = VolumeControl;
 
 /***/ }),
 /* 379 */
@@ -71092,6 +71104,10 @@ var _ArtistSentence = __webpack_require__(27);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
+var _VolumeControl = __webpack_require__(378);
+
+var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
+
 var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -71124,7 +71140,12 @@ var Snapcast = function (_React$Component) {
 	function Snapcast(props) {
 		_classCallCheck(this, Snapcast);
 
-		return _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
+
+		_this.state = {
+			editing_client: null
+		};
+		return _this;
 	}
 
 	_createClass(Snapcast, [{
@@ -71142,25 +71163,37 @@ var Snapcast = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'renderMuteToggle',
-		value: function renderMuteToggle(client) {
+		key: 'saveEditingClient',
+		value: function saveEditingClient() {
+			this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
+			this.setState({ editing_client: null });
+		}
+	}, {
+		key: 'renderClientName',
+		value: function renderClientName(client) {
 			var _this2 = this;
 
-			if (client.config.volume.muted) {
-				return _react2.default.createElement(
-					'span',
-					{ className: 'mute-button', onClick: function onClick(e) {
-							return _this2.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent);
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'volume-off' })
-				);
+			if (this.state.editing_client && this.state.editing_client.id == client.id) {
+				return _react2.default.createElement('input', {
+					className: 'name editing',
+					value: this.state.editing_client.name,
+					onChange: function onChange(e) {
+						return _this2.setState({ editing_client: { id: client.id, name: e.target.value } });
+					},
+					onBlur: function onBlur(e) {
+						return _this2.saveEditingClient();
+					}
+				});
 			} else {
+				var name = client.config.name ? client.config.name : client.host.name;
 				return _react2.default.createElement(
-					'span',
-					{ className: 'mute-button', onClick: function onClick(e) {
-							return _this2.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent);
+					'div',
+					{ className: 'name', onClick: function onClick(e) {
+							return _this2.setState({ editing_client: { id: client.id, name: name } });
 						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'volume-up' })
+					name,
+					' ',
+					!client.connected ? '(disconnected)' : null
 				);
 			}
 		}
@@ -71200,20 +71233,41 @@ var Snapcast = function (_React$Component) {
 					return _react2.default.createElement(
 						'div',
 						{ className: 'group', key: group.id },
-						group.muted ? _react2.default.createElement(_reactFontawesome2.default, { name: 'volume-off' }) : _react2.default.createElement(_reactFontawesome2.default, { name: 'volume-up' }),
-						' ',
-						group.name ? group.name : 'Untitled',
+						_react2.default.createElement(
+							'div',
+							{ className: 'inner' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								group.name ? group.name : 'Untitled group'
+							)
+						),
 						_react2.default.createElement(
 							'div',
 							{ className: 'clients' },
 							group.clients.map(function (client) {
 								return _react2.default.createElement(
 									'div',
-									{ className: 'client', key: client.id },
-									_this3.renderMuteToggle(client),
-									client.config.name ? client.config.name : client.host.name,
-									' ',
-									client.config.volume.percent
+									{ className: "client " + (client.connected ? 'connected' : 'disconnected'), key: client.id },
+									_react2.default.createElement(
+										'div',
+										{ className: 'inner' },
+										_this3.renderClientName(client),
+										_react2.default.createElement(
+											'div',
+											{ className: 'controls' },
+											_react2.default.createElement(_VolumeControl2.default, {
+												volume: client.config.volume.percent,
+												mute: client.config.volume.muted,
+												onVolumeChange: function onVolumeChange(percent) {
+													return _this3.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent);
+												},
+												onMuteChange: function onMuteChange(mute) {
+													return _this3.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent);
+												}
+											})
+										)
+									)
 								);
 							})
 						)

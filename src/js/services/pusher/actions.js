@@ -187,3 +187,16 @@ export function setSnapcastClientVolume(id, muted, percent){
 	}
 }
 
+export function setSnapcastClientName(id, name){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
+		data: {
+			method: 'Client.SetName',
+			params: {
+				id: id,
+				name: name
+			}
+		}
+	}
+}
+

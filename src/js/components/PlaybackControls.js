@@ -114,7 +114,12 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="volume">
-					<VolumeControl />
+					<VolumeControl 
+						volume={this.props.volume}
+						mute={this.props.mute}
+						onVolumeChange={percent => this.props.mopidyActions.setVolume(percent)}
+						onMuteChange={mute => this.props.mopidyActions.setMute(mute)}
+					/>
 				</section>
 
 				<section className="triggers">
@@ -151,6 +156,8 @@ const mapStateToProps = (state, ownProps) => {
 		consume: state.mopidy.consume,
 		repeat: state.mopidy.repeat,
 		random: state.mopidy.random,
+		volume: state.mopidy.volume,
+		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open
 	}
 }

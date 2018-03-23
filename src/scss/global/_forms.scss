@@ -208,28 +208,18 @@ input[type="submit"] {
 }
 
 .field {
+	@include clearfix();
 	display: block;
 	padding-bottom: 12px;
-	@include clearfix;
 
-	.name {
+	& > .name {
 		display: block;
 		padding-top: 10px;
 		width: 20%;
 		float: left;
 	}
 
-	label {
-		display: inline-block;
-	}
-
-	.label {
-		.tooltip {
-			left: -4px;
-		}
-	}
-
-	.input {
+	& > .input {
 		width: 80%;
 		float: left;
 		
@@ -242,6 +232,16 @@ input[type="submit"] {
 		.text {
 			display: block;
 			padding: 10px 14px 10px 0;
+		}
+	}
+
+	label {
+		display: inline-block;
+	}
+
+	.label {
+		.tooltip {
+			left: -4px;
 		}
 	}
 

@@ -3183,25 +3183,25 @@ input[type="submit"] {
     content: '';
     clear: both;
     display: block; }
-  .field .name {
+  .field > .name {
     display: block;
     padding-top: 10px;
     width: 20%;
     float: left; }
+  .field > .input {
+    width: 80%;
+    float: left; }
+    .field > .input input,
+    .field > .input select,
+    .field > .input textarea {
+      width: 100%; }
+    .field > .input .text {
+      display: block;
+      padding: 10px 14px 10px 0; }
   .field label {
     display: inline-block; }
   .field .label .tooltip {
     left: -4px; }
-  .field .input {
-    width: 80%;
-    float: left; }
-    .field .input input,
-    .field .input select,
-    .field .input textarea {
-      width: 100%; }
-    .field .input .text {
-      display: block;
-      padding: 10px 14px 10px 0; }
   .field.radio input, .field.checkbox input {
     display: none; }
   .field.radio .input, .field.checkbox .input {
@@ -4269,19 +4269,44 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
-.snapcast .mute-button {
-  display: inline-block;
-  padding: 10px;
-  cursor: pointer; }
-  .snapcast .mute-button:hover {
-    color: #08d58f; }
-
-.snapcast .group {
-  padding: 10px 0;
+.snapcast .group > .inner {
+  padding-bottom: 5px;
   border-bottom: 1px solid #383734; }
-  .snapcast .group .clients .client {
-    padding: 10px 0 10px 20px;
-    border-top: 1px solid #383734; }
+  .snapcast .group > .inner > .name {
+    font-weight: bold; }
+
+.snapcast .group .clients .client.disconnected {
+  opacity: 0.5; }
+
+.snapcast .group .clients .client > .inner {
+  padding: 5px 5px 5px 20px;
+  border-bottom: 1px solid #383734; }
+
+.snapcast .group .clients .client .name {
+  padding: 6px 0 5px 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0; }
+  .snapcast .group .clients .client .name.editing {
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: -0.01rem;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
+
+.snapcast .group .clients .client .volume-control .mute-control {
+  display: inline-block;
+  float: left;
+  padding: 0 10px;
+  border: 0; }
+
+.snapcast .group .clients .client .volume-control .slider-wrapper {
+  padding-left: 30px; }
+
+.snapcast .group .clients .client .volume-control.muted .slider .progress {
+  background: #a3a19f; }
 
 aside {
   position: fixed;

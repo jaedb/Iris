@@ -6,6 +6,8 @@ import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
+import VolumeControl from './VolumeControl'
+
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
@@ -14,7 +16,11 @@ import * as pusherActions from '../services/pusher/actions'
 class Snapcast extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
+
+		this.state = {
+			editing_client: null
+		}
 	}
 
 	componentDidMount(){
@@ -29,18 +35,27 @@ class Snapcast extends React.Component{
 		}
 	}
 
-	renderMuteToggle(client){
-		if (client.config.volume.muted){
+	saveEditingClient(){
+		this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
+		this.setState({editing_client: null});
+	}
+
+	renderClientName(client){
+		if (this.state.editing_client && this.state.editing_client.id == client.id){
 			return (
-				<span className="mute-button" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, false, client.config.volume.percent)}>
-					<FontAwesome name="volume-off" />
-				</span>
+				<input 
+					className="name editing"
+					value={this.state.editing_client.name}
+					onChange={e => this.setState({editing_client: {id: client.id, name: e.target.value}})}
+					onBlur={e => this.saveEditingClient()}
+				/>
 			);
 		} else {
+			var name = client.config.name ? client.config.name : client.host.name;
 			return (
-				<span className="mute-button" onClick={e => this.props.pusherActions.setSnapcastClientVolume(client.id, true, client.config.volume.percent)}>
-					<FontAwesome name="volume-up" />
-				</span>
+				<div className="name" onClick={e => this.setState({editing_client: {id: client.id, name: name}})}>
+					{name} {!client.connected ? '(disconnected)' : null}
+				</div>
 			);
 		}
 	}
@@ -80,14 +95,27 @@ class Snapcast extends React.Component{
 					groups.map(group => {
 						return (
 							<div className="group" key={group.id}>
-								{group.muted ? <FontAwesome name="volume-off" /> : <FontAwesome name="volume-up" />} {group.name ? group.name : 'Untitled'}
+								<div className="inner">
+									<div className="name">
+										{group.name ? group.name : 'Untitled group'}
+									</div>
+								</div>
 								<div className="clients">
 									{
 										group.clients.map(client => {
 											return (
-												<div className="client" key={client.id}>
-													{this.renderMuteToggle(client)}
-													{client.config.name ? client.config.name : client.host.name} {client.config.volume.percent}
+												<div className={"client "+(client.connected ? 'connected' : 'disconnected')} key={client.id}>
+													<div className="inner">
+														{this.renderClientName(client)}
+														<div className="controls">
+															<VolumeControl 
+																volume={client.config.volume.percent}
+																mute={client.config.volume.muted}
+																onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent)}
+																onMuteChange={mute => this.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent)}
+															/>
+														</div>
+													</div>
 												</div>
 											);
 										})

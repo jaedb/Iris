@@ -56,7 +56,9 @@ export default function reducer(pusher = {}, action){
 
         case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
             var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
-            snapcast_clients[action.key] = Object.assign({}, snapcast_clients[action.key], action.client);
+            var client = snapcast_clients[action.key];
+            client.config = Object.assign({}, client.config, action.client.config);
+            snapcast_clients[action.key] = client;
             return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
 
         default:

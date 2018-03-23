@@ -580,6 +580,30 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+            case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        name: response.name
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);
