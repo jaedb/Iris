@@ -19,7 +19,7 @@
 				}
 
 				& > .inner {
-					padding: 5px 5px 5px 20px;
+					padding: 5px 0;
 					border-bottom: 1px solid $grey;
 				}
 
@@ -29,32 +29,32 @@
 					width: 100%;
 					box-sizing: border-box;
 					border: 0;
-
-					&.editing {
-						background: transparent;
-						color: inherit;
-						font-family: inherit;
-						font-size: 14px;
-						letter-spacing: -0.01rem;
-						text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-					}
 				}
 
-				.volume-control {
-					.mute-control {
+				.controls {
+
+					.edit {
 						display: inline-block;
 						float: left;
-						padding: 0 10px;
-						border: 0;
+						cursor: pointer;
 					}
 
-					.slider-wrapper {
-						padding-left: 30px;
-					}
+					.volume-control {
+						.mute-control {
+							display: inline-block;
+							float: left;
+							padding: 0 10px;
+							border: 0;
+						}
 
-					&.muted {
-						.slider .progress {
-							background: $mid_grey;
+						.slider-wrapper {
+							margin-left: 40px;
+						}
+
+						&.muted {
+							.slider .progress {
+								background: $mid_grey;
+							}
 						}
 					}
 				}

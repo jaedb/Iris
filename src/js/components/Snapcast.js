@@ -40,26 +40,6 @@ class Snapcast extends React.Component{
 		this.setState({editing_client: null});
 	}
 
-	renderClientName(client){
-		if (this.state.editing_client && this.state.editing_client.id == client.id){
-			return (
-				<input 
-					className="name editing"
-					value={this.state.editing_client.name}
-					onChange={e => this.setState({editing_client: {id: client.id, name: e.target.value}})}
-					onBlur={e => this.saveEditingClient()}
-				/>
-			);
-		} else {
-			var name = client.config.name ? client.config.name : client.host.name;
-			return (
-				<div className="name" onClick={e => this.setState({editing_client: {id: client.id, name: name}})}>
-					{name} {!client.connected ? '(disconnected)' : null}
-				</div>
-			);
-		}
-	}
-
 	render(){
 		if (!this.props.snapcast_clients || !this.props.snapcast_groups){
 			return null;
@@ -103,11 +83,17 @@ class Snapcast extends React.Component{
 								<div className="clients">
 									{
 										group.clients.map(client => {
+											var name = client.config.name ? client.config.name : client.host.name;
 											return (
 												<div className={"client "+(client.connected ? 'connected' : 'disconnected')} key={client.id}>
 													<div className="inner">
-														{this.renderClientName(client)}
+														<div className="name">
+															{name} {!client.connected ? '(disconnected)' : null}
+														</div>
 														<div className="controls">
+															<div className="control edit" onClick={e => this.props.uiActions.openModal('edit_snapcast_client',{id: client.id})}>
+																<FontAwesome name="cog" />
+															</div>
 															<VolumeControl 
 																volume={client.config.volume.percent}
 																mute={client.config.volume.muted}

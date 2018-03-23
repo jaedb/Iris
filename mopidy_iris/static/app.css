@@ -4279,7 +4279,7 @@ input[type="submit"] {
   opacity: 0.5; }
 
 .snapcast .group .clients .client > .inner {
-  padding: 5px 5px 5px 20px;
+  padding: 5px 0;
   border-bottom: 1px solid #383734; }
 
 .snapcast .group .clients .client .name {
@@ -4288,24 +4288,22 @@ input[type="submit"] {
   width: 100%;
   box-sizing: border-box;
   border: 0; }
-  .snapcast .group .clients .client .name.editing {
-    background: transparent;
-    color: inherit;
-    font-family: inherit;
-    font-size: 14px;
-    letter-spacing: -0.01rem;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
 
-.snapcast .group .clients .client .volume-control .mute-control {
+.snapcast .group .clients .client .controls .edit {
+  display: inline-block;
+  float: left;
+  cursor: pointer; }
+
+.snapcast .group .clients .client .controls .volume-control .mute-control {
   display: inline-block;
   float: left;
   padding: 0 10px;
   border: 0; }
 
-.snapcast .group .clients .client .volume-control .slider-wrapper {
-  padding-left: 30px; }
+.snapcast .group .clients .client .controls .volume-control .slider-wrapper {
+  margin-left: 40px; }
 
-.snapcast .group .clients .client .volume-control.muted .slider .progress {
+.snapcast .group .clients .client .controls .volume-control.muted .slider .progress {
   background: #a3a19f; }
 
 aside {

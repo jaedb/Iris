@@ -200,3 +200,28 @@ export function setSnapcastClientName(id, name){
 	}
 }
 
+export function setSnapcastClientLatency(id, latency){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY',
+		data: {
+			method: 'Client.SetLatency',
+			params: {
+				id: id,
+				latency: latency
+			}
+		}
+	}
+}
+
+export function deleteSnapcastClient(id){
+	return {
+		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
+		data: {
+			method: 'Server.DeleteClient',
+			params: {
+				id: id
+			}
+		}
+	}
+}
+

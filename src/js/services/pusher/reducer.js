@@ -61,6 +61,11 @@ export default function reducer(pusher = {}, action){
             snapcast_clients[action.key] = client;
             return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
 
+        case 'PUSHER_SNAPCAST_CLIENT_REMOVED':
+            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
+            delete snapcast_clients[action.key];
+            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
+
         default:
             return pusher
     }

@@ -525,8 +525,8 @@ const PusherMiddleware = (function(){
                                 var clients_ids = [];
 
                                 // And now this groups' clients
-                                for (var i = 0; i < group.clients.length; i++){
-                                    var client = group.clients[i];
+                                for (var j = 0; j < group.clients.length; j++){
+                                    var client = group.clients[j];
                                     clients[client.id] = client;
                                     clients_ids.push(client.id);
                                 }
@@ -544,7 +544,7 @@ const PusherMiddleware = (function(){
                                 type: 'PUSHER_SNAPCAST', 
                                 snapcast_clients: clients,
                                 snapcast_groups: groups
-                            })
+                            });
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -592,6 +592,49 @@ const PusherMiddleware = (function(){
                                         name: response.name
                                     }
                                 }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        latency: response.latency
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_DELETE_SNAPCAST_CLIENT':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_REMOVED', 
+                                key: action.data.params.id
                             })
                         },
                         error => {                            
