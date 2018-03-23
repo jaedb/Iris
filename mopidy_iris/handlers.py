@@ -166,6 +166,7 @@ class HttpHandler(tornado.web.RequestHandler):
         id = int(time.time())
 
         if slug == 'config.js':
+            self.set_header("Content-Type", "application/javascript");
             self.write('window._iris_config = %s;' % json.dumps(dict(
                 self.config['iris'])))
             self.finish()
