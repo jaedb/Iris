@@ -35490,7 +35490,7 @@ var _Settings = __webpack_require__(400);
 
 var _Settings2 = _interopRequireDefault(_Settings);
 
-var _Debug = __webpack_require__(403);
+var _Debug = __webpack_require__(402);
 
 var _Debug2 = _interopRequireDefault(_Debug);
 
@@ -69832,216 +69832,6 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(4);
-
-var _redux = __webpack_require__(3);
-
-var _reactRouter = __webpack_require__(8);
-
-var _reactFontawesome = __webpack_require__(6);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _ArtistSentence = __webpack_require__(27);
-
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
-
-var _VolumeControl = __webpack_require__(167);
-
-var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
-
-var _helpers = __webpack_require__(2);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-var _actions = __webpack_require__(22);
-
-var coreActions = _interopRequireWildcard(_actions);
-
-var _actions2 = __webpack_require__(5);
-
-var uiActions = _interopRequireWildcard(_actions2);
-
-var _actions3 = __webpack_require__(24);
-
-var pusherActions = _interopRequireWildcard(_actions3);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Snapcast = function (_React$Component) {
-	_inherits(Snapcast, _React$Component);
-
-	function Snapcast(props) {
-		_classCallCheck(this, Snapcast);
-
-		var _this = _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
-
-		_this.state = {
-			editing_client: null
-		};
-		return _this;
-	}
-
-	_createClass(Snapcast, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			if (this.props.pusher_connected) {
-				this.props.pusherActions.getSnapcast();
-			}
-		}
-	}, {
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(newProps) {
-			if (!this.props.pusher_connected && newProps.pusher_connected) {
-				this.props.pusherActions.getSnapcast();
-			}
-		}
-	}, {
-		key: 'saveEditingClient',
-		value: function saveEditingClient() {
-			this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
-			this.setState({ editing_client: null });
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			if (!this.props.snapcast_clients || !this.props.snapcast_groups) {
-				return null;
-			}
-
-			// Construct a simple array of our groups index
-			var groups = [];
-			for (var group_id in this.props.snapcast_groups) {
-				if (this.props.snapcast_groups.hasOwnProperty(group_id)) {
-					var group = this.props.snapcast_groups[group_id];
-
-					// Merge the group's clients into this group (also as a simple array)
-					var clients = [];
-					for (var i = 0; i < group.clients_ids.length; i++) {
-						if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])) {
-							clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
-						}
-					}
-
-					groups.push(Object.assign({}, group, {
-						clients: clients
-					}));
-				}
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'snapcast' },
-				groups.map(function (group) {
-					return _react2.default.createElement(
-						'div',
-						{ className: 'group', key: group.id },
-						_react2.default.createElement(
-							'div',
-							{ className: 'inner' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'name' },
-								group.name ? group.name : 'Untitled group'
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'clients' },
-							group.clients.map(function (client) {
-								var name = client.config.name ? client.config.name : client.host.name;
-								return _react2.default.createElement(
-									'div',
-									{ className: "client " + (client.connected ? 'connected' : 'disconnected'), key: client.id },
-									_react2.default.createElement(
-										'div',
-										{ className: 'inner' },
-										_react2.default.createElement(
-											'div',
-											{ className: 'name' },
-											name,
-											' ',
-											!client.connected ? '(disconnected)' : null
-										),
-										_react2.default.createElement(
-											'div',
-											{ className: 'controls' },
-											_react2.default.createElement(
-												'div',
-												{ className: 'control edit', onClick: function onClick(e) {
-														return _this2.props.uiActions.openModal('edit_snapcast_client', { id: client.id });
-													} },
-												_react2.default.createElement(_reactFontawesome2.default, { name: 'cog' })
-											),
-											_react2.default.createElement(_VolumeControl2.default, {
-												volume: client.config.volume.percent,
-												mute: client.config.volume.muted,
-												onVolumeChange: function onVolumeChange(percent) {
-													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent);
-												},
-												onMuteChange: function onMuteChange(mute) {
-													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent);
-												}
-											})
-										)
-									)
-								);
-							})
-						)
-					);
-				})
-			);
-		}
-	}]);
-
-	return Snapcast;
-}(_react2.default.Component);
-
-var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {
-		pusher_connected: state.pusher.connected,
-		snapcast_groups: state.pusher.snapcast_groups,
-		snapcast_clients: state.pusher.snapcast_clients
-	};
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
-	};
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
-
-/***/ }),
-/* 403 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -70092,7 +69882,7 @@ var _Thumbnail = __webpack_require__(15);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Snapcast = __webpack_require__(402);
+var _Snapcast = __webpack_require__(403);
 
 var _Snapcast2 = _interopRequireDefault(_Snapcast);
 
@@ -70587,6 +70377,216 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Debug);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+
+/***/ }),
+/* 403 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(3);
+
+var _reactRouter = __webpack_require__(8);
+
+var _reactFontawesome = __webpack_require__(6);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+var _ArtistSentence = __webpack_require__(27);
+
+var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+
+var _VolumeControl = __webpack_require__(167);
+
+var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(22);
+
+var coreActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(5);
+
+var uiActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(24);
+
+var pusherActions = _interopRequireWildcard(_actions3);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Snapcast = function (_React$Component) {
+	_inherits(Snapcast, _React$Component);
+
+	function Snapcast(props) {
+		_classCallCheck(this, Snapcast);
+
+		var _this = _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
+
+		_this.state = {
+			editing_client: null
+		};
+		return _this;
+	}
+
+	_createClass(Snapcast, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.pusher_connected) {
+				this.props.pusherActions.getSnapcast();
+			}
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(newProps) {
+			if (!this.props.pusher_connected && newProps.pusher_connected) {
+				this.props.pusherActions.getSnapcast();
+			}
+		}
+	}, {
+		key: 'saveEditingClient',
+		value: function saveEditingClient() {
+			this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
+			this.setState({ editing_client: null });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			if (!this.props.snapcast_clients || !this.props.snapcast_groups) {
+				return null;
+			}
+
+			// Construct a simple array of our groups index
+			var groups = [];
+			for (var group_id in this.props.snapcast_groups) {
+				if (this.props.snapcast_groups.hasOwnProperty(group_id)) {
+					var group = this.props.snapcast_groups[group_id];
+
+					// Merge the group's clients into this group (also as a simple array)
+					var clients = [];
+					for (var i = 0; i < group.clients_ids.length; i++) {
+						if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])) {
+							clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
+						}
+					}
+
+					groups.push(Object.assign({}, group, {
+						clients: clients
+					}));
+				}
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'snapcast' },
+				groups.map(function (group) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'group', key: group.id },
+						_react2.default.createElement(
+							'div',
+							{ className: 'inner' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								group.name ? group.name : 'Untitled group'
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'clients' },
+							group.clients.map(function (client) {
+								var name = client.config.name ? client.config.name : client.host.name;
+								return _react2.default.createElement(
+									'div',
+									{ className: "client " + (client.connected ? 'connected' : 'disconnected'), key: client.id },
+									_react2.default.createElement(
+										'div',
+										{ className: 'inner' },
+										_react2.default.createElement(
+											'div',
+											{ className: 'name' },
+											name,
+											' ',
+											!client.connected ? '(disconnected)' : null
+										),
+										_react2.default.createElement(
+											'div',
+											{ className: 'controls' },
+											_react2.default.createElement(
+												'div',
+												{ className: 'control edit', onClick: function onClick(e) {
+														return _this2.props.uiActions.openModal('edit_snapcast_client', { id: client.id });
+													} },
+												_react2.default.createElement(_reactFontawesome2.default, { name: 'cog' })
+											),
+											_react2.default.createElement(_VolumeControl2.default, {
+												volume: client.config.volume.percent,
+												mute: client.config.volume.muted,
+												onVolumeChange: function onVolumeChange(percent) {
+													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent);
+												},
+												onMuteChange: function onMuteChange(mute) {
+													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent);
+												}
+											})
+										)
+									)
+								);
+							})
+						)
+					);
+				})
+			);
+		}
+	}]);
+
+	return Snapcast;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		pusher_connected: state.pusher.connected,
+		snapcast_groups: state.pusher.snapcast_groups,
+		snapcast_clients: state.pusher.snapcast_clients
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
 
 /***/ }),
 /* 404 */
