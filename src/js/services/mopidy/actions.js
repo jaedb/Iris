@@ -250,7 +250,9 @@ export function reorderTracklist(indexes, insert_before){
 }
 
 export function clearTracklist(){
-	return instruct('tracklist.clear')
+	return { 
+		type: 'MOPIDY_CLEAR_TRACKLIST'
+	}
 }
 
 

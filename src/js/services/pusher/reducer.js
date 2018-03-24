@@ -32,9 +32,9 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { connections: connections });
 
         case 'PUSHER_CONNECTION_ADDED':
-        case 'PUSHER_CONNECTION_UPDATED':
+        case 'PUSHER_CONNECTION_CHANGED':
             var connections = Object.assign({}, pusher.connections)
-            connections[action.connection.connection_id] = action.connection
+            connections[action.connection.connection_id] = action.connection;
             return Object.assign({}, pusher, { connections: connections });
 
         case 'PUSHER_CONNECTION_REMOVED':
@@ -50,6 +50,21 @@ export default function reducer(pusher = {}, action){
 
         case 'PUSHER_START_UPGRADE':
             return Object.assign({}, pusher, { upgrading: true });
+
+        case 'PUSHER_SNAPCAST':
+            return Object.assign({}, pusher, { snapcast_clients: action.snapcast_clients, snapcast_groups: action.snapcast_groups });
+
+        case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
+            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
+            var client = snapcast_clients[action.key];
+            client.config = Object.assign({}, client.config, action.client.config);
+            snapcast_clients[action.key] = client;
+            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
+
+        case 'PUSHER_SNAPCAST_CLIENT_REMOVED':
+            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
+            delete snapcast_clients[action.key];
+            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
 
         default:
             return pusher

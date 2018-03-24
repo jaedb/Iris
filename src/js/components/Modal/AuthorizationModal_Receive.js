@@ -22,6 +22,7 @@ export default class extends React.Component{
 	}
 
 	render(){
+		console.log(this.props.data)
 		if (!this.props.data || !this.props.data.user || !this.props.data.authorization){
 			return null
 		}

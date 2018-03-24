@@ -3183,25 +3183,25 @@ input[type="submit"] {
     content: '';
     clear: both;
     display: block; }
-  .field .name {
+  .field > .name {
     display: block;
     padding-top: 10px;
     width: 20%;
     float: left; }
+  .field > .input {
+    width: 80%;
+    float: left; }
+    .field > .input input,
+    .field > .input select,
+    .field > .input textarea {
+      width: 100%; }
+    .field > .input .text {
+      display: block;
+      padding: 10px 14px 10px 0; }
   .field label {
     display: inline-block; }
   .field .label .tooltip {
     left: -4px; }
-  .field .input {
-    width: 80%;
-    float: left; }
-    .field .input input,
-    .field .input select,
-    .field .input textarea {
-      width: 100%; }
-    .field .input .text {
-      display: block;
-      padding: 10px 14px 10px 0; }
   .field.radio input, .field.checkbox input {
     display: none; }
   .field.radio .input, .field.checkbox .input {
@@ -3447,8 +3447,11 @@ input[type="submit"] {
         font-weight: 300;
         color: inherit;
         border-bottom: 1px solid #454440 !important; }
+        #context-menu .liner > span button .icon,
         #context-menu .liner > span button .fa,
+        #context-menu .liner > span .button .icon,
         #context-menu .liner > span .button .fa,
+        #context-menu .liner > span .dropdown-field .icon,
         #context-menu .liner > span .dropdown-field .fa {
           display: none; }
         .notouch #context-menu .liner > span button:hover, .notouch
@@ -4157,7 +4160,7 @@ input[type="submit"] {
     .playback-controls section.progress {
       bottom: 10px;
       left: 140px;
-      right: 280px;
+      right: 260px;
       padding-left: 20px;
       padding-right: 20px;
       color: #a3a19f; }
@@ -4181,7 +4184,7 @@ input[type="submit"] {
         width: 50px; }
     .playback-controls section.settings {
       right: 170px;
-      width: 120px;
+      width: 100px;
       text-align: center; }
     .playback-controls section.volume {
       bottom: 10px;
@@ -4265,6 +4268,43 @@ input[type="submit"] {
         bottom: 110px;
         left: 0;
         right: 0; } }
+
+.snapcast .group > .inner {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #383734; }
+  .snapcast .group > .inner > .name {
+    font-weight: bold; }
+
+.snapcast .group .clients .client.disconnected {
+  opacity: 0.5; }
+
+.snapcast .group .clients .client > .inner {
+  padding: 5px 0;
+  border-bottom: 1px solid #383734; }
+
+.snapcast .group .clients .client .name {
+  padding: 6px 0 5px 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0; }
+
+.snapcast .group .clients .client .controls .edit {
+  display: inline-block;
+  float: left;
+  cursor: pointer; }
+
+.snapcast .group .clients .client .controls .volume-control .mute-control {
+  display: inline-block;
+  float: left;
+  padding: 0 10px;
+  border: 0; }
+
+.snapcast .group .clients .client .controls .volume-control .slider-wrapper {
+  margin-left: 40px; }
+
+.snapcast .group .clients .client .controls .volume-control.muted .slider .progress {
+  background: #a3a19f; }
 
 aside {
   position: fixed;

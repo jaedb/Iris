@@ -11,6 +11,7 @@ import AddToQueueModal from './AddToQueueModal'
 import CreatePlaylistModal from './CreatePlaylistModal'
 import EditPlaylistModal from './EditPlaylistModal'
 import EditRadioModal from './EditRadioModal'
+import EditSnapcastClientModal from './EditSnapcastClientModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
 import SearchURISchemesModal from './SearchURISchemesModal'
@@ -115,6 +116,13 @@ class Modal extends React.Component{
 						artists={this.props.artists} 
 						tracks={this.props.tracks} /> : null }
 
+					{ this.props.modal.name == 'edit_snapcast_client' ? <EditSnapcastClientModal 
+						uiActions={this.props.uiActions} 
+						pusherActions={this.props.pusherActions} 
+						data={this.props.modal.data} 
+						clients={this.props.snapcast_clients} 
+						groups={this.props.snapcast_groups} /> : null }
+
 					{ this.props.modal.name == 'image_zoom' ? <ImageZoomModal 
 						uiActions={this.props.uiActions} 
 						data={this.props.modal.data} /> : null }
@@ -159,7 +167,9 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_library_playlists: state.spotify.library_playlists,
-		mopidy_library_playlists: state.mopidy.library_playlists
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		snapcast_groups: state.pusher.snapcast_groups,
+		snapcast_clients: state.pusher.snapcast_clients
 	}
 }
 
