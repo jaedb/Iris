@@ -287,9 +287,11 @@ const MopidyMiddleware = (function(){
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
                     {
-                        type: 'info',
-                        content: store.getState().pusher.username +' paused playback',
-                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                        notification: {
+                            type: 'info',
+                            content: store.getState().pusher.username +' paused playback',
+                            icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                        }
                     }
                 ));
                 break
@@ -784,6 +786,19 @@ const MopidyMiddleware = (function(){
                             ));
                         }
                     )
+                break;
+
+            case 'MOPIDY_CLEAR_TRACKLIST':
+                instruct(socket, store, 'tracklist.clear');
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'notification',
+                    {
+                        notification: {
+                            type: 'info',
+                            content: store.getState().pusher.username +' cleared queue'
+                        }
+                    }
+                ));
                 break;
 
 
