@@ -162,16 +162,27 @@ function refreshToken(dispatch, getState){
 
             $.ajax(config)
                 .then(
-                    response => {
-                        var token = response.spotify_token;
-                        token.token_expiry = new Date().getTime() + (token.expires_in * 1000 );
-                        token.source = 'mopidy';
-                        dispatch({
-                            type: 'SPOTIFY_TOKEN_REFRESHED',
-                            access_token_provider: 'backend',
-                            data: token
-                        });
-                        resolve(token);
+                    (response, status, xhr) => {
+                        if (response.error){
+                            dispatch({ type: 'SPOTIFY_DISCONNECTED' })
+                            reject({
+                                config: config,
+                                xhr: xhr,
+                                status: status,
+                                error: response.error
+                            });
+
+                        } else {
+                            var token = response.result.spotify_token;
+                            token.token_expiry = new Date().getTime() + (token.expires_in * 1000 );
+                            token.source = 'mopidy';
+                            dispatch({
+                                type: 'SPOTIFY_TOKEN_REFRESHED',
+                                access_token_provider: 'backend',
+                                data: token
+                            });
+                            resolve(token);
+                        }
 
                     },
                     (xhr, status, error) => {
@@ -222,6 +233,19 @@ export function refreshingToken(){
         dispatch({ type: 'SPOTIFY_TOKEN_REFRESHING' });
         refreshToken(dispatch, getState );
     }
+}
+
+export function tokenChanged(spotify_token){
+    return {
+        type: 'SPOTIFY_TOKEN_CHANGED',
+        spotify_token: spotify_token
+    }
+}
+
+export function authorizationReceived(data){
+
+    // This is just an alias to open the modal
+    return uiActions.openModal('receive_authorization', data);
 }
 
 export function importAuthorization(data){

@@ -20,24 +20,24 @@ const PusherMiddleware = (function(){
     const handleMessage = (ws, store, message) => {
 
         if (store.getState().ui.log_pusher){
-            console.log('Pusher', message);
+            console.log('Pusher log (incoming)', message);
         }
 
         // Response with request_id
-        if (message.request_id !== undefined && message.request_id){
+        if (message.id !== undefined && message.id){
 
             // Response matches a pending request
-            if (deferredRequests[message.request_id] !== undefined){
+            if (deferredRequests[message.id] !== undefined){
 
-                store.dispatch(uiActions.stopLoading(message.request_id));
+                store.dispatch(uiActions.stopLoading(message.id));
 
                 // Response is an error
-                if (message.status <= 0){
-                    deferredRequests[message.request_id].reject(message);
+                if (message.error !== undefined){
+                    deferredRequests[message.id].reject(message.error);
 
                 // Successful response
                 } else {
-                    deferredRequests[message.request_id].resolve(message);
+                    deferredRequests[message.id].resolve(message.result);
                 }
 
             // Hmm, the response doesn't appear to be for us?
@@ -52,42 +52,75 @@ const PusherMiddleware = (function(){
         } else {
 
             // Broadcast of an error
-            if (message.status !== undefined && message.status <= 0){
+            if (message.error !== undefined){
                 store.dispatch(coreActions.handleException(
-                    'Pusher: '+message.message, 
+                    'Pusher: '+message.error.message, 
                     message
                 ));
             } else {
-                message.type = 'PUSHER_'+message.type.toUpperCase();
-                store.dispatch(message);  
+
+                switch (message.method){
+                    case 'connection_added':
+                        store.dispatch(pusherActions.connectionAdded(message.params.connection));
+                        break;
+                    case 'connection_changed':
+                        store.dispatch(pusherActions.connectionChanged(message.params.connection));
+                        break;
+                    case 'connection_removed':
+                        store.dispatch(pusherActions.connectionRemoved(message.params.connection));
+                        break;
+                    case 'queue_metadata_changed':
+                        store.dispatch(pusherActions.queueMetadataChanged(message.params.queue_metadata));
+                        break;
+                    case 'spotify_token_changed':
+                        store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
+                        break;
+                    case 'spotify_authorization_received':
+                        store.dispatch(uiActions.openModal('receive_authorization', message.params));
+                        break;
+                    case 'notification':
+                        store.dispatch(uiActions.createNotification(message.params.notification));
+                        break;
+                }
             }
         }
     }
 
-    const request = (store, method, data = {}) => {
+    const request = (store, method, params = null) => {
         return new Promise((resolve, reject) => {
 
-            var request_id = helpers.generateGuid()
+            if (store.getState().ui.log_pusher){
+                console.log('Pusher log (outgoing)', {method: method, params: params});
+            }
+
+            var id = helpers.generateGuid();
             var message = {
-                method: method,
-                data: data,
-                request_id: request_id
+                jsonrpc: '2.0',
+                id: id,
+                method: method
+            }
+            if (params){
+                message.params = params;
             }
             socket.send(JSON.stringify(message));
 
-            store.dispatch(uiActions.startLoading(request_id, 'pusher_'+method));
+            store.dispatch(uiActions.startLoading(id, 'pusher_'+method));
 
             // Start our 15 second timeout
             var timeout = setTimeout(
                 function(){
-                    store.dispatch(uiActions.stopLoading(request_id));
-                    reject({message: "Request timed out", method: method, data: data});
+                    store.dispatch(uiActions.stopLoading(id));
+                    reject({
+                        id: id, 
+                        code: 32300, 
+                        message: "Request timed out"
+                    });
                 },
                 30000
             );
             
             // add query to our deferred responses
-            deferredRequests[request_id] = {
+            deferredRequests[id] = {
                 resolve: resolve,
                 reject: reject
             };
@@ -104,7 +137,7 @@ const PusherMiddleware = (function(){
                     socket.close();
                 }
 
-                store.dispatch({ type: 'PUSHER_CONNECTING' });
+                store.dispatch({type: 'PUSHER_CONNECTING'});
 
                 var state = store.getState();
                 var connection = {
@@ -122,9 +155,13 @@ const PusherMiddleware = (function(){
                     [ connection.client_id, connection.connection_id, connection.username ]
                 );
 
-                socket.onmessage = (message) => {
-                    var message = JSON.parse(message.data);
-                    handleMessage(socket, store, message )
+                socket.onopen = () => {
+                    store.dispatch({
+                        type: 'PUSHER_CONNECTED',
+                        connection_id: connection.connection_id,
+                        client_id: connection.client_id,
+                        username: connection.username
+                    });
                 };
 
                 socket.onclose = () => {
@@ -138,75 +175,22 @@ const PusherMiddleware = (function(){
                     }, 5000);
                 };
 
+                socket.onmessage = (message) => {
+                    var message = JSON.parse(message.data);
+                    handleMessage(socket, store, message);
+                };
+
                 break;
 
             case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username})
-                request(store, 'get_config')
-                    .then(
-                        response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
+                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username});
 
-                            response.type = 'PUSHER_CONFIG'
-                            store.dispatch(response);
-
-                            var core = store.getState().core
-                            if (!core.country || !core.locale){
-                                store.dispatch(coreActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }))
-                            }
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not load config',
-                                error
-                            ));
-                        }
-                    );
-                request(store, 'get_version')
-                    .then(
-                        response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
-                            response.type = 'PUSHER_VERSION'
-                            store.dispatch(response)
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not load version',
-                                error
-                            ));
-                        }
-                    );
-                request(store, 'get_radio')
-                    .then(
-                        response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
-
-                            response.type = 'PUSHER_RADIO'
-                            store.dispatch(response)
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not load radio',
-                                error
-                            ));
-                        }
-                    );
-
-                store.dispatch(pusherActions.getQueueMetadata())
-
-                return next(action);
+                store.dispatch(pusherActions.getConfig());
+                store.dispatch(pusherActions.getVersion());
+                store.dispatch(pusherActions.getRadio());
+                store.dispatch(pusherActions.getQueueMetadata());
+                
+                next(action);
                 break;
 
             case 'PUSHER_INSTRUCT':
@@ -225,7 +209,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELIVER_MESSAGE':
-                request(store, 'deliver_message', action.data)
+                request(store, 'send_message', action.data)
                     .then(
                         response => {
                             store.dispatch(uiActions.createNotification({content: 'Message delivered'}));
@@ -272,11 +256,6 @@ const PusherMiddleware = (function(){
                 request(store, 'upgrade')
                     .then(
                         response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
-
                             if (response.upgrade_successful){
                                 store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
                             } else {
@@ -297,15 +276,9 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_SET_USERNAME':
-                request(store, 'set_username', {
-                    username: action.username
-                })
+                request(store, 'set_username', {username: action.username})
                     .then(
                         response => {
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
                             response.type = 'PUSHER_USERNAME_CHANGED'
                             store.dispatch(response)
                         },
@@ -319,16 +292,58 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+            case 'PUSHER_GET_VERSION':
+                request(store, 'get_version')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_VERSION',
+                                version: response.version
+                            })
+                        },
+                        error => {                        
+                            store.dispatch(coreActions.handleException(
+                                'Could not load version',
+                                error
+                            ));
+                        }
+                    );
+                break;
+
+            case 'PUSHER_GET_CONFIG':
+                request(store, 'get_config')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_CONFIG',
+                                config: response.config
+                            });
+
+                            var core = store.getState().core;
+                            if (!core.country || !core.locale){
+                                store.dispatch(coreActions.set({
+                                    country: response.config.country,
+                                    locale: response.config.locale
+                                }))
+                            }
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load config',
+                                error
+                            ));
+                        }
+                    );
+                break;
+
             case 'PUSHER_GET_CONNECTIONS':
                 request(store, 'get_connections')
                     .then(
-                        response => {             
-                            if (response.error){
-                                console.error(response.error)
-                                return false
-                            }
-                            response.type = 'PUSHER_CONNECTIONS'
-                            store.dispatch(response)
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_CONNECTIONS',
+                                connections: response.connections
+                            })
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -338,11 +353,25 @@ const PusherMiddleware = (function(){
                         }
                     );
                 return next(action);
-                break
+                break;
 
-            case 'PUSHER_SPOTIFY_AUTHORIZATION':
-                store.dispatch(uiActions.openModal('receive_authorization', {authorization: action.authorization, user: action.me}))
-                break
+            case 'PUSHER_GET_RADIO':
+                request(store, 'get_radio')
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_RADIO',
+                                radio: response.radio
+                            });
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not load radio',
+                                error
+                            ));
+                        }
+                    );
+                break;
 
             case 'PUSHER_START_RADIO':
             case 'PUSHER_UPDATE_RADIO':
@@ -477,6 +506,145 @@ const PusherMiddleware = (function(){
             case 'PUSHER_ERROR':
                 store.dispatch(uiActions.createNotification(action.message, 'bad'))
                 ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message })
+                break
+
+
+            /**
+             * Snapcast actions
+             **/
+            case 'PUSHER_GET_SNAPCAST':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            var groups = {};
+                            var clients = {};
+
+                            // Loop all the groups
+                            for (var i = 0; i < response.server.groups.length; i++){
+                                var group = response.server.groups[i];
+                                var clients_ids = [];
+
+                                // And now this groups' clients
+                                for (var j = 0; j < group.clients.length; j++){
+                                    var client = group.clients[j];
+                                    clients[client.id] = client;
+                                    clients_ids.push(client.id);
+                                }
+
+                                groups[group.id] = {
+                                    id: group.id,
+                                    muted: group.muted,
+                                    name: group.name,
+                                    stream_id: group.stream_id,
+                                    clients_ids: clients_ids
+                                }
+                            }
+
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST', 
+                                snapcast_clients: clients,
+                                snapcast_groups: groups
+                            });
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not get Snapcast server',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        name: response.name
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.data.params.id,
+                                client: {
+                                    config: {
+                                        latency: response.latency
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_DELETE_SNAPCAST_CLIENT':
+                request(store, 'snapcast_instruct', action.data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_REMOVED', 
+                                key: action.data.params.id
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
                 break
 
             // This action is irrelevant to us, pass it on to the next middleware

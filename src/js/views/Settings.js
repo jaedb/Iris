@@ -331,8 +331,8 @@ class Settings extends React.Component {
 							</div>
 						</div>
 						{this.renderApplyButton()}
-					</form>					
-
+					</form>			
+					
 					<h4 className="underline">Streaming</h4>
 
 					<div className="field checkbox">
@@ -372,6 +372,7 @@ class Settings extends React.Component {
 							</label>
 						</div>
 					</div>
+
 					<div className="field">
 						<div className="name">Location</div>
 						<div className="input">
@@ -383,7 +384,7 @@ class Settings extends React.Component {
 								The full URL to your stream endpoint
 							</div>
 						</div>
-					</div>
+					</div>		
 
 					<h4 className="underline">Localization</h4>
 

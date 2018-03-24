@@ -141,23 +141,23 @@ export function setRandom(random){
 	}
 }
 
-export function seek(time_position){
-	return {
-		type: 'MOPIDY_SEEK',
-		time_position: parseInt(time_position)
-	}
-}
-
 export function getTimePosition(){
 	return {
 		type: 'MOPIDY_GET_TIME_POSITION'
 	}
 }
 
+export function setTimePosition(time_position){
+	return {
+		type: 'MOPIDY_SET_TIME_POSITION',
+		time_position: parseInt(time_position)
+	}
+}
+
 export function timePosition(time_position){
 	return {
 		type: 'MOPIDY_TIME_POSITION',
-		time_position: time_position
+		time_position: parseInt(time_position)
 	}
 }
 
@@ -250,7 +250,9 @@ export function reorderTracklist(indexes, insert_before){
 }
 
 export function clearTracklist(){
-	return instruct('tracklist.clear')
+	return { 
+		type: 'MOPIDY_CLEAR_TRACKLIST'
+	}
 }
 
 

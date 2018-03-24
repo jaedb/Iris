@@ -1,14 +1,8 @@
 
 import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
-import * as mopidyActions from '../services/mopidy/actions'
-import * as uiActions from '../services/ui/actions'
-
-class VolumeControl extends React.Component{
+export default class VolumeControl extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -28,7 +22,7 @@ class VolumeControl extends React.Component{
 			percent = 0
 		}
 
-		this.props.mopidyActions.setVolume(percent)
+		this.props.onVolumeChange(percent);
 	}
 
 	handleWheel(e){
@@ -47,22 +41,21 @@ class VolumeControl extends React.Component{
 			percent = 0
 		}
 
-		this.props.mopidyActions.setVolume(percent);
-
+		this.props.onVolumeChange(percent);
 		e.preventDefault();
 	}
 
 	renderMuteButton(){
 		if (this.props.mute){
 			return (
-				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(false)}>
-					<FontAwesome className="red-text" name="volume-down" />
+				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(false)}>
+					<FontAwesome className="red-text" name="volume-off" />
 					<span className="tooltip">Unmute</span>
 				</a>
 			)
 		} else {
 			return (
-				<a className="control has-tooltip" onClick={() => this.props.mopidyActions.setMute(true)}>
+				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(true)}>
 					<FontAwesome className="muted" name="volume-off" />
 					<span className="tooltip">Mute</span>
 				</a>
@@ -89,19 +82,3 @@ class VolumeControl extends React.Component{
 		);
 	}
 }
-
-const mapStateToProps = (state, ownProps) => {
-	return {
-		volume: state.mopidy.volume,
-		mute: state.mopidy.mute
-	}
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
-		mopidyActions: bindActionCreators(mopidyActions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(VolumeControl)

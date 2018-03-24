@@ -12,6 +12,7 @@ import URISchemesList from '../components/URISchemesList'
 import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
+import Snapcast from '../components/Snapcast'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -118,6 +119,11 @@ class Debug extends React.Component{
 							</div>
 						</div>
 					</form>
+
+					<h4 className="underline">Snapcast (beta)</h4>
+					<div className="field">
+						<Snapcast />
+					</div>
 
 					<h4 className="underline">Spotify</h4>
 					<div className="field">

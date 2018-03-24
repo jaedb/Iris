@@ -34,6 +34,7 @@ let reducers = combineReducers({
 // TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
 	core: {
+		outputs: [],
 		queue: [],
 		queue_metadata: {},
 		current_track_uri: null,

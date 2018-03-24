@@ -33,7 +33,7 @@ export default class Notifications extends React.Component{
 							default:
 								return (
 									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key) } />
+										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }

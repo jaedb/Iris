@@ -146,6 +146,7 @@ export function getIcon(name){
  **/
 
 export function openModal(name, data){
+    console.log(name,data);
     return { 
         type: 'OPEN_MODAL',
         modal: {
@@ -183,7 +184,7 @@ export function createNotification(data){
         notification: Object.assign(
             {
                 key: helpers.generateGuid(),
-                duration: 3,
+                duration: 5,
                 type: 'default',
                 title: null,
                 content: null,
@@ -203,10 +204,11 @@ export function closeNotification(key){
     }
 }
 
-export function removeNotification(key){
+export function removeNotification(key, manual = false){
     return { 
         type: 'REMOVE_NOTIFICATION',
-        key: key
+        key: key,
+        manual: manual
     }
 }
 

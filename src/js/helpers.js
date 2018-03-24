@@ -204,11 +204,19 @@ export let digestMopidyImages = function(mopidy, images){
 }
 
 
-export let generateGuid = function(format = 'xxxxxxxxxxxx'){
-	return format.replace(/[xy]/g, function(c){
-		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-		return v.toString(16);
-	});
+export let generateGuid = function(type = 'numeric'){
+	// numeric
+	if (type == 'numeric'){
+		var date = new Date().valueOf().toString();
+		var random_number = Math.floor((Math.random() * 100)).toString();
+		return parseInt(date+random_number);
+	} else {
+		var format = 'xxxxxxxxxx';
+		return format.replace(/[xy]/g, function(c){
+			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+			return v.toString(16);
+		});
+	}
 }
 
 export let getCurrentPusherConnection = function(connections, connectionid){

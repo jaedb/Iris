@@ -1,0 +1,64 @@
+
+.snapcast {
+
+	.group {
+		& > .inner {
+			padding-bottom: 5px;
+			border-bottom: 1px solid $grey;
+
+			& > .name {
+				font-weight: bold;
+			}
+		}
+
+		.clients {
+			.client {
+
+				&.disconnected {
+					opacity: 0.5;
+				}
+
+				& > .inner {
+					padding: 5px 0;
+					border-bottom: 1px solid $grey;
+				}
+
+				.name {
+					padding: 6px 0 5px 0;
+					display: block;
+					width: 100%;
+					box-sizing: border-box;
+					border: 0;
+				}
+
+				.controls {
+
+					.edit {
+						display: inline-block;
+						float: left;
+						cursor: pointer;
+					}
+
+					.volume-control {
+						.mute-control {
+							display: inline-block;
+							float: left;
+							padding: 0 10px;
+							border: 0;
+						}
+
+						.slider-wrapper {
+							margin-left: 40px;
+						}
+
+						&.muted {
+							.slider .progress {
+								background: $mid_grey;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
