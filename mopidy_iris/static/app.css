@@ -4275,9 +4275,6 @@ input[type="submit"] {
   .snapcast .group > .inner > .name {
     font-weight: bold; }
 
-.snapcast .group .clients .client.disconnected {
-  opacity: 0.5; }
-
 .snapcast .group .clients .client > .inner {
   padding: 5px 0;
   border-bottom: 1px solid #383734; }
@@ -4304,6 +4301,12 @@ input[type="submit"] {
   margin-left: 40px; }
 
 .snapcast .group .clients .client .controls .volume-control.muted .slider .progress {
+  background: #a3a19f; }
+
+.snapcast .group .clients .client.disconnected .name {
+  opacity: 0.5; }
+
+.snapcast .group .clients .client.disconnected .controls .volume-control .slider .progress {
   background: #a3a19f; }
 
 aside {

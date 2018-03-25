@@ -479,12 +479,12 @@ const PusherMiddleware = (function(){
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
                     authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
-                }))
+                }));
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
-                }))
+                }));
 
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_DEBUG':

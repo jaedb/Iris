@@ -62,7 +62,8 @@ var initialState = {
 		mute: false,
 		volume: 0,
 		progress: 0,
-		play_state: false
+		play_state: false,
+		uri_schemes: []
 	},
 	pusher: {
 		connected: false,
@@ -70,7 +71,8 @@ var initialState = {
 		connections: {},
 		version: {
 			current: '0.0.0'
-		}
+		},
+		config: {}
 	},
 	lastfm: {
 		connected: false,
