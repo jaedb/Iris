@@ -5463,6 +5463,71 @@ main header {
     white-space: wrap;
     max-width: 200px; }
 
+.services .menu {
+  margin: 0 -10px;
+  display: flex;
+  flex-wrap: wrap; }
+  .services .menu::after {
+    content: '';
+    clear: both;
+    display: block; }
+  .services .menu .menu-item-wrapper {
+    width: 25%;
+    max-width: 200px;
+    padding: 10px;
+    display: block;
+    box-sizing: border-box; }
+    .services .menu .menu-item-wrapper .menu-item {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      padding: 30px 10px;
+      border-radius: 3px;
+      background: #121212;
+      display: block;
+      text-align: center;
+      height: 100%;
+      box-sizing: border-box;
+      border: 0; }
+      .services .menu .menu-item-wrapper .menu-item:hover {
+        background: #222222; }
+      .services .menu .menu-item-wrapper .menu-item.active {
+        background: #222222;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0; }
+        .services .menu .menu-item-wrapper .menu-item.active:after {
+          height: 10px;
+          bottom: -10px; }
+      .services .menu .menu-item-wrapper .menu-item:after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: #222222; }
+      .services .menu .menu-item-wrapper .menu-item .thumbnail {
+        margin-bottom: 15px;
+        display: inline-block; }
+      .services .menu .menu-item-wrapper .menu-item .fa {
+        font-size: 40px;
+        height: 40px;
+        margin-top: 10px;
+        margin-bottom: 15px; }
+      .services .menu .menu-item-wrapper .menu-item .title {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 16px; }
+
+.services .service {
+  padding: 20px 20px 10px 20px;
+  border-radius: 0 0 3px 3px;
+  background: #222222; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -6149,36 +6214,6 @@ main .track-view {
 .settings-view .content-wrapper {
   padding-top: 0; }
 
-.settings-view .services {
-  margin-bottom: -20px; }
-  .settings-view .services::after {
-    content: '';
-    clear: both;
-    display: block; }
-  .settings-view .services .service {
-    margin-right: 20px;
-    margin-bottom: 20px;
-    padding-left: 46px;
-    box-sizing: border-box;
-    position: relative;
-    float: left;
-    min-width: 150px; }
-    .settings-view .services .service .title {
-      margin: 0;
-      padding: 0; }
-    .settings-view .services .service .icon {
-      position: absolute;
-      top: 2px;
-      left: 0;
-      width: 34px;
-      height: 25px;
-      padding-top: 9px;
-      border: 2px solid #383734;
-      text-align: center;
-      border-radius: 50%; }
-      .settings-view .services .service .icon .fa {
-        font-size: 16px; }
-
 .settings-view .field.current-user .text .user {
   border: 0;
   position: relative; }
@@ -6208,19 +6243,6 @@ main .track-view {
     padding: 15vh 20px 0; }
   .settings-view .content-wrapper {
     padding-bottom: 60px; }
-  .settings-view .services {
-    text-align: center; }
-    .settings-view .services .service {
-      padding: 40px 0 0 0;
-      text-align: center;
-      min-width: 100px;
-      display: inline-block;
-      margin-right: 0;
-      float: none; }
-      .settings-view .services .service .icon {
-        top: 0;
-        left: 50%;
-        margin-left: -18px; }
   .settings-view .field.pusher-connections .connection .col {
     width: auto;
     display: inline-block;

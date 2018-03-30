@@ -321,7 +321,7 @@ const PusherMiddleware = (function(){
 
                             var core = store.getState().core;
                             if (!core.country || !core.locale){
-                                store.dispatch(coreActions.set({
+                                store.dispatch(spotifyActions.set({
                                     country: response.config.country,
                                     locale: response.config.locale
                                 }))

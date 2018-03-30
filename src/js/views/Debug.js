@@ -5,14 +5,8 @@ import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
-import ConfirmationButton from '../components/ConfirmationButton'
-import PusherConnectionList from '../components/PusherConnectionList'
-import URISchemesList from '../components/URISchemesList'
-import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
-import Snapcast from '../components/Snapcast'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -27,7 +21,8 @@ class Debug extends React.Component{
 			mopidy_call: 'playlists.asList',
 			mopidy_data: '{}',
 			pusher_data: '{"method":"get_config"}',
-			access_token: this.props.access_token
+			access_token: this.props.access_token,
+			toggling_test_mode: false
 		}
 	}
 
@@ -39,6 +34,14 @@ class Debug extends React.Component{
 	callPusher(e){
 		e.preventDefault()
 		this.props.pusherActions.debug(JSON.parse(this.state.pusher_data) )
+	}
+
+	toggleTestMode(e){
+		this.setState({toggling_test_mode: true});
+		this.props.uiActions.set({ test_mode: !this.props.test_mode });
+
+		// Wait a second to allow state to update, and then refresh
+		setTimeout(location.reload(), 1000);
 	}
 
 	render(){
@@ -61,23 +64,21 @@ class Debug extends React.Component{
 					<h4 className="underline">User interface</h4>
 					<form>
 						<div className="field checkbox">
+							<div className="name">Test mode</div>
+							<div className="input">
+								{this.state.toggling_test_mode ? <span className="button working">Applying...</span> : (this.props.test_mode ? <span className="button destructive" onClick={e => this.toggleTestMode(e)}>Disable</span> : <span className="button primary" onClick={e => this.toggleTestMode(e)}>Enable</span>)}
+							</div>
+						</div>
+						<div className="field checkbox">
 							<div className="name">Debug</div>
 							<div className="input">
 								<label>
 									<input 
 										type="checkbox"
 										name="debug_info"
-										checked={ this.props.test_mode }
-										onChange={ e => this.props.uiActions.set({ test_mode: !this.props.test_mode })} />
-									<span className="label">Test mode</span>
-								</label>
-								<label>
-									<input 
-										type="checkbox"
-										name="debug_info"
 										checked={ this.props.debug_info }
 										onChange={ e => this.props.uiActions.set({ debug_info: !this.props.debug_info })} />
-									<span className="label">Debug info</span>
+									<span className="label">Show debug overlay</span>
 								</label>
 							</div>
 						</div>
@@ -119,11 +120,6 @@ class Debug extends React.Component{
 							</div>
 						</div>
 					</form>
-
-					<h4 className="underline">Snapcast (beta)</h4>
-					<div className="field">
-						<Snapcast />
-					</div>
 
 					<h4 className="underline">Spotify</h4>
 					<div className="field">

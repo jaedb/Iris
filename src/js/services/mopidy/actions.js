@@ -20,14 +20,6 @@ export function disconnect(){
 	}
 }
 
-export function instruct(call, value){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: call,
-		value: value
-	}
-}
-
 export function debug(call, value){
 	return {
 		type: 'MOPIDY_DEBUG',

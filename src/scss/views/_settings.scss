@@ -30,42 +30,6 @@
 	.content-wrapper {
 		padding-top: 0;
 	}
-	
-	.services {
-		@include clearfix();
-		margin-bottom: -20px;
-
-		.service {
-			margin-right: 20px;
-			margin-bottom: 20px;
-			padding-left: 46px;
-			box-sizing: border-box;
-			position: relative;
-			float: left;
-			min-width: 150px;
-
-			.title {
-				margin: 0;
-				padding: 0;
-			}
-
-			.icon {
-				position: absolute;
-				top: 2px;
-				left: 0;
-				width: 34px;
-				height: 25px;
-				padding-top: 9px;
-				border: 2px solid $grey;
-				text-align: center;
-				border-radius: 50%;
-
-				.fa {
-					font-size: 16px;
-				}
-			}
-		}
-	}
 
 	.field.current-user {
 		.text {
@@ -113,25 +77,6 @@
 
 		.content-wrapper {
 			padding-bottom: 60px;
-		}
-
-		.services {
-			text-align: center;
-
-			.service {
-				padding: 40px 0 0 0;
-				text-align: center;
-				min-width: 100px;
-				display: inline-block;
-				margin-right: 0;
-				float: none;
-
-				.icon {
-					top: 0;
-					left: 50%;
-					margin-left: -18px;
-				}
-			}
 		}
 
 		.field.pusher-connections {

@@ -128,7 +128,7 @@ const MopidyMiddleware = (function(){
      * @param string value (optional) = value of the property to pass
      * @return promise
      **/
-    const instruct = (ws, store, call, value = {}) => {
+    const request = (ws, store, call, value = {}) => {
         if (!store.getState().mopidy.connected){
             return false;
         }
@@ -227,7 +227,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_DEBUG':
-                instruct(socket, store, action.call, action.value )
+                request(socket, store, action.call, action.value )
                     .then(response => {
                         store.dispatch({type: 'DEBUG', response: response});
                     })
@@ -239,7 +239,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_PLAY_STATE':
-                instruct(socket, store, 'playback.getState')
+                request(socket, store, 'playback.getState')
                     .then(
                         response => {
                             store.dispatch({
@@ -251,7 +251,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_PLAY':
-                instruct(socket, store, 'playback.play')
+                request(socket, store, 'playback.play')
                     .then(
                         response => {
                             store.dispatch({
@@ -274,7 +274,7 @@ const MopidyMiddleware = (function(){
             break;
 
             case 'MOPIDY_PAUSE':
-                instruct(socket, store, 'playback.pause')
+                request(socket, store, 'playback.pause')
                     .then(
                         response => {
                             store.dispatch({
@@ -297,7 +297,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_NEXT':
-                instruct(socket, store, 'playback.next');
+                request(socket, store, 'playback.next');
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
@@ -312,7 +312,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_STOP':
-                instruct(socket, store, 'playback.stop');
+                request(socket, store, 'playback.stop');
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
@@ -327,7 +327,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_CHANGE_TRACK':
-                instruct(socket, store, 'playback.play', {tlid: action.tlid});
+                request(socket, store, 'playback.play', {tlid: action.tlid});
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
@@ -341,7 +341,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_REMOVE_TRACKS':
-                instruct(socket, store, 'tracklist.remove', {tlid: action.tlids});
+                request(socket, store, 'tracklist.remove', {tlid: action.tlids});
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
                     {
@@ -354,7 +354,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_REPEAT':
-                instruct(socket, store, 'tracklist.getRepeat')
+                request(socket, store, 'tracklist.getRepeat')
                     .then(
                         response => {
                             store.dispatch({
@@ -366,11 +366,11 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_REPEAT':
-                instruct(socket, store, 'tracklist.setRepeat', [action.repeat]);
+                request(socket, store, 'tracklist.setRepeat', [action.repeat]);
                 break;
 
             case 'MOPIDY_GET_RANDOM':
-                instruct(socket, store, 'tracklist.getRandom')
+                request(socket, store, 'tracklist.getRandom')
                     .then(
                         response => {
                             store.dispatch({
@@ -382,11 +382,11 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_RANDOM':
-                instruct(socket, store, 'tracklist.setRandom', [action.random]);
+                request(socket, store, 'tracklist.setRandom', [action.random]);
                 break;
 
             case 'MOPIDY_GET_CONSUME':
-                instruct(socket, store, 'tracklist.getConsume')
+                request(socket, store, 'tracklist.getConsume')
                     .then(
                         response => {
                             store.dispatch({
@@ -398,11 +398,11 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_CONSUME':
-                instruct(socket, store, 'tracklist.setConsume', [action.consume]);
+                request(socket, store, 'tracklist.setConsume', [action.consume]);
                 break;
 
             case 'MOPIDY_GET_MUTE':
-                instruct(socket, store, 'mixer.getMute')
+                request(socket, store, 'mixer.getMute')
                     .then(
                         response => {
                             store.dispatch({
@@ -414,7 +414,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_MUTE':
-                instruct(socket, store, 'mixer.setMute', [action.mute]);
+                request(socket, store, 'mixer.setMute', [action.mute]);
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
                     {
@@ -427,7 +427,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_VOLUME':
-                instruct(socket, store, 'playback.getVolume')
+                request(socket, store, 'playback.getVolume')
                     .then(
                         response => {
                             store.dispatch({
@@ -439,7 +439,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_VOLUME':
-                instruct(socket, store, 'playback.setVolume', {volume: action.volume})
+                request(socket, store, 'playback.setVolume', {volume: action.volume})
                     .then(
                         response => {
                             store.dispatch({
@@ -451,7 +451,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_SET_TIME_POSITION':
-                instruct(socket, store, 'playback.seek', {time_position: action.time_position})
+                request(socket, store, 'playback.seek', {time_position: action.time_position})
                     .then(
                         response => {
                             store.dispatch({
@@ -463,7 +463,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_TIME_POSITION':
-                instruct(socket, store, 'playback.getTimePosition')
+                request(socket, store, 'playback.getTimePosition')
                     .then(
                         response => {
                             store.dispatch({
@@ -475,7 +475,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_URI_SCHEMES':
-                instruct(socket, store, 'getUriSchemes')
+                request(socket, store, 'getUriSchemes')
                     .then(
                         response => {
                             var uri_schemes = response;
@@ -546,7 +546,7 @@ const MopidyMiddleware = (function(){
 
                 // fetch the playlist tracks via backend
                 // add each track by URI
-                instruct(socket, store, 'playlists.lookup', {uri: action.uri})
+                request(socket, store, 'playlists.lookup', {uri: action.uri})
                     .then(
                         response => {
                             if (response.tracks === undefined){
@@ -679,7 +679,7 @@ const MopidyMiddleware = (function(){
                     params.at_position = batch.at_position + batch.offset
                 }
 
-                instruct(socket, store, 'tracklist.add', params)
+                request(socket, store, 'tracklist.add', params)
                     .then(
                         response => {
                             // add metadata to queue
@@ -729,7 +729,7 @@ const MopidyMiddleware = (function(){
                 var first_uri = action.uris[0];
 
                 // add our first track
-                instruct(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
+                request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
                     .then(
                         response => {
                             // play it (only if we got a successful lookup)
@@ -774,7 +774,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_REORDER_TRACKLIST':
 
                 // add our first track
-                instruct(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before } )
+                request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before } )
                     .then(
                         response => {
                             // TODO: when complete, send event to confirm success/failure
@@ -789,7 +789,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CLEAR_TRACKLIST':
-                instruct(socket, store, 'tracklist.clear');
+                request(socket, store, 'tracklist.clear');
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
                     {
@@ -894,7 +894,7 @@ const MopidyMiddleware = (function(){
                             ))
                         }
             
-                        instruct(socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
+                        request(socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => {
                                     if (response.length > 0){                                        
@@ -963,7 +963,7 @@ const MopidyMiddleware = (function(){
                             ))
                         }
 
-                        instruct(socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
+                        request(socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => { 
                                     if (response.length > 0){
@@ -1029,7 +1029,7 @@ const MopidyMiddleware = (function(){
                             store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
                         }
 
-                        instruct(socket, store, 'playlists.asList')
+                        request(socket, store, 'playlists.asList')
                             .then(
                                 response => {
                                     if (response.length > 0){
@@ -1087,7 +1087,7 @@ const MopidyMiddleware = (function(){
                             ))
                         }
 
-                        instruct(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
+                        request(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => {
                                     if (response.length > 0 && response[0].tracks !== undefined){
@@ -1122,7 +1122,7 @@ const MopidyMiddleware = (function(){
                                 remaining: (action.data.uri_schemes.length) + 1
                             }
                         ));
-                        instruct(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
+                        request(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
                             .then(
                                 response => {
                                     if (response.length > 0 && response[0].tracks !== undefined){
@@ -1154,7 +1154,7 @@ const MopidyMiddleware = (function(){
                                     remaining: (action.data.uri_schemes.length) + 0.75
                                 }
                             ));
-                            instruct(socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            request(socket, store, 'library.search', {query: {album: [action.data.query]}, uris: [action.data.uri_scheme]})
                                 .then(
                                     response => { 
                                         if (response.length > 0){
@@ -1210,7 +1210,7 @@ const MopidyMiddleware = (function(){
                                     remaining: (action.data.uri_schemes.length) + 0.5
                                 }
                             ));
-                            instruct(socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
+                            request(socket, store, 'library.search', {query: {artist: [action.data.query]}, uris: [action.data.uri_scheme]})
                                 .then(
                                     response => { 
                                         if (response.length > 0){
@@ -1288,7 +1288,7 @@ const MopidyMiddleware = (function(){
                                         remaining: (action.data.uri_schemes.length) + 0.25
                                     }
                                 ))
-                                instruct(socket, store, 'playlists.asList')
+                                request(socket, store, 'playlists.asList')
                                     .then(
                                         response => {
                                             if (response.length > 0){
@@ -1341,7 +1341,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
-                instruct(socket, store, 'playlists.asList' )
+                request(socket, store, 'playlists.asList' )
                     .then(response => {
 
                         // drop in our URI list
@@ -1360,7 +1360,7 @@ const MopidyMiddleware = (function(){
 
                         // get the full playlist objects
                         for (var i = 0; i < playlist_uris_filtered.length; i++){
-                            instruct(socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
+                            request(socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
                                 .then(response => {
                                     var source = helpers.uriSource(response.uri)
                                     var playlist = Object.assign(
@@ -1387,7 +1387,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_PLAYLIST':
-                instruct(socket, store, 'playlists.lookup', action.data )
+                request(socket, store, 'playlists.lookup', action.data )
                     .then(response => {
                         var playlist = Object.assign(
                             {},
@@ -1422,7 +1422,7 @@ const MopidyMiddleware = (function(){
                 var tracks = Object.assign([], action.tracks)
                 var uris = helpers.arrayOf('uri',tracks)
 
-                instruct(socket, store, 'library.lookup', { uris: uris })
+                request(socket, store, 'library.lookup', { uris: uris })
                     .then(response => {
                         for(var uri in response){
                             if (response.hasOwnProperty(uri)){
@@ -1455,7 +1455,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_ADD_PLAYLIST_TRACKS':
                 
-                instruct(socket, store, 'playlists.lookup', { uri: action.key })
+                request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
                         var tracks = [];             
                         for(var i = 0; i < action.tracks_uris.length; i++){
@@ -1472,7 +1472,7 @@ const MopidyMiddleware = (function(){
                             playlist.tracks = tracks
                         }
 
-                        instruct(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist } )
                             .then(response => {
                                 store.dispatch({ 
                                     type: 'PLAYLIST_TRACKS_ADDED', 
@@ -1492,13 +1492,13 @@ const MopidyMiddleware = (function(){
                 var indexes = Object.assign([], action.tracks_indexes)
                 indexes.sort(descending);
                 
-                instruct(socket, store, 'playlists.lookup', { uri: action.key })
+                request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
                         var playlist = Object.assign({}, response)
                         for(var i = 0; i < indexes.length; i++){
                             playlist.tracks.splice(indexes[i], 1);
                         }
-                        instruct(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist } )
                             .then(response => {
                                 store.dispatch({
                                     type: 'PLAYLIST_TRACKS_REMOVED', 
@@ -1512,10 +1512,10 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_SAVE_PLAYLIST':
                 var uri = action.key
 
-                instruct(socket, store, 'playlists.lookup', { uri: action.key })
+                request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
                         var playlist = Object.assign({}, response, { name: action.name })
-                        instruct(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist } )
                             .then(response => {
 
                                 store.dispatch({ 
@@ -1541,7 +1541,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_REORDER_PLAYLIST_TRACKS':
-                instruct(socket, store, 'playlists.lookup', { uri: action.key })
+                request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
 
                         var playlist = Object.assign({}, response)
@@ -1571,7 +1571,7 @@ const MopidyMiddleware = (function(){
 
                         // update playlist
                         playlist = Object.assign({}, playlist, { tracks: tracks })
-                        instruct(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist } )
                             .then(response => {
                                 store.dispatch({ 
                                     type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS', 
@@ -1583,7 +1583,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_CREATE_PLAYLIST':
-                instruct(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+                request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
                     .then(response => {            
                         store.dispatch(uiActions.createNotification({content: 'Created playlist'}))
 
@@ -1602,7 +1602,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_DELETE_PLAYLIST':
-                instruct(socket, store, 'playlists.delete', { uri: action.uri })
+                request(socket, store, 'playlists.delete', { uri: action.uri })
                     .then(response => {
                         store.dispatch(uiActions.createNotification({content: 'Deleted playlist'}))
                         store.dispatch({
@@ -1622,7 +1622,7 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
                 if (!last_run){
-                    instruct(socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                    request(socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
                         .then(response => {
                             if (response.length <= 0) return
 
@@ -1682,7 +1682,7 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_GET_ALBUMS':
-                instruct(socket, store, 'library.lookup', { uris: action.uris } )
+                request(socket, store, 'library.lookup', { uris: action.uris } )
                     .then(response => {
                         if (response.length <= 0) return
 
@@ -1725,7 +1725,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_ALBUM':
-                instruct(socket, store, 'library.lookup', action.data )
+                request(socket, store, 'library.lookup', action.data )
                     .then(response => {
                         if (response.length <= 0) return
                             
@@ -1756,7 +1756,7 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        instruct(socket, store, 'library.lookup', { uris: uris } )
+                        request(socket, store, 'library.lookup', { uris: uris } )
                             .then(response => {
 
                                 for(var uri in response){
@@ -1793,7 +1793,7 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
-                instruct(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                request(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                     .then(response => {
                         if (response.length <= 0) return
 
@@ -1821,7 +1821,7 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
 
                 if (!last_run){
-                    instruct(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                    request(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                         .then(response => {
                             if (response.length <= 0) return;
 
@@ -1868,7 +1868,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_ARTIST':
-                instruct(socket, store, 'library.lookup', action.data )
+                request(socket, store, 'library.lookup', action.data )
                     .then(response => {
                         if (response.length <= 0) return
                                           
@@ -1928,7 +1928,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_ARTISTS':
-                instruct(socket, store, 'library.lookup', {uris: action.uris})
+                request(socket, store, 'library.lookup', {uris: action.uris})
                     .then(response => {
                         if (response.length <= 0) return
 
@@ -1973,7 +1973,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_QUEUE':
-                instruct(socket, store, 'tracklist.getTlTracks')
+                request(socket, store, 'tracklist.getTlTracks')
                     .then(
                         response => {
                             store.dispatch({
@@ -1985,7 +1985,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_QUEUE_HISTORY':
-                instruct(socket, store, 'history.getHistory')
+                request(socket, store, 'history.getHistory')
                     .then(
                         response => {
                             store.dispatch({
@@ -1997,7 +1997,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_CURRENT_TRACK':
-                instruct(socket, store, 'playback.getCurrentTlTrack')
+                request(socket, store, 'playback.getCurrentTlTrack')
                     .then(
                         response => {
                             if (response && response.track){
@@ -2024,7 +2024,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_GET_TRACK':
-                instruct(socket, store, 'library.lookup', action.data )
+                request(socket, store, 'library.lookup', action.data )
                     .then(
                         response => {
                             if (response.length > 0){
@@ -2052,7 +2052,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_IMAGES':
 
-                instruct(socket, store, 'library.getImages', {uris: action.uris})
+                request(socket, store, 'library.getImages', {uris: action.uris})
                     .then(response => {
 
                         var records = [];
@@ -2091,7 +2091,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_DIRECTORY':
                 store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false })
-                instruct(socket, store, 'library.browse', action.data)
+                request(socket, store, 'library.browse', action.data)
                     .then(response => {
                         store.dispatch({ 
                             type: 'MOPIDY_DIRECTORY_LOADED',
