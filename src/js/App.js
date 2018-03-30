@@ -93,7 +93,7 @@ class App extends React.Component{
 			// TODO: Detect if we've gone BACK, and then restore to previous
 			// scroll position. We'll need to keep a running history of locations
 			// and scroll positions, which may be performance-hindering
-			$(window).scrollTop(0)
+			//$(window).scrollTop(0)
 		}
 	}
 
