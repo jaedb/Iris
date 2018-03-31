@@ -48,8 +48,9 @@ class App extends React.Component{
 	componentDidMount(){
 		
 		// Fire up our services
-		this.props.coreActions.startServices()
-		this.props.coreActions.getBroadcasts()
+		this.props.mopidyActions.connect();
+		this.props.pusherActions.connect();
+		this.props.coreActions.getBroadcasts();
 
 		// when we navigate to a new route
 		hashHistory.listen(location => {

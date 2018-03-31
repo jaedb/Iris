@@ -91,13 +91,6 @@ const CoreMiddleware = (function(){
                 console.error(message, description, data);
                 break;
 
-            case 'CORE_START_SERVICES':
-                store.dispatch(mopidyActions.connect());
-                store.dispatch(pusherActions.connect());
-
-                next(action)
-                break
-
             case 'PLAY_PLAYLIST':
                 ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
                 next(action)

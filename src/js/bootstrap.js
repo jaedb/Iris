@@ -75,15 +75,11 @@ var initialState = {
 		config: {}
 	},
 	lastfm: {
-		connected: false,
 		me: false,
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
 	},
-	genius: {
-		connected: false
-	},
+	genius: {},
 	spotify: {
-		connected: false,
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'

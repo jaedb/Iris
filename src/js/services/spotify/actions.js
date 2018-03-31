@@ -141,7 +141,6 @@ function refreshToken(dispatch, getState){
                         resolve(response)
                     },
                     (xhr, status, error) => {
-                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                         reject({
                             config: config,
                             xhr: xhr,
@@ -164,7 +163,6 @@ function refreshToken(dispatch, getState){
                 .then(
                     (response, status, xhr) => {
                         if (response.error){
-                            dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                             reject({
                                 config: config,
                                 xhr: xhr,
@@ -186,7 +184,6 @@ function refreshToken(dispatch, getState){
 
                     },
                     (xhr, status, error) => {
-                        dispatch({ type: 'SPOTIFY_DISCONNECTED' })
                         reject({
                             config: config,
                             xhr: xhr,
@@ -269,14 +266,12 @@ export function getMe(){
                         type: 'SPOTIFY_ME_LOADED',
                         data: response
                     });
-                    dispatch({ type: 'SPOTIFY_CONNECTED' });
                 },
                 error => {
                     dispatch(coreActions.handleException(
                         'Could not load your profile',
                         error
                     ));
-                    dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 }
             );
     }

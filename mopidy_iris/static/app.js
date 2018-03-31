@@ -1913,7 +1913,6 @@ function refreshToken(dispatch, getState) {
                 });
                 resolve(response);
             }, function (xhr, status, error) {
-                dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 reject({
                     config: config,
                     xhr: xhr,
@@ -1932,7 +1931,6 @@ function refreshToken(dispatch, getState) {
 
             $.ajax(config).then(function (response, status, xhr) {
                 if (response.error) {
-                    dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                     reject({
                         config: config,
                         xhr: xhr,
@@ -1951,7 +1949,6 @@ function refreshToken(dispatch, getState) {
                     resolve(token);
                 }
             }, function (xhr, status, error) {
-                dispatch({ type: 'SPOTIFY_DISCONNECTED' });
                 reject({
                     config: config,
                     xhr: xhr,
@@ -2028,10 +2025,8 @@ function getMe() {
                 type: 'SPOTIFY_ME_LOADED',
                 data: response
             });
-            dispatch({ type: 'SPOTIFY_CONNECTED' });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load your profile', error));
-            dispatch({ type: 'SPOTIFY_DISCONNECTED' });
         });
     };
 }
@@ -4369,7 +4364,6 @@ exports.getBroadcasts = getBroadcasts;
 exports.startSearch = startSearch;
 exports.handleException = handleException;
 exports.debugResponse = debugResponse;
-exports.startServices = startServices;
 exports.set = set;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
@@ -4446,12 +4440,6 @@ function debugResponse(response) {
     return {
         type: 'DEBUG',
         response: response
-    };
-}
-
-function startServices() {
-    return {
-        type: 'CORE_START_SERVICES'
     };
 }
 
@@ -48754,15 +48742,11 @@ var initialState = {
 		config: {}
 	},
 	lastfm: {
-		connected: false,
 		me: false,
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
 	},
-	genius: {
-		connected: false
-	},
+	genius: {},
 	spotify: {
-		connected: false,
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'
@@ -49615,16 +49599,6 @@ function reducer() {
 
     switch (action.type) {
 
-        case 'SPOTIFY_CONNECT':
-        case 'SPOTIFY_CONNECTING':
-            return Object.assign({}, spotify, { connected: false, connecting: true });
-
-        case 'SPOTIFY_CONNECTED':
-            return Object.assign({}, spotify, { connected: true, connecting: false });
-
-        case 'SPOTIFY_DISCONNECTED':
-            return Object.assign({}, spotify, { connected: false, connecting: false });
-
         case 'SPOTIFY_SET':
             return Object.assign({}, spotify, action.data);
 
@@ -49672,7 +49646,6 @@ function reducer() {
 
         case 'SPOTIFY_TOKEN_REFRESHED':
             return Object.assign({}, spotify, {
-                connected: true,
                 refreshing_token: false,
                 access_token: action.data.access_token,
                 token_expiry: action.data.token_expiry
@@ -49683,9 +49656,6 @@ function reducer() {
                 access_token: action.spotify_token.access_token,
                 token_expiry: action.spotify_token.token_expiry
             });
-
-        case 'SPOTIFY_DISCONNECTED':
-            return Object.assign({}, spotify, { connected: false, connecting: false });
 
         case 'SPOTIFY_ME_LOADED':
             return Object.assign({}, spotify, { me: action.data });
@@ -50058,13 +50028,6 @@ var CoreMiddleware = function () {
 
                         store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
                         console.error(message, description, data);
-                        break;
-
-                    case 'CORE_START_SERVICES':
-                        store.dispatch(mopidyActions.connect());
-                        store.dispatch(pusherActions.connect());
-
-                        next(action);
                         break;
 
                     case 'PLAY_PLAYLIST':
@@ -57043,7 +57006,8 @@ var App = function (_React$Component) {
 			var _this2 = this;
 
 			// Fire up our services
-			this.props.coreActions.startServices();
+			this.props.mopidyActions.connect();
+			this.props.pusherActions.connect();
 			this.props.coreActions.getBroadcasts();
 
 			// when we navigate to a new route
@@ -57557,7 +57521,7 @@ var Sidebar = function (_React$Component) {
 										'Test mode active'
 									)
 								) : null,
-								!this.props.mopidy_connected || !this.props.spotify_connected && this.props.spotify_enabled || !this.props.pusher_connected ? _react2.default.createElement(
+								!this.props.mopidy_connected || !this.props.pusher_connected ? _react2.default.createElement(
 									'span',
 									{ className: 'status has-tooltip right-tooltip' },
 									_react2.default.createElement(_reactFontawesome2.default, { name: 'exclamation-triangle', className: 'red-text' }),
@@ -57575,11 +57539,6 @@ var Sidebar = function (_React$Component) {
 											null,
 											'Pusher not connected',
 											_react2.default.createElement('br', null)
-										) : null,
-										!this.props.spotify_connected && this.props.spotify_enabled ? _react2.default.createElement(
-											'span',
-											null,
-											'Spotify not connected'
 										) : null
 									)
 								) : null
@@ -74506,7 +74465,7 @@ var LibraryArtists = function (_React$Component) {
 				this.props.mopidyActions.getLibraryArtists();
 			}
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}
@@ -74526,12 +74485,7 @@ var LibraryArtists = function (_React$Component) {
 				}
 			}
 
-			if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')) {
-
-				// We've just connected
-				if (!this.props.spotify_connected) {
-					this.props.spotifyActions.getLibraryArtists();
-				}
+			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished') {
@@ -74871,7 +74825,7 @@ var LibraryAlbums = function (_React$Component) {
 				this.props.mopidyActions.getLibraryAlbums();
 			}
 
-			if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryAlbums();
 			}
 		}
@@ -74891,12 +74845,7 @@ var LibraryAlbums = function (_React$Component) {
 				}
 			}
 
-			if (newProps.spotify_connected && newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
-
-				// We've just connected
-				if (!this.props.spotify_connected) {
-					this.props.spotifyActions.getLibraryAlbums();
-				}
+			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
@@ -75430,7 +75379,7 @@ var LibraryPlaylists = function (_React$Component) {
 				this.props.mopidyActions.getLibraryPlaylists();
 			}
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryPlaylists();
 			}
 		}
@@ -75450,12 +75399,7 @@ var LibraryPlaylists = function (_React$Component) {
 				}
 			}
 
-			if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')) {
-
-				// We've just connected
-				if (!this.props.spotify_connected) {
-					this.props.spotifyActions.getLibraryPlaylists();
-				}
+			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_playlists_status !== 'finished') {
