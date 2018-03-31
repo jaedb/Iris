@@ -81,19 +81,22 @@ class App extends React.Component{
 		}*/
 	}
 
-	componentDidUpdate(prevProps){
+	componentWillReceiveProps(nextProps){
 
 		// We've navigated to a new location
-	    if (this.props.location !== prevProps.location){
+	    if (this.props.location.pathname !== nextProps.location.pathname){
 
 			// Close context menu
-			this.props.uiActions.hideContextMenu();
+			if (this.props.context_menu){
+				this.props.uiActions.hideContextMenu();
+			}
 
 			// Restore scroll to top
 			// TODO: Detect if we've gone BACK, and then restore to previous
 			// scroll position. We'll need to keep a running history of locations
 			// and scroll positions, which may be performance-hindering
-			//$(window).scrollTop(0)
+			// At this point we can capture "window.scrollY" for the previous scroll position
+			//window.scrollTo(0, 0);
 		}
 	}
 

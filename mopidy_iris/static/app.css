@@ -5464,7 +5464,7 @@ main header {
     max-width: 200px; }
 
 .services .menu {
-  margin: 0 -10px;
+  margin: 0 -5px;
   display: flex;
   flex-wrap: wrap; }
   .services .menu::after {
@@ -5473,33 +5473,37 @@ main header {
     display: block; }
   .services .menu .menu-item-wrapper {
     width: 25%;
+    min-width: 140px;
     max-width: 200px;
-    padding: 10px;
+    padding: 5px 5px 10px 5px;
     display: block;
     box-sizing: border-box; }
     .services .menu .menu-item-wrapper .menu-item {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
+      -webkit-transition: all 0.1 ease-in-out;
+      -moz-transition: all 0.1 ease-in-out;
+      -o-transition: all 0.1 ease-in-out;
+      transition: all 0.1 ease-in-out;
       position: relative;
       padding: 30px 10px;
       border-radius: 3px;
       background: #121212;
       display: block;
       text-align: center;
-      height: 100%;
       box-sizing: border-box;
       border: 0; }
       .services .menu .menu-item-wrapper .menu-item:hover {
         background: #222222; }
+      .services .menu .menu-item-wrapper .menu-item:active {
+        -moz-transform: scale(0.98);
+        -webkit-transform: scale(0.98);
+        transform: scale(0.98); }
       .services .menu .menu-item-wrapper .menu-item.active {
         background: #222222;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0; }
         .services .menu .menu-item-wrapper .menu-item.active:after {
-          height: 10px;
-          bottom: -10px; }
+          height: 14px;
+          bottom: -14px; }
       .services .menu .menu-item-wrapper .menu-item:after {
         content: '';
         display: block;
@@ -5527,6 +5531,20 @@ main header {
   padding: 20px 20px 10px 20px;
   border-radius: 0 0 3px 3px;
   background: #222222; }
+
+@media (max-width: 800px) {
+  .services .menu .menu-item-wrapper {
+    width: 50%;
+    max-width: none;
+    min-width: none;
+    padding-bottom: 5px; }
+    .services .menu .menu-item-wrapper .menu-item {
+      padding-top: 10px;
+      padding-bottom: 10px; }
+      .services .menu .menu-item-wrapper .menu-item:after {
+        display: none; }
+  .services .service {
+    margin-top: 5px; } }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }

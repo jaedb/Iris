@@ -164,7 +164,7 @@ class Services extends React.Component{
 	}
 
 	renderLastfm(){
-		var user_object = this.props.core.users["lastfm:user:"+this.props.lastfm.session.name];
+		var user_object = (this.props.lastfm.session ? this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
@@ -265,22 +265,22 @@ class Services extends React.Component{
 	renderMenu(){
 
 		if (this.props.spotify.me){
-			var spotify_user = <Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
+			var spotify_icon = <Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
 		} else {
-			var spotify_user = <Thumbnail circle={true} size="small" />
+			var spotify_icon = <Thumbnail circle={true} size="small" />
 		}
 
-		if (this.props.core.users["lastfm:user:"+this.props.lastfm.session.name]){
-			var lastfm_user = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.session.name].image} />
+		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name]){
+			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.session.name].image} />
 		} else {
-			var lastfm_user = <Thumbnail circle={true} size="small" />
+			var lastfm_icon = <FontAwesome name="lastfm" />
 		}
 
 		return (
 			<div className="menu">
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'}>
-						{spotify_user}
+						{spotify_icon}
 						<div className="title">
 							Spotify
 						</div>
@@ -289,7 +289,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'}>
-						{lastfm_user}
+						{lastfm_icon}
 						<div className="title">
 							LastFM
 						</div>
@@ -298,7 +298,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
-						<FontAwesome name="rss" />
+						<FontAwesome name="sliders" />
 						<div className="title">
 							Snapcast
 						</div>

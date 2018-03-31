@@ -3,31 +3,37 @@
 
 	.menu {
 		@include clearfix();
-		margin: 0 -10px;
+		margin: 0 -5px;
 		display: flex;
 		flex-wrap: wrap;	
 
 		.menu-item-wrapper {
 			width: 25%;
+			min-width: 140px;
 			max-width: 200px;
-			padding: 10px;
+			padding: 5px 5px 10px 5px;
 			display: block;
 			box-sizing: border-box;
 
 			.menu-item {
-				@include animate();
+				@include animate(0.1);
 				position: relative;
 				padding: 30px 10px;
 				border-radius: 3px;
 				background: $darkest_grey;
 				display: block;
 				text-align: center;
-				height: 100%;
 				box-sizing: border-box;
 				border: 0;
 
 				&:hover {
 					background: lighten($dark_grey, 4%);
+				}
+
+				&:active {
+					-moz-transform: scale(0.98);
+					-webkit-transform: scale(0.98);
+					transform: scale(0.98);
 				}
 
 				&.active {
@@ -36,8 +42,8 @@
 					border-bottom-right-radius: 0;
 
 					&:after {
-						height: 10px;
-						bottom: -10px;
+						height: 14px;
+						bottom: -14px;
 					}
 				}
 
@@ -78,5 +84,29 @@
 		padding: 20px 20px 10px 20px;
 		border-radius: 0 0 3px 3px;
 		background: lighten($dark_grey, 4%);
+	}
+
+	@include responsive($bp_medium){
+		.menu {
+			.menu-item-wrapper {
+				width: 50%;
+				max-width: none;
+				min-width: none;
+				padding-bottom: 5px;
+
+				.menu-item {
+					padding-top: 10px;
+					padding-bottom: 10px;
+
+					&:after {
+						display: none;
+					}
+				}
+			}
+		}
+
+		.service {
+			margin-top: 5px;
+		}
 	}
 }
