@@ -95,7 +95,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:trackPlaybackStarted':
-                store.dispatch(mopidyActions.getCurrentTrack());
+                store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
                 break;
 
             case 'event:volumeChanged':
@@ -2002,26 +2002,30 @@ const MopidyMiddleware = (function(){
                     .then(
                         response => {
                             if (response && response.track){
-                                var track = helpers.formatTracks(response);
-
-                                // We've got Spotify running, and it's a spotify track - go straight to the source!
-                                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
-                                    store.dispatch(spotifyActions.getTrack(track.uri))
-
-                                // Some other source, rely on Mopidy backends to do their work
-                                } else {
-                                    store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
-                                }
-
-                                // Set our window title to the track title
-                                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
-                                store.dispatch({
-                                    type: 'CURRENT_TRACK_LOADED',
-                                    current_track: track
-                                });
+                                store.dispatch(mopidyActions.currentTrackLoaded(response));
                             }
                         }
                     );
+                break;
+
+            case 'MOPIDY_CURRENT_TRACK_LOADED':
+                var track = helpers.formatTracks(action.tl_track);
+
+                // We've got Spotify running, and it's a spotify track - go straight to the source!
+                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+                    store.dispatch(spotifyActions.getTrack(track.uri))
+
+                // Some other source, rely on Mopidy backends to do their work
+                } else {
+                    store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
+                }
+
+                // Set our window title to the track title
+                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
+                store.dispatch({
+                    type: 'CURRENT_TRACK_LOADED',
+                    current_track: track
+                });
                 break;
 
             case 'MOPIDY_GET_TRACK':

@@ -171,6 +171,13 @@ export function getCurrentTrack(){
 	}
 }
 
+export function currentTrackLoaded(tl_track){
+	return {
+		type: 'MOPIDY_CURRENT_TRACK_LOADED',
+		tl_track: tl_track
+	}
+}
+
 export function getQueue(){
 	return {
 		type: 'MOPIDY_GET_QUEUE'
