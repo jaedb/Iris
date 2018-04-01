@@ -92,12 +92,10 @@ class App extends React.Component{
 				this.props.uiActions.hideContextMenu();
 			}
 
-			// Restore scroll to top
-			// TODO: Detect if we've gone BACK, and then restore to previous
-			// scroll position. We'll need to keep a running history of locations
-			// and scroll positions, which may be performance-hindering
-			// At this point we can capture "window.scrollY" for the previous scroll position
-			window.scrollTo(0, 0);
+			// Scroll to bottom, only if we've PUSHed to a new route
+			if (nextProps.location.action == 'PUSH'){
+				window.scrollTo(0, 0);
+			}
 		}
 	}
 
