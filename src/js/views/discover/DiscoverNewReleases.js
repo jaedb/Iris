@@ -23,7 +23,9 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.new_releases) this.props.spotifyActions.getNewReleases();
+		if (!this.props.new_releases){
+			this.props.spotifyActions.getNewReleases();
+		}
 	}
 
 	loadMore(){

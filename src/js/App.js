@@ -97,7 +97,7 @@ class App extends React.Component{
 			// scroll position. We'll need to keep a running history of locations
 			// and scroll positions, which may be performance-hindering
 			// At this point we can capture "window.scrollY" for the previous scroll position
-			//window.scrollTo(0, 0);
+			window.scrollTo(0, 0);
 		}
 	}
 

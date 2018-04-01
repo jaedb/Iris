@@ -222,8 +222,8 @@ class IrisCore(object):
           
         # invalid, so just create a default connection, and auto-generate an ID
         except:
-            client_id = self.generateGuid(12)
-            connection_id = self.generateGuid(12)
+            client_id = self.generateGuid()
+            connection_id = self.generateGuid()
             username = 'Anonymous'
             generated = True
         
@@ -557,17 +557,21 @@ class IrisCore(object):
         callback = kwargs.get('callback', False)
         data = kwargs.get('data', {})
 
-        # figure out if we're starting or updating radio mode
-        if data['update'] and self.radio['enabled']:
-            starting = False
-            self.initial_consume = self.core.tracklist.get_consume()
-        else:
+        # We're starting a new radio (or forced restart)
+        if data['reset'] or not self.radio['enabled']:
             starting = True
+            self.initial_consume = self.core.tracklist.get_consume().get()
+        else:
+            starting = False
         
         # fetch more tracks from Mopidy-Spotify
-        self.radio = data
-        self.radio['enabled'] = 1;
-        self.radio['results'] = [];
+        self.radio = {
+            'seed_artists': data['seed_artists'],
+            'seed_genres': data['seed_genres'],
+            'seed_tracks': data['seed_tracks'],
+            'enabled': 1,
+            'results': []
+        }
         uris = self.load_more_tracks()
 
         # make sure we got recommendations

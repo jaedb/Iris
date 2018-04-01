@@ -2092,6 +2092,7 @@ function getFeaturedPlaylists() {
             var playlists = [];
             for (var i = 0; i < response.playlists.items.length; i++) {
                 playlists.push(Object.assign({}, response.playlists.items[i], {
+                    is_completely_loaded: false,
                     can_edit: getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id,
                     tracks_total: response.playlists.items[i].tracks.total
                 }));
@@ -3045,6 +3046,7 @@ function getPlaylist(uri) {
             }
 
             var playlist = Object.assign({}, response, {
+                is_completely_loaded: true,
                 can_edit: getState().spotify.me && response.owner.id == getState().spotify.me.id,
                 tracks: helpers.formatTracks(response.tracks.items),
                 tracks_more: response.tracks.next,
@@ -4686,6 +4688,9 @@ exports.getRadio = getRadio;
 exports.startRadio = startRadio;
 exports.updateRadio = updateRadio;
 exports.stopRadio = stopRadio;
+exports.radioStarted = radioStarted;
+exports.radioChanged = radioChanged;
+exports.radioStopped = radioStopped;
 exports.debug = debug;
 exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
@@ -4824,6 +4829,26 @@ function updateRadio(uris) {
 function stopRadio() {
 	return {
 		type: 'PUSHER_STOP_RADIO'
+	};
+}
+
+function radioStarted(radio) {
+	return {
+		type: 'PUSHER_RADIO_STARTED',
+		radio: radio
+	};
+}
+
+function radioChanged(radio) {
+	return {
+		type: 'PUSHER_RADIO_CHANGED',
+		radio: radio
+	};
+}
+
+function radioStopped() {
+	return {
+		type: 'PUSHER_RADIO_STOPPED'
 	};
 }
 
@@ -48704,7 +48729,7 @@ var initialState = {
 		outputs: [],
 		queue: [],
 		queue_metadata: {},
-		current_track_uri: null,
+		current_track: null,
 		albums: {},
 		artists: {},
 		playlists: {},
@@ -48817,13 +48842,13 @@ function reducer() {
             for (var i = 0; i < tracklist.length; i++) {
 
                 // load our metadata (if we have any for that tlid)
-                if (typeof action.queue_metadata['tlid_' + tracklist[i].tlid] !== 'undefined') {
+                if (action.queue_metadata['tlid_' + tracklist[i].tlid] !== undefined) {
                     tracklist[i] = Object.assign({}, tracklist[i], action.queue_metadata['tlid_' + tracklist[i].tlid]);
                 }
             }
             return Object.assign({}, core, { current_tracklist: tracklist, queue_metadata: action.queue_metadata });
 
-        case 'PUSHER_RADIO':
+        case 'PUSHER_RADIO_LOADED':
         case 'PUSHER_RADIO_STARTED':
         case 'PUSHER_RADIO_CHANGED':
         case 'PUSHER_RADIO_STOPPED':
@@ -50875,6 +50900,15 @@ var PusherMiddleware = function () {
                     case 'notification':
                         store.dispatch(uiActions.createNotification(message.params.notification));
                         break;
+                    case 'radio_started':
+                        store.dispatch(pusherActions.radioStarted(message.params.radio));
+                        break;
+                    case 'radio_changed':
+                        store.dispatch(pusherActions.radioChanged(message.params.radio));
+                        break;
+                    case 'radio_stopped':
+                        store.dispatch(pusherActions.radioStopped());
+                        break;
                 }
             }
         }
@@ -51094,7 +51128,7 @@ var PusherMiddleware = function () {
                     case 'PUSHER_GET_RADIO':
                         request(store, 'get_radio').then(function (response) {
                             store.dispatch({
-                                type: 'PUSHER_RADIO',
+                                type: 'PUSHER_RADIO_LOADED',
                                 radio: response.radio
                             });
                         }, function (error) {
@@ -51114,7 +51148,7 @@ var PusherMiddleware = function () {
                         }
 
                         var data = {
-                            update: action.type == 'PUSHER_UPDATE_RADIO',
+                            reset: action.type == 'PUSHER_START_RADIO',
                             seed_artists: [],
                             seed_genres: [],
                             seed_tracks: []
@@ -51134,11 +51168,21 @@ var PusherMiddleware = function () {
                             }
                         }
 
+                        if (action.type == 'PUSHER_START_RADIO') {
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    type: 'info',
+                                    content: store.getState().pusher.username + ' is starting radio mode'
+                                }
+                            }));
+                        }
+
                         request(store, 'change_radio', data).then(function (response) {
                             store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
                             if (response.status == 0) {
                                 store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
                             }
+                            store.dispatch(pusherActions.radioChanged(response.radio));
                         }, function (error) {
                             store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
                             store.dispatch(coreActions.handleException('Could not change radio', error));
@@ -51149,21 +51193,24 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.createNotification({ content: 'Stopping radio' }));
                         _reactGa2.default.event({ category: 'Pusher', action: 'Stop radio' });
 
+                        store.dispatch(pusherActions.deliverBroadcast('notification', {
+                            notification: {
+                                type: 'info',
+                                content: store.getState().pusher.username + ' stopped radio mode'
+                            }
+                        }));
+
                         var data = {
                             seed_artists: [],
                             seed_genres: [],
                             seed_tracks: []
+                        };
 
-                            // we don't need to wait for response, as change will be broadcast
-                        };request(store, 'stop_radio', data);
-                        break;
-
-                    case 'PUSHER_RADIO_STARTED':
-                    case 'PUSHER_RADIO_CHANGED':
-                        if (action.radio && action.radio.enabled && store.getState().spotify.enabled) {
-                            store.dispatch(spotifyActions.resolveRadioSeeds(action.radio));
-                        }
-                        next(action);
+                        request(store, 'stop_radio', data).then(function (response) {
+                            store.dispatch(pusherActions.radioStopped());
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not stop radio', error));
+                        });
                         break;
 
                     case 'PUSHER_BROWSER_NOTIFICATION':
@@ -52516,6 +52563,7 @@ var MopidyMiddleware = function () {
                             var playlist = Object.assign({}, response, {
                                 uri: response.uri,
                                 type: 'playlist',
+                                is_completely_loaded: true,
                                 is_mopidy: true,
                                 tracks: response.tracks ? response.tracks : [],
                                 tracks_total: response.tracks ? response.tracks.length : []
@@ -56023,23 +56071,6 @@ var SpotifyMiddleware = function () {
 
                 switch (action.type) {
 
-                    case 'SPOTIFY_CONNECTED':
-                        var hashed_username = null;
-                        if (store.getState().spotify.me) {
-                            hashed_username = (0, _md2.default)(store.getState().spotify.me.id);
-                            _reactGa2.default.set({ userId: hashed_username });
-                        }
-                        _reactGa2.default.event({ category: 'Spotify', action: 'Connected', label: hashed_username });
-
-                        // TODO: remove this so we don't tap out our API limits before we even get started
-                        // Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
-                        if (store.getState().spotify_authorized) {
-                            store.dispatch(spotifyActions.getAllLibraryPlaylists());
-                        }
-
-                        next(action);
-                        break;
-
                     case 'SPOTIFY_AUTHORIZATION_GRANTED':
                         _reactGa2.default.event({ category: 'Spotify', action: 'Authorization granted' });
 
@@ -57056,7 +57087,7 @@ var App = function (_React$Component) {
 				// scroll position. We'll need to keep a running history of locations
 				// and scroll positions, which may be performance-hindering
 				// At this point we can capture "window.scrollY" for the previous scroll position
-				//window.scrollTo(0, 0);
+				window.scrollTo(0, 0);
 			}
 		}
 	}, {
@@ -57572,7 +57603,6 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
-		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
 		test_mode: state.ui.test_mode ? state.ui.test_mode : false,
 		dragger: state.ui.dragger
@@ -65189,23 +65219,12 @@ var Playlist = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'handleContextMenu',
-		value: function handleContextMenu(e) {
-			var data = {
-				e: e,
-				context: this.props.playlist.can_edit ? 'editable-playlist' : 'playlist',
-				items: [this.props.playlist],
-				uris: [this.props.params.uri]
-			};
-			this.props.uiActions.showContextMenu(data);
-		}
-	}, {
 		key: 'loadPlaylist',
 		value: function loadPlaylist() {
 			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 
 
-			if (props.playlist && props.playlist.tracks && (props.playlist.tracks_total == 0 || props.playlist.tracks.length > 0)) {
+			if (props.playlist && props.playlist.is_completely_loaded) {
 				console.info('Loading playlist from index');
 			} else {
 				switch (helpers.uriSource(props.params.uri)) {
@@ -65231,6 +65250,17 @@ var Playlist = function (_React$Component) {
 				parent_key: this.props.playlist.uri,
 				records_type: 'track'
 			});
+		}
+	}, {
+		key: 'handleContextMenu',
+		value: function handleContextMenu(e) {
+			var data = {
+				e: e,
+				context: this.props.playlist.can_edit ? 'editable-playlist' : 'playlist',
+				items: [this.props.playlist],
+				uris: [this.props.params.uri]
+			};
+			this.props.uiActions.showContextMenu(data);
 		}
 	}, {
 		key: 'play',
@@ -66707,14 +66737,14 @@ var Queue = function (_React$Component) {
 					// We prioritise queue track over index track as queue has unique data, like which track
 					// is playing and tlids.
 					if (this.props.tracks.hasOwnProperty(track.uri)) {
-						track = Object.assign({}, this.props.tracks[track.uri], track);
+						track = Object.assign({}, this.props.tracks[track.uri], track, {
+							playing: this.props.current_track && this.props.current_track.tlid == track.tlid
+						});
 					}
 
 					// Now merge in our queue metadata
 					if (this.props.queue_metadata["tlid_" + track.tlid] !== undefined) {
-						track = Object.assign({}, track, this.props.queue_metadata["tlid_" + track.tlid], {
-							playing: this.props.current_track && this.props.current_track.tlid == track.tlid
-						});
+						track = Object.assign({}, track, this.props.queue_metadata["tlid_" + track.tlid]);
 					}
 
 					// Siphon off this track if it's a full representation of our current track (by tlid)
@@ -67678,7 +67708,7 @@ var Search = function (_React$Component) {
 					this.props.mopidyActions.getSearchResults(context, term);
 				}
 
-				if (this.props.spotify_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')) {
+				if (this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')) {
 					this.props.spotifyActions.getSearchResults(context, term);
 				}
 			}
@@ -67702,16 +67732,8 @@ var Search = function (_React$Component) {
 				var term = null;
 			}
 
-			if (term && !this.props.mopidy_connected && newProps.mopidy_connected) {
-				this.props.mopidyActions.getSearchResults(context, term);
-			}
-
-			if (term && !this.props.spotify_connected && newProps.spotify_connected && newProps.search_uri_schemes.includes('spotify:')) {
-				this.props.spotifyActions.getSearchResults(context, term);
-			}
-
 			// Search changed 
-			if (term && context && term !== old_term) {
+			if (term && context && (term !== old_term || context !== old_context)) {
 
 				this.props.mopidyActions.clearSearchResults();
 				this.props.spotifyActions.clearSearchResults();
@@ -68095,7 +68117,6 @@ var Search = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		albums: state.core.albums ? state.core.albums : [],
 		artists: state.core.artists ? state.core.artists : [],
 		playlists: state.core.playlists ? state.core.playlists : [],
@@ -73613,7 +73634,9 @@ var DiscoverFeatured = function (_React$Component) {
 	_createClass(DiscoverFeatured, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.props.spotifyActions.getFeaturedPlaylists();
+			if (!this.props.featured_playlists) {
+				this.props.spotifyActions.getFeaturedPlaylists();
+			}
 		}
 	}, {
 		key: 'playPlaylist',
@@ -73820,7 +73843,9 @@ var DiscoverCategories = function (_React$Component) {
 	_createClass(DiscoverCategories, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.props.spotifyActions.getCategories();
+			if (!this.props.categories) {
+				this.props.spotifyActions.getCategories();
+			}
 		}
 	}, {
 		key: 'render',
@@ -74030,7 +74055,9 @@ var DiscoverCategory = function (_React$Component) {
 	}, {
 		key: 'loadCategory',
 		value: function loadCategory() {
-			if (!this.props.category || !this.props.category.playlists_uris) this.props.spotifyActions.getCategory(this.props.params.id);
+			if (!this.props.category || !this.props.category.playlists_uris) {
+				this.props.spotifyActions.getCategory(this.props.params.id);
+			}
 		}
 	}, {
 		key: 'loadMore',
@@ -74202,7 +74229,9 @@ var DiscoverNewReleases = function (_React$Component) {
 	_createClass(DiscoverNewReleases, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (!this.props.new_releases) this.props.spotifyActions.getNewReleases();
+			if (!this.props.new_releases) {
+				this.props.spotifyActions.getNewReleases();
+			}
 		}
 	}, {
 		key: 'loadMore',
@@ -74688,7 +74717,6 @@ var LibraryArtists = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null,
@@ -75073,7 +75101,6 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
-		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
@@ -75618,7 +75645,6 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		slim_mode: state.ui.slim_mode,
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_playlists: state.mopidy.library_playlists,
 		mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,

@@ -105,7 +105,10 @@ class Queue extends React.Component{
 					track = Object.assign(
 						{},
 						this.props.tracks[track.uri],
-						track
+						track,
+						{
+							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
+						}
 					);
 				}
 
@@ -114,10 +117,7 @@ class Queue extends React.Component{
 					track = Object.assign(
 						{},
 						track,
-						this.props.queue_metadata["tlid_"+track.tlid],
-						{
-							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
-						}
+						this.props.queue_metadata["tlid_"+track.tlid]
 					);
 				}
 

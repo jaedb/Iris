@@ -44,7 +44,7 @@ class Search extends React.Component{
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.spotify_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
@@ -67,16 +67,8 @@ class Search extends React.Component{
 			var term = null;
 		}
 
-		if (term && !this.props.mopidy_connected && newProps.mopidy_connected){
-			this.props.mopidyActions.getSearchResults(context, term);
-		}
-
-		if (term && !this.props.spotify_connected && newProps.spotify_connected && newProps.search_uri_schemes.includes('spotify:')){		
-			this.props.spotifyActions.getSearchResults(context, term);
-		}
-
 		// Search changed 
-		if (term && context && term !== old_term){
+		if (term && context && (term !== old_term || context !== old_context)){
 			
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
@@ -375,7 +367,6 @@ class Search extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		albums: (state.core.albums ? state.core.albums : []),
 		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),

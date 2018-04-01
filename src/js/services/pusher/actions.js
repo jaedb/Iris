@@ -128,6 +128,26 @@ export function stopRadio(){
 	}
 }
 
+export function radioStarted(radio){
+	return {
+		type: 'PUSHER_RADIO_STARTED',
+		radio: radio
+	}
+}
+
+export function radioChanged(radio){
+	return {
+		type: 'PUSHER_RADIO_CHANGED',
+		radio: radio
+	}
+}
+
+export function radioStopped(){
+	return {
+		type: 'PUSHER_RADIO_STOPPED'
+	}
+}
+
 export function debug(message = null){
 	return {
 		type: 'PUSHER_DEBUG',

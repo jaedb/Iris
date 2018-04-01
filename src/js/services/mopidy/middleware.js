@@ -1395,6 +1395,7 @@ const MopidyMiddleware = (function(){
                             {
                                 uri: response.uri,
                                 type: 'playlist',
+                                is_completely_loaded: true,
                                 is_mopidy: true,
                                 tracks: (response.tracks ? response.tracks : []),
                                 tracks_total: (response.tracks ? response.tracks.length : [])

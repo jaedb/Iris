@@ -362,6 +362,7 @@ export function getFeaturedPlaylists(){
                             {},
                             response.playlists.items[i],
                             {
+                                is_completely_loaded: false,
                                 can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
                                 tracks_total: response.playlists.items[i].tracks.total
                             }
@@ -1543,6 +1544,7 @@ export function getPlaylist(uri){
                     {},
                     response,
                     {
+                        is_completely_loaded: true,
                         can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
                         tracks: helpers.formatTracks(response.tracks.items),
                         tracks_more: response.tracks.next,

@@ -122,7 +122,6 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
-		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
 		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
 		dragger: state.ui.dragger

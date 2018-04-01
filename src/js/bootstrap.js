@@ -37,7 +37,7 @@ var initialState = {
 		outputs: [],
 		queue: [],
 		queue_metadata: {},
-		current_track_uri: null,
+		current_track: null,
 		albums: {},
 		artists: {},
 		playlists: {},
