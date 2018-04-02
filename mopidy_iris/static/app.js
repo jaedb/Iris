@@ -1140,7 +1140,6 @@ function getIcon(name) {
  **/
 
 function openModal(name, data) {
-    console.log(name, data);
     return {
         type: 'OPEN_MODAL',
         modal: {
@@ -51976,7 +51975,7 @@ var MopidyMiddleware = function () {
                         var queue = store.getState().core.queue;
                         var current_track_index = -1;
 
-                        if (current_track !== undefined) {
+                        if (current_track) {
                             for (var i = 0; i < queue.length; i++) {
                                 if (queue[i].tlid == current_track.tlid) {
                                     current_track_index = i;
