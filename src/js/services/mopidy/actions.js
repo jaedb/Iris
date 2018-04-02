@@ -20,14 +20,6 @@ export function disconnect(){
 	}
 }
 
-export function instruct(call, value){
-	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: call,
-		value: value
-	}
-}
-
 export function debug(call, value){
 	return {
 		type: 'MOPIDY_DEBUG',
@@ -176,6 +168,13 @@ export function getUriSchemes(){
 export function getCurrentTrack(){
 	return {
 		type: 'MOPIDY_GET_CURRENT_TRACK'
+	}
+}
+
+export function currentTrackLoaded(tl_track){
+	return {
+		type: 'MOPIDY_CURRENT_TRACK_LOADED',
+		tl_track: tl_track
 	}
 }
 

@@ -13,11 +13,6 @@
 
 		.clients {
 			.client {
-
-				&.disconnected {
-					opacity: 0.5;
-				}
-
 				& > .inner {
 					padding: 5px 0;
 					border-bottom: 1px solid $grey;
@@ -52,6 +47,20 @@
 						}
 
 						&.muted {
+							.slider .progress {
+								background: $mid_grey;
+							}
+						}
+					}
+				}
+
+				&.disconnected {
+					.name {
+						opacity: 0.5;
+					}
+
+					.controls {
+						.volume-control {
 							.slider .progress {
 								background: $mid_grey;
 							}

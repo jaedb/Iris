@@ -20,9 +20,9 @@ import User from './views/User'
 import Track from './views/Track'
 import Queue from './views/Queue'
 import QueueHistory from './views/QueueHistory'
-import Settings from './views/Settings'
 import Debug from './views/Debug'
 import Search from './views/Search'
+import Settings from './views/Settings'
 
 import DiscoverRecommendations from './views/discover/DiscoverRecommendations'
 import DiscoverFeatured from './views/discover/DiscoverFeatured'
@@ -61,9 +61,8 @@ ReactDOM.render(
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
-				<Route path="settings" component={Settings} />
 				<Route path="settings/debug" component={Debug} />
-				<Route path="settings(/:sub_view)" component={Settings} />
+				<Route path="settings(/service/:service)" component={Settings} />
 				
 				<Route path="search(/:query)" component={Search} />
 				<Route path="album/:uri" component={Album} />

@@ -37,7 +37,7 @@ class LibraryAlbums extends React.Component{
 			this.props.mopidyActions.getLibraryAlbums()
 		}
 
-		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryAlbums()
 		}
 	}
@@ -56,12 +56,7 @@ class LibraryAlbums extends React.Component{
 			}			
 		}
 
-		if (newProps.spotify_connected && newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){
-
-			// We've just connected
-			if (!this.props.spotify_connected){
-				this.props.spotifyActions.getLibraryAlbums();
-			}		
+		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){	
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started'){
@@ -280,7 +275,6 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
-		spotify_connected: state.spotify.connected,
 		load_queue: state.ui.load_queue,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,

@@ -24,13 +24,19 @@ class Snapcast extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.pusher_connected){
+		if (this.props.pusher_connected && this.props.snapcast_enabled){
 			this.props.pusherActions.getSnapcast();
 		}
 	}
 
 	componentWillReceiveProps(newProps){
+
+		// Just connected
 		if (!this.props.pusher_connected && newProps.pusher_connected){
+			this.props.pusherActions.getSnapcast();
+
+		// Just enabled (well, identified as being enabled)
+		} else if (!this.props.pusher_enabled && newProps.pusher_enabled && newProps.pusher_connected){
 			this.props.pusherActions.getSnapcast();
 		}
 	}
@@ -118,6 +124,7 @@ class Snapcast extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
 		snapcast_groups: state.pusher.snapcast_groups,
 		snapcast_clients: state.pusher.snapcast_clients

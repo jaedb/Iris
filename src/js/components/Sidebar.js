@@ -92,7 +92,7 @@ class Sidebar extends React.Component{
 								<Icon name="cog" />
 								Settings
 								{this.props.test_mode ? <span className="status has-tooltip right-tooltip"><FontAwesome name="info-circle" className="orange-text" /><span className="tooltip">Test mode active</span></span>: null}
-								{!this.props.mopidy_connected || (!this.props.spotify_connected && this.props.spotify_enabled) || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><FontAwesome name="exclamation-triangle" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}{!this.props.spotify_connected && this.props.spotify_enabled ? <span>Spotify not connected</span> : null}</span></span> : null}
+								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><FontAwesome name="exclamation-triangle" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
 							</Link>
 						</section>
 
@@ -122,7 +122,6 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
-		spotify_connected: state.spotify.connected,
 		spotify_authorized: state.spotify.authorization,
 		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
 		dragger: state.ui.dragger

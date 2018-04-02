@@ -21,7 +21,9 @@ class DiscoverFeatured extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getFeaturedPlaylists();
+		if (!this.props.featured_playlists){
+			this.props.spotifyActions.getFeaturedPlaylists();
+		}
 	}
 
 	playPlaylist(e,playlist){

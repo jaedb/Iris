@@ -26,7 +26,7 @@ export default class GridItem extends React.Component{
 
 	handleClick(e){
 		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
-			this.props.onClick(e)
+			this.props.onClick(e);
 		}
 	}
 

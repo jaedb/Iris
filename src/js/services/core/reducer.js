@@ -28,7 +28,7 @@ export default function reducer(core = {}, action){
             for(var i = 0; i < tracklist.length; i++){
 
                 // load our metadata (if we have any for that tlid)
-                if (typeof(action.queue_metadata['tlid_'+tracklist[i].tlid]) !== 'undefined'){
+                if (action.queue_metadata['tlid_'+tracklist[i].tlid] !== undefined){
                     tracklist[i] = Object.assign(
                         {},
                         tracklist[i],
@@ -38,7 +38,7 @@ export default function reducer(core = {}, action){
             }
             return Object.assign({}, core, { current_tracklist: tracklist, queue_metadata: action.queue_metadata });
 
-        case 'PUSHER_RADIO':
+        case 'PUSHER_RADIO_LOADED':
         case 'PUSHER_RADIO_STARTED':
         case 'PUSHER_RADIO_CHANGED':
         case 'PUSHER_RADIO_STOPPED':

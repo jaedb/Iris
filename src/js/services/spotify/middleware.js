@@ -17,23 +17,6 @@ const SpotifyMiddleware = (function(){
 
         switch(action.type){
 
-            case 'SPOTIFY_CONNECTED':
-                var hashed_username = null
-                if (store.getState().spotify.me){
-                    hashed_username = md5(store.getState().spotify.me.id);
-                    ReactGA.set({userId: hashed_username});
-                }
-                ReactGA.event({category: 'Spotify', action: 'Connected', label: hashed_username})
-
-                // TODO: remove this so we don't tap out our API limits before we even get started
-                // Perhaps fire this on demand? Context menu, playlists loading or AddToPlaylistModal
-                if (store.getState().spotify_authorized){
-                    store.dispatch(spotifyActions.getAllLibraryPlaylists())
-                }
-
-                next(action);
-                break
-
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
                 ReactGA.event({category: 'Spotify', action: 'Authorization granted'});
 

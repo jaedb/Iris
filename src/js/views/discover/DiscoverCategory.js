@@ -16,7 +16,7 @@ class DiscoverCategory extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadCategory()
+		this.loadCategory();
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -26,7 +26,9 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadCategory(){
-		if (!this.props.category || !this.props.category.playlists_uris) this.props.spotifyActions.getCategory(this.props.params.id );
+		if (!this.props.category || !this.props.category.playlists_uris){
+			this.props.spotifyActions.getCategory(this.props.params.id);
+		}
 	}
 
 	loadMore(){

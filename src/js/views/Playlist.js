@@ -42,19 +42,9 @@ class Playlist extends React.Component{
 		}
 	}
 
-	handleContextMenu(e){
-		var data = {
-			e: e,
-			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
-			items: [this.props.playlist],
-			uris: [this.props.params.uri]
-		}
-		this.props.uiActions.showContextMenu(data)
-	}
-
 	loadPlaylist(props = this.props){
-
-		if (props.playlist && props.playlist.tracks && (props.playlist.tracks_total == 0 || props.playlist.tracks.length > 0)){
+		
+		if (props.playlist && props.playlist.is_completely_loaded){
 			console.info('Loading playlist from index')
 
 		} else {
@@ -83,6 +73,16 @@ class Playlist extends React.Component{
 				records_type: 'track'
 			}
 		);
+	}
+
+	handleContextMenu(e){
+		var data = {
+			e: e,
+			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
+			items: [this.props.playlist],
+			uris: [this.props.params.uri]
+		}
+		this.props.uiActions.showContextMenu(data)
 	}
 
 	play(){

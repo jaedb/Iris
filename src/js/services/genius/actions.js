@@ -37,7 +37,7 @@ const sendRequest = (dispatch, getState, endpoint) => {
         $.ajax(config).then(
             response => {
                 dispatch(uiActions.stopLoading(loader_key));
-                resolve(response.response);
+                resolve(response.result);
             },
             (xhr, status, error) => {
                 dispatch(uiActions.stopLoading(loader_key));

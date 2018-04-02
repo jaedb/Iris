@@ -81,6 +81,15 @@ const PusherMiddleware = (function(){
                     case 'notification':
                         store.dispatch(uiActions.createNotification(message.params.notification));
                         break;
+                    case 'radio_started':
+                        store.dispatch(pusherActions.radioStarted(message.params.radio));
+                        break;
+                    case 'radio_changed':
+                        store.dispatch(pusherActions.radioChanged(message.params.radio));
+                        break;
+                    case 'radio_stopped':
+                        store.dispatch(pusherActions.radioStopped());
+                        break;
                 }
             }
         }
@@ -321,7 +330,7 @@ const PusherMiddleware = (function(){
 
                             var core = store.getState().core;
                             if (!core.country || !core.locale){
-                                store.dispatch(coreActions.set({
+                                store.dispatch(spotifyActions.set({
                                     country: response.config.country,
                                     locale: response.config.locale
                                 }))
@@ -360,7 +369,7 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch({
-                                type: 'PUSHER_RADIO',
+                                type: 'PUSHER_RADIO_LOADED',
                                 radio: response.radio
                             });
                         },
@@ -385,7 +394,7 @@ const PusherMiddleware = (function(){
                 }
 
                 var data = {
-                    update: (action.type == 'PUSHER_UPDATE_RADIO'),
+                    reset: (action.type == 'PUSHER_START_RADIO'),
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
@@ -405,6 +414,18 @@ const PusherMiddleware = (function(){
                     }
                 }
 
+                if (action.type == 'PUSHER_START_RADIO'){
+                    store.dispatch(pusherActions.deliverBroadcast(
+                        'notification',
+                        {
+                            notification: {
+                                type: 'info',
+                                content: store.getState().pusher.username + ' is starting radio mode'
+                            }
+                        }
+                    ));
+                }
+
                 request(store, 'change_radio', data)
                     .then(
                         response => {
@@ -412,9 +433,10 @@ const PusherMiddleware = (function(){
                             if (response.status == 0){
                                 store.dispatch(uiActions.createNotification({content: response.message, type: 'bad'}));
                             }
+                            store.dispatch(pusherActions.radioChanged(response.radio));
                         },
                         error => {       
-                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));                     
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));                    
                             store.dispatch(coreActions.handleException(
                                 'Could not change radio',
                                 error
@@ -427,22 +449,33 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification({content: 'Stopping radio'}));
                 ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
 
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'notification',
+                    {
+                        notification: {
+                            type: 'info',
+                            content: store.getState().pusher.username + ' stopped radio mode'
+                        }
+                    }
+                ));
+
                 var data = {
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
                 }
 
-                // we don't need to wait for response, as change will be broadcast
                 request(store, 'stop_radio', data)
-                break
-
-            case 'PUSHER_RADIO_STARTED':
-            case 'PUSHER_RADIO_CHANGED':
-                if (action.radio && action.radio.enabled && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
-                }
-                next(action)
+                    .then(
+                        response => {
+                            store.dispatch(pusherActions.radioStopped());
+                        }, error => {                 
+                            store.dispatch(coreActions.handleException(
+                                'Could not stop radio',
+                                error
+                            ));
+                        }
+                    );
                 break
 
             case 'PUSHER_BROWSER_NOTIFICATION':
@@ -479,12 +512,12 @@ const PusherMiddleware = (function(){
                     locale: (action.config.locale ? action.config.locale : null),
                     country: (action.config.country ? action.config.country : null),
                     authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
-                }))
+                }));
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
-                }))
+                }));
 
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_DEBUG':
