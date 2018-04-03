@@ -43,8 +43,8 @@ $bp_shallow: 650px;
 	padding-left: 14px;
 	
 	&:before {
+		content: '\2022' !important;
 		display: inline-block;
-		content: '\2022';
 		margin-left: -8px;
 		padding-right: 6px;
 	}

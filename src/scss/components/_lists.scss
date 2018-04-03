@@ -209,6 +209,21 @@
 				}
 				&.added { 
 					width: 20%;
+
+					.by {
+						padding-right: 0.25em;
+					}
+
+					.from {
+						&:before {
+							content: '(';
+							display: inline-block;
+						}
+						&:after {
+							content: ')';
+							display: inline-block;
+						}
+					}
 				}
 			}
 		}
@@ -287,7 +302,7 @@
 					text-align: right;
 				}
 
-				&:not(.name):not(.duration):not(.album){
+				&:not(.name):not(.duration):not(.album):not(.added){
 					color: $mid_grey;
 					display: inline;
 					width: auto !important;
@@ -329,9 +344,31 @@
 					}
 				}
 
-				.source,
-				.added {
+				.source {
 					display: none !important;
+				}
+
+				.added {
+					width: auto !important;
+					float: none !important;
+					padding-left: 0.25em;
+
+					.by {
+						display: none;
+					}
+
+					.from {
+						@include bullet();
+						text-transform: capitalize;
+
+						&:after {
+							display: none !important;
+						}
+
+						.label {
+							display: none;
+						}
+					}
 				}
 			}
 		}
