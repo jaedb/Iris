@@ -93,7 +93,8 @@ class App extends React.Component{
 			}
 
 			// Scroll to bottom, only if we've PUSHed to a new route
-			if (nextProps.location.action == 'PUSH'){
+			// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
+			if (nextProps.location.action == 'PUSH' && nextProps.params.sub_view === undefined){
 				window.scrollTo(0, 0);
 			}
 		}

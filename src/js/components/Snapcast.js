@@ -32,11 +32,7 @@ class Snapcast extends React.Component{
 	componentWillReceiveProps(newProps){
 
 		// Just connected
-		if (!this.props.pusher_connected && newProps.pusher_connected){
-			this.props.pusherActions.getSnapcast();
-
-		// Just enabled (well, identified as being enabled)
-		} else if (!this.props.pusher_enabled && newProps.pusher_enabled && newProps.pusher_connected){
+		if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected){
 			this.props.pusherActions.getSnapcast();
 		}
 	}
@@ -47,8 +43,20 @@ class Snapcast extends React.Component{
 	}
 
 	render(){
+		if (!this.props.snapcast_enabled){
+			return (
+				<div>
+					To enable Snapcast, edit your <code>mopidy.conf</code> file
+				</div>
+			)
+		}
+
 		if (!this.props.snapcast_clients || !this.props.snapcast_groups){
-			return null;
+			return (
+				<div className="lazy-loader body-loader loading">
+					<div className="loader"></div>
+				</div>
+			)
 		}
 
 		// Construct a simple array of our groups index

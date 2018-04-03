@@ -62,7 +62,7 @@ ReactDOM.render(
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
 				<Route path="settings/debug" component={Debug} />
-				<Route path="settings(/service/:service)" component={Settings} />
+				<Route path="settings(/service/:sub_view)" component={Settings} />
 				
 				<Route path="search(/:query)" component={Search} />
 				<Route path="album/:uri" component={Album} />

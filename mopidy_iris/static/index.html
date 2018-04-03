@@ -25,11 +25,37 @@
 	<!-- Raven Sentry -->
 	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
 
+	<!-- Loading screen -->
+	<style>
+		#app-loading {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			color: #FFFFFF;
+			background-color: #121212;
+		}
+		#app-loading .logo {
+			width: 80%;
+			max-width: 160px;
+			margin: 0 auto;
+			height: 100%;
+			background-image: url('/iris/assets/logo-app-512.png');
+			background-position: 50% 50%;
+			background-size: contain;
+			background-repeat: no-repeat;
+		}
+	</style>
+
 </head>
 <body>
 
 	<div id="app">
-		<!-- ReactJS application here -->
+		<!-- ReactJS app gets injected here, replacing the loader -->
+		<div id="app-loading">
+			<div class="logo"></div>
+		</div>
 	</div>
 
 </body>
@@ -38,7 +64,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1522638235";
+	var build = "1522699992";
 	var version = "3.16.0";
 
 	// Construct the script tag
