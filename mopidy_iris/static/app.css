@@ -2817,8 +2817,8 @@ footer {
     .details li:not(:first-child) {
       padding-left: 14px; }
       .details li:not(:first-child):before {
+        content: '\2022' !important;
         display: inline-block;
-        content: '\2022';
         margin-left: -8px;
         padding-right: 6px; }
 
@@ -3410,7 +3410,8 @@ input[type="submit"] {
         right: 0;
         left: 100%;
         height: 100%;
-        min-height: 200px;
+        min-height: 300px;
+        max-height: 90vh;
         width: 0;
         height: 100%;
         overflow-y: scroll;
@@ -4275,6 +4276,9 @@ input[type="submit"] {
   .snapcast .group > .inner > .name {
     font-weight: bold; }
 
+.snapcast .group:not(:first-child) {
+  padding-top: 15px; }
+
 .snapcast .group .clients .client > .inner {
   padding: 5px 0;
   border-bottom: 1px solid #383734; }
@@ -4576,6 +4580,14 @@ aside {
     width: 25%; }
   .list.queue-track-list .list-item .col.added {
     width: 20%; }
+    .list.queue-track-list .list-item .col.added .by {
+      padding-right: 0.25em; }
+    .list.queue-track-list .list-item .col.added .from:before {
+      content: '(';
+      display: inline-block; }
+    .list.queue-track-list .list-item .col.added .from:after {
+      content: ')';
+      display: inline-block; }
 
 .list.queue-history-track-list .list-item .col.name {
   width: 60%; }
@@ -4628,7 +4640,7 @@ aside {
       position: absolute;
       right: 10px;
       text-align: right; }
-    .list .list-item .col:not(.name):not(.duration):not(.album) {
+    .list .list-item .col:not(.name):not(.duration):not(.album):not(.added) {
       color: #a3a19f;
       display: inline;
       width: auto !important;
@@ -4648,9 +4660,26 @@ aside {
     padding-left: 0 !important; }
     .list.queue-track-list .list-item .artists:before {
       display: none !important; }
-  .list.queue-track-list .list-item .source,
-  .list.queue-track-list .list-item .added {
+  .list.queue-track-list .list-item .source {
     display: none !important; }
+  .list.queue-track-list .list-item .added {
+    width: auto !important;
+    float: none !important;
+    padding-left: 0.25em; }
+    .list.queue-track-list .list-item .added .by {
+      display: none; }
+    .list.queue-track-list .list-item .added .from {
+      padding-left: 14px;
+      text-transform: capitalize; }
+      .list.queue-track-list .list-item .added .from:before {
+        content: '\2022' !important;
+        display: inline-block;
+        margin-left: -8px;
+        padding-right: 6px; }
+      .list.queue-track-list .list-item .added .from:after {
+        display: none !important; }
+      .list.queue-track-list .list-item .added .from .label {
+        display: none; }
   .list.queue-history-track-list .list-item .source {
     display: none !important; }
   .list.track-list .list-item.can-sort {

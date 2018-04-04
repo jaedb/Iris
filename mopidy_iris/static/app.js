@@ -24434,14 +24434,20 @@ var Track = function (_React$Component) {
 					var added = _react2.default.createElement(
 						'span',
 						null,
-						track.added_by,
-						' ',
 						_react2.default.createElement(
 							'span',
-							{ className: 'grey-text' },
-							' (from ',
-							link,
-							')'
+							{ className: 'by' },
+							track.added_by
+						),
+						_react2.default.createElement(
+							'span',
+							{ className: 'grey-text from' },
+							_react2.default.createElement(
+								'span',
+								{ className: 'label' },
+								'from '
+							),
+							link
 						)
 					);
 				} else if (track.added_by) {
@@ -24993,7 +24999,7 @@ _reactDom2.default.render(_react2.default.createElement(
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue', component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/history', component: _QueueHistory2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings/debug', component: _Debug2.default }),
-			_react2.default.createElement(_reactRouter.Route, { path: 'settings(/service/:service)', component: _Settings2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'settings(/service/:sub_view)', component: _Settings2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'search(/:query)', component: _Search2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'album/:uri', component: _Album2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'artist/:uri(/:sub_view)', component: _Artist2.default }),
@@ -57094,7 +57100,8 @@ var App = function (_React$Component) {
 				}
 
 				// Scroll to bottom, only if we've PUSHed to a new route
-				if (nextProps.location.action == 'PUSH') {
+				// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
+				if (nextProps.location.action == 'PUSH' && nextProps.params.sub_view === undefined) {
 					window.scrollTo(0, 0);
 				}
 			}
@@ -68725,7 +68732,7 @@ var Settings = function (_React$Component) {
 						{ className: 'underline' },
 						'Services'
 					),
-					_react2.default.createElement(_Services2.default, { active: this.props.params.service }),
+					_react2.default.createElement(_Services2.default, { active: this.props.params.sub_view }),
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
@@ -70333,11 +70340,7 @@ var Snapcast = function (_React$Component) {
 		value: function componentWillReceiveProps(newProps) {
 
 			// Just connected
-			if (!this.props.pusher_connected && newProps.pusher_connected) {
-				this.props.pusherActions.getSnapcast();
-
-				// Just enabled (well, identified as being enabled)
-			} else if (!this.props.pusher_enabled && newProps.pusher_enabled && newProps.pusher_connected) {
+			if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected) {
 				this.props.pusherActions.getSnapcast();
 			}
 		}
@@ -70352,8 +70355,26 @@ var Snapcast = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
+			if (!this.props.snapcast_enabled) {
+				return _react2.default.createElement(
+					'div',
+					null,
+					'To enable Snapcast, edit your ',
+					_react2.default.createElement(
+						'code',
+						null,
+						'mopidy.conf'
+					),
+					' file'
+				);
+			}
+
 			if (!this.props.snapcast_clients || !this.props.snapcast_groups) {
-				return null;
+				return _react2.default.createElement(
+					'div',
+					{ className: 'lazy-loader body-loader loading' },
+					_react2.default.createElement('div', { className: 'loader' })
+				);
 			}
 
 			// Construct a simple array of our groups index

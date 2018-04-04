@@ -225,7 +225,7 @@ class Settings extends React.Component {
 					</form>
 
 					<h4 className="underline">Services</h4>
-					<Services active={this.props.params.service} />
+					<Services active={this.props.params.sub_view} />
 
 					<h4 className="underline">Advanced</h4>
 
