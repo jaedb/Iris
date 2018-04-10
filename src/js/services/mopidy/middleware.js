@@ -296,6 +296,10 @@ const MopidyMiddleware = (function(){
                 ));
                 break
 
+            case 'MOPIDY_PREVIOUS':
+                request(socket, store, 'playback.previous');
+                break
+
             case 'MOPIDY_NEXT':
                 request(socket, store, 'playback.next');
 
