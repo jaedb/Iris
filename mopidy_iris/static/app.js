@@ -4072,9 +4072,15 @@ var Thumbnail = function (_React$Component) {
 
 			var image = this.mapImageSizes();
 			var class_name = 'thumbnail ';
-			if (this.props.size) class_name += ' ' + this.props.size;
-			if (this.props.circle) class_name += ' circle';
-			if (this.props.className) class_name += ' ' + this.props.className;
+			if (this.props.size) {
+				class_name += ' ' + this.props.size;
+			}
+			if (this.props.circle) {
+				class_name += ' circle';
+			}
+			if (this.props.className) {
+				class_name += ' ' + this.props.className;
+			}
 
 			var zoom_icon = null;
 			if (this.props.canZoom) {
@@ -19742,7 +19748,7 @@ var GridItem = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'grid-item', onClick: function onClick(e) {
+				{ className: "grid-item " + this.props.type + "-grid-item", onClick: function onClick(e) {
 						return _this2.handleClick(e);
 					}, onContextMenu: function onContextMenu(e) {
 						return _this2.handleContextMenu(e);
@@ -51703,6 +51709,10 @@ var MopidyMiddleware = function () {
                         }));
                         break;
 
+                    case 'MOPIDY_PREVIOUS':
+                        request(socket, store, 'playback.previous');
+                        break;
+
                     case 'MOPIDY_NEXT':
                         request(socket, store, 'playback.next');
 
@@ -64976,100 +64986,71 @@ var Artist = function (_React$Component) {
 
 			var scheme = helpers.uriSource(this.props.params.uri);
 
+			if (!this.props.artist) {
+				if (helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', this.props.params.uri), 'lastfm_method=artist.getInfo'])) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'body-loader loading' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				} else {
+					return null;
+				}
+			}
+
 			if (this.props.artist && this.props.artist.images) {
 				var image = helpers.sizedImages(this.props.artist.images).huge;
 			} else {
 				var image = null;
 			}
 
-			if (this.props.artist) {
-				var is_spotify = scheme == 'spotify';
+			var is_spotify = scheme == 'spotify';
 
-				if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0) {
-					var uris_to_play = this.props.artist.tracks_uris;
-				} else {
-					var uris_to_play = this.props.artist.albums_uris;
-				}
-
-				return _react2.default.createElement(
-					'div',
-					{ className: 'view artist-view' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'intro' },
-						_react2.default.createElement(_Parallax2.default, { image: image }),
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'h1',
-								null,
-								this.props.artist ? this.props.artist.name : null
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'actions' },
-								_react2.default.createElement(
-									'button',
-									{ className: 'primary', onClick: function onClick(e) {
-											return _this3.props.mopidyActions.playURIs(uris_to_play, _this3.props.artist.uri);
-										} },
-									'Play'
-								),
-								is_spotify ? _react2.default.createElement(_FollowButton2.default, { className: 'white', uri: this.props.params.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
-								_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'white', onTrigger: function onTrigger(e) {
-										return _this3.handleContextMenu(e);
-									} })
-							),
-							this.renderSubViewMenu()
-						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'content-wrapper' },
-						this.renderBody()
-					)
-				);
+			if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0) {
+				var uris_to_play = this.props.artist.tracks_uris;
 			} else {
-				return _react2.default.createElement(
+				var uris_to_play = this.props.artist.albums_uris;
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'view artist-view' },
+				_react2.default.createElement(
 					'div',
-					{ className: 'view artist-view' },
+					{ className: 'intro' },
+					_react2.default.createElement(_Parallax2.default, { image: image }),
 					_react2.default.createElement(
 						'div',
-						{ className: 'intro' },
-						_react2.default.createElement(_Parallax2.default, null),
+						{ className: 'liner' },
+						_react2.default.createElement(
+							'h1',
+							null,
+							this.props.artist ? this.props.artist.name : null
+						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'liner' },
+							{ className: 'actions' },
 							_react2.default.createElement(
-								'h1',
-								null,
-								_react2.default.createElement('span', { className: 'placeholder' })
+								'button',
+								{ className: 'primary', onClick: function onClick(e) {
+										return _this3.props.mopidyActions.playURIs(uris_to_play, _this3.props.artist.uri);
+									} },
+								'Play'
 							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'actions' },
-								_react2.default.createElement(
-									'button',
-									{ className: 'placeholder' },
-									'\xA0'
-								),
-								_react2.default.createElement(
-									'button',
-									{ className: 'placeholder' },
-									'\xA0'
-								)
-							),
-							this.renderSubViewMenu()
-						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'content-wrapper' },
-						this.renderBody()
+							is_spotify ? _react2.default.createElement(_FollowButton2.default, { className: 'white', uri: this.props.params.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
+							_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'white', onTrigger: function onTrigger(e) {
+									return _this3.handleContextMenu(e);
+								} })
+						),
+						this.renderSubViewMenu()
 					)
-				);
-			}
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'content-wrapper' },
+					this.renderBody()
+				)
+			);
 		}
 	}]);
 
