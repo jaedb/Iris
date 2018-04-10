@@ -68044,16 +68044,17 @@ var User = function (_React$Component) {
 			var _this2 = this;
 
 			var user_id = helpers.getFromUri('userid', this.props.params.uri);
-			if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
-			}
 
 			if (!this.props.user) {
-				return null;
+				if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'body-loader loading' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				} else {
+					return null;
+				}
 			}
 
 			var playlists = [];
