@@ -53265,6 +53265,7 @@ var PusherMiddleware = function () {
 
             // Broadcast of an error
             if (message.error !== undefined) {
+
                 store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message));
             } else {
 
@@ -53298,6 +53299,9 @@ var PusherMiddleware = function () {
                         break;
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
+                        break;
+                    case 'restart':
+                        window.location.reload(true);
                         break;
                 }
             }
