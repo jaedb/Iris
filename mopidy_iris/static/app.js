@@ -368,7 +368,7 @@ var formatTracks = exports.formatTracks = function formatTracks(tracks) {
 	for (var i = 0; i < tracks.length; i++) {
 
 		// Nested track object (eg in spotify playlist)
-		if (tracks[i].track) {
+		if (tracks[i].track && isObject(tracks[i].track)) {
 			var track = Object.assign({}, tracks[i].track);
 
 			// Copy supporting values
@@ -393,6 +393,8 @@ var formatTracks = exports.formatTracks = function formatTracks(tracks) {
 
 		if (track.track_no) {
 			track.track_number = track.track_no;
+		} else if (track.track_number) {
+			track.track_number = track.track_number;
 		}
 
 		if (track.disc_no) {
@@ -788,11 +790,20 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 
 /**
  * Figure out if a value is a number
- * @param data = mixed
+ * @param value = mixed
  * @return boolean
  **/
-var isNumeric = exports.isNumeric = function isNumeric(data) {
-	return !isNaN(parseFloat(data)) && isFinite(data);
+var isNumeric = exports.isNumeric = function isNumeric(value) {
+	return !isNaN(parseFloat(value)) && isFinite(value);
+};
+
+/** 
+ * Figure out if a value is an object
+ * @param value = mixed
+ * @return boolean
+ **/
+var isObject = exports.isObject = function isObject(value) {
+	return value instanceof Object && value.constructor === Object;
 };
 
 /**
@@ -50888,6 +50899,7 @@ var PusherMiddleware = function () {
 
             // Broadcast of an error
             if (message.error !== undefined) {
+
                 store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message));
             } else {
 
@@ -50921,6 +50933,9 @@ var PusherMiddleware = function () {
                         break;
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
+                        break;
+                    case 'restart':
+                        window.location.reload(true);
                         break;
                 }
             }
@@ -64364,16 +64379,16 @@ var Album = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			if (helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.params.uri)])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
-			}
-
 			if (!this.props.album) {
-				return null;
+				if (helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.params.uri)])) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'body-loader loading' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				} else {
+					return null;
+				}
 			}
 
 			var artists = [];
@@ -64479,12 +64494,6 @@ var Album = function (_React$Component) {
 
 	return Album;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	var uri = ownProps.params.uri;
@@ -64746,14 +64755,6 @@ var Artist = function (_React$Component) {
 		key: 'renderBody',
 		value: function renderBody() {
 			var _this2 = this;
-
-			if (helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', this.props.params.uri), 'lastfm_method=artist.getInfo'])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
-			}
 
 			var scheme = helpers.uriSource(this.props.params.uri);
 
@@ -65414,20 +65415,25 @@ var Playlist = function (_React$Component) {
 		value: function render() {
 			var _this3 = this;
 
-			if (!this.props.playlist) return null;
-
 			var scheme = helpers.uriSource(this.props.params.uri);
-			var context = 'playlist';
-			if (this.props.playlist.can_edit) context = 'editable-playlist';
 			var user_id = helpers.getFromUri('userid', this.props.params.uri);
 			var playlist_id = helpers.getFromUri('playlistid', this.props.params.uri);
 
-			if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id + '/playlists/' + playlist_id + '?'])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
+			if (!this.props.playlist) {
+				if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id + '/playlists/' + playlist_id + '?'])) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'body-loader loading' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				} else {
+					return null;
+				}
+			}
+
+			var context = 'playlist';
+			if (this.props.playlist.can_edit) {
+				context = 'editable-playlist';
 			}
 
 			var tracks = [];
@@ -65676,16 +65682,17 @@ var User = function (_React$Component) {
 			var _this2 = this;
 
 			var user_id = helpers.getFromUri('userid', this.props.params.uri);
-			if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'body-loader loading' },
-					_react2.default.createElement('div', { className: 'loader' })
-				);
-			}
 
 			if (!this.props.user) {
-				return null;
+				if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'body-loader loading' },
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				} else {
+					return null;
+				}
 			}
 
 			var playlists = [];

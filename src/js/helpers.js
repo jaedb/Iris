@@ -284,7 +284,7 @@ export let formatTracks = function(tracks){
     for (var i = 0; i < tracks.length; i++){
 
     	// Nested track object (eg in spotify playlist)
-    	if (tracks[i].track){
+    	if (tracks[i].track && isObject(tracks[i].track)){
     		var track = Object.assign({}, tracks[i].track);
 
     		// Copy supporting values
@@ -310,6 +310,8 @@ export let formatTracks = function(tracks){
 
         if (track.track_no){
         	track.track_number = track.track_no;
+        } else if (track.track_number){
+        	track.track_number = track.track_number;
         }
 
         if (track.disc_no){
@@ -711,11 +713,21 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 
 /**
  * Figure out if a value is a number
- * @param data = mixed
+ * @param value = mixed
  * @return boolean
  **/
-export let isNumeric = function (data){
-	return !isNaN(parseFloat(data)) && isFinite(data)
+export let isNumeric = function (value){
+	return !isNaN(parseFloat(value)) && isFinite(value)
+}
+
+
+/** 
+ * Figure out if a value is an object
+ * @param value = mixed
+ * @return boolean
+ **/
+export let isObject = function(value){
+	return value instanceof Object && value.constructor === Object;
 }
 
 

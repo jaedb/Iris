@@ -65,15 +65,21 @@ class Thumbnail extends React.Component{
 	}
 
 	render(){
-		var image = this.mapImageSizes()
-		var class_name = 'thumbnail '
-		if (this.props.size ) class_name += ' '+this.props.size
-		if (this.props.circle ) class_name += ' circle'
-		if (this.props.className ) class_name += ' '+this.props.className
+		var image = this.mapImageSizes();
+		var class_name = 'thumbnail ';
+		if (this.props.size){
+			class_name += ' '+this.props.size;
+		}
+		if (this.props.circle){
+			class_name += ' circle';
+		}
+		if (this.props.className){
+			class_name += ' '+this.props.className;
+		}
 		
-		var zoom_icon = null
+		var zoom_icon = null;
 		if (this.props.canZoom){
-			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>
+			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>;
 		}
 
 		return (
