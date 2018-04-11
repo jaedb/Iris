@@ -28,33 +28,33 @@ export default class Parallax extends React.Component{
 	}
 
 	componentDidMount(){
-        this._mounted = true
+        this._mounted = true;
         window.addEventListener("resize", this.handleResize);
         window.addEventListener("scroll", this.handleScroll);
 
         if (this.props.image){
-			this._loading = true
-			this.setState({ url: this.props.image, image: false, loading: true })
-			this.loadImage(this.props.image )
+			this._loading = true;
+			this.setState({url: this.props.image, image: false, loading: true});
+			this.loadImage(this.props.image)
 				.then(
 					response => {
 						if (this._mounted){
-							this._loading = false
-							this._loaded = true
-							this.setState({ url: this.props.image, image: response, loading: false })
-							this.updateCanvas(response )
+							this._loading = false;
+							this._loaded = true;
+							this.setState({url: this.props.image, image: response, loading: false});
+							this.updateCanvas(response);
 						}
 					}
 				)
 		} else {
-			this._loaded = true
-			this.state.image = false
-			this.updateCanvas()
+			this._loaded = true;
+			this.state.image = false;
+			this.updateCanvas();
 		}
 	}
 
     componentWillUnmount(){
-        this._mounted = false
+        this._mounted = false;
         window.removeEventListener("resize", this.handleResize);
         window.removeEventListener("scroll", this.handleScroll);
     }
@@ -79,7 +79,7 @@ export default class Parallax extends React.Component{
 
     handleResize(e){
     	if (this._loaded){
-	    	this.updateCanvas(this.state.image)
+	    	this.updateCanvas(this.state.image);
 	    }
     }
 
@@ -87,7 +87,7 @@ export default class Parallax extends React.Component{
     	// this DOES work, but is in no way high-performing and only on Firefox
     	if (this._loaded){
 			this.setState(
-				{ scrollTop: window.scrollY }, 
+				{scrollTop: window.scrollY}, 
 				this.updateCanvas(this.state.image)
 			)
 	    }
@@ -128,7 +128,7 @@ export default class Parallax extends React.Component{
 				}
 			})
 		}
-		this.renderCanvas(image );
+		this.renderCanvas(image);
 	}
 
 	renderCanvas(image = false){
@@ -137,12 +137,12 @@ export default class Parallax extends React.Component{
 		var context = canvasDOM.getContext('2d')
 
 		// Fill the background with mid-grey
-		context.beginPath()
-		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height)
-		context.fillStyle = "#121212"
-		context.fill()
+		context.beginPath();
+		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
+		context.fillStyle = "#121212";
+		context.fill();
 
-		if (image){
+		if (image && !self.state.loading){
 		
 			// zoom image to fill canvas, widthwise
 			if (image.width < this.state.canvas.width || image.width > this.state.canvas.width){

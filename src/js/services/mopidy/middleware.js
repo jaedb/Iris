@@ -91,6 +91,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:trackPlaybackEnded':
+                store.dispatch(mopidyActions.clearCurrentTrack());
                 store.dispatch(mopidyActions.getTimePosition());
                 break;
 
