@@ -178,6 +178,20 @@ export function currentTrackLoaded(tl_track){
 	}
 }
 
+export function getNextTrack(){
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	}
+}
+
+export function clearCurrentTrack(){
+	return {
+		type: 'CURRENT_TRACK_LOADED',
+        track: null,
+        uri: null
+	}
+}
+
 export function getQueue(){
 	return {
 		type: 'MOPIDY_GET_QUEUE'

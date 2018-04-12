@@ -11,7 +11,7 @@ export default class ArtistSentence extends React.Component{
 
 	render(){
 		if (!this.props.artists){
-			return <span>-</span>;
+			return <span className={this.props.className ? this.props.className+" artist-sentence" : "artist-sentence" }>-</span>;
 		}
 
 		return (

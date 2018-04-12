@@ -72,7 +72,8 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:tracklistChanged':
-                store.dispatch(mopidyActions.getQueue())
+                store.dispatch(mopidyActions.getQueue());
+                store.dispatch(mopidyActions.getNextTrack());
                 break;
 
             case 'event:playbackStateChanged':
@@ -91,11 +92,13 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:trackPlaybackEnded':
+                store.dispatch(mopidyActions.clearCurrentTrack());
                 store.dispatch(mopidyActions.getTimePosition());
                 break;
 
             case 'event:trackPlaybackStarted':
                 store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
+                store.dispatch(mopidyActions.getNextTrack());
                 break;
 
             case 'event:volumeChanged':
@@ -2015,21 +2018,58 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CURRENT_TRACK_LOADED':
                 var track = helpers.formatTracks(action.tl_track);
 
-                // We've got Spotify running, and it's a spotify track - go straight to the source!
-                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
-                    store.dispatch(spotifyActions.getTrack(track.uri))
+                // We don't have the track already in our index
+                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
-                // Some other source, rely on Mopidy backends to do their work
-                } else {
-                    store.dispatch(mopidyActions.getImages('tracks',[track.uri]))
+                    // We've got Spotify running, and it's a spotify track - go straight to the source!
+                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+                        store.dispatch(spotifyActions.getTrack(track.uri));
+
+                    // Some other source, rely on Mopidy backends to do their work
+                    } else {
+                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
+                    }
                 }
 
                 // Set our window title to the track title
                 helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                 store.dispatch({
                     type: 'CURRENT_TRACK_LOADED',
-                    current_track: track
+                    track: track
                 });
+                break;
+
+            case 'MOPIDY_GET_NEXT_TRACK':
+                request(socket, store, 'tracklist.getNextTlid')
+                    .then(
+                        response => {
+                            if (response && response >= 0){
+                                var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
+
+                                if (track){
+                                    store.dispatch({
+                                        type: 'NEXT_TRACK_LOADED',
+                                        uri: track.uri
+                                    });
+
+                                    console.log(track.name);
+
+                                    // We don't have the track already in our index
+                                    if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
+
+                                        // We've got Spotify running, and it's a spotify track - go straight to the source!
+                                        if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+                                            store.dispatch(spotifyActions.getTrack(track.uri));
+
+                                        // Some other source, rely on Mopidy backends to do their work
+                                        } else {
+                                            store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    );
                 break;
 
             case 'MOPIDY_GET_TRACK':
