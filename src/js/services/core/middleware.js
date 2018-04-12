@@ -316,7 +316,7 @@ const CoreMiddleware = (function(){
             case 'CURRENT_TRACK_LOADED':
                 store.dispatch({
                     type: 'TRACKS_LOADED',
-                    tracks: [action.current_track]
+                    tracks: [action.track]
                 });
 
                 next(action);

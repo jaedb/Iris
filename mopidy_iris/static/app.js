@@ -612,6 +612,9 @@ var formatTracks = exports.formatTracks = function formatTracks(tracks) {
  * @param uri = string
  **/
 var uriSource = exports.uriSource = function uriSource(uri) {
+	if (!uri) {
+		return false;
+	}
 	var exploded = uri.split(':');
 	return exploded[0];
 };
@@ -848,14 +851,21 @@ var removeDuplicates = exports.removeDuplicates = function removeDuplicates(arra
  * @param field = string (the field we're to search)
  * @param value = string (the value to find)
  * @param array = array of objects to search
+ * @param singular = boolean (just return the first result)
  * @return array
  **/
 var applyFilter = exports.applyFilter = function applyFilter(field, value, array) {
+	var singular = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
 	var results = [];
 
 	for (var i = 0; i < array.length; i++) {
-		if (array[i][field] && array[i][field].toLowerCase().includes(value.toLowerCase())) {
-			results.push(array[i]);
+		if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())) {
+			if (singular) {
+				return array[i];
+			} else {
+				results.push(array[i]);
+			}
 		}
 	}
 
@@ -3613,8 +3623,9 @@ exports.setTimePosition = setTimePosition;
 exports.timePosition = timePosition;
 exports.getUriSchemes = getUriSchemes;
 exports.getCurrentTrack = getCurrentTrack;
-exports.clearCurrentTrack = clearCurrentTrack;
 exports.currentTrackLoaded = currentTrackLoaded;
+exports.getNextTrack = getNextTrack;
+exports.clearCurrentTrack = clearCurrentTrack;
 exports.getQueue = getQueue;
 exports.changeTrack = changeTrack;
 exports.playURIs = playURIs;
@@ -3819,18 +3830,24 @@ function getCurrentTrack() {
 	};
 }
 
-function clearCurrentTrack() {
-	return {
-		type: 'CURRENT_TRACK_LOADED',
-		current_track: null,
-		current_track_uri: null
-	};
-}
-
 function currentTrackLoaded(tl_track) {
 	return {
 		type: 'MOPIDY_CURRENT_TRACK_LOADED',
 		tl_track: tl_track
+	};
+}
+
+function getNextTrack() {
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	};
+}
+
+function clearCurrentTrack() {
+	return {
+		type: 'CURRENT_TRACK_LOADED',
+		track: null,
+		uri: null
 	};
 }
 
@@ -4330,8 +4347,13 @@ var Thumbnail = function (_React$Component) {
 				// multiple images
 			} else if (this.props.images && this.props.images.length > 0) {
 				var images = helpers.sizedImages(this.props.images);
+
+				// Default to medium-sized image, but accept size property as override
 				var size = 'medium';
-				if (this.props.size) size = this.props.size;
+				if (this.props.size) {
+					size = this.props.size;
+				}
+
 				return images[size];
 			}
 		}
@@ -16759,7 +16781,7 @@ var ArtistSentence = function (_React$Component) {
 			if (!this.props.artists) {
 				return _react2.default.createElement(
 					'span',
-					null,
+					{ className: this.props.className ? this.props.className + " artist-sentence" : "artist-sentence" },
 					'-'
 				);
 			}
@@ -50784,8 +50806,13 @@ function reducer() {
 
         case 'CURRENT_TRACK_LOADED':
             return Object.assign({}, core, {
-                current_track: action.current_track,
-                current_track_uri: action.current_track_uri
+                current_track: action.track,
+                current_track_uri: action.uri
+            });
+
+        case 'NEXT_TRACK_LOADED':
+            return Object.assign({}, core, {
+                next_track_uri: action.uri
             });
 
         case 'QUEUE_LOADED':
@@ -52235,7 +52262,7 @@ var CoreMiddleware = function () {
                     case 'CURRENT_TRACK_LOADED':
                         store.dispatch({
                             type: 'TRACKS_LOADED',
-                            tracks: [action.current_track]
+                            tracks: [action.track]
                         });
 
                         next(action);
@@ -53436,6 +53463,7 @@ var MopidyMiddleware = function () {
 
             case 'event:tracklistChanged':
                 store.dispatch(mopidyActions.getQueue());
+                store.dispatch(mopidyActions.getNextTrack());
                 break;
 
             case 'event:playbackStateChanged':
@@ -53460,6 +53488,7 @@ var MopidyMiddleware = function () {
 
             case 'event:trackPlaybackStarted':
                 store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
+                store.dispatch(mopidyActions.getNextTrack());
                 break;
 
             case 'event:volumeChanged':
@@ -55069,20 +55098,54 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_CURRENT_TRACK_LOADED':
                         var track = helpers.formatTracks(action.tl_track);
 
-                        // We've got Spotify running, and it's a spotify track - go straight to the source!
-                        if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
-                            store.dispatch(spotifyActions.getTrack(track.uri));
+                        // We don't have the track already in our index
+                        if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
 
-                            // Some other source, rely on Mopidy backends to do their work
-                        } else {
-                            store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                            // We've got Spotify running, and it's a spotify track - go straight to the source!
+                            if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                                store.dispatch(spotifyActions.getTrack(track.uri));
+
+                                // Some other source, rely on Mopidy backends to do their work
+                            } else {
+                                store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                            }
                         }
 
                         // Set our window title to the track title
                         helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                         store.dispatch({
                             type: 'CURRENT_TRACK_LOADED',
-                            current_track: track
+                            track: track
+                        });
+                        break;
+
+                    case 'MOPIDY_GET_NEXT_TRACK':
+                        request(socket, store, 'tracklist.getNextTlid').then(function (response) {
+                            if (response && response >= 0) {
+                                var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
+
+                                if (track) {
+                                    store.dispatch({
+                                        type: 'NEXT_TRACK_LOADED',
+                                        uri: track.uri
+                                    });
+
+                                    console.log(track.name);
+
+                                    // We don't have the track already in our index
+                                    if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
+
+                                        // We've got Spotify running, and it's a spotify track - go straight to the source!
+                                        if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                                            store.dispatch(spotifyActions.getTrack(track.uri));
+
+                                            // Some other source, rely on Mopidy backends to do their work
+                                        } else {
+                                            store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                                        }
+                                    }
+                                }
+                            }
                         });
                         break;
 
@@ -59907,6 +59970,10 @@ var _Icon = __webpack_require__(17);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
 var _actions = __webpack_require__(5);
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -60089,6 +60156,7 @@ var PlaybackControls = function (_React$Component) {
 					{ id: 'http-streamer', autoPlay: true, preload: 'none' },
 					_react2.default.createElement('source', { src: this.props.http_streaming_url, type: "audio/" + this.props.http_streaming_encoding })
 				) : null,
+				this.props.next_track && this.props.next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: this.props.next_track.images }) : null,
 				_react2.default.createElement(
 					'div',
 					{ className: 'current-track' },
@@ -60214,6 +60282,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		http_streaming_encoding: state.core.http_streaming_encoding,
 		http_streaming_url: state.core.http_streaming_url,
 		current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
+		next_track: state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null,
 		radio_enabled: state.ui.radio && state.ui.radio.enabled ? true : false,
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,
@@ -68661,6 +68730,7 @@ var Queue = function (_React$Component) {
 
 			var current_track = null;
 			var tracks = [];
+
 			if (this.props.queue && this.props.tracks) {
 				for (var i = 0; i < this.props.queue.length; i++) {
 					var track = this.props.queue[i];
@@ -68689,11 +68759,10 @@ var Queue = function (_React$Component) {
 				}
 			}
 
-			var image = null;
+			var current_track_image = null;
 			if (current_track) {
 				if (current_track.images !== undefined && current_track.images) {
-					image = helpers.sizedImages(current_track.images);
-					image = image.large;
+					current_track_image = helpers.sizedImages(current_track.images).large;
 				}
 			}
 
@@ -68743,14 +68812,14 @@ var Queue = function (_React$Component) {
 				'div',
 				{ className: 'view queue-view' },
 				_react2.default.createElement(_Header2.default, { icon: 'play', className: 'overlay', title: 'Now playing', options: options, uiActions: this.props.uiActions }),
-				_react2.default.createElement(_Parallax2.default, { blur: true, image: image }),
+				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
 					_react2.default.createElement(
 						'div',
 						{ className: 'current-track' },
-						this.renderArtwork(image),
+						this.renderArtwork(current_track_image),
 						_react2.default.createElement(
 							'div',
 							{ className: 'title' },
