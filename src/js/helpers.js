@@ -347,6 +347,9 @@ export let formatTracks = function(tracks){
  * @param uri = string
  **/
 export let uriSource = function(uri){
+	if (!uri){
+		return false;
+	}
     var exploded = uri.split(':');
     return exploded[0]
 }
@@ -586,18 +589,23 @@ export let removeDuplicates = function(array){
  * @param field = string (the field we're to search)
  * @param value = string (the value to find)
  * @param array = array of objects to search
+ * @param singular = boolean (just return the first result)
  * @return array
  **/
-export let applyFilter = function(field, value, array){
-	var results = []
+export let applyFilter = function(field, value, array, singular = false){
+	var results = [];
 
 	for (var i = 0; i < array.length; i++){
-		if (array[i][field] && array[i][field].toLowerCase().includes(value.toLowerCase())){
-			results.push(array[i])
+		if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())){
+			if (singular){
+				return array[i];
+			} else {
+				results.push(array[i]);
+			}
 		}
 	}
 
-	return results
+	return results;
 }
 
 

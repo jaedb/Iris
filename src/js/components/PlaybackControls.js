@@ -12,6 +12,7 @@ import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
 import Icon from './Icon'
 
+import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import * as coreActions from '../services/core/actions'
 import * as mopidyActions from '../services/mopidy/actions'
@@ -75,6 +76,8 @@ class PlaybackControls extends React.Component{
 				{this.props.http_streaming_enabled && this.props.http_streaming_active && this.props.play_state == 'playing' ? <audio id="http-streamer" autoPlay preload="none">
 					<source src={this.props.http_streaming_url} type={"audio/"+this.props.http_streaming_encoding} />
 				</audio> : null}
+
+				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div className="current-track">
 					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
@@ -150,6 +153,7 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_encoding: state.core.http_streaming_encoding,
 		http_streaming_url: state.core.http_streaming_url,
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+		next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
 		play_state: state.mopidy.play_state,
 		time_position: state.mopidy.time_position,

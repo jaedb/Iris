@@ -171,18 +171,24 @@ export function getCurrentTrack(){
 	}
 }
 
-export function clearCurrentTrack(){
-	return {
-		type: 'CURRENT_TRACK_LOADED',
-        current_track: null,
-        current_track_uri: null
-	}
-}
-
 export function currentTrackLoaded(tl_track){
 	return {
 		type: 'MOPIDY_CURRENT_TRACK_LOADED',
 		tl_track: tl_track
+	}
+}
+
+export function getNextTrack(){
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	}
+}
+
+export function clearCurrentTrack(){
+	return {
+		type: 'CURRENT_TRACK_LOADED',
+        track: null,
+        uri: null
 	}
 }
 
