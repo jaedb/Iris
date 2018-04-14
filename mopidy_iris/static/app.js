@@ -16665,8 +16665,8 @@ var LazyLoadListener = function (_React$Component) {
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ className: "lazy-loader body-loader" + (this.state.loading ? ' loading' : '') },
-				this.state.loading ? _react2.default.createElement('div', { className: 'loader' }) : null
+				{ className: "lazy-loader body-loader" + (this.state.loading || this.props.forceLoader ? ' loading' : '') },
+				this.state.loading || this.props.forceLoader ? _react2.default.createElement('div', { className: 'loader' }) : null
 			);
 		}
 	}]);
@@ -64500,6 +64500,12 @@ var Album = function (_React$Component) {
 				}
 			}
 
+			if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.params.uri)])) {
+				var is_loading_tracks = true;
+			} else {
+				var is_loading_tracks = false;
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view album-view content-wrapper' },
@@ -64573,7 +64579,7 @@ var Album = function (_React$Component) {
 					'section',
 					{ className: 'list-wrapper' },
 					_react2.default.createElement(_TrackList2.default, { className: 'album-track-list', tracks: tracks, uri: this.props.params.uri }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.album.tracks_more, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.album.tracks_more, forceLoader: is_loading_tracks, loadMore: function loadMore() {
 							return _this2.loadMore();
 						} })
 				)
@@ -64970,16 +64976,6 @@ var Artist = function (_React$Component) {
 
 				default:
 
-					var tracks = [];
-					if (this.props.artist.tracks_uris && this.props.tracks) {
-						for (var i = 0; i < this.props.artist.tracks_uris.length; i++) {
-							var uri = this.props.artist.tracks_uris[i];
-							if (this.props.tracks.hasOwnProperty(uri)) {
-								tracks.push(this.props.tracks[uri]);
-							}
-						}
-					}
-
 					var sort_options = [{
 						value: 'name',
 						label: 'Name'
@@ -64990,6 +64986,22 @@ var Artist = function (_React$Component) {
 						value: 'tracks_total',
 						label: 'Tracks'
 					}];
+
+					var tracks = [];
+					if (this.props.artist.tracks_uris && this.props.tracks) {
+						for (var i = 0; i < this.props.artist.tracks_uris.length; i++) {
+							var uri = this.props.artist.tracks_uris[i];
+							if (this.props.tracks.hasOwnProperty(uri)) {
+								tracks.push(this.props.tracks[uri]);
+							}
+						}
+					}
+
+					if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', this.props.params.uri) + '/top-tracks'])) {
+						var is_loading_tracks = true;
+					} else {
+						var is_loading_tracks = false;
+					}
 
 					return _react2.default.createElement(
 						'div',
@@ -65005,7 +65017,8 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'list-wrapper' },
-								_react2.default.createElement(_TrackList2.default, { className: 'artist-track-list', uri: this.props.params.uri, tracks: tracks })
+								_react2.default.createElement(_TrackList2.default, { className: 'artist-track-list', uri: this.props.params.uri, tracks: tracks }),
+								_react2.default.createElement(_LazyLoadListener2.default, { forceLoader: is_loading_tracks })
 							)
 						),
 						_react2.default.createElement('div', { className: 'col w5' }),
@@ -65506,6 +65519,12 @@ var Playlist = function (_React$Component) {
 				}
 			}
 
+			if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id + '/playlists/' + playlist_id, 'spotify_users/' + user_id + '/playlists/' + playlist_id + '/tracks'])) {
+				var is_loading_tracks = true;
+			} else {
+				var is_loading_tracks = false;
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view playlist-view content-wrapper' },
@@ -65576,7 +65595,7 @@ var Playlist = function (_React$Component) {
 						}, reorderTracks: function reorderTracks(indexes, index) {
 							return _this3.reorderTracks(indexes, index);
 						} }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.playlist.tracks_more, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.playlist.tracks_more, forceLoader: is_loading_tracks, loadMore: function loadMore() {
 							return _this3.loadMore();
 						} })
 				)
