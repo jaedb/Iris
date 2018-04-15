@@ -22,12 +22,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(object):
-
     version = 0
-    if sys.platform == 'win32':
-        is_root = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    else:
-       is_root = os.geteuid() == 0
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -463,6 +458,7 @@ class IrisCore(object):
 
         response = {
             'config': {
+                "is_root": self.is_root(),
                 "spotify_username": spotify_username,
                 "country": self.config['iris']['country'],
                 "locale": self.config['iris']['locale'],
@@ -499,7 +495,7 @@ class IrisCore(object):
             'version': {
                 'current': self.version,
                 'latest': latest_version,
-                'is_root': self.is_root,
+                'is_root': self.is_root(),
                 'upgrade_available': upgrade_available
             }
         }
@@ -508,18 +504,19 @@ class IrisCore(object):
         else:
             return response
 
-    def perform_upgrade(self, *args, **kwargs):
+    def upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         try:
-            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
+            subprocess.check_call(["sudo", "pip", "install", "--upgrade", "mopidy-iris"])
             response = {
-                'result': "Upgrade started"
+                'message': "Upgrade completed, restarting..."
             }
             if (callback):
                 callback(response)
-            else:
-                return response
+
+            self.restart()
+            return response
 
         except subprocess.CalledProcessError as e:
             error = {
@@ -531,7 +528,23 @@ class IrisCore(object):
                 return error
         
     def restart(self, *args, **kwargs):
-        os.execl(sys.executable, *([sys.executable]+sys.argv))
+        callback = kwargs.get('callback', False)
+
+        # Send callback if we have one, otherwise don't bother. We can't return anything
+        # when we're rebooting ourselves...
+        if (callback):
+            result = {
+                'message': "Restarting... please wait"
+            }
+            callback(result)
+
+        self.broadcast(data={
+            'method': "restarting",
+            'params': {}
+        })
+
+        subprocess.Popen(["sudo /etc/init.d/mopidy restart"], shell=True)
+        return
 
 
     ##
@@ -923,6 +936,18 @@ class IrisCore(object):
             http_client = tornado.httpclient.AsyncHTTPClient()
             request = tornado.httpclient.HTTPRequest(data['url'], headers=headers, validate_cert=False)
             http_client.fetch(request, callback=callback)
+
+
+
+
+    ##
+    # Detect if we're running as root
+    ##
+    def is_root(self):        
+        if sys.platform == 'win32':
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        else:
+            return os.geteuid() == 0
 
 
     ##

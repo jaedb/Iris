@@ -31,7 +31,13 @@ export function disconnect(){
 
 export function startUpgrade(){
 	return {
-		type: 'START_UPGRADE'
+		type: 'PUSHER_START_UPGRADE'
+	}
+}
+
+export function restartMopidy(){
+	return {
+		type: 'PUSHER_RESTART_MOPIDY'
 	}
 }
 

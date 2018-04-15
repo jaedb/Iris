@@ -270,16 +270,9 @@ const PusherMiddleware = (function(){
                 request(store, 'upgrade')
                     .then(
                         response => {
-                            if (response.upgrade_successful){
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
-                            } else {
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade failed, please upgrade manually', type: 'bad'}));
-                            }
-
-                            response.type = 'PUSHER_VERSION'
-                            store.dispatch(response)
+                            store.dispatch(uiActions.createNotification({content: response.message}));
                         },
-                        error => {                            
+                        error => {
                             store.dispatch(coreActions.handleException(
                                 'Could not start upgrade',
                                 error
@@ -501,6 +494,11 @@ const PusherMiddleware = (function(){
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
                 window.location.reload(true);
+                break
+
+            case 'PUSHER_RESTART_MOPIDY':
+                store.dispatch(uiActions.createNotification({content: 'Restarting Mopidy...'}));
+                request(store, 'restart');
                 break
 
             case 'PUSHER_VERSION':

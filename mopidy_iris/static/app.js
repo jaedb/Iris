@@ -4730,6 +4730,7 @@ exports.setUsername = setUsername;
 exports.connect = connect;
 exports.disconnect = disconnect;
 exports.startUpgrade = startUpgrade;
+exports.restartMopidy = restartMopidy;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -4788,7 +4789,13 @@ function disconnect() {
 
 function startUpgrade() {
 	return {
-		type: 'START_UPGRADE'
+		type: 'PUSHER_START_UPGRADE'
+	};
+}
+
+function restartMopidy() {
+	return {
+		type: 'PUSHER_RESTART_MOPIDY'
 	};
 }
 
@@ -51129,14 +51136,7 @@ var PusherMiddleware = function () {
                     case 'PUSHER_START_UPGRADE':
                         _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
                         request(store, 'upgrade').then(function (response) {
-                            if (response.upgrade_successful) {
-                                store.dispatch(uiActions.createNotification({ content: 'Upgrade complete' }));
-                            } else {
-                                store.dispatch(uiActions.createNotification({ content: 'Upgrade failed, please upgrade manually', type: 'bad' }));
-                            }
-
-                            response.type = 'PUSHER_VERSION';
-                            store.dispatch(response);
+                            store.dispatch(uiActions.createNotification({ content: response.message }));
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not start upgrade', error));
                         });
@@ -51298,6 +51298,11 @@ var PusherMiddleware = function () {
                         // Hard reload. This doesn't strictly clear the cache, but our compiler's
                         // cache buster should handle that 
                         window.location.reload(true);
+                        break;
+
+                    case 'PUSHER_RESTART_MOPIDY':
+                        store.dispatch(uiActions.createNotification({ content: 'Restarting Mopidy...' }));
+                        request(store, 'restart');
                         break;
 
                     case 'PUSHER_VERSION':
@@ -68903,6 +68908,9 @@ var Settings = function (_React$Component) {
 							{ className: 'input' },
 							_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
 									return _this2.resetAllSettings();
+								} }),
+							_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Restart server', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
+									return _this2.props.pusherActions.restartMopidy();
 								} })
 						)
 					),
@@ -69202,27 +69210,28 @@ var VersionManager = function (_React$Component) {
 		value: function renderUpgradeButton() {
 			var _this2 = this;
 
+			return _react2.default.createElement(
+				'button',
+				{ className: 'productive', onClick: function onClick() {
+						return _this2.props.pusherActions.startUpgrade();
+					} },
+				'Upgrade to ',
+				this.props.pusher.version.latest
+			);
+
 			if (this.props.pusher.upgrading) {
 				return _react2.default.createElement(
 					'button',
-					{ className: 'outline', disabled: true },
+					{ className: 'productive working', disabled: true },
 					_react2.default.createElement(_reactFontawesome2.default, { name: 'circle-o-notch', spin: true }),
 					'\xA0 Upgrading'
-				);
-			}
-
-			if (!this.props.pusher.version.is_root) {
-				return _react2.default.createElement(
-					'button',
-					{ className: 'outline', disabled: true },
-					'Not running as root'
 				);
 			}
 
 			if (this.props.pusher.version.upgrade_available) {
 				return _react2.default.createElement(
 					'button',
-					{ className: 'primary', onClick: function onClick() {
+					{ className: 'productive', onClick: function onClick() {
 							return _this2.props.pusherActions.startUpgrade();
 						} },
 					'Upgrade to ',
@@ -69232,8 +69241,8 @@ var VersionManager = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'button',
-				{ className: 'outline', disabled: true },
-				'No updates available'
+				{ className: 'secondary', disabled: true },
+				'Already up-to-date'
 			);
 		}
 	}, {
@@ -69242,13 +69251,13 @@ var VersionManager = function (_React$Component) {
 			return _react2.default.createElement(
 				'span',
 				{ className: 'version-manager' },
-				this.renderUpgradeButton(),
 				_react2.default.createElement(
 					'span',
-					{ className: 'description' },
+					null,
 					this.props.pusher.version.current,
 					' installed'
-				)
+				),
+				this.renderUpgradeButton()
 			);
 		}
 	}]);
