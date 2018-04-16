@@ -144,6 +144,19 @@ class Settings extends React.Component {
 			</span>
 		)
 
+		
+		if (this.props.mopidy.upgrading){
+			var upgrade_button = (
+				<button className="alternative working">
+					Upgrading...
+				</button>
+			);
+		} else if (this.props.pusher.version.upgrade_available){
+			var upgrade_button = <button className="alternative" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
+		} else {
+			var upgrade_button = null;
+		}
+
 		return (
 			<div className="view settings-view">
 				<Header className="overlay" icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
@@ -258,16 +271,16 @@ class Settings extends React.Component {
 					<div className="field">
 						<div className="name">Version</div>
 						<div className="input">
-				        	<VersionManager />
+				        	<span className="text">
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : null}
+				        	</span>
 				        </div>
 			        </div>
 					
 					<div className="field">
-						<div className="name">Reset</div>
-						<div className="input">
-					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-					        <ConfirmationButton className="destructive" content="Restart server" confirmingContent="Are you sure?" workingContent="Restarting" working={this.props.mopidy.restarting} onConfirm={() => this.props.pusherActions.restartMopidy()} />
-				        </div>
+						{upgrade_button}
+				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restartMopidy()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
+				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
 					<h4 className="underline">About</h4>

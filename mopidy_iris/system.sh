@@ -1,18 +1,11 @@
 #!/bin/bash
 
-ACTION=$1
-
-if [ $ACTION = "upgrade" ]; then
+if [ $1 = "upgrade" ]; then
 	UPGRADE=$(pip install --upgrade mopidy-iris)
-	echo -e "$UPGRADE"
-
 	RESTART=$(service mopidy restart)
-	echo -e "$RESTART"
 
-elif [ $ACTION = "restart" ]; then
-
+elif [ $1 = "restart" ]; then
 	RESTART=$(service mopidy restart)
-	echo -e "$RESTART"
 
 fi
 

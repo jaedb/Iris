@@ -513,10 +513,11 @@ class IrisCore(object):
         })
 
         # Run the system task
-        subprocess.Popen(["sudo /home/iris/system.sh upgrade"], shell=True)
+        path = os.path.dirname(__file__)
+        subprocess.Popen(["sudo "+path+"/system.sh upgrade"], shell=True)
 
         response = {
-            'message': "Upgrade completed, restarting..."
+            'message': "Upgrade started, server will restart when completed"
         }
         if (callback):
             callback(response)
@@ -532,10 +533,10 @@ class IrisCore(object):
             'params': {}
         })
 
-        subprocess.Popen(["sudo /home/iris/system.sh restart"], shell=True)
+        # Run the system task
+        path = os.path.dirname(__file__)
+        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
 
-        # Send callback if we have one, otherwise don't bother. We can't return anything
-        # when we're rebooting ourselves...
         response = {
             'message': "Restarting... please wait"
         }

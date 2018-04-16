@@ -473,19 +473,6 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
-            case 'PUSHER_START_UPGRADE':
-                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
-                request(store, 'start_upgrade')
-                    .then(
-                        response => {
-                            store.dispatch(uiActions.createNotification({content: response.message}));
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
-                        }
-                    );
-                break;
-
             case 'PUSHER_RESTART':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
@@ -493,17 +480,31 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_RESTART_MOPIDY':
-                store.dispatch({type: 'MOPIDY_RESTARTING'});
                 request(store, 'restart')
                     .then(
                         response => {
-                            store.dispatch(uiActions.createNotification({content: response.message}));
+                            // No notification required
                         },
                         error => {
                             store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
                         }
                     );
+                next(action);
                 break
+
+            case 'PUSHER_START_UPGRADE':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+                request(store, 'start_upgrade')
+                    .then(
+                        response => {
+                            // No notification required
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                        }
+                    );
+                next(action);
+                break;
 
             case 'PUSHER_VERSION':
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
@@ -511,7 +512,7 @@ const PusherMiddleware = (function(){
                 if (action.version.upgrade_available){
                     store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
                 }
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_CONFIG':
