@@ -265,23 +265,6 @@ const PusherMiddleware = (function(){
                 })
                 break;
 
-            case 'PUSHER_START_UPGRADE':
-                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            store.dispatch(uiActions.createNotification({content: response.message}));
-                        },
-                        error => {
-                            store.dispatch(coreActions.handleException(
-                                'Could not start upgrade',
-                                error
-                            ));
-                        }
-                    );
-                return next(action);
-                break;
-
             case 'PUSHER_SET_USERNAME':
                 request(store, 'set_username', {username: action.username})
                     .then(
@@ -490,6 +473,19 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
+            case 'PUSHER_START_UPGRADE':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
+                request(store, 'start_upgrade')
+                    .then(
+                        response => {
+                            store.dispatch(uiActions.createNotification({content: response.message}));
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                        }
+                    );
+                break;
+
             case 'PUSHER_RESTART':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
@@ -497,8 +493,16 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_RESTART_MOPIDY':
-                store.dispatch(uiActions.createNotification({content: 'Restarting Mopidy...'}));
-                request(store, 'restart');
+                store.dispatch({type: 'MOPIDY_RESTARTING'});
+                request(store, 'restart')
+                    .then(
+                        response => {
+                            store.dispatch(uiActions.createNotification({content: response.message}));
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                        }
+                    );
                 break
 
             case 'PUSHER_VERSION':

@@ -266,7 +266,7 @@ class Settings extends React.Component {
 						<div className="name">Reset</div>
 						<div className="input">
 					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-					        <ConfirmationButton className="destructive" content="Restart server" confirmingContent="Are you sure?" onConfirm={() => this.props.pusherActions.restartMopidy()} />
+					        <ConfirmationButton className="destructive" content="Restart server" confirmingContent="Are you sure?" workingContent="Restarting" working={this.props.mopidy.restarting} onConfirm={() => this.props.pusherActions.restartMopidy()} />
 				        </div>
 			        </div>
 

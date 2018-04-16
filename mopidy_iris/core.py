@@ -504,47 +504,45 @@ class IrisCore(object):
         else:
             return response
 
-    def upgrade(self, *args, **kwargs):
+    def start_upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
-        try:
-            subprocess.check_call(["sudo", "pip", "install", "--upgrade", "mopidy-iris"])
-            response = {
-                'message': "Upgrade completed, restarting..."
-            }
-            if (callback):
-                callback(response)
+        self.broadcast(data={
+            'method': "upgrading",
+            'params': {}
+        })
 
-            self.restart()
+        # Run the system task
+        subprocess.Popen(["sudo /home/iris/system.sh upgrade"], shell=True)
+
+        response = {
+            'message': "Upgrade completed, restarting..."
+        }
+        if (callback):
+            callback(response)
+        else:
             return response
 
-        except subprocess.CalledProcessError as e:
-            error = {
-                'result': "Could not start upgrade"
-            }
-            if (callback):
-                callback(False, error)
-            else:
-                return error
         
     def restart(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
-
-        # Send callback if we have one, otherwise don't bother. We can't return anything
-        # when we're rebooting ourselves...
-        if (callback):
-            result = {
-                'message': "Restarting... please wait"
-            }
-            callback(result)
 
         self.broadcast(data={
             'method': "restarting",
             'params': {}
         })
 
-        subprocess.Popen(["sudo /etc/init.d/mopidy restart"], shell=True)
-        return
+        subprocess.Popen(["sudo /home/iris/system.sh restart"], shell=True)
+
+        # Send callback if we have one, otherwise don't bother. We can't return anything
+        # when we're rebooting ourselves...
+        response = {
+            'message': "Restarting... please wait"
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
 
 
     ##

@@ -8,8 +8,11 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_CONNECTING':
             return Object.assign({}, mopidy, { connected: false, connecting: true });
 
+        case 'MOPIDY_RESTARTING':
+            return Object.assign({}, mopidy, { connected: false, connecting: true, restarting: true });
+
         case 'MOPIDY_CONNECTED':
-            return Object.assign({}, mopidy, { connected: true, connecting: false });
+            return Object.assign({}, mopidy, { connected: true, connecting: false, restarting: false });
 
         case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
