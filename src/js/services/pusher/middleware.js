@@ -4,6 +4,7 @@ import ReactGA from 'react-ga'
 var helpers = require('../../helpers.js')
 var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
+var mopidyActions = require('../mopidy/actions.js')
 var pusherActions = require('./actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 var spotifyActions = require('../spotify/actions.js')
@@ -92,8 +93,14 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'restart':
+                    case 'refresh':
                         window.location.reload(true);
+                        break;
+                    case 'update_started':
+                        store.dispatch(uiActions.createNotification({content: 'Update running...', type: 'info'}));
+                        break;
+                    case 'restart_started':
+                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
                         break;
                 }
             }
@@ -483,27 +490,26 @@ const PusherMiddleware = (function(){
                 request(store, 'restart')
                     .then(
                         response => {
-                            // No notification required
+                            store.dispatch(mopidyActions.restartStarted());
                         },
                         error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
                         }
                     );
                 next(action);
                 break
 
-            case 'PUSHER_START_UPGRADE':
+            case 'PUSHER_UPGRADE':
                 ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
-                request(store, 'start_upgrade')
+                request(store, 'upgrade')
                     .then(
                         response => {
-                            // No notification required
+                            store.dispatch(mopidyActions.upgradeStarted());
                         },
                         error => {
                             store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
                         }
                     );
-                next(action);
                 break;
 
             case 'PUSHER_VERSION':

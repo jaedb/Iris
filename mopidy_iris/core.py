@@ -504,37 +504,83 @@ class IrisCore(object):
         else:
             return response
 
-    def start_upgrade(self, *args, **kwargs):
+    def upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "upgrading",
+            'method': "upgrade_started",
             'params': {}
         })
 
         # Run the system task
         path = os.path.dirname(__file__)
-        subprocess.Popen(["sudo "+path+"/system.sh upgrade"], shell=True)
+        
+        # Make sure we can run as sudo without password
+        # TODO: Test cross-platform??
+        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
+        if "password is required" in permission_check:
+            error = {
+                'message': "Permission denied",
+                'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
+            }
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
 
-        response = {
-            'message': "Upgrade started, server will restart when completed"
-        }
+        # Start the upgrade
+        output = subprocess.call(["sudo "+path+"/system.sh upgrade"], shell=True)
+
+        # Callbacks can be made, while our script continues to run
         if (callback):
             callback(response)
-        else:
-            return response
+            response = {
+                'message': "Upgrade complete, restarting server",
+                'data': {
+                    'output': output
+                }
+            }
+
+        # And now restart
+        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+        
+        # Now we can return for simple requests
+        response = {
+            'message': "Upgrade complete, restarting server",
+            'data': {
+                'output': output
+            }
+        }
+        return response
 
         
     def restart(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "restarting",
+            'method': "restart_started",
             'params': {}
         })
 
-        # Run the system task
         path = os.path.dirname(__file__)
+
+        # Make sure we can run as sudo without password
+        # TODO: Test cross-platform??
+        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
+        if "password is required" in permission_check:
+            error = {
+                'message': "Permission denied",
+                'data': {
+                    'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
+                }
+            }
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
         subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
 
         response = {

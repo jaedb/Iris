@@ -7,7 +7,6 @@ import FontAwesome from 'react-fontawesome'
 
 import ConfirmationButton from '../components/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
-import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'

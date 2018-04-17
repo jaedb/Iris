@@ -170,7 +170,7 @@ class HttpHandler(tornado.web.RequestHandler):
             getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
         else:
-            self.handle_result(id=self.request_id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
+            self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return
 
     @tornado.web.asynchronous
