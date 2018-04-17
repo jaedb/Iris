@@ -176,7 +176,7 @@ input[type="submit"] {
 			position: absolute;
 			display: block;
 			content: '';
-		    animation: slideloader 1s infinite;
+		    animation: slideloader 1s infinite linear;
 			background: rgba(200,200,200,0.3);
 			top: 0;
 			left: 0;

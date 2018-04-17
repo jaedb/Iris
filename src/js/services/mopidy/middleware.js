@@ -2044,6 +2044,9 @@ const MopidyMiddleware = (function(){
                     .then(
                         response => {
                             if (response && response >= 0){
+
+                                // Get the full track object from our tracklist
+                                // We know it will be here, as the tlid refers to an item in this list
                                 var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
 
                                 if (track){
@@ -2052,9 +2055,7 @@ const MopidyMiddleware = (function(){
                                         uri: track.uri
                                     });
 
-                                    console.log(track.name);
-
-                                    // We don't have the track already in our index
+                                    // We don't have the track (including images) already in our index
                                     if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
                                         // We've got Spotify running, and it's a spotify track - go straight to the source!
