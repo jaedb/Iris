@@ -5565,9 +5565,11 @@ main header {
         font-size: 16px; }
 
 .services .service {
-  padding: 20px 20px 10px 20px;
+  padding: 20px;
   border-radius: 0 0 3px 3px;
   background: #222222; }
+  .services .service .field:last-child {
+    padding-bottom: 0; }
 
 @media (max-width: 800px) {
   .services .menu .menu-item-wrapper {
