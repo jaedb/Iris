@@ -603,37 +603,22 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
-                request(store, 'snapcast_instruct', action.data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
-                                }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
-                break
-
             case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
-                request(store, 'snapcast_instruct', action.data)
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetName',
+                    params: {
+                        id: action.id,
+                        name: action.name
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
                                 client: {
                                     config: {
                                         name: response.name
@@ -651,13 +636,94 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
-                request(store, 'snapcast_instruct', action.data)
+            case 'PUSHER_SET_SNAPCAST_CLIENT_MUTE':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: action.mute,
+                            percent: client.config.volume.percent,
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: client.config.volume.muted,
+                            percent: action.percent
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetLatency',
+                    params: {
+                        id: action.id,
+                        latency: action.latency
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
                                 client: {
                                     config: {
                                         latency: response.latency
@@ -676,7 +742,14 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELETE_SNAPCAST_CLIENT':
-                request(store, 'snapcast_instruct', action.data)
+                var data = {
+                    method: 'Server.DeleteClient',
+                    params: {
+                        id: action.id
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({

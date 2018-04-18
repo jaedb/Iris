@@ -1,75 +1,105 @@
 
 .snapcast {
 
-	.group {
-		& > .inner {
-			padding-bottom: 5px;
-			border-bottom: 1px solid $grey;
-
-			& > .name {
-				font-weight: bold;
-			}
-		}
-
+	.group.list {
+		padding: 0 10px;
+		
 		&:not(:first-child){
 			padding-top: 15px;
 		}
 
-		.clients {
-			.client {
-				& > .inner {
-					padding: 5px 0;
-					border-bottom: 1px solid $grey;
+		.list-item {
+			padding: 20px 0 0 0;
+
+			&:not(.header){
+				border: 0;
+			}
+
+			& > .name {
+				width: 40%;
+				float: left;
+				padding-bottom: 4px;
+				position: relative;
+
+				.disconnected {
+					position: absolute;
+					top: 10px;
+					right: 5px;
+					z-index: 2;
 				}
+			}
+
+			& > .volume {
+				float: left;
+				width: 28%;
+				padding-left: 2%;
+			}
+
+			& > .latency {
+				float: left;
+				width: 28%;
+				padding-left: 2%;
+			}
+
+			&.header {
+				padding-top: 0;
+				vertical-align: bottom;
 
 				.name {
-					padding: 6px 0 5px 0;
+					font-size: 14px;
+					color: $white;
+					text-transform: none;
+					font-weight: 600;
+				}
+			}
+
+			&.client {
+				@include clearfix();
+				padding: 20px 0 0 0;
+
+				& > .name {
 					display: block;
-					width: 100%;
 					box-sizing: border-box;
 					border: 0;
+
+					input {
+						width: 100%;
+					}
 				}
+					
+				.volume-control {
+					display: block;
+					padding-top: 14px;
+					float: left;
+					width: 80%;
+					padding-right: 10px;
+					box-sizing: border-box;
 
-				.controls {
-
-					.edit {
+					.mute-control {
 						display: inline-block;
 						float: left;
-						cursor: pointer;
+						padding: 0 10px;
+						border: 0;
 					}
 
-					.volume-control {
-						.mute-control {
-							display: inline-block;
-							float: left;
-							padding: 0 10px;
-							border: 0;
-						}
+					.slider-wrapper {
+						margin-left: 40px;
+					}
 
-						.slider-wrapper {
-							margin-left: 40px;
-						}
-
-						&.muted {
-							.slider .progress {
-								background: $mid_grey;
-							}
+					&.muted {
+						.slider .progress {
+							background: $mid_grey;
 						}
 					}
 				}
 
-				&.disconnected {
-					.name {
-						opacity: 0.5;
-					}
-
-					.controls {
-						.volume-control {
-							.slider .progress {
-								background: $mid_grey;
-							}
-						}
-					}
+				.latency-control {
+					display: block;
+					padding-top: 14px;
+					float: left;
+					width: 80%;
+					padding-right: 10px;
+					box-sizing: border-box;
 				}
 			}
 		}

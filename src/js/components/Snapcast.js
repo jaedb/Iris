@@ -7,6 +7,8 @@ import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
 import VolumeControl from './VolumeControl'
+import LatencyControl from './LatencyControl'
+import TextField from './Forms/TextField'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -17,10 +19,6 @@ class Snapcast extends React.Component{
 
 	constructor(props){
 		super(props);
-
-		this.state = {
-			editing_client: null
-		}
 	}
 
 	componentDidMount(){
@@ -35,11 +33,6 @@ class Snapcast extends React.Component{
 		if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected){
 			this.props.pusherActions.getSnapcast();
 		}
-	}
-
-	saveEditingClient(){
-		this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
-		this.setState({editing_client: null});
 	}
 
 	render(){
@@ -88,39 +81,59 @@ class Snapcast extends React.Component{
 				{
 					groups.map(group => {
 						return (
-							<div className="group" key={group.id}>
-								<div className="inner">
+							<div className="list group" key={group.id}>
+								<div className="list-item header">
 									<div className="name">
 										{group.name ? group.name : 'Untitled group'}
 									</div>
+									<div className="volume">
+										Volume
+									</div>
+									<div className="latency">
+										Latency
+									</div>
 								</div>
-								<div className="clients">
-									{
-										group.clients.map(client => {
-											var name = client.config.name ? client.config.name : client.host.name;
-											return (
-												<div className={"client "+(client.connected ? 'connected' : 'disconnected')} key={client.id}>
-													<div className="inner">
-														<div className="name">
-															{name} {!client.connected ? '(disconnected)' : null}
-														</div>
-														<div className="controls">
-															<div className="control edit" onClick={e => this.props.uiActions.openModal('edit_snapcast_client',{id: client.id})}>
-																<FontAwesome name="cog" />
-															</div>
-															<VolumeControl 
-																volume={client.config.volume.percent}
-																mute={client.config.volume.muted}
-																onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent)}
-																onMuteChange={mute => this.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent)}
-															/>
-														</div>
-													</div>
+								{
+									group.clients.map(client => {
+										var name = client.config.name ? client.config.name : client.host.name;
+										return (
+											<div className={"list-item client "+(client.connected ? 'connected' : 'disconnected')} key={client.id}>
+												<div className="name">
+													<TextField
+														onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
+														value={name}
+													/>
+													{!client.connected ? <span className="disconnected flag grey">DISCONNECTED</span> : null}
 												</div>
-											);
-										})
-									}
-								</div>
+												<div className="volume">
+													<VolumeControl 
+														volume={client.config.volume.percent}
+														mute={client.config.volume.muted}
+														onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
+														onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
+													/>
+													<TextField
+														className="tiny"
+														onChange={value => this.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value))}
+														value={client.config.volume.percent}
+													/>
+												</div>
+												<div className="latency">
+													<LatencyControl 
+														max="100"
+														value={client.config.latency}
+														onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
+													/>
+													<TextField
+														className="tiny"
+														onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
+														value={client.config.latency}
+													/>
+												</div>
+											</div>
+										);
+									})
+								}
 							</div>
 						);
 					})

@@ -30,6 +30,13 @@ select {
 	&:disabled {
 		opacity: 0.5;
 	}
+
+	&.tiny {
+		width: 50px;
+		padding-left: 4px;
+		padding-right: 4px;
+		text-align: center;
+	}
 }
 
 select {
