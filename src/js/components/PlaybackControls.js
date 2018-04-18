@@ -118,6 +118,7 @@ class PlaybackControls extends React.Component{
 
 				<section className="volume">
 					<VolumeControl 
+						scrollWheel
 						volume={this.props.volume}
 						mute={this.props.mute}
 						onVolumeChange={percent => this.props.mopidyActions.setVolume(percent)}

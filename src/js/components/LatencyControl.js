@@ -49,23 +49,25 @@ export default class LatencyControl extends React.Component{
 	}
 
 	handleWheel(e){
+		if (this.props.scrollWheel){
 
-		// Identify which direction we've scrolled (inverted)
-		// This is simplified and doesn't consider momentum as it varies wildly
-		// between browsers and devices
-		var direction = (e.deltaY > 0 ? -1 : 1)
-		var value = this.props.value;
+			// Identify which direction we've scrolled (inverted)
+			// This is simplified and doesn't consider momentum as it varies wildly
+			// between browsers and devices
+			var direction = (e.deltaY > 0 ? -1 : 1)
+			var value = this.props.value;
 
-		value += direction * 5
+			value += direction * 5
 
-		if (value > this.props.max){
-			value = this.props.max;
-		} else if (value < -this.props.max){
-			value = -this.props.max;
+			if (value > this.props.max){
+				value = this.props.max;
+			} else if (value < -this.props.max){
+				value = -this.props.max;
+			}
+
+			this.props.onChange(value);
+			e.preventDefault();
 		}
-
-		this.props.onChange(value);
-		e.preventDefault();
 	}
 
 	render(){

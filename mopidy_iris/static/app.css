@@ -4344,9 +4344,9 @@ input[type="submit"] {
       .snapcast .group.list .list-item.client > .latency input {
         width: 20%; }
       .snapcast .group.list .list-item.client .volume-control {
-        display: block;
-        padding-top: 12px;
-        float: left;
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
         width: 80%;
         padding-right: 10px;
         box-sizing: border-box; }
@@ -4360,9 +4360,9 @@ input[type="submit"] {
         .snapcast .group.list .list-item.client .volume-control.muted .slider .progress {
           background: #a3a19f; }
       .snapcast .group.list .list-item.client .latency-control {
-        display: block;
-        padding-top: 12px;
-        float: left;
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
         width: 80%;
         padding-right: 10px;
         box-sizing: border-box; }
@@ -4381,20 +4381,27 @@ input[type="submit"] {
           border-top-right-radius: 0;
           border-bottom-right-radius: 0; }
     @media (max-width: 800px) {
-      .snapcast .group.list .list-item.header {
-        display: block; }
-        .snapcast .group.list .list-item.header .volume,
-        .snapcast .group.list .list-item.header .latency {
-          display: none !important; }
-      .snapcast .group.list .list-item .col {
-        float: none !important;
-        width: auto !important;
-        padding-left: 0;
-        padding-right: 0; }
-        .snapcast .group.list .list-item .col::after {
-          content: '';
-          clear: both;
-          display: block; } }
+      .snapcast .group.list .list-item {
+        padding-left: 0 !important;
+        padding-right: 0 !important; }
+        .snapcast .group.list .list-item.header {
+          display: block; }
+          .snapcast .group.list .list-item.header .volume,
+          .snapcast .group.list .list-item.header .latency {
+            display: none !important; }
+        .snapcast .group.list .list-item .col {
+          float: none !important;
+          width: auto !important;
+          padding-left: 0;
+          padding-right: 0; }
+          .snapcast .group.list .list-item .col::after {
+            content: '';
+            clear: both;
+            display: block; }
+          .snapcast .group.list .list-item .col:not(.header) {
+            line-height: 45px; }
+          .snapcast .group.list .list-item .col.volume {
+            padding-bottom: 20px !important; } }
 
 aside {
   position: fixed;

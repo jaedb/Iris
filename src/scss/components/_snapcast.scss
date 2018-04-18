@@ -84,9 +84,9 @@
 				}
 					
 				.volume-control {
-					display: block;
-					padding-top: 12px;
-					float: left;
+					display: inline-block;
+					vertical-align: middle;
+					padding-top: 4px;
 					width: 80%;
 					padding-right: 10px;
 					box-sizing: border-box;
@@ -110,9 +110,9 @@
 				}
 
 				.latency-control {
-					display: block;
-					padding-top: 12px;
-					float: left;
+					display: inline-block;
+					vertical-align: middle;
+					padding-top: 4px;
 					width: 80%;
 					padding-right: 10px;
 					box-sizing: border-box;
@@ -141,6 +141,9 @@
 
 			@include responsive($bp_medium){
 
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+
 				&.header {
 					display: block;
 
@@ -156,6 +159,14 @@
 					width: auto !important;
 					padding-left: 0;
 					padding-right: 0;
+
+					&:not(.header){
+						line-height: 45px;
+					}
+
+					&.volume {
+						padding-bottom: 20px !important;
+					}
 				}
 			}
 		}
