@@ -79,6 +79,7 @@ export default class LatencyControl extends React.Component{
 			var percentage = Math.round((value / this.props.max) * 100 / 2);
 			var left = 50;
 			var width = percentage;
+			var negative = false;
 
 		// Negative value
 		// We reverse it to a positive for easier maths and style rules
@@ -90,14 +91,16 @@ export default class LatencyControl extends React.Component{
 			var percentage = Math.round((value / this.props.max) * 100 / 2);
 			var left = 50 - percentage;
 			var width = percentage;
+			var negative = true;
 		}
 
 		return (
 			<span className="latency-control" onWheel={e => this.handleWheel(e)}>
 				<div className="slider-wrapper">
 					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
+						<div className="zero"></div>
 						<div className="track">
-							<div className="progress" style={{ width: width+'%', left: left+'%' }}></div>
+							<div className={"progress "+(negative ? 'negative' : 'positive')} style={{ width: width+'%', left: left+'%' }}></div>
 						</div>
 					</div>
 				</div>

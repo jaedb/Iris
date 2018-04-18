@@ -4299,30 +4299,35 @@ input[type="submit"] {
       border: 0; }
     .snapcast .group.list .list-item > .name {
       width: 40%;
-      float: left;
       padding-bottom: 4px;
       position: relative; }
-      .snapcast .group.list .list-item > .name .disconnected {
+      .snapcast .group.list .list-item > .name .status {
         position: absolute;
-        top: 10px;
-        right: 5px;
-        z-index: 2; }
+        top: 0;
+        left: 0;
+        z-index: 2;
+        padding: 12px;
+        cursor: default; }
+        .snapcast .group.list .list-item > .name .status .fa {
+          font-size: 12px; }
+      .snapcast .group.list .list-item > .name input {
+        padding-left: 30px; }
     .snapcast .group.list .list-item > .volume {
-      float: left;
       width: 28%;
       padding-left: 2%; }
     .snapcast .group.list .list-item > .latency {
-      float: left;
       width: 28%;
       padding-left: 2%; }
     .snapcast .group.list .list-item.header {
       padding-top: 0;
-      vertical-align: bottom; }
+      vertical-align: bottom;
+      cursor: default; }
       .snapcast .group.list .list-item.header .name {
         font-size: 14px;
         color: #FFFFFF;
         text-transform: none;
-        font-weight: 600; }
+        font-weight: 600;
+        line-height: 14px; }
     .snapcast .group.list .list-item.client {
       padding: 20px 0 0 0; }
       .snapcast .group.list .list-item.client::after {
@@ -4335,9 +4340,12 @@ input[type="submit"] {
         border: 0; }
         .snapcast .group.list .list-item.client > .name input {
           width: 100%; }
+      .snapcast .group.list .list-item.client > .volume input,
+      .snapcast .group.list .list-item.client > .latency input {
+        width: 20%; }
       .snapcast .group.list .list-item.client .volume-control {
         display: block;
-        padding-top: 14px;
+        padding-top: 12px;
         float: left;
         width: 80%;
         padding-right: 10px;
@@ -4353,11 +4361,40 @@ input[type="submit"] {
           background: #a3a19f; }
       .snapcast .group.list .list-item.client .latency-control {
         display: block;
-        padding-top: 14px;
+        padding-top: 12px;
         float: left;
         width: 80%;
         padding-right: 10px;
         box-sizing: border-box; }
+        .snapcast .group.list .list-item.client .latency-control .zero {
+          position: absolute;
+          top: -4px;
+          left: 50%;
+          bottom: 0;
+          width: 1px;
+          background: #383734;
+          z-index: 1; }
+        .snapcast .group.list .list-item.client .latency-control .progress.positive {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0; }
+        .snapcast .group.list .list-item.client .latency-control .progress.negative {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0; }
+    @media (max-width: 800px) {
+      .snapcast .group.list .list-item.header {
+        display: block; }
+        .snapcast .group.list .list-item.header .volume,
+        .snapcast .group.list .list-item.header .latency {
+          display: none !important; }
+      .snapcast .group.list .list-item .col {
+        float: none !important;
+        width: auto !important;
+        padding-left: 0;
+        padding-right: 0; }
+        .snapcast .group.list .list-item .col::after {
+          content: '';
+          clear: both;
+          display: block; } }
 
 aside {
   position: fixed;

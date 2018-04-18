@@ -17,26 +17,33 @@
 
 			& > .name {
 				width: 40%;
-				float: left;
 				padding-bottom: 4px;
 				position: relative;
 
-				.disconnected {
+				.status {
 					position: absolute;
-					top: 10px;
-					right: 5px;
+					top: 0;
+					left: 0;
 					z-index: 2;
+					padding: 12px;
+					cursor: default;
+
+					.fa {
+						font-size: 12px;
+					}
+				}
+
+				input {
+					padding-left: 30px;
 				}
 			}
 
 			& > .volume {
-				float: left;
 				width: 28%;
 				padding-left: 2%;
 			}
 
 			& > .latency {
-				float: left;
 				width: 28%;
 				padding-left: 2%;
 			}
@@ -44,12 +51,14 @@
 			&.header {
 				padding-top: 0;
 				vertical-align: bottom;
+				cursor: default;
 
 				.name {
 					font-size: 14px;
 					color: $white;
 					text-transform: none;
 					font-weight: 600;
+					line-height: 14px;
 				}
 			}
 
@@ -66,10 +75,17 @@
 						width: 100%;
 					}
 				}
+
+				& > .volume,
+				& > .latency {
+					input {
+						width: 20%;
+					}
+				}
 					
 				.volume-control {
 					display: block;
-					padding-top: 14px;
+					padding-top: 12px;
 					float: left;
 					width: 80%;
 					padding-right: 10px;
@@ -95,11 +111,51 @@
 
 				.latency-control {
 					display: block;
-					padding-top: 14px;
+					padding-top: 12px;
 					float: left;
 					width: 80%;
 					padding-right: 10px;
 					box-sizing: border-box;
+
+					.zero {
+						position: absolute;
+						top: -4px;
+						left: 50%;
+						bottom: 0;
+						width: 1px;
+						background: $grey;
+						z-index: 1;
+					}
+
+					.progress.positive {
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
+
+					.progress.negative {
+						border-top-right-radius: 0;
+						border-bottom-right-radius: 0;
+					}
+				}
+			}
+
+			@include responsive($bp_medium){
+
+				&.header {
+					display: block;
+
+					.volume,
+					.latency {
+						display: none !important;
+					}
+				}
+
+				.col {
+					@include clearfix();
+					float: none !important;
+					width: auto !important;
+					padding-left: 0;
+					padding-right: 0;
 				}
 			}
 		}

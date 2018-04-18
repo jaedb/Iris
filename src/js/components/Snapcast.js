@@ -32,6 +32,12 @@ class Snapcast extends React.Component{
 		// Just connected
 		if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected){
 			this.props.pusherActions.getSnapcast();
+
+		// Just enabled
+		// This is the more probable scenario as we don't know if we're enabled until pusher connects
+		// and then gets the config from the server
+		} else if (!this.props.snapcast_enabled && newProps.snapcast_enabled && newProps.pusher_connected){
+			this.props.pusherActions.getSnapcast();
 		}
 	}
 
@@ -83,13 +89,13 @@ class Snapcast extends React.Component{
 						return (
 							<div className="list group" key={group.id}>
 								<div className="list-item header">
-									<div className="name">
+									<div className="col name">
 										{group.name ? group.name : 'Untitled group'}
 									</div>
-									<div className="volume">
+									<div className="col volume">
 										Volume
 									</div>
-									<div className="latency">
+									<div className="col latency">
 										Latency
 									</div>
 								</div>
@@ -97,15 +103,21 @@ class Snapcast extends React.Component{
 									group.clients.map(client => {
 										var name = client.config.name ? client.config.name : client.host.name;
 										return (
-											<div className={"list-item client "+(client.connected ? 'connected' : 'disconnected')} key={client.id}>
-												<div className="name">
+											<div className="list-item client" key={client.id}>
+												<div className="col name">
 													<TextField
 														onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
 														value={name}
 													/>
-													{!client.connected ? <span className="disconnected flag grey">DISCONNECTED</span> : null}
+													{client.connected ? <span className="status has-tooltip">
+														<FontAwesome className="green-text" name="circle" />
+														<span className="tooltip">Connected</span>
+														</span> : <span className="status has-tooltip">
+														<FontAwesome className="grey-text" name="circle" />
+														<span className="tooltip">Not connected</span>
+														</span>}
 												</div>
-												<div className="volume">
+												<div className="col volume">
 													<VolumeControl 
 														volume={client.config.volume.percent}
 														mute={client.config.volume.muted}
@@ -118,7 +130,7 @@ class Snapcast extends React.Component{
 														value={client.config.volume.percent}
 													/>
 												</div>
-												<div className="latency">
+												<div className="col latency">
 													<LatencyControl 
 														max="100"
 														value={client.config.latency}
@@ -127,7 +139,7 @@ class Snapcast extends React.Component{
 													<TextField
 														className="tiny"
 														onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
-														value={client.config.latency}
+														value={String(client.config.latency)}
 													/>
 												</div>
 											</div>
