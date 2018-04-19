@@ -70,7 +70,7 @@ export function pause(){
 
 export function stop(){
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	}
 }
 

@@ -319,7 +319,10 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_STOP':
-                request(socket, store, 'playback.stop');
+                request(socket, store, 'playback.stop')
+                    .then(response => {
+                            store.dispatch(mopidyActions.clearCurrentTrack());
+                        });
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
