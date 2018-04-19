@@ -1348,7 +1348,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
-                request(socket, store, 'playlists.asList' )
+                request(socket, store, 'playlists.asList')
                     .then(response => {
 
                         // drop in our URI list
@@ -1387,7 +1387,9 @@ const MopidyMiddleware = (function(){
                                         type: 'PLAYLIST_LOADED', 
                                         key: playlist.uri,
                                         playlist: playlist 
-                                    })
+                                    });
+
+                                    console.log(playlist);
                                 })
                         }
                     })

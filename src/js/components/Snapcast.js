@@ -6,9 +6,9 @@ import { Link, hashHistory } from 'react-router'
 import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
-import VolumeControl from './VolumeControl'
-import LatencyControl from './LatencyControl'
-import TextField from './Forms/TextField'
+import VolumeControl from './Fields/VolumeControl'
+import LatencyControl from './Fields/LatencyControl'
+import TextField from './Fields/TextField'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'

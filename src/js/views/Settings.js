@@ -5,7 +5,7 @@ import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import ConfirmationButton from '../components/ConfirmationButton'
+import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'

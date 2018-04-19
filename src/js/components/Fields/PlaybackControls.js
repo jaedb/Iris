@@ -7,15 +7,15 @@ import FontAwesome from 'react-fontawesome'
 
 import ProgressSlider from './ProgressSlider'
 import VolumeControl from './VolumeControl'
-import Dater from './Dater'
-import ArtistSentence from './ArtistSentence'
-import Thumbnail from './Thumbnail'
-import Icon from './Icon'
+import Dater from './../Dater'
+import ArtistSentence from './../ArtistSentence'
+import Thumbnail from './../Thumbnail'
+import Icon from './../Icon'
 
-import * as helpers from '../helpers'
-import * as uiActions from '../services/ui/actions'
-import * as coreActions from '../services/core/actions'
-import * as mopidyActions from '../services/mopidy/actions'
+import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
+import * as coreActions from '../../services/core/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
 
 class PlaybackControls extends React.Component{
 

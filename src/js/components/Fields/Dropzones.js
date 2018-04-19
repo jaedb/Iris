@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux'
 
 import Dropzone from './Dropzone'
 
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 
 class Dropzones extends React.Component{
 
