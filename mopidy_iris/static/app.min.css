@@ -2598,6 +2598,14 @@ h4 {
   h4 .dropdown-field {
     margin-left: 10px; }
 
+.hide {
+  width: 0px;
+  height: 0px;
+  position: fixed;
+  z-index: -99;
+  top: -99px;
+  left: -99px; }
+
 .no-results {
   text-align: center;
   padding: 40px;

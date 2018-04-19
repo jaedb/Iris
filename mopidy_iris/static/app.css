@@ -2598,6 +2598,14 @@ h4 {
   h4 .dropdown-field {
     margin-left: 10px; }
 
+.hide {
+  width: 0px;
+  height: 0px;
+  position: fixed;
+  z-index: -99;
+  top: -99px;
+  left: -99px; }
+
 .no-results {
   text-align: center;
   padding: 40px;
@@ -2937,6 +2945,17 @@ select {
   input[type="date"]:disabled,
   select:disabled {
     opacity: 0.5; }
+  textarea.tiny,
+  input[type="text"].tiny,
+  input[type="email"].tiny,
+  input[type="number"].tiny,
+  input[type="email"].tiny,
+  input[type="date"].tiny,
+  select.tiny {
+    width: 50px;
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align: center; }
 
 select {
   max-width: 100%; }
@@ -3134,7 +3153,7 @@ input[type="submit"] {
       position: absolute;
       display: block;
       content: '';
-      animation: slideloader 1s infinite;
+      animation: slideloader 1s infinite linear;
       background: rgba(200, 200, 200, 0.3);
       top: 0;
       left: 0;
@@ -4270,48 +4289,119 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
-.snapcast .group > .inner {
-  padding-bottom: 5px;
-  border-bottom: 1px solid #383734; }
-  .snapcast .group > .inner > .name {
-    font-weight: bold; }
-
-.snapcast .group:not(:first-child) {
-  padding-top: 15px; }
-
-.snapcast .group .clients .client > .inner {
-  padding: 5px 0;
-  border-bottom: 1px solid #383734; }
-
-.snapcast .group .clients .client .name {
-  padding: 6px 0 5px 0;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  border: 0; }
-
-.snapcast .group .clients .client .controls .edit {
-  display: inline-block;
-  float: left;
-  cursor: pointer; }
-
-.snapcast .group .clients .client .controls .volume-control .mute-control {
-  display: inline-block;
-  float: left;
-  padding: 0 10px;
-  border: 0; }
-
-.snapcast .group .clients .client .controls .volume-control .slider-wrapper {
-  margin-left: 40px; }
-
-.snapcast .group .clients .client .controls .volume-control.muted .slider .progress {
-  background: #a3a19f; }
-
-.snapcast .group .clients .client.disconnected .name {
-  opacity: 0.5; }
-
-.snapcast .group .clients .client.disconnected .controls .volume-control .slider .progress {
-  background: #a3a19f; }
+.snapcast .group.list {
+  padding: 0 10px; }
+  .snapcast .group.list:not(:first-child) {
+    padding-top: 15px; }
+  .snapcast .group.list .list-item {
+    padding: 20px 0 0 0; }
+    .snapcast .group.list .list-item:not(.header) {
+      border: 0; }
+    .snapcast .group.list .list-item > .name {
+      width: 40%;
+      padding-bottom: 4px;
+      position: relative; }
+      .snapcast .group.list .list-item > .name .status {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        padding: 12px;
+        cursor: default; }
+        .snapcast .group.list .list-item > .name .status .fa {
+          font-size: 12px; }
+      .snapcast .group.list .list-item > .name input {
+        padding-left: 30px; }
+    .snapcast .group.list .list-item > .volume {
+      width: 28%;
+      padding-left: 2%; }
+    .snapcast .group.list .list-item > .latency {
+      width: 28%;
+      padding-left: 2%; }
+    .snapcast .group.list .list-item.header {
+      padding-top: 0;
+      vertical-align: bottom;
+      cursor: default; }
+      .snapcast .group.list .list-item.header .name {
+        font-size: 14px;
+        color: #FFFFFF;
+        text-transform: none;
+        font-weight: 600;
+        line-height: 14px; }
+    .snapcast .group.list .list-item.client {
+      padding: 20px 0 0 0; }
+      .snapcast .group.list .list-item.client::after {
+        content: '';
+        clear: both;
+        display: block; }
+      .snapcast .group.list .list-item.client > .name {
+        display: block;
+        box-sizing: border-box;
+        border: 0; }
+        .snapcast .group.list .list-item.client > .name input {
+          width: 100%; }
+      .snapcast .group.list .list-item.client > .volume input,
+      .snapcast .group.list .list-item.client > .latency input {
+        width: 20%; }
+      .snapcast .group.list .list-item.client .volume-control {
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
+        width: 80%;
+        padding-right: 10px;
+        box-sizing: border-box; }
+        .snapcast .group.list .list-item.client .volume-control .mute-control {
+          display: inline-block;
+          float: left;
+          padding: 0 10px;
+          border: 0; }
+        .snapcast .group.list .list-item.client .volume-control .slider-wrapper {
+          margin-left: 40px; }
+        .snapcast .group.list .list-item.client .volume-control.muted .slider .progress {
+          background: #a3a19f; }
+      .snapcast .group.list .list-item.client .latency-control {
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
+        width: 80%;
+        padding-right: 10px;
+        box-sizing: border-box; }
+        .snapcast .group.list .list-item.client .latency-control .zero {
+          position: absolute;
+          top: -4px;
+          left: 50%;
+          bottom: 0;
+          width: 1px;
+          background: #383734;
+          z-index: 1; }
+        .snapcast .group.list .list-item.client .latency-control .progress.positive {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0; }
+        .snapcast .group.list .list-item.client .latency-control .progress.negative {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0; }
+    @media (max-width: 800px) {
+      .snapcast .group.list .list-item {
+        padding-left: 0 !important;
+        padding-right: 0 !important; }
+        .snapcast .group.list .list-item.header {
+          display: block; }
+          .snapcast .group.list .list-item.header .volume,
+          .snapcast .group.list .list-item.header .latency {
+            display: none !important; }
+        .snapcast .group.list .list-item .col {
+          float: none !important;
+          width: auto !important;
+          padding-left: 0;
+          padding-right: 0; }
+          .snapcast .group.list .list-item .col::after {
+            content: '';
+            clear: both;
+            display: block; }
+          .snapcast .group.list .list-item .col:not(.header) {
+            line-height: 45px; }
+          .snapcast .group.list .list-item .col.volume {
+            padding-bottom: 20px !important; } }
 
 aside {
   position: fixed;
@@ -5557,9 +5647,11 @@ main header {
         font-size: 16px; }
 
 .services .service {
-  padding: 20px 20px 10px 20px;
+  padding: 20px;
   border-radius: 0 0 3px 3px;
   background: #222222; }
+  .services .service .field:last-child {
+    padding-bottom: 0; }
 
 @media (max-width: 800px) {
   .services .menu .menu-item-wrapper {

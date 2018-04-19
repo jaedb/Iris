@@ -5,9 +5,8 @@ import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import ConfirmationButton from '../components/ConfirmationButton'
+import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
-import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
@@ -144,6 +143,19 @@ class Settings extends React.Component {
 			</span>
 		)
 
+		
+		if (this.props.mopidy.upgrading){
+			var upgrade_button = (
+				<button className="alternative working">
+					Upgrading...
+				</button>
+			);
+		} else if (this.props.pusher.version.upgrade_available){
+			var upgrade_button = <button className="alternative" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
+		} else {
+			var upgrade_button = null;
+		}
+
 		return (
 			<div className="view settings-view">
 				<Header className="overlay" icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
@@ -258,15 +270,16 @@ class Settings extends React.Component {
 					<div className="field">
 						<div className="name">Version</div>
 						<div className="input">
-				        	<VersionManager />
+				        	<span className="text">
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : null}
+				        	</span>
 				        </div>
 			        </div>
 					
 					<div className="field">
-						<div className="name">Reset</div>
-						<div className="input">
-					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-				        </div>
+						{upgrade_button}
+				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restartMopidy()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
+				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
 					<h4 className="underline">About</h4>

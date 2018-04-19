@@ -7,9 +7,9 @@ import FontAwesome from 'react-fontawesome'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'
-import DropdownField from '../../components/DropdownField'
+import DropdownField from '../../components/Fields/DropdownField'
 import Header from '../../components/Header'
-import FilterField from '../../components/FilterField'
+import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
@@ -41,11 +41,12 @@ class LibraryPlaylists extends React.Component{
 	}
 
 	componentWillReceiveProps(newProps){
+
 		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
 
 			// We've just connected
 			if (!this.props.mopidy_connected){
-				this.props.mopidyActions.getLibraryPlaylists()
+				this.props.mopidyActions.getLibraryPlaylists();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet

@@ -9,9 +9,9 @@ import ReactGA from 'react-ga'
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
 import Dater from '../components/Dater'
-import ConfirmationButton from '../components/ConfirmationButton'
+import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
-import FollowButton from '../components/FollowButton'
+import FollowButton from '../components/Fields/FollowButton'
 import Header from '../components/Header'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import URILink from '../components/URILink'
@@ -190,6 +190,12 @@ class Playlist extends React.Component{
 			}
 		}
 
+		if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id, 'spotify_users/'+user_id+'/playlists/'+playlist_id+'/tracks'])){
+			var is_loading_tracks = true;
+		} else {
+			var is_loading_tracks = false;
+		}
+
 		return (
 			<div className="view playlist-view content-wrapper">
 				<div className="thumbnail-wrapper">
@@ -216,7 +222,7 @@ class Playlist extends React.Component{
 
 				<section className="list-wrapper">
 					<TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
-					<LazyLoadListener loading={this.props.playlist.tracks_more} loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener loading={this.props.playlist.tracks_more} forceLoader={is_loading_tracks} loadMore={() => this.loadMore()}/>
 				</section>
 			</div>
 		)

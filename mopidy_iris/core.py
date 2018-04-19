@@ -22,12 +22,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(object):
-
     version = 0
-    if sys.platform == 'win32':
-        is_root = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    else:
-       is_root = os.geteuid() == 0
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -463,6 +458,7 @@ class IrisCore(object):
 
         response = {
             'config': {
+                "is_root": self.is_root(),
                 "spotify_username": spotify_username,
                 "country": self.config['iris']['country'],
                 "locale": self.config['iris']['locale'],
@@ -499,7 +495,7 @@ class IrisCore(object):
             'version': {
                 'current': self.version,
                 'latest': latest_version,
-                'is_root': self.is_root,
+                'is_root': self.is_root(),
                 'upgrade_available': upgrade_available
             }
         }
@@ -508,30 +504,92 @@ class IrisCore(object):
         else:
             return response
 
-    def perform_upgrade(self, *args, **kwargs):
+    def upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
-        try:
-            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
-            response = {
-                'result': "Upgrade started"
-            }
-            if (callback):
-                callback(response)
-            else:
-                return response
+        self.broadcast(data={
+            'method': "upgrade_started",
+            'params': {}
+        })
 
-        except subprocess.CalledProcessError as e:
+        # Run the system task
+        path = os.path.dirname(__file__)
+        
+        # Make sure we can run as sudo without password
+        # TODO: Test cross-platform??
+        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
+        if "password is required" in permission_check:
             error = {
-                'result': "Could not start upgrade"
+                'message': "Permission denied",
+                'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
             }
             if (callback):
                 callback(False, error)
+                return
             else:
                 return error
+
+        # Start the upgrade
+        output = subprocess.call(["sudo "+path+"/system.sh upgrade"], shell=True)
+
+        # Callbacks can be made, while our script continues to run
+        if (callback):
+            callback(response)
+            response = {
+                'message': "Upgrade complete, restarting server",
+                'data': {
+                    'output': output
+                }
+            }
+
+        # And now restart
+        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+        
+        # Now we can return for simple requests
+        response = {
+            'message': "Upgrade complete, restarting server",
+            'data': {
+                'output': output
+            }
+        }
+        return response
+
         
     def restart(self, *args, **kwargs):
-        os.execl(sys.executable, *([sys.executable]+sys.argv))
+        callback = kwargs.get('callback', False)
+
+        self.broadcast(data={
+            'method': "restart_started",
+            'params': {}
+        })
+
+        path = os.path.dirname(__file__)
+
+        # Make sure we can run as sudo without password
+        # TODO: Test cross-platform??
+        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
+        if "password is required" in permission_check:
+            error = {
+                'message': "Permission denied",
+                'data': {
+                    'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
+                }
+            }
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+
+        response = {
+            'message': "Restarting... please wait"
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
 
 
     ##
@@ -923,6 +981,18 @@ class IrisCore(object):
             http_client = tornado.httpclient.AsyncHTTPClient()
             request = tornado.httpclient.HTTPRequest(data['url'], headers=headers, validate_cert=False)
             http_client.fetch(request, callback=callback)
+
+
+
+
+    ##
+    # Detect if we're running as root
+    ##
+    def is_root(self):        
+        if sys.platform == 'win32':
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        else:
+            return os.geteuid() == 0
 
 
     ##

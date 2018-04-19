@@ -14,6 +14,24 @@ export function connect(){
 	}
 }
 
+export function connecting(){
+	return {
+		type: 'MOPIDY_CONNECTING'
+	}
+}
+
+export function upgradeStarted(){
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	}
+}
+
+export function restartStarted(){
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	}
+}
+
 export function disconnect(){
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -175,6 +193,20 @@ export function currentTrackLoaded(tl_track){
 	return {
 		type: 'MOPIDY_CURRENT_TRACK_LOADED',
 		tl_track: tl_track
+	}
+}
+
+export function getNextTrack(){
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	}
+}
+
+export function clearCurrentTrack(){
+	return {
+		type: 'CURRENT_TRACK_LOADED',
+        track: null,
+        uri: null
 	}
 }
 

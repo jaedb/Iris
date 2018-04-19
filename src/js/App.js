@@ -6,7 +6,7 @@ import { hashHistory, Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
-import PlaybackControls from './components/PlaybackControls'
+import PlaybackControls from './components/Fields/PlaybackControls'
 import ContextMenu from './components/ContextMenu'
 import Dragger from './components/Dragger'
 import Modal from './components/Modal/Modal'

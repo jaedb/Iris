@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link, withRouter } from 'react-router'
 
 import Icon from './Icon'
-import Dropzones from './Dropzones'
+import Dropzones from './Fields/Dropzones'
 import Thumbnail from './Thumbnail'
 
 import FontAwesome from 'react-fontawesome'

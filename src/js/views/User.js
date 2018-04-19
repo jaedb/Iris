@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
-import FollowButton from '../components/FollowButton'
+import FollowButton from '../components/Fields/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'

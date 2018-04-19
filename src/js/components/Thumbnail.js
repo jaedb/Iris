@@ -44,24 +44,29 @@ class Thumbnail extends React.Component{
 
 		// no images
 		if (!this.props.image && (!this.props.images || this.props.images.length <= 0)){
-			return require('../../assets/no-image.svg')
+			return require('../../assets/no-image.svg');
 
 		// single image
 		} else if (this.props.image){
-			return this.props.image
+			return this.props.image;
 
 		// multiple images
 		} else if (this.props.images && this.props.images.length > 0){
-			var images = helpers.sizedImages(this.props.images )
-			var size = 'medium'
-			if (this.props.size ) size = this.props.size
-			return images[size]
+			var images = helpers.sizedImages(this.props.images);
+
+			// Default to medium-sized image, but accept size property as override
+			var size = 'medium';
+			if (this.props.size){
+				size = this.props.size;
+			}
+
+			return images[size];
 		}
 	}
 
 	zoom(e, image){
-		e.preventDefault()
-		this.props.uiActions.openModal('image_zoom', {url: image} )
+		e.preventDefault();
+		this.props.uiActions.openModal('image_zoom', {url: image});
 	}
 
 	render(){
