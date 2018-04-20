@@ -315,14 +315,6 @@ const PusherMiddleware = (function(){
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
                             });
-
-                            var core = store.getState().core;
-                            if (!core.country || !core.locale){
-                                store.dispatch(spotifyActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }))
-                            }
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -522,11 +514,27 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_CONFIG':
-                store.dispatch(spotifyActions.set({
-                    locale: (action.config.locale ? action.config.locale : null),
-                    country: (action.config.country ? action.config.country : null),
-                    authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
-                }));
+
+                // Set default country/locale (unless we've already been configured)
+                var spotify = store.getState().spotify;
+                var spotify_updates = {};
+
+                if (!spotify.country && action.config.country){
+                    spotify_updates.country = action.config.country;
+                }
+
+                if (!spotify.locale && action.config.locale){
+                    spotify_updates.locale = action.config.locale;
+                }
+
+                if (action.config.spotify_authorization_url){
+                    spotify_updates.authorization_url = action.config.authorization_url;
+                }
+
+                if (spotify_updates !== {}){
+                    store.dispatch(spotifyActions.set(spotify_updates));
+                }
+                
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
                 }));
