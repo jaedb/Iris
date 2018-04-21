@@ -65,6 +65,7 @@ const MopidyMiddleware = (function(){
 
             case 'state:offline':
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+                store.dispatch(mopidyActions.clearCurrentTrack());
 
                 // reset our playback interval timer
                 clearInterval(progress_interval)
