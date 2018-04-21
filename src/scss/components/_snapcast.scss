@@ -1,74 +1,171 @@
 
 .snapcast {
 
-	.group {
-		& > .inner {
-			padding-bottom: 5px;
-			border-bottom: 1px solid $grey;
-
-			& > .name {
-				font-weight: bold;
-			}
-		}
-
+	.group.list {
+		padding: 0 10px;
+		
 		&:not(:first-child){
 			padding-top: 15px;
 		}
 
-		.clients {
-			.client {
-				& > .inner {
-					padding: 5px 0;
-					border-bottom: 1px solid $grey;
+		.list-item {
+			padding: 20px 0 0 0;
+
+			&:not(.header){
+				border: 0;
+			}
+
+			& > .name {
+				width: 40%;
+				padding-bottom: 4px;
+				position: relative;
+
+				.status {
+					position: absolute;
+					top: 0;
+					left: 0;
+					z-index: 2;
+					padding: 12px;
+					cursor: default;
+
+					.fa {
+						font-size: 12px;
+					}
 				}
+
+				input {
+					padding-left: 30px;
+				}
+			}
+
+			& > .volume {
+				width: 28%;
+				padding-left: 2%;
+			}
+
+			& > .latency {
+				width: 28%;
+				padding-left: 2%;
+			}
+
+			&.header {
+				padding-top: 0;
+				vertical-align: bottom;
+				cursor: default;
 
 				.name {
-					padding: 6px 0 5px 0;
+					font-size: 14px;
+					color: $white;
+					text-transform: none;
+					font-weight: 600;
+					line-height: 14px;
+				}
+			}
+
+			&.client {
+				@include clearfix();
+				padding: 20px 0 0 0;
+
+				& > .name {
 					display: block;
-					width: 100%;
 					box-sizing: border-box;
 					border: 0;
+
+					input {
+						width: 100%;
+					}
 				}
 
-				.controls {
+				& > .volume,
+				& > .latency {
+					input {
+						width: 20%;
+					}
+				}
+					
+				.volume-control {
+					display: inline-block;
+					vertical-align: middle;
+					padding-top: 4px;
+					width: 80%;
+					padding-right: 10px;
+					box-sizing: border-box;
 
-					.edit {
+					.mute-control {
 						display: inline-block;
 						float: left;
-						cursor: pointer;
+						padding: 0 10px;
+						border: 0;
 					}
 
-					.volume-control {
-						.mute-control {
-							display: inline-block;
-							float: left;
-							padding: 0 10px;
-							border: 0;
-						}
+					.slider-wrapper {
+						margin-left: 40px;
+					}
 
-						.slider-wrapper {
-							margin-left: 40px;
-						}
-
-						&.muted {
-							.slider .progress {
-								background: $mid_grey;
-							}
+					&.muted {
+						.slider .progress {
+							background: $mid_grey;
 						}
 					}
 				}
 
-				&.disconnected {
-					.name {
-						opacity: 0.5;
+				.latency-control {
+					display: inline-block;
+					vertical-align: middle;
+					padding-top: 4px;
+					width: 80%;
+					padding-right: 10px;
+					box-sizing: border-box;
+
+					.zero {
+						position: absolute;
+						top: -4px;
+						left: 50%;
+						bottom: 0;
+						width: 1px;
+						background: $grey;
+						z-index: 1;
 					}
 
-					.controls {
-						.volume-control {
-							.slider .progress {
-								background: $mid_grey;
-							}
-						}
+					.progress.positive {
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
+
+					.progress.negative {
+						border-top-right-radius: 0;
+						border-bottom-right-radius: 0;
+					}
+				}
+			}
+
+			@include responsive($bp_medium){
+
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+
+				&.header {
+					display: block;
+
+					.volume,
+					.latency {
+						display: none !important;
+					}
+				}
+
+				.col {
+					@include clearfix();
+					float: none !important;
+					width: auto !important;
+					padding-left: 0;
+					padding-right: 0;
+
+					&:not(.header){
+						line-height: 45px;
+					}
+
+					&.volume {
+						padding-bottom: 20px !important;
 					}
 				}
 			}

@@ -3,12 +3,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import ReactGA from 'react-ga'
-
 import FontAwesome from 'react-fontawesome'
-import Thumbnail from './Thumbnail'
 
-import * as uiActions from '../services/ui/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import Thumbnail from '../Thumbnail'
+
+import * as uiActions from '../../services/ui/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 
 class SpotifyAuthenticationFrame extends React.Component{
 

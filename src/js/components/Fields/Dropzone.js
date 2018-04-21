@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import Icon from './Icon'
+import Icon from './../Icon'
 
 export default class Dropzone extends React.Component{
 

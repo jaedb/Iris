@@ -1331,7 +1331,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -3472,6 +3472,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.setConfig = setConfig;
 exports.connect = connect;
+exports.connecting = connecting;
+exports.upgradeStarted = upgradeStarted;
+exports.restartStarted = restartStarted;
 exports.disconnect = disconnect;
 exports.debug = debug;
 exports.getPlayState = getPlayState;
@@ -3547,6 +3550,24 @@ function connect() {
 	};
 }
 
+function connecting() {
+	return {
+		type: 'MOPIDY_CONNECTING'
+	};
+}
+
+function upgradeStarted() {
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	};
+}
+
+function restartStarted() {
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	};
+}
+
 function disconnect() {
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -3585,7 +3606,7 @@ function pause() {
 
 function stop() {
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	};
 }
 
@@ -4152,6 +4173,41 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+if (process.env.NODE_ENV !== 'production') {
+  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+    Symbol.for &&
+    Symbol.for('react.element')) ||
+    0xeac7;
+
+  var isValidElement = function(object) {
+    return typeof object === 'object' &&
+      object !== null &&
+      object.$$typeof === REACT_ELEMENT_TYPE;
+  };
+
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = __webpack_require__(114)(isValidElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = __webpack_require__(115)();
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -4246,41 +4302,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Icon);
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-if (process.env.NODE_ENV !== 'production') {
-  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-    Symbol.for &&
-    Symbol.for('react.element')) ||
-    0xeac7;
-
-  var isValidElement = function(object) {
-    return typeof object === 'object' &&
-      object !== null &&
-      object.$$typeof === REACT_ELEMENT_TYPE;
-  };
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(114)(isValidElement, throwOnDirectAccess);
-} else {
-  // By explicitly using `prop-types` you are opting into new production behavior.
-  // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(115)();
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4301,7 +4322,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -4730,6 +4751,7 @@ exports.setUsername = setUsername;
 exports.connect = connect;
 exports.disconnect = disconnect;
 exports.startUpgrade = startUpgrade;
+exports.restartMopidy = restartMopidy;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -4751,8 +4773,9 @@ exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getSnapcast = getSnapcast;
-exports.setSnapcastClientVolume = setSnapcastClientVolume;
 exports.setSnapcastClientName = setSnapcastClientName;
+exports.setSnapcastClientMute = setSnapcastClientMute;
+exports.setSnapcastClientVolume = setSnapcastClientVolume;
 exports.setSnapcastClientLatency = setSnapcastClientLatency;
 exports.deleteSnapcastClient = deleteSnapcastClient;
 
@@ -4788,7 +4811,13 @@ function disconnect() {
 
 function startUpgrade() {
 	return {
-		type: 'START_UPGRADE'
+		type: 'PUSHER_START_UPGRADE'
+	};
+}
+
+function restartMopidy() {
+	return {
+		type: 'PUSHER_RESTART_MOPIDY'
 	};
 }
 
@@ -4955,57 +4984,42 @@ function getSnapcast() {
 	};
 }
 
-function setSnapcastClientVolume(id, muted, percent) {
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
-		data: {
-			method: 'Client.SetVolume',
-			params: {
-				id: id,
-				volume: {
-					muted: muted,
-					percent: percent
-				}
-			}
-		}
-	};
-}
-
 function setSnapcastClientName(id, name) {
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
-		data: {
-			method: 'Client.SetName',
-			params: {
-				id: id,
-				name: name
-			}
-		}
+		id: id,
+		name: name
+	};
+}
+
+function setSnapcastClientMute(id, mute) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_MUTE',
+		id: id,
+		mute: mute
+	};
+}
+
+function setSnapcastClientVolume(id, percent) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
+		id: id,
+		percent: percent
 	};
 }
 
 function setSnapcastClientLatency(id, latency) {
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY',
-		data: {
-			method: 'Client.SetLatency',
-			params: {
-				id: id,
-				latency: latency
-			}
-		}
+		id: id,
+		latency: latency
 	};
 }
 
 function deleteSnapcastClient(id) {
 	return {
 		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
-		data: {
-			method: 'Server.DeleteClient',
-			params: {
-				id: id
-			}
-		}
+		id: id
 	};
 }
 
@@ -16682,7 +16696,7 @@ exports.default = LazyLoadListener;
 
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
-		module.exports = factory(__webpack_require__(0), __webpack_require__(13));
+		module.exports = factory(__webpack_require__(0), __webpack_require__(12));
 	else if(typeof define === 'function' && define.amd)
 		define(["react", "prop-types"], factory);
 	else {
@@ -19604,7 +19618,7 @@ module.exports = warning;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return components; });
 /* unused harmony export route */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return routes; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__);
 
 
@@ -20838,7 +20852,7 @@ function mapAsync(array, work, callback) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__getRouteParams__ = __webpack_require__(155);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ContextUtils__ = __webpack_require__(58);
@@ -20964,7 +20978,7 @@ var RouterContext = __WEBPACK_IMPORTED_MODULE_2_create_react_class___default()({
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = ContextProvider;
 /* harmony export (immutable) */ __webpack_exports__["b"] = ContextSubscriber;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__);
 
 
@@ -21089,7 +21103,7 @@ function ContextSubscriber(name) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return routerShape; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return locationShape; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__);
 
 
@@ -21962,7 +21976,7 @@ module.exports = containsNode;
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return subscriptionShape; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return storeShape; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_prop_types__);
 
 
@@ -23204,7 +23218,7 @@ function assignRouterState(router, _ref) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
@@ -23348,7 +23362,7 @@ var Link = __WEBPACK_IMPORTED_MODULE_1_create_react_class___default()({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
@@ -24074,23 +24088,25 @@ var VolumeControl = function (_React$Component) {
 	}, {
 		key: 'handleWheel',
 		value: function handleWheel(e) {
+			if (this.props.scrollWheel) {
 
-			// Identify which direction we've scrolled (inverted)
-			// This is simplified and doesn't consider momentum as it varies wildly
-			// between browsers and devices
-			var direction = e.deltaY > 0 ? -1 : 1;
-			var percent = this.props.volume;
+				// Identify which direction we've scrolled (inverted)
+				// This is simplified and doesn't consider momentum as it varies wildly
+				// between browsers and devices
+				var direction = e.deltaY > 0 ? -1 : 1;
+				var percent = this.props.volume;
 
-			percent += direction * 5;
+				percent += direction * 5;
 
-			if (percent > 100) {
-				percent = 100;
-			} else if (percent < 0) {
-				percent = 0;
+				if (percent > 100) {
+					percent = 100;
+				} else if (percent < 0) {
+					percent = 0;
+				}
+
+				this.props.onVolumeChange(percent);
+				e.preventDefault();
 			}
-
-			this.props.onVolumeChange(percent);
-			e.preventDefault();
 		}
 	}, {
 		key: 'renderMuteButton',
@@ -24811,10 +24827,22 @@ var ConfirmationButton = function (_React$Component) {
 			if (this.state.confirming) {
 				className += ' confirming';
 				content = this.props.confirmingContent;
-				if (this.state.timing_out) className += ' timing-out';
+				if (this.state.timing_out) {
+					className += ' timing-out';
+				}
 			}
 
-			if (this.props.className) className += ' ' + this.props.className;
+			if (this.props.working) {
+				className += ' working';
+
+				if (this.props.workingContent) {
+					content = this.props.workingContent;
+				}
+			}
+
+			if (this.props.className) {
+				className += ' ' + this.props.className;
+			}
 
 			return _react2.default.createElement(
 				'button',
@@ -24855,7 +24883,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -24931,43 +24959,43 @@ var _App = __webpack_require__(211);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _Album = __webpack_require__(239);
+var _Album = __webpack_require__(238);
 
 var _Album2 = _interopRequireDefault(_Album);
 
-var _Artist = __webpack_require__(240);
+var _Artist = __webpack_require__(239);
 
 var _Artist2 = _interopRequireDefault(_Artist);
 
-var _Playlist = __webpack_require__(241);
+var _Playlist = __webpack_require__(240);
 
 var _Playlist2 = _interopRequireDefault(_Playlist);
 
-var _User = __webpack_require__(242);
+var _User = __webpack_require__(241);
 
 var _User2 = _interopRequireDefault(_User);
 
-var _Track = __webpack_require__(243);
+var _Track = __webpack_require__(242);
 
 var _Track2 = _interopRequireDefault(_Track);
 
-var _Queue = __webpack_require__(246);
+var _Queue = __webpack_require__(245);
 
 var _Queue2 = _interopRequireDefault(_Queue);
 
-var _QueueHistory = __webpack_require__(247);
+var _QueueHistory = __webpack_require__(246);
 
 var _QueueHistory2 = _interopRequireDefault(_QueueHistory);
 
-var _Debug = __webpack_require__(248);
+var _Debug = __webpack_require__(247);
 
 var _Debug2 = _interopRequireDefault(_Debug);
 
-var _Search = __webpack_require__(249);
+var _Search = __webpack_require__(248);
 
 var _Search2 = _interopRequireDefault(_Search);
 
-var _Settings = __webpack_require__(251);
+var _Settings = __webpack_require__(250);
 
 var _Settings2 = _interopRequireDefault(_Settings);
 
@@ -43519,7 +43547,7 @@ module.exports = camelize;
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = createProvider;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_PropTypes__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_warning__ = __webpack_require__(55);
@@ -45590,7 +45618,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(82);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__InternalPropTypes__ = __webpack_require__(43);
@@ -47512,7 +47540,7 @@ function withRouter(WrappedComponent, options) {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(18);
@@ -47568,7 +47596,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(18);
@@ -47625,7 +47653,7 @@ var IndexRoute = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
@@ -49461,8 +49489,14 @@ function reducer() {
         case 'MOPIDY_CONNECTING':
             return Object.assign({}, mopidy, { connected: false, connecting: true });
 
+        case 'MOPIDY_RESTART_STARTED':
+            return Object.assign({}, mopidy, { restarting: true });
+
+        case 'MOPIDY_UPGRADE_STARTED':
+            return Object.assign({}, mopidy, { upgrading: true });
+
         case 'MOPIDY_CONNECTED':
-            return Object.assign({}, mopidy, { connected: true, connecting: false });
+            return Object.assign({}, mopidy, { connected: true, connecting: false, restarting: false, upgrading: false });
 
         case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
@@ -50895,6 +50929,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var helpers = __webpack_require__(1);
 var coreActions = __webpack_require__(15);
 var uiActions = __webpack_require__(4);
+var mopidyActions = __webpack_require__(9);
 var pusherActions = __webpack_require__(17);
 var lastfmActions = __webpack_require__(20);
 var spotifyActions = __webpack_require__(8);
@@ -50976,8 +51011,14 @@ var PusherMiddleware = function () {
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'restart':
+                    case 'refresh':
                         window.location.reload(true);
+                        break;
+                    case 'update_started':
+                        store.dispatch(uiActions.createNotification({ content: 'Update running...', type: 'info' }));
+                        break;
+                    case 'restart_started':
+                        store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
                         break;
                 }
             }
@@ -51126,23 +51167,6 @@ var PusherMiddleware = function () {
                         });
                         break;
 
-                    case 'PUSHER_START_UPGRADE':
-                        _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
-                        request(store, 'upgrade').then(function (response) {
-                            if (response.upgrade_successful) {
-                                store.dispatch(uiActions.createNotification({ content: 'Upgrade complete' }));
-                            } else {
-                                store.dispatch(uiActions.createNotification({ content: 'Upgrade failed, please upgrade manually', type: 'bad' }));
-                            }
-
-                            response.type = 'PUSHER_VERSION';
-                            store.dispatch(response);
-                        }, function (error) {
-                            store.dispatch(coreActions.handleException('Could not start upgrade', error));
-                        });
-                        return next(action);
-                        break;
-
                     case 'PUSHER_SET_USERNAME':
                         request(store, 'set_username', { username: action.username }).then(function (response) {
                             response.type = 'PUSHER_USERNAME_CHANGED';
@@ -51170,14 +51194,6 @@ var PusherMiddleware = function () {
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
                             });
-
-                            var core = store.getState().core;
-                            if (!core.country || !core.locale) {
-                                store.dispatch(spotifyActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }));
-                            }
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not load config', error));
                         });
@@ -51300,6 +51316,24 @@ var PusherMiddleware = function () {
                         window.location.reload(true);
                         break;
 
+                    case 'PUSHER_RESTART_MOPIDY':
+                        request(store, 'restart').then(function (response) {
+                            store.dispatch(mopidyActions.restartStarted());
+                        }, function (error) {
+                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
+                        });
+                        next(action);
+                        break;
+
+                    case 'PUSHER_UPGRADE':
+                        _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+                        request(store, 'upgrade').then(function (response) {
+                            store.dispatch(mopidyActions.upgradeStarted());
+                        }, function (error) {
+                            store.dispatch(uiActions.createNotification({ content: error.message, type: 'bad' }));
+                        });
+                        break;
+
                     case 'PUSHER_VERSION':
                         _reactGa2.default.event({ category: 'Pusher', action: 'Version', label: action.version.current });
 
@@ -51310,11 +51344,27 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_CONFIG':
-                        store.dispatch(spotifyActions.set({
-                            locale: action.config.locale ? action.config.locale : null,
-                            country: action.config.country ? action.config.country : null,
-                            authorization_url: action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null
-                        }));
+
+                        // Set default country/locale (unless we've already been configured)
+                        var spotify = store.getState().spotify;
+                        var spotify_updates = {};
+
+                        if (!spotify.country && action.config.country) {
+                            spotify_updates.country = action.config.country;
+                        }
+
+                        if (!spotify.locale && action.config.locale) {
+                            spotify_updates.locale = action.config.locale;
+                        }
+
+                        if (action.config.spotify_authorization_url) {
+                            spotify_updates.authorization_url = action.config.authorization_url;
+                        }
+
+                        if (spotify_updates !== {}) {
+                            store.dispatch(spotifyActions.set(spotify_updates));
+                        }
+
                         store.dispatch(lastfmActions.set({
                             authorization_url: action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null
                         }));
@@ -51374,27 +51424,20 @@ var PusherMiddleware = function () {
                         });
                         break;
 
-                    case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
-                        request(store, 'snapcast_instruct', action.data).then(function (response) {
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
-                                key: action.data.params.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
-                                }
-                            });
-                        }, function (error) {
-                            store.dispatch(coreActions.handleException('Error', error, error.message));
-                        });
-                        break;
-
                     case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
-                        request(store, 'snapcast_instruct', action.data).then(function (response) {
+                        var client = store.getState().pusher.snapcast_clients[action.id];
+                        var data = {
+                            method: 'Client.SetName',
+                            params: {
+                                id: action.id,
+                                name: action.name
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
-                                key: action.data.params.id,
+                                key: action.id,
                                 client: {
                                     config: {
                                         name: response.name
@@ -51406,11 +51449,76 @@ var PusherMiddleware = function () {
                         });
                         break;
 
-                    case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
-                        request(store, 'snapcast_instruct', action.data).then(function (response) {
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_MUTE':
+                        var client = store.getState().pusher.snapcast_clients[action.id];
+                        var data = {
+                            method: 'Client.SetVolume',
+                            params: {
+                                id: action.id,
+                                volume: {
+                                    muted: action.mute,
+                                    percent: client.config.volume.percent
+                                }
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
-                                key: action.data.params.id,
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
+                        var client = store.getState().pusher.snapcast_clients[action.id];
+                        var data = {
+                            method: 'Client.SetVolume',
+                            params: {
+                                id: action.id,
+                                volume: {
+                                    muted: client.config.volume.muted,
+                                    percent: action.percent
+                                }
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                        var client = store.getState().pusher.snapcast_clients[action.id];
+                        var data = {
+                            method: 'Client.SetLatency',
+                            params: {
+                                id: action.id,
+                                latency: action.latency
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED',
+                                key: action.id,
                                 client: {
                                     config: {
                                         latency: response.latency
@@ -51423,7 +51531,14 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_DELETE_SNAPCAST_CLIENT':
-                        request(store, 'snapcast_instruct', action.data).then(function (response) {
+                        var data = {
+                            method: 'Server.DeleteClient',
+                            params: {
+                                id: action.id
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_REMOVED',
                                 key: action.data.params.id
@@ -51537,6 +51652,7 @@ var MopidyMiddleware = function () {
 
             case 'state:offline':
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+                store.dispatch(mopidyActions.clearCurrentTrack());
 
                 // reset our playback interval timer
                 clearInterval(progress_interval);
@@ -51765,7 +51881,9 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_STOP':
-                        request(socket, store, 'playback.stop');
+                        request(socket, store, 'playback.stop').then(function (response) {
+                            store.dispatch(mopidyActions.clearCurrentTrack());
+                        });
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
@@ -52630,6 +52748,8 @@ var MopidyMiddleware = function () {
                                         key: playlist.uri,
                                         playlist: playlist
                                     });
+
+                                    console.log(playlist);
                                 });
                             }
                         });
@@ -53204,6 +53324,9 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_GET_NEXT_TRACK':
                         request(socket, store, 'tracklist.getNextTlid').then(function (response) {
                             if (response && response >= 0) {
+
+                                // Get the full track object from our tracklist
+                                // We know it will be here, as the tlid refers to an item in this list
                                 var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
 
                                 if (track) {
@@ -53212,9 +53335,7 @@ var MopidyMiddleware = function () {
                                         uri: track.uri
                                     });
 
-                                    console.log(track.name);
-
-                                    // We don't have the track already in our index
+                                    // We don't have the track (including images) already in our index
                                     if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
 
                                         // We've got Spotify running, and it's a spotify track - go straight to the source!
@@ -57073,11 +57194,11 @@ var _Modal = __webpack_require__(221);
 
 var _Modal2 = _interopRequireDefault(_Modal);
 
-var _Notifications = __webpack_require__(237);
+var _Notifications = __webpack_require__(236);
 
 var _Notifications2 = _interopRequireDefault(_Notifications);
 
-var _DebugInfo = __webpack_require__(238);
+var _DebugInfo = __webpack_require__(237);
 
 var _DebugInfo2 = _interopRequireDefault(_DebugInfo);
 
@@ -57494,7 +57615,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -57895,7 +58016,7 @@ var _reactRedux = __webpack_require__(3);
 
 var _redux = __webpack_require__(2);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -58048,7 +58169,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -58316,6 +58437,7 @@ var PlaybackControls = function (_React$Component) {
 					'section',
 					{ className: 'volume' },
 					_react2.default.createElement(_VolumeControl2.default, {
+						scrollWheel: true,
 						volume: this.props.volume,
 						mute: this.props.mute,
 						onVolumeChange: function onVolumeChange(percent) {
@@ -59788,7 +59910,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -59812,31 +59934,27 @@ var _EditRadioModal = __webpack_require__(226);
 
 var _EditRadioModal2 = _interopRequireDefault(_EditRadioModal);
 
-var _EditSnapcastClientModal = __webpack_require__(227);
-
-var _EditSnapcastClientModal2 = _interopRequireDefault(_EditSnapcastClientModal);
-
-var _ImageZoomModal = __webpack_require__(228);
+var _ImageZoomModal = __webpack_require__(227);
 
 var _ImageZoomModal2 = _interopRequireDefault(_ImageZoomModal);
 
-var _KioskModeModal = __webpack_require__(229);
+var _KioskModeModal = __webpack_require__(228);
 
 var _KioskModeModal2 = _interopRequireDefault(_KioskModeModal);
 
-var _SearchURISchemesModal = __webpack_require__(230);
+var _SearchURISchemesModal = __webpack_require__(229);
 
 var _SearchURISchemesModal2 = _interopRequireDefault(_SearchURISchemesModal);
 
-var _InitialSetupModal = __webpack_require__(234);
+var _InitialSetupModal = __webpack_require__(233);
 
 var _InitialSetupModal2 = _interopRequireDefault(_InitialSetupModal);
 
-var _AuthorizationModal_Send = __webpack_require__(235);
+var _AuthorizationModal_Send = __webpack_require__(234);
 
 var _AuthorizationModal_Send2 = _interopRequireDefault(_AuthorizationModal_Send);
 
-var _AuthorizationModal_Receive = __webpack_require__(236);
+var _AuthorizationModal_Receive = __webpack_require__(235);
 
 var _AuthorizationModal_Receive2 = _interopRequireDefault(_AuthorizationModal_Receive);
 
@@ -59969,12 +60087,6 @@ var Modal = function (_React$Component) {
 						radio: this.props.radio,
 						artists: this.props.artists,
 						tracks: this.props.tracks }) : null,
-					this.props.modal.name == 'edit_snapcast_client' ? _react2.default.createElement(_EditSnapcastClientModal2.default, {
-						uiActions: this.props.uiActions,
-						pusherActions: this.props.pusherActions,
-						data: this.props.modal.data,
-						clients: this.props.snapcast_clients,
-						groups: this.props.snapcast_groups }) : null,
 					this.props.modal.name == 'image_zoom' ? _react2.default.createElement(_ImageZoomModal2.default, {
 						uiActions: this.props.uiActions,
 						data: this.props.modal.data }) : null,
@@ -60017,9 +60129,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_library_playlists: state.spotify.library_playlists,
-		mopidy_library_playlists: state.mopidy.library_playlists,
-		snapcast_groups: state.pusher.snapcast_groups,
-		snapcast_clients: state.pusher.snapcast_clients
+		mopidy_library_playlists: state.mopidy.library_playlists
 	};
 };
 
@@ -60057,7 +60167,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -60220,7 +60330,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -60379,7 +60489,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -60635,7 +60745,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -60856,7 +60966,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -61207,165 +61317,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactFontawesome = __webpack_require__(5);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _Icon = __webpack_require__(12);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _helpers = __webpack_require__(1);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var EditSnapcastClientModal = function (_React$Component) {
-	_inherits(EditSnapcastClientModal, _React$Component);
-
-	function EditSnapcastClientModal(props) {
-		_classCallCheck(this, EditSnapcastClientModal);
-
-		var _this = _possibleConstructorReturn(this, (EditSnapcastClientModal.__proto__ || Object.getPrototypeOf(EditSnapcastClientModal)).call(this, props));
-
-		var client = _this.props.clients[_this.props.data.id];
-		_this.state = {
-			id: client.id,
-			name: client.config.name,
-			latency: client.config.latency.toString()
-		};
-		return _this;
-	}
-
-	_createClass(EditSnapcastClientModal, [{
-		key: 'handleSave',
-		value: function handleSave(e) {
-			this.props.pusherActions.setSnapcastClientName(this.state.id, this.state.name);
-			this.props.pusherActions.setSnapcastClientLatency(this.state.id, parseInt(this.state.latency));
-			this.props.uiActions.closeModal();
-		}
-	}, {
-		key: 'handleDelete',
-		value: function handleDelete(e) {
-			this.props.pusherActions.deleteSnapcastClient(this.state.id);
-			this.props.uiActions.closeModal();
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			return _react2.default.createElement(
-				'div',
-				null,
-				_react2.default.createElement(
-					'h1',
-					null,
-					'Edit speaker'
-				),
-				_react2.default.createElement(
-					'h2',
-					{ className: 'grey-text' },
-					'Description'
-				),
-				_react2.default.createElement(
-					'form',
-					null,
-					_react2.default.createElement(
-						'div',
-						{ className: 'field text' },
-						_react2.default.createElement(
-							'span',
-							{ className: 'label' },
-							'Name'
-						),
-						_react2.default.createElement('input', {
-							type: 'text',
-							onChange: function onChange(e) {
-								return _this2.setState({ name: e.target.value });
-							},
-							value: this.state.name })
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'field text' },
-						_react2.default.createElement(
-							'span',
-							{ className: 'label' },
-							'Latency (ms)'
-						),
-						_react2.default.createElement('input', {
-							type: 'number',
-							onChange: function onChange(e) {
-								return _this2.setState({ latency: e.target.value });
-							},
-							value: this.state.latency })
-					)
-				),
-				_react2.default.createElement(
-					'form',
-					null,
-					_react2.default.createElement(
-						'div',
-						{ className: 'actions centered-text' },
-						_react2.default.createElement(
-							'button',
-							{ className: 'destructive large', onClick: function onClick(e) {
-									return _this2.handleDelete(e);
-								} },
-							'Delete'
-						),
-						_react2.default.createElement(
-							'button',
-							{ className: 'primary large', onClick: function onClick(e) {
-									return _this2.handleSave(e);
-								} },
-							'Save'
-						)
-					)
-				)
-			);
-		}
-	}]);
-
-	return EditSnapcastClientModal;
-}(_react2.default.Component);
-
-exports.default = EditSnapcastClientModal;
-
-/***/ }),
-/* 228 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
 var _reactRedux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(7);
 
 var _redux = __webpack_require__(2);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -61429,7 +61387,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ImageZoomModal);
 
 /***/ }),
-/* 229 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61459,7 +61417,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -61539,7 +61497,7 @@ var KioskModeModal = function (_React$Component) {
 exports.default = KioskModeModal;
 
 /***/ }),
-/* 230 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61559,11 +61517,11 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _reactSortablejs = __webpack_require__(231);
+var _reactSortablejs = __webpack_require__(230);
 
 var _reactSortablejs2 = _interopRequireDefault(_reactSortablejs);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -61721,13 +61679,13 @@ var SearchURISchemesModal = function (_React$Component) {
 exports.default = SearchURISchemesModal;
 
 /***/ }),
-/* 231 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _Sortable = __webpack_require__(232);
+var _Sortable = __webpack_require__(231);
 
 var _Sortable2 = _interopRequireDefault(_Sortable);
 
@@ -61736,7 +61694,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = _Sortable2.default;
 
 /***/ }),
-/* 232 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61755,7 +61713,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _class, _temp2; /* eslint consistent-return: 0 */
 
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -61767,7 +61725,7 @@ var _reactDom = __webpack_require__(48);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _sortablejs = __webpack_require__(233);
+var _sortablejs = __webpack_require__(232);
 
 var _sortablejs2 = _interopRequireDefault(_sortablejs);
 
@@ -61897,7 +61855,7 @@ var Sortable = (_temp2 = _class = function (_Component) {
 exports.default = Sortable;
 
 /***/ }),
-/* 233 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
@@ -63448,7 +63406,7 @@ exports.default = Sortable;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 234 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63468,7 +63426,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -63581,7 +63539,7 @@ var InitialSetupModal = function (_React$Component) {
 exports.default = InitialSetupModal;
 
 /***/ }),
-/* 235 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63611,7 +63569,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -63731,7 +63689,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AuthorizationModal_Send);
 
 /***/ }),
-/* 236 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63761,7 +63719,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -63873,7 +63831,7 @@ var _class = function (_React$Component) {
 exports.default = _class;
 
 /***/ }),
-/* 237 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64072,7 +64030,7 @@ var Notifications = function (_React$Component) {
 exports.default = Notifications;
 
 /***/ }),
-/* 238 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64279,7 +64237,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DebugInfo);
 
 /***/ }),
-/* 239 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64617,7 +64575,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Album);
 
 /***/ }),
-/* 240 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65187,7 +65145,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 241 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65639,7 +65597,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Playlist);
 
 /***/ }),
-/* 242 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65885,7 +65843,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(User);
 
 /***/ }),
-/* 243 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65935,7 +65893,7 @@ var _FollowButton = __webpack_require__(45);
 
 var _FollowButton2 = _interopRequireDefault(_FollowButton);
 
-var _LastfmLoveButton = __webpack_require__(244);
+var _LastfmLoveButton = __webpack_require__(243);
 
 var _LastfmLoveButton2 = _interopRequireDefault(_LastfmLoveButton);
 
@@ -65975,7 +65933,7 @@ var _actions4 = __webpack_require__(20);
 
 var lastfmActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(245);
+var _actions5 = __webpack_require__(244);
 
 var geniusActions = _interopRequireWildcard(_actions5);
 
@@ -66367,7 +66325,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 244 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66498,7 +66456,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(FollowButton);
 
 /***/ }),
-/* 245 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66645,7 +66603,7 @@ function findTrackLyrics(track) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 246 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66671,7 +66629,7 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -66997,7 +66955,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 247 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67149,7 +67107,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 248 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67685,7 +67643,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 249 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67743,7 +67701,7 @@ var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _SearchForm = __webpack_require__(250);
+var _SearchForm = __webpack_require__(249);
 
 var _SearchForm2 = _interopRequireDefault(_SearchForm);
 
@@ -68244,7 +68202,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 250 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68403,7 +68361,7 @@ exports.default = (0, _reactRedux.connect)(mapDispatchToProps)(SearchForm);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 251 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68433,13 +68391,9 @@ var _ConfirmationButton = __webpack_require__(100);
 
 var _ConfirmationButton2 = _interopRequireDefault(_ConfirmationButton);
 
-var _PusherConnectionList = __webpack_require__(252);
+var _PusherConnectionList = __webpack_require__(251);
 
 var _PusherConnectionList2 = _interopRequireDefault(_PusherConnectionList);
-
-var _VersionManager = __webpack_require__(253);
-
-var _VersionManager2 = _interopRequireDefault(_VersionManager);
 
 var _Header = __webpack_require__(14);
 
@@ -68449,7 +68403,7 @@ var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -68461,7 +68415,7 @@ var _URILink = __webpack_require__(25);
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
-var _Services = __webpack_require__(254);
+var _Services = __webpack_require__(252);
 
 var _Services2 = _interopRequireDefault(_Services);
 
@@ -68652,6 +68606,25 @@ var Settings = function (_React$Component) {
 					'\xA0 Help'
 				)
 			);
+
+			if (this.props.mopidy.upgrading) {
+				var upgrade_button = _react2.default.createElement(
+					'button',
+					{ className: 'alternative working' },
+					'Upgrading...'
+				);
+			} else if (this.props.pusher.version.upgrade_available) {
+				var upgrade_button = _react2.default.createElement(
+					'button',
+					{ className: 'alternative', onClick: function onClick() {
+							return _this2.props.pusherActions.startUpgrade();
+						} },
+					'Upgrade to ',
+					this.props.pusher.version.latest
+				);
+			} else {
+				var upgrade_button = null;
+			}
 
 			return _react2.default.createElement(
 				'div',
@@ -68887,24 +68860,33 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							_react2.default.createElement(_VersionManager2.default, null)
+							_react2.default.createElement(
+								'span',
+								{ className: 'text' },
+								this.props.pusher.version.current,
+								' installed ',
+								this.props.pusher.version.upgrade_available ? _react2.default.createElement(
+									'span',
+									{ className: 'flag blue' },
+									'Upgrade available'
+								) : null
+							)
 						)
 					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'field' },
+						upgrade_button,
 						_react2.default.createElement(
-							'div',
-							{ className: 'name' },
-							'Reset'
+							'button',
+							{ className: "destructive" + (this.props.mopidy.restarting ? ' working' : ''), onClick: function onClick(e) {
+									return _this2.props.pusherActions.restartMopidy();
+								} },
+							this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'
 						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'input' },
-							_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
-									return _this2.resetAllSettings();
-								} })
-						)
+						_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
+								return _this2.resetAllSettings();
+							} })
 					),
 					_react2.default.createElement(
 						'h4',
@@ -68998,7 +68980,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 252 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69148,128 +69130,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PusherConnectionList);
 
 /***/ }),
-/* 253 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(3);
-
-var _reactRouter = __webpack_require__(7);
-
-var _redux = __webpack_require__(2);
-
-var _reactFontawesome = __webpack_require__(5);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _actions = __webpack_require__(17);
-
-var pusherActions = _interopRequireWildcard(_actions);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var VersionManager = function (_React$Component) {
-	_inherits(VersionManager, _React$Component);
-
-	function VersionManager(props) {
-		_classCallCheck(this, VersionManager);
-
-		return _possibleConstructorReturn(this, (VersionManager.__proto__ || Object.getPrototypeOf(VersionManager)).call(this, props));
-	}
-
-	_createClass(VersionManager, [{
-		key: 'renderUpgradeButton',
-		value: function renderUpgradeButton() {
-			var _this2 = this;
-
-			if (this.props.pusher.upgrading) {
-				return _react2.default.createElement(
-					'button',
-					{ className: 'outline', disabled: true },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'circle-o-notch', spin: true }),
-					'\xA0 Upgrading'
-				);
-			}
-
-			if (!this.props.pusher.version.is_root) {
-				return _react2.default.createElement(
-					'button',
-					{ className: 'outline', disabled: true },
-					'Not running as root'
-				);
-			}
-
-			if (this.props.pusher.version.upgrade_available) {
-				return _react2.default.createElement(
-					'button',
-					{ className: 'primary', onClick: function onClick() {
-							return _this2.props.pusherActions.startUpgrade();
-						} },
-					'Upgrade to ',
-					this.props.pusher.version.latest
-				);
-			}
-
-			return _react2.default.createElement(
-				'button',
-				{ className: 'outline', disabled: true },
-				'No updates available'
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			return _react2.default.createElement(
-				'span',
-				{ className: 'version-manager' },
-				this.renderUpgradeButton(),
-				_react2.default.createElement(
-					'span',
-					{ className: 'description' },
-					this.props.pusher.version.current,
-					' installed'
-				)
-			);
-		}
-	}]);
-
-	return VersionManager;
-}(_react2.default.Component);
-
-var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return state;
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
-	};
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(VersionManager);
-
-/***/ }),
-/* 254 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69299,7 +69160,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Icon = __webpack_require__(12);
+var _Icon = __webpack_require__(13);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -69307,15 +69168,15 @@ var _URILink = __webpack_require__(25);
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
-var _SpotifyAuthenticationFrame = __webpack_require__(255);
+var _SpotifyAuthenticationFrame = __webpack_require__(253);
 
 var _SpotifyAuthenticationFrame2 = _interopRequireDefault(_SpotifyAuthenticationFrame);
 
-var _LastfmAuthenticationFrame = __webpack_require__(256);
+var _LastfmAuthenticationFrame = __webpack_require__(254);
 
 var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
 
-var _Snapcast = __webpack_require__(257);
+var _Snapcast = __webpack_require__(255);
 
 var _Snapcast2 = _interopRequireDefault(_Snapcast);
 
@@ -69967,7 +69828,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 255 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70154,7 +70015,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SpotifyAuthenticationFrame);
 
 /***/ }),
-/* 256 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70340,7 +70201,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LastfmAuthenticationFrame);
 
 /***/ }),
-/* 257 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70374,6 +70235,14 @@ var _VolumeControl = __webpack_require__(97);
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
 
+var _LatencyControl = __webpack_require__(256);
+
+var _LatencyControl2 = _interopRequireDefault(_LatencyControl);
+
+var _TextField = __webpack_require__(257);
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -70406,12 +70275,7 @@ var Snapcast = function (_React$Component) {
 	function Snapcast(props) {
 		_classCallCheck(this, Snapcast);
 
-		var _this = _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
-
-		_this.state = {
-			editing_client: null
-		};
-		return _this;
+		return _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
 	}
 
 	_createClass(Snapcast, [{
@@ -70428,13 +70292,13 @@ var Snapcast = function (_React$Component) {
 			// Just connected
 			if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected) {
 				this.props.pusherActions.getSnapcast();
+
+				// Just enabled
+				// This is the more probable scenario as we don't know if we're enabled until pusher connects
+				// and then gets the config from the server
+			} else if (!this.props.snapcast_enabled && newProps.snapcast_enabled && newProps.pusher_connected) {
+				this.props.pusherActions.getSnapcast();
 			}
-		}
-	}, {
-		key: 'saveEditingClient',
-		value: function saveEditingClient() {
-			this.props.pusherActions.setSnapcastClientName(this.state.editing_client.id, this.state.editing_client.name);
-			this.setState({ editing_client: null });
 		}
 	}, {
 		key: 'render',
@@ -70489,59 +70353,101 @@ var Snapcast = function (_React$Component) {
 				groups.map(function (group) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'group', key: group.id },
+						{ className: 'list group', key: group.id },
 						_react2.default.createElement(
 							'div',
-							{ className: 'inner' },
+							{ className: 'list-item header' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'name' },
+								{ className: 'col name' },
 								group.name ? group.name : 'Untitled group'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'col volume' },
+								'Volume'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'col latency' },
+								'Latency'
 							)
 						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'clients' },
-							group.clients.map(function (client) {
-								var name = client.config.name ? client.config.name : client.host.name;
-								return _react2.default.createElement(
+						group.clients.map(function (client) {
+							var name = client.config.name ? client.config.name : client.host.name;
+							return _react2.default.createElement(
+								'div',
+								{ className: 'list-item client', key: client.id },
+								_react2.default.createElement(
 									'div',
-									{ className: "client " + (client.connected ? 'connected' : 'disconnected'), key: client.id },
-									_react2.default.createElement(
-										'div',
-										{ className: 'inner' },
+									{ className: 'col name' },
+									_react2.default.createElement(_TextField2.default, {
+										onChange: function onChange(value) {
+											return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
+										},
+										value: name
+									}),
+									client.connected ? _react2.default.createElement(
+										'span',
+										{ className: 'status has-tooltip' },
+										_react2.default.createElement(_reactFontawesome2.default, { className: 'green-text', name: 'circle' }),
 										_react2.default.createElement(
-											'div',
-											{ className: 'name' },
-											name,
-											' ',
-											!client.connected ? '(disconnected)' : null
-										),
+											'span',
+											{ className: 'tooltip' },
+											'Connected'
+										)
+									) : _react2.default.createElement(
+										'span',
+										{ className: 'status has-tooltip' },
+										_react2.default.createElement(_reactFontawesome2.default, { className: 'grey-text', name: 'circle' }),
 										_react2.default.createElement(
-											'div',
-											{ className: 'controls' },
-											_react2.default.createElement(
-												'div',
-												{ className: 'control edit', onClick: function onClick(e) {
-														return _this2.props.uiActions.openModal('edit_snapcast_client', { id: client.id });
-													} },
-												_react2.default.createElement(_reactFontawesome2.default, { name: 'cog' })
-											),
-											_react2.default.createElement(_VolumeControl2.default, {
-												volume: client.config.volume.percent,
-												mute: client.config.volume.muted,
-												onVolumeChange: function onVolumeChange(percent) {
-													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, client.config.volume.muted, percent);
-												},
-												onMuteChange: function onMuteChange(mute) {
-													return _this2.props.pusherActions.setSnapcastClientVolume(client.id, mute, client.config.volume.percent);
-												}
-											})
+											'span',
+											{ className: 'tooltip' },
+											'Not connected'
 										)
 									)
-								);
-							})
-						)
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'col volume' },
+									_react2.default.createElement(_VolumeControl2.default, {
+										volume: client.config.volume.percent,
+										mute: client.config.volume.muted,
+										onVolumeChange: function onVolumeChange(percent) {
+											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
+										},
+										onMuteChange: function onMuteChange(mute) {
+											return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
+										}
+									}),
+									_react2.default.createElement(_TextField2.default, {
+										className: 'tiny',
+										onChange: function onChange(value) {
+											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value));
+										},
+										value: client.config.volume.percent
+									})
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'col latency' },
+									_react2.default.createElement(_LatencyControl2.default, {
+										max: '100',
+										value: client.config.latency,
+										onChange: function onChange(value) {
+											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+										}
+									}),
+									_react2.default.createElement(_TextField2.default, {
+										className: 'tiny',
+										onChange: function onChange(value) {
+											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+										},
+										value: String(client.config.latency)
+									})
+								)
+							);
+						})
 					);
 				})
 			);
@@ -70569,6 +70475,256 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
+
+/***/ }),
+/* 256 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LatencyControl = function (_React$Component) {
+	_inherits(LatencyControl, _React$Component);
+
+	function LatencyControl(props) {
+		_classCallCheck(this, LatencyControl);
+
+		return _possibleConstructorReturn(this, (LatencyControl.__proto__ || Object.getPrototypeOf(LatencyControl)).call(this, props));
+	}
+
+	_createClass(LatencyControl, [{
+		key: 'handleClick',
+		value: function handleClick(e) {
+			var slider = e.target;
+			if (slider.className != 'slider') {
+				slider = slider.parentElement;
+			}
+
+			var sliderX = e.clientX - slider.getBoundingClientRect().left;
+			var sliderWidth = slider.getBoundingClientRect().width;
+
+			// Clicked left half
+			if (sliderX < sliderWidth / 2) {
+				var percent = Math.round(sliderX / (sliderWidth / 2) * 100);
+
+				// Invert our percentage
+				percent = 100 - percent;
+
+				var value = -(this.props.max * (percent / 100));
+
+				// Handle maximum value limits
+				if (value < -this.props.max) {
+					value = -this.props.max;
+				}
+
+				// Second half
+			} else {
+
+				// Subtract half the slider's width from our click position
+				sliderX = sliderX - sliderWidth / 2;
+				var percent = Math.round(sliderX / (sliderWidth / 2) * 100);
+
+				var value = this.props.max * (percent / 100);
+
+				// Handle maximum value limits
+				if (value > this.props.max) {
+					value = this.props.max;
+				}
+			}
+
+			this.props.onChange(value);
+		}
+	}, {
+		key: 'handleWheel',
+		value: function handleWheel(e) {
+			if (this.props.scrollWheel) {
+
+				// Identify which direction we've scrolled (inverted)
+				// This is simplified and doesn't consider momentum as it varies wildly
+				// between browsers and devices
+				var direction = e.deltaY > 0 ? -1 : 1;
+				var value = this.props.value;
+
+				value += direction * 5;
+
+				if (value > this.props.max) {
+					value = this.props.max;
+				} else if (value < -this.props.max) {
+					value = -this.props.max;
+				}
+
+				this.props.onChange(value);
+				e.preventDefault();
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			// Zero, or positive value
+			if (this.props.value >= 0) {
+				var value = this.props.value;
+				if (value > this.props.max) {
+					value = this.props.max;
+				}
+				var percentage = Math.round(value / this.props.max * 100 / 2);
+				var left = 50;
+				var width = percentage;
+				var negative = false;
+
+				// Negative value
+				// We reverse it to a positive for easier maths and style rules
+			} else {
+				var value = -this.props.value;
+				if (value < -this.props.max) {
+					value = -this.props.max;
+				}
+				var percentage = Math.round(value / this.props.max * 100 / 2);
+				var left = 50 - percentage;
+				var width = percentage;
+				var negative = true;
+			}
+
+			return _react2.default.createElement(
+				'span',
+				{ className: 'latency-control', onWheel: function onWheel(e) {
+						return _this2.handleWheel(e);
+					} },
+				_react2.default.createElement(
+					'div',
+					{ className: 'slider-wrapper' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'slider horizontal', onClick: function onClick(e) {
+								return _this2.handleClick(e);
+							} },
+						_react2.default.createElement('div', { className: 'zero' }),
+						_react2.default.createElement(
+							'div',
+							{ className: 'track' },
+							_react2.default.createElement('div', { className: "progress " + (negative ? 'negative' : 'positive'), style: { width: width + '%', left: left + '%' } })
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return LatencyControl;
+}(_react2.default.Component);
+
+exports.default = LatencyControl;
+
+/***/ }),
+/* 257 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var TextField = function (_React$Component) {
+	_inherits(TextField, _React$Component);
+
+	function TextField(props) {
+		_classCallCheck(this, TextField);
+
+		var _this = _possibleConstructorReturn(this, (TextField.__proto__ || Object.getPrototypeOf(TextField)).call(this, props));
+
+		_this.state = {
+			in_focus: false,
+			value: _this.props.value ? _this.props.value : ''
+		};
+		return _this;
+	}
+
+	_createClass(TextField, [{
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(newProps) {
+			if (!this.state.in_focus) {
+				this.setState({ value: newProps.value });
+			}
+		}
+	}, {
+		key: 'handleChange',
+		value: function handleChange(e) {
+			this.setState({ value: e.target.value });
+		}
+	}, {
+		key: 'handleFocus',
+		value: function handleFocus(e) {
+			this.setState({ in_focus: true });
+		}
+	}, {
+		key: 'handleBlur',
+		value: function handleBlur(e) {
+			this.setState({ in_focus: false });
+			if (this.state.value !== this.props.value) {
+				this.props.onChange(this.state.value);
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement('input', {
+				className: this.props.className ? this.props.className : '',
+				type: 'text',
+				onChange: function onChange(e) {
+					return _this2.handleChange(e);
+				},
+				onFocus: function onFocus(e) {
+					return _this2.handleFocus(e);
+				},
+				onBlur: function onBlur(e) {
+					return _this2.handleBlur(e);
+				},
+				value: this.state.value
+			});
+		}
+	}]);
+
+	return TextField;
+}(_react2.default.Component);
+
+exports.default = TextField;
 
 /***/ }),
 /* 258 */
@@ -71381,7 +71537,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -72736,7 +72892,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -73140,7 +73296,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(13);
+var _propTypes = __webpack_require__(12);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -75529,6 +75685,7 @@ var LibraryPlaylists = function (_React$Component) {
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(newProps) {
+
 			if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')) {
 
 				// We've just connected

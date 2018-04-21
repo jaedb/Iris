@@ -4,6 +4,7 @@ import ReactGA from 'react-ga'
 var helpers = require('../../helpers.js')
 var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
+var mopidyActions = require('../mopidy/actions.js')
 var pusherActions = require('./actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 var spotifyActions = require('../spotify/actions.js')
@@ -92,8 +93,14 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'restart':
+                    case 'refresh':
                         window.location.reload(true);
+                        break;
+                    case 'update_started':
+                        store.dispatch(uiActions.createNotification({content: 'Update running...', type: 'info'}));
+                        break;
+                    case 'restart_started':
+                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
                         break;
                 }
             }
@@ -265,30 +272,6 @@ const PusherMiddleware = (function(){
                 })
                 break;
 
-            case 'PUSHER_START_UPGRADE':
-                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            if (response.upgrade_successful){
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
-                            } else {
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade failed, please upgrade manually', type: 'bad'}));
-                            }
-
-                            response.type = 'PUSHER_VERSION'
-                            store.dispatch(response)
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not start upgrade',
-                                error
-                            ));
-                        }
-                    );
-                return next(action);
-                break;
-
             case 'PUSHER_SET_USERNAME':
                 request(store, 'set_username', {username: action.username})
                     .then(
@@ -332,14 +315,6 @@ const PusherMiddleware = (function(){
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
                             });
-
-                            var core = store.getState().core;
-                            if (!core.country || !core.locale){
-                                store.dispatch(spotifyActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }))
-                            }
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -503,21 +478,63 @@ const PusherMiddleware = (function(){
                 window.location.reload(true);
                 break
 
+            case 'PUSHER_RESTART_MOPIDY':
+                request(store, 'restart')
+                    .then(
+                        response => {
+                            store.dispatch(mopidyActions.restartStarted());
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
+                        }
+                    );
+                next(action);
+                break
+
+            case 'PUSHER_UPGRADE':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+                request(store, 'upgrade')
+                    .then(
+                        response => {
+                            store.dispatch(mopidyActions.upgradeStarted());
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                        }
+                    );
+                break;
+
             case 'PUSHER_VERSION':
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
 
                 if (action.version.upgrade_available){
                     store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
                 }
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_CONFIG':
-                store.dispatch(spotifyActions.set({
-                    locale: (action.config.locale ? action.config.locale : null),
-                    country: (action.config.country ? action.config.country : null),
-                    authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
-                }));
+
+                // Set default country/locale (unless we've already been configured)
+                var spotify = store.getState().spotify;
+                var spotify_updates = {};
+
+                if (!spotify.country && action.config.country){
+                    spotify_updates.country = action.config.country;
+                }
+
+                if (!spotify.locale && action.config.locale){
+                    spotify_updates.locale = action.config.locale;
+                }
+
+                if (action.config.spotify_authorization_url){
+                    spotify_updates.authorization_url = action.config.authorization_url;
+                }
+
+                if (spotify_updates !== {}){
+                    store.dispatch(spotifyActions.set(spotify_updates));
+                }
+                
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
                 }));
@@ -594,37 +611,22 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
-                request(store, 'snapcast_instruct', action.data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
-                                }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
-                break
-
             case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
-                request(store, 'snapcast_instruct', action.data)
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetName',
+                    params: {
+                        id: action.id,
+                        name: action.name
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
                                 client: {
                                     config: {
                                         name: response.name
@@ -642,13 +644,94 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
-                request(store, 'snapcast_instruct', action.data)
+            case 'PUSHER_SET_SNAPCAST_CLIENT_MUTE':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: action.mute,
+                            percent: client.config.volume.percent,
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: client.config.volume.muted,
+                            percent: action.percent
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetLatency',
+                    params: {
+                        id: action.id,
+                        latency: action.latency
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
                                 client: {
                                     config: {
                                         latency: response.latency
@@ -667,7 +750,14 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELETE_SNAPCAST_CLIENT':
-                request(store, 'snapcast_instruct', action.data)
+                var data = {
+                    method: 'Server.DeleteClient',
+                    params: {
+                        id: action.id
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({

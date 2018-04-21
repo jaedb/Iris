@@ -26,23 +26,25 @@ export default class VolumeControl extends React.Component{
 	}
 
 	handleWheel(e){
+		if (this.props.scrollWheel){
+			
+			// Identify which direction we've scrolled (inverted)
+			// This is simplified and doesn't consider momentum as it varies wildly
+			// between browsers and devices
+			var direction = (e.deltaY > 0 ? -1 : 1)
+			var percent = this.props.volume;
 
-		// Identify which direction we've scrolled (inverted)
-		// This is simplified and doesn't consider momentum as it varies wildly
-		// between browsers and devices
-		var direction = (e.deltaY > 0 ? -1 : 1)
-		var percent = this.props.volume;
+			percent += direction * 5
 
-		percent += direction * 5
+			if (percent > 100){
+				percent = 100
+			} else if (percent < 0){
+				percent = 0
+			}
 
-		if (percent > 100){
-			percent = 100
-		} else if (percent < 0){
-			percent = 0
+			this.props.onVolumeChange(percent);
+			e.preventDefault();
 		}
-
-		this.props.onVolumeChange(percent);
-		e.preventDefault();
 	}
 
 	renderMuteButton(){

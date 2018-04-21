@@ -4,11 +4,11 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link, hashHistory } from 'react-router'
 
-import ArtistSentence from './ArtistSentence'
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import ArtistSentence from './../ArtistSentence'
+import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 
 class AddSeedField extends React.Component{
 

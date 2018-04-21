@@ -14,6 +14,24 @@ export function connect(){
 	}
 }
 
+export function connecting(){
+	return {
+		type: 'MOPIDY_CONNECTING'
+	}
+}
+
+export function upgradeStarted(){
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	}
+}
+
+export function restartStarted(){
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	}
+}
+
 export function disconnect(){
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -52,7 +70,7 @@ export function pause(){
 
 export function stop(){
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	}
 }
 

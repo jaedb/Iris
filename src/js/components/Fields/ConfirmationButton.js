@@ -52,10 +52,22 @@ export default class ConfirmationButton extends React.Component{
 		if (this.state.confirming){
 			className += ' confirming';	
 			content = this.props.confirmingContent;
-			if (this.state.timing_out ) className += ' timing-out';
+			if (this.state.timing_out){
+				className += ' timing-out';
+			}
 		}
 
-		if (this.props.className ) className += ' '+this.props.className
+		if (this.props.working){
+			className += ' working';
+
+			if (this.props.workingContent){
+				content = this.props.workingContent;
+			}
+		}
+
+		if (this.props.className){
+			className += ' '+this.props.className;
+		}
 
 		return (
 			<button
