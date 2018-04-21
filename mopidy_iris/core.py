@@ -505,10 +505,12 @@ class IrisCore(object):
             return response
 
     def upgrade(self, *args, **kwargs):
+        logger.info("Upgrading")
+
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "upgrade_started",
+            'method': "upgrading",
             'params': {}
         })
 
@@ -519,47 +521,68 @@ class IrisCore(object):
         # TODO: Test cross-platform??
         permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
         if "password is required" in permission_check:
+
+            logger.error("Upgrade failed: Permission denied. Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
+
             error = {
                 'message': "Permission denied",
                 'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
             }
+
             if (callback):
                 callback(False, error)
                 return
             else:
                 return error
 
-        # Start the upgrade
-        output = subprocess.call(["sudo "+path+"/system.sh upgrade"], shell=True)
+        # Attempt the upgrade
+        upgrade_process = subprocess.Popen("sudo "+path+"/system.sh upgrade", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result, error = upgrade_process.communicate()
+        exitCode = upgrade_process.wait()
 
-        # Callbacks can be made, while our script continues to run
-        if (callback):
-            callback(response)
-            response = {
-                'message': "Upgrade complete, restarting server",
+        if exitCode > 0:
+            output = error.decode('ascii')
+            logger.error("Upgrade failed: "+output)
+
+            error = {
+                'message': "Upgrade failed",
                 'data': {
                     'output': output
                 }
             }
 
-        # And now restart
-        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        output = result.decode();
+
+        # And now restart (with a 5 second delay to allow our response to return first)
+        subprocess.Popen(["sudo "+path+"/system.sh restart 5"], shell=True)
         
         # Now we can return for simple requests
         response = {
-            'message': "Upgrade complete, restarting server",
+            'message': "Upgrade complete, restarting server in 5 seconds",
             'data': {
                 'output': output
             }
         }
-        return response
+
+        if (callback):
+            callback(response)
+        else:
+            return response
 
         
     def restart(self, *args, **kwargs):
+        logger.info("Restarting")
+
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "restart_started",
+            'method': "restarting",
             'params': {}
         })
 
@@ -581,7 +604,7 @@ class IrisCore(object):
             else:
                 return error
 
-        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+        subprocess.Popen(["sudo "+path+"/system.sh restart 0"], shell=True)
 
         response = {
             'message': "Restarting... please wait"

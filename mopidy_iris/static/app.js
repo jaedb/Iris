@@ -3473,8 +3473,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.setConfig = setConfig;
 exports.connect = connect;
 exports.connecting = connecting;
-exports.upgradeStarted = upgradeStarted;
-exports.restartStarted = restartStarted;
+exports.upgrading = upgrading;
+exports.restarting = restarting;
 exports.disconnect = disconnect;
 exports.debug = debug;
 exports.getPlayState = getPlayState;
@@ -3556,15 +3556,15 @@ function connecting() {
 	};
 }
 
-function upgradeStarted() {
+function upgrading() {
 	return {
-		type: 'MOPIDY_UPGRADE_STARTED'
+		type: 'MOPIDY_UPGRADING'
 	};
 }
 
-function restartStarted() {
+function restarting() {
 	return {
-		type: 'MOPIDY_RESTART_STARTED'
+		type: 'MOPIDY_RESTARTING'
 	};
 }
 
@@ -4750,8 +4750,9 @@ exports.setPort = setPort;
 exports.setUsername = setUsername;
 exports.connect = connect;
 exports.disconnect = disconnect;
-exports.startUpgrade = startUpgrade;
-exports.restartMopidy = restartMopidy;
+exports.upgrade = upgrade;
+exports.reload = reload;
+exports.restart = restart;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -4809,15 +4810,21 @@ function disconnect() {
 	};
 }
 
-function startUpgrade() {
+function upgrade() {
 	return {
-		type: 'PUSHER_START_UPGRADE'
+		type: 'PUSHER_UPGRADE'
 	};
 }
 
-function restartMopidy() {
+function reload() {
 	return {
-		type: 'PUSHER_RESTART_MOPIDY'
+		type: 'PUSHER_RELOAD'
+	};
+}
+
+function restart() {
+	return {
+		type: 'PUSHER_RESTART'
 	};
 }
 
@@ -49489,10 +49496,10 @@ function reducer() {
         case 'MOPIDY_CONNECTING':
             return Object.assign({}, mopidy, { connected: false, connecting: true });
 
-        case 'MOPIDY_RESTART_STARTED':
+        case 'MOPIDY_RESTARTING':
             return Object.assign({}, mopidy, { restarting: true });
 
-        case 'MOPIDY_UPGRADE_STARTED':
+        case 'MOPIDY_UPGRADING':
             return Object.assign({}, mopidy, { upgrading: true });
 
         case 'MOPIDY_CONNECTED':
@@ -51011,13 +51018,13 @@ var PusherMiddleware = function () {
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'refresh':
+                    case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'update_started':
-                        store.dispatch(uiActions.createNotification({ content: 'Update running...', type: 'info' }));
+                    case 'upgrading':
+                        store.dispatch(uiActions.createNotification({ content: 'Upgrading...', type: 'info' }));
                         break;
-                    case 'restart_started':
+                    case 'restarting':
                         store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
                         break;
                 }
@@ -51310,15 +51317,15 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.createNotification(data));
                         break;
 
-                    case 'PUSHER_RESTART':
+                    case 'PUSHER_RELOAD':
                         // Hard reload. This doesn't strictly clear the cache, but our compiler's
                         // cache buster should handle that 
                         window.location.reload(true);
                         break;
 
-                    case 'PUSHER_RESTART_MOPIDY':
+                    case 'PUSHER_RESTART':
                         request(store, 'restart').then(function (response) {
-                            store.dispatch(mopidyActions.restartStarted());
+                            store.dispatch(mopidyActions.restarting());
                         }, function (error) {
                             store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
                         });
@@ -51328,7 +51335,7 @@ var PusherMiddleware = function () {
                     case 'PUSHER_UPGRADE':
                         _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
                         request(store, 'upgrade').then(function (response) {
-                            store.dispatch(mopidyActions.upgradeStarted());
+                            store.dispatch(mopidyActions.upgrading());
                         }, function (error) {
                             store.dispatch(uiActions.createNotification({ content: error.message, type: 'bad' }));
                         });
@@ -68616,14 +68623,20 @@ var Settings = function (_React$Component) {
 			} else if (this.props.pusher.version.upgrade_available) {
 				var upgrade_button = _react2.default.createElement(
 					'button',
-					{ className: 'alternative', onClick: function onClick() {
-							return _this2.props.pusherActions.startUpgrade();
+					{ className: 'alternative', onClick: function onClick(e) {
+							return _this2.props.pusherActions.upgrade();
 						} },
 					'Upgrade to ',
 					this.props.pusher.version.latest
 				);
 			} else {
-				var upgrade_button = null;
+				var upgrade_button = _react2.default.createElement(
+					'button',
+					{ className: 'alternative', onClick: function onClick(e) {
+							return _this2.props.pusherActions.upgrade();
+						} },
+					'Already up-to-date'
+				);
 			}
 
 			return _react2.default.createElement(
@@ -68880,7 +68893,7 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: "destructive" + (this.props.mopidy.restarting ? ' working' : ''), onClick: function onClick(e) {
-									return _this2.props.pusherActions.restartMopidy();
+									return _this2.props.pusherActions.restart();
 								} },
 							this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'
 						),
