@@ -93,13 +93,13 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'refresh':
+                    case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'update_started':
-                        store.dispatch(uiActions.createNotification({content: 'Update running...', type: 'info'}));
+                    case 'upgrading':
+                        store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
                         break;
-                    case 'restart_started':
+                    case 'restarting':
                         store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
                         break;
                 }
@@ -472,17 +472,17 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
-            case 'PUSHER_RESTART':
+            case 'PUSHER_RELOAD':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
                 window.location.reload(true);
                 break
 
-            case 'PUSHER_RESTART_MOPIDY':
+            case 'PUSHER_RESTART':
                 request(store, 'restart')
                     .then(
                         response => {
-                            store.dispatch(mopidyActions.restartStarted());
+                            store.dispatch(mopidyActions.restarting());
                         },
                         error => {
                             store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
@@ -496,7 +496,7 @@ const PusherMiddleware = (function(){
                 request(store, 'upgrade')
                     .then(
                         response => {
-                            store.dispatch(mopidyActions.upgradeStarted());
+                            store.dispatch(mopidyActions.upgrading());
                         },
                         error => {
                             store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));

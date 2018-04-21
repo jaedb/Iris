@@ -151,9 +151,9 @@ class Settings extends React.Component {
 				</button>
 			);
 		} else if (this.props.pusher.version.upgrade_available){
-			var upgrade_button = <button className="alternative" onClick={() => this.props.pusherActions.startUpgrade()}>Upgrade to { this.props.pusher.version.latest }</button>
+			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
 		} else {
-			var upgrade_button = null;
+			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Already up-to-date</button>;
 		}
 
 		return (
@@ -278,7 +278,7 @@ class Settings extends React.Component {
 					
 					<div className="field">
 						{upgrade_button}
-				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restartMopidy()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
+				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
