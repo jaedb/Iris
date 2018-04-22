@@ -204,9 +204,7 @@ export function getNextTrack(){
 
 export function clearCurrentTrack(){
 	return {
-		type: 'CURRENT_TRACK_LOADED',
-        track: null,
-        uri: null
+		type: 'CLEAR_CURRENT_TRACK'
 	}
 }
 

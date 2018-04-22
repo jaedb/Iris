@@ -2037,8 +2037,6 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                // Set our window title to the track title
-                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                 store.dispatch({
                     type: 'CURRENT_TRACK_LOADED',
                     track: track

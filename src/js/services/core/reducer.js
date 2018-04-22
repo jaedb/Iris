@@ -17,6 +17,12 @@ export default function reducer(core = {}, action){
                 current_track_uri: action.uri
             });
 
+        case 'CLEAR_CURRENT_TRACK':
+            return Object.assign({}, core, {
+                current_track: null,
+                current_track_uri: null
+            });
+
         case 'NEXT_TRACK_LOADED':
             return Object.assign({}, core, {
                 next_track_uri: action.uri
