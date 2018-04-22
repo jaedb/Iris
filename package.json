@@ -1,10 +1,6 @@
 {
   "name": "mopidy-iris",
-<<<<<<< Updated upstream
   "version": "3.17.1",
-=======
-  "version": "3.17.0",
->>>>>>> Stashed changes
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",
