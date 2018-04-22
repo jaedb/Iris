@@ -517,21 +517,25 @@ const PusherMiddleware = (function(){
 
                 // Set default country/locale (unless we've already been configured)
                 var spotify = store.getState().spotify;
+                var spotify_updated = false;
                 var spotify_updates = {};
 
                 if (!spotify.country && action.config.country){
                     spotify_updates.country = action.config.country;
+                    spotify_updated = true;
                 }
 
                 if (!spotify.locale && action.config.locale){
                     spotify_updates.locale = action.config.locale;
+                    spotify_updated = true;
                 }
 
                 if (action.config.spotify_authorization_url){
-                    spotify_updates.authorization_url = action.config.authorization_url;
+                    spotify_updates.authorization_url = action.config.spotify_authorization_url;
+                    spotify_updated = true;
                 }
 
-                if (spotify_updates !== {}){
+                if (spotify_updated){
                     store.dispatch(spotifyActions.set(spotify_updates));
                 }
                 
