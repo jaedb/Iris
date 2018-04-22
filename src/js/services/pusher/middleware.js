@@ -24,21 +24,31 @@ const PusherMiddleware = (function(){
             console.log('Pusher log (incoming)', message);
         }
 
+        // Pull our ID. JSON-RPC nests the ID under the error object, 
+        // so make sure we handle that.
+        // TODO: Use this as our measure of a successful response vs error
+        var id = null;
+        if (message.id){
+            id = message.id;
+        } else if (message.error && message.error.id){
+            id = message.error.id;
+        }
+
         // Response with request_id
-        if (message.id !== undefined && message.id){
+        if (id){
 
             // Response matches a pending request
-            if (deferredRequests[message.id] !== undefined){
+            if (deferredRequests[id] !== undefined){
 
-                store.dispatch(uiActions.stopLoading(message.id));
+                store.dispatch(uiActions.stopLoading(id));
 
                 // Response is an error
                 if (message.error !== undefined){
-                    deferredRequests[message.id].reject(message.error);
+                    deferredRequests[id].reject(message.error);
 
                 // Successful response
                 } else {
-                    deferredRequests[message.id].resolve(message.result);
+                    deferredRequests[id].resolve(message.result);
                 }
 
             // Hmm, the response doesn't appear to be for us?
@@ -54,10 +64,10 @@ const PusherMiddleware = (function(){
 
             // Broadcast of an error
             if (message.error !== undefined){
-
                 store.dispatch(coreActions.handleException(
                     'Pusher: '+message.error.message, 
-                    message
+                    message,
+                    (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null)
                 ));
 
             } else {
@@ -110,10 +120,6 @@ const PusherMiddleware = (function(){
     const request = (store, method, params = null) => {
         return new Promise((resolve, reject) => {
 
-            if (store.getState().ui.log_pusher){
-                console.log('Pusher log (outgoing)', {method: method, params: params});
-            }
-
             var id = helpers.generateGuid();
             var message = {
                 jsonrpc: '2.0',
@@ -123,11 +129,16 @@ const PusherMiddleware = (function(){
             if (params){
                 message.params = params;
             }
+
+            if (store.getState().ui.log_pusher){
+                console.log('Pusher log (outgoing)', message);
+            }
+
             socket.send(JSON.stringify(message));
 
             store.dispatch(uiActions.startLoading(id, 'pusher_'+method));
 
-            // Start our 15 second timeout
+            // Start our 30 second timeout
             var timeout = setTimeout(
                 function(){
                     store.dispatch(uiActions.stopLoading(id));
@@ -499,7 +510,7 @@ const PusherMiddleware = (function(){
                             store.dispatch(mopidyActions.upgrading());
                         },
                         error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, type: 'bad'}));
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
                         }
                     );
                 break;
@@ -517,21 +528,25 @@ const PusherMiddleware = (function(){
 
                 // Set default country/locale (unless we've already been configured)
                 var spotify = store.getState().spotify;
+                var spotify_updated = false;
                 var spotify_updates = {};
 
                 if (!spotify.country && action.config.country){
                     spotify_updates.country = action.config.country;
+                    spotify_updated = true;
                 }
 
                 if (!spotify.locale && action.config.locale){
                     spotify_updates.locale = action.config.locale;
+                    spotify_updated = true;
                 }
 
                 if (action.config.spotify_authorization_url){
                     spotify_updates.authorization_url = action.config.authorization_url;
+                    spotify_updated = true;
                 }
 
-                if (spotify_updates !== {}){
+                if (spotify_updated){
                     store.dispatch(spotifyActions.set(spotify_updates));
                 }
                 

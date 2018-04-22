@@ -153,7 +153,7 @@ class Settings extends React.Component {
 		} else if (this.props.pusher.version.upgrade_available){
 			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
 		} else {
-			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Already up-to-date</button>;
+			var upgrade_button = null;
 		}
 
 		return (
@@ -271,7 +271,7 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : null}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag grey">Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
