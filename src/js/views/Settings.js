@@ -271,7 +271,7 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag grey">Up-to-date</span>}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><FontAwesome name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
