@@ -70821,8 +70821,9 @@ var Settings = function (_React$Component) {
 									'Upgrade available'
 								) : _react2.default.createElement(
 									'span',
-									{ className: 'flag grey' },
-									'Up-to-date'
+									{ className: 'flag dark' },
+									_react2.default.createElement(_reactFontawesome2.default, { name: 'check', className: 'green-text' }),
+									'\xA0 Up-to-date'
 								)
 							)
 						)
