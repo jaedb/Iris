@@ -1,2 +1,3 @@
 include mopidy_iris/ext.conf
+include mopidy_iris/system.sh
 recursive-include mopidy_iris/static *
