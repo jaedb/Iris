@@ -473,6 +473,7 @@ class IrisCore(object):
         else:
             return response
 
+
     def get_version(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
@@ -504,84 +505,106 @@ class IrisCore(object):
         else:
             return response
 
+
     def upgrade(self, *args, **kwargs):
+        logger.info("Upgrading")
+
         callback = kwargs.get('callback', False)
 
+        try:
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
+
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
         self.broadcast(data={
-            'method': "upgrade_started",
+            'method': "upgrading",
             'params': {}
         })
 
         # Run the system task
         path = os.path.dirname(__file__)
-        
-        # Make sure we can run as sudo without password
-        # TODO: Test cross-platform??
-        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
-        if "password is required" in permission_check:
+
+        # Attempt the upgrade
+        upgrade_process = subprocess.Popen("sudo "+path+"/system.sh upgrade", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result, error = upgrade_process.communicate()
+        exitCode = upgrade_process.wait()
+
+        if exitCode > 0:
+            output = error.decode('ascii')
+            logger.error("Upgrade failed: "+output)
+
             error = {
-                'message': "Permission denied",
-                'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
-            }
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
-        # Start the upgrade
-        output = subprocess.call(["sudo "+path+"/system.sh upgrade"], shell=True)
-
-        # Callbacks can be made, while our script continues to run
-        if (callback):
-            callback(response)
-            response = {
-                'message': "Upgrade complete, restarting server",
+                'message': "Upgrade failed",
                 'data': {
                     'output': output
                 }
             }
 
-        # And now restart
-        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
-        
-        # Now we can return for simple requests
-        response = {
-            'message': "Upgrade complete, restarting server",
-            'data': {
-                'output': output
-            }
-        }
-        return response
-
-        
-    def restart(self, *args, **kwargs):
-        callback = kwargs.get('callback', False)
-
-        self.broadcast(data={
-            'method': "restart_started",
-            'params': {}
-        })
-
-        path = os.path.dirname(__file__)
-
-        # Make sure we can run as sudo without password
-        # TODO: Test cross-platform??
-        permission_check = str(subprocess.call(["sudo -n "+path+"/system.sh"], shell=True)).lower()
-        if "password is required" in permission_check:
-            error = {
-                'message': "Permission denied",
-                'data': {
-                    'description': "Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file."
-                }
-            }
             if (callback):
                 callback(False, error)
                 return
             else:
                 return error
 
-        subprocess.Popen(["sudo "+path+"/system.sh restart"], shell=True)
+        output = result.decode();
+
+        # And now restart (with a 5 second delay to allow our response to return first)
+        subprocess.Popen(["sudo "+path+"/system.sh restart 5"], shell=True)
+        
+        # Now we can return for simple requests
+        response = {
+            'message': "Upgrade complete, restarting server in 5 seconds",
+            'data': {
+                'output': output
+            }
+        }
+
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+        
+    def restart(self, *args, **kwargs):
+        logger.info("Restarting")
+        callback = kwargs.get('callback', False)
+
+        try:
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
+
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+
+        self.broadcast(data={
+            'method': "restarting",
+            'params': {}
+        })
+
+        path = os.path.dirname(__file__)
+
+        subprocess.Popen(["sudo "+path+"/system.sh restart 0"], shell=True)
 
         response = {
             'message': "Restarting... please wait"
@@ -996,16 +1019,55 @@ class IrisCore(object):
 
 
     ##
-    # Simple test method
+    # Check if we have access to the system script (system.sh)
+    #
+    # @return boolean or exception
+    ##
+    def check_system_access(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+
+        # Run the system task
+        path = os.path.dirname(__file__)
+
+        # Attempt the upgrade
+        process = subprocess.Popen("sudo -n "+path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result, error = process.communicate()
+        exitCode = process.wait()
+
+        if exitCode > 0:
+            raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
+        else:
+            return True
+
+
+    ##
+    # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
-        data = kwargs.get('data', {})
 
-        if data and 'force_error' in data:
-            callback(False, {'message': "Could not sleep, forced error"})
+        try:
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
+
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        response = {
+            'message': "Permission granted"
+        }
+
+        if (callback):
+            callback(response)
             return
         else:
-            time.sleep(1)
-            callback({'message': "Slept for one second"}, False)
-            return
+            return response

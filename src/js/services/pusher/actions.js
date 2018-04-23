@@ -29,15 +29,21 @@ export function disconnect(){
 	}
 }
 
-export function startUpgrade(){
+export function upgrade(){
 	return {
-		type: 'PUSHER_START_UPGRADE'
+		type: 'PUSHER_UPGRADE'
 	}
 }
 
-export function restartMopidy(){
+export function reload(){
 	return {
-		type: 'PUSHER_RESTART_MOPIDY'
+		type: 'PUSHER_RELOAD'
+	}
+}
+
+export function restart(){
+	return {
+		type: 'PUSHER_RESTART'
 	}
 }
 

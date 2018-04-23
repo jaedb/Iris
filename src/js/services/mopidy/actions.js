@@ -20,15 +20,15 @@ export function connecting(){
 	}
 }
 
-export function upgradeStarted(){
+export function upgrading(){
 	return {
-		type: 'MOPIDY_UPGRADE_STARTED'
+		type: 'MOPIDY_UPGRADING'
 	}
 }
 
-export function restartStarted(){
+export function restarting(){
 	return {
-		type: 'MOPIDY_RESTART_STARTED'
+		type: 'MOPIDY_RESTARTING'
 	}
 }
 
@@ -70,7 +70,7 @@ export function pause(){
 
 export function stop(){
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	}
 }
 
@@ -204,9 +204,7 @@ export function getNextTrack(){
 
 export function clearCurrentTrack(){
 	return {
-		type: 'CURRENT_TRACK_LOADED',
-        track: null,
-        uri: null
+		type: 'CLEAR_CURRENT_TRACK'
 	}
 }
 

@@ -65,6 +65,7 @@ const MopidyMiddleware = (function(){
 
             case 'state:offline':
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+                store.dispatch(mopidyActions.clearCurrentTrack());
 
                 // reset our playback interval timer
                 clearInterval(progress_interval)
@@ -319,7 +320,10 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_STOP':
-                request(socket, store, 'playback.stop');
+                request(socket, store, 'playback.stop')
+                    .then(response => {
+                            store.dispatch(mopidyActions.clearCurrentTrack());
+                        });
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
@@ -2033,8 +2037,6 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                // Set our window title to the track title
-                helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                 store.dispatch({
                     type: 'CURRENT_TRACK_LOADED',
                     track: track

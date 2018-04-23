@@ -3601,8 +3601,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.setConfig = setConfig;
 exports.connect = connect;
 exports.connecting = connecting;
-exports.upgradeStarted = upgradeStarted;
-exports.restartStarted = restartStarted;
+exports.upgrading = upgrading;
+exports.restarting = restarting;
 exports.disconnect = disconnect;
 exports.debug = debug;
 exports.getPlayState = getPlayState;
@@ -3684,15 +3684,15 @@ function connecting() {
 	};
 }
 
-function upgradeStarted() {
+function upgrading() {
 	return {
-		type: 'MOPIDY_UPGRADE_STARTED'
+		type: 'MOPIDY_UPGRADING'
 	};
 }
 
-function restartStarted() {
+function restarting() {
 	return {
-		type: 'MOPIDY_RESTART_STARTED'
+		type: 'MOPIDY_RESTARTING'
 	};
 }
 
@@ -3734,7 +3734,7 @@ function pause() {
 
 function stop() {
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	};
 }
 
@@ -3866,9 +3866,7 @@ function getNextTrack() {
 
 function clearCurrentTrack() {
 	return {
-		type: 'CURRENT_TRACK_LOADED',
-		track: null,
-		uri: null
+		type: 'CLEAR_CURRENT_TRACK'
 	};
 }
 
@@ -5259,8 +5257,9 @@ exports.setPort = setPort;
 exports.setUsername = setUsername;
 exports.connect = connect;
 exports.disconnect = disconnect;
-exports.startUpgrade = startUpgrade;
-exports.restartMopidy = restartMopidy;
+exports.upgrade = upgrade;
+exports.reload = reload;
+exports.restart = restart;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -5318,15 +5317,21 @@ function disconnect() {
 	};
 }
 
-function startUpgrade() {
+function upgrade() {
 	return {
-		type: 'PUSHER_START_UPGRADE'
+		type: 'PUSHER_UPGRADE'
 	};
 }
 
-function restartMopidy() {
+function reload() {
 	return {
-		type: 'PUSHER_RESTART_MOPIDY'
+		type: 'PUSHER_RELOAD'
+	};
+}
+
+function restart() {
+	return {
+		type: 'PUSHER_RESTART'
 	};
 }
 
@@ -50838,6 +50843,12 @@ function reducer() {
                 current_track_uri: action.uri
             });
 
+        case 'CLEAR_CURRENT_TRACK':
+            return Object.assign({}, core, {
+                current_track: null,
+                current_track_uri: null
+            });
+
         case 'NEXT_TRACK_LOADED':
             return Object.assign({}, core, {
                 next_track_uri: action.uri
@@ -51407,10 +51418,10 @@ function reducer() {
         case 'MOPIDY_CONNECTING':
             return Object.assign({}, mopidy, { connected: false, connecting: true });
 
-        case 'MOPIDY_RESTART_STARTED':
+        case 'MOPIDY_RESTARTING':
             return Object.assign({}, mopidy, { restarting: true });
 
-        case 'MOPIDY_UPGRADE_STARTED':
+        case 'MOPIDY_UPGRADING':
             return Object.assign({}, mopidy, { upgrading: true });
 
         case 'MOPIDY_CONNECTED':
@@ -52299,7 +52310,16 @@ var CoreMiddleware = function () {
                             tracks: [action.track]
                         });
 
+                        // Set our window title to the track title
+                        helpers.setWindowTitle(action.track, store.getState().mopidy.play_state);
+
                         next(action);
+                        break;
+
+                    case 'CLEAR_CURRENT_TRACK':
+
+                        // Set our window title to the track title
+                        helpers.setWindowTitle(null, store.getState().mopidy.play_state);
                         break;
 
                     case 'QUEUE_LOADED':
@@ -52867,21 +52887,31 @@ var PusherMiddleware = function () {
             console.log('Pusher log (incoming)', message);
         }
 
+        // Pull our ID. JSON-RPC nests the ID under the error object, 
+        // so make sure we handle that.
+        // TODO: Use this as our measure of a successful response vs error
+        var id = null;
+        if (message.id) {
+            id = message.id;
+        } else if (message.error && message.error.id) {
+            id = message.error.id;
+        }
+
         // Response with request_id
-        if (message.id !== undefined && message.id) {
+        if (id) {
 
             // Response matches a pending request
-            if (deferredRequests[message.id] !== undefined) {
+            if (deferredRequests[id] !== undefined) {
 
-                store.dispatch(uiActions.stopLoading(message.id));
+                store.dispatch(uiActions.stopLoading(id));
 
                 // Response is an error
                 if (message.error !== undefined) {
-                    deferredRequests[message.id].reject(message.error);
+                    deferredRequests[id].reject(message.error);
 
                     // Successful response
                 } else {
-                    deferredRequests[message.id].resolve(message.result);
+                    deferredRequests[id].resolve(message.result);
                 }
 
                 // Hmm, the response doesn't appear to be for us?
@@ -52894,8 +52924,7 @@ var PusherMiddleware = function () {
 
             // Broadcast of an error
             if (message.error !== undefined) {
-
-                store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message));
+                store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
             } else {
 
                 switch (message.method) {
@@ -52929,13 +52958,13 @@ var PusherMiddleware = function () {
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
-                    case 'refresh':
+                    case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'update_started':
-                        store.dispatch(uiActions.createNotification({ content: 'Update running...', type: 'info' }));
+                    case 'upgrading':
+                        store.dispatch(uiActions.createNotification({ content: 'Upgrading...', type: 'info' }));
                         break;
-                    case 'restart_started':
+                    case 'restarting':
                         store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
                         break;
                 }
@@ -52948,10 +52977,6 @@ var PusherMiddleware = function () {
 
         return new Promise(function (resolve, reject) {
 
-            if (store.getState().ui.log_pusher) {
-                console.log('Pusher log (outgoing)', { method: method, params: params });
-            }
-
             var id = helpers.generateGuid();
             var message = {
                 jsonrpc: '2.0',
@@ -52961,11 +52986,16 @@ var PusherMiddleware = function () {
             if (params) {
                 message.params = params;
             }
+
+            if (store.getState().ui.log_pusher) {
+                console.log('Pusher log (outgoing)', message);
+            }
+
             socket.send(JSON.stringify(message));
 
             store.dispatch(uiActions.startLoading(id, 'pusher_' + method));
 
-            // Start our 15 second timeout
+            // Start our 30 second timeout
             var timeout = setTimeout(function () {
                 store.dispatch(uiActions.stopLoading(id));
                 reject({
@@ -53112,14 +53142,6 @@ var PusherMiddleware = function () {
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
                             });
-
-                            var core = store.getState().core;
-                            if (!core.country || !core.locale) {
-                                store.dispatch(spotifyActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }));
-                            }
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not load config', error));
                         });
@@ -53236,15 +53258,15 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.createNotification(data));
                         break;
 
-                    case 'PUSHER_RESTART':
+                    case 'PUSHER_RELOAD':
                         // Hard reload. This doesn't strictly clear the cache, but our compiler's
                         // cache buster should handle that 
                         window.location.reload(true);
                         break;
 
-                    case 'PUSHER_RESTART_MOPIDY':
+                    case 'PUSHER_RESTART':
                         request(store, 'restart').then(function (response) {
-                            store.dispatch(mopidyActions.restartStarted());
+                            store.dispatch(mopidyActions.restarting());
                         }, function (error) {
                             store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
                         });
@@ -53254,9 +53276,9 @@ var PusherMiddleware = function () {
                     case 'PUSHER_UPGRADE':
                         _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
                         request(store, 'upgrade').then(function (response) {
-                            store.dispatch(mopidyActions.upgradeStarted());
+                            store.dispatch(mopidyActions.upgrading());
                         }, function (error) {
-                            store.dispatch(uiActions.createNotification({ content: error.message, type: 'bad' }));
+                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
                         });
                         break;
 
@@ -53270,11 +53292,31 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_CONFIG':
-                        store.dispatch(spotifyActions.set({
-                            locale: action.config.locale ? action.config.locale : null,
-                            country: action.config.country ? action.config.country : null,
-                            authorization_url: action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null
-                        }));
+
+                        // Set default country/locale (unless we've already been configured)
+                        var spotify = store.getState().spotify;
+                        var spotify_updated = false;
+                        var spotify_updates = {};
+
+                        if (!spotify.country && action.config.country) {
+                            spotify_updates.country = action.config.country;
+                            spotify_updated = true;
+                        }
+
+                        if (!spotify.locale && action.config.locale) {
+                            spotify_updates.locale = action.config.locale;
+                            spotify_updated = true;
+                        }
+
+                        if (action.config.spotify_authorization_url) {
+                            spotify_updates.authorization_url = action.config.authorization_url;
+                            spotify_updated = true;
+                        }
+
+                        if (spotify_updated) {
+                            store.dispatch(spotifyActions.set(spotify_updates));
+                        }
+
                         store.dispatch(lastfmActions.set({
                             authorization_url: action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null
                         }));
@@ -53562,6 +53604,7 @@ var MopidyMiddleware = function () {
 
             case 'state:offline':
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+                store.dispatch(mopidyActions.clearCurrentTrack());
 
                 // reset our playback interval timer
                 clearInterval(progress_interval);
@@ -53790,7 +53833,9 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_STOP':
-                        request(socket, store, 'playback.stop');
+                        request(socket, store, 'playback.stop').then(function (response) {
+                            store.dispatch(mopidyActions.clearCurrentTrack());
+                        });
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
@@ -55220,8 +55265,6 @@ var MopidyMiddleware = function () {
                             }
                         }
 
-                        // Set our window title to the track title
-                        helpers.setWindowTitle(track, store.getState().mopidy.play_state);
                         store.dispatch({
                             type: 'CURRENT_TRACK_LOADED',
                             track: track
@@ -70523,8 +70566,8 @@ var Settings = function (_React$Component) {
 			} else if (this.props.pusher.version.upgrade_available) {
 				var upgrade_button = _react2.default.createElement(
 					'button',
-					{ className: 'alternative', onClick: function onClick() {
-							return _this2.props.pusherActions.startUpgrade();
+					{ className: 'alternative', onClick: function onClick(e) {
+							return _this2.props.pusherActions.upgrade();
 						} },
 					'Upgrade to ',
 					this.props.pusher.version.latest
@@ -70776,7 +70819,11 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'flag blue' },
 									'Upgrade available'
-								) : null
+								) : _react2.default.createElement(
+									'span',
+									{ className: 'flag grey' },
+									'Up-to-date'
+								)
 							)
 						)
 					),
@@ -70787,7 +70834,7 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: "destructive" + (this.props.mopidy.restarting ? ' working' : ''), onClick: function onClick(e) {
-									return _this2.props.pusherActions.restartMopidy();
+									return _this2.props.pusherActions.restart();
 								} },
 							this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'
 						),
