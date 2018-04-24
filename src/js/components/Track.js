@@ -235,10 +235,10 @@ export default class Track extends React.Component{
 				var added = <span><span className="by">{track.added_by}</span><span className="grey-text from"><span className="label">from </span>{link}</span></span>
 
 			} else if (track.added_by){
-				var added = track.added_by
+				var added = <span className="by">{track.added_by}</span>
 
 			} else {
-				var added = '-'
+				var added = <span className="placeholder">-</span>
 			}
 
 			track_columns.push(

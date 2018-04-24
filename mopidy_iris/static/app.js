@@ -24520,9 +24520,17 @@ var Track = function (_React$Component) {
 						)
 					);
 				} else if (track.added_by) {
-					var added = track.added_by;
+					var added = _react2.default.createElement(
+						'span',
+						{ className: 'by' },
+						track.added_by
+					);
 				} else {
-					var added = '-';
+					var added = _react2.default.createElement(
+						'span',
+						{ className: 'placeholder' },
+						'-'
+					);
 				}
 
 				track_columns.push(_react2.default.createElement(
@@ -51391,7 +51399,7 @@ var PusherMiddleware = function () {
                         }
 
                         if (action.config.spotify_authorization_url) {
-                            spotify_updates.authorization_url = action.config.authorization_url;
+                            spotify_updates.authorization_url = action.config.spotify_authorization_url;
                             spotify_updated = true;
                         }
 

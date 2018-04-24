@@ -542,7 +542,7 @@ const PusherMiddleware = (function(){
                 }
 
                 if (action.config.spotify_authorization_url){
-                    spotify_updates.authorization_url = action.config.authorization_url;
+                    spotify_updates.authorization_url = action.config.spotify_authorization_url;
                     spotify_updated = true;
                 }
 
