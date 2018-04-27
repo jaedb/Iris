@@ -93,6 +93,7 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'event:trackPlaybackEnded':
+                // This doesn't fire when it's the last track in the queue... bug in Mopidy?
                 store.dispatch(mopidyActions.clearCurrentTrack());
                 store.dispatch(mopidyActions.getTimePosition());
                 break;
