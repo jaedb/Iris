@@ -588,6 +588,7 @@ const PusherMiddleware = (function(){
                         response => {
                             var groups = {};
                             var clients = {};
+                            var streams = {};
 
                             // Loop all the groups
                             for (var i = 0; i < response.server.groups.length; i++){
@@ -610,10 +611,17 @@ const PusherMiddleware = (function(){
                                 }
                             }
 
+                            // Loop all the streams
+                            for (var i = 0; i < response.server.streams.length; i++){
+                                var stream = response.server.streams[i];
+                                streams[stream.id] = stream;
+                            }
+
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST', 
                                 snapcast_clients: clients,
-                                snapcast_groups: groups
+                                snapcast_groups: groups,
+                                snapcast_streams: streams
                             });
                         },
                         error => {                            

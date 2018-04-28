@@ -68,7 +68,10 @@ class Snapcast extends React.Component{
 				var clients = [];
 				for (var i = 0; i < group.clients_ids.length; i++){
 					if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])){
-						clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
+						var client = this.props.snapcast_clients[group.clients_ids[i]];
+						if (client.connected || this.props.snapcast_show_disconnected_clients){
+							clients.push(client);
+						}
 					}
 				}
 
@@ -84,6 +87,23 @@ class Snapcast extends React.Component{
 
 		return (
 			<div className="snapcast">
+
+				<div className="field checkbox">
+					<div className="input">
+						<button onClick={e => this.props.pusherActions.getSnapcast()}>Refresh</button>
+						<label>
+							<input 
+								type="checkbox"
+								name="snapcast_show_disconnected_clients"
+								checked={this.props.snapcast_show_disconnected_clients}
+								onChange={e => this.props.uiActions.set({ snapcast_show_disconnected_clients: !this.props.snapcast_show_disconnected_clients })} />
+							<span className="label">
+								Show disconnected clients
+							</span>
+						</label>
+					</div>
+				</div>
+
 				{
 					groups.map(group => {
 						return (
@@ -159,6 +179,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
+		snapcast_show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
 		snapcast_groups: state.pusher.snapcast_groups,
 		snapcast_clients: state.pusher.snapcast_clients
 	}
