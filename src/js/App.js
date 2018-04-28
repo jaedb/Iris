@@ -6,7 +6,7 @@ import { hashHistory, Link } from 'react-router'
 import { connect } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
-import PlaybackControls from './components/PlaybackControls'
+import PlaybackControls from './components/Fields/PlaybackControls'
 import ContextMenu from './components/ContextMenu'
 import Dragger from './components/Dragger'
 import Modal from './components/Modal/Modal'
@@ -48,8 +48,9 @@ class App extends React.Component{
 	componentDidMount(){
 		
 		// Fire up our services
-		this.props.coreActions.startServices()
-		this.props.coreActions.getBroadcasts()
+		this.props.mopidyActions.connect();
+		this.props.pusherActions.connect();
+		this.props.coreActions.getBroadcasts();
 
 		// when we navigate to a new route
 		hashHistory.listen(location => {
@@ -81,19 +82,21 @@ class App extends React.Component{
 		}*/
 	}
 
-	componentDidUpdate(prevProps){
+	componentWillReceiveProps(nextProps){
 
 		// We've navigated to a new location
-	    if (this.props.location !== prevProps.location){
+	    if (this.props.location.pathname !== nextProps.location.pathname){
 
 			// Close context menu
-			this.props.uiActions.hideContextMenu();
+			if (this.props.context_menu){
+				this.props.uiActions.hideContextMenu();
+			}
 
-			// Restore scroll to top
-			// TODO: Detect if we've gone BACK, and then restore to previous
-			// scroll position. We'll need to keep a running history of locations
-			// and scroll positions, which may be performance-hindering
-			$(window).scrollTop(0)
+			// Scroll to bottom, only if we've PUSHed to a new route
+			// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
+			if (nextProps.location.action == 'PUSH' && nextProps.params.sub_view === undefined){
+				window.scrollTo(0, 0);
+			}
 		}
 	}
 

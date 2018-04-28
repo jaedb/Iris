@@ -22,12 +22,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(object):
-
     version = 0
-    if sys.platform == 'win32':
-        is_root = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    else:
-       is_root = os.geteuid() == 0
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -222,8 +217,8 @@ class IrisCore(object):
           
         # invalid, so just create a default connection, and auto-generate an ID
         except:
-            client_id = self.generateGuid(12)
-            connection_id = self.generateGuid(12)
+            client_id = self.generateGuid()
+            connection_id = self.generateGuid()
             username = 'Anonymous'
             generated = True
         
@@ -463,6 +458,7 @@ class IrisCore(object):
 
         response = {
             'config': {
+                "is_root": self.is_root(),
                 "spotify_username": spotify_username,
                 "country": self.config['iris']['country'],
                 "locale": self.config['iris']['locale'],
@@ -476,6 +472,7 @@ class IrisCore(object):
             callback(response)
         else:
             return response
+
 
     def get_version(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
@@ -499,7 +496,7 @@ class IrisCore(object):
             'version': {
                 'current': self.version,
                 'latest': latest_version,
-                'is_root': self.is_root,
+                'is_root': self.is_root(),
                 'upgrade_available': upgrade_available
             }
         }
@@ -508,30 +505,114 @@ class IrisCore(object):
         else:
             return response
 
-    def perform_upgrade(self, *args, **kwargs):
+
+    def upgrade(self, *args, **kwargs):
+        logger.info("Upgrading")
+
         callback = kwargs.get('callback', False)
 
         try:
-            subprocess.check_call(["pip", "install", "--upgrade", "Mopidy-Iris"])
-            response = {
-                'result': "Upgrade started"
-            }
-            if (callback):
-                callback(response)
-            else:
-                return response
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
 
-        except subprocess.CalledProcessError as e:
             error = {
-                'result': "Could not start upgrade"
+                'message': "Permission denied",
+                'description': str(e)
             }
+
             if (callback):
                 callback(False, error)
+                return
             else:
                 return error
+
+        self.broadcast(data={
+            'method': "upgrading",
+            'params': {}
+        })
+
+        # Run the system task
+        path = os.path.dirname(__file__)
+
+        # Attempt the upgrade
+        upgrade_process = subprocess.Popen("sudo "+path+"/system.sh upgrade", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result, error = upgrade_process.communicate()
+        exitCode = upgrade_process.wait()
+
+        if exitCode > 0:
+            output = error.decode('ascii')
+            logger.error("Upgrade failed: "+output)
+
+            error = {
+                'message': "Upgrade failed",
+                'data': {
+                    'output': output
+                }
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        output = result.decode();
+
+        # And now restart (with a 5 second delay to allow our response to return first)
+        subprocess.Popen(["sudo "+path+"/system.sh restart 5"], shell=True)
+        
+        # Now we can return for simple requests
+        response = {
+            'message': "Upgrade complete, restarting server in 5 seconds",
+            'data': {
+                'output': output
+            }
+        }
+
+        if (callback):
+            callback(response)
+        else:
+            return response
+
         
     def restart(self, *args, **kwargs):
-        os.execl(sys.executable, *([sys.executable]+sys.argv))
+        logger.info("Restarting")
+        callback = kwargs.get('callback', False)
+
+        try:
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
+
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+
+        self.broadcast(data={
+            'method': "restarting",
+            'params': {}
+        })
+
+        path = os.path.dirname(__file__)
+
+        subprocess.Popen(["sudo "+path+"/system.sh restart 0"], shell=True)
+
+        response = {
+            'message': "Restarting... please wait"
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
 
 
     ##
@@ -557,17 +638,21 @@ class IrisCore(object):
         callback = kwargs.get('callback', False)
         data = kwargs.get('data', {})
 
-        # figure out if we're starting or updating radio mode
-        if data['update'] and self.radio['enabled']:
-            starting = False
-            self.initial_consume = self.core.tracklist.get_consume()
-        else:
+        # We're starting a new radio (or forced restart)
+        if data['reset'] or not self.radio['enabled']:
             starting = True
+            self.initial_consume = self.core.tracklist.get_consume().get()
+        else:
+            starting = False
         
         # fetch more tracks from Mopidy-Spotify
-        self.radio = data
-        self.radio['enabled'] = 1;
-        self.radio['results'] = [];
+        self.radio = {
+            'seed_artists': data['seed_artists'],
+            'seed_genres': data['seed_genres'],
+            'seed_tracks': data['seed_tracks'],
+            'enabled': 1,
+            'results': []
+        }
         uris = self.load_more_tracks()
 
         # make sure we got recommendations
@@ -921,17 +1006,68 @@ class IrisCore(object):
             http_client.fetch(request, callback=callback)
 
 
+
+
     ##
-    # Simple test method
+    # Detect if we're running as root
+    ##
+    def is_root(self):        
+        if sys.platform == 'win32':
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        else:
+            return os.geteuid() == 0
+
+
+    ##
+    # Check if we have access to the system script (system.sh)
+    #
+    # @return boolean or exception
+    ##
+    def check_system_access(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+
+        # Run the system task
+        path = os.path.dirname(__file__)
+
+        # Attempt the upgrade
+        process = subprocess.Popen("sudo -n "+path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result, error = process.communicate()
+        exitCode = process.wait()
+
+        if exitCode > 0:
+            raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
+        else:
+            return True
+
+
+    ##
+    # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
-        data = kwargs.get('data', {})
 
-        if data and 'force_error' in data:
-            callback(False, {'message': "Could not sleep, forced error"})
+        try:
+            self.check_system_access()
+        except Exception, e:
+            logger.error(e)
+
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        response = {
+            'message': "Permission granted"
+        }
+
+        if (callback):
+            callback(response)
             return
         else:
-            time.sleep(1)
-            callback({'message': "Slept for one second"}, False)
-            return
+            return response

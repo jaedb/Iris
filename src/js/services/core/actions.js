@@ -59,13 +59,6 @@ export function debugResponse(response){
     }
 }
 
-
-export function startServices(){
-    return {
-        type: 'CORE_START_SERVICES'
-    }
-}
-
 export function set(data){
     return {
         type: 'CORE_SET',

@@ -14,17 +14,27 @@ export function connect(){
 	}
 }
 
-export function disconnect(){
+export function connecting(){
 	return {
-		type: 'MOPIDY_DISCONNECT'
+		type: 'MOPIDY_CONNECTING'
 	}
 }
 
-export function instruct(call, value){
+export function upgrading(){
 	return {
-		type: 'MOPIDY_INSTRUCT',
-		call: call,
-		value: value
+		type: 'MOPIDY_UPGRADING'
+	}
+}
+
+export function restarting(){
+	return {
+		type: 'MOPIDY_RESTARTING'
+	}
+}
+
+export function disconnect(){
+	return {
+		type: 'MOPIDY_DISCONNECT'
 	}
 }
 
@@ -60,7 +70,7 @@ export function pause(){
 
 export function stop(){
 	return {
-		type: 'MOPIDY_PAUSE'
+		type: 'MOPIDY_STOP'
 	}
 }
 
@@ -176,6 +186,25 @@ export function getUriSchemes(){
 export function getCurrentTrack(){
 	return {
 		type: 'MOPIDY_GET_CURRENT_TRACK'
+	}
+}
+
+export function currentTrackLoaded(tl_track){
+	return {
+		type: 'MOPIDY_CURRENT_TRACK_LOADED',
+		tl_track: tl_track
+	}
+}
+
+export function getNextTrack(){
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	}
+}
+
+export function clearCurrentTrack(){
+	return {
+		type: 'CLEAR_CURRENT_TRACK'
 	}
 }
 

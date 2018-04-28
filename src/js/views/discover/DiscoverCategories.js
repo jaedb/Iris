@@ -15,7 +15,9 @@ class DiscoverCategories extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.spotifyActions.getCategories();
+		if (!this.props.categories){
+			this.props.spotifyActions.getCategories();
+		}
 	}
 
 	render(){

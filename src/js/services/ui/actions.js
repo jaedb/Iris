@@ -146,7 +146,6 @@ export function getIcon(name){
  **/
 
 export function openModal(name, data){
-    console.log(name,data);
     return { 
         type: 'OPEN_MODAL',
         modal: {

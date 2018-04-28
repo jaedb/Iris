@@ -7,13 +7,13 @@ import FontAwesome from 'react-fontawesome'
 import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
-import DropdownField from '../components/DropdownField'
+import DropdownField from '../components/Fields/DropdownField'
 import TrackList from '../components/TrackList'
 import ArtistGrid from '../components/ArtistGrid'
 import AlbumGrid from '../components/AlbumGrid'
 import PlaylistGrid from '../components/PlaylistGrid'
 import LazyLoadListener from '../components/LazyLoadListener'
-import SearchForm from '../components/SearchForm'
+import SearchForm from '../components/Fields/SearchForm'
 import URILink from '../components/URILink'
 
 import * as helpers from '../helpers'
@@ -44,7 +44,7 @@ class Search extends React.Component{
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.spotify_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
@@ -67,16 +67,8 @@ class Search extends React.Component{
 			var term = null;
 		}
 
-		if (term && !this.props.mopidy_connected && newProps.mopidy_connected){
-			this.props.mopidyActions.getSearchResults(context, term);
-		}
-
-		if (term && !this.props.spotify_connected && newProps.spotify_connected && newProps.search_uri_schemes.includes('spotify:')){		
-			this.props.spotifyActions.getSearchResults(context, term);
-		}
-
 		// Search changed 
-		if (term && context && term !== old_term){
+		if (term && context && (term !== old_term || context !== old_context)){
 			
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
@@ -226,7 +218,7 @@ class Search extends React.Component{
 							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -293,7 +285,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)
@@ -375,7 +367,6 @@ class Search extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		albums: (state.core.albums ? state.core.albums : []),
 		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),

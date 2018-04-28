@@ -4,16 +4,6 @@ import * as helpers from '../../helpers'
 export default function reducer(spotify = {}, action){
     switch (action.type){
 
-        case 'SPOTIFY_CONNECT':
-        case 'SPOTIFY_CONNECTING':
-            return Object.assign({}, spotify, { connected: false, connecting: true })
-
-        case 'SPOTIFY_CONNECTED':
-            return Object.assign({}, spotify, { connected: true, connecting: false })
-
-        case 'SPOTIFY_DISCONNECTED':
-            return Object.assign({}, spotify, { connected: false, connecting: false })
-
         case 'SPOTIFY_SET':
             return Object.assign({},spotify,action.data)
 
@@ -61,7 +51,6 @@ export default function reducer(spotify = {}, action){
 
         case 'SPOTIFY_TOKEN_REFRESHED':
             return Object.assign({}, spotify, {
-                connected: true,
                 refreshing_token: false,
                 access_token: action.data.access_token,
                 token_expiry: action.data.token_expiry
@@ -72,9 +61,6 @@ export default function reducer(spotify = {}, action){
                 access_token: action.spotify_token.access_token,
                 token_expiry: action.spotify_token.token_expiry
             });
-
-        case 'SPOTIFY_DISCONNECTED':
-            return Object.assign({}, spotify, { connected: false, connecting: false })
 
         case 'SPOTIFY_ME_LOADED':
             return Object.assign({}, spotify, { me: action.data })

@@ -10,7 +10,7 @@ import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
 import ArtistSentence from '../components/ArtistSentence'
 import ArtistGrid from '../components/ArtistGrid'
-import FollowButton from '../components/FollowButton'
+import FollowButton from '../components/Fields/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
@@ -105,16 +105,16 @@ class Album extends React.Component{
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
-			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-
-		if (!this.props.album){
-			return null
+		if (!this.props.album){		
+			if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+				return (
+					<div className="body-loader loading">
+						<div className="loader"></div>
+					</div>
+				)
+			} else {
+				return null;
+			}
 		}
 
 		var artists = []
@@ -135,6 +135,12 @@ class Album extends React.Component{
 					tracks.push(this.props.tracks[uri])
 				}
 			}
+		}
+
+		if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+			var is_loading_tracks = true;
+		} else {
+			var is_loading_tracks = false;
 		}
 
 		return (
@@ -165,20 +171,13 @@ class Album extends React.Component{
 
 				<section className="list-wrapper">
 					<TrackList className="album-track-list" tracks={tracks} uri={this.props.params.uri} />
-					<LazyLoadListener loading={this.props.album.tracks_more} loadMore={ () => this.loadMore() }/>
+					<LazyLoadListener loading={this.props.album.tracks_more} forceLoader={is_loading_tracks} loadMore={() => this.loadMore()}/>
 				</section>
 
 			</div>
 		)
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;

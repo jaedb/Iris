@@ -78,14 +78,10 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
-            case 'SPOTIFY_SET_CONFIG':
+            case 'SPOTIFY_SET':
                 helpers.setStorage(
                     'spotify', 
-                    {
-                        authentication_provider: action.config.authentication_provider, 
-                        country: action.config.country, 
-                        locale: action.config.locale
-                    }
+                    action.data
                 );
                 break;
 

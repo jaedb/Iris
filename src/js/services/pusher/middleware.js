@@ -4,6 +4,7 @@ import ReactGA from 'react-ga'
 var helpers = require('../../helpers.js')
 var coreActions = require('../core/actions.js')
 var uiActions = require('../ui/actions.js')
+var mopidyActions = require('../mopidy/actions.js')
 var pusherActions = require('./actions.js')
 var lastfmActions = require('../lastfm/actions.js')
 var spotifyActions = require('../spotify/actions.js')
@@ -23,21 +24,31 @@ const PusherMiddleware = (function(){
             console.log('Pusher log (incoming)', message);
         }
 
+        // Pull our ID. JSON-RPC nests the ID under the error object, 
+        // so make sure we handle that.
+        // TODO: Use this as our measure of a successful response vs error
+        var id = null;
+        if (message.id){
+            id = message.id;
+        } else if (message.error && message.error.id){
+            id = message.error.id;
+        }
+
         // Response with request_id
-        if (message.id !== undefined && message.id){
+        if (id){
 
             // Response matches a pending request
-            if (deferredRequests[message.id] !== undefined){
+            if (deferredRequests[id] !== undefined){
 
-                store.dispatch(uiActions.stopLoading(message.id));
+                store.dispatch(uiActions.stopLoading(id));
 
                 // Response is an error
                 if (message.error !== undefined){
-                    deferredRequests[message.id].reject(message.error);
+                    deferredRequests[id].reject(message.error);
 
                 // Successful response
                 } else {
-                    deferredRequests[message.id].resolve(message.result);
+                    deferredRequests[id].resolve(message.result);
                 }
 
             // Hmm, the response doesn't appear to be for us?
@@ -55,8 +66,10 @@ const PusherMiddleware = (function(){
             if (message.error !== undefined){
                 store.dispatch(coreActions.handleException(
                     'Pusher: '+message.error.message, 
-                    message
+                    message,
+                    (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null)
                 ));
+
             } else {
 
                 switch (message.method){
@@ -81,6 +94,24 @@ const PusherMiddleware = (function(){
                     case 'notification':
                         store.dispatch(uiActions.createNotification(message.params.notification));
                         break;
+                    case 'radio_started':
+                        store.dispatch(pusherActions.radioStarted(message.params.radio));
+                        break;
+                    case 'radio_changed':
+                        store.dispatch(pusherActions.radioChanged(message.params.radio));
+                        break;
+                    case 'radio_stopped':
+                        store.dispatch(pusherActions.radioStopped());
+                        break;
+                    case 'reload':
+                        window.location.reload(true);
+                        break;
+                    case 'upgrading':
+                        store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
+                        break;
+                    case 'restarting':
+                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
+                        break;
                 }
             }
         }
@@ -88,10 +119,6 @@ const PusherMiddleware = (function(){
 
     const request = (store, method, params = null) => {
         return new Promise((resolve, reject) => {
-
-            if (store.getState().ui.log_pusher){
-                console.log('Pusher log (outgoing)', {method: method, params: params});
-            }
 
             var id = helpers.generateGuid();
             var message = {
@@ -102,11 +129,16 @@ const PusherMiddleware = (function(){
             if (params){
                 message.params = params;
             }
+
+            if (store.getState().ui.log_pusher){
+                console.log('Pusher log (outgoing)', message);
+            }
+
             socket.send(JSON.stringify(message));
 
             store.dispatch(uiActions.startLoading(id, 'pusher_'+method));
 
-            // Start our 15 second timeout
+            // Start our 30 second timeout
             var timeout = setTimeout(
                 function(){
                     store.dispatch(uiActions.stopLoading(id));
@@ -251,30 +283,6 @@ const PusherMiddleware = (function(){
                 })
                 break;
 
-            case 'PUSHER_START_UPGRADE':
-                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' })
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            if (response.upgrade_successful){
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade complete'}));
-                            } else {
-                                store.dispatch(uiActions.createNotification({content: 'Upgrade failed, please upgrade manually', type: 'bad'}));
-                            }
-
-                            response.type = 'PUSHER_VERSION'
-                            store.dispatch(response)
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not start upgrade',
-                                error
-                            ));
-                        }
-                    );
-                return next(action);
-                break;
-
             case 'PUSHER_SET_USERNAME':
                 request(store, 'set_username', {username: action.username})
                     .then(
@@ -318,14 +326,6 @@ const PusherMiddleware = (function(){
                                 type: 'PUSHER_CONFIG',
                                 config: response.config
                             });
-
-                            var core = store.getState().core;
-                            if (!core.country || !core.locale){
-                                store.dispatch(coreActions.set({
-                                    country: response.config.country,
-                                    locale: response.config.locale
-                                }))
-                            }
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -360,7 +360,7 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch({
-                                type: 'PUSHER_RADIO',
+                                type: 'PUSHER_RADIO_LOADED',
                                 radio: response.radio
                             });
                         },
@@ -385,7 +385,7 @@ const PusherMiddleware = (function(){
                 }
 
                 var data = {
-                    update: (action.type == 'PUSHER_UPDATE_RADIO'),
+                    reset: (action.type == 'PUSHER_START_RADIO'),
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
@@ -405,6 +405,18 @@ const PusherMiddleware = (function(){
                     }
                 }
 
+                if (action.type == 'PUSHER_START_RADIO'){
+                    store.dispatch(pusherActions.deliverBroadcast(
+                        'notification',
+                        {
+                            notification: {
+                                type: 'info',
+                                content: store.getState().pusher.username + ' is starting radio mode'
+                            }
+                        }
+                    ));
+                }
+
                 request(store, 'change_radio', data)
                     .then(
                         response => {
@@ -412,9 +424,10 @@ const PusherMiddleware = (function(){
                             if (response.status == 0){
                                 store.dispatch(uiActions.createNotification({content: response.message, type: 'bad'}));
                             }
+                            store.dispatch(pusherActions.radioChanged(response.radio));
                         },
                         error => {       
-                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));                     
+                            store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));                    
                             store.dispatch(coreActions.handleException(
                                 'Could not change radio',
                                 error
@@ -427,22 +440,33 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification({content: 'Stopping radio'}));
                 ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
 
+                store.dispatch(pusherActions.deliverBroadcast(
+                    'notification',
+                    {
+                        notification: {
+                            type: 'info',
+                            content: store.getState().pusher.username + ' stopped radio mode'
+                        }
+                    }
+                ));
+
                 var data = {
                     seed_artists: [],
                     seed_genres: [],
                     seed_tracks: []
                 }
 
-                // we don't need to wait for response, as change will be broadcast
                 request(store, 'stop_radio', data)
-                break
-
-            case 'PUSHER_RADIO_STARTED':
-            case 'PUSHER_RADIO_CHANGED':
-                if (action.radio && action.radio.enabled && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.resolveRadioSeeds(action.radio))
-                }
-                next(action)
+                    .then(
+                        response => {
+                            store.dispatch(pusherActions.radioStopped());
+                        }, error => {                 
+                            store.dispatch(coreActions.handleException(
+                                'Could not stop radio',
+                                error
+                            ));
+                        }
+                    );
                 break
 
             case 'PUSHER_BROWSER_NOTIFICATION':
@@ -459,11 +483,37 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
-            case 'PUSHER_RESTART':
+            case 'PUSHER_RELOAD':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
                 window.location.reload(true);
                 break
+
+            case 'PUSHER_RESTART':
+                request(store, 'restart')
+                    .then(
+                        response => {
+                            store.dispatch(mopidyActions.restarting());
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
+                        }
+                    );
+                next(action);
+                break
+
+            case 'PUSHER_UPGRADE':
+                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+                request(store, 'upgrade')
+                    .then(
+                        response => {
+                            store.dispatch(mopidyActions.upgrading());
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
+                        }
+                    );
+                break;
 
             case 'PUSHER_VERSION':
                 ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
@@ -471,20 +521,40 @@ const PusherMiddleware = (function(){
                 if (action.version.upgrade_available){
                     store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
                 }
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_CONFIG':
-                store.dispatch(spotifyActions.set({
-                    locale: (action.config.locale ? action.config.locale : null),
-                    country: (action.config.country ? action.config.country : null),
-                    authorization_url: (action.config.spotify_authorization_url ? action.config.spotify_authorization_url : null)
-                }))
+
+                // Set default country/locale (unless we've already been configured)
+                var spotify = store.getState().spotify;
+                var spotify_updated = false;
+                var spotify_updates = {};
+
+                if (!spotify.country && action.config.country){
+                    spotify_updates.country = action.config.country;
+                    spotify_updated = true;
+                }
+
+                if (!spotify.locale && action.config.locale){
+                    spotify_updates.locale = action.config.locale;
+                    spotify_updated = true;
+                }
+
+                if (action.config.spotify_authorization_url){
+                    spotify_updates.authorization_url = action.config.spotify_authorization_url;
+                    spotify_updated = true;
+                }
+
+                if (spotify_updated){
+                    store.dispatch(spotifyActions.set(spotify_updates));
+                }
+                
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
-                }))
+                }));
 
-                next(action )
+                next(action);
                 break
 
             case 'PUSHER_DEBUG':
@@ -518,6 +588,7 @@ const PusherMiddleware = (function(){
                         response => {
                             var groups = {};
                             var clients = {};
+                            var streams = {};
 
                             // Loop all the groups
                             for (var i = 0; i < response.server.groups.length; i++){
@@ -540,10 +611,17 @@ const PusherMiddleware = (function(){
                                 }
                             }
 
+                            // Loop all the streams
+                            for (var i = 0; i < response.server.streams.length; i++){
+                                var stream = response.server.streams[i];
+                                streams[stream.id] = stream;
+                            }
+
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST', 
                                 snapcast_clients: clients,
-                                snapcast_groups: groups
+                                snapcast_groups: groups,
+                                snapcast_streams: streams
                             });
                         },
                         error => {                            
@@ -556,37 +634,22 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
-                request(store, 'snapcast_instruct', action.data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
-                                }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
-                break
-
             case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
-                request(store, 'snapcast_instruct', action.data)
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetName',
+                    params: {
+                        id: action.id,
+                        name: action.name
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
                                 client: {
                                     config: {
                                         name: response.name
@@ -604,13 +667,94 @@ const PusherMiddleware = (function(){
                     );
                 break
 
-            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
-                request(store, 'snapcast_instruct', action.data)
+            case 'PUSHER_SET_SNAPCAST_CLIENT_MUTE':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: action.mute,
+                            percent: client.config.volume.percent,
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
-                                key: action.data.params.id,
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetVolume',
+                    params: {
+                        id: action.id,
+                        volume: {
+                            muted: client.config.volume.muted,
+                            percent: action.percent
+                        }
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
+                                client: {
+                                    config: {
+                                        volume: response.volume
+                                    }
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY':
+                var client = store.getState().pusher.snapcast_clients[action.id];
+                var data = {
+                    method: 'Client.SetLatency',
+                    params: {
+                        id: action.id,
+                        latency: action.latency
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_CLIENT_UPDATED', 
+                                key: action.id,
                                 client: {
                                     config: {
                                         latency: response.latency
@@ -629,7 +773,14 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_DELETE_SNAPCAST_CLIENT':
-                request(store, 'snapcast_instruct', action.data)
+                var data = {
+                    method: 'Server.DeleteClient',
+                    params: {
+                        id: action.id
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
                     .then(
                         response => {
                             store.dispatch({

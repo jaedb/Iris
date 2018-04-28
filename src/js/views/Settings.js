@@ -5,17 +5,14 @@ import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
-import SpotifyAuthenticationFrame from '../components/SpotifyAuthenticationFrame'
-import LastfmAuthenticationFrame from '../components/LastfmAuthenticationFrame'
-import ConfirmationButton from '../components/ConfirmationButton'
+import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
-import URISchemesList from '../components/URISchemesList'
-import VersionManager from '../components/VersionManager'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 import URILink from '../components/URILink'
+import Services from '../components/Services'
 
 import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
@@ -29,8 +26,6 @@ class Settings extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			country: this.props.core.country,
-			locale: this.props.core.locale,
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
 			mopidy_ssl: this.props.mopidy.ssl,
@@ -39,25 +34,9 @@ class Settings extends React.Component {
 		}
 	}
 
-	componentDidMount(){
-		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
-			this.props.lastfmActions.getMe();
-		}
-	}
-
 	componentWillReceiveProps(newProps){
 		var changed = false
 		var state = this.state
-		
-		if (newProps.core.country != this.state.country && this.state.input_in_focus != 'country'){
-			state.country = newProps.core.country
-			changed = true
-		}
-		
-		if (newProps.core.locale != this.state.locale && this.state.input_in_focus != 'locale'){
-			state.locale = newProps.core.locale
-			changed = true
-		}
 		
 		if (newProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
 			state.pusher_username = newProps.pusher.username
@@ -123,65 +102,6 @@ class Settings extends React.Component {
 		)
 	}
 
-	renderSpotifyUser(){
-		var user = this.props.spotify.me;
-
-		if (user){
-			return (
-				<URILink className="user" type="user" uri={user.uri}>
-					<Thumbnail circle={true} size="small" images={user.images} />
-					<span className="user-name">
-						{user.display_name ? user.display_name : user.id}
-						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
-					</span>
-				</URILink>
-			)
-		} else {
-			return (
-				<URILink className="user">
-					<Thumbnail circle={true} size="small" />
-					<span className="user-name">
-						Unknown
-					</span>
-				</URILink>
-			)
-		}
-	}
-
-	renderLastfmUser(){
-		var user = this.props.core.users["lastfm:user:"+this.props.lastfm.session.name];
-
-		if (user){
-			return (
-				<span className="user">
-					<Thumbnail circle={true} size="small" images={user.image} />
-					<span className="user-name">
-						{user.realname ? user.realname : user.name}
-					</span>
-				</span>
-			)
-		} else {
-			return (
-				<span className="user">
-					<Thumbnail circle={true} size="small" />
-					<span className="user-name">
-						Unknown
-					</span>
-				</span>
-			)
-		}
-	}
-
-	renderSendAuthorizationButton(){
-		if (!this.props.spotify.authorization) return null
-
-		return (
-			<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
-				Share authentication
-			</button>
-		)
-	}
-
 	renderServerStatus(){
 		var colour = 'grey';
 		var icon = 'question-circle';
@@ -207,36 +127,6 @@ class Settings extends React.Component {
 		);
 	}
 
-	renderSpotifyStatus(){
-		var colour = 'grey';
-		var icon = 'question-circle';
-		var status = 'Unknown';
-
-		if (this.props.spotify.connecting){
-			icon = 'plug';
-			status = 'Connecting...'
-		} else if (!this.props.spotify.connected){
-			colour = 'red';
-			icon = 'close';
-			status = 'Disconnected';
-		} else if (this.props.mopidy.connected){
-			colour = 'green';
-			icon = 'check';
-			status = 'Connected';
-		}
-
-		if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')){
-			colour = 'orange';
-			status += ' (Mopidy-Spotify extension not installed/enabled!)';
-		}
-
-		return (
-			<span className={colour+'-text'}>
-				<FontAwesome name={icon} />&nbsp; {status}
-			</span>
-		);
-	}
-
 	render(){
 
 		var options = (
@@ -252,6 +142,19 @@ class Settings extends React.Component {
 				</a>
 			</span>
 		)
+
+		
+		if (this.props.mopidy.upgrading){
+			var upgrade_button = (
+				<button className="alternative working">
+					Upgrading...
+				</button>
+			);
+		} else if (this.props.pusher.version.upgrade_available){
+			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
+		} else {
+			var upgrade_button = null;
+		}
 
 		return (
 			<div className="view settings-view">
@@ -331,138 +234,10 @@ class Settings extends React.Component {
 							</div>
 						</div>
 						{this.renderApplyButton()}
-					</form>			
-					
-					<h4 className="underline">Streaming</h4>
+					</form>
 
-					<div className="field checkbox">
-						<div className="name">Enable</div>
-						<div className="input">
-							<label>
-								<input 
-									type="checkbox"
-									name="ssl"
-									checked={this.props.core.http_streaming_enabled}
-									onChange={e => this.props.coreActions.set({http_streaming_enabled: !this.props.core.http_streaming_enabled})} />
-								<span className="label has-tooltip">
-									Stream audio to this browser
-									<span className="tooltip">Requires streaming service like Icecast2</span>
-								</span>
-							</label>
-						</div>
-					</div>
-					<div className="field radio">
-						<div className="name">Encoding</div>
-						<div className="input">
-							<label>
-								<input 
-									type="radio"
-									name="http_streaming_encoding"
-									checked={this.props.core.http_streaming_encoding == 'mpeg'}
-									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'mpeg'})} />
-								<span className="label">mpeg (mp3)</span>
-							</label>
-							<label>
-								<input 
-									type="radio"
-									name="http_streaming_encoding"
-									checked={this.props.core.http_streaming_encoding == 'ogg'}
-									onChange={e => this.props.coreActions.set({http_streaming_encoding: 'ogg'})} />
-								<span className="label">ogg</span>
-							</label>
-						</div>
-					</div>
-
-					<div className="field">
-						<div className="name">Location</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.props.coreActions.set({http_streaming_url: e.target.value})}
-								value={this.props.core.http_streaming_url} />
-							<div className="description">
-								The full URL to your stream endpoint
-							</div>
-						</div>
-					</div>		
-
-					<h4 className="underline">Localization</h4>
-
-					<div className="field">
-						<div className="name">Country</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.setState({country: e.target.value})} 
-								onFocus={e => this.setState({input_in_focus: 'country'})} 
-								onBlur={e => this.handleBlur('country',e.target.value)} 
-								value={ this.state.country } />
-							<div className="description">
-								An <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code (eg <em>NZ</em>)
-							</div>
-						</div>
-					</div>
-					<div className="field">
-						<div className="name">Locale</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.setState({locale: e.target.value})}
-								onFocus={e => this.setState({input_in_focus: 'locale'})} 
-								onBlur={e => this.handleBlur('locale',e.target.value)} 
-								value={this.state.locale} />
-							<div className="description">
-								Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a> and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>, joined by an underscore (eg <em>en_NZ</em>)
-							</div>
-						</div>
-					</div>
-
-					<h4 className="underline">Spotify</h4>
-
-					<div className="field">
-						<div className="name">Status</div>
-						<div className="input">
-							<div className="text">
-								{this.renderSpotifyStatus()}
-							</div>
-						</div>
-					</div>
-
-					<div className="field current-user">
-						<div className="name">Current user</div>
-						<div className="input">
-							<div className="text">
-								{ this.renderSpotifyUser() }
-							</div>
-						</div>
-					</div>	
-
-					<div className="field">
-						<div className="name">Authorization</div>
-						<div className="input">
-							<SpotifyAuthenticationFrame />
-							{ this.renderSendAuthorizationButton() }
-							{this.props.spotify.refreshing_token ? <button className="working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
-						</div>
-					</div>
-
-					<h4 className="underline">LastFM</h4>
-
-					{this.props.lastfm.session ? <div className="field current-user">
-						<div className="name">Current user</div>
-						<div className="input">
-							<div className="text">
-								{ this.renderLastfmUser() }
-							</div>
-						</div>
-					</div> : null}
-
-					<div className="field">
-						<div className="name">Authorization</div>
-						<div className="input">
-							<LastfmAuthenticationFrame />
-						</div>
-					</div>
+					<h4 className="underline">Services</h4>
+					<Services active={this.props.params.sub_view} />
 
 					<h4 className="underline">Advanced</h4>
 
@@ -493,26 +268,18 @@ class Settings extends React.Component {
 			        </div>
 					
 					<div className="field">
-						<div className="name">Extensions</div>
-						<div className="input">
-				        	<div className="text">
-				        		<URISchemesList />
-				        	</div>
-				        </div>
-			        </div>
-					
-					<div className="field">
 						<div className="name">Version</div>
 						<div className="input">
-				        	<VersionManager />
+				        	<span className="text">
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><FontAwesome name="check" className="green-text" />&nbsp; Up-to-date</span>}
+				        	</span>
 				        </div>
 			        </div>
 					
 					<div className="field">
-						<div className="name">Reset</div>
-						<div className="input">
-					        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
-				        </div>
+						{upgrade_button}
+				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
+				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
 					<h4 className="underline">About</h4>

@@ -20,7 +20,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
     def select_subprotocol(self, subprotocols):
 
         # select one of our subprotocol elements and return it. This confirms the connection has been accepted.
-        protocols = mem.iris.digest_protocol( subprotocols )
+        protocols = mem.iris.digest_protocol(subprotocols)
 
         # if we've auto-generated some ids, the provided subprotocols was a string, so just return it right back
         # this allows a connection to be completed
@@ -170,7 +170,7 @@ class HttpHandler(tornado.web.RequestHandler):
             getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
         else:
-            self.handle_result(id=self.request_id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
+            self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return
 
     @tornado.web.asynchronous

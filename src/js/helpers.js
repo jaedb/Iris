@@ -284,7 +284,7 @@ export let formatTracks = function(tracks){
     for (var i = 0; i < tracks.length; i++){
 
     	// Nested track object (eg in spotify playlist)
-    	if (tracks[i].track){
+    	if (tracks[i].track && isObject(tracks[i].track)){
     		var track = Object.assign({}, tracks[i].track);
 
     		// Copy supporting values
@@ -310,6 +310,8 @@ export let formatTracks = function(tracks){
 
         if (track.track_no){
         	track.track_number = track.track_no;
+        } else if (track.track_number){
+        	track.track_number = track.track_number;
         }
 
         if (track.disc_no){
@@ -345,6 +347,9 @@ export let formatTracks = function(tracks){
  * @param uri = string
  **/
 export let uriSource = function(uri){
+	if (!uri){
+		return false;
+	}
     var exploded = uri.split(':');
     return exploded[0]
 }
@@ -584,18 +589,23 @@ export let removeDuplicates = function(array){
  * @param field = string (the field we're to search)
  * @param value = string (the value to find)
  * @param array = array of objects to search
+ * @param singular = boolean (just return the first result)
  * @return array
  **/
-export let applyFilter = function(field, value, array){
-	var results = []
+export let applyFilter = function(field, value, array, singular = false){
+	var results = [];
 
 	for (var i = 0; i < array.length; i++){
-		if (array[i][field] && array[i][field].toLowerCase().includes(value.toLowerCase())){
-			results.push(array[i])
+		if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())){
+			if (singular){
+				return array[i];
+			} else {
+				results.push(array[i]);
+			}
 		}
 	}
 
-	return results
+	return results;
 }
 
 
@@ -711,11 +721,21 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 
 /**
  * Figure out if a value is a number
- * @param data = mixed
+ * @param value = mixed
  * @return boolean
  **/
-export let isNumeric = function (data){
-	return !isNaN(parseFloat(data)) && isFinite(data)
+export let isNumeric = function (value){
+	return !isNaN(parseFloat(value)) && isFinite(value)
+}
+
+
+/** 
+ * Figure out if a value is an object
+ * @param value = mixed
+ * @return boolean
+ **/
+export let isObject = function(value){
+	return value instanceof Object && value.constructor === Object;
 }
 
 

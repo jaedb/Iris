@@ -91,9 +91,9 @@ class Queue extends React.Component{
 	}
 
 	render(){
-
 		var current_track = null;
 		var tracks = [];
+
 		if (this.props.queue && this.props.tracks){
 			for (var i = 0; i < this.props.queue.length; i++){
 				var track = this.props.queue[i];
@@ -105,7 +105,10 @@ class Queue extends React.Component{
 					track = Object.assign(
 						{},
 						this.props.tracks[track.uri],
-						track
+						track,
+						{
+							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
+						}
 					);
 				}
 
@@ -114,10 +117,7 @@ class Queue extends React.Component{
 					track = Object.assign(
 						{},
 						track,
-						this.props.queue_metadata["tlid_"+track.tlid],
-						{
-							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
-						}
+						this.props.queue_metadata["tlid_"+track.tlid]
 					);
 				}
 
@@ -131,11 +131,10 @@ class Queue extends React.Component{
 			}
 		}
 
-		var image = null
+		var current_track_image = null;
 		if (current_track){
 			if (current_track.images !== undefined && current_track.images){
-				image = helpers.sizedImages(current_track.images)
-				image = image.large
+				current_track_image = helpers.sizedImages(current_track.images).large;
 			}
 		}
 
@@ -164,11 +163,11 @@ class Queue extends React.Component{
 		return (
 			<div className="view queue-view">			
 				<Header icon="play" className="overlay" title="Now playing" options={options} uiActions={this.props.uiActions} />
-				<Parallax blur image={image} />
+				<Parallax blur image={current_track_image} />
 				<div className="content-wrapper">
 				
 					<div className="current-track">
-						{this.renderArtwork(image)}
+						{this.renderArtwork(current_track_image)}
 						<div className="title">
 							{current_track ? <URILink type="track" uri={current_track.uri}>{current_track.name}</URILink> : <span>-</span>}
 						</div>

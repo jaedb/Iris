@@ -44,36 +44,47 @@ class Thumbnail extends React.Component{
 
 		// no images
 		if (!this.props.image && (!this.props.images || this.props.images.length <= 0)){
-			return require('../../assets/no-image.svg')
+			return require('../../assets/no-image.svg');
 
 		// single image
 		} else if (this.props.image){
-			return this.props.image
+			return this.props.image;
 
 		// multiple images
 		} else if (this.props.images && this.props.images.length > 0){
-			var images = helpers.sizedImages(this.props.images )
-			var size = 'medium'
-			if (this.props.size ) size = this.props.size
-			return images[size]
+			var images = helpers.sizedImages(this.props.images);
+
+			// Default to medium-sized image, but accept size property as override
+			var size = 'medium';
+			if (this.props.size){
+				size = this.props.size;
+			}
+
+			return images[size];
 		}
 	}
 
 	zoom(e, image){
-		e.preventDefault()
-		this.props.uiActions.openModal('image_zoom', {url: image} )
+		e.preventDefault();
+		this.props.uiActions.openModal('image_zoom', {url: image});
 	}
 
 	render(){
-		var image = this.mapImageSizes()
-		var class_name = 'thumbnail '
-		if (this.props.size ) class_name += ' '+this.props.size
-		if (this.props.circle ) class_name += ' circle'
-		if (this.props.className ) class_name += ' '+this.props.className
+		var image = this.mapImageSizes();
+		var class_name = 'thumbnail ';
+		if (this.props.size){
+			class_name += ' '+this.props.size;
+		}
+		if (this.props.circle){
+			class_name += ' circle';
+		}
+		if (this.props.className){
+			class_name += ' '+this.props.className;
+		}
 		
-		var zoom_icon = null
+		var zoom_icon = null;
 		if (this.props.canZoom){
-			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>
+			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>;
 		}
 
 		return (

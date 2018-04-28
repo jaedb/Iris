@@ -26,7 +26,7 @@ export default class GridItem extends React.Component{
 
 	handleClick(e){
 		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
-			this.props.onClick(e)
+			this.props.onClick(e);
 		}
 	}
 
@@ -98,7 +98,7 @@ export default class GridItem extends React.Component{
 		}
 
 		return (
-			<div className="grid-item" onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
+			<div className={"grid-item "+this.props.type+"-grid-item"} onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
 				<Thumbnail size="medium" images={images} />
 				<div className="name">
 					{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}

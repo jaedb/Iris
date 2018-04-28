@@ -91,13 +91,6 @@ const CoreMiddleware = (function(){
                 console.error(message, description, data);
                 break;
 
-            case 'CORE_START_SERVICES':
-                store.dispatch(mopidyActions.connect());
-                store.dispatch(pusherActions.connect());
-
-                next(action)
-                break
-
             case 'PLAY_PLAYLIST':
                 ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
                 next(action)
@@ -323,10 +316,19 @@ const CoreMiddleware = (function(){
             case 'CURRENT_TRACK_LOADED':
                 store.dispatch({
                     type: 'TRACKS_LOADED',
-                    tracks: [action.current_track]
+                    tracks: [action.track]
                 });
 
+                // Set our window title to the track title
+                helpers.setWindowTitle(action.track, store.getState().mopidy.play_state);
+
                 next(action);
+                break;
+
+            case 'CLEAR_CURRENT_TRACK':
+
+                // Set our window title to the track title
+                helpers.setWindowTitle(null, store.getState().mopidy.play_state);
                 break;
 
             case 'QUEUE_LOADED':

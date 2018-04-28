@@ -37,7 +37,7 @@ var initialState = {
 		outputs: [],
 		queue: [],
 		queue_metadata: {},
-		current_track_uri: null,
+		current_track: null,
 		albums: {},
 		artists: {},
 		playlists: {},
@@ -62,7 +62,8 @@ var initialState = {
 		mute: false,
 		volume: 0,
 		progress: 0,
-		play_state: false
+		play_state: false,
+		uri_schemes: []
 	},
 	pusher: {
 		connected: false,
@@ -70,18 +71,15 @@ var initialState = {
 		connections: {},
 		version: {
 			current: '0.0.0'
-		}
+		},
+		config: {}
 	},
 	lastfm: {
-		connected: false,
 		me: false,
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
 	},
-	genius: {
-		connected: false
-	},
+	genius: {},
 	spotify: {
-		connected: false,
 		me: false,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'

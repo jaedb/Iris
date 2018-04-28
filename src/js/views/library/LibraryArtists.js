@@ -7,8 +7,8 @@ import { Link } from 'react-router'
 import Header from '../../components/Header'
 import ArtistGrid from '../../components/ArtistGrid'
 import List from '../../components/List'
-import DropdownField from '../../components/DropdownField'
-import FilterField from '../../components/FilterField'
+import DropdownField from '../../components/Fields/DropdownField'
+import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
@@ -33,7 +33,7 @@ class LibraryArtists extends React.Component{
 			this.props.mopidyActions.getLibraryArtists();
 		}
 
-		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryArtists();
 		}
 	}
@@ -52,12 +52,7 @@ class LibraryArtists extends React.Component{
 			}			
 		}
 
-		if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
-
-			// We've just connected
-			if (!this.props.spotify_connected){
-				this.props.spotifyActions.getLibraryArtists();
-			}		
+		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished'){
@@ -247,7 +242,6 @@ class LibraryArtists extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),

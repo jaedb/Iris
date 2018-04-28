@@ -29,9 +29,21 @@ export function disconnect(){
 	}
 }
 
-export function startUpgrade(){
+export function upgrade(){
 	return {
-		type: 'START_UPGRADE'
+		type: 'PUSHER_UPGRADE'
+	}
+}
+
+export function reload(){
+	return {
+		type: 'PUSHER_RELOAD'
+	}
+}
+
+export function restart(){
+	return {
+		type: 'PUSHER_RESTART'
 	}
 }
 
@@ -128,6 +140,26 @@ export function stopRadio(){
 	}
 }
 
+export function radioStarted(radio){
+	return {
+		type: 'PUSHER_RADIO_STARTED',
+		radio: radio
+	}
+}
+
+export function radioChanged(radio){
+	return {
+		type: 'PUSHER_RADIO_CHANGED',
+		radio: radio
+	}
+}
+
+export function radioStopped(){
+	return {
+		type: 'PUSHER_RADIO_STOPPED'
+	}
+}
+
 export function debug(message = null){
 	return {
 		type: 'PUSHER_DEBUG',
@@ -171,57 +203,42 @@ export function getSnapcast(){
 	}
 }
 
-export function setSnapcastClientVolume(id, muted, percent){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
-		data: {
-			method: 'Client.SetVolume',
-			params: {
-				id: id,
-				volume: {
-					muted: muted,
-					percent: percent
-				}
-			}
-		}
-	}
-}
-
 export function setSnapcastClientName(id, name){
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
-		data: {
-			method: 'Client.SetName',
-			params: {
-				id: id,
-				name: name
-			}
-		}
+		id: id,
+		name: name
+	}
+}
+
+export function setSnapcastClientMute(id, mute){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_MUTE',
+		id: id,
+		mute: mute
+	}
+}
+
+export function setSnapcastClientVolume(id, percent){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
+		id: id,
+		percent: percent
 	}
 }
 
 export function setSnapcastClientLatency(id, latency){
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY',
-		data: {
-			method: 'Client.SetLatency',
-			params: {
-				id: id,
-				latency: latency
-			}
-		}
+		id: id,
+		latency: latency
 	}
 }
 
 export function deleteSnapcastClient(id){
 	return {
 		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
-		data: {
-			method: 'Server.DeleteClient',
-			params: {
-				id: id
-			}
-		}
+		id: id
 	}
 }
 

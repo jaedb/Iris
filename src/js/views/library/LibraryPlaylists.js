@@ -7,9 +7,9 @@ import FontAwesome from 'react-fontawesome'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'
-import DropdownField from '../../components/DropdownField'
+import DropdownField from '../../components/Fields/DropdownField'
 import Header from '../../components/Header'
-import FilterField from '../../components/FilterField'
+import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
@@ -35,17 +35,18 @@ class LibraryPlaylists extends React.Component{
 			this.props.mopidyActions.getLibraryPlaylists()
 		}
 
-		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && this.props.spotify_connected && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryPlaylists()
 		}
 	}
 
 	componentWillReceiveProps(newProps){
+
 		if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')){
 
 			// We've just connected
 			if (!this.props.mopidy_connected){
-				this.props.mopidyActions.getLibraryPlaylists()
+				this.props.mopidyActions.getLibraryPlaylists();
 			}		
 
 			// Filter changed, but we haven't got this provider's library yet
@@ -54,12 +55,7 @@ class LibraryPlaylists extends React.Component{
 			}			
 		}
 
-		if (newProps.mopidy_uri_schemes.includes('spotify:') && newProps.spotify_connected && (newProps.source == 'all' || newProps.source == 'spotify')){
-
-			// We've just connected
-			if (!this.props.spotify_connected){
-				this.props.spotifyActions.getLibraryPlaylists()
-			}		
+		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_playlists_status !== 'finished'){
@@ -269,7 +265,6 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		slim_mode: state.ui.slim_mode,
 		mopidy_connected: state.mopidy.connected,
-		spotify_connected: state.spotify.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_playlists: state.mopidy.library_playlists,
 		mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),

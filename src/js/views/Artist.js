@@ -13,9 +13,9 @@ import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
 import ArtistGrid from '../components/ArtistGrid'
 import RelatedArtists from '../components/RelatedArtists'
-import FollowButton from '../components/FollowButton'
+import FollowButton from '../components/Fields/FollowButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
-import DropdownField from '../components/DropdownField'
+import DropdownField from '../components/Fields/DropdownField'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -115,15 +115,7 @@ class Artist extends React.Component{
 		)
 	}
 
-	renderBody(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
-			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-		
+	renderBody(){		
 		var scheme = helpers.uriSource(this.props.params.uri);
 
 		var related_artists = []
@@ -182,16 +174,6 @@ class Artist extends React.Component{
 
 			default:
 
-				var tracks = [];
-				if (this.props.artist.tracks_uris && this.props.tracks){
-					for (var i = 0; i < this.props.artist.tracks_uris.length; i++){
-						var uri = this.props.artist.tracks_uris[i]
-						if (this.props.tracks.hasOwnProperty(uri)){
-							tracks.push(this.props.tracks[uri])
-						}
-					}
-				}
-
 				var sort_options = [
 					{
 						value: 'name',
@@ -207,12 +189,29 @@ class Artist extends React.Component{
 					}
 				];
 
+				var tracks = [];
+				if (this.props.artist.tracks_uris && this.props.tracks){
+					for (var i = 0; i < this.props.artist.tracks_uris.length; i++){
+						var uri = this.props.artist.tracks_uris[i]
+						if (this.props.tracks.hasOwnProperty(uri)){
+							tracks.push(this.props.tracks[uri])
+						}
+					}
+				}
+
+				if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri)+'/top-tracks'])){
+					var is_loading_tracks = true;
+				} else {
+					var is_loading_tracks = false;
+				}
+
 				return (
 					<div className="body overview">
 						<div className={"top-tracks col w"+(related_artists.length > 0 ? "70" : "100")}>
 							<h4>Top tracks</h4>
 							<div className="list-wrapper">
 								<TrackList className="artist-track-list" uri={this.props.params.uri} tracks={tracks} />
+								<LazyLoadListener forceLoader={is_loading_tracks} />
 							</div>
 						</div>
 
@@ -245,68 +244,55 @@ class Artist extends React.Component{
 	}
 
 	render(){
+		var scheme = helpers.uriSource(this.props.params.uri);
 
-		var scheme = helpers.uriSource(this.props.params.uri )
+		if (!this.props.artist){
+			if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
+				return (
+					<div className="body-loader loading">
+						<div className="loader"></div>
+					</div>
+				)
+			} else {
+				return null;
+			}
+		}
 
 		if (this.props.artist && this.props.artist.images){
-			var image = helpers.sizedImages(this.props.artist.images ).huge
+			var image = helpers.sizedImages(this.props.artist.images).huge;
 		} else {
-			var image = null
+			var image = null;
 		}
 
-		if (this.props.artist){
-			var is_spotify = (scheme == 'spotify')
-			
-			if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0){
-				var uris_to_play = this.props.artist.tracks_uris
-			} else {
-				var uris_to_play = this.props.artist.albums_uris
-			}
-
-			return (
-				<div className="view artist-view">
-					<div className="intro">
-
-						<Parallax image={image} />
-
-						<div className="liner">
-							<h1>{this.props.artist ? this.props.artist.name : null}</h1>
-							<div className="actions">
-								<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
-								{is_spotify ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
-								<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
-							</div>
-							{ this.renderSubViewMenu() }
-						</div>
-					</div>
-					<div className="content-wrapper">
-						{this.renderBody()}
-					</div>
-				</div>
-			);
-
+		var is_spotify = (scheme == 'spotify')
+		
+		if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0){
+			var uris_to_play = this.props.artist.tracks_uris
 		} else {
-			return (
-				<div className="view artist-view">
-					<div className="intro">
-						<Parallax />
-						<div className="liner">
-							<h1>
-								<span className="placeholder"></span>
-							</h1>
-							<div className="actions">
-								<button className="placeholder">&nbsp;</button>
-								<button className="placeholder">&nbsp;</button>
-							</div>
-							{ this.renderSubViewMenu() }
+			var uris_to_play = this.props.artist.albums_uris
+		}
+
+		return (
+			<div className="view artist-view">
+				<div className="intro">
+
+					<Parallax image={image} />
+
+					<div className="liner">
+						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
+						<div className="actions">
+							<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
+							{is_spotify ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
+							<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 						</div>
-					</div>
-					<div className="content-wrapper">
-						{this.renderBody()}
+						{ this.renderSubViewMenu() }
 					</div>
 				</div>
-			);
-		}
+				<div className="content-wrapper">
+					{this.renderBody()}
+				</div>
+			</div>
+		);
 	}
 }
 

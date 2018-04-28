@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
-import FollowButton from '../components/FollowButton'
+import FollowButton from '../components/Fields/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
@@ -56,16 +56,17 @@ class User extends React.Component{
 
 	render(){
 		var user_id = helpers.getFromUri('userid',this.props.params.uri);
-		if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
-			return (
-				<div className="body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
 
-		if (!this.props.user){
-			return null;
+		if (!this.props.user){			
+			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
+				return (
+					<div className="body-loader loading">
+						<div className="loader"></div>
+					</div>
+				)
+			} else {
+				return null;
+			}
 		}
 
 		var playlists = [];
