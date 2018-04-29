@@ -5384,7 +5384,7 @@ main header {
         background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
       .dropdown-field .options .option .fa {
         position: absolute;
-        top: 9px;
+        top: 11px;
         left: 8px;
         font-size: 10px; }
       .notouch .dropdown-field .options .option:hover {

@@ -599,7 +599,6 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_SNAPCAST_SERVER_LOADED':
-                console.log(action);
                 var groups = {};
                 var clients = {};
                 var streams = {};
@@ -778,8 +777,22 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_SET_SNAPCAST_CLIENT_GROUP':
+
                 var group = store.getState().pusher.snapcast_groups[action.group_id];
-                var clients_ids = Object.assign([], group.clients_ids, [action.id]);
+                var clients_ids = group.clients_ids;
+                var clients_ids_index = clients_ids.indexOf(action.id);
+
+                // Not in group (yet), so add it
+                if (clients_ids_index <= -1){
+                    clients_ids.push(action.id);
+
+                // Already there, so remove it
+                } else {
+                    clients_ids.splice(clients_ids_index, 1);
+                }
+
+                console.log(clients_ids, action.id, clients_ids_index);
+
                 var data = {
                     method: 'Group.SetClients',
                     params: {

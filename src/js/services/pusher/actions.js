@@ -243,7 +243,6 @@ export function setSnapcastClientLatency(id, latency){
 }
 
 export function setSnapcastClientGroup(id, group_id){
-	console.log(id,group_id);
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
 		id: id,
