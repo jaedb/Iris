@@ -18,9 +18,12 @@
 	<link rel="manifest" href="/iris/assets/manifest.json">
 
 	<!-- Apple app -->
-	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png">
-	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png">
-	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png">
+	<meta name="apple-mobile-web-app-title" content="Iris" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#121212">
+	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png" />
+	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png" />
 
 	<!-- Raven Sentry -->
 	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
@@ -73,7 +76,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1524541685";
+	var build = "1524953170";
 	var version = "3.17.4";
 
 	// Construct the script tag

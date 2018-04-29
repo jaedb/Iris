@@ -33,6 +33,12 @@
 		}
 	}
 
+	&.no-label {
+		.label > .text {
+			display: none;
+		}
+	}
+
 	.options {
 		color: $black;
 		position: absolute;

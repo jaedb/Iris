@@ -51,6 +51,9 @@ export default class DropdownField extends React.Component{
 		if (this.props.no_status_icon){
 			className += ' no-status-icon';
 		}
+		if (this.props.no_label){
+			className += ' no-label';
+		}
 		if (this.props.button){
 			className += ' buttonify';
 		}

@@ -1,79 +1,60 @@
 
 .snapcast {
 
-	.group.list {
-		padding: 0 10px;
-		
+	.group {
+
 		&:not(:first-child){
-			padding-top: 15px;
+			padding-top: 20px;
 		}
 
-		.list-item {
-			padding: 20px 0 0 0;
+		.clients {
+			padding: 0 10px;
 
-			&:not(.header){
-				border: 0;
-			}
-
-			& > .name {
-				width: 40%;
-				padding-bottom: 4px;
-				position: relative;
-
-				.status {
-					position: absolute;
-					top: 0;
-					left: 0;
-					z-index: 2;
-					padding: 12px;
-					cursor: default;
-
-					.fa {
-						font-size: 12px;
-					}
-				}
-
-				input {
-					padding-left: 30px;
-				}
-			}
-
-			& > .volume {
-				width: 28%;
-				padding-left: 2%;
-			}
-
-			& > .latency {
-				width: 28%;
-				padding-left: 2%;
-			}
-
-			&.header {
-				padding-top: 0;
-				vertical-align: bottom;
-				cursor: default;
-
-				.name {
-					font-size: 14px;
-					color: $white;
-					text-transform: none;
-					font-weight: 600;
-					line-height: 14px;
-				}
-			}
-
-			&.client {
+			.client {
 				@include clearfix();
-				padding: 20px 0 0 0;
+				border: 0;
+				padding: 0;
+				clear: both;
+
+				&:not(:first-child){
+					padding-top: 8px;
+				}
 
 				& > .name {
+					width: 40%;
+					padding-bottom: 4px;
+					position: relative;
 					display: block;
 					box-sizing: border-box;
 					border: 0;
 
 					input {
 						width: 100%;
+						padding-right: 30px;
 					}
+
+					.tools {
+						position: absolute;
+						top: -2px;
+						right: 0;
+						z-index: 2;
+
+						.disconnected {
+							padding: 12px 0;
+							cursor: default;
+							font-size: 12px;
+						}
+					}
+				}
+
+				& > .volume {
+					width: 28%;
+					padding-left: 2%;
+				}
+
+				& > .latency {
+					width: 28%;
+					padding-left: 2%;
 				}
 
 				& > .volume,
@@ -137,35 +118,25 @@
 						border-bottom-right-radius: 0;
 					}
 				}
-			}
 
-			@include responsive($bp_medium){
+				@include responsive($bp_medium){
+					padding-left: 0 !important;
+					padding-right: 0 !important;
 
-				padding-left: 0 !important;
-				padding-right: 0 !important;
+					.col {
+						@include clearfix();
+						float: none !important;
+						width: auto !important;
+						padding-left: 0;
+						padding-right: 0;
 
-				&.header {
-					display: block;
+						&:not(.header){
+							line-height: 45px;
+						}
 
-					.volume,
-					.latency {
-						display: none !important;
-					}
-				}
-
-				.col {
-					@include clearfix();
-					float: none !important;
-					width: auto !important;
-					padding-left: 0;
-					padding-right: 0;
-
-					&:not(.header){
-						line-height: 45px;
-					}
-
-					&.volume {
-						padding-bottom: 20px !important;
+						&.volume {
+							padding-bottom: 20px !important;
+						}
 					}
 				}
 			}

@@ -4772,11 +4772,14 @@ exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getSnapcast = getSnapcast;
+exports.snapcastServerLoaded = snapcastServerLoaded;
 exports.setSnapcastClientName = setSnapcastClientName;
 exports.setSnapcastClientMute = setSnapcastClientMute;
 exports.setSnapcastClientVolume = setSnapcastClientVolume;
 exports.setSnapcastClientLatency = setSnapcastClientLatency;
+exports.setSnapcastClientGroup = setSnapcastClientGroup;
 exports.deleteSnapcastClient = deleteSnapcastClient;
+exports.setSnapcastGroupStream = setSnapcastGroupStream;
 
 /**
  * Actions and Action Creators
@@ -4989,6 +4992,13 @@ function getSnapcast() {
 	};
 }
 
+function snapcastServerLoaded(server) {
+	return {
+		type: 'PUSHER_SNAPCAST_SERVER_LOADED',
+		server: server
+	};
+}
+
 function setSnapcastClientName(id, name) {
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
@@ -5021,10 +5031,27 @@ function setSnapcastClientLatency(id, latency) {
 	};
 }
 
+function setSnapcastClientGroup(id, group_id) {
+	console.log(id, group_id);
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
+		id: id,
+		group_id: group_id
+	};
+}
+
 function deleteSnapcastClient(id) {
 	return {
 		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
 		id: id
+	};
+}
+
+function setSnapcastGroupStream(id, stream_id) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
+		id: id,
+		stream_id: stream_id
 	};
 }
 
@@ -19458,6 +19485,9 @@ var DropdownField = function (_React$Component) {
 			if (this.props.no_status_icon) {
 				className += ' no-status-icon';
 			}
+			if (this.props.no_label) {
+				className += ' no-label';
+			}
 			if (this.props.button) {
 				className += ' buttonify';
 			}
@@ -24492,6 +24522,14 @@ var Track = function (_React$Component) {
 							);
 							break;
 
+						case "search":
+							var link = _react2.default.createElement(
+								_URILink2.default,
+								{ type: 'search', uri: track.added_from.replace("iris:", "") },
+								'search'
+							);
+							break;
+
 						default:
 							var link = _react2.default.createElement(
 								_URILink2.default,
@@ -24528,7 +24566,7 @@ var Track = function (_React$Component) {
 				} else {
 					var added = _react2.default.createElement(
 						'span',
-						{ className: 'placeholder' },
+						{ className: 'empty' },
 						'-'
 					);
 				}
@@ -49459,7 +49497,17 @@ function reducer() {
             return Object.assign({}, pusher, { config: action.config });
 
         case 'PUSHER_SNAPCAST':
-            return Object.assign({}, pusher, { snapcast_clients: action.snapcast_clients, snapcast_groups: action.snapcast_groups });
+            return Object.assign({}, pusher, {
+                snapcast_streams: action.snapcast_streams,
+                snapcast_groups: action.snapcast_groups,
+                snapcast_clients: action.snapcast_clients
+            });
+
+        case 'PUSHER_SNAPCAST_GROUP_UPDATED':
+            var snapcast_groups = Object.assign({}, pusher.snapcast_groups);
+            var group = snapcast_groups[action.key];
+            snapcast_groups[action.key] = Object.assign({}, group, action.group);
+            return Object.assign({}, pusher, { snapcast_groups: snapcast_groups });
 
         case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
             var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
@@ -51432,37 +51480,50 @@ var PusherMiddleware = function () {
                      **/
                     case 'PUSHER_GET_SNAPCAST':
                         request(store, 'snapcast_instruct', action.data).then(function (response) {
-                            var groups = {};
-                            var clients = {};
-
-                            // Loop all the groups
-                            for (var i = 0; i < response.server.groups.length; i++) {
-                                var group = response.server.groups[i];
-                                var clients_ids = [];
-
-                                // And now this groups' clients
-                                for (var j = 0; j < group.clients.length; j++) {
-                                    var client = group.clients[j];
-                                    clients[client.id] = client;
-                                    clients_ids.push(client.id);
-                                }
-
-                                groups[group.id] = {
-                                    id: group.id,
-                                    muted: group.muted,
-                                    name: group.name,
-                                    stream_id: group.stream_id,
-                                    clients_ids: clients_ids
-                                };
-                            }
-
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST',
-                                snapcast_clients: clients,
-                                snapcast_groups: groups
-                            });
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not get Snapcast server', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SNAPCAST_SERVER_LOADED':
+                        console.log(action);
+                        var groups = {};
+                        var clients = {};
+                        var streams = {};
+
+                        // Loop all the groups
+                        for (var i = 0; i < action.server.groups.length; i++) {
+                            var group = action.server.groups[i];
+                            var clients_ids = [];
+
+                            // And now this groups' clients
+                            for (var j = 0; j < group.clients.length; j++) {
+                                var client = group.clients[j];
+                                clients[client.id] = client;
+                                clients_ids.push(client.id);
+                            }
+
+                            groups[group.id] = {
+                                id: group.id,
+                                muted: group.muted,
+                                name: group.name,
+                                stream_id: group.stream_id,
+                                clients_ids: clients_ids
+                            };
+                        }
+
+                        // Loop all the streams
+                        for (var i = 0; i < action.server.streams.length; i++) {
+                            var stream = action.server.streams[i];
+                            streams[stream.id] = stream;
+                        }
+
+                        store.dispatch({
+                            type: 'PUSHER_SNAPCAST',
+                            snapcast_clients: clients,
+                            snapcast_groups: groups,
+                            snapcast_streams: streams
                         });
                         break;
 
@@ -51572,6 +51633,24 @@ var PusherMiddleware = function () {
                         });
                         break;
 
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_GROUP':
+                        var group = store.getState().pusher.snapcast_groups[action.group_id];
+                        var clients_ids = Object.assign([], group.clients_ids, [action.id]);
+                        var data = {
+                            method: 'Group.SetClients',
+                            params: {
+                                id: action.group_id,
+                                clients: clients_ids
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
                     case 'PUSHER_DELETE_SNAPCAST_CLIENT':
                         var data = {
                             method: 'Server.DeleteClient',
@@ -51584,6 +51663,29 @@ var PusherMiddleware = function () {
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_REMOVED',
                                 key: action.data.params.id
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_STREAM':
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var data = {
+                            method: 'Group.SetStream',
+                            params: {
+                                id: action.id,
+                                stream_id: action.stream_id
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED',
+                                key: action.id,
+                                group: {
+                                    stream_id: action.stream_id
+                                }
                             });
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Error', error, error.message));
@@ -51722,6 +51824,7 @@ var MopidyMiddleware = function () {
                 break;
 
             case 'event:trackPlaybackEnded':
+                // This doesn't fire when it's the last track in the queue... bug in Mopidy?
                 store.dispatch(mopidyActions.clearCurrentTrack());
                 store.dispatch(mopidyActions.getTimePosition());
                 break;
@@ -68022,7 +68125,7 @@ var Search = function (_React$Component) {
 						_react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
@@ -68127,7 +68230,7 @@ var Search = function (_React$Component) {
 						var tracks_section = _react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
@@ -70288,6 +70391,10 @@ var _TextField = __webpack_require__(257);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
+var _DropdownField = __webpack_require__(40);
+
+var _DropdownField2 = _interopRequireDefault(_DropdownField);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -70372,17 +70479,34 @@ var Snapcast = function (_React$Component) {
 				);
 			}
 
+			var streams = [];
+			for (var key in this.props.snapcast_streams) {
+				if (this.props.snapcast_streams.hasOwnProperty(key)) {
+					streams.push(this.props.snapcast_streams[key]);
+				}
+			}
+
 			// Construct a simple array of our groups index
 			var groups = [];
+			var groups_dropdown = [];
 			for (var group_id in this.props.snapcast_groups) {
 				if (this.props.snapcast_groups.hasOwnProperty(group_id)) {
 					var group = this.props.snapcast_groups[group_id];
+
+					// Append to our groups dropdown source array
+					groups_dropdown.push({
+						label: group.name ? group.name : group.stream_id,
+						value: group.id
+					});
 
 					// Merge the group's clients into this group (also as a simple array)
 					var clients = [];
 					for (var i = 0; i < group.clients_ids.length; i++) {
 						if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])) {
-							clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
+							var client = this.props.snapcast_clients[group.clients_ids[i]];
+							if (client.connected || this.props.snapcast_show_disconnected_clients) {
+								clients.push(client);
+							}
 						}
 					}
 
@@ -70395,104 +70519,156 @@ var Snapcast = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'snapcast' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'field checkbox' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'input' },
+						_react2.default.createElement(
+							'button',
+							{ onClick: function onClick(e) {
+									return _this2.props.pusherActions.getSnapcast();
+								} },
+							'Refresh'
+						),
+						_react2.default.createElement(
+							'label',
+							null,
+							_react2.default.createElement('input', {
+								type: 'checkbox',
+								name: 'snapcast_show_disconnected_clients',
+								checked: this.props.snapcast_show_disconnected_clients,
+								onChange: function onChange(e) {
+									return _this2.props.uiActions.set({ snapcast_show_disconnected_clients: !_this2.props.snapcast_show_disconnected_clients });
+								} }),
+							_react2.default.createElement(
+								'span',
+								{ className: 'label' },
+								'Show disconnected clients'
+							)
+						)
+					)
+				),
 				groups.map(function (group) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'list group', key: group.id },
+						{ className: 'group', key: group.id },
+						_react2.default.createElement(
+							'h3',
+							{ className: 'name' },
+							group.name ? group.name : group.stream_id
+						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'list-item header' },
+							{ className: 'field dropdown' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'col name' },
-								group.name ? group.name : 'Untitled group'
+								{ className: 'name' },
+								'Source'
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'col volume' },
-								'Volume'
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'col latency' },
-								'Latency'
-							)
-						),
-						group.clients.map(function (client) {
-							var name = client.config.name ? client.config.name : client.host.name;
-							return _react2.default.createElement(
-								'div',
-								{ className: 'list-item client', key: client.id },
+								{ className: 'input' },
 								_react2.default.createElement(
-									'div',
-									{ className: 'col name' },
-									_react2.default.createElement(_TextField2.default, {
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
-										},
-										value: name
-									}),
-									client.connected ? _react2.default.createElement(
-										'span',
-										{ className: 'status has-tooltip' },
-										_react2.default.createElement(_reactFontawesome2.default, { className: 'green-text', name: 'circle' }),
-										_react2.default.createElement(
-											'span',
-											{ className: 'tooltip' },
-											'Connected'
-										)
-									) : _react2.default.createElement(
-										'span',
-										{ className: 'status has-tooltip' },
-										_react2.default.createElement(_reactFontawesome2.default, { className: 'grey-text', name: 'circle' }),
-										_react2.default.createElement(
-											'span',
-											{ className: 'tooltip' },
-											'Not connected'
-										)
-									)
-								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'col volume' },
-									_react2.default.createElement(_VolumeControl2.default, {
-										volume: client.config.volume.percent,
-										mute: client.config.volume.muted,
-										onVolumeChange: function onVolumeChange(percent) {
-											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
-										},
-										onMuteChange: function onMuteChange(mute) {
-											return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
-										}
-									}),
-									_react2.default.createElement(_TextField2.default, {
-										className: 'tiny',
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value));
-										},
-										value: client.config.volume.percent
-									})
-								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'col latency' },
-									_react2.default.createElement(_LatencyControl2.default, {
-										max: '100',
-										value: client.config.latency,
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
-										}
-									}),
-									_react2.default.createElement(_TextField2.default, {
-										className: 'tiny',
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
-										},
-										value: String(client.config.latency)
+									'select',
+									{ onChange: function onChange(e) {
+											return _this2.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value);
+										}, value: group.stream_id },
+									streams.map(function (stream) {
+										return _react2.default.createElement(
+											'option',
+											{ value: stream.id, key: stream.id },
+											stream.id,
+											' (',
+											stream.status,
+											')'
+										);
 									})
 								)
-							);
-						})
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'Clients'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'list clients' },
+									group.clients.map(function (client) {
+										var name = client.config.name ? client.config.name : client.host.name;
+										return _react2.default.createElement(
+											'div',
+											{ className: 'list-item client', key: client.id },
+											_react2.default.createElement(
+												'div',
+												{ className: 'col name' },
+												_react2.default.createElement(_TextField2.default, {
+													onChange: function onChange(value) {
+														return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
+													},
+													value: name
+												}),
+												_react2.default.createElement(
+													'div',
+													{ className: 'tools' },
+													client.connected ? null : _react2.default.createElement(_reactFontawesome2.default, { className: 'disconnected red-text', name: 'plug' }),
+													_react2.default.createElement(_DropdownField2.default, { icon: 'cog', name: 'Group', no_label: true, value: group.id, options: groups_dropdown, handleChange: function handleChange(val) {
+															_this2.props.pusherActions.setSnapcastClientGroup(client.id, group.id);_this2.props.uiActions.hideContextMenu();
+														} })
+												)
+											),
+											_react2.default.createElement(
+												'div',
+												{ className: 'col volume' },
+												_react2.default.createElement(_VolumeControl2.default, {
+													volume: client.config.volume.percent,
+													mute: client.config.volume.muted,
+													onVolumeChange: function onVolumeChange(percent) {
+														return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
+													},
+													onMuteChange: function onMuteChange(mute) {
+														return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
+													}
+												}),
+												_react2.default.createElement(_TextField2.default, {
+													className: 'tiny',
+													onChange: function onChange(value) {
+														return _this2.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value));
+													},
+													value: client.config.volume.percent
+												})
+											),
+											_react2.default.createElement(
+												'div',
+												{ className: 'col latency' },
+												_react2.default.createElement(_LatencyControl2.default, {
+													max: '100',
+													value: client.config.latency,
+													onChange: function onChange(value) {
+														return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+													}
+												}),
+												_react2.default.createElement(_TextField2.default, {
+													className: 'tiny',
+													onChange: function onChange(value) {
+														return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+													},
+													value: String(client.config.latency)
+												})
+											)
+										);
+									})
+								)
+							)
+						)
 					);
 				})
 			);
@@ -70506,6 +70682,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
+		snapcast_show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
+		snapcast_streams: state.pusher.snapcast_streams,
 		snapcast_groups: state.pusher.snapcast_groups,
 		snapcast_clients: state.pusher.snapcast_clients
 	};
