@@ -42,6 +42,91 @@ class Snapcast extends React.Component{
 		}
 	}
 
+	renderClientsList(group, groups){
+
+		if (!group.clients || group.clients.length <= 0){
+			return (
+				<div className="text grey-text">
+					No clients
+				</div>
+			);
+		}
+
+		return (
+			<div className="list clients">
+				{
+					group.clients.map(client => {
+						var name = client.config.name ? client.config.name : client.host.name;
+						var groups_dropdown = [];
+						for (var i = 0; i < groups.length; i++){
+
+							// Don't add our existing group
+							if (groups[i].id !== group.id){
+								groups_dropdown.push({
+									label: (groups[i].name ? groups[i].name : 'Group '+(i+1)),
+									value: groups[i].id
+								});
+							}
+						}
+
+						// And append with 'New group' (which is actually
+						// the existing group and middleware handles the behavior shift)
+						groups_dropdown.push({
+							label: 'New group',
+							value: group.id
+						});
+
+						return (
+							<div className="list-item client" key={client.id}>
+								<div className="col name">
+									<DropdownField 
+										className="group-dropdown-field" 
+										icon="cog" 
+										name="Group" 
+										no_label
+										no_status_icon
+										value={group.id} 
+										options={groups_dropdown} 
+										handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
+									/>
+									<TextField
+										onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
+										value={name}
+									/>
+								</div>
+								<div className="col volume">
+									<VolumeControl 
+										volume={client.config.volume.percent}
+										mute={client.config.volume.muted}
+										onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
+										onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
+									/>
+									<TextField
+										className="tiny"
+										onChange={value => this.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value))}
+										value={client.config.volume.percent}
+									/>
+								</div>
+								<div className="col latency">
+									<LatencyControl 
+										max="100"
+										value={client.config.latency}
+										onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
+									/>
+									<TextField
+										className="tiny"
+										onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
+										value={String(client.config.latency)}
+									/>
+								</div>
+							</div>
+						);
+					})
+				}
+			</div>
+		);
+	}
+
 	render(){
 		if (!this.props.snapcast_enabled){
 			return (
@@ -113,23 +198,23 @@ class Snapcast extends React.Component{
 				</div>
 
 				{
-					groups.map(group => {
+					groups.map((group, i) => {
 						return (
 							<div className="group" key={group.id}>
 								<div className="field">
 									<div className="name">
-										ID
+										Name
 									</div>
 									<div className="input">	
 										<div className="text">
-											{group.id}
-											{group.name ? '('+group.name+')' : null}
+											{group.name ? group.name : 'Group '+(i+1)} &nbsp;
+											<span className="grey-text">({group.id})</span>
 										</div>
 									</div>
 								</div>
 								<div className="field dropdown">
 									<div className="name">
-										Source
+										Stream
 									</div>
 									<div className="input">										
 										<select onChange={e => this.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value)} value={group.stream_id}>
@@ -150,77 +235,7 @@ class Snapcast extends React.Component{
 										Clients
 									</div>
 									<div className="input">	
-										<div className="list clients">
-											{
-												group.clients.map(client => {
-													var name = client.config.name ? client.config.name : client.host.name;
-													var groups_dropdown = [];
-													for (var i = 0; i < groups.length; i++){
-
-														// Don't add our existing group
-														if (groups[i].id !== group.id){
-															groups_dropdown.push({
-																label: (groups[i].name ? groups[i].name : groups[i].stream_id),
-																value: groups[i].id
-															});
-														}
-													}
-
-													// And append with 'New group' (which is actually
-													// the existing group and middleware handles the behavior shift)
-													groups_dropdown.push({
-														label: 'New group',
-														value: group.id
-													});
-
-													return (
-														<div className="list-item client" key={client.id}>
-															<div className="col name">
-																<DropdownField 
-																	className="group-dropdown-field" 
-																	icon="cog" 
-																	name="Group" 
-																	no_label
-																	no_status_icon
-																	value={group.id} 
-																	options={groups_dropdown} 
-																	handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
-																/>
-																<TextField
-																	onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
-																	value={name}
-																/>
-															</div>
-															<div className="col volume">
-																<VolumeControl 
-																	volume={client.config.volume.percent}
-																	mute={client.config.volume.muted}
-																	onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
-																	onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
-																/>
-																<TextField
-																	className="tiny"
-																	onChange={value => this.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value))}
-																	value={client.config.volume.percent}
-																/>
-															</div>
-															<div className="col latency">
-																<LatencyControl 
-																	max="100"
-																	value={client.config.latency}
-																	onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
-																/>
-																<TextField
-																	className="tiny"
-																	onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
-																	value={String(client.config.latency)}
-																/>
-															</div>
-														</div>
-													);
-												})
-											}
-										</div>
+										{this.renderClientsList(group, groups)}
 									</div>
 								</div>
 							</div>

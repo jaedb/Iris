@@ -116,6 +116,7 @@
 				@include responsive($bp_medium){
 					padding-left: 0 !important;
 					padding-right: 0 !important;
+					padding-top: 0 !important;
 
 					.col {
 						@include clearfix();
