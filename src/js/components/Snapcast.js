@@ -68,16 +68,9 @@ class Snapcast extends React.Component{
 
 		// Construct a simple array of our groups index
 		var groups = [];
-		var groups_dropdown = [];
 		for (var group_id in this.props.snapcast_groups){
 			if (this.props.snapcast_groups.hasOwnProperty(group_id)){
 				var group = this.props.snapcast_groups[group_id];
-
-				// Append to our groups dropdown source array
-				groups_dropdown.push({
-					label: (group.name ? group.name : group.stream_id),
-					value: group.id
-				});
 
 				// Merge the group's clients into this group (also as a simple array)
 				var clients = [];
@@ -161,10 +154,38 @@ class Snapcast extends React.Component{
 											{
 												group.clients.map(client => {
 													var name = client.config.name ? client.config.name : client.host.name;
+													var groups_dropdown = [];
+													for (var i = 0; i < groups.length; i++){
+
+														// Don't add our existing group
+														if (groups[i].id !== group.id){
+															groups_dropdown.push({
+																label: (groups[i].name ? groups[i].name : groups[i].stream_id),
+																value: groups[i].id
+															});
+														}
+													}
+
+													// And append with 'New group' (which is actually
+													// the existing group and middleware handles the behavior shift)
+													groups_dropdown.push({
+														label: 'New group',
+														value: group.id
+													});
+
 													return (
 														<div className="list-item client" key={client.id}>
 															<div className="col name">
-																<DropdownField className="group" icon="cog" name="Group" no_label value={group.id} options={groups_dropdown} handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} />
+																<DropdownField 
+																	className="group-dropdown-field" 
+																	icon="cog" 
+																	name="Group" 
+																	no_label
+																	no_status_icon
+																	value={group.id} 
+																	options={groups_dropdown} 
+																	handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
+																/>
 																<TextField
 																	onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
 																	value={name}

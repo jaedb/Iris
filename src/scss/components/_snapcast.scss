@@ -4,10 +4,9 @@
 	.group {
 		padding-top: 10px;
 		border-top: 1px solid $grey;
-		margin-top: 20px;
 
-		&:nth-child(0n + 1){
-			margin-top: 0;
+		&:not(:last-child){
+			padding-bottom: 20px;
 		}
 
 		.clients {
@@ -36,7 +35,7 @@
 						padding-right: 30px;
 					}
 
-					.group {
+					.group-dropdown-field {
 						float: right;
 						margin-bottom: -4rem;
 					}
@@ -120,17 +119,15 @@
 
 					.col {
 						@include clearfix();
+						clear: both;
+						display: block !important;
 						float: none !important;
 						width: auto !important;
-						padding-left: 0;
-						padding-right: 0;
+						padding: 0;
 
-						&:not(.header){
-							line-height: 45px;
-						}
-
-						&.volume {
-							padding-bottom: 20px !important;
+						&.volume,
+						&.latency {
+							padding-top: 5px;
 						}
 					}
 				}

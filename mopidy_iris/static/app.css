@@ -4293,10 +4293,9 @@ input[type="submit"] {
 
 .snapcast .group {
   padding-top: 10px;
-  border-top: 1px solid #383734;
-  margin-top: 20px; }
-  .snapcast .group:nth-child(0n + 1) {
-    margin-top: 0; }
+  border-top: 1px solid #383734; }
+  .snapcast .group:not(:last-child) {
+    padding-bottom: 20px; }
   .snapcast .group .clients {
     padding: 0 10px; }
     .snapcast .group .clients .client {
@@ -4319,7 +4318,7 @@ input[type="submit"] {
         .snapcast .group .clients .client > .name input {
           width: 100%;
           padding-right: 30px; }
-        .snapcast .group .clients .client > .name .group {
+        .snapcast .group .clients .client > .name .group-dropdown-field {
           float: right;
           margin-bottom: -4rem; }
       .snapcast .group .clients .client > .volume {
@@ -4373,18 +4372,17 @@ input[type="submit"] {
           padding-left: 0 !important;
           padding-right: 0 !important; }
           .snapcast .group .clients .client .col {
+            clear: both;
+            display: block !important;
             float: none !important;
             width: auto !important;
-            padding-left: 0;
-            padding-right: 0; }
+            padding: 0; }
             .snapcast .group .clients .client .col::after {
               content: '';
               clear: both;
               display: block; }
-            .snapcast .group .clients .client .col:not(.header) {
-              line-height: 45px; }
-            .snapcast .group .clients .client .col.volume {
-              padding-bottom: 20px !important; } }
+            .snapcast .group .clients .client .col.volume, .snapcast .group .clients .client .col.latency {
+              padding-top: 5px; } }
 
 aside {
   position: fixed;
