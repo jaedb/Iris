@@ -33,6 +33,12 @@
 		}
 	}
 
+	&.no-label {
+		.label > .text {
+			display: none;
+		}
+	}
+
 	.options {
 		color: $black;
 		position: absolute;
@@ -84,7 +90,7 @@
 
 			.fa {
 				position: absolute;
-				top: 9px;
+				top: 11px;
 				left: 8px;
 				font-size: 10px;
 			}

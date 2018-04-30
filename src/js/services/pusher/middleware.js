@@ -586,43 +586,7 @@ const PusherMiddleware = (function(){
                 request(store, 'snapcast_instruct', action.data)
                     .then(
                         response => {
-                            var groups = {};
-                            var clients = {};
-                            var streams = {};
-
-                            // Loop all the groups
-                            for (var i = 0; i < response.server.groups.length; i++){
-                                var group = response.server.groups[i];
-                                var clients_ids = [];
-
-                                // And now this groups' clients
-                                for (var j = 0; j < group.clients.length; j++){
-                                    var client = group.clients[j];
-                                    clients[client.id] = client;
-                                    clients_ids.push(client.id);
-                                }
-
-                                groups[group.id] = {
-                                    id: group.id,
-                                    muted: group.muted,
-                                    name: group.name,
-                                    stream_id: group.stream_id,
-                                    clients_ids: clients_ids
-                                }
-                            }
-
-                            // Loop all the streams
-                            for (var i = 0; i < response.server.streams.length; i++){
-                                var stream = response.server.streams[i];
-                                streams[stream.id] = stream;
-                            }
-
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST', 
-                                snapcast_clients: clients,
-                                snapcast_groups: groups,
-                                snapcast_streams: streams
-                            });
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -632,6 +596,46 @@ const PusherMiddleware = (function(){
                             ));
                         }
                     );
+                break
+
+            case 'PUSHER_SNAPCAST_SERVER_LOADED':
+                var groups = {};
+                var clients = {};
+                var streams = {};
+
+                // Loop all the groups
+                for (var i = 0; i < action.server.groups.length; i++){
+                    var group = action.server.groups[i];
+                    var clients_ids = [];
+
+                    // And now this groups' clients
+                    for (var j = 0; j < group.clients.length; j++){
+                        var client = group.clients[j];
+                        clients[client.id] = client;
+                        clients_ids.push(client.id);
+                    }
+
+                    groups[group.id] = {
+                        id: group.id,
+                        muted: group.muted,
+                        name: group.name,
+                        stream_id: group.stream_id,
+                        clients_ids: clients_ids
+                    }
+                }
+
+                // Loop all the streams
+                for (var i = 0; i < action.server.streams.length; i++){
+                    var stream = action.server.streams[i];
+                    streams[stream.id] = stream;
+                }
+
+                store.dispatch({
+                    type: 'PUSHER_SNAPCAST', 
+                    snapcast_clients: clients,
+                    snapcast_groups: groups,
+                    snapcast_streams: streams
+                });
                 break
 
             case 'PUSHER_SET_SNAPCAST_CLIENT_NAME':
@@ -772,6 +776,46 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+            case 'PUSHER_SET_SNAPCAST_CLIENT_GROUP':
+
+                var group = store.getState().pusher.snapcast_groups[action.group_id];
+                var clients_ids = group.clients_ids;
+                var clients_ids_index = clients_ids.indexOf(action.id);
+
+                // Not in group (yet), so add it
+                if (clients_ids_index <= -1){
+                    clients_ids.push(action.id);
+
+                // Already there, so remove it
+                } else {
+                    clients_ids.splice(clients_ids_index, 1);
+                }
+
+                console.log(clients_ids, action.id, clients_ids_index);
+
+                var data = {
+                    method: 'Group.SetClients',
+                    params: {
+                        id: action.group_id,
+                        clients: clients_ids
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
             case 'PUSHER_DELETE_SNAPCAST_CLIENT':
                 var data = {
                     method: 'Server.DeleteClient',
@@ -786,6 +830,37 @@ const PusherMiddleware = (function(){
                             store.dispatch({
                                 type: 'PUSHER_SNAPCAST_CLIENT_REMOVED', 
                                 key: action.data.params.id
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
+            case 'PUSHER_SET_SNAPCAST_GROUP_STREAM':
+                var group = store.getState().pusher.snapcast_groups[action.id];
+                var data = {
+                    method: 'Group.SetStream',
+                    params: {
+                        id: action.id,
+                        stream_id: action.stream_id
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED', 
+                                key: action.id,
+                                group: {
+                                    stream_id: action.stream_id
+                                }
                             })
                         },
                         error => {                            

@@ -55,7 +55,17 @@ export default function reducer(pusher = {}, action){
             return Object.assign({}, pusher, { config: action.config });
 
         case 'PUSHER_SNAPCAST':
-            return Object.assign({}, pusher, { snapcast_clients: action.snapcast_clients, snapcast_groups: action.snapcast_groups });
+            return Object.assign({}, pusher, { 
+                snapcast_streams: action.snapcast_streams,
+                snapcast_groups: action.snapcast_groups,
+                snapcast_clients: action.snapcast_clients
+            });
+
+        case 'PUSHER_SNAPCAST_GROUP_UPDATED':
+            var snapcast_groups = Object.assign({}, pusher.snapcast_groups);
+            var group = snapcast_groups[action.key];
+            snapcast_groups[action.key] = Object.assign({}, group, action.group);
+            return Object.assign({}, pusher, { snapcast_groups: snapcast_groups });
 
         case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
             var snapcast_clients = Object.assign({}, pusher.snapcast_clients);

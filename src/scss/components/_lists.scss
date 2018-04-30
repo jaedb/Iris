@@ -13,7 +13,6 @@
 		position: relative;
 		margin: 0 -10px -1px -10px;
 		padding: 14px 30px 13px 10px;
-		cursor: pointer;
 		border-radius: 3px;
 		border-bottom: 1px solid rgba(255,255,255,0.05);
 		border-top: 1px solid rgba(255,255,255,0.05);
@@ -96,6 +95,8 @@
 
 	&.track-list {
 		.list-item {
+			cursor: pointer;
+
 			.col {
 				&.name { 
 					width: 40%;
@@ -142,6 +143,8 @@
 	}
 
 	&.playlist-list .list-item {
+		cursor: pointer;
+
 		.col {
 			&.name { 
 				width: 50%;
@@ -159,6 +162,8 @@
 	}
 
 	&.album-list .list-item {
+		cursor: pointer;
+
 		.col {
 			&.name,
 			&.artists { 
@@ -175,6 +180,8 @@
 	}
 
 	&.library-local-album-list .list-item{
+		cursor: pointer;
+
 		.col {
 			&.name,
 			&.artists { 
@@ -187,6 +194,8 @@
 	}
 
 	&.artist-list .list-item {
+		cursor: pointer;
+
 		.col {
 			&.name { 
 				width: 70%;
@@ -199,6 +208,8 @@
 	}
 
 	&.queue-track-list {
+		cursor: pointer;
+
 		.list-item {
 			padding-right: 60px;
 			.col {
@@ -230,6 +241,8 @@
 	}
 
 	&.queue-history-track-list .list-item {
+		cursor: pointer;
+		
 		.col {
 			&.name { 
 				width: 60%;
@@ -243,6 +256,7 @@
 
 	&.related-artist-list {
 		padding-bottom: 20px;
+		cursor: pointer;
 		
 		.artist {
 			display: block;
