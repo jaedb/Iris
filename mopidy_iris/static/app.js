@@ -20978,6 +20978,9 @@ var DropdownField = function (_React$Component) {
 			if (this.props.button) {
 				className += ' buttonify';
 			}
+			if (this.props.className) {
+				className += ' ' + this.props.className;
+			}
 			var current_value = this.props.options[0].value;
 			if (this.props.value) {
 				current_value = this.props.value;
@@ -72484,12 +72487,23 @@ var Snapcast = function (_React$Component) {
 						'div',
 						{ className: 'group', key: group.id },
 						_react2.default.createElement(
-							'h3',
-							{ className: 'name' },
-							group.name ? group.name : group.id,
-							' (',
-							group.stream_id,
-							')'
+							'div',
+							{ className: 'field' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'ID'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'text' },
+									group.id,
+									group.name ? '(' + group.name + ')' : null
+								)
+							)
 						),
 						_react2.default.createElement(
 							'div',
@@ -72542,20 +72556,15 @@ var Snapcast = function (_React$Component) {
 											_react2.default.createElement(
 												'div',
 												{ className: 'col name' },
+												_react2.default.createElement(_DropdownField2.default, { className: 'group', icon: 'cog', name: 'Group', no_label: true, value: group.id, options: groups_dropdown, handleChange: function handleChange(value) {
+														_this2.props.pusherActions.setSnapcastClientGroup(client.id, value);_this2.props.uiActions.hideContextMenu();
+													} }),
 												_react2.default.createElement(_TextField2.default, {
 													onChange: function onChange(value) {
 														return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
 													},
 													value: name
-												}),
-												_react2.default.createElement(
-													'div',
-													{ className: 'tools' },
-													client.connected ? null : _react2.default.createElement(_reactFontawesome2.default, { className: 'disconnected red-text', name: 'plug' }),
-													_react2.default.createElement(_DropdownField2.default, { icon: 'cog', name: 'Group', no_label: true, value: group.id, options: groups_dropdown, handleChange: function handleChange(value) {
-															_this2.props.pusherActions.setSnapcastClientGroup(client.id, value);_this2.props.uiActions.hideContextMenu();
-														} })
-												)
+												})
 											),
 											_react2.default.createElement(
 												'div',

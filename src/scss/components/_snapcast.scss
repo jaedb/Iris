@@ -2,9 +2,12 @@
 .snapcast {
 
 	.group {
+		padding-top: 10px;
+		border-top: 1px solid $grey;
+		margin-top: 20px;
 
-		&:not(:first-child){
-			padding-top: 20px;
+		&:nth-child(0n + 1){
+			margin-top: 0;
 		}
 
 		.clients {
@@ -33,17 +36,9 @@
 						padding-right: 30px;
 					}
 
-					.tools {
-						position: absolute;
-						top: -2px;
-						right: 0;
-						z-index: 2;
-
-						.disconnected {
-							padding: 12px 0;
-							cursor: default;
-							font-size: 12px;
-						}
+					.group {
+						float: right;
+						margin-bottom: -4rem;
 					}
 				}
 

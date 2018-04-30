@@ -123,9 +123,17 @@ class Snapcast extends React.Component{
 					groups.map(group => {
 						return (
 							<div className="group" key={group.id}>
-								<h3 className="name">
-									{group.name ? group.name : group.id} ({group.stream_id})
-								</h3>
+								<div className="field">
+									<div className="name">
+										ID
+									</div>
+									<div className="input">	
+										<div className="text">
+											{group.id}
+											{group.name ? '('+group.name+')' : null}
+										</div>
+									</div>
+								</div>
 								<div className="field dropdown">
 									<div className="name">
 										Source
@@ -156,14 +164,11 @@ class Snapcast extends React.Component{
 													return (
 														<div className="list-item client" key={client.id}>
 															<div className="col name">
+																<DropdownField className="group" icon="cog" name="Group" no_label value={group.id} options={groups_dropdown} handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} />
 																<TextField
 																	onChange={value => this.props.pusherActions.setSnapcastClientName(client.id, value)}
 																	value={name}
 																/>
-																<div className="tools">
-																	{client.connected ? null : <FontAwesome className="disconnected red-text" name="plug" />}
-																	<DropdownField icon="cog" name="Group" no_label value={group.id} options={groups_dropdown} handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} />
-																</div>
 															</div>
 															<div className="col volume">
 																<VolumeControl 

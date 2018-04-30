@@ -4291,103 +4291,100 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
-.snapcast .group:not(:first-child) {
-  padding-top: 20px; }
-
-.snapcast .group .clients {
-  padding: 0 10px; }
-  .snapcast .group .clients .client {
-    border: 0;
-    padding: 0;
-    clear: both; }
-    .snapcast .group .clients .client::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .snapcast .group .clients .client:not(:first-child) {
-      padding-top: 8px; }
-    .snapcast .group .clients .client > .name {
-      width: 40%;
-      padding-bottom: 4px;
-      position: relative;
-      display: block;
-      box-sizing: border-box;
-      border: 0; }
-      .snapcast .group .clients .client > .name input {
-        width: 100%;
-        padding-right: 30px; }
-      .snapcast .group .clients .client > .name .tools {
-        position: absolute;
-        top: -2px;
-        right: 0;
-        z-index: 2; }
-        .snapcast .group .clients .client > .name .tools .disconnected {
-          padding: 12px 0;
-          cursor: default;
-          font-size: 12px; }
-    .snapcast .group .clients .client > .volume {
-      width: 28%;
-      padding-left: 2%; }
-    .snapcast .group .clients .client > .latency {
-      width: 28%;
-      padding-left: 2%; }
-    .snapcast .group .clients .client > .volume input,
-    .snapcast .group .clients .client > .latency input {
-      width: 20%; }
-    .snapcast .group .clients .client .volume-control {
-      display: inline-block;
-      vertical-align: middle;
-      padding-top: 4px;
-      width: 80%;
-      padding-right: 10px;
-      box-sizing: border-box; }
-      .snapcast .group .clients .client .volume-control .mute-control {
-        display: inline-block;
-        float: left;
-        padding: 0 10px;
+.snapcast .group {
+  padding-top: 10px;
+  border-top: 1px solid #383734;
+  margin-top: 20px; }
+  .snapcast .group:nth-child(0n + 1) {
+    margin-top: 0; }
+  .snapcast .group .clients {
+    padding: 0 10px; }
+    .snapcast .group .clients .client {
+      border: 0;
+      padding: 0;
+      clear: both; }
+      .snapcast .group .clients .client::after {
+        content: '';
+        clear: both;
+        display: block; }
+      .snapcast .group .clients .client:not(:first-child) {
+        padding-top: 8px; }
+      .snapcast .group .clients .client > .name {
+        width: 40%;
+        padding-bottom: 4px;
+        position: relative;
+        display: block;
+        box-sizing: border-box;
         border: 0; }
-      .snapcast .group .clients .client .volume-control .slider-wrapper {
-        margin-left: 25px; }
-      .snapcast .group .clients .client .volume-control.muted .slider .progress {
-        background: #a3a19f; }
-    .snapcast .group .clients .client .latency-control {
-      display: inline-block;
-      vertical-align: middle;
-      padding-top: 4px;
-      width: 80%;
-      padding-right: 10px;
-      box-sizing: border-box; }
-      .snapcast .group .clients .client .latency-control .zero {
-        position: absolute;
-        top: -4px;
-        left: 50%;
-        bottom: 0;
-        width: 1px;
-        background: #383734;
-        z-index: 1; }
-      .snapcast .group .clients .client .latency-control .progress.positive {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0; }
-      .snapcast .group .clients .client .latency-control .progress.negative {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0; }
-    @media (max-width: 800px) {
-      .snapcast .group .clients .client {
-        padding-left: 0 !important;
-        padding-right: 0 !important; }
-        .snapcast .group .clients .client .col {
-          float: none !important;
-          width: auto !important;
-          padding-left: 0;
-          padding-right: 0; }
-          .snapcast .group .clients .client .col::after {
-            content: '';
-            clear: both;
-            display: block; }
-          .snapcast .group .clients .client .col:not(.header) {
-            line-height: 45px; }
-          .snapcast .group .clients .client .col.volume {
-            padding-bottom: 20px !important; } }
+        .snapcast .group .clients .client > .name input {
+          width: 100%;
+          padding-right: 30px; }
+        .snapcast .group .clients .client > .name .group {
+          float: right;
+          margin-bottom: -4rem; }
+      .snapcast .group .clients .client > .volume {
+        width: 28%;
+        padding-left: 2%; }
+      .snapcast .group .clients .client > .latency {
+        width: 28%;
+        padding-left: 2%; }
+      .snapcast .group .clients .client > .volume input,
+      .snapcast .group .clients .client > .latency input {
+        width: 20%; }
+      .snapcast .group .clients .client .volume-control {
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
+        width: 80%;
+        padding-right: 10px;
+        box-sizing: border-box; }
+        .snapcast .group .clients .client .volume-control .mute-control {
+          display: inline-block;
+          float: left;
+          padding: 0 10px;
+          border: 0; }
+        .snapcast .group .clients .client .volume-control .slider-wrapper {
+          margin-left: 25px; }
+        .snapcast .group .clients .client .volume-control.muted .slider .progress {
+          background: #a3a19f; }
+      .snapcast .group .clients .client .latency-control {
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 4px;
+        width: 80%;
+        padding-right: 10px;
+        box-sizing: border-box; }
+        .snapcast .group .clients .client .latency-control .zero {
+          position: absolute;
+          top: -4px;
+          left: 50%;
+          bottom: 0;
+          width: 1px;
+          background: #383734;
+          z-index: 1; }
+        .snapcast .group .clients .client .latency-control .progress.positive {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0; }
+        .snapcast .group .clients .client .latency-control .progress.negative {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0; }
+      @media (max-width: 800px) {
+        .snapcast .group .clients .client {
+          padding-left: 0 !important;
+          padding-right: 0 !important; }
+          .snapcast .group .clients .client .col {
+            float: none !important;
+            width: auto !important;
+            padding-left: 0;
+            padding-right: 0; }
+            .snapcast .group .clients .client .col::after {
+              content: '';
+              clear: both;
+              display: block; }
+            .snapcast .group .clients .client .col:not(.header) {
+              line-height: 45px; }
+            .snapcast .group .clients .client .col.volume {
+              padding-bottom: 20px !important; } }
 
 aside {
   position: fixed;
