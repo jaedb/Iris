@@ -873,6 +873,37 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+            case 'PUSHER_SET_SNAPCAST_GROUP_MUTE':
+                var group = store.getState().pusher.snapcast_groups[action.id];
+                var data = {
+                    method: 'Group.SetMute',
+                    params: {
+                        id: action.id,
+                        mute: action.mute
+                    }
+                }
+
+                request(store, 'snapcast_instruct', data)
+                    .then(
+                        response => {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED', 
+                                key: action.id,
+                                group: {
+                                    muted: response.mute
+                                }
+                            })
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Error',
+                                error,
+                                error.message
+                            ));
+                        }
+                    );
+                break
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

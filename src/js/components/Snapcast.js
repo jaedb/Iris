@@ -232,6 +232,19 @@ class Snapcast extends React.Component{
 								</div>
 								<div className="field">
 									<div className="name">
+										Volume
+									</div>
+									<div className="input">	
+										<VolumeControl 
+											volume={group.volume}
+											mute={group.muted}
+											onVolumeChange={percent => this.props.pusherActions.setSnapcastGroupVolume(group.id, percent)}
+											onMuteChange={mute => this.props.pusherActions.setSnapcastGroupMute(group.id, mute)}
+										/>
+									</div>
+								</div>
+								<div className="field">
+									<div className="name">
 										Clients
 									</div>
 									<div className="input">	

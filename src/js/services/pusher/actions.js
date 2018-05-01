@@ -265,3 +265,19 @@ export function setSnapcastGroupStream(id, stream_id){
 	}
 }
 
+export function setSnapcastGroupMute(id, mute){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
+		id: id,
+		mute: mute
+	}
+}
+
+export function setSnapcastGroupVolume(id, percent){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
+		id: id,
+		percent: percent
+	}
+}
+
