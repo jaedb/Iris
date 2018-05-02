@@ -22,7 +22,7 @@
   "start_url": "/iris/index.html",
   "background_color": "#08d58f",
   "theme_color": "#181818",
-  "display": "standalone",
+  "display": "fullscreen",
   "app": {
     "background": {}
   }

@@ -228,6 +228,10 @@ export default class Track extends React.Component{
 						var link = <URILink type="browse" uri={track.added_from.replace("iris:browse:","")}>browse</URILink>
 						break;
 
+					case "search":
+						var link = <URILink type="search" uri={track.added_from.replace("iris:","")}>search</URILink>
+						break;
+
 					default:
 						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
@@ -235,10 +239,10 @@ export default class Track extends React.Component{
 				var added = <span><span className="by">{track.added_by}</span><span className="grey-text from"><span className="label">from </span>{link}</span></span>
 
 			} else if (track.added_by){
-				var added = track.added_by
+				var added = <span className="by">{track.added_by}</span>
 
 			} else {
-				var added = '-'
+				var added = <span className="empty">-</span>
 			}
 
 			track_columns.push(

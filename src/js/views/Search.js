@@ -218,7 +218,7 @@ class Search extends React.Component{
 							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -285,7 +285,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)

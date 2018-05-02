@@ -260,7 +260,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-module.exports = __webpack_require__(48);
+module.exports = __webpack_require__(49);
 
 
 /***/ }),
@@ -1739,7 +1739,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "match", function() { return __WEBPACK_IMPORTED_MODULE_11__match__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__useRouterHistory__ = __webpack_require__(162);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "useRouterHistory", function() { return __WEBPACK_IMPORTED_MODULE_12__useRouterHistory__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__PatternUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__PatternUtils__ = __webpack_require__(54);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "formatPattern", function() { return __WEBPACK_IMPORTED_MODULE_13__PatternUtils__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__applyRouterMiddleware__ = __webpack_require__(318);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "applyRouterMiddleware", function() { return __WEBPACK_IMPORTED_MODULE_14__applyRouterMiddleware__["a"]; });
@@ -5281,11 +5281,16 @@ exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getSnapcast = getSnapcast;
+exports.snapcastServerLoaded = snapcastServerLoaded;
 exports.setSnapcastClientName = setSnapcastClientName;
 exports.setSnapcastClientMute = setSnapcastClientMute;
 exports.setSnapcastClientVolume = setSnapcastClientVolume;
 exports.setSnapcastClientLatency = setSnapcastClientLatency;
+exports.setSnapcastClientGroup = setSnapcastClientGroup;
 exports.deleteSnapcastClient = deleteSnapcastClient;
+exports.setSnapcastGroupStream = setSnapcastGroupStream;
+exports.setSnapcastGroupMute = setSnapcastGroupMute;
+exports.setSnapcastGroupVolume = setSnapcastGroupVolume;
 
 /**
  * Actions and Action Creators
@@ -5498,6 +5503,13 @@ function getSnapcast() {
 	};
 }
 
+function snapcastServerLoaded(server) {
+	return {
+		type: 'PUSHER_SNAPCAST_SERVER_LOADED',
+		server: server
+	};
+}
+
 function setSnapcastClientName(id, name) {
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
@@ -5530,10 +5542,45 @@ function setSnapcastClientLatency(id, latency) {
 	};
 }
 
+function setSnapcastClientGroup(id, group_id) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
+		id: id,
+		group_id: group_id
+	};
+}
+
 function deleteSnapcastClient(id) {
 	return {
 		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
 		id: id
+	};
+}
+
+function setSnapcastGroupStream(id, stream_id) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
+		id: id,
+		stream_id: stream_id
+	};
+}
+
+function setSnapcastGroupMute(id, mute) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
+		id: id,
+		mute: mute
+	};
+}
+
+function setSnapcastGroupVolume(id, percent) {
+	var old_percent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
+		id: id,
+		percent: percent,
+		old_percent: old_percent
 	};
 }
 
@@ -15983,7 +16030,7 @@ return jQuery;
 
 
 
-var _prodInvariant = __webpack_require__(49);
+var _prodInvariant = __webpack_require__(50);
 
 var ReactCurrentOwner = __webpack_require__(35);
 
@@ -18892,7 +18939,7 @@ var _prodInvariant = __webpack_require__(12),
 var CallbackQueue = __webpack_require__(125);
 var PooledClass = __webpack_require__(46);
 var ReactFeatureFlags = __webpack_require__(126);
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 var Transaction = __webpack_require__(70);
 
 var invariant = __webpack_require__(7);
@@ -20858,6 +20905,166 @@ exports.default = Dater;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(3);
+
+var _reactFontawesome = __webpack_require__(6);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DropdownField = function (_React$Component) {
+	_inherits(DropdownField, _React$Component);
+
+	function DropdownField(props) {
+		_classCallCheck(this, DropdownField);
+
+		var _this = _possibleConstructorReturn(this, (DropdownField.__proto__ || Object.getPrototypeOf(DropdownField)).call(this, props));
+
+		_this.state = {
+			expanded: false
+		};
+		_this.handleClick = _this.handleClick.bind(_this);
+		return _this;
+	}
+
+	_createClass(DropdownField, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			window.addEventListener("click", this.handleClick, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("click", this.handleClick, false);
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e) {
+			// TODO: remove dependency on jQuery and explore the performance of this functionality
+			if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ', '_').toLowerCase() && this.state.expanded) {
+				this.setState({ expanded: false });
+			}
+		}
+	}, {
+		key: 'handleChange',
+		value: function handleChange(value) {
+			this.setState({ expanded: !this.state.expanded });
+			return this.props.handleChange(value);
+		}
+	}, {
+		key: 'handleToggle',
+		value: function handleToggle() {
+			this.setState({ expanded: !this.state.expanded });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			if (!this.props.options) {
+				return null;
+			}
+
+			var className = 'dropdown-field';
+			if (this.state.expanded) {
+				className += ' expanded';
+			}
+			if (this.props.no_status_icon) {
+				className += ' no-status-icon';
+			}
+			if (this.props.no_label) {
+				className += ' no-label';
+			}
+			if (this.props.button) {
+				className += ' buttonify';
+			}
+			if (this.props.className) {
+				className += ' ' + this.props.className;
+			}
+			var current_value = this.props.options[0].value;
+			if (this.props.value) {
+				current_value = this.props.value;
+			}
+
+			var icon = _react2.default.createElement(_reactFontawesome2.default, { name: 'check' });
+			if (this.props.reverse !== undefined) {
+				if (this.props.reverse) {
+					icon = _react2.default.createElement(_reactFontawesome2.default, { className: 'reverse', name: 'caret-down' });
+				} else {
+					icon = _react2.default.createElement(_reactFontawesome2.default, { className: 'reverse', name: 'caret-up' });
+				}
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: className, 'data-key': this.props.name.replace(' ', '_').toLowerCase() },
+				_react2.default.createElement(
+					'div',
+					{ className: "label" + (this.props.button ? " button " + this.props.button : ""), onClick: function onClick() {
+							return _this2.handleToggle();
+						} },
+					this.props.icon ? _react2.default.createElement(
+						'span',
+						null,
+						_react2.default.createElement(_reactFontawesome2.default, { name: this.props.icon }),
+						'\xA0 '
+					) : null,
+					_react2.default.createElement(
+						'span',
+						{ className: 'text' },
+						this.props.name
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'options' },
+					this.props.options.map(function (option) {
+						return _react2.default.createElement(
+							'div',
+							{ className: 'option', key: option.value, onClick: function onClick(e) {
+									return _this2.handleChange(option.value);
+								} },
+							!_this2.props.no_status_icon && option.value == current_value ? icon : null,
+							option.label
+						);
+					})
+				)
+			);
+		}
+	}]);
+
+	return DropdownField;
+}(_react2.default.Component);
+
+exports.default = DropdownField;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(25)))
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -20990,7 +21197,7 @@ module.exports = React;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21032,7 +21239,7 @@ function reactProdInvariant(code) {
 module.exports = reactProdInvariant;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21202,7 +21409,7 @@ module.exports = ReactReconciler;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21323,7 +21530,7 @@ DOMLazyTree.queueText = queueText;
 module.exports = DOMLazyTree;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21359,7 +21566,7 @@ function _resetWarned() {
 }
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21604,7 +21811,7 @@ function formatPattern(pattern, params) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21703,7 +21910,7 @@ var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21834,160 +22041,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ArtistGrid);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(4);
-
-var _redux = __webpack_require__(3);
-
-var _reactFontawesome = __webpack_require__(6);
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DropdownField = function (_React$Component) {
-	_inherits(DropdownField, _React$Component);
-
-	function DropdownField(props) {
-		_classCallCheck(this, DropdownField);
-
-		var _this = _possibleConstructorReturn(this, (DropdownField.__proto__ || Object.getPrototypeOf(DropdownField)).call(this, props));
-
-		_this.state = {
-			expanded: false
-		};
-		_this.handleClick = _this.handleClick.bind(_this);
-		return _this;
-	}
-
-	_createClass(DropdownField, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			window.addEventListener("click", this.handleClick, false);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			window.removeEventListener("click", this.handleClick, false);
-		}
-	}, {
-		key: 'handleClick',
-		value: function handleClick(e) {
-			// TODO: remove dependency on jQuery and explore the performance of this functionality
-			if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ', '_').toLowerCase() && this.state.expanded) {
-				this.setState({ expanded: false });
-			}
-		}
-	}, {
-		key: 'handleChange',
-		value: function handleChange(value) {
-			this.setState({ expanded: !this.state.expanded });
-			return this.props.handleChange(value);
-		}
-	}, {
-		key: 'handleToggle',
-		value: function handleToggle() {
-			this.setState({ expanded: !this.state.expanded });
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			if (!this.props.options) {
-				return null;
-			}
-
-			var className = 'dropdown-field';
-			if (this.state.expanded) {
-				className += ' expanded';
-			}
-			if (this.props.no_status_icon) {
-				className += ' no-status-icon';
-			}
-			if (this.props.button) {
-				className += ' buttonify';
-			}
-			var current_value = this.props.options[0].value;
-			if (this.props.value) {
-				current_value = this.props.value;
-			}
-
-			var icon = _react2.default.createElement(_reactFontawesome2.default, { name: 'check' });
-			if (this.props.reverse !== undefined) {
-				if (this.props.reverse) {
-					icon = _react2.default.createElement(_reactFontawesome2.default, { className: 'reverse', name: 'caret-down' });
-				} else {
-					icon = _react2.default.createElement(_reactFontawesome2.default, { className: 'reverse', name: 'caret-up' });
-				}
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: className, 'data-key': this.props.name.replace(' ', '_').toLowerCase() },
-				_react2.default.createElement(
-					'div',
-					{ className: "label" + (this.props.button ? " button " + this.props.button : ""), onClick: function onClick() {
-							return _this2.handleToggle();
-						} },
-					this.props.icon ? _react2.default.createElement(
-						'span',
-						null,
-						_react2.default.createElement(_reactFontawesome2.default, { name: this.props.icon }),
-						'\xA0 '
-					) : null,
-					_react2.default.createElement(
-						'span',
-						{ className: 'text' },
-						this.props.name
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'options' },
-					this.props.options.map(function (option) {
-						return _react2.default.createElement(
-							'div',
-							{ className: 'option', key: option.value, onClick: function onClick(e) {
-									return _this2.handleChange(option.value);
-								} },
-							!_this2.props.no_status_icon && option.value == current_value ? icon : null,
-							option.label
-						);
-					})
-				)
-			);
-		}
-	}]);
-
-	return DropdownField;
-}(_react2.default.Component);
-
-exports.default = DropdownField;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(25)))
 
 /***/ }),
 /* 57 */
@@ -25246,7 +25299,7 @@ module.exports = getEventModifierState;
 
 
 
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var Danger = __webpack_require__(208);
 var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(30);
@@ -25539,7 +25592,7 @@ var _prodInvariant = __webpack_require__(12);
 var ReactPropTypesSecret = __webpack_require__(134);
 var propTypesFactory = __webpack_require__(118);
 
-var React = __webpack_require__(48);
+var React = __webpack_require__(49);
 var PropTypes = propTypesFactory(React.isValidElement);
 
 var invariant = __webpack_require__(7);
@@ -27079,7 +27132,7 @@ var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
 var _Actions = __webpack_require__(75);
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27262,7 +27315,7 @@ var canUseDOM = exports.canUseDOM = !!(typeof window !== 'undefined' && window.d
 exports.__esModule = true;
 exports.go = exports.replaceLocation = exports.pushLocation = exports.startListener = exports.getUserConfirmation = exports.getCurrentLocation = undefined;
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 var _DOMUtils = __webpack_require__(76);
 
@@ -27815,7 +27868,7 @@ exports.default = FilterField;
 
 
 
-var _prodInvariant = __webpack_require__(49),
+var _prodInvariant = __webpack_require__(50),
     _assign = __webpack_require__(14);
 
 var ReactNoopUpdateQueue = __webpack_require__(114);
@@ -31166,7 +31219,7 @@ module.exports = instantiateReactComponent;
 
 var _prodInvariant = __webpack_require__(12);
 
-var React = __webpack_require__(48);
+var React = __webpack_require__(49);
 
 var invariant = __webpack_require__(7);
 
@@ -31747,9 +31800,9 @@ module.exports = getActiveElement;
 
 var _prodInvariant = __webpack_require__(12);
 
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var DOMProperty = __webpack_require__(40);
-var React = __webpack_require__(48);
+var React = __webpack_require__(49);
 var ReactBrowserEventEmitter = __webpack_require__(74);
 var ReactCurrentOwner = __webpack_require__(35);
 var ReactDOMComponentTree = __webpack_require__(16);
@@ -31759,7 +31812,7 @@ var ReactFeatureFlags = __webpack_require__(126);
 var ReactInstanceMap = __webpack_require__(60);
 var ReactInstrumentation = __webpack_require__(30);
 var ReactMarkupChecksum = __webpack_require__(266);
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 var ReactUpdateQueue = __webpack_require__(94);
 var ReactUpdates = __webpack_require__(36);
 
@@ -33075,7 +33128,7 @@ function verifyPlainObject(value, displayName, methodName) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = createTransitionManager;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__routerWarning__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__computeChangedRoutes__ = __webpack_require__(301);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TransitionUtils__ = __webpack_require__(302);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__isActive__ = __webpack_require__(303);
@@ -33539,7 +33592,7 @@ var Link = __WEBPACK_IMPORTED_MODULE_1_create_react_class___default()({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__RouteUtils__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PatternUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PatternUtils__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__InternalPropTypes__ = __webpack_require__(61);
 
 
@@ -33671,7 +33724,7 @@ var _runTransitionHook = __webpack_require__(103);
 
 var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 var _PathUtils = __webpack_require__(43);
 
@@ -34311,6 +34364,7 @@ var VolumeControl = function (_React$Component) {
 	_createClass(VolumeControl, [{
 		key: 'handleClick',
 		value: function handleClick(e) {
+			var old_percent = this.props.volume;
 			var slider = e.target;
 			if (slider.className != 'slider') slider = slider.parentElement;
 
@@ -34324,12 +34378,13 @@ var VolumeControl = function (_React$Component) {
 				percent = 0;
 			}
 
-			this.props.onVolumeChange(percent);
+			this.props.onVolumeChange(percent, old_percent);
 		}
 	}, {
 		key: 'handleWheel',
 		value: function handleWheel(e) {
 			if (this.props.scrollWheel) {
+				var old_percent = this.props.volume;
 
 				// Identify which direction we've scrolled (inverted)
 				// This is simplified and doesn't consider momentum as it varies wildly
@@ -34345,7 +34400,7 @@ var VolumeControl = function (_React$Component) {
 					percent = 0;
 				}
 
-				this.props.onVolumeChange(percent);
+				this.props.onVolumeChange(percent, old_percent);
 				e.preventDefault();
 			}
 		}
@@ -34391,6 +34446,10 @@ var VolumeControl = function (_React$Component) {
 			if (this.props.mute) {
 				className += " muted";
 			}
+			if (this.props.className) {
+				className += " " + this.props.className;
+			}
+
 			return _react2.default.createElement(
 				'span',
 				{ className: className, onWheel: function onWheel(e) {
@@ -34728,6 +34787,14 @@ var Track = function (_React$Component) {
 							);
 							break;
 
+						case "search":
+							var link = _react2.default.createElement(
+								_URILink2.default,
+								{ type: 'search', uri: track.added_from.replace("iris:", "") },
+								'search'
+							);
+							break;
+
 						default:
 							var link = _react2.default.createElement(
 								_URILink2.default,
@@ -34756,9 +34823,17 @@ var Track = function (_React$Component) {
 						)
 					);
 				} else if (track.added_by) {
-					var added = track.added_by;
+					var added = _react2.default.createElement(
+						'span',
+						{ className: 'by' },
+						track.added_by
+					);
 				} else {
-					var added = '-';
+					var added = _react2.default.createElement(
+						'span',
+						{ className: 'empty' },
+						'-'
+					);
 				}
 
 				track_columns.push(_react2.default.createElement(
@@ -35548,7 +35623,7 @@ module.exports = ReactChildren;
 
 
 
-var _prodInvariant = __webpack_require__(49);
+var _prodInvariant = __webpack_require__(50);
 
 var invariant = __webpack_require__(7);
 
@@ -35663,7 +35738,7 @@ module.exports = PooledClass;
 
 
 
-var _prodInvariant = __webpack_require__(49);
+var _prodInvariant = __webpack_require__(50);
 
 var ReactCurrentOwner = __webpack_require__(35);
 var REACT_ELEMENT_TYPE = __webpack_require__(115);
@@ -36078,7 +36153,7 @@ module.exports = ReactDOMFactories;
 
 
 
-var _prodInvariant = __webpack_require__(49);
+var _prodInvariant = __webpack_require__(50);
 
 var ReactPropTypeLocationNames = __webpack_require__(182);
 var ReactPropTypesSecret = __webpack_require__(183);
@@ -36351,7 +36426,7 @@ module.exports = factory(Component, isValidElement, ReactNoopUpdateQueue);
  */
 
 
-var _prodInvariant = __webpack_require__(49);
+var _prodInvariant = __webpack_require__(50);
 
 var ReactElement = __webpack_require__(45);
 
@@ -36399,7 +36474,7 @@ module.exports = onlyChild;
 var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDefaultInjection = __webpack_require__(190);
 var ReactMount = __webpack_require__(144);
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 var ReactUpdates = __webpack_require__(36);
 var ReactVersion = __webpack_require__(268);
 
@@ -38656,7 +38731,7 @@ module.exports = ReactComponentBrowserEnvironment;
 
 var _prodInvariant = __webpack_require__(12);
 
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var ExecutionEnvironment = __webpack_require__(22);
 
 var createNodesFromMarkup = __webpack_require__(209);
@@ -39071,7 +39146,7 @@ var _prodInvariant = __webpack_require__(12),
 
 var AutoFocusUtils = __webpack_require__(214);
 var CSSPropertyOperations = __webpack_require__(215);
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var DOMNamespaces = __webpack_require__(87);
 var DOMProperty = __webpack_require__(40);
 var DOMPropertyOperations = __webpack_require__(133);
@@ -41071,7 +41146,7 @@ module.exports = ReactDOMInput;
 
 var _assign = __webpack_require__(14);
 
-var React = __webpack_require__(48);
+var React = __webpack_require__(49);
 var ReactDOMComponentTree = __webpack_require__(16);
 var ReactDOMSelect = __webpack_require__(135);
 
@@ -41366,7 +41441,7 @@ var ReactInstanceMap = __webpack_require__(60);
 var ReactInstrumentation = __webpack_require__(30);
 
 var ReactCurrentOwner = __webpack_require__(35);
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 var ReactChildReconciler = __webpack_require__(229);
 
 var emptyFunction = __webpack_require__(29);
@@ -41809,7 +41884,7 @@ module.exports = ReactMultiChild;
 
 
 
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 
 var instantiateReactComponent = __webpack_require__(136);
 var KeyEscapeUtils = __webpack_require__(93);
@@ -41969,14 +42044,14 @@ module.exports = ReactChildReconciler;
 var _prodInvariant = __webpack_require__(12),
     _assign = __webpack_require__(14);
 
-var React = __webpack_require__(48);
+var React = __webpack_require__(49);
 var ReactComponentEnvironment = __webpack_require__(90);
 var ReactCurrentOwner = __webpack_require__(35);
 var ReactErrorUtils = __webpack_require__(82);
 var ReactInstanceMap = __webpack_require__(60);
 var ReactInstrumentation = __webpack_require__(30);
 var ReactNodeTypes = __webpack_require__(137);
-var ReactReconciler = __webpack_require__(50);
+var ReactReconciler = __webpack_require__(51);
 
 if (process.env.NODE_ENV !== 'production') {
   var checkReactTypeSpec = __webpack_require__(231);
@@ -43400,7 +43475,7 @@ module.exports = ReactServerUpdateQueue;
 
 var _assign = __webpack_require__(14);
 
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var ReactDOMComponentTree = __webpack_require__(16);
 
 var ReactDOMEmptyComponent = function (instantiate) {
@@ -43605,7 +43680,7 @@ var _prodInvariant = __webpack_require__(12),
     _assign = __webpack_require__(14);
 
 var DOMChildrenOperations = __webpack_require__(86);
-var DOMLazyTree = __webpack_require__(51);
+var DOMLazyTree = __webpack_require__(52);
 var ReactDOMComponentTree = __webpack_require__(16);
 
 var escapeTextContentForBrowser = __webpack_require__(73);
@@ -47708,7 +47783,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RouterContext__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__RouteUtils__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__RouterUtils__ = __webpack_require__(156);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__routerWarning__ = __webpack_require__(53);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -47865,7 +47940,7 @@ var propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(54);
 
 
 function routeParamsChanged(route, prevState, nextState) {
@@ -48107,7 +48182,7 @@ function getTransitionUtils() {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = isActive;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(54);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 
@@ -48304,8 +48379,8 @@ function getComponents(nextState, callback) {
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = matchRoutes;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__AsyncUtils__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PromiseUtils__ = __webpack_require__(155);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PatternUtils__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PatternUtils__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__routerWarning__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RouteUtils__ = __webpack_require__(42);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -48554,7 +48629,7 @@ function matchRoutes(routes, location, callback, remainingPathname) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PatternUtils__ = __webpack_require__(54);
 
 
 /**
@@ -48748,7 +48823,7 @@ module.exports = function hoistNonReactStatics(targetComponent, sourceComponent,
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Redirect__ = __webpack_require__(158);
@@ -48804,7 +48879,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_create_react_class__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__RouteUtils__ = __webpack_require__(42);
@@ -49220,7 +49295,7 @@ var _invariant = __webpack_require__(24);
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 var _PathUtils = __webpack_require__(43);
 
@@ -49418,7 +49493,7 @@ var loopAsync = exports.loopAsync = function loopAsync(turns, work, callback) {
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RouterContext__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routerWarning__ = __webpack_require__(53);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 
@@ -49599,7 +49674,7 @@ Object.defineProperty(exports, 'go', {
   }
 });
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 var _PathUtils = __webpack_require__(43);
 
@@ -49812,7 +49887,7 @@ var _warning = __webpack_require__(41);
 
 var _warning2 = _interopRequireDefault(_warning);
 
-var _LocationUtils = __webpack_require__(54);
+var _LocationUtils = __webpack_require__(55);
 
 var _DOMUtils = __webpack_require__(76);
 
@@ -51369,7 +51444,17 @@ function reducer() {
             return Object.assign({}, pusher, { config: action.config });
 
         case 'PUSHER_SNAPCAST':
-            return Object.assign({}, pusher, { snapcast_clients: action.snapcast_clients, snapcast_groups: action.snapcast_groups });
+            return Object.assign({}, pusher, {
+                snapcast_streams: action.snapcast_streams,
+                snapcast_groups: action.snapcast_groups,
+                snapcast_clients: action.snapcast_clients
+            });
+
+        case 'PUSHER_SNAPCAST_GROUP_UPDATED':
+            var snapcast_groups = Object.assign({}, pusher.snapcast_groups);
+            var group = snapcast_groups[action.key];
+            snapcast_groups[action.key] = Object.assign({}, group, action.group);
+            return Object.assign({}, pusher, { snapcast_groups: snapcast_groups });
 
         case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
             var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
@@ -53309,7 +53394,7 @@ var PusherMiddleware = function () {
                         }
 
                         if (action.config.spotify_authorization_url) {
-                            spotify_updates.authorization_url = action.config.authorization_url;
+                            spotify_updates.authorization_url = action.config.spotify_authorization_url;
                             spotify_updated = true;
                         }
 
@@ -53342,37 +53427,49 @@ var PusherMiddleware = function () {
                      **/
                     case 'PUSHER_GET_SNAPCAST':
                         request(store, 'snapcast_instruct', action.data).then(function (response) {
-                            var groups = {};
-                            var clients = {};
-
-                            // Loop all the groups
-                            for (var i = 0; i < response.server.groups.length; i++) {
-                                var group = response.server.groups[i];
-                                var clients_ids = [];
-
-                                // And now this groups' clients
-                                for (var j = 0; j < group.clients.length; j++) {
-                                    var client = group.clients[j];
-                                    clients[client.id] = client;
-                                    clients_ids.push(client.id);
-                                }
-
-                                groups[group.id] = {
-                                    id: group.id,
-                                    muted: group.muted,
-                                    name: group.name,
-                                    stream_id: group.stream_id,
-                                    clients_ids: clients_ids
-                                };
-                            }
-
-                            store.dispatch({
-                                type: 'PUSHER_SNAPCAST',
-                                snapcast_clients: clients,
-                                snapcast_groups: groups
-                            });
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not get Snapcast server', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SNAPCAST_SERVER_LOADED':
+                        var groups = {};
+                        var clients = {};
+                        var streams = {};
+
+                        // Loop all the groups
+                        for (var i = 0; i < action.server.groups.length; i++) {
+                            var group = action.server.groups[i];
+                            var clients_ids = [];
+
+                            // And now this groups' clients
+                            for (var j = 0; j < group.clients.length; j++) {
+                                var client = group.clients[j];
+                                clients[client.id] = client;
+                                clients_ids.push(client.id);
+                            }
+
+                            groups[group.id] = {
+                                id: group.id,
+                                muted: group.muted,
+                                name: group.name,
+                                stream_id: group.stream_id,
+                                clients_ids: clients_ids
+                            };
+                        }
+
+                        // Loop all the streams
+                        for (var i = 0; i < action.server.streams.length; i++) {
+                            var stream = action.server.streams[i];
+                            streams[stream.id] = stream;
+                        }
+
+                        store.dispatch({
+                            type: 'PUSHER_SNAPCAST',
+                            snapcast_clients: clients,
+                            snapcast_groups: groups,
+                            snapcast_streams: streams
                         });
                         break;
 
@@ -53482,6 +53579,36 @@ var PusherMiddleware = function () {
                         });
                         break;
 
+                    case 'PUSHER_SET_SNAPCAST_CLIENT_GROUP':
+
+                        var group = store.getState().pusher.snapcast_groups[action.group_id];
+                        var clients_ids = group.clients_ids;
+                        var clients_ids_index = clients_ids.indexOf(action.id);
+
+                        // Not in group (yet), so add it
+                        if (clients_ids_index <= -1) {
+                            clients_ids.push(action.id);
+
+                            // Already there, so remove it
+                        } else {
+                            clients_ids.splice(clients_ids_index, 1);
+                        }
+
+                        var data = {
+                            method: 'Group.SetClients',
+                            params: {
+                                id: action.group_id,
+                                clients: clients_ids
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch(pusherActions.snapcastServerLoaded(response.server));
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                        });
+                        break;
+
                     case 'PUSHER_DELETE_SNAPCAST_CLIENT':
                         var data = {
                             method: 'Server.DeleteClient',
@@ -53499,6 +53626,88 @@ var PusherMiddleware = function () {
                             store.dispatch(coreActions.handleException('Error', error, error.message));
                         });
                         break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_STREAM':
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var data = {
+                            method: 'Group.SetStream',
+                            params: {
+                                id: action.id,
+                                stream_id: action.stream_id
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED',
+                                key: action.id,
+                                group: {
+                                    stream_id: action.stream_id
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not change stream', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_MUTE':
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var data = {
+                            method: 'Group.SetMute',
+                            params: {
+                                id: action.id,
+                                mute: action.mute
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED',
+                                key: action.id,
+                                group: {
+                                    muted: response.mute
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not toggle mute', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_VOLUME':
+                        var clients_to_update = [];
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var change = action.percent - action.old_percent;
+
+                        for (var i = 0; i < group.clients_ids.length; i++) {
+
+                            // Apply the change proportionately to each client
+                            var client = store.getState().pusher.snapcast_clients[group.clients_ids[i]];
+                            var current_percent = client.config.volume.percent;
+                            var new_percent = current_percent + change;
+
+                            // Only change if the client is within min/max limits
+                            if (change > 0 && current_percent < 100 || change < 0 && current_percent > 0) {
+                                clients_to_update.push({
+                                    id: client.id,
+                                    percent: new_percent
+                                });
+                            }
+                        }
+
+                        // Loop our required changes, and post each to Snapcast
+                        for (var i = 0; i < clients_to_update.length; i++) {
+                            var update = clients_to_update[i];
+                            var percent = update.percent + (group.clients_ids.length - clients_to_update.length) * change;
+
+                            // Make sure we're not creating an impossible percent
+                            if (percent < 0) {
+                                percent = 0;
+                            } else if (percent > 100) {
+                                percent = 100;
+                            }
+
+                            store.dispatch(pusherActions.setSnapcastClientVolume(update.id, percent));
+                        }
 
                     // This action is irrelevant to us, pass it on to the next middleware
                     default:
@@ -66231,7 +66440,7 @@ var _ArtistSentence = __webpack_require__(28);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -66575,7 +66784,7 @@ var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -66591,7 +66800,7 @@ var _ContextMenuTrigger = __webpack_require__(37);
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -67835,7 +68044,7 @@ var _ArtistSentence = __webpack_require__(28);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -69627,7 +69836,7 @@ var _Header = __webpack_require__(18);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -69635,7 +69844,7 @@ var _TrackList = __webpack_require__(31);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -69932,7 +70141,7 @@ var Search = function (_React$Component) {
 						_react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
@@ -70037,7 +70246,7 @@ var Search = function (_React$Component) {
 						var tracks_section = _react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
@@ -70821,8 +71030,9 @@ var Settings = function (_React$Component) {
 									'Upgrade available'
 								) : _react2.default.createElement(
 									'span',
-									{ className: 'flag grey' },
-									'Up-to-date'
+									{ className: 'flag dark' },
+									_react2.default.createElement(_reactFontawesome2.default, { name: 'check', className: 'green-text' }),
+									'\xA0 Up-to-date'
 								)
 							)
 						)
@@ -72197,6 +72407,10 @@ var _TextField = __webpack_require__(413);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
+var _DropdownField = __webpack_require__(48);
+
+var _DropdownField2 = _interopRequireDefault(_DropdownField);
+
 var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -72255,9 +72469,115 @@ var Snapcast = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'renderClientsList',
+		value: function renderClientsList(group, groups) {
+			var _this2 = this;
+
+			if (!group.clients || group.clients.length <= 0) {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'text grey-text' },
+					'No clients'
+				);
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'list clients' },
+				group.clients.map(function (client) {
+					var name = client.config.name ? client.config.name : client.host.name;
+					var groups_dropdown = [];
+					for (var i = 0; i < groups.length; i++) {
+
+						// Don't add our existing group
+						if (groups[i].id !== group.id) {
+							groups_dropdown.push({
+								label: groups[i].name ? groups[i].name : 'Group ' + groups[i].id.substring(0, 3),
+								value: groups[i].id
+							});
+						}
+					}
+
+					// And append with 'New group' (which is actually
+					// the existing group and middleware handles the behavior shift)
+					groups_dropdown.push({
+						label: 'New group',
+						value: group.id
+					});
+
+					return _react2.default.createElement(
+						'div',
+						{ className: 'list-item client', key: client.id },
+						_react2.default.createElement(
+							'div',
+							{ className: 'col name' },
+							_react2.default.createElement(_DropdownField2.default, {
+								className: 'group-dropdown-field',
+								icon: 'cog',
+								name: 'Group',
+								no_label: true,
+								no_status_icon: true,
+								value: group.id,
+								options: groups_dropdown,
+								handleChange: function handleChange(value) {
+									_this2.props.pusherActions.setSnapcastClientGroup(client.id, value);_this2.props.uiActions.hideContextMenu();
+								}
+							}),
+							_react2.default.createElement(_TextField2.default, {
+								onChange: function onChange(value) {
+									return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
+								},
+								value: name
+							})
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'col volume' },
+							_react2.default.createElement(_VolumeControl2.default, {
+								className: 'client-volume-control',
+								volume: client.config.volume.percent,
+								mute: client.config.volume.muted,
+								onVolumeChange: function onVolumeChange(percent) {
+									return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
+								},
+								onMuteChange: function onMuteChange(mute) {
+									return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
+								}
+							}),
+							_react2.default.createElement(_TextField2.default, {
+								className: 'tiny',
+								onChange: function onChange(value) {
+									return _this2.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value));
+								},
+								value: client.config.volume.percent
+							})
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'col latency' },
+							_react2.default.createElement(_LatencyControl2.default, {
+								max: '100',
+								value: client.config.latency,
+								onChange: function onChange(value) {
+									return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+								}
+							}),
+							_react2.default.createElement(_TextField2.default, {
+								className: 'tiny',
+								onChange: function onChange(value) {
+									return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
+								},
+								value: String(client.config.latency)
+							})
+						)
+					);
+				})
+			);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
+			var _this3 = this;
 
 			if (!this.props.snapcast_enabled) {
 				return _react2.default.createElement(
@@ -72281,6 +72601,13 @@ var Snapcast = function (_React$Component) {
 				);
 			}
 
+			var streams = [];
+			for (var key in this.props.snapcast_streams) {
+				if (this.props.snapcast_streams.hasOwnProperty(key)) {
+					streams.push(this.props.snapcast_streams[key]);
+				}
+			}
+
 			// Construct a simple array of our groups index
 			var groups = [];
 			for (var group_id in this.props.snapcast_groups) {
@@ -72291,7 +72618,10 @@ var Snapcast = function (_React$Component) {
 					var clients = [];
 					for (var i = 0; i < group.clients_ids.length; i++) {
 						if (this.props.snapcast_clients.hasOwnProperty(group.clients_ids[i])) {
-							clients.push(this.props.snapcast_clients[group.clients_ids[i]]);
+							var client = this.props.snapcast_clients[group.clients_ids[i]];
+							if (client.connected || this.props.snapcast_show_disconnected_clients) {
+								clients.push(client);
+							}
 						}
 					}
 
@@ -72304,104 +72634,143 @@ var Snapcast = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'snapcast' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'field checkbox' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'input' },
+						_react2.default.createElement(
+							'button',
+							{ onClick: function onClick(e) {
+									return _this3.props.pusherActions.getSnapcast();
+								} },
+							'Refresh'
+						),
+						_react2.default.createElement(
+							'label',
+							null,
+							_react2.default.createElement('input', {
+								type: 'checkbox',
+								name: 'snapcast_show_disconnected_clients',
+								checked: this.props.snapcast_show_disconnected_clients,
+								onChange: function onChange(e) {
+									return _this3.props.uiActions.set({ snapcast_show_disconnected_clients: !_this3.props.snapcast_show_disconnected_clients });
+								} }),
+							_react2.default.createElement(
+								'span',
+								{ className: 'label' },
+								'Show disconnected clients'
+							)
+						)
+					)
+				),
 				groups.map(function (group) {
+
+					// Average our clients' volume for an overall group volume
+					var group_volume = 0;
+					for (var i = 0; i < group.clients.length; i++) {
+						var client = group.clients[i];
+						group_volume += client.config.volume.percent;
+					}
+					group_volume = group_volume / group.clients.length;
+
 					return _react2.default.createElement(
 						'div',
-						{ className: 'list group', key: group.id },
+						{ className: 'group', key: group.id },
 						_react2.default.createElement(
 							'div',
-							{ className: 'list-item header' },
+							{ className: 'field' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'col name' },
-								group.name ? group.name : 'Untitled group'
+								{ className: 'name' },
+								'Name'
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'col volume' },
+								{ className: 'input' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'text' },
+									group.name ? group.name : 'Group ' + group.id.substring(0, 3),
+									' \xA0',
+									_react2.default.createElement(
+										'span',
+										{ className: 'grey-text' },
+										'(',
+										group.id,
+										')'
+									)
+								)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field dropdown' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'Stream'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement(
+									'select',
+									{ onChange: function onChange(e) {
+											return _this3.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value);
+										}, value: group.stream_id },
+									streams.map(function (stream) {
+										return _react2.default.createElement(
+											'option',
+											{ value: stream.id, key: stream.id },
+											stream.id,
+											' (',
+											stream.status,
+											')'
+										);
+									})
+								)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
 								'Volume'
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'col latency' },
-								'Latency'
+								{ className: 'input' },
+								_react2.default.createElement(_VolumeControl2.default, {
+									className: 'group-volume-control',
+									volume: group_volume,
+									mute: group.muted,
+									onVolumeChange: function onVolumeChange(percent, old_percent) {
+										return _this3.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent);
+									},
+									onMuteChange: function onMuteChange(mute) {
+										return _this3.props.pusherActions.setSnapcastGroupMute(group.id, mute);
+									}
+								})
 							)
 						),
-						group.clients.map(function (client) {
-							var name = client.config.name ? client.config.name : client.host.name;
-							return _react2.default.createElement(
+						_react2.default.createElement(
+							'div',
+							{ className: 'field' },
+							_react2.default.createElement(
 								'div',
-								{ className: 'list-item client', key: client.id },
-								_react2.default.createElement(
-									'div',
-									{ className: 'col name' },
-									_react2.default.createElement(_TextField2.default, {
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientName(client.id, value);
-										},
-										value: name
-									}),
-									client.connected ? _react2.default.createElement(
-										'span',
-										{ className: 'status has-tooltip' },
-										_react2.default.createElement(_reactFontawesome2.default, { className: 'green-text', name: 'circle' }),
-										_react2.default.createElement(
-											'span',
-											{ className: 'tooltip' },
-											'Connected'
-										)
-									) : _react2.default.createElement(
-										'span',
-										{ className: 'status has-tooltip' },
-										_react2.default.createElement(_reactFontawesome2.default, { className: 'grey-text', name: 'circle' }),
-										_react2.default.createElement(
-											'span',
-											{ className: 'tooltip' },
-											'Not connected'
-										)
-									)
-								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'col volume' },
-									_react2.default.createElement(_VolumeControl2.default, {
-										volume: client.config.volume.percent,
-										mute: client.config.volume.muted,
-										onVolumeChange: function onVolumeChange(percent) {
-											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
-										},
-										onMuteChange: function onMuteChange(mute) {
-											return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
-										}
-									}),
-									_react2.default.createElement(_TextField2.default, {
-										className: 'tiny',
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value));
-										},
-										value: client.config.volume.percent
-									})
-								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'col latency' },
-									_react2.default.createElement(_LatencyControl2.default, {
-										max: '100',
-										value: client.config.latency,
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
-										}
-									}),
-									_react2.default.createElement(_TextField2.default, {
-										className: 'tiny',
-										onChange: function onChange(value) {
-											return _this2.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value));
-										},
-										value: String(client.config.latency)
-									})
-								)
-							);
-						})
+								{ className: 'name' },
+								'Clients'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_this3.renderClientsList(group, groups)
+							)
+						)
 					);
 				})
 			);
@@ -72415,6 +72784,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
+		snapcast_show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
+		snapcast_streams: state.pusher.snapcast_streams,
 		snapcast_groups: state.pusher.snapcast_groups,
 		snapcast_clients: state.pusher.snapcast_clients
 	};
@@ -72717,7 +73088,7 @@ var _ArtistSentence = __webpack_require__(28);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -72737,7 +73108,7 @@ var _Parallax = __webpack_require__(44);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -76651,7 +77022,7 @@ var _Header = __webpack_require__(18);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _ArtistGrid = __webpack_require__(55);
+var _ArtistGrid = __webpack_require__(56);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
@@ -76659,7 +77030,7 @@ var _List = __webpack_require__(78);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -77014,7 +77385,7 @@ var _ArtistSentence = __webpack_require__(28);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -77563,7 +77934,7 @@ var _List = __webpack_require__(78);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(56);
+var _DropdownField = __webpack_require__(48);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 

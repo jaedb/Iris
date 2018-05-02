@@ -4291,84 +4291,79 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
-.snapcast .group.list {
-  padding: 0 10px; }
-  .snapcast .group.list:not(:first-child) {
-    padding-top: 15px; }
-  .snapcast .group.list .list-item {
-    padding: 20px 0 0 0; }
-    .snapcast .group.list .list-item:not(.header) {
-      border: 0; }
-    .snapcast .group.list .list-item > .name {
-      width: 40%;
-      padding-bottom: 4px;
-      position: relative; }
-      .snapcast .group.list .list-item > .name .status {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
-        padding: 12px;
-        cursor: default; }
-        .snapcast .group.list .list-item > .name .status .fa {
-          font-size: 12px; }
-      .snapcast .group.list .list-item > .name input {
-        padding-left: 30px; }
-    .snapcast .group.list .list-item > .volume {
-      width: 28%;
-      padding-left: 2%; }
-    .snapcast .group.list .list-item > .latency {
-      width: 28%;
-      padding-left: 2%; }
-    .snapcast .group.list .list-item.header {
-      padding-top: 0;
-      vertical-align: bottom;
-      cursor: default; }
-      .snapcast .group.list .list-item.header .name {
-        font-size: 14px;
-        color: #FFFFFF;
-        text-transform: none;
-        font-weight: 600;
-        line-height: 14px; }
-    .snapcast .group.list .list-item.client {
-      padding: 20px 0 0 0; }
-      .snapcast .group.list .list-item.client::after {
+.snapcast .volume-control .mute-control {
+  display: inline-block;
+  float: left;
+  padding: 0 10px;
+  border: 0; }
+
+.snapcast .volume-control .slider-wrapper {
+  margin-left: 25px; }
+
+.snapcast .volume-control.muted .slider .progress {
+  background: #a3a19f; }
+
+.snapcast .volume-control.group-volume-control {
+  padding: 10px 0 5px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box; }
+
+.snapcast .volume-control.client-volume-control {
+  padding-top: 4px;
+  width: 80%;
+  padding-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: border-box; }
+
+.snapcast .group {
+  padding-top: 10px;
+  border-top: 1px solid #383734; }
+  .snapcast .group:not(:last-child) {
+    padding-bottom: 20px; }
+  .snapcast .group .clients {
+    padding: 0 10px; }
+    .snapcast .group .clients .client {
+      border: 0;
+      padding: 0;
+      clear: both; }
+      .snapcast .group .clients .client::after {
         content: '';
         clear: both;
         display: block; }
-      .snapcast .group.list .list-item.client > .name {
+      .snapcast .group .clients .client:not(:first-child) {
+        padding-top: 8px; }
+      .snapcast .group .clients .client > .name {
+        width: 40%;
+        padding-bottom: 4px;
+        position: relative;
         display: block;
         box-sizing: border-box;
         border: 0; }
-        .snapcast .group.list .list-item.client > .name input {
-          width: 100%; }
-      .snapcast .group.list .list-item.client > .volume input,
-      .snapcast .group.list .list-item.client > .latency input {
+        .snapcast .group .clients .client > .name input {
+          width: 100%;
+          padding-right: 30px; }
+        .snapcast .group .clients .client > .name .group-dropdown-field {
+          float: right;
+          margin-bottom: -4rem; }
+      .snapcast .group .clients .client > .volume {
+        width: 28%;
+        padding-left: 2%; }
+      .snapcast .group .clients .client > .latency {
+        width: 28%;
+        padding-left: 2%; }
+      .snapcast .group .clients .client > .volume input,
+      .snapcast .group .clients .client > .latency input {
         width: 20%; }
-      .snapcast .group.list .list-item.client .volume-control {
+      .snapcast .group .clients .client .latency-control {
         display: inline-block;
         vertical-align: middle;
         padding-top: 4px;
         width: 80%;
         padding-right: 10px;
         box-sizing: border-box; }
-        .snapcast .group.list .list-item.client .volume-control .mute-control {
-          display: inline-block;
-          float: left;
-          padding: 0 10px;
-          border: 0; }
-        .snapcast .group.list .list-item.client .volume-control .slider-wrapper {
-          margin-left: 40px; }
-        .snapcast .group.list .list-item.client .volume-control.muted .slider .progress {
-          background: #a3a19f; }
-      .snapcast .group.list .list-item.client .latency-control {
-        display: inline-block;
-        vertical-align: middle;
-        padding-top: 4px;
-        width: 80%;
-        padding-right: 10px;
-        box-sizing: border-box; }
-        .snapcast .group.list .list-item.client .latency-control .zero {
+        .snapcast .group .clients .client .latency-control .zero {
           position: absolute;
           top: -4px;
           left: 50%;
@@ -4376,34 +4371,29 @@ input[type="submit"] {
           width: 1px;
           background: #383734;
           z-index: 1; }
-        .snapcast .group.list .list-item.client .latency-control .progress.positive {
+        .snapcast .group .clients .client .latency-control .progress.positive {
           border-top-left-radius: 0;
           border-bottom-left-radius: 0; }
-        .snapcast .group.list .list-item.client .latency-control .progress.negative {
+        .snapcast .group .clients .client .latency-control .progress.negative {
           border-top-right-radius: 0;
           border-bottom-right-radius: 0; }
-    @media (max-width: 800px) {
-      .snapcast .group.list .list-item {
-        padding-left: 0 !important;
-        padding-right: 0 !important; }
-        .snapcast .group.list .list-item.header {
-          display: block; }
-          .snapcast .group.list .list-item.header .volume,
-          .snapcast .group.list .list-item.header .latency {
-            display: none !important; }
-        .snapcast .group.list .list-item .col {
-          float: none !important;
-          width: auto !important;
-          padding-left: 0;
-          padding-right: 0; }
-          .snapcast .group.list .list-item .col::after {
-            content: '';
+      @media (max-width: 800px) {
+        .snapcast .group .clients .client {
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          padding-top: 0 !important; }
+          .snapcast .group .clients .client .col {
             clear: both;
-            display: block; }
-          .snapcast .group.list .list-item .col:not(.header) {
-            line-height: 45px; }
-          .snapcast .group.list .list-item .col.volume {
-            padding-bottom: 20px !important; } }
+            display: block !important;
+            float: none !important;
+            width: auto !important;
+            padding: 0; }
+            .snapcast .group .clients .client .col::after {
+              content: '';
+              clear: both;
+              display: block; }
+            .snapcast .group .clients .client .col.volume, .snapcast .group .clients .client .col.latency {
+              padding-top: 5px; } }
 
 aside {
   position: fixed;
@@ -4431,7 +4421,7 @@ aside {
     height: 50px;
     margin-top: 30px;
     opacity: 0.2;
-    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMS4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNDEuNyAxNDEuNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTQxLjcgMTQxLjc7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iNTguMyw0Ny4xIDE4LjIsOC4yIDE4LjIsMTMzLjUgNTguMyw5NSAiLz4NCjxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iNTguMyw4LjIgNTguMywyNy4xIDEwMy44LDcwLjcgNTguMywxMTUgNTguMywxMzMuNSAxMjMuNSw3MC43ICIvPg0KPC9zdmc+DQo=);
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNiAxNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZD0iTTYuNiwxMC43bC00LjQsNC4zVjEuMWw0LjQsNC4zVjEwLjd6IE02LjYsMS4xdjIuMWw1LDQuOGwtNSw0Ljl2MkwxMy44LDhMNi42LDEuMXoiLz4NCjwvc3ZnPg0K);
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: contain; }
@@ -4549,7 +4539,6 @@ aside {
   position: relative;
   margin: 0 -10px -1px -10px;
   padding: 14px 30px 13px 10px;
-  cursor: pointer;
   border-radius: 3px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   border-top: 1px solid rgba(255, 255, 255, 0.05); }
@@ -4604,91 +4593,95 @@ aside {
   .list .list-item .uri-placeholder {
     word-break: break-all; }
 
-.list.track-list .list-item .col.name {
-  width: 40%; }
-
-.list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
-  width: 25%; }
-
-.list.track-list .list-item .col.duration {
-  width: 5%; }
-
-:root .dragging .list.track-list .list-item.hover, .list.track-list .list-item.touch-drag-hover {
-  border-top: 3px solid #32b5f2;
-  margin-top: -3px;
-  background: transparent; }
-
-.list.track-list .list-item.has-touch-drag-zone {
-  padding-left: 45px; }
-  .list.track-list .list-item.has-touch-drag-zone .drag-zone {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 34px;
-    font-size: 14px;
-    display: block;
-    color: #a3a19f; }
-    .list.track-list .list-item.has-touch-drag-zone .drag-zone .fa {
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      margin-top: -6px;
-      pointer-events: none; }
-
-.list.playlist-list .list-item .col.name {
-  width: 50%; }
-
-.list.playlist-list .list-item .col.owner {
-  width: 20%; }
-
-.list.playlist-list .list-item .col.source, .list.playlist-list .list-item .col.can_edit, .list.playlist-list .list-item .col.tracks_total, .list.playlist-list .list-item .col.popularity {
-  width: 10%; }
-
-.list.album-list .list-item .col.name, .list.album-list .list-item .col.artists {
-  width: 30%; }
-
-.list.album-list .list-item .col.added_at, .list.album-list .list-item .col.release_date {
-  width: 15%; }
-
-.list.album-list .list-item .col.tracks_total {
-  width: 10%; }
-
-.list.library-local-album-list .list-item .col.name, .list.library-local-album-list .list-item .col.artists {
-  width: 45%; }
-
-.list.library-local-album-list .list-item .col.tracks_total {
-  width: 10%; }
-
-.list.artist-list .list-item .col.name {
-  width: 70%; }
-
-.list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
-  width: 15%; }
-
-.list.queue-track-list .list-item {
-  padding-right: 60px; }
-  .list.queue-track-list .list-item .col.name, .list.queue-track-list .list-item .col.artists, .list.queue-track-list .list-item .col.album {
+.list.track-list .list-item {
+  cursor: pointer; }
+  .list.track-list .list-item .col.name {
+    width: 40%; }
+  .list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
     width: 25%; }
-  .list.queue-track-list .list-item .col.added {
+  .list.track-list .list-item .col.duration {
+    width: 5%; }
+  :root .dragging .list.track-list .list-item.hover, .list.track-list .list-item.touch-drag-hover {
+    border-top: 3px solid #32b5f2;
+    margin-top: -3px;
+    background: transparent; }
+  .list.track-list .list-item.has-touch-drag-zone {
+    padding-left: 45px; }
+    .list.track-list .list-item.has-touch-drag-zone .drag-zone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 34px;
+      font-size: 14px;
+      display: block;
+      color: #a3a19f; }
+      .list.track-list .list-item.has-touch-drag-zone .drag-zone .fa {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        margin-top: -6px;
+        pointer-events: none; }
+
+.list.playlist-list .list-item {
+  cursor: pointer; }
+  .list.playlist-list .list-item .col.name {
+    width: 50%; }
+  .list.playlist-list .list-item .col.owner {
     width: 20%; }
-    .list.queue-track-list .list-item .col.added .by {
-      padding-right: 0.25em; }
-    .list.queue-track-list .list-item .col.added .from:before {
-      content: '(';
-      display: inline-block; }
-    .list.queue-track-list .list-item .col.added .from:after {
-      content: ')';
-      display: inline-block; }
+  .list.playlist-list .list-item .col.source, .list.playlist-list .list-item .col.can_edit, .list.playlist-list .list-item .col.tracks_total, .list.playlist-list .list-item .col.popularity {
+    width: 10%; }
 
-.list.queue-history-track-list .list-item .col.name {
-  width: 60%; }
+.list.album-list .list-item {
+  cursor: pointer; }
+  .list.album-list .list-item .col.name, .list.album-list .list-item .col.artists {
+    width: 30%; }
+  .list.album-list .list-item .col.added_at, .list.album-list .list-item .col.release_date {
+    width: 15%; }
+  .list.album-list .list-item .col.tracks_total {
+    width: 10%; }
 
-.list.queue-history-track-list .list-item .col.played_at, .list.queue-history-track-list .list-item .col.source {
-  width: 20%; }
+.list.library-local-album-list .list-item {
+  cursor: pointer; }
+  .list.library-local-album-list .list-item .col.name, .list.library-local-album-list .list-item .col.artists {
+    width: 45%; }
+  .list.library-local-album-list .list-item .col.tracks_total {
+    width: 10%; }
+
+.list.artist-list .list-item {
+  cursor: pointer; }
+  .list.artist-list .list-item .col.name {
+    width: 70%; }
+  .list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
+    width: 15%; }
+
+.list.queue-track-list {
+  cursor: pointer; }
+  .list.queue-track-list .list-item {
+    padding-right: 60px; }
+    .list.queue-track-list .list-item .col.name, .list.queue-track-list .list-item .col.artists, .list.queue-track-list .list-item .col.album {
+      width: 25%; }
+    .list.queue-track-list .list-item .col.added {
+      width: 20%; }
+      .list.queue-track-list .list-item .col.added .by {
+        padding-right: 0.25em; }
+      .list.queue-track-list .list-item .col.added .from:before {
+        content: '(';
+        display: inline-block; }
+      .list.queue-track-list .list-item .col.added .from:after {
+        content: ')';
+        display: inline-block; }
+
+.list.queue-history-track-list .list-item {
+  cursor: pointer; }
+  .list.queue-history-track-list .list-item .col.name {
+    width: 60%; }
+  .list.queue-history-track-list .list-item .col.played_at, .list.queue-history-track-list .list-item .col.source {
+    width: 20%; }
 
 .list.related-artist-list {
-  padding-bottom: 20px; }
+  padding-bottom: 20px;
+  cursor: pointer; }
   .list.related-artist-list .artist {
     display: block;
     border: 0;
@@ -4758,7 +4751,8 @@ aside {
     width: auto !important;
     float: none !important;
     padding-left: 0.25em; }
-    .list.queue-track-list .list-item .added .by {
+    .list.queue-track-list .list-item .added .by,
+    .list.queue-track-list .list-item .added .empty {
       display: none; }
     .list.queue-track-list .list-item .added .from {
       padding-left: 14px;
@@ -5343,6 +5337,8 @@ main header {
     display: block; }
   .dropdown-field.no-status-icon .options .option {
     padding-left: 12px; }
+  .dropdown-field.no-label .label > .text {
+    display: none; }
   .dropdown-field .options {
     color: #000000;
     position: absolute;
@@ -5394,7 +5390,7 @@ main header {
         background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
       .dropdown-field .options .option .fa {
         position: absolute;
-        top: 9px;
+        top: 11px;
         left: 8px;
         font-size: 10px; }
       .notouch .dropdown-field .options .option:hover {
