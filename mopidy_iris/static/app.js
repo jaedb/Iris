@@ -5289,6 +5289,8 @@ exports.setSnapcastClientLatency = setSnapcastClientLatency;
 exports.setSnapcastClientGroup = setSnapcastClientGroup;
 exports.deleteSnapcastClient = deleteSnapcastClient;
 exports.setSnapcastGroupStream = setSnapcastGroupStream;
+exports.setSnapcastGroupMute = setSnapcastGroupMute;
+exports.setSnapcastGroupVolume = setSnapcastGroupVolume;
 
 /**
  * Actions and Action Creators
@@ -5560,6 +5562,25 @@ function setSnapcastGroupStream(id, stream_id) {
 		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
 		id: id,
 		stream_id: stream_id
+	};
+}
+
+function setSnapcastGroupMute(id, mute) {
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
+		id: id,
+		mute: mute
+	};
+}
+
+function setSnapcastGroupVolume(id, percent) {
+	var old_percent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
+		id: id,
+		percent: percent,
+		old_percent: old_percent
 	};
 }
 
@@ -34343,6 +34364,7 @@ var VolumeControl = function (_React$Component) {
 	_createClass(VolumeControl, [{
 		key: 'handleClick',
 		value: function handleClick(e) {
+			var old_percent = this.props.volume;
 			var slider = e.target;
 			if (slider.className != 'slider') slider = slider.parentElement;
 
@@ -34356,12 +34378,13 @@ var VolumeControl = function (_React$Component) {
 				percent = 0;
 			}
 
-			this.props.onVolumeChange(percent);
+			this.props.onVolumeChange(percent, old_percent);
 		}
 	}, {
 		key: 'handleWheel',
 		value: function handleWheel(e) {
 			if (this.props.scrollWheel) {
+				var old_percent = this.props.volume;
 
 				// Identify which direction we've scrolled (inverted)
 				// This is simplified and doesn't consider momentum as it varies wildly
@@ -34377,7 +34400,7 @@ var VolumeControl = function (_React$Component) {
 					percent = 0;
 				}
 
-				this.props.onVolumeChange(percent);
+				this.props.onVolumeChange(percent, old_percent);
 				e.preventDefault();
 			}
 		}
@@ -34423,6 +34446,10 @@ var VolumeControl = function (_React$Component) {
 			if (this.props.mute) {
 				className += " muted";
 			}
+			if (this.props.className) {
+				className += " " + this.props.className;
+			}
+
 			return _react2.default.createElement(
 				'span',
 				{ className: className, onWheel: function onWheel(e) {
@@ -53567,8 +53594,6 @@ var PusherMiddleware = function () {
                             clients_ids.splice(clients_ids_index, 1);
                         }
 
-                        console.log(clients_ids, action.id, clients_ids_index);
-
                         var data = {
                             method: 'Group.SetClients',
                             params: {
@@ -53621,9 +53646,68 @@ var PusherMiddleware = function () {
                                 }
                             });
                         }, function (error) {
-                            store.dispatch(coreActions.handleException('Error', error, error.message));
+                            store.dispatch(coreActions.handleException('Could not change stream', error, error.message));
                         });
                         break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_MUTE':
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var data = {
+                            method: 'Group.SetMute',
+                            params: {
+                                id: action.id,
+                                mute: action.mute
+                            }
+                        };
+
+                        request(store, 'snapcast_instruct', data).then(function (response) {
+                            store.dispatch({
+                                type: 'PUSHER_SNAPCAST_GROUP_UPDATED',
+                                key: action.id,
+                                group: {
+                                    muted: response.mute
+                                }
+                            });
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not toggle mute', error, error.message));
+                        });
+                        break;
+
+                    case 'PUSHER_SET_SNAPCAST_GROUP_VOLUME':
+                        var clients_to_update = [];
+                        var group = store.getState().pusher.snapcast_groups[action.id];
+                        var change = action.percent - action.old_percent;
+
+                        for (var i = 0; i < group.clients_ids.length; i++) {
+
+                            // Apply the change proportionately to each client
+                            var client = store.getState().pusher.snapcast_clients[group.clients_ids[i]];
+                            var current_percent = client.config.volume.percent;
+                            var new_percent = current_percent + change;
+
+                            // Only change if the client is within min/max limits
+                            if (change > 0 && current_percent < 100 || change < 0 && current_percent > 0) {
+                                clients_to_update.push({
+                                    id: client.id,
+                                    percent: new_percent
+                                });
+                            }
+                        }
+
+                        // Loop our required changes, and post each to Snapcast
+                        for (var i = 0; i < clients_to_update.length; i++) {
+                            var update = clients_to_update[i];
+                            var percent = update.percent + (group.clients_ids.length - clients_to_update.length) * change;
+
+                            // Make sure we're not creating an impossible percent
+                            if (percent < 0) {
+                                percent = 0;
+                            } else if (percent > 100) {
+                                percent = 100;
+                            }
+
+                            store.dispatch(pusherActions.setSnapcastClientVolume(update.id, percent));
+                        }
 
                     // This action is irrelevant to us, pass it on to the next middleware
                     default:
@@ -72408,7 +72492,7 @@ var Snapcast = function (_React$Component) {
 						// Don't add our existing group
 						if (groups[i].id !== group.id) {
 							groups_dropdown.push({
-								label: groups[i].name ? groups[i].name : 'Group ' + (i + 1),
+								label: groups[i].name ? groups[i].name : 'Group ' + groups[i].id.substring(0, 3),
 								value: groups[i].id
 							});
 						}
@@ -72450,6 +72534,7 @@ var Snapcast = function (_React$Component) {
 							'div',
 							{ className: 'col volume' },
 							_react2.default.createElement(_VolumeControl2.default, {
+								className: 'client-volume-control',
 								volume: client.config.volume.percent,
 								mute: client.config.volume.muted,
 								onVolumeChange: function onVolumeChange(percent) {
@@ -72580,7 +72665,16 @@ var Snapcast = function (_React$Component) {
 						)
 					)
 				),
-				groups.map(function (group, i) {
+				groups.map(function (group) {
+
+					// Average our clients' volume for an overall group volume
+					var group_volume = 0;
+					for (var i = 0; i < group.clients.length; i++) {
+						var client = group.clients[i];
+						group_volume += client.config.volume.percent;
+					}
+					group_volume = group_volume / group.clients.length;
+
 					return _react2.default.createElement(
 						'div',
 						{ className: 'group', key: group.id },
@@ -72598,7 +72692,7 @@ var Snapcast = function (_React$Component) {
 								_react2.default.createElement(
 									'div',
 									{ className: 'text' },
-									group.name ? group.name : 'Group ' + (i + 1),
+									group.name ? group.name : 'Group ' + group.id.substring(0, 3),
 									' \xA0',
 									_react2.default.createElement(
 										'span',
@@ -72637,6 +72731,30 @@ var Snapcast = function (_React$Component) {
 										);
 									})
 								)
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'Volume'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement(_VolumeControl2.default, {
+									className: 'group-volume-control',
+									volume: group_volume,
+									mute: group.muted,
+									onVolumeChange: function onVolumeChange(percent, old_percent) {
+										return _this3.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent);
+									},
+									onMuteChange: function onMuteChange(mute) {
+										return _this3.props.pusherActions.setSnapcastGroupMute(group.id, mute);
+									}
+								})
 							)
 						),
 						_react2.default.createElement(
