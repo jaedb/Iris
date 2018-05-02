@@ -273,11 +273,12 @@ export function setSnapcastGroupMute(id, mute){
 	}
 }
 
-export function setSnapcastGroupVolume(id, percent){
+export function setSnapcastGroupVolume(id, percent, old_percent = 0){
 	return {
 		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
 		id: id,
-		percent: percent
+		percent: percent,
+		old_percent: old_percent
 	}
 }
 

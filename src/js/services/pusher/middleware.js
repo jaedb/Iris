@@ -865,7 +865,7 @@ const PusherMiddleware = (function(){
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
-                                'Error',
+                                'Could not change stream',
                                 error,
                                 error.message
                             ));
@@ -896,13 +896,49 @@ const PusherMiddleware = (function(){
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
-                                'Error',
+                                'Could not toggle mute',
                                 error,
                                 error.message
                             ));
                         }
                     );
                 break
+
+            case 'PUSHER_SET_SNAPCAST_GROUP_VOLUME':
+                var clients_to_update = [];
+                var group = store.getState().pusher.snapcast_groups[action.id];
+                var change = action.percent - action.old_percent;
+
+                for (var i = 0; i < group.clients_ids.length; i++){
+
+                    // Apply the change proportionately to each client
+                    var client = store.getState().pusher.snapcast_clients[group.clients_ids[i]];
+                    var current_percent = client.config.volume.percent;
+                    var new_percent = current_percent + change;
+
+                    // Only change if the client is within min/max limits
+                    if ((change > 0 && current_percent < 100) || (change < 0 && current_percent > 0)){
+                        clients_to_update.push({
+                            id: client.id,
+                            percent: new_percent
+                        });
+                    }
+                }
+
+                // Loop our required changes, and post each to Snapcast
+                for (var i = 0; i < clients_to_update.length; i++){
+                    var update = clients_to_update[i];
+                    var percent = update.percent + ((group.clients_ids.length - clients_to_update.length) * change);
+
+                    // Make sure we're not creating an impossible percent
+                    if (percent < 0){
+                        percent = 0;
+                    } else if (percent > 100){
+                        percent = 100;
+                    }
+
+                    store.dispatch(pusherActions.setSnapcastClientVolume(update.id, percent));
+                }
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

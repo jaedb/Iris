@@ -1,5 +1,41 @@
 
 .snapcast {
+					
+	.volume-control {
+
+		.mute-control {
+			display: inline-block;
+			float: left;
+			padding: 0 10px;
+			border: 0;
+		}
+
+		.slider-wrapper {
+			margin-left: 25px;
+		}
+
+		&.muted {
+			.slider .progress {
+				background: $mid_grey;
+			}
+		}
+		
+		&.group-volume-control {
+			padding: 10px 0 5px;
+			display: block;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		&.client-volume-control {
+			padding-top: 4px;
+			width: 80%;
+			padding-right: 10px;
+			display: inline-block;
+			vertical-align: middle;
+			box-sizing: border-box;
+		}
+	}
 
 	.group {
 		padding-top: 10px;
@@ -55,32 +91,6 @@
 				& > .latency {
 					input {
 						width: 20%;
-					}
-				}
-					
-				.volume-control {
-					display: inline-block;
-					vertical-align: middle;
-					padding-top: 4px;
-					width: 80%;
-					padding-right: 10px;
-					box-sizing: border-box;
-
-					.mute-control {
-						display: inline-block;
-						float: left;
-						padding: 0 10px;
-						border: 0;
-					}
-
-					.slider-wrapper {
-						margin-left: 25px;
-					}
-
-					&.muted {
-						.slider .progress {
-							background: $mid_grey;
-						}
 					}
 				}
 

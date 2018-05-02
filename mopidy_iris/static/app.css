@@ -4291,6 +4291,32 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
+.snapcast .volume-control .mute-control {
+  display: inline-block;
+  float: left;
+  padding: 0 10px;
+  border: 0; }
+
+.snapcast .volume-control .slider-wrapper {
+  margin-left: 25px; }
+
+.snapcast .volume-control.muted .slider .progress {
+  background: #a3a19f; }
+
+.snapcast .volume-control.group-volume-control {
+  padding: 10px 0 5px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box; }
+
+.snapcast .volume-control.client-volume-control {
+  padding-top: 4px;
+  width: 80%;
+  padding-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: border-box; }
+
 .snapcast .group {
   padding-top: 10px;
   border-top: 1px solid #383734; }
@@ -4330,22 +4356,6 @@ input[type="submit"] {
       .snapcast .group .clients .client > .volume input,
       .snapcast .group .clients .client > .latency input {
         width: 20%; }
-      .snapcast .group .clients .client .volume-control {
-        display: inline-block;
-        vertical-align: middle;
-        padding-top: 4px;
-        width: 80%;
-        padding-right: 10px;
-        box-sizing: border-box; }
-        .snapcast .group .clients .client .volume-control .mute-control {
-          display: inline-block;
-          float: left;
-          padding: 0 10px;
-          border: 0; }
-        .snapcast .group .clients .client .volume-control .slider-wrapper {
-          margin-left: 25px; }
-        .snapcast .group .clients .client .volume-control.muted .slider .progress {
-          background: #a3a19f; }
       .snapcast .group .clients .client .latency-control {
         display: inline-block;
         vertical-align: middle;

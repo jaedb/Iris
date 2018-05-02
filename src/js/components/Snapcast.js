@@ -96,6 +96,7 @@ class Snapcast extends React.Component{
 								</div>
 								<div className="col volume">
 									<VolumeControl 
+										className="client-volume-control"
 										volume={client.config.volume.percent}
 										mute={client.config.volume.muted}
 										onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
@@ -199,6 +200,15 @@ class Snapcast extends React.Component{
 
 				{
 					groups.map((group, i) => {
+
+						// Average our clients' volume for an overall group volume
+						var group_volume = 0;
+						for (var i = 0; i < group.clients.length; i++){
+							var client = group.clients[i];
+							group_volume += client.config.volume.percent;
+						}
+						group_volume = group_volume / group.clients.length;
+
 						return (
 							<div className="group" key={group.id}>
 								<div className="field">
@@ -236,9 +246,10 @@ class Snapcast extends React.Component{
 									</div>
 									<div className="input">	
 										<VolumeControl 
-											volume={group.volume}
+											className="group-volume-control"
+											volume={group_volume}
 											mute={group.muted}
-											onVolumeChange={percent => this.props.pusherActions.setSnapcastGroupVolume(group.id, percent)}
+											onVolumeChange={(percent, old_percent) => this.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent)}
 											onMuteChange={mute => this.props.pusherActions.setSnapcastGroupMute(group.id, mute)}
 										/>
 									</div>
