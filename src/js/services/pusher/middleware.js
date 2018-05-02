@@ -791,8 +791,6 @@ const PusherMiddleware = (function(){
                     clients_ids.splice(clients_ids_index, 1);
                 }
 
-                console.log(clients_ids, action.id, clients_ids_index);
-
                 var data = {
                     method: 'Group.SetClients',
                     params: {

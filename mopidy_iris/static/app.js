@@ -51676,8 +51676,6 @@ var PusherMiddleware = function () {
                             clients_ids.splice(clients_ids_index, 1);
                         }
 
-                        console.log(clients_ids, action.id, clients_ids_index);
-
                         var data = {
                             method: 'Group.SetClients',
                             params: {
@@ -70576,7 +70574,7 @@ var Snapcast = function (_React$Component) {
 						// Don't add our existing group
 						if (groups[i].id !== group.id) {
 							groups_dropdown.push({
-								label: groups[i].name ? groups[i].name : 'Group ' + (i + 1),
+								label: groups[i].name ? groups[i].name : 'Group ' + groups[i].id.substring(0, 3),
 								value: groups[i].id
 							});
 						}
@@ -70749,7 +70747,7 @@ var Snapcast = function (_React$Component) {
 						)
 					)
 				),
-				groups.map(function (group, i) {
+				groups.map(function (group) {
 
 					// Average our clients' volume for an overall group volume
 					var group_volume = 0;
@@ -70776,7 +70774,7 @@ var Snapcast = function (_React$Component) {
 								_react2.default.createElement(
 									'div',
 									{ className: 'text' },
-									group.name ? group.name : 'Group ' + (i + 1),
+									group.name ? group.name : 'Group ' + group.id.substring(0, 3),
 									' \xA0',
 									_react2.default.createElement(
 										'span',

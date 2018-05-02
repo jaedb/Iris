@@ -63,7 +63,7 @@ class Snapcast extends React.Component{
 							// Don't add our existing group
 							if (groups[i].id !== group.id){
 								groups_dropdown.push({
-									label: (groups[i].name ? groups[i].name : 'Group '+(i+1)),
+									label: (groups[i].name ? groups[i].name : 'Group '+groups[i].id.substring(0,3)),
 									value: groups[i].id
 								});
 							}
@@ -199,7 +199,7 @@ class Snapcast extends React.Component{
 				</div>
 
 				{
-					groups.map((group, i) => {
+					groups.map(group => {
 
 						// Average our clients' volume for an overall group volume
 						var group_volume = 0;
@@ -217,7 +217,7 @@ class Snapcast extends React.Component{
 									</div>
 									<div className="input">	
 										<div className="text">
-											{group.name ? group.name : 'Group '+(i+1)} &nbsp;
+											{group.name ? group.name : 'Group '+group.id.substring(0,3)} &nbsp;
 											<span className="grey-text">({group.id})</span>
 										</div>
 									</div>
