@@ -718,11 +718,7 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
 
 		case 'searchcontext':
 			if (exploded[0] == "search") {
-				var available_views = ["all", "artist", "album", "playlist", "track"];
-				var view = available_views.indexOf(exploded[1]);
-				if (view > -1) {
-					return exploded[1];
-				}
+				return exploded[1];
 			}
 			break;
 
@@ -20944,6 +20940,7 @@ var DropdownField = function (_React$Component) {
 		_this.state = {
 			expanded: false
 		};
+
 		_this.handleClick = _this.handleClick.bind(_this);
 		return _this;
 	}
@@ -20963,19 +20960,40 @@ var DropdownField = function (_React$Component) {
 		value: function handleClick(e) {
 			// TODO: remove dependency on jQuery and explore the performance of this functionality
 			if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ', '_').toLowerCase() && this.state.expanded) {
-				this.setState({ expanded: false });
+				this.setState({
+					expanded: false
+				});
 			}
 		}
 	}, {
 		key: 'handleChange',
-		value: function handleChange(value) {
-			this.setState({ expanded: !this.state.expanded });
-			return this.props.handleChange(value);
+		value: function handleChange(value, is_selected) {
+			this.setState({
+				expanded: !this.state.expanded
+			});
+
+			var current_value = this.props.value;
+			if (current_value instanceof Array) {
+				if (is_selected) {
+					var index = current_value.indexOf(value);
+					current_value.splice(index, 1);
+					var new_value = current_value;
+				} else {
+					current_value.push(value);
+					var new_value = current_value;
+				}
+			} else {
+				var new_value = value;
+			}
+
+			return this.props.handleChange(new_value);
 		}
 	}, {
 		key: 'handleToggle',
 		value: function handleToggle() {
-			this.setState({ expanded: !this.state.expanded });
+			this.setState({
+				expanded: !this.state.expanded
+			});
 		}
 	}, {
 		key: 'render',
@@ -21002,9 +21020,11 @@ var DropdownField = function (_React$Component) {
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
-			var current_value = this.props.options[0].value;
+			var current_value = null;
 			if (this.props.value) {
 				current_value = this.props.value;
+			} else if (this.props.options.length > 0) {
+				current_value = this.props.options[0].value;
 			}
 
 			var icon = _react2.default.createElement(_reactFontawesome2.default, { name: 'check' });
@@ -21040,12 +21060,17 @@ var DropdownField = function (_React$Component) {
 					'div',
 					{ className: 'options' },
 					this.props.options.map(function (option) {
+						if (current_value instanceof Array) {
+							var is_selected = current_value.indexOf(option.value) > -1;
+						} else {
+							var is_selected = current_value == option.value;
+						}
 						return _react2.default.createElement(
 							'div',
 							{ className: 'option', key: option.value, onClick: function onClick(e) {
-									return _this2.handleChange(option.value);
+									return _this2.handleChange(option.value, is_selected);
 								} },
-							!_this2.props.no_status_icon && option.value == current_value ? icon : null,
+							!_this2.props.no_status_icon && is_selected ? icon : null,
 							option.label
 						);
 					})
@@ -70283,10 +70308,18 @@ var Search = function (_React$Component) {
 			}, {
 				value: 'duration',
 				label: 'Duration'
-			}, {
-				value: 'uri',
-				label: 'Source'
 			}];
+
+			var provider_options = [{
+				value: 'all',
+				label: 'All'
+			}];
+			for (var i = 0; i < this.props.uri_schemes.length; i++) {
+				provider_options.push({
+					value: this.props.uri_schemes[i],
+					label: helpers.titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
+				});
+			}
 
 			var options = _react2.default.createElement(
 				'span',
@@ -70297,17 +70330,20 @@ var Search = function (_React$Component) {
 					value: this.props.sort,
 					options: sort_options,
 					reverse: this.props.sort_reverse,
-					handleChange: function handleChange(val) {
-						_this3.setSort(val);_this3.props.uiActions.hideContextMenu();
-					} }),
-				_react2.default.createElement(
-					'button',
-					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this3.props.uiActions.openModal('search_uri_schemes', { query: _this3.props.params.query });
-						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'wrench' }),
-					'\xA0 Sources'
-				)
+					handleChange: function handleChange(value) {
+						_this3.setSort(value);_this3.props.uiActions.hideContextMenu();
+					}
+				}),
+				_react2.default.createElement(_DropdownField2.default, {
+					icon: 'database',
+					name: 'Source',
+					value: this.props.search_uri_schemes,
+					options: provider_options,
+					reverse: this.props.sort_reverse,
+					handleChange: function handleChange(value) {
+						_this3.props.uiActions.set({ search_uri_schemes: value });_this3.props.uiActions.hideContextMenu();
+					}
+				})
 			);
 
 			return _react2.default.createElement(
@@ -70320,7 +70356,8 @@ var Search = function (_React$Component) {
 				}),
 				_react2.default.createElement(_SearchForm2.default, {
 					query: this.props.params.query ? this.props.params.query : '',
-					view: this.props.params.view ? this.props.params.view : 'all' }),
+					view: this.props.params.view ? this.props.params.view : 'all'
+				}),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -70341,6 +70378,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		playlists: state.core.playlists ? state.core.playlists : [],
 		tracks: state.core.tracks ? state.core.tracks : [],
 		search_uri_schemes: state.ui.search_uri_schemes ? state.ui.search_uri_schemes : [],
+		uri_schemes: state.mopidy.uri_schemes ? state.mopidy.uri_schemes : [],
 		mopidy_search_results: state.mopidy.search_results ? state.mopidy.search_results : {},
 		spotify_search_results: state.spotify.search_results ? state.spotify.search_results : {},
 		sort: state.ui.search_results_sort ? state.ui.search_results_sort : 'name',
@@ -70453,6 +70491,10 @@ var SearchForm = function (_React$Component) {
 
 				case 'playlist':
 					_reactRouter.hashHistory.push(global.baseURL + 'playlist/' + encodeURIComponent(this.state.query));
+					break;
+
+				case 'track':
+					_reactRouter.hashHistory.push(global.baseURL + 'track/' + encodeURIComponent(this.state.query));
 					break;
 
 				default:
@@ -77665,15 +77707,34 @@ var LibraryAlbums = function (_React$Component) {
 				_react2.default.createElement(_FilterField2.default, { handleChange: function handleChange(value) {
 						return _this3.setState({ filter: value, limit: _this3.state.per_page });
 					} }),
-				_react2.default.createElement(_DropdownField2.default, { icon: 'sort', name: 'Sort', value: this.props.sort, options: sort_options, reverse: this.props.sort_reverse, handleChange: function handleChange(val) {
+				_react2.default.createElement(_DropdownField2.default, {
+					icon: 'sort',
+					name: 'Sort',
+					value: this.props.sort,
+					options: sort_options,
+					reverse: this.props.sort_reverse,
+					handleChange: function handleChange(val) {
 						_this3.setSort(val);_this3.props.uiActions.hideContextMenu();
-					} }),
-				_react2.default.createElement(_DropdownField2.default, { icon: 'eye', name: 'View', value: this.props.view, options: view_options, handleChange: function handleChange(val) {
+					}
+				}),
+				_react2.default.createElement(_DropdownField2.default, {
+					icon: 'eye',
+					name: 'View',
+					value: this.props.view,
+					options: view_options,
+					handleChange: function handleChange(val) {
 						_this3.props.uiActions.set({ library_albums_view: val });_this3.props.uiActions.hideContextMenu();
-					} }),
-				_react2.default.createElement(_DropdownField2.default, { icon: 'database', name: 'Source', value: this.props.source, options: source_options, handleChange: function handleChange(val) {
+					}
+				}),
+				_react2.default.createElement(_DropdownField2.default, {
+					icon: 'database',
+					name: 'Source',
+					value: this.props.source,
+					options: source_options,
+					handleChange: function handleChange(val) {
 						_this3.props.uiActions.set({ library_albums_source: val });_this3.props.uiActions.hideContextMenu();
-					} })
+					}
+				})
 			);
 
 			return _react2.default.createElement(

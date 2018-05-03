@@ -12,31 +12,53 @@ export default class DropdownField extends React.Component{
 		this.state = {
 			expanded: false
 		}
-		this.handleClick = this.handleClick.bind(this)
+
+		this.handleClick = this.handleClick.bind(this);
 	}
 
 	componentDidMount(){		
-		window.addEventListener("click", this.handleClick, false)
+		window.addEventListener("click", this.handleClick, false);
 	}
 
 	componentWillUnmount(){		
-		window.removeEventListener("click", this.handleClick, false)
+		window.removeEventListener("click", this.handleClick, false);
 	}
 
 	handleClick(e){
 		// TODO: remove dependency on jQuery and explore the performance of this functionality
 		if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ','_').toLowerCase() && this.state.expanded){
-			this.setState({ expanded: false })
+			this.setState({
+				expanded: false
+			});
 		}
 	}
 
-	handleChange(value){
-		this.setState({ expanded: !this.state.expanded })
-		return this.props.handleChange(value )
+	handleChange(value, is_selected){
+		this.setState({
+			expanded: !this.state.expanded
+		});
+
+		var current_value = this.props.value;
+		if (current_value instanceof Array){
+			if (is_selected){
+				var index = current_value.indexOf(value);
+				current_value.splice(index, 1);
+				var new_value = current_value;
+			} else {
+				current_value.push(value);
+				var new_value = current_value;
+			}
+		} else {
+			var new_value = value;
+		}
+
+		return this.props.handleChange(new_value);
 	}
 
 	handleToggle(){
-		this.setState({ expanded: !this.state.expanded })
+		this.setState({
+			expanded: !this.state.expanded
+		});
 	}
 
 	render(){
@@ -60,9 +82,11 @@ export default class DropdownField extends React.Component{
 		if (this.props.className){
 			className += ' '+this.props.className;
 		}
-		var current_value = this.props.options[0].value
+		var current_value = null;
 		if (this.props.value){
 			current_value = this.props.value;
+		} else if (this.props.options.length > 0){
+			current_value = this.props.options[0].value;
 		}
 
 		var icon = <FontAwesome name="check" />
@@ -83,9 +107,14 @@ export default class DropdownField extends React.Component{
 				<div className="options">
 					{
 						this.props.options.map(option => {
+							if (current_value instanceof Array){
+								var is_selected = current_value.indexOf(option.value) > -1;
+							} else {
+								var is_selected = current_value == option.value;
+							}
 							return (
-								<div className="option" key={ option.value } onClick={ e => this.handleChange(option.value) }>
-									{!this.props.no_status_icon && (option.value == current_value) ? icon : null}
+								<div className="option" key={option.value} onClick={e => this.handleChange(option.value, is_selected)}>
+									{!this.props.no_status_icon && is_selected ? icon : null}
 									{option.label}
 								</div>
 							)

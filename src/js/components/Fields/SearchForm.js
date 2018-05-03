@@ -50,6 +50,10 @@ class SearchForm extends React.Component{
 				hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(this.state.query))
 				break
 
+			case 'track':
+				hashHistory.push(global.baseURL+'track/'+encodeURIComponent(this.state.query))
+				break
+
 			default:
 				var available_views = ["artist","album","playlist","track"];
 				var view_defined = false;
