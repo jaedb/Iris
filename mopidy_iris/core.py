@@ -528,9 +528,9 @@ class IrisCore(object):
                 return error
 
         self.broadcast(data={
-            'method': "upgrading",
+            'method': "upgrade_started",
             'params': {}
-        })
+        });
 
         # Run the system task
         path = os.path.dirname(__file__)
@@ -557,14 +557,15 @@ class IrisCore(object):
             else:
                 return error
 
-        output = result.decode();
+        self.broadcast(data={
+            'method': "upgrade_complete",
+            'params': {}
+        });
 
-        # And now restart (with a 5 second delay to allow our response to return first)
-        subprocess.Popen(["sudo "+path+"/system.sh restart 5"], shell=True)
+        output = result.decode();
         
-        # Now we can return for simple requests
         response = {
-            'message': "Upgrade complete, restarting server in 5 seconds",
+            'message': "Restart required to complete upgrade",
             'data': {
                 'output': output
             }
