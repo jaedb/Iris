@@ -4291,6 +4291,9 @@ input[type="submit"] {
         left: 0;
         right: 0; } }
 
+.snapcast button {
+  margin-bottom: 0; }
+
 .snapcast .volume-control .mute-control {
   display: inline-block;
   float: left;
