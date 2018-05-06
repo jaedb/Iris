@@ -322,10 +322,7 @@ class Search extends React.Component{
 			}
 		];
 
-		var provider_options = [{
-			value: 'all',
-			label: 'All'
-		}];
+		var provider_options = [];
 		for (var i = 0; i < this.props.uri_schemes.length; i++){
 			provider_options.push({
 				value: this.props.uri_schemes[i],
@@ -340,7 +337,7 @@ class Search extends React.Component{
 					name="Sort" 
 					value={this.props.sort} 
 					options={sort_options} 
-					reverse={this.props.sort_reverse} 
+					selected_icon={this.props.sort_reverse ? 'caret-up' : 'caret-down'} 
 					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu()}}
 				/>
 				<DropdownField 
@@ -348,7 +345,6 @@ class Search extends React.Component{
 					name="Source"
 					value={this.props.search_uri_schemes}
 					options={provider_options} 
-					reverse={this.props.sort_reverse} 
 					handleChange={value => {this.props.uiActions.set({search_uri_schemes: value}); this.props.uiActions.hideContextMenu()}}
 				/>
 			</span>

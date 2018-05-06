@@ -254,7 +254,7 @@ class LibraryAlbums extends React.Component{
 					name="Sort"
 					value={this.props.sort} 
 					options={sort_options} 
-					reverse={this.props.sort_reverse} 
+					selected_icon={this.props.sort_reverse ? 'caret-up' : 'caret-down'} 
 					handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }}
 				/>
 				<DropdownField

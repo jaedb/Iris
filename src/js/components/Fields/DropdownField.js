@@ -34,12 +34,23 @@ export default class DropdownField extends React.Component{
 	}
 
 	handleChange(value, is_selected){
-		this.setState({
-			expanded: !this.state.expanded
-		});
+
+		if (this.isMultiSelect()){
+			if (value == 'select-all'){
+				var new_value = [];
+				for (var i = 0; i < this.props.options.length; i++){
+					new_value.push(this.props.options[i].value);
+				}
+				return this.props.handleChange(new_value);
+			}
+		} else {			
+			this.setState({
+				expanded: !this.state.expanded
+			});
+		}
 
 		var current_value = this.props.value;
-		if (current_value instanceof Array){
+		if (this.isMultiSelect()){
 			if (is_selected){
 				var index = current_value.indexOf(value);
 				current_value.splice(index, 1);
@@ -59,6 +70,10 @@ export default class DropdownField extends React.Component{
 		this.setState({
 			expanded: !this.state.expanded
 		});
+	}
+
+	isMultiSelect(){
+		return this.props.value instanceof Array;
 	}
 
 	render(){
@@ -89,32 +104,40 @@ export default class DropdownField extends React.Component{
 			current_value = this.props.options[0].value;
 		}
 
-		var icon = <FontAwesome name="check" />
-		if (this.props.reverse !== undefined){
-			if (this.props.reverse){
-				icon = <FontAwesome className="reverse" name="caret-down" />
-			} else {
-				icon = <FontAwesome className="reverse" name="caret-up" />
-			}
+		var selected_icon = <FontAwesome name="check" />
+		if (this.props.selected_icon){
+			selected_icon = <FontAwesome name={this.props.selected_icon} />
+		}
+
+		var options = Object.assign([], this.props.options);
+		if (this.isMultiSelect()){
+			options.push({
+				value: 'select-all',
+				label: 'Select all',
+				className: 'grey-text'
+			});
 		}
 
 		return (
 			<div className={className} data-key={this.props.name.replace(' ','_').toLowerCase()}>
-				<div className={"label"+(this.props.button ? " button "+this.props.button : "")} onClick={ () => this.handleToggle() }>
+				<div className={"label"+(this.props.button ? " button "+this.props.button : "")} onClick={e => this.handleToggle()}>
 					{this.props.icon ? <span><FontAwesome name={this.props.icon} />&nbsp; </span> : null}
-					<span className="text">{ this.props.name }</span>
+					<span className="text">
+						{this.props.name}
+						{this.isMultiSelect() ? ' ('+current_value.length+')' : null}
+					</span>
 				</div>
 				<div className="options">
 					{
-						this.props.options.map(option => {
-							if (current_value instanceof Array){
+						options.map(option => {
+							if (this.isMultiSelect()){
 								var is_selected = current_value.indexOf(option.value) > -1;
 							} else {
 								var is_selected = current_value == option.value;
 							}
 							return (
-								<div className="option" key={option.value} onClick={e => this.handleChange(option.value, is_selected)}>
-									{!this.props.no_status_icon && is_selected ? icon : null}
+								<div className={"option "+(option.className ? option.className : '')} key={option.value} onClick={e => this.handleChange(option.value, is_selected)}>
+									{!this.props.no_status_icon && is_selected ? selected_icon : null}
 									{option.label}
 								</div>
 							)

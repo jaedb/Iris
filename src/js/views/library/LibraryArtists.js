@@ -217,9 +217,28 @@ class LibraryArtists extends React.Component{
 		var options = (
 			<span>
 				<FilterField handleChange={value => this.setState({filter: value, limit: this.state.per_page})} />
-				<DropdownField icon="sort" name="Sort" value={ this.props.sort } options={sort_options} reverse={this.props.sort_reverse} handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }} />
-				<DropdownField icon="eye" name="View" value={ this.props.view } options={view_options} handleChange={value => {this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu()}} />
-				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_artists_source: val}); this.props.uiActions.hideContextMenu() }} />
+				<DropdownField
+					icon="sort"
+					name="Sort"
+					value={ this.props.sort }
+					options={sort_options}
+					selected_icon={this.props.sort_reverse ? 'caret-up' : 'caret-down'} 
+					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }} 
+				/>
+				<DropdownField
+					icon="eye"
+					name="View"
+					value={ this.props.view }
+					options={view_options}
+					handleChange={value => {this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu()}}
+				/>
+				<DropdownField
+					icon="database"
+					name="Source"
+					value={this.props.source}
+					options={source_options}
+					handleChange={value => {this.props.uiActions.set({ library_artists_source: value}); this.props.uiActions.hideContextMenu() }}
+				/>
 			</span>
 		)
 
