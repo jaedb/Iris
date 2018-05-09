@@ -6,77 +6,62 @@
 	right: 0;
 	left: 0;
 	height: 50px;
-	background: lighten($dark_grey, 15%);
+	background: $darkest_grey;
 	color: $white;
+
+	.background {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		max-width: none;
+		width: auto;
+
+		.image {
+			@include blur();
+			opacity: 0.25;
+			padding-bottom: 0;
+			border-radius: 0;
+			position: absolute;
+			top: -20px;
+			right: -20px;
+			bottom: -20px;
+			left: -20px;
+		}
+	}
 
 	.current-track {
 		@include animate();
 		position: absolute;
-		bottom: 50px;
-		width: 220px;
+		top: 16px;
+		left: 100px;
+		right: 100px;
+		text-align: center;
 		font-size: 14px;
 		color: $white;
 		text-decoration: none;
 
-		.thumbnail {
-			float: left;
-			margin: 12px;
-			cursor: pointer;
-
-			&:before {
-				@include animate();
-				display: block;
-				content: "\f065";
-				font-family: "FontAwesome";
-				position: absolute;
-				top: 50%;
-				left: 0;
-				bottom: 0;
-				right: 0;
-				margin-top: -9px;
-				text-align: center;
-				font-size: 18px;
-				color: $white;
-				z-index: 1;
-				opacity: 0;
-			}
-
-			&:after {
-				@include animate();
-				content: '';
-				display: block;
-				background: rgba(0,0,0,0.75);
-				position: absolute;
-				top: 0;
-				left: 0;
-				bottom: 0;
-				right: 0;
-				border-radius: 3px;
-				opacity: 0;
-			}
-
-			&:hover{
-				&:after,
-				&:before {
-					opacity: 1;
-				}
-			}
-		}
-
-		.title {
-			padding-top: 20px;
+		& > .title {
 			@include one_line_text;
+			display: inline-block;
+			padding: 0 5px;
 		}
 
-		.artist-sentence {
+		& > .artist {
 			opacity: 0.5;
-			display: block;
-			@include one_line_text;
+			display: inline-block;
+			padding: 0 5px;
+			vertical-align: top;
 
-			.artist {
-				color: inherit;
-				text-decoration: none;
-				border-bottom: 1px dotted transparent;
+			.artist-sentence {
+				@include one_line_text;
+
+				.artist {
+					color: inherit;
+					text-decoration: none;
+					border-bottom: 1px dotted transparent;
+				}
 			}
 		}
 	}
@@ -132,35 +117,60 @@
 		}
 
 		&.progress {
-			bottom: 10px;
-			left: 140px;
-			right: 260px;
-			padding-left: 20px;
-			padding-right: 20px;
+			@include animate();
+			top: -5px;
+			left: 0;
+			right: 0;
+			bottom: auto !important;
 			color: $mid_grey;
 
 			.slider {
-				position: absolute;
-				bottom: 2px;
-				left: 60px;
-				right: 60px;
+				.track {
+					@include animate();
+					border-radius: 0;
+					background: none;
+					height: 2px;
+
+					.progress {
+						border-radius: 0;
+					}
+				}
 			}
 
 			.current {
+				@include animate();
 				font-size: 11px;
 				position: absolute;
 				bottom: 6px;
 				left: 0;
 				width: 50px;
 				text-align: right;
+				opacity: 0;
 			}
 
 			.total {
+				@include animate();
 				font-size: 11px;
 				position: absolute;
 				bottom: 6px;
 				right: 0;
 				width: 50px;
+				opacity: 0;
+			}
+
+			&:hover {
+				top: -12px;
+
+				.slider {
+					.track {
+						height: 8px;
+					}
+				}
+
+				.current,
+				.total {
+					/*opacity: 1;*/
+				}
 			}
 		}
 

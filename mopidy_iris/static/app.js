@@ -58658,16 +58658,10 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement('source', { src: this.props.http_streaming_url, type: "audio/" + this.props.http_streaming_encoding })
 				) : null,
 				this.props.next_track && this.props.next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: this.props.next_track.images }) : null,
+				_react2.default.createElement(_Thumbnail2.default, { className: 'background', size: 'huge', images: images }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'current-track' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'thumbnail-wrapper', onClick: function onClick(e) {
-								return _this6.handleThumbnailClick(e);
-							} },
-						_react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
-					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'title' },

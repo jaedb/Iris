@@ -4085,74 +4085,59 @@ input[type="submit"] {
   right: 0;
   left: 0;
   height: 50px;
-  background: #3e3e3e;
+  background: #121212;
   color: #FFFFFF; }
+  .playback-controls .background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: none;
+    width: auto; }
+    .playback-controls .background .image {
+      -webkit-filter: blur(10px);
+      filter: blur(10px);
+      opacity: 0.25;
+      padding-bottom: 0;
+      border-radius: 0;
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      bottom: -20px;
+      left: -20px; }
   .playback-controls .current-track {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     position: absolute;
-    bottom: 50px;
-    width: 220px;
+    top: 16px;
+    left: 100px;
+    right: 100px;
+    text-align: center;
     font-size: 14px;
     color: #FFFFFF;
     text-decoration: none; }
-    .playback-controls .current-track .thumbnail {
-      float: left;
-      margin: 12px;
-      cursor: pointer; }
-      .playback-controls .current-track .thumbnail:before {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-        display: block;
-        content: "\F065";
-        font-family: "FontAwesome";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        margin-top: -9px;
-        text-align: center;
-        font-size: 18px;
-        color: #FFFFFF;
-        z-index: 1;
-        opacity: 0; }
-      .playback-controls .current-track .thumbnail:after {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-        content: '';
-        display: block;
-        background: rgba(0, 0, 0, 0.75);
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        border-radius: 3px;
-        opacity: 0; }
-      .playback-controls .current-track .thumbnail:hover:after, .playback-controls .current-track .thumbnail:hover:before {
-        opacity: 1; }
-    .playback-controls .current-track .title {
-      padding-top: 20px;
+    .playback-controls .current-track > .title {
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis; }
-    .playback-controls .current-track .artist-sentence {
+      text-overflow: ellipsis;
+      display: inline-block;
+      padding: 0 5px; }
+    .playback-controls .current-track > .artist {
       opacity: 0.5;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; }
-      .playback-controls .current-track .artist-sentence .artist {
-        color: inherit;
-        text-decoration: none;
-        border-bottom: 1px dotted transparent; }
+      display: inline-block;
+      padding: 0 5px;
+      vertical-align: top; }
+      .playback-controls .current-track > .artist .artist-sentence {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+        .playback-controls .current-track > .artist .artist-sentence .artist {
+          color: inherit;
+          text-decoration: none;
+          border-bottom: 1px dotted transparent; }
   .playback-controls .control {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -4186,30 +4171,55 @@ input[type="submit"] {
       width: 125px;
       text-align: center; }
     .playback-controls section.progress {
-      bottom: 10px;
-      left: 140px;
-      right: 260px;
-      padding-left: 20px;
-      padding-right: 20px;
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      top: -5px;
+      left: 0;
+      right: 0;
+      bottom: auto !important;
       color: #a3a19f; }
-      .playback-controls section.progress .slider {
-        position: absolute;
-        bottom: 2px;
-        left: 60px;
-        right: 60px; }
+      .playback-controls section.progress .slider .track {
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        border-radius: 0;
+        background: none;
+        height: 2px; }
+        .playback-controls section.progress .slider .track .progress {
+          border-radius: 0; }
       .playback-controls section.progress .current {
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
         font-size: 11px;
         position: absolute;
         bottom: 6px;
         left: 0;
         width: 50px;
-        text-align: right; }
+        text-align: right;
+        opacity: 0; }
       .playback-controls section.progress .total {
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
         font-size: 11px;
         position: absolute;
         bottom: 6px;
         right: 0;
-        width: 50px; }
+        width: 50px;
+        opacity: 0; }
+      .playback-controls section.progress:hover {
+        top: -12px; }
+        .playback-controls section.progress:hover .slider .track {
+          height: 8px; }
+        .playback-controls section.progress:hover .current,
+        .playback-controls section.progress:hover .total {
+          /*opacity: 1;*/ }
     .playback-controls section.settings {
       right: 170px;
       width: 100px;

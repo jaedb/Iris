@@ -78,11 +78,10 @@ class PlaybackControls extends React.Component{
 				</audio> : null}
 
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
+
+				<Thumbnail className="background" size="huge" images={images} />
 				
 				<div className="current-track">
-					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
-						<Thumbnail size="small" images={images} />
-					</div>
 					<div className="title">
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>
