@@ -18874,7 +18874,14 @@ var DropdownField = function (_React$Component) {
 	function DropdownField(props) {
 		_classCallCheck(this, DropdownField);
 
+		// Create a "unique" id. This is human-controlled to avoid requiring
+		// other libraries for a very simple purpose: clicking outside
 		var _this = _possibleConstructorReturn(this, (DropdownField.__proto__ || Object.getPrototypeOf(DropdownField)).call(this, props));
+
+		_this.uid = _this.props.name.replace(' ', '_').toLowerCase();
+		if (_this.props.uid) {
+			_this.uid += "_" + _this.props.uid;
+		}
 
 		_this.state = {
 			expanded: false
@@ -18895,36 +18902,38 @@ var DropdownField = function (_React$Component) {
 			window.removeEventListener("click", this.handleClick, false);
 		}
 	}, {
+		key: 'setExpanded',
+		value: function setExpanded() {
+			var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
+
+			if (expanded) {
+				this.setState({ expanded: expanded });
+				window.addEventListener("click", this.handleClick, false);
+			} else {
+				this.setState({ expanded: expanded });
+				window.removeEventListener("click", this.handleClick, false);
+			}
+		}
+	}, {
 		key: 'handleClick',
 		value: function handleClick(e) {
 			// TODO: remove dependency on jQuery and explore the performance of this functionality
-			if ($(e.target).closest('.dropdown-field').data('key') != this.props.name.replace(' ', '_').toLowerCase() && this.state.expanded) {
-				this.setState({
-					expanded: false
-				});
+			if ($(e.target).closest('.dropdown-field').attr('data-uid') != this.uid && this.state.expanded) {
+				this.setExpanded(false);
 			}
 		}
 	}, {
 		key: 'handleChange',
 		value: function handleChange(value, is_selected) {
 
+			var current_value = this.props.value;
 			if (this.isMultiSelect()) {
 				if (value == 'select-all') {
 					var new_value = [];
 					for (var i = 0; i < this.props.options.length; i++) {
 						new_value.push(this.props.options[i].value);
 					}
-					return this.props.handleChange(new_value);
-				}
-			} else {
-				this.setState({
-					expanded: !this.state.expanded
-				});
-			}
-
-			var current_value = this.props.value;
-			if (this.isMultiSelect()) {
-				if (is_selected) {
+				} else if (is_selected) {
 					var index = current_value.indexOf(value);
 					current_value.splice(index, 1);
 					var new_value = current_value;
@@ -18934,16 +18943,12 @@ var DropdownField = function (_React$Component) {
 				}
 			} else {
 				var new_value = value;
+
+				// Collapse our menu
+				this.setExpanded(false);
 			}
 
 			return this.props.handleChange(new_value);
-		}
-	}, {
-		key: 'handleToggle',
-		value: function handleToggle() {
-			this.setState({
-				expanded: !this.state.expanded
-			});
 		}
 	}, {
 		key: 'isMultiSelect',
@@ -18998,11 +19003,11 @@ var DropdownField = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: className, 'data-key': this.props.name.replace(' ', '_').toLowerCase() },
+				{ className: className, 'data-uid': this.uid },
 				_react2.default.createElement(
 					'div',
 					{ className: "label" + (this.props.button ? " button " + this.props.button : ""), onClick: function onClick(e) {
-							return _this2.handleToggle();
+							return _this2.setExpanded();
 						} },
 					this.props.icon ? _react2.default.createElement(
 						'span',
@@ -19020,21 +19025,25 @@ var DropdownField = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'options' },
-					options.map(function (option) {
-						if (_this2.isMultiSelect()) {
-							var is_selected = current_value.indexOf(option.value) > -1;
-						} else {
-							var is_selected = current_value == option.value;
-						}
-						return _react2.default.createElement(
-							'div',
-							{ className: "option " + (option.className ? option.className : ''), key: option.value, onClick: function onClick(e) {
-									return _this2.handleChange(option.value, is_selected);
-								} },
-							!_this2.props.no_status_icon && is_selected ? selected_icon : null,
-							option.label
-						);
-					})
+					_react2.default.createElement(
+						'div',
+						{ className: 'liner' },
+						options.map(function (option) {
+							if (_this2.isMultiSelect()) {
+								var is_selected = current_value.indexOf(option.value) > -1;
+							} else {
+								var is_selected = current_value == option.value;
+							}
+							return _react2.default.createElement(
+								'div',
+								{ className: "option " + (option.className ? option.className : ''), key: option.value, onClick: function onClick(e) {
+										return _this2.handleChange(option.value, is_selected);
+									} },
+								!_this2.props.no_status_icon && is_selected ? selected_icon : null,
+								option.label
+							);
+						})
+					)
 				)
 			);
 		}
@@ -49338,6 +49347,7 @@ function reducer() {
             return Object.assign({}, ui, { debug_response: action.response });
 
         case 'UI_SET':
+            console.log(action);
             return Object.assign({}, ui, action.data);
 
         case 'TOGGLE_SIDEBAR':
@@ -68062,8 +68072,15 @@ var Search = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			this.props.mopidyActions.clearSearchResults();
+			this.props.spotifyActions.clearSearchResults();
+		}
+	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(newProps) {
+
 			if (this.props.params && this.props.params.query && this.props.params.query !== '') {
 				var old_context = helpers.getFromUri("searchcontext", this.props.params.query);
 				var old_term = helpers.getFromUri("searchterm", this.props.params.query);
@@ -68437,7 +68454,7 @@ var Search = function (_React$Component) {
 				}),
 				_react2.default.createElement(_DropdownField2.default, {
 					icon: 'database',
-					name: 'Source',
+					name: 'Sources',
 					value: this.props.search_uri_schemes,
 					options: provider_options,
 					handleChange: function handleChange(value) {
@@ -68598,12 +68615,12 @@ var SearchForm = function (_React$Component) {
 					break;
 
 				default:
-					var available_views = ["artist", "album", "playlist", "track"];
+					var available_views = ["all:", "artist:", "album:", "playlist:", ":track"];
 					var view_defined = false;
 					var query = this.state.query;
 
 					for (var i = 0; i < available_views.length; i++) {
-						if (query.startsWith(available_views[i] + ':')) {
+						if (query.startsWith(available_views[i])) {
 							view_defined = true;
 						}
 					}
@@ -70644,7 +70661,8 @@ var Snapcast = function (_React$Component) {
 					// the existing group and middleware handles the behavior shift)
 					groups_dropdown.push({
 						label: 'New group',
-						value: group.id
+						value: group.id,
+						className: 'grey-text'
 					});
 
 					return _react2.default.createElement(
@@ -70661,6 +70679,7 @@ var Snapcast = function (_React$Component) {
 								no_status_icon: true,
 								value: group.id,
 								options: groups_dropdown,
+								uid: group.id + "_" + client.id,
 								handleChange: function handleChange(value) {
 									_this2.props.pusherActions.setSnapcastClientGroup(client.id, value);_this2.props.uiActions.hideContextMenu();
 								}

@@ -73,7 +73,8 @@ class Snapcast extends React.Component{
 						// the existing group and middleware handles the behavior shift)
 						groups_dropdown.push({
 							label: 'New group',
-							value: group.id
+							value: group.id,
+							className: 'grey-text'
 						});
 
 						return (
@@ -87,6 +88,7 @@ class Snapcast extends React.Component{
 										no_status_icon
 										value={group.id} 
 										options={groups_dropdown} 
+										uid={group.id+"_"+client.id}
 										handleChange={value => {this.props.pusherActions.setSnapcastClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
 									/>
 									<TextField

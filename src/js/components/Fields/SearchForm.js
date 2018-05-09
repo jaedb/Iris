@@ -55,12 +55,12 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				var available_views = ["artist","album","playlist","track"];
+				var available_views = ["all:","artist:","album:","playlist:",":track"];
 				var view_defined = false;
 				var query = this.state.query;
 
 				for (var i = 0; i < available_views.length; i++){
-					if (query.startsWith(available_views[i]+':')){
+					if (query.startsWith(available_views[i])){
 						view_defined = true;
 					}
 				}

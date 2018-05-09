@@ -50,7 +50,13 @@ class Search extends React.Component{
 		}
 	}
 
+	componentWillUnmount(){
+		this.props.mopidyActions.clearSearchResults();
+		this.props.spotifyActions.clearSearchResults();
+	}
+
 	componentWillReceiveProps(newProps){
+
 		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
 			var old_context = helpers.getFromUri("searchcontext",this.props.params.query);
 			var old_term = helpers.getFromUri("searchterm",this.props.params.query);
@@ -342,7 +348,7 @@ class Search extends React.Component{
 				/>
 				<DropdownField 
 					icon="database" 
-					name="Source"
+					name="Sources"
 					value={this.props.search_uri_schemes}
 					options={provider_options} 
 					handleChange={value => {this.props.uiActions.set({search_uri_schemes: value}); this.props.uiActions.hideContextMenu()}}
@@ -383,7 +389,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
 		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'name'),
-		sort_reverse: (state.ui.search_results_sort_reverse ? true : false),
+		sort_reverse: (state.ui.search_results_sort_reverse ? true : false)
 	}
 }
 
