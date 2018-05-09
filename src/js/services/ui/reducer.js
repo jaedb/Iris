@@ -14,7 +14,8 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { debug_response: action.response })
 
         case 'UI_SET':
-            return Object.assign({}, ui, action.data)
+            console.log(action);
+            return Object.assign({}, ui, action.data);
 
         case 'TOGGLE_SIDEBAR':
             var new_state = !ui.sidebar_open

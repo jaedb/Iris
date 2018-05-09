@@ -73,6 +73,7 @@ input[type="button"],
 input[type="submit"] {
 	@include animate();
 	@include feature_font();
+	@include noselect();
 	font-size: 14px;
 	color: $black;
 	display: inline-block;

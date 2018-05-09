@@ -50,7 +50,13 @@ class Search extends React.Component{
 		}
 	}
 
+	componentWillUnmount(){
+		this.props.mopidyActions.clearSearchResults();
+		this.props.spotifyActions.clearSearchResults();
+	}
+
 	componentWillReceiveProps(newProps){
+
 		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
 			var old_context = helpers.getFromUri("searchcontext",this.props.params.query);
 			var old_term = helpers.getFromUri("searchterm",this.props.params.query);
@@ -319,12 +325,16 @@ class Search extends React.Component{
 			{
 				value: 'duration',
 				label: 'Duration'
-			},
-			{
-				value: 'uri',
-				label: 'Source'
 			}
 		];
+
+		var provider_options = [];
+		for (var i = 0; i < this.props.uri_schemes.length; i++){
+			provider_options.push({
+				value: this.props.uri_schemes[i],
+				label: helpers.titleCase(this.props.uri_schemes[i].replace(':','').replace('+',' '))
+			});
+		}
 
 		var options = (
 			<span>
@@ -333,14 +343,16 @@ class Search extends React.Component{
 					name="Sort" 
 					value={this.props.sort} 
 					options={sort_options} 
-					reverse={this.props.sort_reverse} 
-					handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
-
-				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_uri_schemes', {query: this.props.params.query})}>
-					<FontAwesome name="wrench" />&nbsp;
-					Sources
-				</button>
-
+					selected_icon={this.props.sort_reverse ? 'caret-up' : 'caret-down'} 
+					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu()}}
+				/>
+				<DropdownField 
+					icon="database" 
+					name="Sources"
+					value={this.props.search_uri_schemes}
+					options={provider_options} 
+					handleChange={value => {this.props.uiActions.set({search_uri_schemes: value}); this.props.uiActions.hideContextMenu()}}
+				/>
 			</span>
 		)
 
@@ -354,7 +366,8 @@ class Search extends React.Component{
 
 				<SearchForm 
 					query={(this.props.params.query ? this.props.params.query : '')}
-					view={(this.props.params.view ? this.props.params.view : 'all')} />
+					view={(this.props.params.view ? this.props.params.view : 'all')}
+				/>
 
 				<div className="content-wrapper">
 					{ this.renderResults() }
@@ -372,10 +385,11 @@ const mapStateToProps = (state, ownProps) => {
 		playlists: (state.core.playlists ? state.core.playlists : []),
 		tracks: (state.core.tracks ? state.core.tracks : []),
 		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
+		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
 		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'name'),
-		sort_reverse: (state.ui.search_results_sort_reverse ? true : false),
+		sort_reverse: (state.ui.search_results_sort_reverse ? true : false)
 	}
 }
 

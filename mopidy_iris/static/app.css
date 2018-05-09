@@ -2987,6 +2987,12 @@ input[type="submit"] {
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   font-size: 14px;
   color: #000000;
   display: inline-block;
@@ -5320,6 +5326,12 @@ main header {
         right: 40px; } }
 
 .dropdown-field {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   font-size: 13px;
   font-weight: 800;
   font-family: "Overpass";
@@ -5343,16 +5355,12 @@ main header {
   .dropdown-field.no-label .label > .text {
     display: none; }
   .dropdown-field .options {
-    color: #000000;
     position: absolute;
     top: 46px;
     right: 10px;
     z-index: 97;
-    background: #FFFFFF;
     display: none;
-    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-    min-width: 120px; }
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
     .dropdown-field .options:before {
       content: '';
       display: block;
@@ -5365,41 +5373,60 @@ main header {
       border-left: 5px solid #121212;
       border-right: 5px solid #121212;
       border-bottom: 6px solid #FFFFFF; }
-    .dropdown-field .options .option {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      position: relative;
-      padding: 9px 12px 8px 24px;
-      cursor: pointer; }
-      .dropdown-field .options .option:before {
+    .dropdown-field .options > .liner {
+      color: #000000;
+      background: #FFFFFF;
+      min-width: 120px;
+      max-height: 70vh;
+      overflow-y: auto;
+      border-radius: 3px; }
+      .dropdown-field .options > .liner:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: -6px;
+        right: 10px;
+        background: #FFFFFF;
+        width: 0;
+        height: 0;
+        border-left: 5px solid #121212;
+        border-right: 5px solid #121212;
+        border-bottom: 6px solid #FFFFFF; }
+      .dropdown-field .options > .liner .option {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out;
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        opacity: 0;
-        z-index: 9;
-        background: -webkit-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-        background: -moz-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-        background: -o-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-        background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
-      .dropdown-field .options .option .fa {
-        position: absolute;
-        top: 11px;
-        left: 8px;
-        font-size: 10px; }
-      .notouch .dropdown-field .options .option:hover {
-        color: #000000; }
-        .notouch .dropdown-field .options .option:hover:before {
-          opacity: 0.15; }
+        position: relative;
+        padding: 9px 12px 8px 24px;
+        cursor: pointer; }
+        .dropdown-field .options > .liner .option:before {
+          -webkit-transition: all 0.2s ease-in-out;
+          -moz-transition: all 0.2s ease-in-out;
+          -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          opacity: 0;
+          z-index: 9;
+          background: -webkit-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+          background: -moz-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+          background: -o-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+          background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
+        .dropdown-field .options > .liner .option .fa {
+          position: absolute;
+          top: 11px;
+          left: 8px;
+          font-size: 10px; }
+        .notouch .dropdown-field .options > .liner .option:hover {
+          color: #000000; }
+          .notouch .dropdown-field .options > .liner .option:hover:before {
+            opacity: 0.15; }
 
 .autocomplete-field {
   position: relative; }

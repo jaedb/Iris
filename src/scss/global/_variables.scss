@@ -224,6 +224,15 @@ $bp_shallow: 650px;
 	font-weight: 600;
 }
 
+@mixin noselect(){
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 @mixin invert(){
 	-webkit-filter: invert(1);
 	filter: invert(1);

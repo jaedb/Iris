@@ -451,11 +451,7 @@ export let getFromUri = function(element, uri = ""){
 
     	case 'searchcontext':
     		if (exploded[0] == "search"){
-				var available_views = ["all","artist","album","playlist","track"];
-				var view = available_views.indexOf(exploded[1]);
-	    		if (view > -1){
-	    			return exploded[1];
-	    		}
+				return exploded[1];
     		}
     		break
 
