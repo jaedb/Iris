@@ -67150,7 +67150,7 @@ var Queue = function (_React$Component) {
 				_react2.default.createElement(
 					'button',
 					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this2.props.mopidyActions.clearTracklist();
+							_this2.props.mopidyActions.clearTracklist();_this2.props.uiActions.hideContextMenu();
 						} },
 					_react2.default.createElement(_reactFontawesome2.default, { name: 'trash' }),
 					'\xA0 Clear'

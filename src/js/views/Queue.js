@@ -149,7 +149,7 @@ class Queue extends React.Component{
 					<FontAwesome name="history" />&nbsp;
 					History
 				</button>
-				<button className="no-hover" onClick={e => this.props.mopidyActions.clearTracklist()}>
+				<button className="no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
 					<FontAwesome name="trash" />&nbsp;
 					Clear
 				</button>
