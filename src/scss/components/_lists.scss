@@ -287,6 +287,13 @@
 		}
 	}
 
+	&.library-local-view,
+	&.library-local-directory-list {
+		.list-item {
+			cursor: pointer;
+		}
+	}
+
 	@include responsive($bp_medium){
 
 		.list-item {

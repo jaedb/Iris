@@ -1,11 +1,230 @@
 
-.icon {
-	margin-top: -0.2em;
-	vertical-align: middle;
-
-	svg {
-		height: 1.4em;
-		fill: $white;
-		vertical-align: middle;
-	}
+@font-face {
+  font-family: 'iris';
+  src:
+    url('../assets/fonts/iris.ttf?wncwx9') format('truetype'),
+    url('../assets/fonts/iris.woff?wncwx9') format('woff'),
+    url('../assets/fonts/iris.svg?wncwx9#iris') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
+
+$icon-back: \e900;
+$icon-broadcast: \e901;
+$icon-cd: \e902;
+$icon-chevron-left: \e903;
+$icon-chevron-right: \e904;
+$icon-close: \e905;
+$icon-cog: \e906;
+$icon-compass: \e907;
+$icon-connection: \e908;
+$icon-consume: \e909;
+$icon-filter: \e90a;
+$icon-folder: \e90b;
+$icon-grid: \e90c;
+$icon-leaf: \e90d;
+$icon-list: \e90e;
+$icon-local: \e90f;
+$icon-mic: \e910;
+$icon-music: \e911;
+$icon-pause: \e912;
+$icon-play: \e913;
+$icon-play-alt: \e914;
+$icon-playlist: \e915;
+$icon-repeat: \e916;
+$icon-search: \e917;
+$icon-sections: \e918;
+$icon-server: \e919;
+$icon-shuffle: \e91a;
+$icon-skip: \e91b;
+$icon-soundcloud: \e91c;
+$icon-spotify: \e91d;
+$icon-star: \e91e;
+$icon-stop: \e91f;
+$icon-websocket: \e920;
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'iris' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@function unicode($str) {
+  @return unquote("\"") + $str + unquote("\"");
+}
+
+.icon-back {
+  &:before {
+    content: unicode($icon-back); 
+  }
+}
+.icon-broadcast {
+  &:before {
+    content: unicode($icon-broadcast); 
+  }
+}
+.icon-cd {
+  &:before {
+    content: unicode($icon-cd); 
+  }
+}
+.icon-chevron-left {
+  &:before {
+    content: unicode($icon-chevron-left); 
+  }
+}
+.icon-chevron-right {
+  &:before {
+    content: unicode($icon-chevron-right); 
+  }
+}
+.icon-close {
+  &:before {
+    content: unicode($icon-close); 
+  }
+}
+.icon-cog {
+  &:before {
+    content: unicode($icon-cog); 
+  }
+}
+.icon-compass {
+  &:before {
+    content: unicode($icon-compass); 
+  }
+}
+.icon-connection {
+  &:before {
+    content: unicode($icon-connection); 
+  }
+}
+.icon-consume {
+  &:before {
+    content: unicode($icon-consume); 
+  }
+}
+.icon-filter {
+  &:before {
+    content: unicode($icon-filter); 
+  }
+}
+.icon-folder {
+  &:before {
+    content: unicode($icon-folder); 
+  }
+}
+.icon-grid {
+  &:before {
+    content: unicode($icon-grid); 
+  }
+}
+.icon-leaf {
+  &:before {
+    content: unicode($icon-leaf); 
+  }
+}
+.icon-list {
+  &:before {
+    content: unicode($icon-list); 
+  }
+}
+.icon-local {
+  &:before {
+    content: unicode($icon-local); 
+  }
+}
+.icon-mic {
+  &:before {
+    content: unicode($icon-mic); 
+  }
+}
+.icon-music {
+  &:before {
+    content: unicode($icon-music); 
+  }
+}
+.icon-pause {
+  &:before {
+    content: unicode($icon-pause); 
+  }
+}
+.icon-play {
+  &:before {
+    content: unicode($icon-play); 
+  }
+}
+.icon-play-alt {
+  &:before {
+    content: unicode($icon-play-alt); 
+  }
+}
+.icon-playlist {
+  &:before {
+    content: unicode($icon-playlist); 
+  }
+}
+.icon-repeat {
+  &:before {
+    content: unicode($icon-repeat); 
+  }
+}
+.icon-search {
+  &:before {
+    content: unicode($icon-search); 
+  }
+}
+.icon-sections {
+  &:before {
+    content: unicode($icon-sections); 
+  }
+}
+.icon-server {
+  &:before {
+    content: unicode($icon-server); 
+  }
+}
+.icon-shuffle {
+  &:before {
+    content: unicode($icon-shuffle); 
+  }
+}
+.icon-skip {
+  &:before {
+    content: unicode($icon-skip); 
+  }
+}
+.icon-soundcloud {
+  &:before {
+    content: unicode($icon-soundcloud); 
+  }
+}
+.icon-spotify {
+  &:before {
+    content: unicode($icon-spotify); 
+  }
+}
+.icon-star {
+  &:before {
+    content: unicode($icon-star); 
+  }
+}
+.icon-stop {
+  &:before {
+    content: unicode($icon-stop); 
+  }
+}
+.icon-websocket {
+  &:before {
+    content: unicode($icon-websocket); 
+  }
+}
+

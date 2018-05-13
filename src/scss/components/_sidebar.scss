@@ -51,19 +51,13 @@ aside{
 			color: $white;
 			text-decoration: none;
 			display: block;
-			padding: 9px 10px 5px;
+			padding: 10px 10px 8px;
 			margin: 0 16px;
 			border-radius: 3px;
-			line-height: 18px;
 
 			.icon {
 				padding-right: 6px;
-				vertical-align: top;
-				margin-top: 0;
-
-				svg {
-					height: 14px;
-				}
+				font-size: 0.8em;
 			}
 
 			.status {

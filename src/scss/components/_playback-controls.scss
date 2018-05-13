@@ -98,12 +98,10 @@
 		}
 
 		&.play {
-			margin-bottom: -4px;
+			margin-bottom: -6px;
 
 			.icon {
-				svg {
-					height: 24px;
-				}
+				font-size: 2em;
 			}
 		}
 
@@ -125,7 +123,7 @@
 		bottom: 8px;
 
 		&.playback {
-			bottom: 6px;
+			bottom: 8px;
 			left: 10px;
 			width: 125px;
 			text-align: center;
