@@ -13,6 +13,7 @@ import ArtistSentence from '../../components/ArtistSentence'
 import DropdownField from '../../components/Fields/DropdownField'
 import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -276,7 +277,10 @@ class LibraryAlbums extends React.Component{
 
 		return (
 			<div className="view library-albums-view">
-				<Header icon="cd" title="My albums" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="album" type="material" />
+					My albums
+				</Header>
 				{this.renderView()}
 			</div>
 		);

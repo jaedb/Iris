@@ -11,6 +11,7 @@ import DropdownField from '../../components/Fields/DropdownField'
 import Header from '../../components/Header'
 import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -268,7 +269,10 @@ class LibraryPlaylists extends React.Component{
 
 		return (
 			<div className="view library-playlists-view">
-				<Header icon="playlist" title="My playlists" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>				
+					<Icon name="queue_music" type="material" />
+					My playlists
+				</Header>
 				{ this.renderView() }
 			</div>
 		)

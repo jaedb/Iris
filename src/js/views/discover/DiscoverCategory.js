@@ -4,8 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
+import Icon from '../../components/Icon'
 import PlaylistGrid from '../../components/PlaylistGrid'
 import LazyLoadListener from '../../components/LazyLoadListener'
+
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -46,7 +48,10 @@ class DiscoverCategory extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/categories/'])){
 			return (
 				<div className="view discover-categories-view">
-					<Header icon="grid" title={(this.props.category ? this.props.category.name : 'Category')} />
+					<Header>
+						<Icon name="mood" type="material" />
+						{(this.props.category ? this.props.category.name : 'Category')}
+					</Header>
 					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
@@ -70,7 +75,10 @@ class DiscoverCategory extends React.Component{
 
 		return (
 			<div className="view discover-categories-view">
-				<Header icon="grid" title={this.props.category.name} />
+				<Header>
+					<Icon name="mood" type="material" />
+					{this.props.category.name}
+				</Header>
 				<div className="content-wrapper">
 					<section className="grid-wrapper">
 						<PlaylistGrid playlists={playlists} />

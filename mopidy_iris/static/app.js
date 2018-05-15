@@ -4189,6 +4189,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactFontawesome = __webpack_require__(5);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4209,12 +4213,27 @@ var Icon = function (_React$Component) {
 	_createClass(Icon, [{
 		key: 'render',
 		value: function render() {
-			var className = 'icon icon-' + this.props.name;
+			var className = "icon";
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
 
-			return _react2.default.createElement('i', { className: className });
+			switch (this.props.type) {
+				case 'material':
+					className += ' material-icon';
+					return _react2.default.createElement(
+						'i',
+						{ className: className },
+						this.props.name
+					);
+
+				case 'fontawesome':
+					return _react2.default.createElement(_reactFontawesome2.default, { name: this.props.name });
+
+				default:
+					className += ' icon-' + this.props.name;
+					return _react2.default.createElement('i', { className: className });
+			}
 		}
 	}]);
 
@@ -4337,8 +4356,7 @@ var Header = function (_React$Component) {
 				_react2.default.createElement(
 					'h1',
 					null,
-					this.props.icon ? _react2.default.createElement('i', { className: "icon header-icon icon-" + this.props.icon }) : null,
-					this.props.title ? this.props.title : null
+					this.props.children ? this.props.children : null
 				),
 				this.renderOptions()
 			);
@@ -57913,13 +57931,13 @@ var Sidebar = function (_React$Component) {
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('queue'), to: global.baseURL + "queue" },
-								_react2.default.createElement(_Icon2.default, { name: 'play' }),
+								_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 								'Now playing'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('search'), to: global.baseURL + "search" },
-								_react2.default.createElement(_Icon2.default, { name: 'search' }),
+								_react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' }),
 								'Search'
 							)
 						),
@@ -57934,25 +57952,25 @@ var Sidebar = function (_React$Component) {
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('discover/recommendations'), to: global.baseURL + "discover/recommendations" },
-								_react2.default.createElement(_Icon2.default, { name: 'compass' }),
+								_react2.default.createElement(_Icon2.default, { name: 'explore', type: 'material' }),
 								'Discover'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('discover/categories'), to: global.baseURL + "discover/categories" },
-								_react2.default.createElement(_Icon2.default, { name: 'grid' }),
+								_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
 								'Genre / Mood'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('discover/featured'), to: global.baseURL + "discover/featured" },
-								_react2.default.createElement(_Icon2.default, { name: 'star' }),
+								_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 								'Featured playlists'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('discover/new-releases'), to: global.baseURL + "discover/new-releases" },
-								_react2.default.createElement(_Icon2.default, { name: 'leaf' }),
+								_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 								'New releases'
 							)
 						) : null,
@@ -57967,31 +57985,31 @@ var Sidebar = function (_React$Component) {
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('library/playlists'), to: global.baseURL + "library/playlists" },
-								_react2.default.createElement(_Icon2.default, { name: 'playlist' }),
+								_react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
 								'Playlists'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('library/artists'), to: global.baseURL + "library/artists" },
-								_react2.default.createElement(_Icon2.default, { name: 'mic' }),
+								_react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
 								'Artists'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('library/albums'), to: global.baseURL + "library/albums" },
-								_react2.default.createElement(_Icon2.default, { name: 'cd' }),
+								_react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
 								'Albums'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('library/tracks'), to: global.baseURL + "library/tracks" },
-								_react2.default.createElement(_Icon2.default, { name: 'music' }),
+								_react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
 								'Tracks'
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('library/browse'), to: global.baseURL + "library/browse" },
-								_react2.default.createElement(_Icon2.default, { name: 'folder' }),
+								_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
 								'Browse'
 							)
 						),
@@ -58001,7 +58019,7 @@ var Sidebar = function (_React$Component) {
 							_react2.default.createElement(
 								_reactRouter.Link,
 								{ className: this.linkClassName('settings'), to: global.baseURL + "settings" },
-								_react2.default.createElement(_Icon2.default, { name: 'cog' }),
+								_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
 								'Settings',
 								this.props.test_mode ? _react2.default.createElement(
 									'span',
@@ -58449,7 +58467,7 @@ var PlaybackControls = function (_React$Component) {
 				{ className: 'control play', onClick: function onClick() {
 						return _this2.props.mopidyActions.play();
 					} },
-				_react2.default.createElement(_Icon2.default, { name: 'play' })
+				_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled', type: 'material' })
 			);
 			if (this.props.play_state == 'playing') {
 				button = _react2.default.createElement(
@@ -58457,7 +58475,7 @@ var PlaybackControls = function (_React$Component) {
 					{ className: 'control play', onClick: function onClick() {
 							return _this2.props.mopidyActions.pause();
 						} },
-					_react2.default.createElement(_Icon2.default, { name: 'pause' })
+					_react2.default.createElement(_Icon2.default, { name: 'pause_circle_filled', type: 'material' })
 				);
 			}
 			return button;
@@ -58472,7 +58490,7 @@ var PlaybackControls = function (_React$Component) {
 				{ className: 'control has-tooltip', onClick: function onClick() {
 						return _this3.props.mopidyActions.setConsume(true);
 					} },
-				_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' }),
+				_react2.default.createElement(_Icon2.default, { name: 'restaurant', type: 'material' }),
 				_react2.default.createElement(
 					'span',
 					{ className: 'tooltip' },
@@ -58485,7 +58503,7 @@ var PlaybackControls = function (_React$Component) {
 					{ className: 'control active has-tooltip', onClick: function onClick() {
 							return _this3.props.mopidyActions.setConsume(false);
 						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'fire' }),
+					_react2.default.createElement(_Icon2.default, { name: 'restaurant', type: 'material' }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'tooltip' },
@@ -58505,7 +58523,7 @@ var PlaybackControls = function (_React$Component) {
 				{ className: 'control has-tooltip', onClick: function onClick() {
 						return _this4.props.mopidyActions.setRandom(true);
 					} },
-				_react2.default.createElement(_reactFontawesome2.default, { name: 'random' }),
+				_react2.default.createElement(_Icon2.default, { name: 'shuffle', type: 'material' }),
 				_react2.default.createElement(
 					'span',
 					{ className: 'tooltip' },
@@ -58518,7 +58536,7 @@ var PlaybackControls = function (_React$Component) {
 					{ className: 'control active has-tooltip', onClick: function onClick() {
 							return _this4.props.mopidyActions.setRandom(false);
 						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'random' }),
+					_react2.default.createElement(_Icon2.default, { name: 'shuffle', type: 'material' }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'tooltip' },
@@ -58538,7 +58556,7 @@ var PlaybackControls = function (_React$Component) {
 				{ className: 'control has-tooltip', onClick: function onClick() {
 						return _this5.props.mopidyActions.setRepeat(true);
 					} },
-				_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' }),
+				_react2.default.createElement(_Icon2.default, { name: 'repeat' }),
 				_react2.default.createElement(
 					'span',
 					{ className: 'tooltip' },
@@ -58551,7 +58569,7 @@ var PlaybackControls = function (_React$Component) {
 					{ className: 'control active has-tooltip', onClick: function onClick() {
 							return _this5.props.mopidyActions.setRepeat(false);
 						} },
-					_react2.default.createElement(_reactFontawesome2.default, { name: 'repeat' }),
+					_react2.default.createElement(_Icon2.default, { name: 'repeat' }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'tooltip' },
@@ -58619,7 +58637,7 @@ var PlaybackControls = function (_React$Component) {
 						{ className: 'control previous', onClick: function onClick() {
 								return _this6.props.mopidyActions.previous();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'back' })
+						_react2.default.createElement(_Icon2.default, { name: 'skip_previous', type: 'material' })
 					),
 					this.renderPlayButton(),
 					_react2.default.createElement(
@@ -58627,14 +58645,14 @@ var PlaybackControls = function (_React$Component) {
 						{ className: 'control stop', onClick: function onClick() {
 								return _this6.props.mopidyActions.stop();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'stop' })
+						_react2.default.createElement(_Icon2.default, { name: 'stop', type: 'material' })
 					),
 					_react2.default.createElement(
 						'a',
 						{ className: 'control next', onClick: function onClick() {
 								return _this6.props.mopidyActions.next();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'skip' })
+						_react2.default.createElement(_Icon2.default, { name: 'skip_next', type: 'material' })
 					)
 				),
 				_react2.default.createElement(
@@ -58689,7 +58707,7 @@ var PlaybackControls = function (_React$Component) {
 						{ className: "control sidebar-toggle" + (this.props.sidebar_open ? ' open' : ''), onClick: function onClick() {
 								return _this6.props.uiActions.toggleSidebar();
 							} },
-						_react2.default.createElement(_reactFontawesome2.default, { className: 'open', name: 'bars' })
+						_react2.default.createElement(_Icon2.default, { className: 'open', name: 'bars', type: 'fontawesome' })
 					)
 				)
 			);
@@ -67096,7 +67114,12 @@ var Queue = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view queue-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'play', className: 'overlay', title: 'Now playing', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ className: 'overlay', options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
+					'Now playing'
+				),
 				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
 				_react2.default.createElement(
 					'div',
@@ -67215,6 +67238,10 @@ var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
 var _actions = __webpack_require__(4);
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -67290,7 +67317,12 @@ var QueueHistory = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view queue-history-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'play', title: 'Playback history', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
+					'Playback history'
+				),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -67366,6 +67398,10 @@ var _Header2 = _interopRequireDefault(_Header);
 var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _actions = __webpack_require__(4);
 
@@ -67453,7 +67489,12 @@ var Debug = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view debugger-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'cog', title: 'Debugger', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
+					'Debug'
+				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -67902,6 +67943,10 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _DropdownField = __webpack_require__(35);
 
@@ -68394,11 +68439,11 @@ var Search = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view search-view' },
-				_react2.default.createElement(_Header2.default, {
-					icon: 'search',
-					options: options,
-					uiActions: this.props.uiActions
-				}),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' })
+				),
 				_react2.default.createElement(_SearchForm2.default, {
 					query: this.props.params.query ? this.props.params.query : '',
 					view: this.props.params.view ? this.props.params.view : 'all'
@@ -68875,7 +68920,12 @@ var Settings = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view settings-view' },
-				_react2.default.createElement(_Header2.default, { className: 'overlay', icon: 'cog', title: 'Settings', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ className: 'overlay', options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
+					'Settings'
+				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
@@ -74274,6 +74324,10 @@ var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
 var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
@@ -74403,7 +74457,12 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view discover-featured-view' },
-					_react2.default.createElement(_Header2.default, { icon: 'star', title: 'Featured playlists' }),
+					_react2.default.createElement(
+						_Header2.default,
+						{ className: 'overlay' },
+						_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
+						'Featured playlists'
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'body-loader loading' },
@@ -74431,7 +74490,12 @@ var DiscoverFeatured = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view discover-featured-view' },
-				_react2.default.createElement(_Header2.default, { className: 'overlay', icon: 'star', title: 'Featured playlists' }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ className: 'overlay' },
+					_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
+					'Featured playlists'
+				),
 				this.renderIntro(first_playlist),
 				_react2.default.createElement(
 					'section',
@@ -74494,6 +74558,10 @@ var _redux = __webpack_require__(2);
 var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _CategoryGrid = __webpack_require__(278);
 
@@ -74562,7 +74630,12 @@ var DiscoverCategories = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view discover-categories-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'grid', title: 'Genre / Mood' }),
+				_react2.default.createElement(
+					_Header2.default,
+					null,
+					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
+					'Genre / Mood'
+				),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper grid-wrapper' },
@@ -74691,6 +74764,10 @@ var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
 var _PlaylistGrid = __webpack_require__(47);
 
 var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
@@ -74762,7 +74839,12 @@ var DiscoverCategory = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view discover-categories-view' },
-					_react2.default.createElement(_Header2.default, { icon: 'grid', title: this.props.category ? this.props.category.name : 'Category' }),
+					_react2.default.createElement(
+						_Header2.default,
+						null,
+						_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
+						this.props.category ? this.props.category.name : 'Category'
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'body-loader loading' },
@@ -74788,7 +74870,12 @@ var DiscoverCategory = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view discover-categories-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'grid', title: this.props.category.name }),
+				_react2.default.createElement(
+					_Header2.default,
+					null,
+					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
+					this.props.category.name
+				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -74856,6 +74943,10 @@ var _reactRouter = __webpack_require__(7);
 var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _AlbumGrid = __webpack_require__(46);
 
@@ -75012,7 +75103,12 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'view discover-new-releases-view' },
-					_react2.default.createElement(_Header2.default, { icon: 'leaf', title: 'New Releases' }),
+					_react2.default.createElement(
+						_Header2.default,
+						null,
+						_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
+						'New releases'
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'body-loader loading' },
@@ -75040,7 +75136,12 @@ var DiscoverNewReleases = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view discover-new-releases-view' },
-				_react2.default.createElement(_Header2.default, { className: 'overlay', icon: 'leaf', title: 'New Releases' }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ className: 'overlay' },
+					_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
+					'New releases'
+				),
 				this.renderIntro(first_album),
 				_react2.default.createElement(
 					'section',
@@ -75130,6 +75231,10 @@ var _FilterField2 = _interopRequireDefault(_FilterField);
 var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _helpers = __webpack_require__(1);
 
@@ -75404,7 +75509,12 @@ var LibraryArtists = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-artists-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'mic', title: 'My artists', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
+					'My artists'
+				),
 				this.renderView()
 			);
 		}
@@ -75504,6 +75614,10 @@ var _FilterField2 = _interopRequireDefault(_FilterField);
 var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _helpers = __webpack_require__(1);
 
@@ -75806,7 +75920,12 @@ var LibraryAlbums = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-albums-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'cd', title: 'My albums', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
+					'My albums'
+				),
 				this.renderView()
 			);
 		}
@@ -75888,6 +76007,10 @@ var _Header2 = _interopRequireDefault(_Header);
 var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _helpers = __webpack_require__(1);
 
@@ -75986,7 +76109,12 @@ var LibraryTracks = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-tracks-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'music', title: 'My tracks', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
+					'My tracks'
+				),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -76076,6 +76204,10 @@ var _FilterField2 = _interopRequireDefault(_FilterField);
 var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _helpers = __webpack_require__(1);
 
@@ -76372,7 +76504,12 @@ var LibraryPlaylists = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-playlists-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'playlist', title: 'My playlists', options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
+					'My playlists'
+				),
 				this.renderView()
 			);
 		}
@@ -76460,6 +76597,10 @@ var _TrackList2 = _interopRequireDefault(_TrackList);
 var _GridItem = __webpack_require__(44);
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
+
+var _Icon = __webpack_require__(13);
+
+var _Icon2 = _interopRequireDefault(_Icon);
 
 var _helpers = __webpack_require__(1);
 
@@ -76617,7 +76758,12 @@ var LibraryBrowse = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-local-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'music', title: title, options: options, uiActions: this.props.uiActions }),
+				_react2.default.createElement(
+					_Header2.default,
+					{ options: options, uiActions: this.props.uiActions },
+					_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
+					title
+				),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -76698,7 +76844,12 @@ var LibraryBrowse = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view library-local-view' },
-				_react2.default.createElement(_Header2.default, { icon: 'folder', title: 'Browse' }),
+				_react2.default.createElement(
+					_Header2.default,
+					null,
+					_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
+					'Browse'
+				),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },

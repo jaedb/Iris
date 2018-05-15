@@ -83,34 +83,16 @@
 
 	.control {
 		@include animate();
-		font-size: 12px;
+		font-size: 14px;
 		color: $white;
 		cursor: pointer;
-		padding: 10px 8px;
+		padding: 10px 6px;
 		display: inline-block;
 		vertical-align: bottom;
 		opacity: 0.8;
 
-		.icon {
-			svg {
-				height: 12px;
-			}
-		}
-
-		&.play {
-			margin-bottom: -6px;
-
-			.icon {
-				font-size: 2em;
-			}
-		}
-
 		&.active {
 			color: $turquoise !important;
-			
-			svg {
-				fill: $turquoise !important;
-			}
 		}
 
 		&:hover {
@@ -123,15 +105,22 @@
 		bottom: 8px;
 
 		&.playback {
-			bottom: 8px;
+			bottom: 7px;
 			left: 10px;
-			width: 125px;
+			width: 135px;
 			text-align: center;
+
+			.control {
+				&.play {
+					font-size: 30px;
+					margin-bottom: -8px;
+				}
+			}
 		}
 
 		&.progress {
 			bottom: 10px;
-			left: 140px;
+			left: 150px;
 			right: 260px;
 			padding-left: 20px;
 			padding-right: 20px;

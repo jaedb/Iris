@@ -1,5 +1,6 @@
 
 import React, { PropTypes } from 'react';
+import FontAwesome from 'react-fontawesome';
 
 export default class Icon extends React.Component{
 
@@ -8,11 +9,22 @@ export default class Icon extends React.Component{
 	}
 
 	render(){
-		var className = 'icon icon-'+this.props.name;
+		var className = "icon";
 		if (this.props.className){
 			className += ' '+this.props.className;
 		}
 
-		return <i className={className}></i>;
+		switch (this.props.type){
+			case 'material':
+				className += ' material-icon';		
+				return <i className={className}>{this.props.name}</i>;
+
+			case 'fontawesome':	
+				return <FontAwesome name={this.props.name} />;
+
+			default:
+				className += ' icon-'+this.props.name;		
+				return <i className={className}></i>;
+		}
 	}
 }

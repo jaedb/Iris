@@ -8,6 +8,7 @@ import FontAwesome from 'react-fontawesome'
 import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -73,7 +74,10 @@ class LibraryTracks extends React.Component{
 
 		return (
 			<div className="view library-tracks-view">
-				<Header icon="music" title="My tracks" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="music_note" type="material" />
+					My tracks
+				</Header>
 				<section className="content-wrapper">
 					<TrackList tracks={tracks} />
 					<LazyLoadListener loading={this.props.library_tracks_more} loadMore={() => this.loadMore()}/>

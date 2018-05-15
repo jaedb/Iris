@@ -28,33 +28,33 @@ class PlaybackControls extends React.Component{
 	}
 
 	renderPlayButton(){
-		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play" /></a>
+		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></a>
 		if (this.props.play_state == 'playing'){
-			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause" /></a>
+			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause_circle_filled" type="material" /></a>
 		}
 		return button;
 	}
 
 	renderConsumeButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip">Consume</span></a>
 		if (this.props.consume){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><FontAwesome name="fire" /><span className="tooltip">Consume</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip">Consume</span></a>
 		}
 		return button;
 	}
 
 	renderRandomButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip">Shuffle</span></a>
 		if (this.props.random){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><FontAwesome name="random" /><span className="tooltip">Shuffle</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip">Shuffle</span></a>
 		}
 		return button;
 	}
 
 	renderRepeatButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
+		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip">Repeat</span></a>
 		if (this.props.repeat){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><FontAwesome name="repeat" /><span className="tooltip">Repeat</span></a>
+			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip">Repeat</span></a>
 		}
 		return button;
 	}
@@ -93,14 +93,14 @@ class PlaybackControls extends React.Component{
 
 				<section className="playback">
 					<a className="control previous" onClick={() => this.props.mopidyActions.previous()}>
-						<Icon name="back" />
+						<Icon name="skip_previous" type="material" />
 					</a>
 					{ this.renderPlayButton() }
 					<a className="control stop" onClick={() => this.props.mopidyActions.stop()}>
-						<Icon name="stop" />
+						<Icon name="stop" type="material" />
 					</a>
 					<a className="control next" onClick={() => this.props.mopidyActions.next()}>
-						<Icon name="skip" />
+						<Icon name="skip_next" type="material" />
 					</a>
 				</section>
 
@@ -131,7 +131,7 @@ class PlaybackControls extends React.Component{
 						{this.state.expanded ? <FontAwesome name="chevron-down" /> : <FontAwesome name="chevron-up" />}
 					</a>
 					<a className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={() => this.props.uiActions.toggleSidebar()}>
-						<FontAwesome className="open" name="bars" />
+						<Icon className="open" name="bars" type="fontawesome" />
 					</a>
 				</section>
 				

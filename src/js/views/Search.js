@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome'
 import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
+import Icon from '../components/Icon'
 import DropdownField from '../components/Fields/DropdownField'
 import TrackList from '../components/TrackList'
 import ArtistGrid from '../components/ArtistGrid'
@@ -358,11 +359,9 @@ class Search extends React.Component{
 
 		return (
 			<div className="view search-view">			
-				<Header
-					icon="search" 
-					options={options} 
-					uiActions={this.props.uiActions}
-				/>
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="search" type="material" />
+				</Header>
 
 				<SearchForm 
 					query={(this.props.params.query ? this.props.params.query : '')}

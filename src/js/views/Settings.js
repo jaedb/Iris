@@ -158,7 +158,10 @@ class Settings extends React.Component {
 
 		return (
 			<div className="view settings-view">
-				<Header className="overlay" icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
+				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+					<Icon name="settings" type="material" />
+					Settings
+				</Header>
 
 				<div className="intro">
 					<div className="liner">

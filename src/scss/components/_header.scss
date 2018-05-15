@@ -7,16 +7,13 @@ main {
 
 		h1 {
 			display: inline-block;
-		}
 
-		.header-icon {
-			display: inline-block;
-			padding-right: 14px;
-			vertical-align: bottom;
-			margin-bottom: 8px;
-
-			svg {
-				height: 2.6rem;
+			& > .icon {
+				display: inline-block;
+				padding-right: 14px;
+				vertical-align: bottom;
+				margin-bottom: 8px;
+				font-size: 0.9em;
 			}
 		}
 

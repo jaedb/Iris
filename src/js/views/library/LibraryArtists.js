@@ -10,6 +10,7 @@ import List from '../../components/List'
 import DropdownField from '../../components/Fields/DropdownField'
 import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -244,7 +245,10 @@ class LibraryArtists extends React.Component{
 
 		return (
 			<div className="view library-artists-view">
-				<Header icon="mic" title="My artists" options={options} uiActions={this.props.uiActions} />		
+				<Header options={options} uiActions={this.props.uiActions}>				
+					<Icon name="recent_actors" type="material" />
+					My artists
+				</Header>	
 				{this.renderView()}
 			</div>
 		);

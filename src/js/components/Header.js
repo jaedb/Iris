@@ -63,8 +63,7 @@ export default class Header extends React.Component{
 		return (
 			<header className={(this.props.className ? this.props.className : null)}>
 				<h1>
-					{this.props.icon ? <i className={"icon header-icon icon-"+this.props.icon}></i> : null}
-					{this.props.title ? this.props.title : null}
+					{this.props.children ? this.props.children : null}
 				</h1>
 				{this.renderOptions()}
 			</header>

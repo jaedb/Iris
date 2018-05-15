@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome'
 
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
+import Icon from '../components/Icon'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -57,7 +58,10 @@ class Debug extends React.Component{
 
 		return (
 			<div className="view debugger-view">
-				<Header icon="cog" title="Debugger" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="settings" type="material" />
+					Debug
+				</Header>
 
 				<div className="content-wrapper">
 

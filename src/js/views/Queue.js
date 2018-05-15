@@ -162,7 +162,10 @@ class Queue extends React.Component{
 
 		return (
 			<div className="view queue-view">			
-				<Header icon="play" className="overlay" title="Now playing" options={options} uiActions={this.props.uiActions} />
+				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+					<Icon name="play_arrow" type="material" />
+					Now playing
+				</Header>
 				<Parallax blur image={current_track_image} />
 				<div className="content-wrapper">
 				
