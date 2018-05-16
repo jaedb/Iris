@@ -282,8 +282,6 @@
 }
 
 .context-menu-trigger {
-	@include animate();
-	@include gradient_overlay(3px);
 	display: inline-block;
 	padding: 14px 12px;
 	cursor: pointer;
@@ -293,32 +291,28 @@
 	border-radius: 3px;
 	text-align: center;
 
+	.actions & {
+		@include gradient_overlay(3px);
+		font-size: 24px;
+		padding: 2px 10px 1px;
+
+		&:hover{
+			cursor: pointer;
+			box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+
+			&:before {
+				opacity: 0.15;
+			}
+		}
+
+		&:active {
+			margin-top: 0px;
+			margin-bottom: -1px;
+		}
+	}
+
 	h4 &,
 	h4 &:active {
 		margin: -8px 0 0 10px;
-	}
-
-	.dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 5px;
-		background: $white;
-		display: inline-block;
-		margin: 1px;
-		pointer-events: none;
-	}
-
-	&:active {
-		margin-top: 0px;
-		margin-bottom: -1px;
-	}
-
-	&:hover{
-		cursor: pointer;
-		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
-
-		&:before {
-			opacity: 0.15;
-		}
 	}
 }

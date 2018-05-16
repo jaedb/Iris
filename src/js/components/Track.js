@@ -308,7 +308,7 @@ export default class Track extends React.Component{
 		}
 
 		track_actions.push(
-			<ContextMenuTrigger key="context" onTrigger={e => this.props.handleContextMenu(e)} />
+			<ContextMenuTrigger className="subtle" key="context" onTrigger={e => this.props.handleContextMenu(e)} />
 		)
 
 		// If we're touchable, and can sort this tracklist
@@ -319,7 +319,7 @@ export default class Track extends React.Component{
 				<span 
 					className="drag-zone touch-draggable mouse-draggable"
 					key="drag-zone">
-						<FontAwesome name="bars" fixedWidth />
+						<Icon name="drag_indicator" />
 				</span>
 			)
 		}

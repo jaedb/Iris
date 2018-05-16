@@ -161,23 +161,18 @@
 		}
 
 		&.volume {
-			bottom: 10px;
+			bottom: 6px;
 			right: 20px;
 			width: 150px;
+			font-size: 18px;
 
 			.modal-trigger {
 				display: none;
 			}
 
-			.control {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-			}
-
 			.slider-wrapper {
 				position: absolute;
-				bottom: 2px;
+				bottom: 6px;
 				right: 0;
 				left: 30px;
 			}

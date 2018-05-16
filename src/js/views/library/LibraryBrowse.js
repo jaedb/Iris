@@ -110,12 +110,10 @@ class LibraryBrowse extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => this.playAll(e)}>
-					<Icon name="play_circle_filled" />&nbsp;
-					Play all
+					<Icon name="play_circle_filled" />Play all
 				</button>
 				<button className="no-hover" onClick={e => this.goBack(e)}>
-					<Icon name="keyboard_backspace" />&nbsp;
-					Back
+					<Icon name="keyboard_backspace" />Back
 				</button>
 			</span>
 		);

@@ -261,8 +261,7 @@ class LibraryPlaylists extends React.Component{
 					handleChange={value => {this.props.uiActions.set({ library_playlists_source: value}); this.props.uiActions.hideContextMenu() }}
 				/>
 				<button className="no-hover" onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
-					<Icon name="add" />
-					New
+					<Icon name="add_box" />New
 				</button>
 			</span>
 		)

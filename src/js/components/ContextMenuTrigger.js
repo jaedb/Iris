@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import Icon from './Icon'
 
 export default class ContextMenuTrigger extends React.Component{
 
@@ -20,12 +20,8 @@ export default class ContextMenuTrigger extends React.Component{
 			className += ' '+this.props.className
 		}
 		return (
-			<span
-				className={className}
-				onClick={e => this.handleClick(e)}>
-					<span className="dot"></span>
-					<span className="dot"></span>
-					<span className="dot"></span>
+			<span className={className} onClick={e => this.handleClick(e)}>
+				<Icon name="more_horiz" />
 			</span>
 		);
 	}

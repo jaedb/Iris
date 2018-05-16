@@ -43,14 +43,8 @@
 
 		.context-menu-trigger {
 			position: absolute;
-			top: 6px;
+			top: 2px;
 			right: 0;
-
-			.dot {
-				width: 4px;
-				height: 4px;
-				margin-left: 0;
-			}
 
 			&:before {
 				display: none !important;

@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import Icon from '../Icon'
 
 export default class VolumeControl extends React.Component{
 
@@ -53,14 +53,14 @@ export default class VolumeControl extends React.Component{
 		if (this.props.mute){
 			return (
 				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(false)}>
-					<FontAwesome className="red-text" name="volume-off" />
+					<Icon className="red-text" name="volume_off" />
 					<span className="tooltip">Unmute</span>
 				</a>
 			)
 		} else {
 			return (
 				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(true)}>
-					<FontAwesome className="muted" name="volume-off" />
+					<Icon className="muted" name="volume_mute" />
 					<span className="tooltip">Mute</span>
 				</a>
 			)

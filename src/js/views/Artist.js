@@ -229,7 +229,7 @@ class Artist extends React.Component{
 									name="Sort" 
 									value={this.props.sort} 
 									options={sort_options} 
-									reverse={this.props.sort_reverse} 
+									selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
 									handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
 							</h4>
 

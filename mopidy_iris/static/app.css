@@ -3007,6 +3007,11 @@ input[type="submit"] {
   cursor: pointer;
   letter-spacing: -0.01rem;
   text-align: center; }
+  .button .icon,
+  button .icon,
+  input[type="button"] .icon,
+  input[type="submit"] .icon {
+    padding-right: 8px; }
   .button:not(.no-hover),
   button:not(.no-hover),
   input[type="button"]:not(.no-hover),
@@ -3556,12 +3561,6 @@ input[type="submit"] {
           box-sizing: border-box; } }
 
 .context-menu-trigger {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  position: relative;
-  border-radius: 3px;
   display: inline-block;
   padding: 14px 12px;
   cursor: pointer;
@@ -3570,45 +3569,42 @@ input[type="submit"] {
   position: relative;
   border-radius: 3px;
   text-align: center; }
-  .context-menu-trigger:before {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
+  .actions .context-menu-trigger {
+    position: relative;
     border-radius: 3px;
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    opacity: 0;
-    z-index: 9;
-    pointer-events: none;
-    background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+    font-size: 24px;
+    padding: 2px 10px 1px; }
+    .actions .context-menu-trigger:before {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      border-radius: 3px;
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0;
+      z-index: 9;
+      pointer-events: none;
+      background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+      background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+      background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+    .actions .context-menu-trigger:hover {
+      cursor: pointer;
+      box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
+      .actions .context-menu-trigger:hover:before {
+        opacity: 0.15; }
+    .actions .context-menu-trigger:active {
+      margin-top: 0px;
+      margin-bottom: -1px; }
   h4 .context-menu-trigger,
   h4 .context-menu-trigger:active {
     margin: -8px 0 0 10px; }
-  .context-menu-trigger .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 5px;
-    background: #FFFFFF;
-    display: inline-block;
-    margin: 1px;
-    pointer-events: none; }
-  .context-menu-trigger:active {
-    margin-top: 0px;
-    margin-bottom: -1px; }
-  .context-menu-trigger:hover {
-    cursor: pointer;
-    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
-    .context-menu-trigger:hover:before {
-      opacity: 0.15; }
 
 .loader {
   height: 120px;
@@ -4366,18 +4362,15 @@ input[type="submit"] {
       width: 100px;
       text-align: center; }
     .playback-controls section.volume {
-      bottom: 10px;
+      bottom: 6px;
       right: 20px;
-      width: 150px; }
+      width: 150px;
+      font-size: 18px; }
       .playback-controls section.volume .modal-trigger {
         display: none; }
-      .playback-controls section.volume .control {
-        position: absolute;
-        bottom: 0;
-        left: 0; }
       .playback-controls section.volume .slider-wrapper {
         position: absolute;
-        bottom: 2px;
+        bottom: 6px;
         right: 0;
         left: 30px; }
       .playback-controls section.volume .muted .slider .progress {
@@ -4452,11 +4445,11 @@ input[type="submit"] {
 .snapcast .volume-control .mute-control {
   display: inline-block;
   float: left;
-  padding: 0 10px;
+  padding: 0 5px;
   border: 0; }
 
 .snapcast .volume-control .slider-wrapper {
-  margin-left: 25px; }
+  margin-left: 30px; }
 
 .snapcast .volume-control.muted .slider .progress {
   background: #a3a19f; }
@@ -4621,7 +4614,7 @@ aside {
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
       aside nav a .icon {
-        padding-right: 6px;
+        padding-right: 8px;
         vertical-align: top;
         margin-top: -1px;
         font-size: 14px; }
@@ -4717,12 +4710,8 @@ aside {
       pointer-events: none; }
   .list .list-item .context-menu-trigger {
     position: absolute;
-    top: 6px;
+    top: 2px;
     right: 0; }
-    .list .list-item .context-menu-trigger .dot {
-      width: 4px;
-      height: 4px;
-      margin-left: 0; }
     .list .list-item .context-menu-trigger:before {
       display: none !important; }
   .list .list-item .source {
@@ -5485,7 +5474,7 @@ main header {
   position: relative;
   display: inline-block; }
   .dropdown-field .label .icon {
-    padding-right: 6px; }
+    padding-right: 8px; }
   .dropdown-field .label:not(.button) {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
