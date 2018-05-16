@@ -66,7 +66,7 @@ class LibraryTracks extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => this.playAll(e)}>
-					<FontAwesome name="play" />&nbsp;
+					<Icon name="play_circle_filled" />&nbsp;
 					Play all
 				</button>
 			</span>

@@ -340,7 +340,7 @@ class Search extends React.Component{
 		var options = (
 			<span>
 				<DropdownField 
-					icon="sort" 
+					icon="filter_list" 
 					name="Sort" 
 					value={this.props.sort} 
 					options={sort_options} 
@@ -348,7 +348,7 @@ class Search extends React.Component{
 					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu()}}
 				/>
 				<DropdownField 
-					icon="database" 
+					icon="cloud" 
 					name="Sources"
 					value={this.props.search_uri_schemes}
 					options={provider_options} 

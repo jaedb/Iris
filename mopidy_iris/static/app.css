@@ -3005,7 +3005,8 @@ input[type="submit"] {
   position: relative;
   border: 0 !important;
   cursor: pointer;
-  letter-spacing: -0.01rem; }
+  letter-spacing: -0.01rem;
+  text-align: center; }
   .button:not(.no-hover),
   button:not(.no-hover),
   input[type="button"]:not(.no-hover),
@@ -3691,8 +3692,8 @@ input[type="submit"] {
       padding: 20px; }
       .modal .controls .control:hover {
         opacity: 1; }
-      .modal .controls .control .icon svg {
-        height: 35px; }
+      .modal .controls .control .icon {
+        font-size: 35px; }
   .modal .content {
     padding: 80px 25%;
     margin: 0 auto;
@@ -4180,6 +4181,9 @@ input[type="submit"] {
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
+  vertical-align: bottom;
+  font-size: 1.3em;
+  margin-bottom: 0.1em;
   /* Support for all WebKit browsers. */
   -webkit-font-smoothing: antialiased;
   /* Support for Safari and Chrome. */
@@ -4309,13 +4313,14 @@ input[type="submit"] {
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    font-size: 14px;
     color: #FFFFFF;
     cursor: pointer;
     padding: 10px 6px;
     display: inline-block;
     vertical-align: bottom;
     opacity: 0.8; }
+    .playback-controls .control .icon {
+      font-size: 0.9em; }
     .playback-controls .control.active {
       color: #08d58f !important; }
     .playback-controls .control:hover {
@@ -4394,11 +4399,9 @@ input[type="submit"] {
         display: none; }
     .playback-controls section.playback {
       left: 0;
-      width: 60px; }
+      width: 70px; }
       .playback-controls section.playback .control.play {
-        margin-bottom: 0; }
-        .playback-controls section.playback .control.play .icon svg {
-          height: 12px; }
+        margin-bottom: -8px; }
       .playback-controls section.playback .control.previous {
         display: none; }
       .playback-controls section.playback .control.stop {
@@ -5306,15 +5309,13 @@ main header {
     main header {
       padding: 10px 10px 10px 0;
       margin-bottom: -10px; }
-      main header .icon {
-        margin-bottom: 6px;
-        padding-right: 6px;
-        margin-left: 10px; }
-        main header .icon svg {
-          height: 1.2rem; }
       main header h1 {
         vertical-align: top;
         padding-top: 6px; }
+        main header h1 > .icon {
+          margin-bottom: 2px;
+          padding-right: 6px;
+          margin-left: 10px; }
       main header .options {
         top: 8px;
         right: 0; }
@@ -5483,6 +5484,8 @@ main header {
   font-family: "Overpass";
   position: relative;
   display: inline-block; }
+  .dropdown-field .label .icon {
+    padding-right: 6px; }
   .dropdown-field .label:not(.button) {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -5564,11 +5567,11 @@ main header {
           background: -moz-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
           background: -o-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
           background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
-        .dropdown-field .options > .liner .option .fa {
+        .dropdown-field .options > .liner .option .icon {
           position: absolute;
-          top: 11px;
-          left: 8px;
-          font-size: 10px; }
+          top: 8px;
+          left: 6px;
+          font-size: 16px; }
         .notouch .dropdown-field .options > .liner .option:hover {
           color: #000000; }
           .notouch .dropdown-field .options > .liner .option:hover:before {
@@ -5627,9 +5630,9 @@ main header {
   display: inline-block;
   position: relative; }
 
-.filter-field .fa {
+.filter-field .icon {
   position: absolute;
-  top: 12px;
+  top: 10px;
   left: 15px;
   pointer-events: none; }
 
@@ -5645,7 +5648,7 @@ main header {
 .filter-field:not(.active) input {
   cursor: pointer; }
 
-.filter-field:not(.active):hover .fa {
+.filter-field:not(.active):hover .icon {
   color: #32b5f2; }
 
 .filter-field.active input {
@@ -5656,8 +5659,8 @@ main header {
 #context-menu .filter-field {
   display: block;
   border-bottom: 1px solid #454440; }
-  #context-menu .filter-field .fa {
-    top: 17px;
+  #context-menu .filter-field .icon {
+    top: 15px;
     left: 24px;
     color: #FFFFFF !important; }
   #context-menu .filter-field form {

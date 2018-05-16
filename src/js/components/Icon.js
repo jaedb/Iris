@@ -15,16 +15,12 @@ export default class Icon extends React.Component{
 		}
 
 		switch (this.props.type){
-			case 'material':
-				className += ' material-icon';		
-				return <i className={className}>{this.props.name}</i>;
-
 			case 'fontawesome':	
 				return <FontAwesome name={this.props.name} />;
 
 			default:
-				className += ' icon-'+this.props.name;		
-				return <i className={className}></i>;
+				className += ' material-icon';		
+				return <i className={className}>{this.props.name}</i>;
 		}
 	}
 }

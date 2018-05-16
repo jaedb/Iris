@@ -83,13 +83,16 @@
 
 	.control {
 		@include animate();
-		font-size: 14px;
 		color: $white;
 		cursor: pointer;
 		padding: 10px 6px;
 		display: inline-block;
 		vertical-align: bottom;
 		opacity: 0.8;
+
+		.icon {
+			font-size: 0.9em;
+		}
 
 		&.active {
 			color: $turquoise !important;
@@ -215,17 +218,11 @@
 
 			&.playback {
 				left: 0;
-				width: 60px;
+				width: 70px;
 
 				.control {
 					&.play {
-						margin-bottom: 0;
-
-						.icon {
-							svg {
-								height: 12px;
-							}
-						}
+						margin-bottom: -8px;
 					}
 					&.previous {
 						display: none;

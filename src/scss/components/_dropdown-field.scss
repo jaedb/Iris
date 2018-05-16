@@ -7,13 +7,19 @@
 	position: relative;
 	display: inline-block;
 
-	.label:not(.button) {
-		@include animate();
-		padding: 14px 10px;
-		cursor: pointer;
+	.label {
+		.icon {
+			padding-right: 6px;
+		}
 
-		.notouch &:hover {
-			color: $blue;
+		&:not(.button) {
+			@include animate();
+			padding: 14px 10px;
+			cursor: pointer;
+
+			.notouch &:hover {
+				color: $blue;
+			}
 		}
 	}
 
@@ -107,11 +113,11 @@
 					background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
 				}
 
-				.fa {
+				.icon {
 					position: absolute;
-					top: 11px;
-					left: 8px;
-					font-size: 10px;
+					top: 8px;
+					left: 6px;
+					font-size: 16px;
 				}
 
 				.notouch &:hover {

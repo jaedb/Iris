@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import FontAwesome from 'react-fontawesome'
 
+import Icon from '../Icon';
+
 export default class DropdownField extends React.Component{
 
 	constructor(props){
@@ -107,9 +109,9 @@ export default class DropdownField extends React.Component{
 			current_value = this.props.options[0].value;
 		}
 
-		var selected_icon = <FontAwesome name="check" />
+		var selected_icon = <Icon name="check" />
 		if (this.props.selected_icon){
-			selected_icon = <FontAwesome name={this.props.selected_icon} />
+			selected_icon = <Icon name={this.props.selected_icon} />
 		}
 
 		var options = Object.assign([], this.props.options);
@@ -124,7 +126,7 @@ export default class DropdownField extends React.Component{
 		return (
 			<div className={className} data-uid={this.uid}>
 				<div className={"label"+(this.props.button ? " button "+this.props.button : "")} onClick={e => this.setExpanded()}>
-					{this.props.icon ? <span><FontAwesome name={this.props.icon} />&nbsp; </span> : null}
+					{this.props.icon ? <Icon name={this.props.icon} type={this.props.icon_type ? this.props.icon_type : "material"} /> : null}
 					<span className="text">
 						{this.props.name}
 						{this.isMultiSelect() ? ' ('+current_value.length+')' : null}

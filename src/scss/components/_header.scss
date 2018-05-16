@@ -63,19 +63,15 @@ main {
 			padding: 10px 10px 10px 0;
 			margin-bottom: -10px;
 
-			.icon {
-				margin-bottom: 6px;
-				padding-right: 6px;
-				margin-left: 10px;
-
-				svg {
-					height: 1.2rem;
-				}
-			}
-
 			h1 {
 				vertical-align: top;
 				padding-top: 6px;
+
+				& > .icon {
+					margin-bottom: 2px;
+					padding-right: 6px;
+					margin-left: 10px;
+				}
 			}
 
 			.options {

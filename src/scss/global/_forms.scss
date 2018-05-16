@@ -87,6 +87,7 @@ input[type="submit"] {
 	border: 0 !important;
 	cursor: pointer;
 	letter-spacing: -0.01rem;
+	text-align: center;
 
 	&:not(.no-hover){
 		@include gradient_overlay(3px, 0.05);

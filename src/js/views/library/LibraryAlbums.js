@@ -255,18 +255,18 @@ class LibraryAlbums extends React.Component{
 					name="Sort"
 					value={this.props.sort} 
 					options={sort_options} 
-					selected_icon={this.props.sort_reverse ? 'caret-up' : 'caret-down'} 
+					selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
 					handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }}
 				/>
 				<DropdownField
-					icon="eye"
+					icon="visibility"
 					name="View"
 					value={this.props.view}
 					options={view_options}
 					handleChange={val => {this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu() }}
 				/>
 				<DropdownField
-					icon="database"
+					icon="cloud"
 					name="Source"
 					value={this.props.source}
 					options={source_options}
