@@ -98,16 +98,13 @@
 			}
 
 			.icon {
-				display: none;
-			}
+				font-size: 12px;
 
-			.submenu-icon {
-				float: right;
-				padding-top: 4px;
-			}
-
-			.fa {
-				font-size: 10px;
+				&.submenu-icon {
+					display: inline-block;
+					float: right;
+					padding-top: 4px;
+				}
 			}
 
 			.submenu {
@@ -129,6 +126,13 @@
 				&.expanded {
 					width: 100%;
 					left: 0;
+				}
+
+				.label {
+					.icon {
+						margin-bottom: 0.4em;
+						padding-right: 6px;
+					}
 				}
 
 				.menu-item {

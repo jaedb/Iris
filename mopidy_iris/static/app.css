@@ -3425,12 +3425,11 @@ input[type="submit"] {
           background: #000000;
           color: #FFFFFF; }
       #context-menu .liner .menu-item-wrapper .icon {
-        display: none; }
-      #context-menu .liner .menu-item-wrapper .submenu-icon {
-        float: right;
-        padding-top: 4px; }
-      #context-menu .liner .menu-item-wrapper .fa {
-        font-size: 10px; }
+        font-size: 12px; }
+        #context-menu .liner .menu-item-wrapper .icon.submenu-icon {
+          display: inline-block;
+          float: right;
+          padding-top: 4px; }
       #context-menu .liner .menu-item-wrapper .submenu {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
@@ -3452,6 +3451,9 @@ input[type="submit"] {
         #context-menu .liner .menu-item-wrapper .submenu.expanded {
           width: 100%;
           left: 0; }
+        #context-menu .liner .menu-item-wrapper .submenu .label .icon {
+          margin-bottom: 0.4em;
+          padding-right: 6px; }
         #context-menu .liner .menu-item-wrapper .submenu .menu-item {
           width: 100%; }
           #context-menu .liner .menu-item-wrapper .submenu .menu-item.close-submenu {

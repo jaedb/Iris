@@ -50,8 +50,7 @@ class Debug extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
-					<Icon name="keyboard_backspace" />&nbsp;
-					Back
+					<Icon name="keyboard_backspace" />Back
 				</button>
 			</span>
 		)
