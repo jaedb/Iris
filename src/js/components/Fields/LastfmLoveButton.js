@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'

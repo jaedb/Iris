@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'

@@ -45,6 +45,8 @@
 			position: absolute;
 			top: 2px;
 			right: 0;
+			font-size: 14px;
+			z-index: 2;
 
 			&:before {
 				display: none !important;
@@ -124,11 +126,11 @@
 					display: block;
 					color: $mid_grey;
 					
-					.fa {
+					.icon {
 						position: absolute;
 						top: 50%;
 						left: 10px;
-						margin-top: -6px;
+						margin-top: -8px;
 						pointer-events: none;
 					}
 				}
@@ -315,6 +317,7 @@
 					position: absolute;
 					right: 10px;
 					text-align: right;
+					z-index: 1;
 				}
 
 				&:not(.name):not(.duration):not(.album):not(.added){

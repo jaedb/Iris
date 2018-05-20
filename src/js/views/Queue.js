@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import Icon from '../components/Icon'
 import Parallax from '../components/Parallax'
@@ -141,21 +140,17 @@ class Queue extends React.Component{
 		var options = (
 			<span>
 				{this.props.spotify_enabled ? <button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
-					<Icon name="radio" />&nbsp;
-					Radio
+					<Icon name="radio" />Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
 				</button> : null}
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
-					<Icon name="history" />&nbsp;
-					History
+					<Icon name="history" />History
 				</button>
 				<button className="no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
-					<Icon name="delete_sweep" />&nbsp;
-					Clear
+					<Icon name="delete_sweep" />Clear
 				</button>
 				<button className="no-hover" onClick={e => this.props.uiActions.openModal('add_to_queue', {})}>
-					<Icon name="playlist_add" />&nbsp;
-					Add URI
+					<Icon name="playlist_add" />Add URI
 				</button>
 			</span>
 		)

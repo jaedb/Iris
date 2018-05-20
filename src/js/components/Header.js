@@ -1,6 +1,5 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
 
 import Icon from './Icon'
 import ContextMenuTrigger from './ContextMenuTrigger'

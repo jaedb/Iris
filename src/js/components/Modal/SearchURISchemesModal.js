@@ -1,6 +1,5 @@
 
-import React, { PropTypes } from 'react';
-import FontAwesome from 'react-fontawesome';
+import React, { PropTypes } from 'react';;
 import Sortable from 'react-sortablejs';
 
 import Icon from '../Icon';
@@ -65,10 +64,10 @@ export default class SearchURISchemesModal extends React.Component{
 								this.state.schemes.map(scheme => {
 									return (
 										<div className="list-item draggable" key={scheme} data-id={scheme}>
-											<FontAwesome className="grey-text drag-handle" name="bars" />
+											<Icon type="fontawesome" className="grey-text drag-handle" name="bars" />
 											{scheme.replace(':','')}
 											<button className="discrete remove-uri no-hover" onClick={e => this.handleToggle(scheme)}>
-												<FontAwesome name="trash" />
+												<Icon type="fontawesome" name="trash" />
 											</button>
 										</div>
 									)
@@ -87,7 +86,7 @@ export default class SearchURISchemesModal extends React.Component{
 										onClick={e => this.handleToggle(scheme)}>
 											{scheme.replace(':','')}
 											&nbsp;&nbsp;
-											<FontAwesome name="plus" />
+											<Icon type="fontawesome" name="plus" />
 									</div>
 								)
 							})

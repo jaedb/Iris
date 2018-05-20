@@ -1,6 +1,6 @@
 
-import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
+import React, { PropTypes } from 'react';
+import Icon from './Icon';
 
 export default class Notifications extends React.Component{
 
@@ -26,14 +26,14 @@ export default class Notifications extends React.Component{
 							case 'shortcut':
 								return (
 									<div className={"notification shortcut-notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
-										<FontAwesome name={notification.content} />
+										<Icon type="fontawesome" name={notification.content} />
 									</div>
 								)
 
 							default:
 								return (
 									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										<FontAwesome name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
+										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
@@ -63,7 +63,7 @@ export default class Notifications extends React.Component{
 							</div>
 						</div>
 						{process.message}
-						<FontAwesome name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
+						<Icon name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
 					</div>
 				)
 

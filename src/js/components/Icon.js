@@ -8,6 +8,12 @@ export default class Icon extends React.Component{
 		super(props);
 	}
 
+	handleClick(e){
+		if (this.props.onClick){
+			this.props.onClick(e);
+		}
+	}
+
 	render(){
 		var className = "icon";
 		if (this.props.className){
@@ -16,11 +22,11 @@ export default class Icon extends React.Component{
 
 		switch (this.props.type){
 			case 'fontawesome':	
-				return <FontAwesome name={this.props.name} />;
+				return <FontAwesome type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 
 			default:
 				className += ' material-icon';		
-				return <i className={className}>{this.props.name}</i>;
+				return <i className={className} onClick={e => this.handleClick(e)}>{this.props.name}</i>;
 		}
 	}
 }

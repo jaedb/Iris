@@ -1,6 +1,5 @@
 
-import React, { PropTypes } from 'react';
-import FontAwesome from 'react-fontawesome';
+import React, { PropTypes } from 'react';;
 
 import Icon from '../Icon';
 import * as helpers from '../../helpers';

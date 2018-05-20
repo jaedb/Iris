@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
@@ -104,11 +103,11 @@ class Settings extends React.Component {
 
 	renderServerStatus(){
 		var colour = 'grey';
-		var icon = 'question-circle';
+		var icon = 'help';
 		var status = 'Unknown';
 
 		if (this.props.mopidy.connecting || this.props.pusher.connecting){
-			icon = 'plug';
+			icon = 'autorenew';
 			status = 'Connecting...'
 		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
 			colour = 'red';
@@ -122,7 +121,7 @@ class Settings extends React.Component {
 
 		return (
 			<span className={colour+'-text'}>
-				<FontAwesome name={icon} />&nbsp; {status}
+				<Icon name={icon} />{status}
 			</span>
 		);
 	}
@@ -271,7 +270,7 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><FontAwesome name="check" className="green-text" />&nbsp; Up-to-date</span>}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><Icon type="fontawesome" name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
@@ -295,14 +294,14 @@ class Settings extends React.Component {
 						<br /><br />
 						<div>
 					        <a className="button" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-					        	<FontAwesome name="paypal" />&nbsp;Donate
+					        	<Icon type="fontawesome" name="paypal" />&nbsp;Donate
 					        </a>
 					        &nbsp;&nbsp;
 					        <a className="button" href="https://github.com/jaedb/Iris" target="_blank">
-					        	<FontAwesome name="github" />&nbsp;GitHub
+					        	<Icon type="fontawesome" name="github" />&nbsp;GitHub
 					        </a>
 					        &nbsp;&nbsp;
-					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><FontAwesome name="creative-commons" />&nbsp;Licence</a>
+					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><Icon type="fontawesome" name="creative-commons" />&nbsp;Licence</a>
 						</div>
 			        </div>
 

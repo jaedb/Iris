@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 
-import FontAwesome from 'react-fontawesome'
+import Icon from './Icon'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
@@ -253,7 +253,7 @@ export default class Track extends React.Component{
 			)
 			if (this.props.show_source_icon){
 				track_columns.push(
-					<FontAwesome name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
+					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
 				)
 			}
 			track_columns.push(
@@ -287,7 +287,7 @@ export default class Track extends React.Component{
 			)
 			if (this.props.show_source_icon){
 				track_columns.push(
-					<FontAwesome name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
+					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
 				)
 			}
 			track_columns.push(

@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
@@ -167,7 +166,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Artists
 						</h4>
 						<section className="grid-wrapper">
@@ -185,7 +184,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Albums
 						</h4>
 						<section className="grid-wrapper">
@@ -203,7 +202,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Playlists
 						</h4>
 						<section className="grid-wrapper">
@@ -221,7 +220,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Tracks
 						</h4>
 						<section className="list-wrapper">

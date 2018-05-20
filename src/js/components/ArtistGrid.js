@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import { hashHistory } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
 import GridItem from './GridItem'

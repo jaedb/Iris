@@ -225,6 +225,10 @@ input[type="submit"] {
 	display: block;
 	padding-bottom: 12px;
 
+	.icon {
+		padding-right: 0.32em;
+	}
+
 	& > .name {
 		display: block;
 		padding-top: 10px;
@@ -303,7 +307,7 @@ input[type="submit"] {
 
 	&.checkbox {
 		input + .label:before {
-			font-family: FontAwesome;
+			font-family: "Material Icons";
 			font-size: 8px;
 			content: ' ';
 			color: $mid_grey;
@@ -318,7 +322,7 @@ input[type="submit"] {
 		}
 
 		input:checked + .label:before {
-			content: '\f00c';
+			content: 'check';
 		}
 	}
 

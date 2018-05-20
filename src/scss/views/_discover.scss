@@ -220,6 +220,17 @@
 			}
 		}
 
+		.actions {
+			.add-seed-field {
+				width: 69%;
+			}
+
+			.add-properties {
+				width: 30%;
+				margin-right: 0;
+			}
+		}
+
 		.col {
 			&.tracks {
 				width: 100%;
