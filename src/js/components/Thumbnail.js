@@ -3,6 +3,8 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 
+import Icon from './Icon'
+
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 

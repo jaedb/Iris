@@ -41,7 +41,7 @@ export default class Dropzone extends React.Component{
 
 		return (
 			<div className={this.state.hover?"dropzone hover":"dropzone"} onMouseUp={ e => this.props.handleMouseUp(e) }>
-				<Icon className="white" name={ this.props.data.icon } />
+				<Icon name={ this.props.data.icon } />
 				<span className="title">{ this.props.data.title }</span>
 			</div>
 		);

@@ -14,6 +14,7 @@ import FollowButton from '../components/Fields/FollowButton'
 import Header from '../components/Header'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import URILink from '../components/URILink'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'

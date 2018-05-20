@@ -13,6 +13,7 @@ import FollowButton from '../components/Fields/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'

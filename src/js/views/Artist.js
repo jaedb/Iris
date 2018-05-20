@@ -15,6 +15,7 @@ import RelatedArtists from '../components/RelatedArtists'
 import FollowButton from '../components/Fields/FollowButton'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import DropdownField from '../components/Fields/DropdownField'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'

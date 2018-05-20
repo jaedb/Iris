@@ -16,6 +16,7 @@ import AddSeedField from '../../components/Fields/AddSeedField'
 import URILink from '../../components/URILink'
 import ContextMenuTrigger from '../../components/ContextMenuTrigger'
 import RelatedArtists from '../../components/RelatedArtists'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'

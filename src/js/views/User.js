@@ -9,6 +9,7 @@ import FollowButton from '../components/Fields/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'
