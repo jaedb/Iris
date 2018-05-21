@@ -146,13 +146,13 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         
 class HttpHandler(tornado.web.RequestHandler):
 
-    def set_default_headers(self):
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")        
-
     def initialize(self, core, config):
         self.core = core
         self.config = config
+
+        if not self.config['iris']['privacy']:
+            self.set_header("Access-Control-Allow-Origin", "*")
+            self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")
 
     # Options request
     # This is a preflight request for CORS requests
@@ -165,8 +165,13 @@ class HttpHandler(tornado.web.RequestHandler):
 
         id = int(time.time())
 
+        if slug == 'config.js':
+            self.set_header("Content-Type", "application/javascript");
+            self.write('window._iris_config = %s;' % json.dumps(dict(
+                self.config['iris'])))
+            self.finish()
         # make sure the method exists
-        if hasattr(mem.iris, slug):
+        elif hasattr(mem.iris, slug):
             getattr(mem.iris, slug)(request=self.request, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
         else:

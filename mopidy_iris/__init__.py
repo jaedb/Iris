@@ -9,8 +9,6 @@ import handlers
 from mopidy import config, ext
 from frontend import IrisFrontend
 from handlers import WebsocketHandler, HttpHandler
-from core import IrisCore
-from raven import Client
 
 logger = logging.getLogger(__name__)
 __version__ = '3.17.5'
@@ -33,6 +31,7 @@ class Extension( ext.Extension ):
     def get_config_schema(self):
         schema = config.ConfigSchema(self.ext_name)
         schema['enabled'] = config.Boolean()
+        schema['privacy'] = config.Boolean()
         schema['country'] = config.String()
         schema['locale'] = config.String()
         schema['spotify_authorization_url'] = config.String()
@@ -49,16 +48,6 @@ class Extension( ext.Extension ):
             'name': self.ext_name,
             'factory': iris_factory
         })
-
-        # create our core instance
-        mem.iris = IrisCore()
-        mem.iris.version = self.version
-
-        # Connect to our Ravent Sentry error tracker 
-        mem.iris.raven_client = Client(
-            dsn='https://023e3bf7721b48f29948545fc36a4621:ba30d29174ef4778ac4e141d445607a2@sentry.io/219026',
-            release=self.version
-        )
 
         # Add our frontend
         registry.add('frontend', IrisFrontend)
