@@ -22,7 +22,7 @@ export default class Icon extends React.Component{
 
 		switch (this.props.type){
 			case 'fontawesome':	
-				return <FontAwesome type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
+				return <FontAwesome className="icon" type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 
 			default:
 				className += ' material-icon';		

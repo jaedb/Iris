@@ -306,7 +306,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
-						<Icon type="fontawesome" name="rss" />
+						<Icon name="rss_feed" />
 						<div className="title">
 							Icecast
 						</div>
