@@ -280,7 +280,7 @@ input[type="submit"] {
 			display: inline-block;
 			float: none;
 			width: auto;
-			padding: 5px 5px 5px 26px;
+			padding: 5px 5px 5px 28px;
 			position: relative;
 			cursor: pointer;
 		}
@@ -308,21 +308,23 @@ input[type="submit"] {
 	&.checkbox {
 		input + .label:before {
 			font-family: "Material Icons";
-			font-size: 8px;
-			content: ' ';
-			color: $mid_grey;
+			font-size: 14px;
+			content: '';
+			color: $white;
+			background: $grey;
 			display: inline-block;
-			width: 11px;
-			height: 11px;
-			padding: 3px 0 0 3px;
-			border: 2px solid $mid_grey;
+			padding: 0.2em;
+			height: 1.1em;
+			width: 1.1em;
+			text-align: center;
 			position: absolute;
-			top: 5px;
+			top: 3px;
 			left: 0;
+			border-radius: 3px;
 		}
 
 		input:checked + .label:before {
-			content: 'check';
+			content: '\e5ca';
 		}
 	}
 
