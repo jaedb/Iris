@@ -2957,6 +2957,55 @@ select {
     padding-right: 4px;
     text-align: center; }
 
+input[type="radio"] + .label:before {
+  content: ' ';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  top: 4px;
+  left: 0; }
+
+input[type="radio"]:checked + .label:after {
+  content: ' ';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: 12px;
+  left: 7px;
+  background: #FFFFFF; }
+
+input[type="radio"]:focus + .label:before,
+input[type="radio"]:active + .label:before {
+  background: rgba(255, 255, 255, 0.3); }
+
+input[type="checkbox"] + .label:before {
+  font-family: "Material Icons";
+  font-size: 14px;
+  content: '';
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  padding: 0.2em;
+  height: 1.1em;
+  width: 1.1em;
+  text-align: center;
+  position: absolute;
+  top: 3px;
+  left: 0;
+  border-radius: 3px; }
+
+input[type="checkbox"]:checked + .label:before {
+  content: '\E5CA'; }
+
+input[type="checkbox"]:focus + .label:before,
+input[type="checkbox"]:active + .label:before {
+  background: rgba(255, 255, 255, 0.3); }
+
 select {
   max-width: 100%; }
   select option {
@@ -3208,6 +3257,12 @@ input[type="submit"] {
       padding-right: 20px; } }
 
 .field {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   display: block;
   padding-bottom: 12px; }
   .field::after {
@@ -3248,36 +3303,6 @@ input[type="submit"] {
     padding: 5px 5px 5px 28px;
     position: relative;
     cursor: pointer; }
-  .field.radio input + .label:before {
-    content: ' ';
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid #a3a19f;
-    position: absolute;
-    top: 4px;
-    left: 0; }
-  .field.radio input:checked + .label:before {
-    background: #a3a19f;
-    box-shadow: inset 0px 0px 0px 4px #222222; }
-  .field.checkbox input + .label:before {
-    font-family: "Material Icons";
-    font-size: 14px;
-    content: '';
-    color: #FFFFFF;
-    background: #383734;
-    display: inline-block;
-    padding: 0.2em;
-    height: 1.1em;
-    width: 1.1em;
-    text-align: center;
-    position: absolute;
-    top: 3px;
-    left: 0;
-    border-radius: 3px; }
-  .field.checkbox input:checked + .label:before {
-    content: '\E5CA'; }
   .field.range {
     position: relative; }
     .field.range .input-range {
