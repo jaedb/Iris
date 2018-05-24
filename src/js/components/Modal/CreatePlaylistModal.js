@@ -55,23 +55,27 @@ export default class CreatePlaylistModal extends React.Component{
 						</div>
 
 						<div className="field checkbox white">
-							<span className="label">Options</span>
-							<label>
-								<input 
-									type="checkbox"
-									name="is_public"
-									checked={ this.state.is_public }
-									onChange={ e => this.setState({ is_public: !this.state.is_public })} />
-								<span className="label">Public</span>
-							</label>
-							<label>
-								<input 
-									type="checkbox"
-									name="is_collaborative"
-									checked={ this.state.is_collaborative }
-									onChange={ e => this.setState({ is_collaborative: !this.state.is_collaborative })} />
-								<span className="label">Collaborative</span>
-							</label>
+							<div className="label">
+								Options
+							</div>
+							<div className="input">
+								<label>
+									<input 
+										type="checkbox"
+										name="is_public"
+										checked={ this.state.is_public }
+										onChange={ e => this.setState({ is_public: !this.state.is_public })} />
+									<span className="label">Public</span>
+								</label>
+								<label>
+									<input 
+										type="checkbox"
+										name="is_collaborative"
+										checked={ this.state.is_collaborative }
+										onChange={ e => this.setState({ is_collaborative: !this.state.is_collaborative })} />
+									<span className="label">Collaborative</span>
+								</label>
+							</div>
 						</div>
 					</div>
 				)
@@ -98,25 +102,29 @@ export default class CreatePlaylistModal extends React.Component{
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 
 					<div className="field radio white">
-						<span className="label">Provider</span>
-						<label>
-							<input 
-								type="radio"
-								name="scheme"
-								value="spotify"
-								checked={ this.state.scheme == 'spotify' }
-								onChange={ e => this.setState({ scheme: e.target.value })} />
-							<span className="label">Spotify</span>
-						</label>
-						<label>
-							<input 
-								type="radio"
-								name="scheme"
-								value="m3u"
-								checked={ this.state.scheme == 'm3u' }
-								onChange={ e => this.setState({ scheme: e.target.value })} />
-							<span className="label">Mopidy</span>
-						</label>
+						<div className="label">
+							Provider
+						</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="scheme"
+									value="spotify"
+									checked={ this.state.scheme == 'spotify' }
+									onChange={ e => this.setState({ scheme: e.target.value })} />
+								<span className="label">Spotify</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="scheme"
+									value="m3u"
+									checked={ this.state.scheme == 'm3u' }
+									onChange={ e => this.setState({ scheme: e.target.value })} />
+								<span className="label">Mopidy</span>
+							</label>
+						</div>
 					</div>
 					
 					{this.renderFields()}

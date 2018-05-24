@@ -68,6 +68,9 @@
 						pointer-events: none;
 						padding: 0;
 					}
+					& > .input {
+						padding-top: 0;
+					}
 				}
 
 				&.text {

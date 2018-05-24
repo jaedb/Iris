@@ -83,6 +83,7 @@
 
 	.control {
 		@include animate();
+		@include noselect();
 		color: $white;
 		cursor: pointer;
 		padding: 10px 6px;
