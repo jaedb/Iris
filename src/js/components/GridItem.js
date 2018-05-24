@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import { Router, Link, hashHistory } from 'react-router'
 
 import * as helpers from '../helpers'
+import Icon from './Icon'
 import Thumbnail from './Thumbnail'
 import ArtistSentence from './ArtistSentence'
 
