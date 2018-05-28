@@ -43,7 +43,7 @@
 
 		.context-menu-trigger {
 			position: absolute;
-			top: 2px;
+			top: 0;
 			right: 0;
 			font-size: 14px;
 			z-index: 2;
@@ -57,7 +57,7 @@
 			color: $mid_grey;
 			position: absolute;
 			top: 16px;
-			right: 32px;
+			right: 36px;
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {

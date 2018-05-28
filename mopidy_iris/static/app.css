@@ -4758,7 +4758,7 @@ aside {
       pointer-events: none; }
   .list .list-item .context-menu-trigger {
     position: absolute;
-    top: 2px;
+    top: 0;
     right: 0;
     font-size: 14px;
     z-index: 2; }
@@ -4768,7 +4768,7 @@ aside {
     color: #a3a19f;
     position: absolute;
     top: 16px;
-    right: 32px; }
+    right: 36px; }
   :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
@@ -5709,6 +5709,17 @@ main header {
       padding: 14px 18px 14px 42px;
       width: 100%;
       box-sizing: border-box; }
+
+.sources-priority-field {
+  padding: 7px 0; }
+  .sources-priority-field .source {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 3px 6px;
+    margin: 0 5px 5px 0;
+    cursor: move;
+    font-size: inherit;
+    font-weight: normal; }
 
 .sub-views .option {
   font-family: "Overpass";

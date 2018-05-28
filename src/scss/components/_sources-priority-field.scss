@@ -1,0 +1,14 @@
+
+.sources-priority-field {
+	padding: 7px 0;
+
+	.source {
+		display: inline-block;
+		border-radius: 3px;
+		padding: 3px 6px;
+		margin: 0 5px 5px 0;
+		cursor: move;
+		font-size: inherit;
+		font-weight: normal;
+	}
+}

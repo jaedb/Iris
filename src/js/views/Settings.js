@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
+import SourcesPriority from '../components/Fields/SourcesPriority'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
@@ -256,6 +257,20 @@ class Settings extends React.Component {
 							</label>
 						</div>
 					</div>
+
+					<div className="field sources-priority">
+						<div className="name has-tooltip">
+							Sources priority
+							<span className="tooltip">Order of searching and search results</span>
+						</div>
+						<div className="input">
+			        		<SourcesPriority
+								uri_schemes={this.props.mopidy.uri_schemes}
+								uri_schemes_priority={this.props.ui.uri_schemes_priority}
+			        			uiActions={this.props.uiActions}
+			        		/>
+			        	</div>
+			        </div>
 
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>
