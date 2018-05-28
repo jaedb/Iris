@@ -5713,13 +5713,26 @@ main header {
 .sources-priority-field {
   padding: 7px 0; }
   .sources-priority-field .source {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     display: inline-block;
     border-radius: 3px;
     padding: 3px 6px;
     margin: 0 5px 5px 0;
     cursor: move;
-    font-size: inherit;
+    font-size: 12px;
     font-weight: normal; }
+    .sources-priority-field .source:hover {
+      background: #FFFFFF; }
+    .sources-priority-field .source:focus, .sources-priority-field .source:active {
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+      -o-transition: none !important;
+      transition: none !important;
+      background: #32b5f2;
+      color: #FFFFFF; }
 
 .sub-views .option {
   font-family: "Overpass";

@@ -309,13 +309,11 @@ class Settings extends React.Component {
 						<br /><br />
 						<div>
 					        <a className="button" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-					        	<Icon type="fontawesome" name="paypal" />&nbsp;Donate
+					        	<Icon type="fontawesome" name="paypal" /> Donate
 					        </a>
-					        &nbsp;&nbsp;
 					        <a className="button" href="https://github.com/jaedb/Iris" target="_blank">
-					        	<Icon type="fontawesome" name="github" />&nbsp;GitHub
+					        	<Icon type="fontawesome" name="github" /> GitHub
 					        </a>
-					        &nbsp;&nbsp;
 					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><Icon type="fontawesome" name="creative-commons" />&nbsp;Licence</a>
 						</div>
 			        </div>
