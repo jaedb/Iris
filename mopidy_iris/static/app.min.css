@@ -5591,7 +5591,8 @@ main header {
         transition: all 0.2s ease-in-out;
         position: relative;
         padding: 9px 12px 8px 24px;
-        cursor: pointer; }
+        cursor: pointer;
+        color: #000000; }
         .dropdown-field .options > .liner .option:before {
           -webkit-transition: all 0.2s ease-in-out;
           -moz-transition: all 0.2s ease-in-out;
@@ -6442,7 +6443,7 @@ main .track-view {
   .discover-view .actions .autocomplete-field {
     width: 250px;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: bottom;
     padding: 0;
     margin-right: 1px; }
     .discover-view .actions .autocomplete-field .input {
