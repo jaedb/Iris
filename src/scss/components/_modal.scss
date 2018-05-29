@@ -140,6 +140,7 @@
 				border-radius: 3px;
 				margin-left: -12px;
 				margin-right: -12px;
+				font-size: 16px;
 
 				.source {
 					position: absolute;
@@ -149,17 +150,6 @@
 
 				&:hover {
 					background: rgba(255,255,255,0.1);
-				}
-
-				&.draggable {
-					padding-left: 35px !important;
-
-					.drag-handle {
-						position: absolute;
-						top: 0;
-						left: 0;
-						padding: 16px 12px;
-					}
 				}
 			}
 
@@ -186,6 +176,7 @@
 			&.small .list-item {
 				width: 49%;
 				float: left;
+				font-size: inherit;
 
 				&:nth-child(2n){
 					margin-left: 2%;

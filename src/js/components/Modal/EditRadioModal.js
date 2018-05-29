@@ -167,7 +167,7 @@ export default class EditRadioModal extends React.Component{
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
 										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
-											<Icon type="fontawesome" name="trash" />
+											<Icon name="delete" />Remove
 										</button>
 									</div>
 								)
@@ -205,7 +205,7 @@ export default class EditRadioModal extends React.Component{
 							onChange={e => this.setState({uri: e.target.value, error_message: null})} 
 							value={this.state.uri} />
 						<span className="button discrete add-uri no-hover" onClick={e => this.addSeed()}>
-							<Icon type="fontawesome" name="plus" />&nbsp; Add
+							<Icon name="add" />Add
 						</span>
 						{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
 					</div>

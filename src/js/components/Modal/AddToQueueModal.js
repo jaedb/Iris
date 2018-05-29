@@ -36,23 +36,27 @@ export default class AddToQueueModal extends React.Component{
 					</div>
 
 					<div className="field radio white">
-						<span className="label">Position</span>
-						<label>
-							<input 
-								type="radio"
-								name="next"
-								checked={!this.state.next}
-								onChange={e => this.setState({next: false})} />
-							<span className="label">End</span>
-						</label>
-						<label>
-							<input 
-								type="radio"
-								name="next"
-								checked={this.state.next}
-								onChange={e => this.setState({next: true})} />
-							<span className="label">After current track</span>
-						</label>
+						<div className="label">
+							Position
+						</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="next"
+									checked={!this.state.next}
+									onChange={e => this.setState({next: false})} />
+								<span className="label">End</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="next"
+									checked={this.state.next}
+									onChange={e => this.setState({next: true})} />
+								<span className="label">After current track</span>
+							</label>
+						</div>
 					</div>
 
 					<div className="actions centered-text">

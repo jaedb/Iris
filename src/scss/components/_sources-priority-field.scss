@@ -12,6 +12,10 @@
 		font-size: 12px;
 		font-weight: normal;
 
+		&.sortable-chosen {
+			background: $grey;
+		}
+
 		&:hover {
 			background: $white;
 		}

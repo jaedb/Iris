@@ -3363,7 +3363,7 @@ input[type="submit"] {
 #context-menu {
   position: fixed;
   z-index: 99; }
-  #context-menu .liner {
+  #context-menu > .liner {
     width: 190px;
     box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
     border-radius: 3px;
@@ -3371,7 +3371,7 @@ input[type="submit"] {
     font-size: 14px;
     font-weight: 500;
     font-family: "Overpass"; }
-    #context-menu .liner .title {
+    #context-menu > .liner .title {
       display: none;
       padding: 10px 14px;
       font-weight: bold;
@@ -3380,7 +3380,7 @@ input[type="submit"] {
       overflow: hidden;
       text-decoration: none;
       background: #121212; }
-      #context-menu .liner .title .background {
+      #context-menu > .liner .title .background {
         -webkit-filter: blur(5px);
         filter: blur(5px);
         background-size: cover;
@@ -3392,7 +3392,7 @@ input[type="submit"] {
         bottom: -10px;
         right: -10px;
         z-index: 1; }
-        #context-menu .liner .title .background.generic {
+        #context-menu > .liner .title .background.generic {
           opacity: 0.9;
           background: #32b5f2;
           background: -moz-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
@@ -3402,24 +3402,24 @@ input[type="submit"] {
           background: -ms-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
           background: linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
           filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 ); }
-      #context-menu .liner .title .text {
+      #context-menu > .liner .title .text {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         position: relative;
         z-index: 2;
         color: #FFFFFF; }
-      #context-menu .liner .title .type {
+      #context-menu > .liner .title .type {
         position: relative;
         z-index: 2;
         color: #FFFFFF;
         opacity: 0.5;
         font-weight: 200;
         text-transform: capitalize; }
-    #context-menu .liner .menu-item-wrapper {
+    #context-menu > .liner .menu-item-wrapper {
       display: block;
       overflow-x: hidden; }
-      #context-menu .liner .menu-item-wrapper .menu-item {
+      #context-menu > .liner .menu-item-wrapper .menu-item {
         position: relative;
         border-radius: 3px;
         cursor: pointer;
@@ -3428,7 +3428,7 @@ input[type="submit"] {
         box-sizing: border-box;
         position: relative;
         color: #FFFFFF; }
-        #context-menu .liner .menu-item-wrapper .menu-item:before {
+        #context-menu > .liner .menu-item-wrapper .menu-item:before {
           -webkit-transition: all 0.2s ease-in-out;
           -moz-transition: all 0.2s ease-in-out;
           -o-transition: all 0.2s ease-in-out;
@@ -3448,18 +3448,18 @@ input[type="submit"] {
           background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
           background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
           background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
-        .notouch #context-menu .liner .menu-item-wrapper .menu-item:hover:before {
+        .notouch #context-menu > .liner .menu-item-wrapper .menu-item:hover:before {
           opacity: 0.15; }
-        .notouch #context-menu .liner .menu-item-wrapper .menu-item:active {
+        .notouch #context-menu > .liner .menu-item-wrapper .menu-item:active {
           background: #000000;
           color: #FFFFFF; }
-      #context-menu .liner .menu-item-wrapper .icon {
+      #context-menu > .liner .menu-item-wrapper .icon {
         font-size: 12px; }
-        #context-menu .liner .menu-item-wrapper .icon.submenu-icon {
+        #context-menu > .liner .menu-item-wrapper .icon.submenu-icon {
           display: inline-block;
           float: right;
           padding-top: 4px; }
-      #context-menu .liner .menu-item-wrapper .submenu {
+      #context-menu > .liner .menu-item-wrapper .submenu {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
@@ -3477,27 +3477,27 @@ input[type="submit"] {
         background: #52514d;
         z-index: 3;
         border-radius: 3px; }
-        #context-menu .liner .menu-item-wrapper .submenu.expanded {
+        #context-menu > .liner .menu-item-wrapper .submenu.expanded {
           width: 100%;
           left: 0; }
-        #context-menu .liner .menu-item-wrapper .submenu .label .icon {
+        #context-menu > .liner .menu-item-wrapper .submenu .label .icon {
           margin-bottom: 0.4em;
           padding-right: 6px; }
-        #context-menu .liner .menu-item-wrapper .submenu .menu-item {
+        #context-menu > .liner .menu-item-wrapper .submenu .menu-item {
           width: 100%; }
-          #context-menu .liner .menu-item-wrapper .submenu .menu-item.close-submenu {
+          #context-menu > .liner .menu-item-wrapper .submenu .menu-item.close-submenu {
             color: #a3a19f; }
-    #context-menu .liner .divider {
+    #context-menu > .liner .divider {
       height: 1px;
       padding: 0;
       margin: 0;
       background: #454440; }
-    #context-menu .liner > span {
+    #context-menu > .liner > span {
       display: block;
       margin-bottom: -1px; }
-      #context-menu .liner > span button,
-      #context-menu .liner > span .button,
-      #context-menu .liner > span .dropdown-field {
+      #context-menu > .liner > span button,
+      #context-menu > .liner > span .button,
+      #context-menu > .liner > span .dropdown-field {
         text-decoration: none;
         display: block;
         margin: 0;
@@ -3510,48 +3510,56 @@ input[type="submit"] {
         font-weight: 300;
         color: inherit;
         border-bottom: 1px solid #454440 !important; }
-        #context-menu .liner > span button .icon,
-        #context-menu .liner > span button .icon,
-        #context-menu .liner > span .button .icon,
-        #context-menu .liner > span .button .icon,
-        #context-menu .liner > span .dropdown-field .icon,
-        #context-menu .liner > span .dropdown-field .icon {
+        #context-menu > .liner > span button .icon,
+        #context-menu > .liner > span button .icon,
+        #context-menu > .liner > span .button .icon,
+        #context-menu > .liner > span .button .icon,
+        #context-menu > .liner > span .dropdown-field .icon,
+        #context-menu > .liner > span .dropdown-field .icon {
           display: none; }
-        .notouch #context-menu .liner > span button:hover, .notouch
-        #context-menu .liner > span .button:hover, .notouch
-        #context-menu .liner > span .dropdown-field:hover {
+        .notouch #context-menu > .liner > span button:hover, .notouch
+        #context-menu > .liner > span .button:hover, .notouch
+        #context-menu > .liner > span .dropdown-field:hover {
           background: #252525; }
-      #context-menu .liner > span button,
-      #context-menu .liner > span .button {
+      #context-menu > .liner > span button,
+      #context-menu > .liner > span .button {
         padding: 16px 20px;
         min-width: 100% !important;
         max-width: 100% !important; }
-      #context-menu .liner > span .dropdown-field {
+      #context-menu > .liner > span .dropdown-field {
         padding: 16px 20px; }
-        #context-menu .liner > span .dropdown-field .label {
+        #context-menu > .liner > span .dropdown-field .label {
           padding: 0 0 3px 0;
           font-weight: 800; }
-        #context-menu .liner > span .dropdown-field .options {
+        #context-menu > .liner > span .dropdown-field .options {
           display: block;
           position: static;
           background: transparent;
           border-radius: 0;
           border: 0;
-          color: #FFFFFF !important;
           box-shadow: none; }
-          #context-menu .liner > span .dropdown-field .options .option {
-            display: inline-block;
-            padding: 3px 5px;
-            border-radius: 0;
-            opacity: 0.6; }
-            #context-menu .liner > span .dropdown-field .options .option .icon {
+          #context-menu > .liner > span .dropdown-field .options:before {
+            display: none !important; }
+          #context-menu > .liner > span .dropdown-field .options > .liner {
+            background: transparent;
+            color: #FFFFFF !important;
+            margin: -3px -5px; }
+            #context-menu > .liner > span .dropdown-field .options > .liner:before {
+              display: none !important; }
+            #context-menu > .liner > span .dropdown-field .options > .liner .option {
               display: inline-block;
-              position: relative;
-              padding-right: 5px;
-              top: auto;
-              left: auto; }
-          #context-menu .liner > span .dropdown-field .options:before {
-            display: none; }
+              padding: 3px 5px;
+              border-radius: 0;
+              opacity: 0.6;
+              color: #FFFFFF !important; }
+              #context-menu > .liner > span .dropdown-field .options > .liner .option:before {
+                display: none !important; }
+              #context-menu > .liner > span .dropdown-field .options > .liner .option .icon {
+                display: inline-block;
+                position: static;
+                padding-right: 2px;
+                padding-bottom: 3px;
+                font-size: 0.9em; }
   @media (max-width: 800px) {
     #context-menu {
       top: 0 !important;
@@ -3568,26 +3576,26 @@ input[type="submit"] {
         left: 0;
         background: rgba(0, 0, 0, 0.88);
         z-index: 1; }
-      #context-menu .liner {
+      #context-menu > .liner {
         width: 250px;
         margin: 30px auto;
         max-width: 90vw;
         position: relative;
         z-index: 2;
         border-radius: 3px; }
-        #context-menu .liner .title {
+        #context-menu > .liner .title {
           display: block;
           padding: 14px 18px;
           box-sizing: border-box;
           border-radius: 3px 3px 0 0; }
-        #context-menu .liner > span button,
-        #context-menu .liner > span .button {
+        #context-menu > .liner > span button,
+        #context-menu > .liner > span .button {
           color: #FFFFFF;
           font-weight: 800;
           background: transparent; }
-        #context-menu .liner > span .dropdown-field {
+        #context-menu > .liner > span .dropdown-field {
           color: #FFFFFF; }
-        #context-menu .liner .menu-item-wrapper .menu-item {
+        #context-menu > .liner .menu-item-wrapper .menu-item {
           padding: 14px 18px;
           box-sizing: border-box; } }
 
@@ -3794,20 +3802,14 @@ input[type="submit"] {
       border: 0;
       border-radius: 3px;
       margin-left: -12px;
-      margin-right: -12px; }
+      margin-right: -12px;
+      font-size: 16px; }
       .modal .content .list .list-item .source {
         position: absolute;
         top: 18px;
         left: 10px; }
       .modal .content .list .list-item:hover {
         background: rgba(255, 255, 255, 0.1); }
-      .modal .content .list .list-item.draggable {
-        padding-left: 35px !important; }
-        .modal .content .list .list-item.draggable .drag-handle {
-          position: absolute;
-          top: 0;
-          left: 0;
-          padding: 16px 12px; }
     .modal .content .list.playlists {
       padding-top: 40px; }
       .modal .content .list.playlists .list-item {
@@ -3822,7 +3824,8 @@ input[type="submit"] {
           left: auto; }
     .modal .content .list.small .list-item {
       width: 49%;
-      float: left; }
+      float: left;
+      font-size: inherit; }
       .modal .content .list.small .list-item:nth-child(2n) {
         margin-left: 2%; }
   .modal.image_zoom .content {
@@ -5357,7 +5360,7 @@ main header {
           padding-right: 6px;
           margin-left: 10px; }
       main header .options {
-        top: 8px;
+        top: 0;
         right: 0; }
         main header .options .context-menu-trigger {
           display: block; }
@@ -5724,6 +5727,8 @@ main header {
     cursor: move;
     font-size: 12px;
     font-weight: normal; }
+    .sources-priority-field .source.sortable-chosen {
+      background: #383734; }
     .sources-priority-field .source:hover {
       background: #FFFFFF; }
     .sources-priority-field .source:focus, .sources-priority-field .source:active {
@@ -6296,8 +6301,6 @@ main .track-view {
         display: none; }
 
 @media (max-width: 800px) {
-  .search-view header .icon {
-    margin-top: 8px; }
   .search-view .search-form {
     top: 10px;
     left: 40px;

@@ -265,8 +265,8 @@ class Settings extends React.Component {
 						</div>
 						<div className="input">
 			        		<SourcesPriority
-								uri_schemes={this.props.mopidy.uri_schemes}
-								uri_schemes_priority={this.props.ui.uri_schemes_priority}
+								uri_schemes={this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : []}
+								uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
 			        			uiActions={this.props.uiActions}
 			        		/>
 			        	</div>

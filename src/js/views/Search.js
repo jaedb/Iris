@@ -40,11 +40,11 @@ class Search extends React.Component{
 		$(document).find('.search-form input').focus();
 
 		if (context && term){
-			if (this.props.mopidy_connected && this.props.search_uri_schemes){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
@@ -79,11 +79,11 @@ class Search extends React.Component{
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
 
-			if (this.props.mopidy_connected && this.props.search_uri_schemes){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.mopidy_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
@@ -116,7 +116,7 @@ class Search extends React.Component{
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
 		if (this.props.sort == 'uri'){
-			var sort_map = this.props.search_uri_schemes;
+			var sort_map = this.props.uri_schemes_priority;
 		} else {
 			var sort_map = null;
 		}
@@ -325,6 +325,10 @@ class Search extends React.Component{
 			{
 				value: 'duration',
 				label: 'Duration'
+			},
+			{
+				value: 'uri',
+				label: 'Source'
 			}
 		];
 
@@ -349,9 +353,9 @@ class Search extends React.Component{
 				<DropdownField 
 					icon="cloud" 
 					name="Sources"
-					value={this.props.search_uri_schemes}
+					value={this.props.uri_schemes_search_enabled}
 					options={provider_options} 
-					handleChange={value => {this.props.uiActions.set({search_uri_schemes: value}); this.props.uiActions.hideContextMenu()}}
+					handleChange={value => {this.props.uiActions.set({uri_schemes_search_enabled: value}); this.props.uiActions.hideContextMenu()}}
 				/>
 			</span>
 		)
@@ -382,7 +386,8 @@ const mapStateToProps = (state, ownProps) => {
 		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),
 		tracks: (state.core.tracks ? state.core.tracks : []),
-		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
+		uri_schemes_search_enabled: (state.ui.uri_schemes_search_enabled ? state.ui.uri_schemes_search_enabled : []),
+		uri_schemes_priority: (state.ui.uri_schemes_priority ? state.ui.uri_schemes_priority : []),
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
