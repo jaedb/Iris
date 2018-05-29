@@ -4,7 +4,9 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Header from '../../components/Header'
+import Icon from '../../components/Icon'
 import CategoryGrid from '../../components/CategoryGrid'
+
 import * as helpers from '../../helpers'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -44,7 +46,10 @@ class DiscoverCategories extends React.Component{
 
 		return (
 			<div className="view discover-categories-view">
-				<Header icon="grid" title="Genre / Mood" />
+				<Header>
+					<Icon name="mood" type="material" />
+					Genre / Mood
+				</Header>
 				<section className="content-wrapper grid-wrapper">
 					<CategoryGrid categories={categories} />
 				</section>

@@ -203,6 +203,13 @@ export function getSnapcast(){
 	}
 }
 
+export function snapcastServerLoaded(server){
+	return {
+		type: 'PUSHER_SNAPCAST_SERVER_LOADED',
+		server: server
+	}
+}
+
 export function setSnapcastClientName(id, name){
 	return {
 		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
@@ -235,10 +242,43 @@ export function setSnapcastClientLatency(id, latency){
 	}
 }
 
+export function setSnapcastClientGroup(id, group_id){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
+		id: id,
+		group_id: group_id
+	}
+}
+
 export function deleteSnapcastClient(id){
 	return {
 		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
 		id: id
+	}
+}
+
+export function setSnapcastGroupStream(id, stream_id){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
+		id: id,
+		stream_id: stream_id
+	}
+}
+
+export function setSnapcastGroupMute(id, mute){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
+		id: id,
+		mute: mute
+	}
+}
+
+export function setSnapcastGroupVolume(id, percent, old_percent = 0){
+	return {
+		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
+		id: id,
+		percent: percent,
+		old_percent: old_percent
 	}
 }
 

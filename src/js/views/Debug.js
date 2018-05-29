@@ -3,10 +3,10 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
+import Icon from '../components/Icon'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -49,15 +49,17 @@ class Debug extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
-					<FontAwesome name="reply" />&nbsp;
-					Back
+					<Icon name="keyboard_backspace" />Back
 				</button>
 			</span>
 		)
 
 		return (
 			<div className="view debugger-view">
-				<Header icon="cog" title="Debugger" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="settings" type="material" />
+					Debug
+				</Header>
 
 				<div className="content-wrapper">
 

@@ -2,7 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
+
+import Icon from './Icon'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -84,7 +85,7 @@ class Thumbnail extends React.Component{
 		
 		var zoom_icon = null;
 		if (this.props.canZoom){
-			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><FontAwesome name="search" /></span>;
+			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><Icon name="search" /></span>;
 		}
 
 		return (

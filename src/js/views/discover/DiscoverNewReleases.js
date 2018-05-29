@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 
 import Header from '../../components/Header'
+import Icon from '../../components/Icon'
 import AlbumGrid from '../../components/AlbumGrid'
 import Parallax from '../../components/Parallax'
 import Thumbnail from '../../components/Thumbnail'
@@ -92,7 +93,10 @@ class DiscoverNewReleases extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/new-releases'])){
 			return (
 				<div className="view discover-new-releases-view">
-					<Header icon="leaf" title="New Releases" />
+					<Header>
+						<Icon name="new_releases" type="material" />
+						New releases
+					</Header>
 					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
@@ -118,7 +122,10 @@ class DiscoverNewReleases extends React.Component{
 
 		return (
 			<div className="view discover-new-releases-view">
-				<Header className="overlay" icon="leaf" title="New Releases" />
+				<Header className="overlay">
+					<Icon name="new_releases" type="material" />
+					New releases
+				</Header>
 				{this.renderIntro(first_album)}
 				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />

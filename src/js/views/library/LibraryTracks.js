@@ -3,11 +3,11 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as mopidyActions from '../../services/mopidy/actions'
@@ -65,15 +65,17 @@ class LibraryTracks extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => this.playAll(e)}>
-					<FontAwesome name="play" />&nbsp;
-					Play all
+					<Icon name="play_circle_filled" />Play all
 				</button>
 			</span>
 		);
 
 		return (
 			<div className="view library-tracks-view">
-				<Header icon="music" title="My tracks" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="music_note" type="material" />
+					My tracks
+				</Header>
 				<section className="content-wrapper">
 					<TrackList tracks={tracks} />
 					<LazyLoadListener loading={this.props.library_tracks_more} loadMore={() => this.loadMore()}/>

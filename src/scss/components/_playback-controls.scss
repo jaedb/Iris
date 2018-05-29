@@ -83,36 +83,20 @@
 
 	.control {
 		@include animate();
-		font-size: 12px;
+		@include noselect();
 		color: $white;
 		cursor: pointer;
-		padding: 10px 8px;
+		padding: 10px 6px;
 		display: inline-block;
 		vertical-align: bottom;
 		opacity: 0.8;
 
 		.icon {
-			svg {
-				height: 12px;
-			}
-		}
-
-		&.play {
-			margin-bottom: -4px;
-
-			.icon {
-				svg {
-					height: 24px;
-				}
-			}
+			font-size: 0.9em;
 		}
 
 		&.active {
 			color: $turquoise !important;
-			
-			svg {
-				fill: $turquoise !important;
-			}
 		}
 
 		&:hover {
@@ -125,15 +109,22 @@
 		bottom: 8px;
 
 		&.playback {
-			bottom: 6px;
+			bottom: 7px;
 			left: 10px;
-			width: 125px;
+			width: 135px;
 			text-align: center;
+
+			.control {
+				&.play {
+					font-size: 30px;
+					margin-bottom: -8px;
+				}
+			}
 		}
 
 		&.progress {
 			bottom: 10px;
-			left: 140px;
+			left: 150px;
 			right: 260px;
 			padding-left: 20px;
 			padding-right: 20px;
@@ -171,23 +162,18 @@
 		}
 
 		&.volume {
-			bottom: 10px;
+			bottom: 6px;
 			right: 20px;
 			width: 150px;
+			font-size: 18px;
 
 			.modal-trigger {
 				display: none;
 			}
 
-			.control {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-			}
-
 			.slider-wrapper {
 				position: absolute;
-				bottom: 2px;
+				bottom: 6px;
 				right: 0;
 				left: 30px;
 			}
@@ -228,17 +214,11 @@
 
 			&.playback {
 				left: 0;
-				width: 60px;
+				width: 70px;
 
 				.control {
 					&.play {
-						margin-bottom: 0;
-
-						.icon {
-							svg {
-								height: 12px;
-							}
-						}
+						margin-bottom: -8px;
 					}
 					&.previous {
 						display: none;

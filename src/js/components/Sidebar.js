@@ -8,7 +8,6 @@ import Icon from './Icon'
 import Dropzones from './Fields/Dropzones'
 import Thumbnail from './Thumbnail'
 
-import FontAwesome from 'react-fontawesome'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 
@@ -34,11 +33,11 @@ class Sidebar extends React.Component{
 
 		        		<section>
 							<Link className={this.linkClassName('queue')} to={global.baseURL+"queue"}>
-								<Icon name="play" />
+								<Icon name="play_arrow" type="material" />
 								Now playing
 							</Link>
 							<Link className={this.linkClassName('search')} to={global.baseURL+"search"}>
-								<Icon name="search" />
+								<Icon name="search" type="material" />
 								Search
 							</Link>
 						</section>
@@ -46,19 +45,19 @@ class Sidebar extends React.Component{
 						{this.props.spotify_enabled ? <section>
 							<title>Discover</title>
 							<Link className={this.linkClassName('discover/recommendations')} to={global.baseURL+"discover/recommendations"}>
-								<Icon name="compass" />
+								<Icon name="explore" type="material" />
 								Discover
 							</Link>
 							<Link className={this.linkClassName('discover/categories')} to={global.baseURL+"discover/categories"}>
-								<Icon name="grid" />
+								<Icon name="mood" type="material" />
 								Genre / Mood
 							</Link>
 							<Link className={this.linkClassName('discover/featured')} to={global.baseURL+"discover/featured"}>
-								<Icon name="star" />
+								<Icon name="star" type="material" />
 								Featured playlists
 							</Link>
 							<Link className={this.linkClassName('discover/new-releases')} to={global.baseURL+"discover/new-releases"}>
-								<Icon name="leaf" />
+								<Icon name="new_releases" type="material" />
 								New releases
 							</Link>
 						</section> : null}
@@ -66,33 +65,33 @@ class Sidebar extends React.Component{
 						<section>
 							<title>My Music</title>
 							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
-								<Icon name="playlist" />
+								<Icon name="queue_music" type="material" />
 								Playlists
 							</Link>
 							<Link className={this.linkClassName('library/artists')} to={global.baseURL+"library/artists"}>
-								<Icon name="mic" />
+								<Icon name="recent_actors" type="material" />
 								Artists
 							</Link>
 							<Link className={this.linkClassName('library/albums')} to={global.baseURL+"library/albums"}>
-								<Icon name="cd" />
+								<Icon name="album" type="material" />
 								Albums
 							</Link>
 							<Link className={this.linkClassName('library/tracks')} to={global.baseURL+"library/tracks"}>
-								<Icon name="music" />
+								<Icon name="music_note" type="material" />
 								Tracks
 							</Link>
 							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
-								<Icon name="folder" />
+								<Icon name="folder" type="material" />
 								Browse
 							</Link>
 						</section>
 
 						<section>
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
-								<Icon name="cog" />
+								<Icon name="settings" type="material" />
 								Settings
-								{this.props.test_mode ? <span className="status has-tooltip right-tooltip"><FontAwesome name="info-circle" className="orange-text" /><span className="tooltip">Test mode active</span></span>: null}
-								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><FontAwesome name="exclamation-triangle" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
+								{this.props.test_mode ? <span className="status has-tooltip right-tooltip"><Icon name="info" className="orange-text" /><span className="tooltip">Test mode active</span></span>: null}
+								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><Icon name="warning" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
 							</Link>
 						</section>
 
@@ -102,7 +101,7 @@ class Sidebar extends React.Component{
 		       	<Dropzones />
 
 		       	<div className="close" onClick={e => this.props.uiActions.toggleSidebar(false)}>
-		       		<FontAwesome name="chevron-right" />
+		       		<Icon name="close" />
 		       	</div>
 
 			</aside>

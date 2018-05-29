@@ -1,18 +1,25 @@
 
 .dropdown-field {
+	@include noselect();
 	font-size: 13px;
 	font-weight: 800;
 	font-family: "Overpass";
 	position: relative;
 	display: inline-block;
 
-	.label:not(.button) {
-		@include animate();
-		padding: 14px 10px;
-		cursor: pointer;
+	.label {
+		.icon {
+			padding-right: 8px;
+		}
 
-		.notouch &:hover {
-			color: $blue;
+		&:not(.button) {
+			@include animate();
+			padding: 14px 10px;
+			cursor: pointer;
+
+			.notouch &:hover {
+				color: $blue;
+			}
 		}
 	}
 
@@ -33,17 +40,19 @@
 		}
 	}
 
+	&.no-label {
+		.label > .text {
+			display: none;
+		}
+	}
+
 	.options {
-		color: $black;
 		position: absolute;
 		top: 46px;
 		right: 10px;
 		z-index: 97;
-		background: $white;
 		display: none;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
-		border-radius: 3px;
-		min-width: 120px;
 
 		&:before {
 			content: '';
@@ -59,41 +68,65 @@
 			border-bottom: 6px solid $white;
 		}
 
-		.option {
-			@include animate();
-			position: relative;
-			padding: 9px 12px 8px 24px;
-			cursor: pointer;
-			
+		& > .liner {
+			color: $black;
+			background: $white;
+			min-width: 120px;
+			max-height: 70vh;
+			overflow-y: auto;
+			border-radius: 3px;
+
 			&:before {
-				@include animate();
 				content: '';
 				display: block;
 				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-				opacity: 0;
-				z-index: 9;
-				background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				top: -6px;
+				right: 10px;
+				background: $white;
+				width: 0;
+				height: 0;
+				border-left: 5px solid $darkest_grey;
+				border-right: 5px solid $darkest_grey;
+				border-bottom: 6px solid $white;
 			}
 
-			.fa {
-				position: absolute;
-				top: 9px;
-				left: 8px;
-				font-size: 10px;
-			}
-
-			.notouch &:hover {
+			.option {
+				@include animate();
+				position: relative;
+				padding: 9px 12px 8px 24px;
+				cursor: pointer;
 				color: $black;
-
+				
 				&:before {
-					opacity: 0.15;
+					@include animate();
+					content: '';
+					display: block;
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: 0;
+					opacity: 0;
+					z-index: 9;
+					background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+					background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				}
+
+				.icon {
+					position: absolute;
+					top: 8px;
+					left: 6px;
+					font-size: 16px;
+				}
+
+				.notouch &:hover {
+					color: $black;
+
+					&:before {
+						opacity: 0.15;
+					}
 				}
 			}
 		}

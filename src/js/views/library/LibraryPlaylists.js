@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'
@@ -11,6 +10,7 @@ import DropdownField from '../../components/Fields/DropdownField'
 import Header from '../../components/Header'
 import FilterField from '../../components/Fields/FilterField'
 import LazyLoadListener from '../../components/LazyLoadListener'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'
@@ -234,20 +234,43 @@ class LibraryPlaylists extends React.Component{
 
 		var options = (
 			<span>
-				<FilterField handleChange={value => this.setState({filter: value})} />
-				<DropdownField icon="sort" name="Sort" value={this.props.sort} options={sort_options} reverse={this.props.sort_reverse} handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
-				<DropdownField icon="eye" name="View" value={this.props.view} options={view_options} handleChange={val => {this.props.uiActions.set({ library_playlists_view: val}); this.props.uiActions.hideContextMenu() }} />
-				<DropdownField icon="database" name="Source" value={this.props.source} options={source_options} handleChange={val => {this.props.uiActions.set({ library_playlists_source: val}); this.props.uiActions.hideContextMenu() }} />
+				<FilterField 
+					handleChange={value => this.setState({filter: value})}
+				/>
+				<DropdownField 
+					icon="sort"
+					name="Sort"
+					value={this.props.sort}
+					options={sort_options}
+					selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
+					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }}
+				/>
+				<DropdownField
+					icon="visibility"
+					name="View"
+					value={this.props.view}
+					options={view_options}
+					handleChange={value => {this.props.uiActions.set({ library_playlists_view: value}); this.props.uiActions.hideContextMenu() }}
+				/>
+				<DropdownField
+					icon="cloud"
+					name="Source"
+					value={this.props.source}
+					options={source_options}
+					handleChange={value => {this.props.uiActions.set({ library_playlists_source: value}); this.props.uiActions.hideContextMenu() }}
+				/>
 				<button className="no-hover" onClick={ () => this.props.uiActions.openModal('create_playlist', {} ) }>
-					<FontAwesome name="plus" />&nbsp;
-					New
+					<Icon name="add_box" />New
 				</button>
 			</span>
 		)
 
 		return (
 			<div className="view library-playlists-view">
-				<Header icon="playlist" title="My playlists" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>				
+					<Icon name="queue_music" type="material" />
+					My playlists
+				</Header>
 				{ this.renderView() }
 			</div>
 		)

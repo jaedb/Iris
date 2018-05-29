@@ -2,9 +2,9 @@
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Link, hashHistory } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../helpers'
+import Icon from './Icon'
 import Thumbnail from './Thumbnail'
 import ArtistSentence from './ArtistSentence'
 
@@ -104,7 +104,7 @@ export default class GridItem extends React.Component{
 					{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}
 				</div>
 				<div className="secondary">					
-					{this.props.show_source_icon ? <FontAwesome name={helpers.sourceIcon(item.uri)} className="source" /> : null}
+					{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
 					{this.renderSecondary(item)}
 				</div>
 			</div>

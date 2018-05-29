@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import * as helpers from '../../helpers'
 import Icon from '../Icon'
@@ -13,7 +12,6 @@ import EditPlaylistModal from './EditPlaylistModal'
 import EditRadioModal from './EditRadioModal'
 import ImageZoomModal from './ImageZoomModal'
 import KioskModeModal from './KioskModeModal'
-import SearchURISchemesModal from './SearchURISchemesModal'
 import InitialSetupModal from './InitialSetupModal'
 import AuthorizationModal_Send from './AuthorizationModal_Send'
 import AuthorizationModal_Receive from './AuthorizationModal_Receive'
@@ -124,13 +122,6 @@ class Modal extends React.Component{
 						data={this.props.modal.data} 
 						current_track={this.props.current_track} /> : null }
 
-					{ this.props.modal.name == 'search_uri_schemes' ? <SearchURISchemesModal 
-						uiActions={this.props.uiActions} 
-						coreActions={this.props.coreActions} 
-						search_uri_schemes={this.props.search_uri_schemes} 
-						available_uri_schemes={this.props.uri_schemes} 
-						data={this.props.modal.data} /> : null }
-
 					{ this.props.modal.name == 'initial_setup' ? <InitialSetupModal
 						uiActions={this.props.uiActions}
 						pusherActions={this.props.pusherActions} /> : null }
@@ -144,8 +135,6 @@ class Modal extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
-		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
-		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
 		modal: state.ui.modal,

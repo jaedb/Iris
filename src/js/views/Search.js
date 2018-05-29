@@ -3,10 +3,10 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
+import Icon from '../components/Icon'
 import DropdownField from '../components/Fields/DropdownField'
 import TrackList from '../components/TrackList'
 import ArtistGrid from '../components/ArtistGrid'
@@ -40,17 +40,23 @@ class Search extends React.Component{
 		$(document).find('.search-form input').focus();
 
 		if (context && term){
-			if (this.props.mopidy_connected && this.props.search_uri_schemes){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
 	}
 
+	componentWillUnmount(){
+		this.props.mopidyActions.clearSearchResults();
+		this.props.spotifyActions.clearSearchResults();
+	}
+
 	componentWillReceiveProps(newProps){
+
 		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
 			var old_context = helpers.getFromUri("searchcontext",this.props.params.query);
 			var old_term = helpers.getFromUri("searchterm",this.props.params.query);
@@ -73,11 +79,11 @@ class Search extends React.Component{
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
 
-			if (this.props.mopidy_connected && this.props.search_uri_schemes){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
 				this.props.mopidyActions.getSearchResults(context, term)
 			}
 
-			if (this.props.mopidy_connected && this.props.search_uri_schemes && this.props.search_uri_schemes.includes('spotify:')){
+			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
 				this.props.spotifyActions.getSearchResults(context, term)
 			}
 		}
@@ -110,7 +116,7 @@ class Search extends React.Component{
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
 		if (this.props.sort == 'uri'){
-			var sort_map = this.props.search_uri_schemes;
+			var sort_map = this.props.uri_schemes_priority;
 		} else {
 			var sort_map = null;
 		}
@@ -160,7 +166,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Artists
 						</h4>
 						<section className="grid-wrapper">
@@ -178,7 +184,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Albums
 						</h4>
 						<section className="grid-wrapper">
@@ -196,7 +202,7 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Playlists
 						</h4>
 						<section className="grid-wrapper">
@@ -214,11 +220,11 @@ class Search extends React.Component{
 							<URILink unencoded type="search" uri={"search:all:"+term}>
 								Search
 							</URILink>
-							&nbsp; <FontAwesome name="angle-right" />&nbsp;
+							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -285,7 +291,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)
@@ -326,6 +332,14 @@ class Search extends React.Component{
 			}
 		];
 
+		var provider_options = [];
+		for (var i = 0; i < this.props.uri_schemes.length; i++){
+			provider_options.push({
+				value: this.props.uri_schemes[i],
+				label: helpers.titleCase(this.props.uri_schemes[i].replace(':','').replace('+',' '))
+			});
+		}
+
 		var options = (
 			<span>
 				<DropdownField 
@@ -333,28 +347,29 @@ class Search extends React.Component{
 					name="Sort" 
 					value={this.props.sort} 
 					options={sort_options} 
-					reverse={this.props.sort_reverse} 
-					handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
-
-				<button className="no-hover" onClick={e => this.props.uiActions.openModal('search_uri_schemes', {query: this.props.params.query})}>
-					<FontAwesome name="wrench" />&nbsp;
-					Sources
-				</button>
-
+					selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
+					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu()}}
+				/>
+				<DropdownField 
+					icon="cloud" 
+					name="Sources"
+					value={this.props.uri_schemes_search_enabled}
+					options={provider_options} 
+					handleChange={value => {this.props.uiActions.set({uri_schemes_search_enabled: value}); this.props.uiActions.hideContextMenu()}}
+				/>
 			</span>
 		)
 
 		return (
 			<div className="view search-view">			
-				<Header
-					icon="search" 
-					options={options} 
-					uiActions={this.props.uiActions}
-				/>
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="search" type="material" />
+				</Header>
 
 				<SearchForm 
 					query={(this.props.params.query ? this.props.params.query : '')}
-					view={(this.props.params.view ? this.props.params.view : 'all')} />
+					view={(this.props.params.view ? this.props.params.view : 'all')}
+				/>
 
 				<div className="content-wrapper">
 					{ this.renderResults() }
@@ -371,11 +386,13 @@ const mapStateToProps = (state, ownProps) => {
 		artists: (state.core.artists ? state.core.artists : []),
 		playlists: (state.core.playlists ? state.core.playlists : []),
 		tracks: (state.core.tracks ? state.core.tracks : []),
-		search_uri_schemes: (state.ui.search_uri_schemes ? state.ui.search_uri_schemes : []),
+		uri_schemes_search_enabled: (state.ui.uri_schemes_search_enabled ? state.ui.uri_schemes_search_enabled : []),
+		uri_schemes_priority: (state.ui.uri_schemes_priority ? state.ui.uri_schemes_priority : []),
+		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
 		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'name'),
-		sort_reverse: (state.ui.search_results_sort_reverse ? true : false),
+		sort_reverse: (state.ui.search_results_sort_reverse ? true : false)
 	}
 }
 

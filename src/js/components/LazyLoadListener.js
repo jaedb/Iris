@@ -1,6 +1,5 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
 
 export default class LazyLoadListener extends React.Component{
 

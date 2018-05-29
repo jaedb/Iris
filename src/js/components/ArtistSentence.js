@@ -1,6 +1,5 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
 import URILink from './URILink'
 
 export default class ArtistSentence extends React.Component{

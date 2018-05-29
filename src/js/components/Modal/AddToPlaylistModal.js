@@ -1,6 +1,5 @@
 
-import React, { PropTypes } from 'react';
-import FontAwesome from 'react-fontawesome';
+import React, { PropTypes } from 'react';;
 
 import Icon from '../Icon';
 import Thumbnail from '../Thumbnail';
@@ -56,7 +55,7 @@ export default class AddToPlaylistModal extends React.Component{
 									<Thumbnail images={playlist.images} size="small" />
 									<h3 className="name">{ playlist.name }</h3>
 									<ul className="details">
-										<li><FontAwesome className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
+										<li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
 										<li>{ playlist.tracks_total ? <span className="grey-text">&nbsp;{ playlist.tracks_total } tracks</span> : null }</li>
 									</ul>
 								</div>

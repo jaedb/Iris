@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 
-import FontAwesome from 'react-fontawesome'
+import Icon from './Icon'
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
@@ -228,6 +228,10 @@ export default class Track extends React.Component{
 						var link = <URILink type="browse" uri={track.added_from.replace("iris:browse:","")}>browse</URILink>
 						break;
 
+					case "search":
+						var link = <URILink type="search" uri={track.added_from.replace("iris:","")}>search</URILink>
+						break;
+
 					default:
 						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
@@ -238,7 +242,7 @@ export default class Track extends React.Component{
 				var added = <span className="by">{track.added_by}</span>
 
 			} else {
-				var added = <span className="placeholder">-</span>
+				var added = <span className="empty">-</span>
 			}
 
 			track_columns.push(
@@ -249,7 +253,7 @@ export default class Track extends React.Component{
 			)
 			if (this.props.show_source_icon){
 				track_columns.push(
-					<FontAwesome name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
+					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
 				)
 			}
 			track_columns.push(
@@ -283,7 +287,7 @@ export default class Track extends React.Component{
 			)
 			if (this.props.show_source_icon){
 				track_columns.push(
-					<FontAwesome name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
+					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
 				)
 			}
 			track_columns.push(
@@ -304,7 +308,7 @@ export default class Track extends React.Component{
 		}
 
 		track_actions.push(
-			<ContextMenuTrigger key="context" onTrigger={e => this.props.handleContextMenu(e)} />
+			<ContextMenuTrigger className="subtle" key="context" onTrigger={e => this.props.handleContextMenu(e)} />
 		)
 
 		// If we're touchable, and can sort this tracklist
@@ -315,7 +319,7 @@ export default class Track extends React.Component{
 				<span 
 					className="drag-zone touch-draggable mouse-draggable"
 					key="drag-zone">
-						<FontAwesome name="bars" fixedWidth />
+						<Icon name="drag_indicator" />
 				</span>
 			)
 		}

@@ -3,10 +3,10 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { hashHistory, Link } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
+import SourcesPriority from '../components/Fields/SourcesPriority'
 import Header from '../components/Header'
 import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
@@ -104,11 +104,11 @@ class Settings extends React.Component {
 
 	renderServerStatus(){
 		var colour = 'grey';
-		var icon = 'question-circle';
+		var icon = 'help';
 		var status = 'Unknown';
 
 		if (this.props.mopidy.connecting || this.props.pusher.connecting){
-			icon = 'plug';
+			icon = 'autorenew';
 			status = 'Connecting...'
 		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
 			colour = 'red';
@@ -122,7 +122,7 @@ class Settings extends React.Component {
 
 		return (
 			<span className={colour+'-text'}>
-				<FontAwesome name={icon} />&nbsp; {status}
+				<Icon name={icon} />{status}
 			</span>
 		);
 	}
@@ -132,13 +132,10 @@ class Settings extends React.Component {
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
-					<FontAwesome name="flask" />&nbsp;
-					Debug
-					{this.props.ui && this.props.ui.test_mode ? <span className="flag warning">Test mode</span> : null}
+					<Icon name="code" />Debug
 				</button>
 				<a className="no-hover button" href="https://github.com/jaedb/Iris/wiki" target="_blank">
-					<FontAwesome name="question" />&nbsp;
-					Help
+					<Icon name="help" />Help
 				</a>
 			</span>
 		)
@@ -158,7 +155,10 @@ class Settings extends React.Component {
 
 		return (
 			<div className="view settings-view">
-				<Header className="overlay" icon="cog" title="Settings" options={options} uiActions={this.props.uiActions} />
+				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+					<Icon name="settings" type="material" />
+					Settings
+				</Header>
 
 				<div className="intro">
 					<div className="liner">
@@ -258,6 +258,20 @@ class Settings extends React.Component {
 						</div>
 					</div>
 
+					<div className="field sources-priority">
+						<div className="name has-tooltip">
+							Sources priority
+							<span className="tooltip">Order of searching and search results</span>
+						</div>
+						<div className="input">
+			        		<SourcesPriority
+								uri_schemes={this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : []}
+								uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
+			        			uiActions={this.props.uiActions}
+			        		/>
+			        	</div>
+			        </div>
+
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>
 						<div className="input">
@@ -271,7 +285,7 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><FontAwesome name="check" className="green-text" />&nbsp; Up-to-date</span>}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><Icon type="fontawesome" name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
@@ -295,14 +309,12 @@ class Settings extends React.Component {
 						<br /><br />
 						<div>
 					        <a className="button" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-					        	<FontAwesome name="paypal" />&nbsp;Donate
+					        	<Icon type="fontawesome" name="paypal" /> Donate
 					        </a>
-					        &nbsp;&nbsp;
 					        <a className="button" href="https://github.com/jaedb/Iris" target="_blank">
-					        	<FontAwesome name="github" />&nbsp;GitHub
+					        	<Icon type="fontawesome" name="github" /> GitHub
 					        </a>
-					        &nbsp;&nbsp;
-					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><FontAwesome name="creative-commons" />&nbsp;Licence</a>
+					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><Icon type="fontawesome" name="creative-commons" />&nbsp;Licence</a>
 						</div>
 			        </div>
 

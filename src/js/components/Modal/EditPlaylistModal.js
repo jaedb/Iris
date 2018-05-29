@@ -51,23 +51,27 @@ export default class EditPlaylistModal extends React.Component{
 								value={ this.state.description } />
 						</div>
 						<div className="field checkbox white">
-							<span className="label">Options</span>
-							<label>
-								<input 
-									type="checkbox"
-									name="playlist_private"
-									checked={ this.state.public }
-									onChange={ e => this.setState({ public: !this.state.public })} />
-								<span className="label">Public</span>
-							</label>
-							<label>
-								<input 
-									type="checkbox"
-									name="collaborative"
-									checked={ this.state.collaborative }
-									onChange={ e => this.setState({ collaborative: !this.state.collaborative })} />
-								<span className="label">Collaborative</span>
-							</label>
+							<div className="label">
+								Options
+							</div>
+							<div className="input">
+								<label>
+									<input 
+										type="checkbox"
+										name="playlist_private"
+										checked={ this.state.public }
+										onChange={ e => this.setState({ public: !this.state.public })} />
+									<span className="label">Public</span>
+								</label>
+								<label>
+									<input 
+										type="checkbox"
+										name="collaborative"
+										checked={ this.state.collaborative }
+										onChange={ e => this.setState({ collaborative: !this.state.collaborative })} />
+									<span className="label">Collaborative</span>
+								</label>
+							</div>
 						</div>
 					</div>
 				)

@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 import InputRange from 'react-input-range';
 
 import Header from '../../components/Header'
@@ -17,6 +16,7 @@ import AddSeedField from '../../components/Fields/AddSeedField'
 import URILink from '../../components/URILink'
 import ContextMenuTrigger from '../../components/ContextMenuTrigger'
 import RelatedArtists from '../../components/RelatedArtists'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -312,7 +312,7 @@ class Discover extends React.Component{
 								{seed.images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={seed.images} circle={seed.type == "artist"} size="small" /></URILink> : null}
 								<div className="label">
 									{helpers.titleCase(type)}
-									<FontAwesome name="close" className="remove" onClick={() => this.removeSeed(index)} />
+									<Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
 								</div>
 								<div className="name">{seed.name}</div>
 							</div>
@@ -369,7 +369,7 @@ class Discover extends React.Component{
 								<div className="label">
 									{helpers.titleCase(tunability.name)}
 									<span className="remove" onClick={e => this.toggleTunability(tunability.name)}>
-										<FontAwesome name="close" />
+										<Icon name="close" />
 									</span>
 								</div>
 								<div className="input">
@@ -519,7 +519,7 @@ class Discover extends React.Component{
 							<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
 							<DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="default" handleChange={val => {this.toggleTunability(val)}} />
 							<span className={"submit button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>
-								<FontAwesome name="compass" />&nbsp; 
+								<Icon name="explore" />&nbsp; 
 								Find recommendations
 							</span>
 

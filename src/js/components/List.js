@@ -3,12 +3,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import { hashHistory } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
 import ContextMenuTrigger from './ContextMenuTrigger'
+import Icon from './Icon'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -78,7 +78,7 @@ class List extends React.Component{
 		if (key_string === 'added_at') return <span><Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
 		if (key[0] === 'artists') return <ArtistSentence artists={value} />
-		if (value === true) return <FontAwesome name="check" />
+		if (value === true) return <Icon name="check" />
 		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>
 		return <span>{value}</span>
 	}

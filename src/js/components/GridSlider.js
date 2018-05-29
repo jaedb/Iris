@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 import { Link, hashHistory } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
@@ -61,8 +60,8 @@ class GridSlider extends React.Component{
 				<div className={className}>
 					{ this.props.title ? this.props.title : null }
 					<div className="controls">
-						<FontAwesome name="chevron-left" disabled={this.state.page <= 0} onClick={ () => this.previous() } />
-						<FontAwesome name="chevron-right" disabled={this.state.page >= this._pagelimit} onClick={ () => this.next() } />
+						<Icon type="fontawesome" name="chevron-left" disabled={this.state.page <= 0} onClick={ () => this.previous() } />
+						<Icon type="fontawesome" name="chevron-right" disabled={this.state.page >= this._pagelimit} onClick={ () => this.next() } />
 					</div>
 					<div className="grid-slider">
 						<div className="grid artist-grid liner" style={style}>

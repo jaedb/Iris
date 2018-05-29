@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -14,6 +13,7 @@ import FollowButton from '../components/Fields/FollowButton'
 import Dater from '../components/Dater'
 import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -154,7 +154,7 @@ class Album extends React.Component{
 					<h1>{ this.props.album.name }</h1>
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><FontAwesome name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
+						{ !this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
 						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
 						{ this.props.album.date ? <li><Dater type="date" data={ this.props.album.date } /></li> : null }
 						<li>

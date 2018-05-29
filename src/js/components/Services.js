@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from './Thumbnail'
 import Icon from './Icon'
@@ -273,7 +272,7 @@ class Services extends React.Component{
 		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name]){
 			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.session.name].image} />
 		} else {
-			var lastfm_icon = <FontAwesome name="lastfm" />
+			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
 		}
 
 		return (
@@ -298,7 +297,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
-						<FontAwesome name="sliders" />
+						<Icon type="fontawesome" name="sliders" />
 						<div className="title">
 							Snapcast
 						</div>
@@ -307,7 +306,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
-						<FontAwesome name="rss" />
+						<Icon name="rss_feed" />
 						<div className="title">
 							Icecast
 						</div>

@@ -3,7 +3,9 @@ import React, { PropTypes } from 'react'
 import { Link, hashHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
+
+import TrackList from './TrackList'
+import Icon from './Icon'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -12,7 +14,6 @@ import * as pusherActions from '../services/pusher/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as lastfmActions from '../services/lastfm/actions'
 import * as spotifyActions from '../services/spotify/actions'
-import TrackList from './TrackList'
 
 class ContextMenu extends React.Component{
 
@@ -353,9 +354,7 @@ class ContextMenu extends React.Component{
 				<span className="menu-item-wrapper">
 					<a className="menu-item close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
 						<span className="label">
-							<FontAwesome name='caret-left' />
-							&nbsp;&nbsp;
-							Back
+							<Icon name="arrow_back" />Back
 						</span>
 					</a>
 				</span>
@@ -491,7 +490,7 @@ class ContextMenu extends React.Component{
 			<span className="menu-item-wrapper has-submenu">
 				<a className="menu-item" onClick={e => this.setPlaylistSubmenu()}>
 					<span className="label">Add to playlist</span>
-					<FontAwesome className="submenu-icon" name='caret-right' />
+					<Icon className="submenu-icon" name="arrow_forward" />
 				</a>
 				{this.renderPlaylistSubmenu()}
 			</span>

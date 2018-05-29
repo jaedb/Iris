@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import Header from '../../components/Header'
+import Icon from '../../components/Icon'
 import Parallax from '../../components/Parallax'
 import Thumbnail from '../../components/Thumbnail'
 
@@ -75,7 +76,10 @@ class DiscoverFeatured extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
 			return (
 				<div className="view discover-featured-view">
-					<Header icon="star" title="Featured playlists" />
+					<Header className="overlay">
+						<Icon name="star" type="material" />
+						Featured playlists
+					</Header>
 					<div className="body-loader loading">
 						<div className="loader"></div>
 					</div>
@@ -101,7 +105,10 @@ class DiscoverFeatured extends React.Component{
 
 		return (
 			<div className="view discover-featured-view">
-				<Header className="overlay" icon="star" title="Featured playlists" />
+				<Header className="overlay">
+					<Icon name="star" type="material" />
+					Featured playlists
+				</Header>
 				{this.renderIntro(first_playlist)}
 				<section className="content-wrapper grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }

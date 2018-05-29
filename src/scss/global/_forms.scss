@@ -39,6 +39,66 @@ select {
 	}
 }
 
+input[type="radio"]{
+
+	& + .label:before {
+		content: ' ';
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+	    border-radius: 50%;
+		position: absolute;
+		background: rgba(255,255,255,0.1);
+		top: 4px;
+		left: 0;
+	}
+
+	&:checked + .label:after {
+		content: ' ';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+	    border-radius: 50%;
+		position: absolute;
+		top: 11px;
+		left: 7px;
+		background: $white;
+	}
+
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: rgba(255,255,255,0.3);
+	}
+}
+
+input[type="checkbox"]{
+	& + .label:before {
+		font-family: "Material Icons";
+		font-size: 14px;
+		content: '';
+		color: $white;
+		background: rgba(255,255,255,0.1);
+		display: inline-block;
+		padding: 0.2em;
+		height: 1.1em;
+		width: 1.1em;
+		text-align: center;
+		position: absolute;
+		top: 3px;
+		left: 0;
+		border-radius: 3px;
+	}
+
+	&:checked + .label:before {
+		content: '\e5ca';
+	}
+
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: rgba(255,255,255,0.3);
+	}
+}
+
 select {
 	max-width: 100%;
 
@@ -73,6 +133,7 @@ input[type="button"],
 input[type="submit"] {
 	@include animate();
 	@include feature_font();
+	@include noselect();
 	font-size: 14px;
 	color: $black;
 	display: inline-block;
@@ -86,6 +147,11 @@ input[type="submit"] {
 	border: 0 !important;
 	cursor: pointer;
 	letter-spacing: -0.01rem;
+	text-align: center;
+
+	.icon {
+		padding-right: 8px;
+	}
 
 	&:not(.no-hover){
 		@include gradient_overlay(3px, 0.05);
@@ -216,8 +282,13 @@ input[type="submit"] {
 
 .field {
 	@include clearfix();
+	@include noselect();
 	display: block;
 	padding-bottom: 12px;
+
+	.icon {
+		padding-right: 0.32em;
+	}
 
 	& > .name {
 		display: block;
@@ -270,49 +341,9 @@ input[type="submit"] {
 			display: inline-block;
 			float: none;
 			width: auto;
-			padding: 5px 5px 5px 26px;
+			padding: 5px 5px 5px 28px;
 			position: relative;
 			cursor: pointer;
-		}
-	}
-
-	&.radio {
-		input + .label:before {
-			content: ' ';
-			display: inline-block;
-			width: 14px;
-			height: 14px;
-		    border-radius: 50%;
-			border: 2px solid $mid_grey;
-			position: absolute;
-			top: 4px;
-			left: 0;
-		}
-
-		input:checked + .label:before {
-		    background: $mid_grey;
-		    box-shadow: inset 0px 0px 0px 4px #222222;
-		}
-	}
-
-	&.checkbox {
-		input + .label:before {
-			font-family: FontAwesome;
-			font-size: 8px;
-			content: ' ';
-			color: $mid_grey;
-			display: inline-block;
-			width: 11px;
-			height: 11px;
-			padding: 3px 0 0 3px;
-			border: 2px solid $mid_grey;
-			position: absolute;
-			top: 5px;
-			left: 0;
-		}
-
-		input:checked + .label:before {
-			content: '\f00c';
 		}
 	}
 

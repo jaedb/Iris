@@ -24,36 +24,42 @@
 	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png" />
 	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png" />
 	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png" />
+<<<<<<< HEAD
+=======
+	<link rel="mask-icon" href="/iris/assets/icon_coloured.svg" color="#08d58f" />
+>>>>>>> develop
 
 	<!-- Raven Sentry -->
 	<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
 
 	<!-- Loading screen -->
 	<style>
-		@keyframes logo-pulse {
-		    0% { opacity: 0.05; }
-		    50% { opacity: 0.3; }
-		    100% { opacity: 0.05; }
+		html {			
+			background-color: #121212;
+		}
+		@keyframes loader {
+		    0% { left: 0; right: 100%; }
+		    50% { left: 0; right: 0; }
+		    100% { left: 100%; right: 0; }
 		}
 		#app-loading {
 			position: fixed;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			color: #FFFFFF;
-			background-color: #121212;
+			top: 50vh;
+			right: 25vw;
+			left: 25vw;
+			width: 50vw;
+			height: 3px;
+			border-radius: 3px;
+			overflow: hidden;
+			background-color: #1A1A1A;
 		}
-		#app-loading-logo {
-			width: 80%;
-			max-width: 160px;
-			margin: 0 auto;
+		#app-loading::before {
+			position: absolute;
+			display: block;
+			content: '';			
 			height: 100%;
-			background-image: url('/iris/assets/icon.svg');
-			background-position: 50% 50%;
-			background-size: contain;
-			background-repeat: no-repeat;
-		    animation-name: logo-pulse;
+		    animation-name: loader;
+		    background: #444444;
 		    animation-duration: 1.8s;
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
@@ -65,9 +71,7 @@
 
 	<div id="app">
 		<!-- ReactJS app gets injected here, replacing the loader -->
-		<div id="app-loading">
-			<div id="app-loading-logo"></div>
-		</div>
+		<div id="app-loading"></div>
 	</div>
 
 </body>
@@ -76,8 +80,13 @@
 
 	// Release details
 	// These are automatically injected to built HTML
+<<<<<<< HEAD
 	var build = "1524597710";
 	var version = "3.17.5";
+=======
+	var build = "1527584808";
+	var version = "3.18.0";
+>>>>>>> develop
 
 	// Construct the script tag
     var js = document.createElement("script");

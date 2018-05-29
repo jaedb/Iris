@@ -5,9 +5,9 @@
 		position: relative;
 	}
 
-	.fa {
+	.icon {
 		position: absolute;
-		top: 12px;
+		top: 10px;
 		left: 15px;
 		pointer-events: none;
 	}
@@ -25,8 +25,7 @@
 		}
 		
 		&:hover {
-
-			.fa {
+			.icon {
 				color: $blue;
 			}
 		}
@@ -46,8 +45,8 @@
 		display: block;
 		border-bottom: 1px solid lighten($grey, 5%);
 
-		.fa {
-			top: 17px;
+		.icon {
+			top: 15px;
 			left: 24px;
 			color: $white !important;
 		}

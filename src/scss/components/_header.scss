@@ -7,16 +7,13 @@ main {
 
 		h1 {
 			display: inline-block;
-		}
 
-		.header-icon {
-			display: inline-block;
-			padding-right: 14px;
-			vertical-align: bottom;
-			margin-bottom: 8px;
-
-			svg {
-				height: 2.6rem;
+			& > .icon {
+				display: inline-block;
+				padding-right: 14px;
+				vertical-align: bottom;
+				margin-bottom: 8px;
+				font-size: 0.9em;
 			}
 		}
 
@@ -66,23 +63,19 @@ main {
 			padding: 10px 10px 10px 0;
 			margin-bottom: -10px;
 
-			.icon {
-				margin-bottom: 6px;
-				padding-right: 6px;
-				margin-left: 10px;
-
-				svg {
-					height: 1.2rem;
-				}
-			}
-
 			h1 {
 				vertical-align: top;
 				padding-top: 6px;
+
+				& > .icon {
+					margin-bottom: 2px;
+					padding-right: 6px;
+					margin-left: 10px;
+				}
 			}
 
 			.options {
-				top: 8px;
+				top: 0;
 				right: 0;
 
 				.context-menu-trigger {

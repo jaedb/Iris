@@ -123,7 +123,7 @@
 		.autocomplete-field {
 			width: 250px;
 			display: inline-block;
-			vertical-align: top;
+			vertical-align: bottom;
 			padding: 0;
 			margin-right: 1px;
 
@@ -217,6 +217,17 @@
 				.add-properties {
 					margin-right: 0;
 				}
+			}
+		}
+
+		.actions {
+			.add-seed-field {
+				width: 69%;
+			}
+
+			.add-properties {
+				width: 30%;
+				margin-right: 0;
 			}
 		}
 

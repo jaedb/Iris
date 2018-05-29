@@ -3,10 +3,10 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import TrackList from '../components/TrackList'
 import Header from '../components/Header'
+import Icon from '../components/Icon'
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -39,7 +39,7 @@ class QueueHistory extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
-					<FontAwesome name="reply" />&nbsp;
+					<Icon name="keyboard_backspace" />&nbsp;
 					Back
 				</button>
 			</span>
@@ -47,7 +47,10 @@ class QueueHistory extends React.Component{
 
 		return (
 			<div className="view queue-history-view">
-				<Header icon="play" title="Playback history" options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="play_arrow" type="material" />
+					Playback history
+				</Header>
 				<section className="content-wrapper">
 					<TrackList
 						className="queue-history-track-list"

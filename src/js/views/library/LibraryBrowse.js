@@ -3,12 +3,12 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link, hashHistory } from 'react-router'
-import FontAwesome from 'react-fontawesome'
 
 import Header from '../../components/Header'
 import List from '../../components/List'
 import TrackList from '../../components/TrackList'
 import GridItem from '../../components/GridItem'
+import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -109,19 +109,20 @@ class LibraryBrowse extends React.Component{
 		var options = (
 			<span>
 				<button className="no-hover" onClick={e => this.playAll(e)}>
-					<FontAwesome name="play" />&nbsp;
-					Play all
+					<Icon name="play_circle_filled" />Play all
 				</button>
 				<button className="no-hover" onClick={e => this.goBack(e)}>
-					<FontAwesome name="reply" />&nbsp;
-					Back
+					<Icon name="keyboard_backspace" />Back
 				</button>
 			</span>
 		);
 
 		return (
 			<div className="view library-local-view">
-				<Header icon="music" title={title} options={options} uiActions={this.props.uiActions} />
+				<Header options={options} uiActions={this.props.uiActions}>
+					<Icon name="folder" type="material" />
+					{title}
+				</Header>
 				<section className="content-wrapper">
 					<List
 						nocontext
@@ -199,7 +200,10 @@ class LibraryBrowse extends React.Component{
 
 		return (
 			<div className="view library-local-view">
-				<Header icon="folder" title="Browse" />
+				<Header>				
+					<Icon name="folder" type="material" />
+					Browse
+				</Header>
 				<section className="content-wrapper">
 					<div className="grid category-grid">				
 						{

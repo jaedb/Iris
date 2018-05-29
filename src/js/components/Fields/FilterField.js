@@ -1,7 +1,8 @@
 
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
-import FontAwesome from 'react-fontawesome'
+
+import Icon from '../Icon';
 
 export default class FilterField extends React.Component{
 
@@ -58,7 +59,7 @@ export default class FilterField extends React.Component{
 		return (
 			<span className={"filter-field "+(this.state.active ? 'active' : '')} onClick={e => this.activate()}>
 				<form>
-					<FontAwesome name="search" />
+					<Icon name="search" type="material" />
 					<input
 						type="text"
 						placeholder="Filter"

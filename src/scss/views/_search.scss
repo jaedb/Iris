@@ -55,12 +55,6 @@
 
 	@include responsive($bp_medium){
 
-		header {
-			.icon {
-				margin-top: 8px;
-			}
-		}
-
 		.search-form {
 			top: 10px;
 			left: 40px;

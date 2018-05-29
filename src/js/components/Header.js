@@ -1,6 +1,5 @@
 
 import React, { PropTypes } from 'react'
-import FontAwesome from 'react-fontawesome'
 
 import Icon from './Icon'
 import ContextMenuTrigger from './ContextMenuTrigger'
@@ -62,8 +61,9 @@ export default class Header extends React.Component{
 	render(){
 		return (
 			<header className={(this.props.className ? this.props.className : null)}>
-				{this.props.icon ? <Icon className="header-icon" name={this.props.icon} /> : null}
-				{this.props.title ? <h1>{ this.props.title }</h1> : null}
+				<h1>
+					{this.props.children ? this.props.children : null}
+				</h1>
 				{this.renderOptions()}
 			</header>
 		)

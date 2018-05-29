@@ -105,39 +105,6 @@ export function set(data){
     }
 }
 
-export function getIcon(name){
-    return (dispatch, getState) => {
-        var config = {
-            method: 'GET',
-            timeout: 15000,
-            url: 'assets/icons/'+name+'.svg'
-        }
-        $.ajax(config).then(
-                response => {
-                    dispatch({
-                        type: 'ICON_LOADED',
-                        key: name,
-                        icon: new XMLSerializer().serializeToString(response)
-                    })
-                },
-                (xhr, status, error) => {
-                    dispatch(
-                        handleException(
-                            'Could not load '+name+' icon',
-                            {
-                                config: config,
-                                xhr: xhr,
-                                status: status,
-                                error: error
-                            }
-                        )
-                    );
-                }
-            )
-    }
-}
-
-
 
 /**
  * Modal

@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import FontAwesome from 'react-fontawesome'
 
 import Thumbnail from '../components/Thumbnail'
 import PlaylistGrid from '../components/PlaylistGrid'
@@ -10,6 +9,7 @@ import FollowButton from '../components/Fields/FollowButton'
 import LazyLoadListener from '../components/LazyLoadListener'
 import Parallax from '../components/Parallax'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
+import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
 import * as mopidyActions from '../services/mopidy/actions'

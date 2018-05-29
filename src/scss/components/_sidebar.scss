@@ -51,24 +51,25 @@ aside{
 			color: $white;
 			text-decoration: none;
 			display: block;
-			padding: 9px 10px 5px;
+			padding: 10px 10px 8px;
 			margin: 0 16px;
 			border-radius: 3px;
-			line-height: 18px;
 
 			.icon {
-				padding-right: 6px;
+				padding-right: 8px;
 				vertical-align: top;
-				margin-top: 0;
-
-				svg {
-					height: 14px;
-				}
+				margin-top: -1px;
+				font-size: 14px;
 			}
 
 			.status {
 				margin-left: 5px;
 				float: right;
+
+				.icon {
+					padding-right: 0;
+					padding-left: 8px;
+				}
 			}
 
 			&.active {
@@ -109,8 +110,8 @@ aside{
 	.close {
 		display: none;
 		position: absolute;
-		bottom: 10px;
-		right: 10px;
+		bottom: 4px;
+		right: 4px;
 		padding: 10px 8px;
 		display: inline-block;
 		opacity: 0.5;

@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 
-import FontAwesome from 'react-fontawesome'
 
 import * as pusherActions from '../services/pusher/actions'
 

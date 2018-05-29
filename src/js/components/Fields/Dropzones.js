@@ -17,17 +17,17 @@ class Dropzones extends React.Component{
 		this._zones = [
 			{
 				title: 'Add to queue',
-				icon: 'play',
+				icon: 'play_arrow',
 				action: 'enqueue'
 			},
 			{
 				title: 'Play next',
-				icon: 'play',
+				icon: 'play_arrow',
 				action: 'enqueue_next'
 			},
 			{
 				title: 'Add to playlist',
-				icon: 'playlist',
+				icon: 'playlist_add',
 				action: 'add_to_playlist',
 				accepts: ['tltrack','track','album','playlist','artist']
 			}

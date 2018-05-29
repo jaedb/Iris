@@ -515,8 +515,8 @@ const MopidyMiddleware = (function(){
                             }
 
                             // If we haven't customised our search schemes, add all to search
-                            if (store.getState().ui.search_uri_schemes === undefined){
-                                store.dispatch(uiActions.set({search_uri_schemes: uri_schemes}));
+                            if (store.getState().ui.uri_schemes_search_enabled === undefined){
+                                store.dispatch(uiActions.set({uri_schemes_search_enabled: uri_schemes}));
                             }
 
                             store.dispatch({type: 'MOPIDY_URI_SCHEMES', uri_schemes: uri_schemes});
@@ -825,7 +825,7 @@ const MopidyMiddleware = (function(){
                 store.dispatch({type: 'MOPIDY_CLEAR_SEARCH_RESULTS'});
 
                 var uri_schemes_to_ignore = ['spotify:'];
-                var uri_schemes = Object.assign([], store.getState().ui.search_uri_schemes);
+                var uri_schemes = Object.assign([], store.getState().ui.uri_schemes_search_enabled);
                 for (var i = 0; i < uri_schemes.length; i++){
                     if (uri_schemes_to_ignore.includes(uri_schemes[i])){
                         uri_schemes.splice(i,1);

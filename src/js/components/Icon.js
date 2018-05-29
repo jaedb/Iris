@@ -1,55 +1,32 @@
 
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
+import FontAwesome from 'react-fontawesome';
 
-import * as helpers from '../helpers';
-import * as uiActions from '../services/ui/actions';
-
-class Icon extends React.Component{
+export default class Icon extends React.Component{
 
 	constructor(props){
 		super(props);
 	}
 
-	componentDidMount(){
-		if (!this.props.icons[this.props.name]){
-			this.props.uiActions.getIcon(this.props.name);
-		}
-	}
-
-	componentWillReceiveProps(newProps){
-		if (this.props.name !== newProps.name && !newProps.icons[newProps.name]){
-			this.props.uiActions.getIcon(newProps.name);
+	handleClick(e){
+		if (this.props.onClick){
+			this.props.onClick(e);
 		}
 	}
 
 	render(){
-		var className = 'icon';
+		var className = "icon";
 		if (this.props.className){
 			className += ' '+this.props.className;
 		}
 
-		var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve"></svg>';
+		switch (this.props.type){
+			case 'fontawesome':	
+				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 
-		if (this.props.icons[this.props.name]){
-			svg = this.props.icons[this.props.name];
+			default:
+				className += ' material-icon';		
+				return <i className={className} onClick={e => this.handleClick(e)}>{this.props.name}</i>;
 		}
-
-		return <span className={className} dangerouslySetInnerHTML={{ __html: svg}}></span>;
 	}
 }
-
-const mapStateToProps = (state, ownProps) => {
-	return {
-		icons: (state.ui.icons ? state.ui.icons : {})
-	}
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Icon)
