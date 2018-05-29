@@ -4041,7 +4041,7 @@ var Thumbnail = function (_React$Component) {
 					{ className: 'zoom', onClick: function onClick(e) {
 							return _this2.zoom(e, image);
 						} },
-					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'search' })
+					_react2.default.createElement(_Icon2.default, { name: 'search' })
 				);
 			}
 
@@ -71449,7 +71449,7 @@ var Discover = function (_React$Component) {
 							'div',
 							{ className: 'label' },
 							helpers.titleCase(type),
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'close', className: 'remove', onClick: function onClick() {
+							_react2.default.createElement(_Icon2.default, { name: 'close', className: 'remove', onClick: function onClick() {
 									return _this2.removeSeed(index);
 								} })
 						),
@@ -71517,7 +71517,7 @@ var Discover = function (_React$Component) {
 								{ className: 'remove', onClick: function onClick(e) {
 										return _this3.toggleTunability(tunability.name);
 									} },
-								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'close' })
+								_react2.default.createElement(_Icon2.default, { name: 'close' })
 							)
 						),
 						_react2.default.createElement(
@@ -71713,7 +71713,7 @@ var Discover = function (_React$Component) {
 								{ className: "submit button primary large" + (is_loading ? " working" : ""), onClick: function onClick(e) {
 										return _this5.getRecommendations();
 									} },
-								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'compass' }),
+								_react2.default.createElement(_Icon2.default, { name: 'explore' }),
 								'\xA0 Find recommendations'
 							)
 						)

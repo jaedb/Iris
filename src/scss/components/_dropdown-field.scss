@@ -95,6 +95,7 @@
 				position: relative;
 				padding: 9px 12px 8px 24px;
 				cursor: pointer;
+				color: $black;
 				
 				&:before {
 					@include animate();
