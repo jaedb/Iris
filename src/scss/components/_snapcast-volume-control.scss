@@ -1,0 +1,59 @@
+
+.snapcast-volume-control {
+	position: relative;
+
+	.volumes {
+		position: absolute;
+		bottom: 40px;
+		right: 0px;
+		width: 250px;
+		border-radius: 3px;
+		background: lighten($grey,5%);
+		color: $white;
+		font-size: 14px;
+		font-weight: 500;
+		text-align: left;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+
+		&:after {
+			content: '';
+			display: block;
+			width: 6px;
+			height: 6px;
+			background: lighten($grey,5%);
+			-ms-transform: rotate(45deg);
+			-webkit-transform: rotate(45deg);
+			transform: rotate(45deg);
+			position: absolute;
+			bottom: -3px;
+			right: 9px;
+		}
+
+		.client {
+			padding: 10px 12px 6px;
+
+			&:not(:first-child) {
+				border-top: 1px solid rgba(255,255,255,0.1);
+			}
+
+			.name {
+				display: block;
+				padding-bottom: 5px;
+			}
+
+			.volume-control {
+				display: block;
+				position: relative;
+				padding-left: 22px;
+
+				.mute-control {
+					position: absolute;
+					top: -2px;
+					left: -2px;
+					padding: 2px;
+				}
+			}
+		}
+	}
+}
+

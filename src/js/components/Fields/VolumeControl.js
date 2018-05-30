@@ -78,7 +78,7 @@ export default class VolumeControl extends React.Component{
 
 		return (
 			<span className={className} onWheel={e => this.handleWheel(e)}>
-				{this.renderMuteButton()}
+				{this.props.NoMuteButton ? null : this.renderMuteButton()}
 				<div className="slider-wrapper">
 					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
 						<div className="track">

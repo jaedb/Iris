@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 
 import ProgressSlider from './ProgressSlider'
 import VolumeControl from './VolumeControl'
+import SnapcastVolumeControl from './SnapcastVolumeControl'
 import Dater from './../Dater'
 import ArtistSentence from './../ArtistSentence'
 import Thumbnail from './../Thumbnail'
@@ -107,6 +108,7 @@ class PlaybackControls extends React.Component{
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
+					{this.props.snapcast_enabled ? <SnapcastVolumeControl /> : null}
 				</section>
 
 				<section className="progress">
@@ -148,6 +150,7 @@ class PlaybackControls extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		http_streaming_active: state.core.http_streaming_active,
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_encoding: state.core.http_streaming_encoding,

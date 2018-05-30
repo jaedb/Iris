@@ -24042,7 +24042,7 @@ var VolumeControl = function (_React$Component) {
 				{ className: className, onWheel: function onWheel(e) {
 						return _this3.handleWheel(e);
 					} },
-				this.renderMuteButton(),
+				this.props.NoMuteButton ? null : this.renderMuteButton(),
 				_react2.default.createElement(
 					'div',
 					{ className: 'slider-wrapper' },
@@ -58357,6 +58357,10 @@ var _VolumeControl = __webpack_require__(96);
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
 
+var _SnapcastVolumeControl = __webpack_require__(314);
+
+var _SnapcastVolumeControl2 = _interopRequireDefault(_SnapcastVolumeControl);
+
 var _Dater = __webpack_require__(33);
 
 var _Dater2 = _interopRequireDefault(_Dater);
@@ -58616,7 +58620,8 @@ var PlaybackControls = function (_React$Component) {
 					{ className: 'settings' },
 					this.renderConsumeButton(),
 					this.renderRandomButton(),
-					this.renderRepeatButton()
+					this.renderRepeatButton(),
+					this.props.snapcast_enabled ? _react2.default.createElement(_SnapcastVolumeControl2.default, null) : null
 				),
 				_react2.default.createElement(
 					'section',
@@ -58681,6 +58686,7 @@ var PlaybackControls = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		http_streaming_active: state.core.http_streaming_active,
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_encoding: state.core.http_streaming_encoding,
@@ -76734,6 +76740,198 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 287 */,
+/* 288 */,
+/* 289 */,
+/* 290 */,
+/* 291 */,
+/* 292 */,
+/* 293 */,
+/* 294 */,
+/* 295 */,
+/* 296 */,
+/* 297 */,
+/* 298 */,
+/* 299 */,
+/* 300 */,
+/* 301 */,
+/* 302 */,
+/* 303 */,
+/* 304 */,
+/* 305 */,
+/* 306 */,
+/* 307 */,
+/* 308 */,
+/* 309 */,
+/* 310 */,
+/* 311 */,
+/* 312 */,
+/* 313 */,
+/* 314 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(3);
+
+var _redux = __webpack_require__(2);
+
+var _VolumeControl = __webpack_require__(96);
+
+var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(16);
+
+var pusherActions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SnapcastVolumeControl = function (_React$Component) {
+	_inherits(SnapcastVolumeControl, _React$Component);
+
+	function SnapcastVolumeControl(props) {
+		_classCallCheck(this, SnapcastVolumeControl);
+
+		var _this = _possibleConstructorReturn(this, (SnapcastVolumeControl.__proto__ || Object.getPrototypeOf(SnapcastVolumeControl)).call(this, props));
+
+		_this.state = {
+			expanded: false
+		};
+		return _this;
+	}
+
+	_createClass(SnapcastVolumeControl, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.pusher_connected && this.props.snapcast_enabled) {
+				this.props.pusherActions.getSnapcast();
+			}
+		}
+	}, {
+		key: 'renderVolumes',
+		value: function renderVolumes() {
+			var _this2 = this;
+
+			var clients = [];
+			for (var key in this.props.snapcast_clients) {
+				if (this.props.snapcast_clients.hasOwnProperty(key)) {
+					var client = this.props.snapcast_clients[key];
+					//if (client.connected){
+					clients.push(client);
+					//}
+				}
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'volumes' },
+				clients.map(function (client) {
+					var name = client.config.name ? client.config.name : client.host.name;
+
+					return _react2.default.createElement(
+						'div',
+						{ className: 'client', key: client.id },
+						_react2.default.createElement(
+							'span',
+							{ className: 'name' },
+							name
+						),
+						_react2.default.createElement(_VolumeControl2.default, {
+							className: 'client-volume-control',
+							volume: client.config.volume.percent,
+							mute: client.config.volume.muted,
+							onVolumeChange: function onVolumeChange(percent) {
+								return _this2.props.pusherActions.setSnapcastClientVolume(client.id, percent);
+							},
+							onMuteChange: function onMuteChange(mute) {
+								return _this2.props.pusherActions.setSnapcastClientMute(client.id, mute);
+							}
+						})
+					);
+				})
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this3 = this;
+
+			if (this.state.expanded) {
+				return _react2.default.createElement(
+					'span',
+					{ className: 'snapcast-volume-control' },
+					_react2.default.createElement(
+						'a',
+						{ className: 'control speakers active', onClick: function onClick(e) {
+								return _this3.setState({ expanded: !_this3.state.expanded });
+							} },
+						_react2.default.createElement(_Icon2.default, { name: 'speaker' })
+					),
+					this.renderVolumes()
+				);
+			} else {
+				return _react2.default.createElement(
+					'span',
+					{ className: 'snapcast-volume-control' },
+					_react2.default.createElement(
+						'a',
+						{ className: 'control speakers', onClick: function onClick(e) {
+								return _this3.setState({ expanded: !_this3.state.expanded });
+							} },
+						_react2.default.createElement(_Icon2.default, { name: 'speaker' })
+					)
+				);
+			}
+		}
+	}]);
+
+	return SnapcastVolumeControl;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		snapcast_enabled: state.pusher.config.snapcast_enabled,
+		pusher_connected: state.pusher.connected,
+		snapcast_clients: state.pusher.snapcast_clients
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SnapcastVolumeControl);
 
 /***/ })
 /******/ ]);
