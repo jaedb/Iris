@@ -17,11 +17,29 @@ class SnapcastVolumeControl extends React.Component{
 		this.state = {
 			expanded: false
 		}
+
+		this.handleClick = this.handleClick.bind(this);
 	}
 
 	componentDidMount(){
 		if (this.props.pusher_connected && this.props.snapcast_enabled){
 			this.props.pusherActions.getSnapcast();
+		}
+	}
+
+	handleClick(e){
+		if ($(e.target).closest('.snapcast-volume-control').length <= 0){
+			this.setExpanded(false);
+		}
+	}
+
+	setExpanded(expanded = !this.state.expanded){
+		if (expanded){
+			this.setState({expanded: expanded});
+			window.addEventListener("click", this.handleClick, false);
+		} else {
+			this.setState({expanded: expanded});
+			window.removeEventListener("click", this.handleClick, false);
 		}
 	}
 
@@ -67,14 +85,14 @@ class SnapcastVolumeControl extends React.Component{
 		if (this.state.expanded){
 			return (
 				<span className="snapcast-volume-control">
-					<a className="control speakers active" onClick={e => this.setState({expanded: !this.state.expanded})}><Icon name="speaker" /></a>
+					<a className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
 					{this.renderVolumes()}
 				</span>
 			);
 		} else {
 			return (
 				<span className="snapcast-volume-control">
-					<a className="control speakers" onClick={e => this.setState({expanded: !this.state.expanded})}><Icon name="speaker" /></a>
+					<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
 				</span>
 			);
 		}

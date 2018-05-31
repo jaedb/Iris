@@ -5,14 +5,14 @@
 	.volumes {
 		position: absolute;
 		bottom: 40px;
-		right: 0px;
-		width: 250px;
-		border-radius: 3px;
-		background: lighten($grey,5%);
-		color: $white;
+		right: -150px;
+		width: 300px;
+		background: $white;
+		color: $black;
 		font-size: 14px;
-		font-weight: 500;
+		font-weight: 600;
 		text-align: left;
+		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 
 		&:after {
@@ -20,20 +20,20 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: lighten($grey,5%);
+			background: $white;
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
 			position: absolute;
 			bottom: -3px;
-			right: 9px;
+			right: 159px;
 		}
 
 		.client {
-			padding: 10px 12px 6px;
+			padding: 16px 20px 12px;
 
 			&:not(:first-child) {
-				border-top: 1px solid rgba(255,255,255,0.1);
+				border-top: 1px solid rgba(0,0,0,0.05);
 			}
 
 			.name {
@@ -51,6 +51,7 @@
 					top: -2px;
 					left: -2px;
 					padding: 2px;
+					color: $black;
 				}
 			}
 		}

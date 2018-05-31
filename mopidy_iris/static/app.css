@@ -4599,31 +4599,31 @@ input[type="submit"] {
   .snapcast-volume-control .volumes {
     position: absolute;
     bottom: 40px;
-    right: 0px;
-    width: 250px;
-    border-radius: 3px;
-    background: #454440;
-    color: #FFFFFF;
+    right: -150px;
+    width: 300px;
+    background: #FFFFFF;
+    color: #000000;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     text-align: left;
+    border-radius: 3px;
     box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
     .snapcast-volume-control .volumes:after {
       content: '';
       display: block;
       width: 6px;
       height: 6px;
-      background: #454440;
+      background: #FFFFFF;
       -ms-transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
       position: absolute;
       bottom: -3px;
-      right: 9px; }
+      right: 159px; }
     .snapcast-volume-control .volumes .client {
-      padding: 10px 12px 6px; }
+      padding: 16px 20px 12px; }
       .snapcast-volume-control .volumes .client:not(:first-child) {
-        border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        border-top: 1px solid rgba(0, 0, 0, 0.05); }
       .snapcast-volume-control .volumes .client .name {
         display: block;
         padding-bottom: 5px; }
@@ -4635,7 +4635,8 @@ input[type="submit"] {
           position: absolute;
           top: -2px;
           left: -2px;
-          padding: 2px; }
+          padding: 2px;
+          color: #000000; }
 
 aside {
   position: fixed;
