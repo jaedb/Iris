@@ -58558,7 +58558,7 @@ var PlaybackControls = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: this.state.expanded ? "expanded playback-controls" : "playback-controls" },
-				this.props.http_streaming_enabled && this.props.http_streaming_active && this.props.play_state == 'playing' ? _react2.default.createElement(
+				this.props.http_streaming_enabled && this.props.play_state == 'playing' ? _react2.default.createElement(
 					'audio',
 					{ id: 'http-streamer', autoPlay: true, preload: 'none' },
 					_react2.default.createElement('source', { src: this.props.http_streaming_url, type: "audio/" + this.props.http_streaming_encoding })
@@ -58687,7 +58687,6 @@ var PlaybackControls = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
-		http_streaming_active: state.core.http_streaming_active,
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_encoding: state.core.http_streaming_encoding,
 		http_streaming_url: state.core.http_streaming_url,
