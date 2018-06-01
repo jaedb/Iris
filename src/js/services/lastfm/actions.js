@@ -24,7 +24,7 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
             method: 'GET',
             cache: true,
             timeout: 30000,
-            url: '//ws.audioscrobbler.com/2.0/?format=json&'+params
+            url: 'https://ws.audioscrobbler.com/2.0/?format=json&'+params
         }
 
         // Signed requests don't need our api_key as the proxy has it's own 

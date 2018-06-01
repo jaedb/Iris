@@ -4236,7 +4236,7 @@ input[type="submit"] {
   cursor: pointer; }
   .slider .track {
     position: absolute;
-    background: #323232;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 2px; }
     .slider .track .progress {
       position: absolute;
@@ -4382,7 +4382,7 @@ input[type="submit"] {
         margin-bottom: -8px; }
     .playback-controls section.progress {
       bottom: 10px;
-      left: 150px;
+      left: 130px;
       right: 260px;
       padding-left: 20px;
       padding-right: 20px;
@@ -4545,7 +4545,9 @@ input[type="submit"] {
           padding-right: 30px; }
         .snapcast .group .clients .client > .name .group-dropdown-field {
           float: right;
-          margin-bottom: -4rem; }
+          margin-bottom: -3.2rem; }
+          .snapcast .group .clients .client > .name .group-dropdown-field .icon {
+            padding-right: 0; }
       .snapcast .group .clients .client > .volume {
         width: 28%;
         padding-left: 2%; }
@@ -4593,6 +4595,57 @@ input[type="submit"] {
               display: block; }
             .snapcast .group .clients .client .col.volume, .snapcast .group .clients .client .col.latency {
               padding-top: 5px; } }
+
+.snapcast-volume-control {
+  position: relative; }
+  .snapcast-volume-control .volumes {
+    position: absolute;
+    bottom: 40px;
+    right: -150px;
+    width: 300px;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    border-radius: 3px;
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
+    z-index: 9; }
+    .snapcast-volume-control .volumes:after {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: #FFFFFF;
+      -ms-transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      position: absolute;
+      bottom: -3px;
+      right: 159px; }
+    .snapcast-volume-control .volumes .client {
+      padding: 16px 20px 12px; }
+      .snapcast-volume-control .volumes .client:not(:first-child) {
+        border-top: 1px solid rgba(0, 0, 0, 0.05); }
+      .snapcast-volume-control .volumes .client .name {
+        display: block;
+        padding-bottom: 5px; }
+      .snapcast-volume-control .volumes .client .volume-control {
+        display: block;
+        position: relative;
+        padding-left: 22px; }
+        .snapcast-volume-control .volumes .client .volume-control .mute-control {
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          padding: 2px;
+          color: #000000; }
+  @media (max-width: 800px) {
+    .snapcast-volume-control .volumes {
+      width: 86vw;
+      right: 0; }
+      .snapcast-volume-control .volumes:after {
+        right: 9px; } }
 
 aside {
   position: fixed;
@@ -5556,15 +5609,15 @@ main header {
     .dropdown-field .options:before {
       content: '';
       display: block;
-      position: absolute;
-      top: -6px;
-      right: 10px;
+      width: 6px;
+      height: 6px;
       background: #FFFFFF;
-      width: 0;
-      height: 0;
-      border-left: 5px solid #121212;
-      border-right: 5px solid #121212;
-      border-bottom: 6px solid #FFFFFF; }
+      -ms-transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      position: absolute;
+      top: -3px;
+      right: 9px; }
     .dropdown-field .options > .liner {
       color: #000000;
       background: #FFFFFF;
@@ -5572,18 +5625,6 @@ main header {
       max-height: 70vh;
       overflow-y: auto;
       border-radius: 3px; }
-      .dropdown-field .options > .liner:before {
-        content: '';
-        display: block;
-        position: absolute;
-        top: -6px;
-        right: 10px;
-        background: #FFFFFF;
-        width: 0;
-        height: 0;
-        border-left: 5px solid #121212;
-        border-right: 5px solid #121212;
-        border-bottom: 6px solid #FFFFFF; }
       .dropdown-field .options > .liner .option {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
