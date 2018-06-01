@@ -77,7 +77,11 @@
 
 					.group-dropdown-field {
 						float: right;
-						margin-bottom: -4rem;
+						margin-bottom: -3.2rem;
+
+						.icon {
+							padding-right: 0;
+						}
 					}
 				}
 
