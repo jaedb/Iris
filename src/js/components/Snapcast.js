@@ -81,7 +81,7 @@ class Snapcast extends React.Component{
 								<div className="col name">
 									<DropdownField 
 										className="group-dropdown-field" 
-										icon="cog" 
+										icon="settings" 
 										name="Group" 
 										no_label
 										no_status_icon
