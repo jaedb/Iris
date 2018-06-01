@@ -14,6 +14,7 @@
 		text-align: left;
 		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+		z-index: 9;
 
 		&:after {
 			content: '';
@@ -53,6 +54,17 @@
 					padding: 2px;
 					color: $black;
 				}
+			}
+		}
+	}
+
+	@include responsive($bp_medium){
+		.volumes {
+			width: 86vw;
+			right: 0;
+
+			&:after {
+				right: 9px;
 			}
 		}
 	}
