@@ -220,7 +220,9 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CONNECTED':
-                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname });
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname });
+	            }
                 next(action);
                 break;
 
@@ -2155,7 +2157,9 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_DIRECTORY':
-                if (action.data) ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri })
+                if (store.getState().ui.allow_reporting && action.data){
+                	ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri });
+                }
                 next(action)
                 break
 

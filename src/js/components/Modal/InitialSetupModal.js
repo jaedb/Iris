@@ -2,6 +2,9 @@
 import React, { PropTypes } from 'react'
 
 import Icon from '../Icon'
+import SpotifyAuthenticationFrame from '../Fields/SpotifyAuthenticationFrame'
+import LastfmAuthenticationFrame from '../Fields/LastfmAuthenticationFrame'
+
 import * as helpers from '../../helpers'
 
 export default class InitialSetupModal extends React.Component{
@@ -9,40 +12,115 @@ export default class InitialSetupModal extends React.Component{
 		super(props);
 
 		this.state = {
-			username: 'Anonymous'
+			username: 'Anonymous',
+			allow_reporting: this.props.allow_reporting,
+			host: this.props.host,
+			port: this.props.port,
+			ssl: this.props.ssl
 		}
 	}
 
 	handleSubmit(e){
-		// save and falseify show_initial_setup
-	}
+		e.preventDefault();
 
-	handleCancel(e){
-		// falseify show_initial_setup
+		this.props.pusherActions.setUsername(this.state.username);
+		this.props.uiActions.set({
+			initial_setup_complete: true,
+			allow_reporting: this.state.allow_reporting
+		});
+		this.props.mopidyActions.setConfig({
+			host: this.state.host,
+			port: this.state.port,
+			ssl: this.state.ssl
+		});
+
+		this.setState({saving: true});
+
+		// Wait two seconds to allow our actions to complete
+		// Then reload the interface
+		setTimeout(function(){
+			window.location.reload(true);
+		}, 2000);
+
+		return false;
 	}
 
 	render(){
 		return (
 			<div>
-				<h1>Welcome to Iris</h1>
+				<h1>Get started</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
-					<div className="field">
-						<div className="name">Username</div>
-						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.setState({username: e.target.value.replace(/\W/g, '')})}
-								value={this.state.username } />
-							<div className="description">
-								A non-unique string used to identify this client (no special characters)
-							</div>
+					<div className="field text">
+						<span className="label">Username</span>
+						<input 
+							type="text"
+							onChange={e => this.setState({username: e.target.value.replace(/\W/g, '')})}
+							value={this.state.username } />
+						<div className="description">
+							A non-unique string used to identify this client (no special characters)
 						</div>
 					</div>
 
+					<div className="field">
+						<div className="name">Host</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={ e => this.setState({host: e.target.value})}
+								value={ this.state.host } />
+						</div>
+					</div>
+					<div className="field">
+						<div className="name">Port</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={ e => this.setState({port: e.target.value})}
+								value={ this.state.port } />
+						</div>
+					</div>
+					<div className="field checkbox">
+						<div className="name">Encryption</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="ssl"
+									checked={this.state.ssl}
+									onChange={e => this.setState({ssl: !this.state.ssl})} />
+								<span className="label has-tooltip">
+									Enable SSL
+									<span className="tooltip">Requires SSL proxy</span>
+								</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="field checkbox">
+						<div className="name">Reporting</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="allow_reporting"
+									checked={ this.props.ui.allow_reporting }
+									onChange={ e => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })} />
+								<span className="label">
+									Allow reporting of anonymous usage statistics
+								</span>
+							</label>
+						</div>
+					</div>
+
+					<div className="field">
+						<div>Google Analytics is used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. Personal information is anonymized prior to collection.</div>
+					</div>
+
 					<div className="actions centered-text">
-						<button className="large" onClick={e => this.handleCancel(e)}>Skip</button>
-						<button className="primary large" onClick={e => this.handleSubmit(e)}>Save</button>
+						<button className={"primary large"+(this.state.saving ? " working" : "")} onClick={e => this.handleSubmit(e)}>
+							{this.state.saving ? "Saving" : "Save"}
+						</button>
 					</div>
 
 				</form>

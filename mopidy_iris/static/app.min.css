@@ -3741,6 +3741,9 @@ input[type="submit"] {
         position: relative; }
         .modal .content form .field .label {
           font-size: 16px; }
+        .modal .content form .field .description {
+          padding-left: 0;
+          padding-right: 0; }
         .modal .content form .field.text > .label, .modal .content form .field.radio > .label, .modal .content form .field.checkbox > .label {
           opacity: 0.5;
           width: 100px;
@@ -3763,7 +3766,6 @@ input[type="submit"] {
           .modal .content form .field.text input:focus, .modal .content form .field.text input:active {
             border-color: #08d58f; }
         .modal .content form .field.radio, .modal .content form .field.checkbox {
-          padding-left: 100px;
           padding-top: 8px; }
       .modal .content form button[type="submit"] {
         margin-top: 50px; }

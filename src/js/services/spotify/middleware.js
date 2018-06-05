@@ -18,7 +18,9 @@ const SpotifyMiddleware = (function(){
         switch(action.type){
 
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
-                ReactGA.event({category: 'Spotify', action: 'Authorization granted'});
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({category: 'Spotify', action: 'Authorization granted'});
+	            }
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
@@ -27,13 +29,16 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
-                var hashed_username = null
-                if (store.getState().spotify.me){
-                    hashed_username = md5(store.getState().spotify.me);
-                    ReactGA.set({userId: hashed_username});
-                }
-                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username})
-                next(action)
+                if (store.getState().ui.allow_reporting){
+	                var hashed_username = null
+	                if (store.getState().spotify.me){
+	                    hashed_username = md5(store.getState().spotify.me);
+		                ReactGA.set({userId: hashed_username});
+	                }
+	                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username});
+	            }
+
+                next(action);
 
                 // Now dispatch a getMe to get the backend-provided user
                 store.dispatch(spotifyActions.getMe());
@@ -44,12 +49,14 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_IMPORT_AUTHORIZATION':
-                var hashed_username = null
-                if (store.getState().spotify.me){
-                    hashed_username = md5(store.getState().spotify.me);
-                    ReactGA.set({userId: hashed_username});
-                }
-                ReactGA.event({category: 'Spotify', action: 'Authorization imported', label: hashed_username});
+                if (store.getState().ui.allow_reporting){
+	                var hashed_username = null
+	                if (store.getState().spotify.me){
+	                    hashed_username = md5(store.getState().spotify.me);
+		                ReactGA.set({userId: hashed_username});
+	                }
+	                ReactGA.event({category: 'Spotify', action: 'Authorization imported', label: hashed_username});
+	            }
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
@@ -58,14 +65,16 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_RECOMMENDATIONS_LOADED':
-                if (action.seeds_uris){
+                if (store.getState().ui.allow_reporting && action.seeds_uris){
                     ReactGA.event({ category: 'Spotify', action: 'Recommendations', label: action.seeds_uris.join(',') })
                 }
                 next(action)
                 break;
 
             case 'SPOTIFY_USER_LOADED':
-                if (action.data) ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri })
+                if (store.getState().ui.allow_reporting && action.data){
+                	ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri });
+                }
                 next(action)
                 break;
 
@@ -414,9 +423,11 @@ const SpotifyMiddleware = (function(){
                     store.dispatch(pusherActions.setUsername(name));
                 }
 
-                var hashed_username = md5(action.data.id);
-                ReactGA.set({userId: hashed_username});
-                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
+                if (store.getState().ui.allow_reporting){
+	                var hashed_username = md5(action.data.id);
+	                ReactGA.set({userId: hashed_username});
+	                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
+	            }
 
                 store.dispatch({
                     type: 'USERS_LOADED',

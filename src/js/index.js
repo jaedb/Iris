@@ -7,7 +7,6 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router'
-import ReactGA from 'react-ga'
 
 import store from './bootstrap.js'
 require('../scss/app.scss');
@@ -44,18 +43,11 @@ console.error = function(message, error){
     originalConsoleError.apply(this, arguments)
 */
 
-// setup our analytics tracking
-ReactGA.initialize('UA-64701652-3');
-function handleUpdate(){
-	ReactGA.set({ page: window.location.hash });
-	ReactGA.pageview(window.location.hash);
-}
-
 global.baseURL = '/'
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={hashHistory} onUpdate={handleUpdate}>
+		<Router history={hashHistory}>
 			<Route path={global.baseURL} component={App}>
 
      			<IndexRoute component={Queue} />

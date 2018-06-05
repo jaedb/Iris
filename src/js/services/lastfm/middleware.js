@@ -1,6 +1,4 @@
 
-import ReactGA from 'react-ga'
-
 var helpers = require('./../../helpers')
 var lastfmActions = require('./actions')
 var uiActions = require('../ui/actions')

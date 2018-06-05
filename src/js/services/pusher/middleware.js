@@ -215,7 +215,9 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_CONNECTED':
-                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username});
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username});
+	            }
 
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getVersion());
@@ -375,7 +377,9 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_START_RADIO':
             case 'PUSHER_UPDATE_RADIO':
-                ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() })
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() });
+	            }
 
                 // start our UI process notification  
                 if (action.type == 'PUSHER_UPDATE_RADIO'){
@@ -438,7 +442,10 @@ const PusherMiddleware = (function(){
 
             case 'PUSHER_STOP_RADIO':
                 store.dispatch(uiActions.createNotification({content: 'Stopping radio'}));
-                ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
+
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
+	            }
 
                 store.dispatch(pusherActions.deliverBroadcast(
                     'notification',
@@ -503,7 +510,9 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_UPGRADE':
-                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+	            }
                 request(store, 'upgrade')
                     .then(
                         response => {
@@ -516,7 +525,9 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_VERSION':
-                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current })
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current });
+	            }
 
                 if (action.version.upgrade_available){
                     store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
@@ -574,8 +585,10 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_ERROR':
-                store.dispatch(uiActions.createNotification(action.message, 'bad'))
-                ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message })
+                store.dispatch(uiActions.createNotification(action.message, 'bad'));
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message });
+	            }
                 break
 
 

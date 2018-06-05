@@ -72,62 +72,82 @@ const CoreMiddleware = (function(){
                 );
 
                 // Log with Raven Sentry
-                Raven.captureException(
-                    new Error(message), 
-                    {
-                        extra: data
-                    }
-                );
+                if (store.getState().ui.allow_reporting){
+	                Raven.captureException(
+	                    new Error(message), 
+	                    {
+	                        extra: data
+	                    }
+	                );
+	            }
 
                 // Log with Analytics
-                ReactGA.event({
-                    category: "Error",
-                    action: message,
-                    label: description,
-                    nonInteraction: true
-                });
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({
+	                    category: "Error",
+	                    action: message,
+	                    label: description,
+	                    nonInteraction: true
+	                });
+	            }
 
                 store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
                 console.error(message, description, data);
                 break;
 
             case 'PLAY_PLAYLIST':
-                ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri })
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri });
+	            }
                 next(action)
                 break
 
             case 'SAVE_PLAYLIST':
-                ReactGA.event({ category: 'Playlist', action: 'Save', label: action.key })
+                if (store.getState().ui.allow_reporting){
+              		ReactGA.event({ category: 'Playlist', action: 'Save', label: action.key });
+	            }
                 next(action)
                 break
 
             case 'CREATE_PLAYLIST':
-                ReactGA.event({ category: 'Playlist', action: 'Create', label: +action.name })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Playlist', action: 'Create', label: +action.name });
+	            }
                 next(action)
                 break
 
             case 'REORDER_PLAYLIST_TRACKS':
-                ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.key })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.key });
+	            }
                 next(action)
                 break
 
             case 'ADD_PLAYLIST_TRACKS':
-                ReactGA.event({ category: 'Playlist', action: 'Add tracks', label: action.playlist_uri })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Playlist', action: 'Add tracks', label: action.playlist_uri });
+	            }
                 next(action)
                 break
 
             case 'REMOVE_PLAYLIST_TRACKS':
-                ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri });
+	            }
                 next(action)
                 break
 
             case 'DELETE_PLAYLIST':
-                ReactGA.event({ category: 'Playlist', action: 'Delete', label: action.uri })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Playlist', action: 'Delete', label: action.uri });
+	            }
                 next(action)
                 break
 
             case 'SEARCH_STARTED':
-                ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query })
+                if (store.getState().ui.allow_reporting){
+                	ReactGA.event({ category: 'Search', action: 'Started', label: action.type+': '+action.query });
+	            }
                 next(action)
 
                 var state = store.getState()
