@@ -254,11 +254,8 @@ class Settings extends React.Component {
 									Allow reporting of anonymous usage statistics
 								</span>
 							</label>
+							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
 						</div>
-					</div>
-
-					<div className="field">
-						<div>Google Analytics is used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. Personal information is anonymized prior to collection.</div>
 					</div>
 
 					<h4 className="underline">Advanced</h4>

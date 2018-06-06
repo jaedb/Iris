@@ -1,6 +1,7 @@
 
 import ReactGA from 'react-ga'
 import Mopidy from 'mopidy'
+import md5 from 'md5';
 import { hashHistory } from 'react-router'
 import * as helpers from '../../helpers'
 
@@ -221,7 +222,8 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CONNECTED':
                 if (store.getState().ui.allow_reporting){
-	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: window.location.hostname });
+                    var hashed_hostname = md5(window.location.hostname);
+	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
 	            }
                 next(action);
                 break;

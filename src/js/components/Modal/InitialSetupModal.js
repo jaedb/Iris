@@ -22,8 +22,11 @@ export default class InitialSetupModal extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
+		var self = this;
 
-		this.props.pusherActions.setUsername(this.state.username);
+		// Force local username change, even if remote connection absent/failed
+		this.props.pusherActions.setUsername(this.state.username, true);
+
 		this.props.uiActions.set({
 			initial_setup_complete: true,
 			allow_reporting: this.state.allow_reporting
@@ -36,11 +39,19 @@ export default class InitialSetupModal extends React.Component{
 
 		this.setState({saving: true});
 
-		// Wait two seconds to allow our actions to complete
-		// Then reload the interface
+		// Wait a second to allow changes to apply to store
 		setTimeout(function(){
-			window.location.reload(true);
-		}, 2000);
+
+			// We've changed a connection setting, so need to reload
+			if (self.state.host !== self.props.host || self.state.port !== self.props.port || self.state.ssl !== self.props.ssl){
+
+				window.location.reload(true);
+
+			// Safe to just close modal
+			} else {
+				self.props.uiActions.closeModal();
+			}
+		}, 1000);
 
 		return false;
 	}
@@ -85,7 +96,6 @@ export default class InitialSetupModal extends React.Component{
 						</div>
 					</div>
 					<div className="field checkbox">
-						<div className="name">Encryption</div>
 						<div className="input">
 							<label>
 								<input 
@@ -101,8 +111,7 @@ export default class InitialSetupModal extends React.Component{
 						</div>
 					</div>
 					
-					<div className="field checkbox no-label">
-						<div className="name">Reporting</div>
+					<div className="field checkbox">
 						<div className="input">
 							<label>
 								<input 
@@ -113,12 +122,11 @@ export default class InitialSetupModal extends React.Component{
 								<span className="label">
 									Allow reporting of anonymous usage statistics
 								</span>
-								<div className="description">
-									Google Analytics and Sentry are used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. All personal information is anonymized prior to collection.
-								</div>
 							</label>
 						</div>
 					</div>
+
+					{!this.state.allow_reporting ? <p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</p> : null}
 
 					<div className="actions centered-text">
 						<button className={"primary large"+(this.state.saving ? " working" : "")} onClick={e => this.handleSubmit(e)}>

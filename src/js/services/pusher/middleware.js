@@ -297,6 +297,14 @@ const PusherMiddleware = (function(){
                                 'Could not set username',
                                 error
                             ));
+
+                            // Forced change to local state, even if server-end failed
+                            // Useful for changing when not yet connected (ie Initial setup on
+                            // non-standard ports, etc)
+                            if (action.force){                                
+                                response.type = 'PUSHER_USERNAME_CHANGED'
+                                store.dispatch(response)
+                            }
                         }
                     );
                 return next(action);

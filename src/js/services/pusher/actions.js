@@ -10,10 +10,11 @@ export function setPort(port){
 	}
 }
 
-export function setUsername(username){
+export function setUsername(username, force = false){
 	return {
 		type: 'PUSHER_SET_USERNAME',
-		username: username.replace(/[\W_]+/g,'')
+		username: username.replace(/[\W_]+/g,''),
+		force: force
 	}
 }
 

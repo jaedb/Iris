@@ -45,11 +45,15 @@
 		width: 50%;
 		color: $white;
 
+		h1 {
+			padding-bottom: 20px;
+		}
+
 		form {
 			padding-top: 50px;
 
 			.field {
-				padding-bottom: 30px;
+				padding-bottom: 20px;
 				position: relative;
 
 				.name {
@@ -58,7 +62,7 @@
 					padding-right: 2%;
 					float: left;
 					opacity: 0.5;
-					padding-top: 10px;
+					padding-top: 8px;
 				}
 
 				.description {
@@ -80,13 +84,14 @@
 		.add-uri,
 		.remove-uri {
 			position: absolute;
-			top: 6px;
+			top: 2px;
 			right: 6px;
 			padding: 8px;
 			margin: 0;
 			min-width: 0;
 			color: #FFFFFF;
 			background: transparent;
+			margin-top: 0 !important;
 
 			&:before {
 				display: none !important;
@@ -98,6 +103,12 @@
 				&.remove-uri {
 					color: $red;
 				}
+			}
+		}
+
+		@include responsive($bp_medium){
+			.add-uri {
+				top: 36px;
 			}
 		}
 
@@ -294,8 +305,22 @@
 	@include responsive($bp_medium){
 
 		.content {
-			padding: 100px 10%;
-			width: 80%;
+			padding: 40px 5%;
+			width: 90%;
+
+			form {
+				padding-top: 20px;
+
+				.field {
+					padding-bottom: 8px;
+
+					.name {
+						font-size: inherit;
+						width: auto;
+						float: none;
+					}
+				}
+			}
 
 			.list {
 				.list-item {
