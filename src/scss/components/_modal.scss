@@ -52,48 +52,18 @@
 				padding-bottom: 30px;
 				position: relative;
 
-				.label {
+				.name {
 					font-size: 16px;
+					width: 18%;
+					padding-right: 2%;
+					float: left;
+					opacity: 0.5;
+					padding-top: 10px;
 				}
 
 				.description {
 					padding-left: 0;
 					padding-right: 0;
-				}
-
-				&.text,
-				&.radio,
-				&.checkbox {
-					& > .label {
-						opacity: 0.5;
-						width: 100px;
-						position: absolute;
-						top: 12px;
-						left: 0;
-						pointer-events: none;
-						padding: 0;
-					}
-					& > .input {
-						padding-top: 0;
-					}
-				}
-
-				&.text {
-					input {
-						background: transparent;
-						font-size: 18px;
-						padding-left: 100px;
-						padding-right: 0;
-						width: 100%;
-						color: $white;
-						border-bottom: 2px solid $white;
-						border-radius: 0;
-
-						&:focus,
-						&:active {
-							border-color: $turquoise;
-						}
-					}
 				}
 
 				&.radio,

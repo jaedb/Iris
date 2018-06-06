@@ -52,13 +52,17 @@ export default class InitialSetupModal extends React.Component{
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
 					<div className="field text">
-						<span className="label">Username</span>
-						<input 
-							type="text"
-							onChange={e => this.setState({username: e.target.value.replace(/\W/g, '')})}
-							value={this.state.username } />
-						<div className="description">
-							A non-unique string used to identify this client (no special characters)
+						<div className="name">
+							Username
+						</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({username: e.target.value.replace(/\W/g, '')})}
+								value={this.state.username } />
+							<div className="description">
+								A non-unique string used to identify this client (no special characters)
+							</div>
 						</div>
 					</div>
 
@@ -97,24 +101,23 @@ export default class InitialSetupModal extends React.Component{
 						</div>
 					</div>
 					
-					<div className="field checkbox">
+					<div className="field checkbox no-label">
 						<div className="name">Reporting</div>
 						<div className="input">
 							<label>
 								<input 
 									type="checkbox"
 									name="allow_reporting"
-									checked={ this.props.ui.allow_reporting }
-									onChange={ e => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })} />
+									checked={ this.state.allow_reporting }
+									onChange={ e => this.setState({ allow_reporting: !this.state.allow_reporting })} />
 								<span className="label">
 									Allow reporting of anonymous usage statistics
 								</span>
+								<div className="description">
+									Google Analytics and Sentry are used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. All personal information is anonymized prior to collection.
+								</div>
 							</label>
 						</div>
-					</div>
-
-					<div className="field">
-						<div>Google Analytics is used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. Personal information is anonymized prior to collection.</div>
 					</div>
 
 					<div className="actions centered-text">

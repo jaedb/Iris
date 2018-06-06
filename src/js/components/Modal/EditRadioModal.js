@@ -199,15 +199,17 @@ export default class EditRadioModal extends React.Component{
 					{this.renderSeeds()}
 
 					<div className="field text">
-						<span className="label">URI(s)</span>
-						<input 
-							type="text"
-							onChange={e => this.setState({uri: e.target.value, error_message: null})} 
-							value={this.state.uri} />
-						<span className="button discrete add-uri no-hover" onClick={e => this.addSeed()}>
-							<Icon name="add" />Add
-						</span>
-						{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+						<div className="name">URI(s)</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({uri: e.target.value, error_message: null})} 
+								value={this.state.uri} />
+							<span className="button discrete add-uri no-hover" onClick={e => this.addSeed()}>
+								<Icon name="add" />Add
+							</span>
+							{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+						</div>
 					</div>
 				</form>
 
