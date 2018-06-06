@@ -123,7 +123,12 @@ class Modal extends React.Component{
 						current_track={this.props.current_track} /> : null }
 
 					{ this.props.modal.name == 'initial_setup' ? <InitialSetupModal
+						host={this.props.mopidy_host}
+						port={this.props.mopidy_port}
+						ssl={this.props.mopidy_ssl}
+						allow_reporting={this.props.allow_reporting}
 						uiActions={this.props.uiActions}
+						mopidyActions={this.props.mopidyActions}
 						pusherActions={this.props.pusherActions} /> : null }
 
 				</div>
@@ -148,7 +153,11 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
 		spotify_library_playlists: state.spotify.library_playlists,
-		mopidy_library_playlists: state.mopidy.library_playlists
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		allow_reporting: state.ui.allow_reporting,
+		mopidy_host: state.mopidy.host,
+		mopidy_port: state.mopidy.port,
+		mopidy_ssl: state.mopidy.ssl
 	}
 }
 

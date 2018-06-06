@@ -195,19 +195,22 @@ export default class EditRadioModal extends React.Component{
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
-				<form>
+				<form onSubmit={e => this.addSeed()}>
 					{this.renderSeeds()}
 
 					<div className="field text">
-						<span className="label">URI(s)</span>
-						<input 
-							type="text"
-							onChange={e => this.setState({uri: e.target.value, error_message: null})} 
-							value={this.state.uri} />
-						<span className="button discrete add-uri no-hover" onClick={e => this.addSeed()}>
-							<Icon name="add" />Add
-						</span>
-						{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+						<div className="name">URI(s)</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({uri: e.target.value, error_message: null})} 
+								value={this.state.uri}
+							/>
+							<button type="submit" className="discrete add-uri no-hover">
+								<Icon name="add" />Add
+							</button>
+							{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+						</div>
 					</div>
 				</form>
 

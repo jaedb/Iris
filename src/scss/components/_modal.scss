@@ -45,55 +45,33 @@
 		width: 50%;
 		color: $white;
 
+		h1 {
+			padding-bottom: 20px;
+		}
+
 		form {
 			padding-top: 50px;
 
 			.field {
-				padding-bottom: 30px;
+				padding-bottom: 20px;
 				position: relative;
 
-				.label {
+				.name {
 					font-size: 16px;
+					width: 18%;
+					padding-right: 2%;
+					float: left;
+					opacity: 0.5;
+					padding-top: 8px;
 				}
 
-				&.text,
-				&.radio,
-				&.checkbox {
-					& > .label {
-						opacity: 0.5;
-						width: 100px;
-						position: absolute;
-						top: 12px;
-						left: 0;
-						pointer-events: none;
-						padding: 0;
-					}
-					& > .input {
-						padding-top: 0;
-					}
-				}
-
-				&.text {
-					input {
-						background: transparent;
-						font-size: 18px;
-						padding-left: 100px;
-						padding-right: 0;
-						width: 100%;
-						color: $white;
-						border-bottom: 2px solid $white;
-						border-radius: 0;
-
-						&:focus,
-						&:active {
-							border-color: $turquoise;
-						}
-					}
+				.description {
+					padding-left: 0;
+					padding-right: 0;
 				}
 
 				&.radio,
 				&.checkbox {
-					padding-left: 100px;
 					padding-top: 8px;
 				}
 			}
@@ -106,13 +84,14 @@
 		.add-uri,
 		.remove-uri {
 			position: absolute;
-			top: 6px;
+			top: 2px;
 			right: 6px;
 			padding: 8px;
 			margin: 0;
 			min-width: 0;
 			color: #FFFFFF;
 			background: transparent;
+			margin-top: 0 !important;
 
 			&:before {
 				display: none !important;
@@ -124,6 +103,12 @@
 				&.remove-uri {
 					color: $red;
 				}
+			}
+		}
+
+		@include responsive($bp_medium){
+			.add-uri {
+				top: 36px;
 			}
 		}
 
@@ -320,8 +305,22 @@
 	@include responsive($bp_medium){
 
 		.content {
-			padding: 100px 10%;
-			width: 80%;
+			padding: 40px 5%;
+			width: 90%;
+
+			form {
+				padding-top: 20px;
+
+				.field {
+					padding-bottom: 8px;
+
+					.name {
+						font-size: inherit;
+						width: auto;
+						float: none;
+					}
+				}
+			}
 
 			.list {
 				.list-item {

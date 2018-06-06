@@ -38,24 +38,28 @@ export default class CreatePlaylistModal extends React.Component{
 				return (
 					<div>
 						<div className="field text">
-							<span className="label">Name</span>
-							<input 
-								type="text"
-								onChange={ e => this.setState({ name: e.target.value })} 
-								value={ this.state.name } />
+							<div className="name">Name</div>
+							<div className="input">
+								<input 
+									type="text"
+									onChange={ e => this.setState({ name: e.target.value })} 
+									value={ this.state.name } />
+							</div>
 						</div>
 
 						<div className="field text">
-							<span className="label">Description</span>
-							<input 
-								type="text"
-								onChange={ e => this.setState({ description: e.target.value })} 
-								
-								value={ this.state.description } />
+							<div className="name">Description</div>
+							<div className="input">
+								<input 
+									type="text"
+									onChange={ e => this.setState({ description: e.target.value })} 
+									
+									value={ this.state.description } />
+							</div>
 						</div>
 
 						<div className="field checkbox white">
-							<div className="label">
+							<div className="name">
 								Options
 							</div>
 							<div className="input">
@@ -84,11 +88,13 @@ export default class CreatePlaylistModal extends React.Component{
 				return (
 					<div>
 						<div className="field text">
-							<span className="label">Name</span>
-							<input 
-								type="text"
-								onChange={ e => this.setState({ name: e.target.value })} 
-								value={ this.state.name } />
+							<div className="name">Name</div>							
+							<div className="input">
+								<input 
+									type="text"
+									onChange={ e => this.setState({ name: e.target.value })} 
+									value={ this.state.name } />
+							</div>
 						</div>
 					</div>
 				)
@@ -102,7 +108,7 @@ export default class CreatePlaylistModal extends React.Component{
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 
 					<div className="field radio white">
-						<div className="label">
+						<div className="name">
 							Provider
 						</div>
 						<div className="input">

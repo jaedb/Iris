@@ -2598,6 +2598,11 @@ h4 {
   h4 .dropdown-field {
     margin-left: 10px; }
 
+p a {
+  color: inherit; }
+  p a:hover {
+    opacity: 0.8; }
+
 .hide {
   width: 0px;
   height: 0px;
@@ -2887,7 +2892,7 @@ footer {
     line-height: 1.8rem; }
   h2 {
     font-size: 1.2rem;
-    line-height: 1.3rem; }
+    line-height: 1.5rem; }
   h3 {
     font-size: 1rem; }
   .right-padding {
@@ -3290,6 +3295,17 @@ input[type="submit"] {
     display: inline-block; }
   .field .label .tooltip {
     left: -4px; }
+  .field.sub-field {
+    padding: 0; }
+  .field .description {
+    display: inline-block;
+    padding: 10px 0 4px;
+    font-size: 12px;
+    opacity: 0.6; }
+    .field .description.error {
+      color: #cf2d2d;
+      display: inline-block;
+      opacity: 1; }
   .field.radio input, .field.checkbox input {
     display: none; }
   .field.radio .input, .field.checkbox .input {
@@ -3332,17 +3348,6 @@ input[type="submit"] {
     .field.range .input-range__slider-container:last-child .input-range__slider {
       border-radius: 0 3px 3px 0;
       margin-left: -12px; }
-  .field.sub-field {
-    padding: 0; }
-  .field .description {
-    display: inline-block;
-    padding: 10px 14px;
-    font-size: 12px;
-    opacity: 0.6; }
-    .field .description.error {
-      color: #cf2d2d;
-      display: inline-block;
-      opacity: 1; }
 
 @media (max-width: 800px) {
   .field .name {
@@ -3734,49 +3739,38 @@ input[type="submit"] {
     margin: 0 auto;
     width: 50%;
     color: #FFFFFF; }
+    .modal .content h1 {
+      padding-bottom: 20px; }
     .modal .content form {
       padding-top: 50px; }
       .modal .content form .field {
-        padding-bottom: 30px;
+        padding-bottom: 20px;
         position: relative; }
-        .modal .content form .field .label {
-          font-size: 16px; }
-        .modal .content form .field.text > .label, .modal .content form .field.radio > .label, .modal .content form .field.checkbox > .label {
+        .modal .content form .field .name {
+          font-size: 16px;
+          width: 18%;
+          padding-right: 2%;
+          float: left;
           opacity: 0.5;
-          width: 100px;
-          position: absolute;
-          top: 12px;
-          left: 0;
-          pointer-events: none;
-          padding: 0; }
-        .modal .content form .field.text > .input, .modal .content form .field.radio > .input, .modal .content form .field.checkbox > .input {
-          padding-top: 0; }
-        .modal .content form .field.text input {
-          background: transparent;
-          font-size: 18px;
-          padding-left: 100px;
-          padding-right: 0;
-          width: 100%;
-          color: #FFFFFF;
-          border-bottom: 2px solid #FFFFFF;
-          border-radius: 0; }
-          .modal .content form .field.text input:focus, .modal .content form .field.text input:active {
-            border-color: #08d58f; }
+          padding-top: 8px; }
+        .modal .content form .field .description {
+          padding-left: 0;
+          padding-right: 0; }
         .modal .content form .field.radio, .modal .content form .field.checkbox {
-          padding-left: 100px;
           padding-top: 8px; }
       .modal .content form button[type="submit"] {
         margin-top: 50px; }
     .modal .content .add-uri,
     .modal .content .remove-uri {
       position: absolute;
-      top: 6px;
+      top: 2px;
       right: 6px;
       padding: 8px;
       margin: 0;
       min-width: 0;
       color: #FFFFFF;
-      background: transparent; }
+      background: transparent;
+      margin-top: 0 !important; }
       .modal .content .add-uri:before,
       .modal .content .remove-uri:before {
         display: none !important; }
@@ -3786,6 +3780,9 @@ input[type="submit"] {
         .modal .content .add-uri:hover.remove-uri,
         .modal .content .remove-uri:hover.remove-uri {
           color: #cf2d2d; }
+    @media (max-width: 800px) {
+      .modal .content .add-uri {
+        top: 36px; } }
     .modal .content .list::after {
       content: '';
       clear: both;
@@ -3915,8 +3912,16 @@ input[type="submit"] {
       margin: 0 3px; }
   @media (max-width: 800px) {
     .modal .content {
-      padding: 100px 10%;
-      width: 80%; }
+      padding: 40px 5%;
+      width: 90%; }
+      .modal .content form {
+        padding-top: 20px; }
+        .modal .content form .field {
+          padding-bottom: 8px; }
+          .modal .content form .field .name {
+            font-size: inherit;
+            width: auto;
+            float: none; }
       .modal .content .list .list-item {
         float: none !important;
         width: auto;

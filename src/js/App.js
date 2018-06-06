@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux'
 import { hashHistory, Link } from 'react-router'
 import { connect } from 'react-redux'
+import ReactGA from 'react-ga'
 
 import Sidebar from './components/Sidebar'
 import PlaybackControls from './components/Fields/PlaybackControls'
@@ -46,6 +47,10 @@ class App extends React.Component{
 	}
 
 	componentDidMount(){
+
+		if (this.props.allow_reporting){
+			ReactGA.initialize('UA-64701652-3');
+		}
 		
 		// Fire up our services
 		this.props.mopidyActions.connect();
@@ -54,12 +59,23 @@ class App extends React.Component{
 
 		// when we navigate to a new route
 		hashHistory.listen(location => {
+			
+	    	// Log our pageview
+			if (this.props.allow_reporting){
+				ReactGA.set({ page: window.location.hash });
+				ReactGA.pageview(window.location.hash);
+			}
 
 			// Hide our sidebar
 			this.props.uiActions.toggleSidebar(false )
 
 			// Unselect any tracks
-			this.props.uiActions.setSelectedTracks([])
+			this.props.uiActions.setSelectedTracks([]);
+
+			// Close context menu
+			if (this.props.context_menu){
+				this.props.uiActions.hideContextMenu();
+			}
 		});
 
 		// Check our slim_mode
@@ -76,21 +92,15 @@ class App extends React.Component{
 		}
 
 		// show initial setup if required
-		/*
-		if (this.props.show_initial_setup){
+		if (!this.props.initial_setup_complete){
 			this.props.uiActions.openModal('initial_setup');
-		}*/
+		}
 	}
 
 	componentWillReceiveProps(nextProps){
 
 		// We've navigated to a new location
 	    if (this.props.location.pathname !== nextProps.location.pathname){
-
-			// Close context menu
-			if (this.props.context_menu){
-				this.props.uiActions.hideContextMenu();
-			}
 
 			// Scroll to bottom, only if we've PUSHed to a new route
 			// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
@@ -317,8 +327,9 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
-		show_initial_setup: state.ui.show_initial_setup,
+		initial_setup_complete: state.ui.initial_setup_complete,
 		slim_mode: state.ui.slim_mode,
 		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
 		volume: (state.mopidy.volume ? state.mopidy.volume : false),

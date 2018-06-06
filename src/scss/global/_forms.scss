@@ -323,6 +323,23 @@ input[type="submit"] {
 		}
 	}
 
+	&.sub-field {
+		padding: 0;
+	}
+
+	.description {
+		display: inline-block;
+		padding: 10px 0 4px;
+		font-size: 12px;
+		opacity: 0.6;
+
+		&.error {
+			color: $red;
+			display: inline-block;
+			opacity: 1;
+		}
+	}
+
 	&.radio,
 	&.checkbox {
 		input{
@@ -393,23 +410,6 @@ input[type="submit"] {
 					margin-left: -12px;
 				}
 			}
-		}
-	}
-
-	&.sub-field {
-		padding: 0;
-	}
-
-	.description {
-		display: inline-block;
-		padding: 10px 14px;
-		font-size: 12px;
-		opacity: 0.6;
-
-		&.error {
-			color: $red;
-			display: inline-block;
-			opacity: 1;
 		}
 	}
 }

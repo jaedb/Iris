@@ -239,6 +239,25 @@ class Settings extends React.Component {
 					<h4 className="underline">Services</h4>
 					<Services active={this.props.params.sub_view} />
 
+					<h4 className="underline">Privacy</h4>
+
+					<div className="field checkbox">
+						<div className="name">Reporting</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="allow_reporting"
+									checked={ this.props.ui.allow_reporting }
+									onChange={ e => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })} />
+								<span className="label">
+									Allow reporting of anonymous usage statistics
+								</span>
+							</label>
+							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
+						</div>
+					</div>
+
 					<h4 className="underline">Advanced</h4>
 
 					<div className="field checkbox">
@@ -301,10 +320,6 @@ class Settings extends React.Component {
 					<div className="field">
 						<div>
 							<em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em> is an open-source project by <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
-								<br />
-								<br />
-								Google Analytics is used to collect usage data and errors to help trace issues and provide valuable insight into how we can continue to make improvements. Personal information is anonymized prior to collection. For more information, see <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use" target="_blank">terms and conditions</a>.
-								<br />
 						</div>
 						<br /><br />
 						<div>

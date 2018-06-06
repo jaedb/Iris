@@ -90,13 +90,17 @@ class Playlist extends React.Component{
 	}
 
 	follow(){
-        ReactGA.event({ category: 'Playlist', action: 'Follow', label: this.props.playlist.uri })
+        if (this.props.allow_reporting){
+	        ReactGA.event({ category: 'Playlist', action: 'Follow', label: this.props.playlist.uri });
+	    }
 		this.props.spotifyActions.toggleFollowingPlaylist(this.props.playlist.uri, 'PUT')
 	}
 
 	// TODO: Once unfollowing occurs, remove playlist from global playlists list
 	unfollow(){
-        ReactGA.event({ category: 'Playlist', action: 'Unfollow', label: this.props.playlist.uri })
+        if (this.props.allow_reporting){
+	        ReactGA.event({ category: 'Playlist', action: 'Unfollow', label: this.props.playlist.uri });
+	    }
 		this.props.spotifyActions.toggleFollowingPlaylist(this.props.playlist.uri, 'DELETE' )
 	}
 
@@ -239,6 +243,7 @@ class Playlist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
+		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,

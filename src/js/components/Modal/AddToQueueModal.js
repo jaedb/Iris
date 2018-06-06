@@ -28,15 +28,17 @@ export default class AddToQueueModal extends React.Component{
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field text">
-						<span className="label">URI(s)</span>
-						<input 
-							type="text"
-							onChange={e => this.setState({uris: e.target.value})} 
-							value={this.state.uris} />
+						<div className="name">URI(s)</div>
+						<div className="input">
+							<input 
+								type="text"
+								onChange={e => this.setState({uris: e.target.value})} 
+								value={this.state.uris} />
+						</div>
 					</div>
 
 					<div className="field radio white">
-						<div className="label">
+						<div className="name">
 							Position
 						</div>
 						<div className="input">

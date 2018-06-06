@@ -197,6 +197,16 @@ h4 {
 	}
 }
 
+p {
+	a {
+		color: inherit;
+
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
 .hide {
 	width: 0px;
 	height: 0px;
@@ -460,7 +470,7 @@ footer {
 	
 	h2 {
 		font-size: 1.2rem;
-		line-height: 1.3rem;
+		line-height: 1.5rem;
 	}
 	
 	h3 {

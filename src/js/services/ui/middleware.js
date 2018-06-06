@@ -28,7 +28,9 @@ const UIMiddleware = (function(){
                 break
 
             case 'OPEN_MODAL':
-                ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name })
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name });
+	            }
                 $('body').addClass('modal-open')
                 store.dispatch(uiActions.hideContextMenu())
                 store.dispatch(uiActions.hideTouchContextMenu())
@@ -36,7 +38,9 @@ const UIMiddleware = (function(){
                 break
 
             case 'CLOSE_MODAL':
-                ReactGA.event({ category: 'Modal', action: 'Closed', label: null })
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Modal', action: 'Closed', label: null });
+	            }
                 $('body').removeClass('modal-open')
                 next(action)
                 break

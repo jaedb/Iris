@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link, hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
-import ReactGA from 'react-ga'
 
 import Header from '../components/Header'
 import Icon from '../components/Icon'
