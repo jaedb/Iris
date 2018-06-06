@@ -13,7 +13,7 @@ from core import IrisCore
 from raven import Client
 
 logger = logging.getLogger(__name__)
-__version__ = '3.20.0'
+__version__ = '3.21.0'
 
 ##
 # Core extension class
