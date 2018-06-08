@@ -116,7 +116,6 @@ export function findTrackLyrics(track){
         query = query.toLowerCase();
         query = query.replace(/\([^)]*\) */g, '');        // anything in circle-braces
         query = query.replace(/\([^[]*\] */g, '');        // anything in square-braces
-        query = query.replace(/[^A-Za-z0-9\s]/g, '');     // non-alphanumeric
 
         sendRequest(dispatch, getState, 'search?q='+encodeURIComponent(query))
             .then(
