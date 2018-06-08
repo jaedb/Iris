@@ -105,6 +105,10 @@ class Artist extends React.Component{
 		this.props.uiActions.set(data)
 	}
 
+	setFilter(value){
+		this.props.uiActions.set({artist_albums_filter: value});
+	}
+
 	renderSubViewMenu(){		
 		return (
 			<div className="sub-views">
@@ -137,6 +141,10 @@ class Artist extends React.Component{
 				}
 			}
 			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+
+			if (this.props.filter){
+				albums = helpers.applyFilter('album_type', this.props.filter, albums);
+			}
 		}
 
 		switch (this.props.params.sub_view){
@@ -189,6 +197,25 @@ class Artist extends React.Component{
 					}
 				];
 
+				var filter_options = [
+					{
+						value: null,
+						label: 'All'
+					},
+					{
+						value: 'album',
+						label: 'Albums'
+					},
+					{
+						value: 'single',
+						label: 'Singles'
+					},
+					{
+						value: 'compilation',
+						label: 'Compilations'
+					}
+				];
+
 				var tracks = [];
 				if (this.props.artist.tracks_uris && this.props.tracks){
 					for (var i = 0; i < this.props.artist.tracks_uris.length; i++){
@@ -223,14 +250,22 @@ class Artist extends React.Component{
 
 						<div className="albums">
 							<h4>
-								Albums
+								Releases
 								<DropdownField 
 									icon="sort" 
 									name="Sort" 
 									value={this.props.sort} 
 									options={sort_options} 
 									selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
-									handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }} />
+									handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }}
+								/>
+								<DropdownField 
+									icon="filter_list" 
+									name="Filter" 
+									value={this.props.filter} 
+									options={filter_options}
+									handleChange={value => {this.setFilter(value); this.props.uiActions.hideContextMenu() }}
+								/>
 							</h4>
 
 							<section className="grid-wrapper no-top-padding">
@@ -314,6 +349,7 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_artists: state.spotify.library_artists,
 		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
+		filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
 		sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : 'name'),
 		sort_reverse: (state.ui.artist_albums_sort_reverse ? true : false),
 		spotify_authorized: state.spotify.authorization,

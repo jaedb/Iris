@@ -63851,6 +63851,11 @@ var Artist = function (_React$Component) {
 			this.props.uiActions.set(data);
 		}
 	}, {
+		key: 'setFilter',
+		value: function setFilter(value) {
+			this.props.uiActions.set({ artist_albums_filter: value });
+		}
+	}, {
 		key: 'renderSubViewMenu',
 		value: function renderSubViewMenu() {
 			return _react2.default.createElement(
@@ -63911,6 +63916,10 @@ var Artist = function (_React$Component) {
 					}
 				}
 				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+
+				if (this.props.filter) {
+					albums = helpers.applyFilter('album_type', this.props.filter, albums);
+				}
 			}
 
 			switch (this.props.params.sub_view) {
@@ -64026,6 +64035,20 @@ var Artist = function (_React$Component) {
 						label: 'Tracks'
 					}];
 
+					var filter_options = [{
+						value: null,
+						label: 'All'
+					}, {
+						value: 'album',
+						label: 'Albums'
+					}, {
+						value: 'single',
+						label: 'Singles'
+					}, {
+						value: 'compilation',
+						label: 'Compilations'
+					}];
+
 					var tracks = [];
 					if (this.props.artist.tracks_uris && this.props.tracks) {
 						for (var i = 0; i < this.props.artist.tracks_uris.length; i++) {
@@ -64087,16 +64110,26 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'h4',
 								null,
-								'Albums',
+								'Releases',
 								_react2.default.createElement(_DropdownField2.default, {
 									icon: 'sort',
 									name: 'Sort',
 									value: this.props.sort,
 									options: sort_options,
 									selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
-									handleChange: function handleChange(val) {
-										_this2.setSort(val);_this2.props.uiActions.hideContextMenu();
-									} })
+									handleChange: function handleChange(value) {
+										_this2.setSort(value);_this2.props.uiActions.hideContextMenu();
+									}
+								}),
+								_react2.default.createElement(_DropdownField2.default, {
+									icon: 'filter_list',
+									name: 'Filter',
+									value: this.props.filter,
+									options: filter_options,
+									handleChange: function handleChange(value) {
+										_this2.setFilter(value);_this2.props.uiActions.hideContextMenu();
+									}
+								})
 							),
 							_react2.default.createElement(
 								'section',
@@ -64205,6 +64238,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		spotify_library_artists: state.spotify.library_artists,
 		local_library_artists: state.mopidy.library_artists,
 		albums: state.core.albums ? state.core.albums : [],
+		filter: state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null,
 		sort: state.ui.artist_albums_sort ? state.ui.artist_albums_sort : 'name',
 		sort_reverse: state.ui.artist_albums_sort_reverse ? true : false,
 		spotify_authorized: state.spotify.authorization,
