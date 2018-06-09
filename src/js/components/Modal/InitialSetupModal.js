@@ -31,7 +31,7 @@ export default class InitialSetupModal extends React.Component{
 			initial_setup_complete: true,
 			allow_reporting: this.state.allow_reporting
 		});
-		this.props.mopidyActions.setConfig({
+		this.props.mopidyActions.set({
 			host: this.state.host,
 			port: this.state.port,
 			ssl: this.state.ssl

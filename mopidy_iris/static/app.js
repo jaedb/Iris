@@ -3372,7 +3372,7 @@ function getLibraryAlbumsProcessor(data) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.setConfig = setConfig;
+exports.set = set;
 exports.connect = connect;
 exports.connecting = connecting;
 exports.upgrading = upgrading;
@@ -3422,11 +3422,13 @@ exports.getPlaylists = getPlaylists;
 exports.getDirectory = getDirectory;
 exports.getTrack = getTrack;
 exports.getLibraryArtists = getLibraryArtists;
+exports.clearLibraryArtists = clearLibraryArtists;
 exports.getArtist = getArtist;
 exports.getArtists = getArtists;
 exports.getAlbum = getAlbum;
 exports.getAlbums = getAlbums;
 exports.getLibraryAlbums = getLibraryAlbums;
+exports.clearLibraryAlbums = clearLibraryAlbums;
 exports.runProcessor = runProcessor;
 exports.cancelProcessor = cancelProcessor;
 exports.clearSearchResults = clearSearchResults;
@@ -3439,10 +3441,10 @@ var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function setConfig(config) {
+function set(data) {
 	return {
-		type: 'MOPIDY_SET_CONFIG',
-		config: config
+		type: 'MOPIDY_SET',
+		data: data
 	};
 }
 
@@ -3795,6 +3797,12 @@ function getLibraryArtists() {
 	};
 }
 
+function clearLibraryArtists() {
+	return {
+		type: 'MOPIDY_CLEAR_LIBRARY_ARTISTS'
+	};
+}
+
 function getArtist(uri) {
 	return {
 		type: 'MOPIDY_GET_ARTIST',
@@ -3832,6 +3840,12 @@ function getAlbums(uris) {
 function getLibraryAlbums() {
 	return {
 		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+	};
+}
+
+function clearLibraryAlbums() {
+	return {
+		type: 'MOPIDY_CLEAR_LIBRARY_ALBUMS'
 	};
 }
 
@@ -49283,7 +49297,9 @@ var initialState = {
 		volume: 0,
 		progress: 0,
 		play_state: false,
-		uri_schemes: []
+		uri_schemes: [],
+		library_albums_uri: 'local:directory?type=album',
+		library_artists_uri: 'local:directory?type=artist'
 	},
 	pusher: {
 		connected: false,
@@ -49957,13 +49973,6 @@ function reducer() {
         case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
 
-        case 'MOPIDY_SET_CONFIG':
-            return Object.assign({}, mopidy, {
-                host: action.config.host,
-                port: action.config.port,
-                ssl: action.config.ssl
-            });
-
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
                 tlid: action.tlid
@@ -49973,6 +49982,9 @@ function reducer() {
             return Object.assign({}, mopidy, {
                 uri_schemes: action.uri_schemes
             });
+
+        case 'MOPIDY_SET':
+            return Object.assign({}, mopidy, action.data);
 
         /**
          * State-oriented actions
@@ -50072,6 +50084,9 @@ function reducer() {
             }
             return Object.assign({}, mopidy, { library_artists: helpers.removeDuplicates(uris) });
 
+        case 'MOPIDY_CLEAR_LIBRARY_ARTISTS':
+            return Object.assign({}, mopidy, { library_artists: null });
+
         case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
             if (mopidy.library_albums) {
                 var uris = [].concat(_toConsumableArray(mopidy.library_albums), _toConsumableArray(action.uris));
@@ -50079,6 +50094,9 @@ function reducer() {
                 var uris = action.uris;
             }
             return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) });
+
+        case 'MOPIDY_CLEAR_LIBRARY_ALBUMS':
+            return Object.assign({}, mopidy, { library_albums: null });
 
         /**
          * Searching
@@ -53632,7 +53650,7 @@ var MopidyMiddleware = function () {
                         var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR;
 
                         if (!last_run) {
-                            request(socket, store, 'library.browse', { uri: 'local:directory?type=album' }).then(function (response) {
+                            request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri }).then(function (response) {
                                 if (response.length <= 0) return;
 
                                 var uris = helpers.arrayOf('uri', response);
@@ -53777,10 +53795,17 @@ var MopidyMiddleware = function () {
                      * ======================================================================================
                      **/
                     case 'MOPIDY_GET_LIBRARY_ARTISTS':
-                        request(socket, store, 'library.browse', { uri: 'local:directory?type=artist' }).then(function (response) {
+                        request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri }).then(function (response) {
                             if (response.length <= 0) return;
 
-                            var uris = helpers.arrayOf('uri', response);
+                            var uris = [];
+                            for (var i = 0; i < response.length; i++) {
+
+                                // Convert local URI to actual artist URI
+                                // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
+                                response[i].uri = response[i].uri.replace('local:directory?albumartist=', '');
+                                uris.push(response[i].uri);
+                            }
 
                             store.dispatch({
                                 type: 'ARTISTS_LOADED',
@@ -57543,22 +57568,10 @@ var localstorageMiddleware = function () {
                         });
                         break;
 
-                    case 'MOPIDY_SET_CONFIG':
-                        helpers.setStorage('mopidy', {
-                            host: action.config.host,
-                            port: action.config.port,
-                            ssl: action.config.ssl
-                        });
-                        break;
-
                     case 'MOPIDY_URISCHEMES_FILTERED':
                         helpers.setStorage('mopidy', {
                             uri_schemes: action.data
                         });
-                        break;
-
-                    case 'SPOTIFY_SET':
-                        helpers.setStorage('spotify', action.data);
                         break;
 
                     case 'SPOTIFY_IMPORT_AUTHORIZATION':
@@ -57605,6 +57618,14 @@ var localstorageMiddleware = function () {
 
                     case 'UI_SET':
                         helpers.setStorage('ui', action.data);
+                        break;
+
+                    case 'MOPIDY_SET':
+                        helpers.setStorage('mopidy', action.data);
+                        break;
+
+                    case 'SPOTIFY_SET':
+                        helpers.setStorage('spotify', action.data);
                         break;
 
                     case 'SUPPRESS_BROADCAST':
@@ -57806,7 +57827,7 @@ var App = function (_React$Component) {
 			// Check for url-parsed configuration values
 			var url_vars = this.props.location.query;
 			if (url_vars !== undefined && url_vars.host !== undefined && url_vars.port !== undefined) {
-				this.props.mopidyActions.setConfig({
+				this.props.mopidyActions.set({
 					host: url_vars.host,
 					port: url_vars.port
 				});
@@ -62445,7 +62466,7 @@ var InitialSetupModal = function (_React$Component) {
 				initial_setup_complete: true,
 				allow_reporting: this.state.allow_reporting
 			});
-			this.props.mopidyActions.setConfig({
+			this.props.mopidyActions.set({
 				host: this.state.host,
 				port: this.state.port,
 				ssl: this.state.ssl
@@ -67635,6 +67656,8 @@ var Settings = function (_React$Component) {
 			mopidy_host: _this.props.mopidy.host,
 			mopidy_port: _this.props.mopidy.port,
 			mopidy_ssl: _this.props.mopidy.ssl,
+			mopidy_library_artists_uri: _this.props.mopidy.library_artists_uri,
+			mopidy_library_albums_uri: _this.props.mopidy.library_albums_uri,
 			pusher_username: _this.props.pusher.username,
 			input_in_focus: null
 		};
@@ -67670,7 +67693,7 @@ var Settings = function (_React$Component) {
 			this.setState({ input_in_focus: null });
 			e.preventDefault();
 
-			this.props.mopidyActions.setConfig({
+			this.props.mopidyActions.set({
 				host: this.state.mopidy_host,
 				port: this.state.mopidy_port,
 				ssl: this.state.mopidy_ssl
@@ -67681,11 +67704,21 @@ var Settings = function (_React$Component) {
 		}
 	}, {
 		key: 'handleBlur',
-		value: function handleBlur(name, value) {
+		value: function handleBlur(service, name, value) {
 			this.setState({ input_in_focus: null });
 			var data = {};
 			data[name] = value;
-			this.props.coreActions.set(data);
+			this.props[service + 'Actions'].set(data);
+
+			// Any per-field actions
+			switch (name) {
+				case 'library_albums_uri':
+					this.props.mopidyActions.clearLibraryAlbums();
+					break;
+				case 'library_artists_uri':
+					this.props.mopidyActions.clearLibraryArtists();
+					break;
+			}
 		}
 	}, {
 		key: 'handleUsernameChange',
@@ -68042,6 +68075,62 @@ var Settings = function (_React$Component) {
 										'Playing one or more URIs will clear the current play queue first'
 									)
 								)
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Artist library URI'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								value: this.state.mopidy_library_artists_uri,
+								onChange: function onChange(e) {
+									return _this2.setState({ mopidy_library_artists_uri: e.target.value });
+								},
+								onBlur: function onBlur(e) {
+									return _this2.handleBlur('mopidy', 'library_artists_uri', e.target.value);
+								}
+							}),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'URI used for collecting library artists'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Album library URI'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								value: this.state.mopidy_library_albums_uri,
+								onChange: function onChange(e) {
+									return _this2.setState({ mopidy_library_albums_uri: e.target.value });
+								},
+								onBlur: function onBlur(e) {
+									return _this2.handleBlur('mopidy', 'library_albums_uri', e.target.value);
+								}
+							}),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'URI used for collecting library albums'
 							)
 						)
 					),

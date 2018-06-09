@@ -20,13 +20,6 @@ export default function reducer(mopidy = {}, action){
         case 'MOPIDY_DISCONNECTED':
             return Object.assign({}, mopidy, { connected: false, connecting: false });
 
-        case 'MOPIDY_SET_CONFIG':
-            return Object.assign({}, mopidy, {
-                host: action.config.host, 
-                port: action.config.port,
-                ssl: action.config.ssl
-            });
-
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
                 tlid: action.tlid
@@ -36,6 +29,9 @@ export default function reducer(mopidy = {}, action){
             return Object.assign({}, mopidy, {
                 uri_schemes: action.uri_schemes
             });
+
+        case 'MOPIDY_SET':
+            return Object.assign({}, mopidy, action.data);
 
 
         /**
@@ -142,6 +138,9 @@ export default function reducer(mopidy = {}, action){
             }
             return Object.assign({}, mopidy, { library_artists: helpers.removeDuplicates(uris) })
 
+        case 'MOPIDY_CLEAR_LIBRARY_ARTISTS':
+            return Object.assign({}, mopidy, { library_artists: null })
+
         case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
             if (mopidy.library_albums){
                 var uris = [...mopidy.library_albums,...action.uris]
@@ -149,6 +148,9 @@ export default function reducer(mopidy = {}, action){
                 var uris = action.uris
             }
             return Object.assign({}, mopidy, { library_albums: helpers.removeDuplicates(uris) })
+
+        case 'MOPIDY_CLEAR_LIBRARY_ALBUMS':
+            return Object.assign({}, mopidy, { library_albums: null })
 
 
         /**

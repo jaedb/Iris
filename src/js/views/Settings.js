@@ -29,6 +29,8 @@ class Settings extends React.Component {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
 			mopidy_ssl: this.props.mopidy.ssl,
+			mopidy_library_artists_uri: this.props.mopidy.library_artists_uri,
+			mopidy_library_albums_uri: this.props.mopidy.library_albums_uri,
 			pusher_username: this.props.pusher.username,
 			input_in_focus: null
 		}
@@ -59,7 +61,7 @@ class Settings extends React.Component {
 		this.setState({input_in_focus: null});
 		e.preventDefault();
 		
-		this.props.mopidyActions.setConfig({
+		this.props.mopidyActions.set({
 			host: this.state.mopidy_host,
 			port: this.state.mopidy_port,
 			ssl: this.state.mopidy_ssl
@@ -69,11 +71,21 @@ class Settings extends React.Component {
 		return false;
 	}
 
-	handleBlur(name, value){
-		this.setState({input_in_focus: null})
-		var data = {}
-		data[name] = value
-		this.props.coreActions.set(data)
+	handleBlur(service, name, value){
+		this.setState({input_in_focus: null});
+		var data = {};
+		data[name] = value;
+		this.props[service+'Actions'].set(data);
+
+		// Any per-field actions
+		switch (name){
+			case 'library_albums_uri':
+				this.props.mopidyActions.clearLibraryAlbums();
+				break;
+			case 'library_artists_uri':
+				this.props.mopidyActions.clearLibraryArtists();
+				break;
+		}
 	}
 
 	handleUsernameChange(username){
@@ -274,6 +286,36 @@ class Settings extends React.Component {
 									<span className="tooltip">Playing one or more URIs will clear the current play queue first</span>
 								</span>
 							</label>
+						</div>
+					</div>
+
+					<div className="field">
+						<div className="name">Artist library URI</div>
+						<div className="input">
+							<input 
+								type="text"
+								value={this.state.mopidy_library_artists_uri}
+								onChange={e => this.setState({mopidy_library_artists_uri: e.target.value})}
+								onBlur={e => this.handleBlur('mopidy', 'library_artists_uri', e.target.value)}
+							/>
+							<div className="description">
+								URI used for collecting library artists
+							</div>
+						</div>
+					</div>
+
+					<div className="field">
+						<div className="name">Album library URI</div>
+						<div className="input">
+							<input 
+								type="text"
+								value={this.state.mopidy_library_albums_uri}
+								onChange={e => this.setState({mopidy_library_albums_uri: e.target.value})}
+								onBlur={e => this.handleBlur('mopidy', 'library_albums_uri', e.target.value)}
+							/>
+							<div className="description">
+								URI used for collecting library albums
+							</div>
 						</div>
 					</div>
 

@@ -63,7 +63,9 @@ var initialState = {
 		volume: 0,
 		progress: 0,
 		play_state: false,
-		uri_schemes: []
+		uri_schemes: [],
+		library_albums_uri: 'local:directory?type=album',
+		library_artists_uri: 'local:directory?type=artist'
 	},
 	pusher: {
 		connected: false,

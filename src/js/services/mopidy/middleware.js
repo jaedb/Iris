@@ -1640,7 +1640,7 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
                 if (!last_run){
-                    request(socket, store, 'library.browse', { uri: 'local:directory?type=album' } )
+                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri } )
                         .then(response => {
                             if (response.length <= 0) return
 
@@ -1811,11 +1811,18 @@ const MopidyMiddleware = (function(){
              * ======================================================================================
              **/
             case 'MOPIDY_GET_LIBRARY_ARTISTS':
-                request(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
+                request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri } )
                     .then(response => {
                         if (response.length <= 0) return
 
-                        var uris = helpers.arrayOf('uri',response)
+                        var uris = [];
+                        for (var i = 0; i < response.length; i++){ 
+
+                            // Convert local URI to actual artist URI
+                            // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
+                            response[i].uri = response[i].uri.replace('local:directory?albumartist=','');
+                            uris.push(response[i].uri);
+                        }
 
                         store.dispatch({ 
                             type: 'ARTISTS_LOADED', 
