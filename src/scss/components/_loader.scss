@@ -40,26 +40,28 @@
 }
 
 .body-loader {
-	padding: 35vh 0;
 
 	&.loading {
+		padding: 35vh 0;
+		
 		.loader {
 			opacity: 1;
 		}
 	}
 
 	&.lazy-loader {
-		padding: 20px;
-		height: 40px;
 
-		.loader {			
-			height: 40px;
-			width: 40px;
+		.loader {
 			opacity: 0;
 		}
 
 		&.loading {
+			padding: 20px;
+			height: 40px;
+
 			.loader {
+				height: 40px;
+				width: 40px;
 				opacity: 1;
 			}
 		}

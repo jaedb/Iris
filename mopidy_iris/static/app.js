@@ -348,7 +348,7 @@ var formatAlbum = exports.formatAlbum = function formatAlbum(album) {
 /**
  * Format tracks into our universal format
  *
- * @param tracks = array
+ * @param tracks = object or array of objects
  * @return array
  **/
 var formatTracks = exports.formatTracks = function formatTracks(tracks) {
@@ -357,7 +357,7 @@ var formatTracks = exports.formatTracks = function formatTracks(tracks) {
 		return null;
 	}
 
-	// Handle single recoreds
+	// Handle single records
 	var singular = false;
 	if (tracks.constructor !== Array) {
 		tracks = [tracks];
@@ -16289,8 +16289,13 @@ var TrackList = function (_React$Component) {
 							),
 							_react2.default.createElement(
 								'span',
-								{ className: 'col source' },
-								'Source'
+								{ className: 'col artists' },
+								'Artists'
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'col album' },
+								'Album'
 							),
 							_react2.default.createElement(
 								'span',
@@ -24495,21 +24500,31 @@ var Track = function (_React$Component) {
 			var track_columns = [];
 			var track_actions = [];
 
-			if (track.type == 'history') {
+			if (this.props.context == 'history') {
 
 				track_columns.push(_react2.default.createElement(
 					'span',
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'uri-placeholder grey-text' },
+						{ className: 'grey-text' },
 						track.uri
-					)
+					),
+					track.explicit ? _react2.default.createElement(
+						'span',
+						{ className: 'flag dark' },
+						'EXPLICIT'
+					) : null
 				));
 				track_columns.push(_react2.default.createElement(
 					'span',
-					{ className: 'col source', key: 'source' },
-					helpers.uriSource(track.uri)
+					{ className: 'col artists', key: 'artists' },
+					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
+				));
+				track_columns.push(_react2.default.createElement(
+					'span',
+					{ className: 'col album', key: 'album' },
+					album
 				));
 				track_columns.push(_react2.default.createElement(
 					'span',
@@ -24519,7 +24534,7 @@ var Track = function (_React$Component) {
 						null,
 						_react2.default.createElement(_Dater2.default, { type: 'ago', data: track.played_at }),
 						' ago'
-					) : null
+					) : '-'
 				));
 			} else if (this.props.context == 'queue') {
 
@@ -50914,7 +50929,7 @@ var CoreMiddleware = function () {
                         for (var i = 0; i < action.tracks.length; i++) {
                             var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
 
-                            if (tracks[track.uri]) {
+                            if (tracks[track.uri] !== undefined) {
                                 track = Object.assign({}, tracks[track.uri], track);
                             }
 
@@ -64110,7 +64125,7 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'h4',
 								null,
-								'Releases',
+								'Albums',
 								_react2.default.createElement(_DropdownField2.default, {
 									icon: 'sort',
 									name: 'Sort',
@@ -66177,6 +66192,18 @@ var QueueHistory = function (_React$Component) {
 				)
 			);
 
+			var tracks = [];
+			for (var i = 0; i < this.props.queue_history.length; i++) {
+				var track = Object.assign({}, this.props.queue_history[i]);
+
+				// We have the track in the index, so merge the track objects
+				if (this.props.tracks[track.uri] !== undefined) {
+					track = Object.assign({}, track, this.props.tracks[track.uri]);
+				}
+
+				tracks.push(track);
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view queue-history-view' },
@@ -66191,9 +66218,9 @@ var QueueHistory = function (_React$Component) {
 					{ className: 'content-wrapper' },
 					_react2.default.createElement(_TrackList2.default, {
 						className: 'queue-history-track-list',
-						show_source_icon: true,
 						context: 'history',
-						tracks: this.props.queue_history })
+						tracks: tracks
+					})
 				)
 			);
 		}
@@ -66211,6 +66238,7 @@ var QueueHistory = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
+		tracks: state.core.tracks ? state.core.tracks : {},
 		queue_history: state.mopidy.queue_history ? state.mopidy.queue_history : []
 	};
 };

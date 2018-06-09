@@ -264,7 +264,7 @@ export let formatAlbum = function(album){
 /**
  * Format tracks into our universal format
  *
- * @param tracks = array
+ * @param tracks = object or array of objects
  * @return array
  **/
 export let formatTracks = function(tracks){
@@ -273,7 +273,7 @@ export let formatTracks = function(tracks){
 		return null;
 	}
 
-	// Handle single recoreds
+	// Handle single records
 	var singular = false;
 	if (tracks.constructor !== Array){
 		tracks = [tracks];

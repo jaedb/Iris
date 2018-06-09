@@ -412,7 +412,7 @@ const CoreMiddleware = (function(){
                 for (var i = 0; i < action.tracks.length; i++){
                     var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
 
-                    if (tracks[track.uri]){
+                    if (tracks[track.uri] !== undefined){
                         track = Object.assign({}, tracks[track.uri], track);
                     }
 

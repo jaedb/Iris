@@ -250,7 +250,7 @@ class Artist extends React.Component{
 
 						<div className="albums">
 							<h4>
-								Releases
+								Albums
 								<DropdownField 
 									icon="sort" 
 									name="Sort" 

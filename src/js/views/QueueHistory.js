@@ -45,6 +45,22 @@ class QueueHistory extends React.Component{
 			</span>
 		)
 
+		var tracks = [];
+		for (var i = 0; i < this.props.queue_history.length; i++){
+			var track = Object.assign({}, this.props.queue_history[i]);
+
+			// We have the track in the index, so merge the track objects
+			if (this.props.tracks[track.uri] !== undefined){
+				track = Object.assign(
+					{},
+					track,
+					this.props.tracks[track.uri]
+				);
+			}
+			
+			tracks.push(track);
+		}
+
 		return (
 			<div className="view queue-history-view">
 				<Header options={options} uiActions={this.props.uiActions}>
@@ -54,9 +70,9 @@ class QueueHistory extends React.Component{
 				<section className="content-wrapper">
 					<TrackList
 						className="queue-history-track-list"
-						show_source_icon={true}
 						context="history"
-						tracks={this.props.queue_history} />
+						tracks={tracks}
+					/>
 				</section>
 				
 			</div>
@@ -74,6 +90,7 @@ class QueueHistory extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
+		tracks: (state.core.tracks ? state.core.tracks : {}),
 		queue_history: (state.mopidy.queue_history ? state.mopidy.queue_history : [])
 	}
 }

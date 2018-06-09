@@ -393,7 +393,8 @@ class TrackList extends React.Component{
 					<div className="list-item header track">
 						<div className="liner">
 							<span className="col name">Name</span>
-							<span className="col source">Source</span>
+							<span className="col artists">Artists</span>
+							<span className="col album">Album</span>
 							<span className="col played_at">Started playing</span>
 						</div>
 					</div>
