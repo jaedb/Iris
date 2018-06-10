@@ -289,6 +289,20 @@ class Settings extends React.Component {
 						</div>
 					</div>
 
+					<div className="field sources-priority">
+						<div className="name has-tooltip">
+							Sources priority
+							<span className="tooltip">Order of searching and search results</span>
+						</div>
+						<div className="input">
+			        		<SourcesPriority
+								uri_schemes={this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : []}
+								uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
+			        			uiActions={this.props.uiActions}
+			        		/>
+			        	</div>
+			        </div>
+
 					<div className="field">
 						<div className="name">Artist library URI</div>
 						<div className="input">
@@ -318,20 +332,6 @@ class Settings extends React.Component {
 							</div>
 						</div>
 					</div>
-
-					<div className="field sources-priority">
-						<div className="name has-tooltip">
-							Sources priority
-							<span className="tooltip">Order of searching and search results</span>
-						</div>
-						<div className="input">
-			        		<SourcesPriority
-								uri_schemes={this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : []}
-								uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
-			        			uiActions={this.props.uiActions}
-			        		/>
-			        	</div>
-			        </div>
 
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>

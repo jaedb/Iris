@@ -68080,6 +68080,29 @@ var Settings = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'div',
+						{ className: 'field sources-priority' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name has-tooltip' },
+							'Sources priority',
+							_react2.default.createElement(
+								'span',
+								{ className: 'tooltip' },
+								'Order of searching and search results'
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_SourcesPriority2.default, {
+								uri_schemes: this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : [],
+								uri_schemes_priority: this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : [],
+								uiActions: this.props.uiActions
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'field' },
 						_react2.default.createElement(
 							'div',
@@ -68132,29 +68155,6 @@ var Settings = function (_React$Component) {
 								{ className: 'description' },
 								'URI used for collecting library albums'
 							)
-						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'field sources-priority' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'name has-tooltip' },
-							'Sources priority',
-							_react2.default.createElement(
-								'span',
-								{ className: 'tooltip' },
-								'Order of searching and search results'
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'input' },
-							_react2.default.createElement(_SourcesPriority2.default, {
-								uri_schemes: this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : [],
-								uri_schemes_priority: this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : [],
-								uiActions: this.props.uiActions
-							})
 						)
 					),
 					_react2.default.createElement(
