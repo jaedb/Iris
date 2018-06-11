@@ -114,10 +114,18 @@ class Search extends React.Component{
 
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
-		if (this.props.sort == 'uri'){
-			var sort_map = this.props.uri_schemes_priority;
-		} else {
-			var sort_map = null;
+		var sort = this.props.sort;
+		var sort_reverse = this.props.sort_reverse;
+		var sort_map = null;
+
+		switch (this.props.sort){
+			case 'uri':
+				sort_map = this.props.uri_schemes_priority;
+				break;
+
+			case 'followers.total':
+				sort_reverse = !sort_reverse;
+				break;
 		}
 
 		var artists = [];
@@ -127,7 +135,7 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.artists){
 			artists = [...artists, ...helpers.getIndexedRecords(this.props.artists,this.props.spotify_search_results.artists)];
 		}
-		artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse, sort_map);
+		artists = helpers.sortItems(artists, sort, sort_reverse, sort_map);
 
 		var albums = [];
 		if (this.props.mopidy_search_results.albums){
@@ -135,8 +143,8 @@ class Search extends React.Component{
 		}
 		if (this.props.spotify_search_results.albums){
 			albums = [...albums, ...helpers.getIndexedRecords(this.props.albums,this.props.spotify_search_results.albums)]
-		}		
-		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse, sort_map);
+		}
+		albums = helpers.sortItems(albums, sort, sort_reverse, sort_map);
 
 		var playlists = []
 		if (this.props.mopidy_search_results.playlists){
@@ -145,7 +153,7 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.playlists){
 			playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists,this.props.spotify_search_results.playlists)];
 		}
-		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse, sort_map);
+		playlists = helpers.sortItems(playlists, sort, sort_reverse, sort_map);
 
 		var tracks = [];
 		if (this.props.mopidy_search_results.tracks){
@@ -154,7 +162,8 @@ class Search extends React.Component{
 		if (this.props.spotify_search_results.tracks){
 			tracks = [...tracks, ...this.props.spotify_search_results.tracks];
 		}
-		tracks = helpers.sortItems(tracks, this.props.sort, this.props.sort_reverse, sort_map);
+
+		tracks = helpers.sortItems(tracks, (sort == 'followers.total' ? 'popularity' : sort), sort_reverse, sort_map);
 		
 		switch (context){
 
@@ -314,6 +323,10 @@ class Search extends React.Component{
 	render(){
 		var sort_options = [
 			{
+				value: 'followers.total',
+				label: 'Popularity'
+			},
+			{
 				value: 'name',
 				label: 'Name'
 			},
@@ -390,7 +403,7 @@ const mapStateToProps = (state, ownProps) => {
 		uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
 		mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
 		spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
-		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'name'),
+		sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'followers.total'),
 		sort_reverse: (state.ui.search_results_sort_reverse ? true : false)
 	}
 }
