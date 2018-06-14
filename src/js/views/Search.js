@@ -25,28 +25,21 @@ class Search extends React.Component{
 
 	constructor(props){
 		super(props);
+
+		this.state = {
+			type: 'all',
+			term: ''
+		}
 	}
 
 	componentDidMount(){
-		var context = "all";
-		var term = null;
-		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
-			context = helpers.getFromUri("searchcontext",this.props.params.query);
-			term = helpers.getFromUri("searchterm",this.props.params.query);
-		}
 
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
 
-		if (context && term){
-			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
-				this.props.mopidyActions.getSearchResults(context, term)
-			}
-
-			if (this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
-				this.props.spotifyActions.getSearchResults(context, term)
-			}
-		}
+		// Listen for a query baked-in to the URL
+		// This would be the case when we've clicked from a link elsewhere
+		this.digestUri();
 	}
 
 	componentWillUnmount(){
@@ -54,37 +47,59 @@ class Search extends React.Component{
 		this.props.spotifyActions.clearSearchResults();
 	}
 
-	componentWillReceiveProps(newProps){
+	componentWillReceiveProps(nextProps){
 
-		if (this.props.params && this.props.params.query && this.props.params.query !== ''){
-			var old_context = helpers.getFromUri("searchcontext",this.props.params.query);
-			var old_term = helpers.getFromUri("searchterm",this.props.params.query);
-		} else {
-			var old_context = "all";
-			var old_term = null;
+		// Query changed
+		if (nextProps.params.query !== this.props.params.query){
+			this.digestUri(nextProps);
 		}
 
-		if (newProps.params && newProps.params.query && newProps.params.query !== ''){
-			var context = helpers.getFromUri("searchcontext",newProps.params.query);
-			var term = helpers.getFromUri("searchterm",newProps.params.query);
-		} else {
-			var context = "all";
-			var term = null;
+		// Services came online
+		if (!this.props.mopidy_connected && nextProps.mopidy_connected && nextProps.uri_schemes_search_enabled){
+			this.search(this.state.type, this.state.term, 'mopidy');
+
+			if (nextProps.uri_schemes_search_enabled.includes('spotify:')){
+				this.search(this.state.type, this.state.term, 'spotify');
+			}
+		}
+	}
+
+	handleChange(e){
+		this.setState({term: e.target.value});
+	}
+
+	// Digest the URI query property
+	// Triggered when the URL changes
+	digestUri(props = this.props){
+		if (props.params && props.params.query && props.params.query !== ''){
+			var type = helpers.getFromUri("searchtype", props.params.query);
+			var term = helpers.getFromUri("searchterm", props.params.query);
+
+			if (type){
+				this.setState({type: type});
+			}
+
+			if (term){
+				this.setState({term: term});
+			}
+
+			if (type && term){
+				this.search(type, term);
+			}
+		}
+	}
+
+	search(type = this.state.type, term = this.state.term, provider){
+
+		this.props.mopidyActions.clearSearchResults();
+		this.props.spotifyActions.clearSearchResults();
+
+		if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)){
+			this.props.mopidyActions.getSearchResults(type, term)
 		}
 
-		// Search changed 
-		if (term && context && (term !== old_term || context !== old_context)){
-			
-			this.props.mopidyActions.clearSearchResults();
-			this.props.spotifyActions.clearSearchResults();
-
-			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled){
-				this.props.mopidyActions.getSearchResults(context, term)
-			}
-
-			if (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')){
-				this.props.spotifyActions.getSearchResults(context, term)
-			}
+		if (provider == 'spotify' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:'))){
+			this.props.spotifyActions.getSearchResults(type, term)
 		}
 	}
 
@@ -105,13 +120,6 @@ class Search extends React.Component{
 	}
 
 	renderResults(){
-
-		var context = helpers.getFromUri("searchcontext",this.props.params.query);
-		var term = helpers.getFromUri("searchterm",this.props.params.query);
-		if (!context){
-			context = "all";
-		}
-
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
 		var sort = this.props.sort;
@@ -165,13 +173,13 @@ class Search extends React.Component{
 
 		tracks = helpers.sortItems(tracks, (sort == 'followers.total' ? 'popularity' : sort), sort_reverse, sort_map);
 		
-		switch (context){
+		switch (this.state.type){
 
 			case 'artist':
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+term}>
+							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -189,7 +197,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+term}>
+							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -207,7 +215,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+term}>
+							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -225,7 +233,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+term}>
+							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -246,11 +254,11 @@ class Search extends React.Component{
 					var artists_section = (					
 						<section>
 							<div className="inner">								
-								<URILink unencoded type="search" uri={"search:artist:"+term}>
+								<URILink unencoded type="search" uri={"search:artist:"+this.state.term}>
 									<h4>Artists</h4>
 								</URILink>
 								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
-								{artists.length > 4 ? <URILink unencoded type="search" uri={"search:artist:"+term} className="button grey">
+								{artists.length > 4 ? <URILink unencoded type="search" uri={"search:artist:"+this.state.term} className="button grey">
 									All artists ({artists.length})
 								</URILink> : null}
 							</div>
@@ -264,11 +272,11 @@ class Search extends React.Component{
 					var albums_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:album:"+term}>
+								<URILink unencoded type="search" uri={"search:album:"+this.state.term}>
 									<h4>Albums</h4>
 								</URILink>
 								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
-								{albums.length > 4 ? <URILink unencoded type="search" uri={"search:album:"+term} className="button grey">
+								{albums.length > 4 ? <URILink unencoded type="search" uri={"search:album:"+this.state.term} className="button grey">
 									All albums ({albums.length})
 								</URILink> : null}
 							</div>
@@ -282,11 +290,11 @@ class Search extends React.Component{
 					var playlists_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:playlist:"+term}>
+								<URILink unencoded type="search" uri={"search:playlist:"+this.state.term}>
 									<h4>Playlists</h4>
 								</URILink>
 								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
-								{playlists.length > 4 ? <URILink unencoded type="search" uri={"search:playlist:"+term} className="button grey">
+								{playlists.length > 4 ? <URILink unencoded type="search" uri={"search:playlist:"+this.state.term} className="button grey">
 									All playlists ({playlists.length})
 								</URILink> : null}
 							</div>
@@ -321,6 +329,29 @@ class Search extends React.Component{
 	}
 
 	render(){
+		var type_options = [
+			{
+				value: 'all',
+				label: 'All'
+			},
+			{
+				value: 'artist',
+				label: 'Artist'
+			},
+			{
+				value: 'album',
+				label: 'Album'
+			},
+			{
+				value: 'playlist',
+				label: 'Playlist'
+			},
+			{
+				value: 'track',
+				label: 'Track'
+			}
+		];
+
 		var sort_options = [
 			{
 				value: 'followers.total',
@@ -355,6 +386,13 @@ class Search extends React.Component{
 		var options = (
 			<span>
 				<DropdownField 
+					icon="category" 
+					name="Type" 
+					value={this.state.type} 
+					options={type_options} 
+					handleChange={value => {this.setState({type: value}); this.search(value, this.state.term)}}
+				/>
+				<DropdownField 
 					icon="sort" 
 					name="Sort" 
 					value={this.props.sort} 
@@ -379,8 +417,10 @@ class Search extends React.Component{
 				</Header>
 
 				<SearchForm 
-					query={(this.props.params.query ? this.props.params.query : '')}
-					view={(this.props.params.view ? this.props.params.view : 'all')}
+					type={this.state.type}
+					term={this.state.term}
+					onChange={e => this.handleChange(e)}
+					onSubmit={e => this.search()}
 				/>
 
 				<div className="content-wrapper">

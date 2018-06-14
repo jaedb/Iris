@@ -36,12 +36,12 @@ class Settings extends React.Component {
 		}
 	}
 
-	componentWillReceiveProps(newProps){
+	componentWillReceiveProps(nextProps){
 		var changed = false
 		var state = this.state
 		
-		if (newProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
-			state.pusher_username = newProps.pusher.username
+		if (nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
+			state.pusher_username = nextProps.pusher.username
 			changed = true
 		}
 

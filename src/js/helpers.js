@@ -449,7 +449,7 @@ export let getFromUri = function(element, uri = ""){
     		}
     		break
 
-    	case 'searchcontext':
+    	case 'searchtype':
     		if (exploded[0] == "search"){
 				return exploded[1];
     		}
