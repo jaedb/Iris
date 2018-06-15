@@ -7,6 +7,7 @@ import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
 import ContextMenuTrigger from './ContextMenuTrigger'
+import Popularity from './Popularity'
 
 import * as helpers from '../helpers'
 
@@ -311,6 +312,11 @@ export default class Track extends React.Component{
 					{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 				</span>
 			)
+			track_columns.push(
+				<span className="col popularity" key="popularity">
+					<Popularity popularity={track.popularity} />
+				</span>
+			)
 		}
 
 		track_actions.push(
@@ -338,10 +344,8 @@ export default class Track extends React.Component{
 				onMouseDown={e => this.handleMouseDown(e)}
 				onMouseUp={e => this.handleMouseUp(e)}
 				onMouseMove={e => this.handleMouseMove(e)}
-
 				onDoubleClick={e => this.handleDoubleClick(e)}
 				onContextMenu={e => this.props.handleContextMenu(e)}
-
 				onTouchStart={e => this.handleTouchStart(e)}
 				onTouchEnd={e => this.handleTouchEnd(e)}>
 					{track_actions}

@@ -1,0 +1,19 @@
+
+.popularity-diagram {
+	display: block;
+	margin: 0.15em -2px;
+	text-align: center;
+
+	.bar {
+		display: inline-block;
+		width: 2px;
+		height: 0.5em;
+		margin: 0.25em 1px;
+		background: $white;
+		opacity: 0.25;
+
+		&.filled {
+			opacity: 1;
+		}
+	}
+}

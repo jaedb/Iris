@@ -4831,7 +4831,7 @@ aside {
     color: #a3a19f;
     position: absolute;
     top: 16px;
-    right: 36px; }
+    right: 40px; }
   :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
@@ -4854,11 +4854,13 @@ aside {
 .list.track-list .list-item {
   cursor: pointer; }
   .list.track-list .list-item .col.name {
-    width: 40%; }
+    width: 38%; }
   .list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
     width: 25%; }
   .list.track-list .list-item .col.duration {
     width: 5%; }
+  .list.track-list .list-item .col.popularity {
+    width: 3%; }
   :root .dragging .list.track-list .list-item.hover, .list.track-list .list-item.touch-drag-hover {
     border-top: 3px solid #32b5f2;
     margin-top: -3px;
@@ -5961,6 +5963,20 @@ main header {
         display: none; }
   .services .service {
     margin-top: 5px; } }
+
+.popularity-diagram {
+  display: block;
+  margin: 0.15em -2px;
+  text-align: center; }
+  .popularity-diagram .bar {
+    display: inline-block;
+    width: 2px;
+    height: 0.5em;
+    margin: 0.25em 1px;
+    background: #FFFFFF;
+    opacity: 0.25; }
+    .popularity-diagram .bar.filled {
+      opacity: 1; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }

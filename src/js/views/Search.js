@@ -94,12 +94,15 @@ class Search extends React.Component{
 		this.props.mopidyActions.clearSearchResults();
 		this.props.spotifyActions.clearSearchResults();
 
-		if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)){
-			this.props.mopidyActions.getSearchResults(type, term)
-		}
+		if (type && term){
 
-		if (provider == 'spotify' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:'))){
-			this.props.spotifyActions.getSearchResults(type, term)
+			if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)){
+				this.props.mopidyActions.getSearchResults(type, term)
+			}
+
+			if (provider == 'spotify' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:'))){
+				this.props.spotifyActions.getSearchResults(type, term)
+			}
 		}
 	}
 

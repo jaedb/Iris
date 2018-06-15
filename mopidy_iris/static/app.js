@@ -17346,7 +17346,8 @@ var TrackList = function (_React$Component) {
 								'span',
 								{ className: 'col duration' },
 								'Duration'
-							)
+							),
+							_react2.default.createElement('span', { className: 'col popularity' })
 						)
 					);
 			}
@@ -34530,6 +34531,10 @@ var _ContextMenuTrigger = __webpack_require__(35);
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
+var _Popularity = __webpack_require__(471);
+
+var _Popularity2 = _interopRequireDefault(_Popularity);
+
 var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -34928,6 +34933,11 @@ var Track = function (_React$Component) {
 					{ className: 'col duration', key: 'duration' },
 					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 				));
+				track_columns.push(_react2.default.createElement(
+					'span',
+					{ className: 'col popularity', key: 'popularity' },
+					_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
+				));
 			}
 
 			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'subtle', key: 'context', onTrigger: function onTrigger(e) {
@@ -34966,14 +34976,12 @@ var Track = function (_React$Component) {
 					onMouseMove: function onMouseMove(e) {
 						return _this2.handleMouseMove(e);
 					},
-
 					onDoubleClick: function onDoubleClick(e) {
 						return _this2.handleDoubleClick(e);
 					},
 					onContextMenu: function onContextMenu(e) {
 						return _this2.props.handleContextMenu(e);
 					},
-
 					onTouchStart: function onTouchStart(e) {
 						return _this2.handleTouchStart(e);
 					},
@@ -66987,6 +66995,10 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _Popularity = __webpack_require__(471);
+
+var _Popularity2 = _interopRequireDefault(_Popularity);
+
 var _helpers = __webpack_require__(2);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -67337,6 +67349,11 @@ var Track = function (_React$Component) {
 							'li',
 							null,
 							_react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration })
+						) : null,
+						track.popularity ? _react2.default.createElement(
+							'li',
+							null,
+							_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
 						) : null
 					)
 				),
@@ -68922,12 +68939,15 @@ var Search = function (_React$Component) {
 			this.props.mopidyActions.clearSearchResults();
 			this.props.spotifyActions.clearSearchResults();
 
-			if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
-				this.props.mopidyActions.getSearchResults(type, term);
-			}
+			if (type && term) {
 
-			if (provider == 'spotify' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')) {
-				this.props.spotifyActions.getSearchResults(type, term);
+				if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
+					this.props.mopidyActions.getSearchResults(type, term);
+				}
+
+				if (provider == 'spotify' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')) {
+					this.props.spotifyActions.getSearchResults(type, term);
+				}
 			}
 		}
 	}, {
@@ -79298,6 +79318,101 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Icon = __webpack_require__(6);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Popularity = function (_React$Component) {
+	_inherits(Popularity, _React$Component);
+
+	function Popularity(props) {
+		_classCallCheck(this, Popularity);
+
+		return _possibleConstructorReturn(this, (Popularity.__proto__ || Object.getPrototypeOf(Popularity)).call(this, props));
+	}
+
+	_createClass(Popularity, [{
+		key: 'render',
+		value: function render() {
+			if (this.props.popularity === undefined || this.props.popularity === null) {
+				return null;
+			}
+
+			return _react2.default.createElement(
+				'span',
+				{ className: 'popularity-diagram' },
+				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 10 ? " filled" : "") }),
+				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 30 ? " filled" : "") }),
+				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 50 ? " filled" : "") }),
+				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 70 ? " filled" : "") }),
+				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 90 ? " filled" : "") })
+			);
+		}
+	}]);
+
+	return Popularity;
+}(_react2.default.Component);
+
+exports.default = Popularity;
 
 /***/ })
 /******/ ]);

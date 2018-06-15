@@ -57,7 +57,7 @@
 			color: $mid_grey;
 			position: absolute;
 			top: 16px;
-			right: 36px;
+			right: 40px;
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
@@ -95,7 +95,7 @@
 
 			.col {
 				&.name { 
-					width: 40%;
+					width: 38%;
 				}
 				&.artists,
 				&.album { 
@@ -103,6 +103,9 @@
 				}
 				&.duration {
 					width: 5%;
+				}
+				&.popularity {
+					width: 3%;
 				}
 			}
 

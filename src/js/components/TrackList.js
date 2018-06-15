@@ -423,6 +423,7 @@ class TrackList extends React.Component{
 							<span className="col artists">Artists</span>
 							<span className="col album">Album</span>
 							<span className="col duration">Duration</span>
+							<span className="col popularity"></span>
 						</div>
 					</div>
 				)
