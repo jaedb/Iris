@@ -25,7 +25,6 @@ setup(
         'Mopidy >= 2.0',
         'Mopidy-Local-Images >= 1.0',
         'ConfigObj >= 5.0.6',
-        'raven >= 6.1.0',
         'requests >= 2.0.0',
         'tornado >= 3.2, < 5.0'
     ],
