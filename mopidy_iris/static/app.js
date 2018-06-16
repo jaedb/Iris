@@ -67047,11 +67047,6 @@ var Search = function (_React$Component) {
 				}
 			}
 		}
-	}, {
-		key: 'handleChange',
-		value: function handleChange(e) {
-			this.setState({ term: e.target.value });
-		}
 
 		// Digest the URI query property
 		// Triggered when the URL changes
@@ -67495,13 +67490,12 @@ var Search = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' })
 				),
 				_react2.default.createElement(_SearchForm2.default, {
-					type: this.state.type,
 					term: this.state.term,
-					onChange: function onChange(e) {
-						return _this3.handleChange(e);
+					onBlur: function onBlur(term) {
+						return _this3.setState({ term: term });
 					},
-					onSubmit: function onSubmit(e) {
-						return _this3.search();
+					onSubmit: function onSubmit(term) {
+						return _this3.search(_this3.state.type, term);
 					}
 				}),
 				_react2.default.createElement(
@@ -67592,7 +67586,12 @@ var SearchForm = function (_React$Component) {
 	function SearchForm(props) {
 		_classCallCheck(this, SearchForm);
 
-		return _possibleConstructorReturn(this, (SearchForm.__proto__ || Object.getPrototypeOf(SearchForm)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (SearchForm.__proto__ || Object.getPrototypeOf(SearchForm)).call(this, props));
+
+		_this.state = {
+			term: _this.props.term
+		};
+		return _this;
 	}
 
 	_createClass(SearchForm, [{
@@ -67620,7 +67619,7 @@ var SearchForm = function (_React$Component) {
 					break;
 
 				default:
-					this.props.onSubmit(e);
+					this.props.onSubmit(this.state.term);
 					break;
 			}
 
@@ -67643,9 +67642,12 @@ var SearchForm = function (_React$Component) {
 						type: 'text',
 						placeholder: 'Search...',
 						onChange: function onChange(e) {
-							return _this2.props.onChange(e);
+							return _this2.setState({ term: e.target.value });
 						},
-						value: this.props.term })
+						onBlur: function onBlur(e) {
+							return _this2.props.onBlur(_this2.state.term);
+						},
+						value: this.state.term })
 				)
 			);
 		}

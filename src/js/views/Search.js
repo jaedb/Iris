@@ -64,10 +64,6 @@ class Search extends React.Component{
 		}
 	}
 
-	handleChange(e){
-		this.setState({term: e.target.value});
-	}
-
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
@@ -420,10 +416,9 @@ class Search extends React.Component{
 				</Header>
 
 				<SearchForm 
-					type={this.state.type}
 					term={this.state.term}
-					onChange={e => this.handleChange(e)}
-					onSubmit={e => this.search()}
+					onBlur={term => this.setState({term: term})}
+					onSubmit={term => this.search(this.state.type, term)}
 				/>
 
 				<div className="content-wrapper">

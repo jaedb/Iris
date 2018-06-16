@@ -11,6 +11,10 @@ class SearchForm extends React.Component{
 
 	constructor(props){
 		super(props);
+
+		this.state = {
+			term: this.props.term
+		}
 	}
 
 	handleSubmit(e){
@@ -36,7 +40,7 @@ class SearchForm extends React.Component{
 				break
 
 			default:
-				this.props.onSubmit(e);
+				this.props.onSubmit(this.state.term);
 				break
 		}
 
@@ -50,8 +54,9 @@ class SearchForm extends React.Component{
 					<input					
 						type="text"
 						placeholder="Search..."
-						onChange={e => this.props.onChange(e)}
-						value={ this.props.term } />
+						onChange={e => this.setState({term: e.target.value})}
+						onBlur={e => this.props.onBlur(this.state.term)}
+						value={ this.state.term } />
 					</label>
 			</form>
 		)
