@@ -1,11 +1,11 @@
 
 import * as helpers from '../../helpers'
 
-export function setConfig(config){
-	return {
-		type: 'MOPIDY_SET_CONFIG',
-		config: config
-	}
+export function set(data){
+    return {
+        type: 'MOPIDY_SET',
+        data: data
+    }
 }
 
 export function connect(){
@@ -352,6 +352,12 @@ export function getLibraryArtists(){
 	}
 }
 
+export function clearLibraryArtists(){
+	return { 
+		type: 'MOPIDY_CLEAR_LIBRARY_ARTISTS' 
+	}
+}
+
 export function getArtist(uri){
 	return { 
 		type: 'MOPIDY_GET_ARTIST', 
@@ -385,6 +391,12 @@ export function getAlbums(uris, processor = null){
 export function getLibraryAlbums(){
 	return { 
 		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+	}
+}
+
+export function clearLibraryAlbums(){
+	return { 
+		type: 'MOPIDY_CLEAR_LIBRARY_ALBUMS' 
 	}
 }
 

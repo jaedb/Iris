@@ -13,21 +13,7 @@ class SearchForm extends React.Component{
 		super(props);
 
 		this.state = {
-			query: '',
-			in_focus: false
-		}
-	}
-
-	componentDidMount(){
-		if (this.props.query){
-			var query = this.props.query.replace("search:","");
-			this.setState({query: query});
-		}
-	}
-
-	componentWillReceiveProps(newProps){
-		if (newProps.query && newProps.query != this.state.query && !this.state.in_focus){
-			this.setState({query: newProps.query.replace("search:","")});
+			term: this.props.term
 		}
 	}
 
@@ -35,40 +21,26 @@ class SearchForm extends React.Component{
 		e.preventDefault()
 
 		// check for uri type matching
-		switch (helpers.uriType(this.state.query)){
+		switch (helpers.uriType(this.props.term)){
 
 			case 'album':
-				hashHistory.push(global.baseURL+'album/'+encodeURIComponent(this.state.query))
+				hashHistory.push(global.baseURL+'album/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'artist':
-				hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(this.state.query))
+				hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'playlist':
-				hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(this.state.query))
+				hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'track':
-				hashHistory.push(global.baseURL+'track/'+encodeURIComponent(this.state.query))
+				hashHistory.push(global.baseURL+'track/'+encodeURIComponent(this.props.term))
 				break
 
 			default:
-				var available_views = ["all:","artist:","album:","playlist:",":track"];
-				var view_defined = false;
-				var query = this.state.query;
-
-				for (var i = 0; i < available_views.length; i++){
-					if (query.startsWith(available_views[i])){
-						view_defined = true;
-					}
-				}
-
-				if (!view_defined){
-					query = "all:"+query;
-				}
-
-				hashHistory.push(global.baseURL+'search/search:'+query);
+				this.props.onSubmit(this.state.term);
 				break
 		}
 
@@ -82,10 +54,9 @@ class SearchForm extends React.Component{
 					<input					
 						type="text"
 						placeholder="Search..."
-						onChange={ e => this.setState({ query: e.target.value }) }
-						onFocus={e => this.setState({in_focus: true})}
-						onBlur={e => this.setState({in_focus: false})}
-						value={ this.state.query } />
+						onChange={e => this.setState({term: e.target.value})}
+						onBlur={e => this.props.onBlur(this.state.term)}
+						value={ this.state.term } />
 					</label>
 			</form>
 		)

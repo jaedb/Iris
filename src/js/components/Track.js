@@ -7,6 +7,7 @@ import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
 import URILink from './URILink'
 import ContextMenuTrigger from './ContextMenuTrigger'
+import Popularity from './Popularity'
 
 import * as helpers from '../helpers'
 
@@ -196,21 +197,27 @@ export default class Track extends React.Component{
 		let track_columns = [];
 		let track_actions = [];
 
-		if (track.type == 'history'){
+		if (this.props.context == 'history'){
 
 			track_columns.push(
 				<span className="col name" key="name">
-					{track.name ? track.name : <span className="uri-placeholder grey-text">{track.uri}</span>}
+					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 				</span>
 			)
 			track_columns.push(
-				<span className="col source" key="source">
-					{helpers.uriSource(track.uri)}
+				<span className="col artists" key="artists">
+					{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
+				</span>
+			)
+			track_columns.push(
+				<span className="col album" key="album">
+					{album}
 				</span>
 			)
 			track_columns.push(
 				<span className="col played_at" key="played_at">
-					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : null}
+					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : '-'}
 				</span>
 			)
 
@@ -305,6 +312,11 @@ export default class Track extends React.Component{
 					{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 				</span>
 			)
+			track_columns.push(
+				<span className="col popularity" key="popularity">
+					<Popularity popularity={track.popularity} />
+				</span>
+			)
 		}
 
 		track_actions.push(
@@ -332,10 +344,8 @@ export default class Track extends React.Component{
 				onMouseDown={e => this.handleMouseDown(e)}
 				onMouseUp={e => this.handleMouseUp(e)}
 				onMouseMove={e => this.handleMouseMove(e)}
-
 				onDoubleClick={e => this.handleDoubleClick(e)}
 				onContextMenu={e => this.props.handleContextMenu(e)}
-
 				onTouchStart={e => this.handleTouchStart(e)}
 				onTouchEnd={e => this.handleTouchEnd(e)}>
 					{track_actions}

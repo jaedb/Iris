@@ -58,30 +58,12 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
-            case 'MOPIDY_SET_CONFIG':
-                helpers.setStorage(
-                    'mopidy', 
-                    {
-                        host: action.config.host,
-                        port: action.config.port,
-                        ssl: action.config.ssl
-                    }
-                );
-                break;
-
             case 'MOPIDY_URISCHEMES_FILTERED':
                 helpers.setStorage(
                     'mopidy', 
                     {
                         uri_schemes: action.data
                     }
-                );
-                break;
-
-            case 'SPOTIFY_SET':
-                helpers.setStorage(
-                    'spotify', 
-                    action.data
                 );
                 break;
 
@@ -148,6 +130,20 @@ const localstorageMiddleware = (function(){
                     action.data
                 );
                 break
+
+            case 'MOPIDY_SET':
+                helpers.setStorage(
+                    'mopidy', 
+                    action.data
+                );
+                break;
+
+            case 'SPOTIFY_SET':
+                helpers.setStorage(
+                    'spotify', 
+                    action.data
+                );
+                break;
 
             case 'SUPPRESS_BROADCAST':
                 var ui = helpers.getStorage('ui');

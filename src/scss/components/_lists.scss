@@ -57,7 +57,7 @@
 			color: $mid_grey;
 			position: absolute;
 			top: 16px;
-			right: 36px;
+			right: 40px;
 		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
@@ -95,7 +95,7 @@
 
 			.col {
 				&.name { 
-					width: 40%;
+					width: 38%;
 				}
 				&.artists,
 				&.album { 
@@ -103,6 +103,9 @@
 				}
 				&.duration {
 					width: 5%;
+				}
+				&.popularity {
+					width: 3%;
 				}
 			}
 
@@ -138,67 +141,75 @@
 		}
 	}
 
-	&.playlist-list .list-item {
-		cursor: pointer;
+	&.playlist-list {
+		.list-item {
+			cursor: pointer;
 
-		.col {
-			&.name { 
-				width: 50%;
-			}
-			&.owner {
-				width: 20%
-			}
-			&.source,
-			&.can_edit,
-			&.tracks_total,
-			&.popularity {
-				width: 10%;
+			.col {
+				&.name { 
+					width: 50%;
+				}
+				&.owner {
+					width: 20%
+				}
+				&.source,
+				&.can_edit,
+				&.tracks_total,
+				&.popularity {
+					width: 10%;
+				}
 			}
 		}
 	}
 
-	&.album-list .list-item {
-		cursor: pointer;
+	&.album-list {
+		.list-item {
+			cursor: pointer;
 
-		.col {
-			&.name,
-			&.artists { 
-				width: 30%;
-			}
-			&.added_at,
-			&.release_date {
-				width: 15%;
-			}
-			&.tracks_total {
-				width: 10%;
+			.col {
+				&.name,
+				&.artists { 
+					width: 30%;
+				}
+				&.added_at,
+				&.release_date {
+					width: 15%;
+				}
+				&.tracks_total {
+					width: 10%;
+				}
 			}
 		}
 	}
 
-	&.library-local-album-list .list-item{
-		cursor: pointer;
+	&.library-local-album-list {
+		.list-item {
+			cursor: pointer;
 
-		.col {
-			&.name,
-			&.artists { 
-				width: 45%;
-			}
-			&.tracks_total {
-				width: 10%;
+			.col {
+				&.name,
+				&.artists { 
+					width: 45%;
+				}
+				&.tracks_total {
+					width: 10%;
+				}
 			}
 		}
 	}
 
-	&.artist-list .list-item {
-		cursor: pointer;
+	&.artist-list {
+		.list-item {
+			cursor: pointer;
 
-		.col {
-			&.name { 
-				width: 70%;
-			}
-			&.followers_total,
-			&.popularity {
-				width: 15%;
+			.col {
+				&.name { 
+					width: 70%;
+				}
+				&.followers_total,
+				&.popularity {
+					width: 15%;
+				}
 			}
 		}
 	}
@@ -236,16 +247,19 @@
 		}
 	}
 
-	&.queue-history-track-list .list-item {
-		cursor: pointer;
-		
-		.col {
-			&.name { 
-				width: 60%;
-			}
-			&.played_at,
-			&.source {
-				width: 20%;
+	&.queue-history-track-list {
+		.list-item {
+			cursor: pointer;
+			
+			.col {
+				&.name,
+				&.artists,
+				&.album { 
+					width: 25%;
+				}
+				&.played_at {
+					width: 15%;
+				}
 			}
 		}
 	}

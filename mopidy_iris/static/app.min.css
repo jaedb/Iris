@@ -3681,19 +3681,21 @@ input[type="submit"] {
     border-bottom-color: transparent;
     border-right-color: #32b5f2; }
 
-.body-loader {
+.body-loader.loading {
   padding: 35vh 0; }
   .body-loader.loading .loader {
     opacity: 1; }
-  .body-loader.lazy-loader {
-    padding: 20px;
-    height: 40px; }
-    .body-loader.lazy-loader .loader {
-      height: 40px;
-      width: 40px;
-      opacity: 0; }
-    .body-loader.lazy-loader.loading .loader {
-      opacity: 1; }
+
+.body-loader.lazy-loader .loader {
+  opacity: 0; }
+
+.body-loader.lazy-loader.loading {
+  padding: 20px;
+  height: 40px; }
+  .body-loader.lazy-loader.loading .loader {
+    height: 40px;
+    width: 40px;
+    opacity: 1; }
 
 .mini-loader .loader {
   width: 20px;
@@ -4829,7 +4831,7 @@ aside {
     color: #a3a19f;
     position: absolute;
     top: 16px;
-    right: 36px; }
+    right: 40px; }
   :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
@@ -4852,11 +4854,13 @@ aside {
 .list.track-list .list-item {
   cursor: pointer; }
   .list.track-list .list-item .col.name {
-    width: 40%; }
+    width: 38%; }
   .list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
     width: 25%; }
   .list.track-list .list-item .col.duration {
     width: 5%; }
+  .list.track-list .list-item .col.popularity {
+    width: 3%; }
   :root .dragging .list.track-list .list-item.hover, .list.track-list .list-item.touch-drag-hover {
     border-top: 3px solid #32b5f2;
     margin-top: -3px;
@@ -4930,10 +4934,10 @@ aside {
 
 .list.queue-history-track-list .list-item {
   cursor: pointer; }
-  .list.queue-history-track-list .list-item .col.name {
-    width: 60%; }
-  .list.queue-history-track-list .list-item .col.played_at, .list.queue-history-track-list .list-item .col.source {
-    width: 20%; }
+  .list.queue-history-track-list .list-item .col.name, .list.queue-history-track-list .list-item .col.artists, .list.queue-history-track-list .list-item .col.album {
+    width: 25%; }
+  .list.queue-history-track-list .list-item .col.played_at {
+    width: 15%; }
 
 .list.related-artist-list {
   padding-bottom: 20px;
@@ -5960,6 +5964,20 @@ main header {
   .services .service {
     margin-top: 5px; } }
 
+.popularity-diagram {
+  display: block;
+  margin: 0.15em -2px;
+  text-align: center; }
+  .popularity-diagram .bar {
+    display: inline-block;
+    width: 2px;
+    height: 0.5em;
+    margin: 0.25em 1px;
+    background: #cecac4;
+    opacity: 0.25; }
+    .popularity-diagram .bar.filled {
+      opacity: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -6304,7 +6322,7 @@ main .track-view {
   position: absolute;
   top: 30px;
   left: 90px;
-  right: 250px; }
+  right: 330px; }
   .search-view .search-form input {
     font-family: "Overpass";
     letter-spacing: -0.04em;

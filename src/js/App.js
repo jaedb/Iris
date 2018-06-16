@@ -84,7 +84,7 @@ class App extends React.Component{
 		// Check for url-parsed configuration values
 		var url_vars = this.props.location.query;
 		if (url_vars !== undefined && url_vars.host !== undefined && url_vars.port !== undefined){
-			this.props.mopidyActions.setConfig({
+			this.props.mopidyActions.set({
 				host: url_vars.host,
 				port: url_vars.port
 			});

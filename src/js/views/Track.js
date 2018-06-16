@@ -16,6 +16,7 @@ import LazyLoadListener from '../components/LazyLoadListener'
 import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import URILink from '../components/URILink'
 import Icon from '../components/Icon'
+import Popularity from '../components/Popularity'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -241,6 +242,7 @@ class Track extends React.Component{
 							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
 						{track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
+						{track.popularity ? <li><Popularity popularity={track.popularity} /></li> : null}
 					</ul>
 				</div>
 
