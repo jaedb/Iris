@@ -4854,11 +4854,11 @@ aside {
 .list.track-list .list-item {
   cursor: pointer; }
   .list.track-list .list-item .col.name {
-    width: 38%; }
+    width: 36%; }
   .list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
     width: 25%; }
   .list.track-list .list-item .col.duration {
-    width: 5%; }
+    width: 7%; }
   .list.track-list .list-item .col.popularity {
     width: 3%; }
   :root .dragging .list.track-list .list-item.hover, .list.track-list .list-item.touch-drag-hover {
@@ -4911,9 +4911,11 @@ aside {
 .list.artist-list .list-item {
   cursor: pointer; }
   .list.artist-list .list-item .col.name {
-    width: 70%; }
-  .list.artist-list .list-item .col.followers_total, .list.artist-list .list-item .col.popularity {
-    width: 15%; }
+    width: 60%; }
+  .list.artist-list .list-item .col.followers_total {
+    width: 25%; }
+  .list.artist-list .list-item .col.popularity {
+    width: 10%; }
 
 .list.queue-track-list {
   cursor: pointer; }
@@ -4931,6 +4933,8 @@ aside {
       .list.queue-track-list .list-item .col.added .from:after {
         content: ')';
         display: inline-block; }
+    .list.queue-track-list .list-item .col.duration {
+      width: 5%; }
 
 .list.queue-history-track-list .list-item {
   cursor: pointer; }
@@ -4999,8 +5003,15 @@ aside {
       content: ' followers'; }
     .list .list-item .col.tracks_total:after {
       content: ' tracks'; }
-    .list .list-item .col.popularity:after {
-      content: '% popularity'; }
+    .list .list-item .col.popularity {
+      padding-left: 14px; }
+      .list .list-item .col.popularity:before {
+        content: '\2022' !important;
+        display: inline-block;
+        margin-left: -8px;
+        padding-right: 6px; }
+      .list .list-item .col.popularity .popularity-bars {
+        margin: 0.1em 0 0 0; }
     .list .list-item .col.album, .list .list-item .col.can_edit, .list .list-item .col.release_date {
       display: none; }
     .list .list-item.header {
@@ -5033,7 +5044,25 @@ aside {
   .list.queue-history-track-list .list-item .source {
     display: none !important; }
   .list.track-list .list-item.can-sort {
-    padding-left: 40px !important; } }
+    padding-left: 40px !important; }
+  .list.album-list .list-item .col.added_at, .list.album-list .list-item .col.source {
+    display: none !important; }
+  .list.album-list .list-item .col.tracks_total {
+    padding-left: 14px; }
+    .list.album-list .list-item .col.tracks_total:before {
+      content: '\2022' !important;
+      display: inline-block;
+      margin-left: -8px;
+      padding-right: 6px; }
+  .list.playlist-list .list-item .col.can_edit, .list.playlist-list .list-item .col.source {
+    display: none !important; }
+  .list.playlist-list .list-item .col.tracks_total {
+    padding-left: 14px; }
+    .list.playlist-list .list-item .col.tracks_total:before {
+      content: '\2022' !important;
+      display: inline-block;
+      margin-left: -8px;
+      padding-right: 6px; } }
 
 .grid .grid-item-wrapper {
   display: inline-block; }
@@ -5773,15 +5802,21 @@ main header {
     transition: all 0.2s ease-in-out;
     display: inline-block;
     border-radius: 3px;
-    padding: 3px 6px;
+    padding: 6px 8px 4px 3px;
     margin: 0 5px 5px 0;
     cursor: move;
     font-size: 12px;
-    font-weight: normal; }
+    font-weight: normal;
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF; }
     .sources-priority-field .source.sortable-chosen {
       background: #383734; }
+    .sources-priority-field .source .icon {
+      font-size: 14px;
+      padding-right: 0.1em;
+      color: #121212; }
     .sources-priority-field .source:hover {
-      background: #FFFFFF; }
+      background: rgba(255, 255, 255, 0.2); }
     .sources-priority-field .source:focus, .sources-priority-field .source:active {
       -webkit-transition: none !important;
       -moz-transition: none !important;
@@ -5964,19 +5999,22 @@ main header {
   .services .service {
     margin-top: 5px; } }
 
-.popularity-diagram {
-  display: block;
+.popularity-bars {
+  display: inline-block;
   margin: 0.15em -2px;
-  text-align: center; }
-  .popularity-diagram .bar {
+  vertical-align: top; }
+  .popularity-bars .bar {
     display: inline-block;
     width: 2px;
     height: 0.5em;
     margin: 0.25em 1px;
     background: #cecac4;
     opacity: 0.25; }
-    .popularity-diagram .bar.filled {
+    .popularity-bars .bar.filled {
       opacity: 1; }
+
+.popularity-value {
+  display: none; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
