@@ -120,41 +120,28 @@ class LibraryPlaylists extends React.Component{
 		playlists = playlists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			if (this.props.slim_mode){
-				var columns = [
-					{
-						label: 'Name',
-						name: 'name'
-					},
-					{
-						label: 'Tracks',
-						name: 'tracks_total'
-					}
-				]
-			} else {
-				var columns = [
-					{
-						label: 'Name',
-						name: 'name'
-					},
-					{
-						label: 'Owner',
-						name: 'owner'
-					},
-					{
-						label: 'Tracks',
-						name: 'tracks_total'
-					},
-					{
-						label: 'Editable',
-						name: 'can_edit'
-					},
-					{
-						label: 'Source',
-						name: 'source'
-					}
-				]
-			}
+			var columns = [
+				{
+					label: 'Name',
+					name: 'name'
+				},
+				{
+					label: 'Owner',
+					name: 'owner'
+				},
+				{
+					label: 'Tracks',
+					name: 'tracks_total'
+				},
+				{
+					label: 'Editable',
+					name: 'can_edit'
+				},
+				{
+					label: 'Source',
+					name: 'source'
+				}
+			];
 
 			return (
 				<section className="content-wrapper">

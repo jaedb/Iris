@@ -20351,6 +20351,10 @@ var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _Popularity = __webpack_require__(99);
+
+var _Popularity2 = _interopRequireDefault(_Popularity);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -20463,6 +20467,7 @@ var List = function (_React$Component) {
 				{ type: 'user', uri: value.uri },
 				value.id
 			);
+			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
 			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
 			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
 			if (typeof value === 'number') return _react2.default.createElement(
@@ -24817,12 +24822,22 @@ var Popularity = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'span',
-				{ className: 'popularity-diagram' },
-				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 10 ? " filled" : "") }),
-				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 30 ? " filled" : "") }),
-				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 50 ? " filled" : "") }),
-				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 70 ? " filled" : "") }),
-				_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 90 ? " filled" : "") })
+				{ className: 'popularity' },
+				_react2.default.createElement(
+					'span',
+					{ className: 'popularity-bars' },
+					_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 10 ? " filled" : "") }),
+					_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 30 ? " filled" : "") }),
+					_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 50 ? " filled" : "") }),
+					_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 70 ? " filled" : "") }),
+					_react2.default.createElement('span', { className: "bar" + (this.props.popularity > 90 ? " filled" : "") })
+				),
+				_react2.default.createElement(
+					'span',
+					{ className: 'popularity-value' },
+					this.props.popularity,
+					'% popularity'
+				)
 			);
 		}
 	}]);
@@ -64021,8 +64036,9 @@ var Artist = function (_React$Component) {
 
 			var albums = [];
 			if (this.props.artist.albums_uris) {
-				for (var i = 0; i < this.props.artist.albums_uris.length; i++) {
-					var uri = this.props.artist.albums_uris[i];
+				var albums_uris = helpers.removeDuplicates(this.props.artist.albums_uris);
+				for (var i = 0; i < albums_uris.length; i++) {
+					var uri = albums_uris[i];
 					if (this.props.albums.hasOwnProperty(uri)) {
 						albums.push(this.props.albums[uri]);
 					}
@@ -68647,6 +68663,7 @@ var SourcesPriority = function (_React$Component) {
 					return _react2.default.createElement(
 						'span',
 						{ className: 'source flag grey', key: scheme, 'data-id': scheme },
+						_react2.default.createElement(_Icon2.default, { name: 'drag_indicator' }),
 						name
 					);
 				})
@@ -76920,32 +76937,22 @@ var LibraryPlaylists = function (_React$Component) {
 			playlists = playlists.slice(0, this.state.limit);
 
 			if (this.props.view == 'list') {
-				if (this.props.slim_mode) {
-					var columns = [{
-						label: 'Name',
-						name: 'name'
-					}, {
-						label: 'Tracks',
-						name: 'tracks_total'
-					}];
-				} else {
-					var columns = [{
-						label: 'Name',
-						name: 'name'
-					}, {
-						label: 'Owner',
-						name: 'owner'
-					}, {
-						label: 'Tracks',
-						name: 'tracks_total'
-					}, {
-						label: 'Editable',
-						name: 'can_edit'
-					}, {
-						label: 'Source',
-						name: 'source'
-					}];
-				}
+				var columns = [{
+					label: 'Name',
+					name: 'name'
+				}, {
+					label: 'Owner',
+					name: 'owner'
+				}, {
+					label: 'Tracks',
+					name: 'tracks_total'
+				}, {
+					label: 'Editable',
+					name: 'can_edit'
+				}, {
+					label: 'Source',
+					name: 'source'
+				}];
 
 				return _react2.default.createElement(
 					'section',

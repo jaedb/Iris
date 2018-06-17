@@ -95,14 +95,14 @@
 
 			.col {
 				&.name { 
-					width: 38%;
+					width: 36%;
 				}
 				&.artists,
 				&.album { 
 					width: 25%;
 				}
 				&.duration {
-					width: 5%;
+					width: 7%;
 				}
 				&.popularity {
 					width: 3%;
@@ -204,11 +204,13 @@
 
 			.col {
 				&.name { 
-					width: 70%;
+					width: 60%;
 				}
-				&.followers_total,
+				&.followers_total {
+					width: 25%;
+				}
 				&.popularity {
-					width: 15%;
+					width: 10%;
 				}
 			}
 		}
@@ -242,6 +244,9 @@
 							display: inline-block;
 						}
 					}
+				}
+				&.duration {
+					width: 5%;
 				}
 			}
 		}
@@ -350,8 +355,14 @@
 					content: ' tracks';
 				}
 
-				&.popularity:after {
-					content: '% popularity';
+				&.popularity {
+					@include bullet();
+
+					.popularity {
+						&-bars {
+							margin: 0.1em 0 0 0;
+						}
+					}
 				}
 
 				&.album,
@@ -415,8 +426,40 @@
 		}
 
 		&.track-list {
-			.list-item.can-sort {
-				padding-left: 40px !important;
+			.list-item {
+				&.can-sort {
+					padding-left: 40px !important;
+				}
+			}
+		}
+
+		&.album-list {
+			.list-item {
+				.col {
+					&.added_at,
+					&.source {
+						display: none !important;
+					}
+
+					&.tracks_total {
+						@include bullet();
+					}
+				}
+			}
+		}
+
+		&.playlist-list {
+			.list-item {
+				.col {
+					&.can_edit,
+					&.source {
+						display: none !important;
+					}
+
+					&.tracks_total {
+						@include bullet();
+					}
+				}
 			}
 		}
 	}

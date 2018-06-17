@@ -6,18 +6,26 @@
 		@include animate();
 		display: inline-block;
 		border-radius: 3px;
-		padding: 3px 6px;
+		padding: 6px 8px 4px 3px;
 		margin: 0 5px 5px 0;
 		cursor: move;
 		font-size: 12px;
 		font-weight: normal;
+		background: rgba(255,255,255,0.1);
+		color: $white;
 
 		&.sortable-chosen {
 			background: $grey;
 		}
 
+		.icon {
+			font-size: 14px;
+			padding-right: 0.1em;
+			color: $darkest_grey;
+		}
+
 		&:hover {
-			background: $white;
+			background: rgba(255,255,255,0.2);
 		}
 
 		&:focus,

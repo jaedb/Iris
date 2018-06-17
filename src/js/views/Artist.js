@@ -134,8 +134,9 @@ class Artist extends React.Component{
 
 		var albums = [];
 		if (this.props.artist.albums_uris){
-			for (var i = 0; i < this.props.artist.albums_uris.length; i++){
-				var uri = this.props.artist.albums_uris[i];
+			var albums_uris = helpers.removeDuplicates(this.props.artist.albums_uris);
+			for (var i = 0; i < albums_uris.length; i++){
+				var uri = albums_uris[i];
 				if (this.props.albums.hasOwnProperty(uri)){
 					albums.push(this.props.albums[uri]);
 				}
