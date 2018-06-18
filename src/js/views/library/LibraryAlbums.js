@@ -138,7 +138,9 @@ class LibraryAlbums extends React.Component{
 			}
 		}
 
-		albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse)
+		if (this.props.sort){
+			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+		}
 
 		if (this.state.filter && this.state.filter !== ''){
 			albums = helpers.applyFilter('name', this.state.filter, albums)
@@ -226,6 +228,10 @@ class LibraryAlbums extends React.Component{
 
 		var sort_options = [
 			{
+				value: null,
+				label: 'Default'
+			},
+			{
 				value: 'name',
 				label: 'Name'
 			},
@@ -255,7 +261,7 @@ class LibraryAlbums extends React.Component{
 					name="Sort"
 					value={this.props.sort} 
 					options={sort_options} 
-					selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
+					selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null} 
 					handleChange={val => {this.setSort(val); this.props.uiActions.hideContextMenu() }}
 				/>
 				<DropdownField
@@ -306,8 +312,8 @@ const mapStateToProps = (state, ownProps) => {
 		spotify_library_albums_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null),
 		view: state.ui.library_albums_view,
 		source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
-		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name'),
-		sort_reverse: (state.ui.library_albums_sort_reverse ? true : false)
+		sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : null),
+		sort_reverse: (state.ui.library_albums_sort_reverse ? state.ui.library_albums_sort_reverse : false)
 	}
 }
 
