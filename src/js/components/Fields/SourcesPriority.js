@@ -45,6 +45,7 @@ export default class SourcesPriority extends React.Component{
 
 							return (
 								<span className="source flag grey" key={scheme} data-id={scheme}>
+									<Icon name="drag_indicator" />
 									{name}
 								</span>
 							);	

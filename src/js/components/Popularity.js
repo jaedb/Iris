@@ -15,12 +15,17 @@ export default class Popularity extends React.Component{
 		}
 
 		return (
-			<span className="popularity-diagram">
-				<span className={"bar"+(this.props.popularity > 10 ? " filled" : "")}></span>
-				<span className={"bar"+(this.props.popularity > 30 ? " filled" : "")}></span>
-				<span className={"bar"+(this.props.popularity > 50 ? " filled" : "")}></span>
-				<span className={"bar"+(this.props.popularity > 70 ? " filled" : "")}></span>
-				<span className={"bar"+(this.props.popularity > 90 ? " filled" : "")}></span>
+			<span className="popularity">
+				<span className="popularity-bars">
+					<span className={"bar"+(this.props.popularity > 10 ? " filled" : "")}></span>
+					<span className={"bar"+(this.props.popularity > 30 ? " filled" : "")}></span>
+					<span className={"bar"+(this.props.popularity > 50 ? " filled" : "")}></span>
+					<span className={"bar"+(this.props.popularity > 70 ? " filled" : "")}></span>
+					<span className={"bar"+(this.props.popularity > 90 ? " filled" : "")}></span>
+				</span>
+				<span className="popularity-value">
+					{this.props.popularity}% popularity
+				</span>
 			</span>
 		);
 	}

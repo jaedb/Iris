@@ -108,7 +108,9 @@ class LibraryPlaylists extends React.Component{
 			}
 		}
 
-		playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+		if (this.props.sort){
+			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+		}
 		playlists = helpers.removeDuplicates(playlists);
 
 		if (this.state.filter !== ''){
@@ -120,41 +122,28 @@ class LibraryPlaylists extends React.Component{
 		playlists = playlists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			if (this.props.slim_mode){
-				var columns = [
-					{
-						label: 'Name',
-						name: 'name'
-					},
-					{
-						label: 'Tracks',
-						name: 'tracks_total'
-					}
-				]
-			} else {
-				var columns = [
-					{
-						label: 'Name',
-						name: 'name'
-					},
-					{
-						label: 'Owner',
-						name: 'owner'
-					},
-					{
-						label: 'Tracks',
-						name: 'tracks_total'
-					},
-					{
-						label: 'Editable',
-						name: 'can_edit'
-					},
-					{
-						label: 'Source',
-						name: 'source'
-					}
-				]
-			}
+			var columns = [
+				{
+					label: 'Name',
+					name: 'name'
+				},
+				{
+					label: 'Owner',
+					name: 'owner'
+				},
+				{
+					label: 'Tracks',
+					name: 'tracks_total'
+				},
+				{
+					label: 'Editable',
+					name: 'can_edit'
+				},
+				{
+					label: 'Source',
+					name: 'source'
+				}
+			];
 
 			return (
 				<section className="content-wrapper">
@@ -211,6 +200,10 @@ class LibraryPlaylists extends React.Component{
 
 		var sort_options = [
 			{
+				value: null,
+				label: 'Default'
+			},
+			{
 				value: 'name',
 				label: 'Name'
 			},
@@ -242,7 +235,7 @@ class LibraryPlaylists extends React.Component{
 					name="Sort"
 					value={this.props.sort}
 					options={sort_options}
-					selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
+					selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null} 
 					handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }}
 				/>
 				<DropdownField
@@ -297,8 +290,8 @@ const mapStateToProps = (state, ownProps) => {
 		me_id: (state.spotify.me ? state.spotify.me.id : false),
 		view: state.ui.library_playlists_view,
 		source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
-		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name'),
-		sort_reverse: (state.ui.library_playlists_sort_reverse ? true : false),
+		sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
+		sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),
 		playlists: state.core.playlists
 	}
 }

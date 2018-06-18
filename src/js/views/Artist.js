@@ -134,13 +134,17 @@ class Artist extends React.Component{
 
 		var albums = [];
 		if (this.props.artist.albums_uris){
-			for (var i = 0; i < this.props.artist.albums_uris.length; i++){
-				var uri = this.props.artist.albums_uris[i];
+			var albums_uris = helpers.removeDuplicates(this.props.artist.albums_uris);
+			for (var i = 0; i < albums_uris.length; i++){
+				var uri = albums_uris[i];
 				if (this.props.albums.hasOwnProperty(uri)){
 					albums.push(this.props.albums[uri]);
 				}
 			}
-			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+
+			if (this.props.sort){
+				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+			}
 
 			if (this.props.filter){
 				albums = helpers.applyFilter('album_type', this.props.filter, albums);
@@ -183,6 +187,10 @@ class Artist extends React.Component{
 			default:
 
 				var sort_options = [
+					{
+						value: null,
+						label: 'Default'
+					},
 					{
 						value: 'name',
 						label: 'Name'
@@ -256,7 +264,7 @@ class Artist extends React.Component{
 									name="Sort" 
 									value={this.props.sort} 
 									options={sort_options} 
-									selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} 
+									selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
 									handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }}
 								/>
 								<DropdownField 
@@ -350,7 +358,7 @@ const mapStateToProps = (state, ownProps) => {
 		local_library_artists: state.mopidy.library_artists,
 		albums: (state.core.albums ? state.core.albums : []),
 		filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
-		sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : 'name'),
+		sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
 		sort_reverse: (state.ui.artist_albums_sort_reverse ? true : false),
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected

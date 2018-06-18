@@ -9,6 +9,7 @@ import Dater from './Dater'
 import URILink from './URILink'
 import ContextMenuTrigger from './ContextMenuTrigger'
 import Icon from './Icon'
+import Popularity from './Popularity'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
@@ -77,6 +78,7 @@ class List extends React.Component{
 
 		if (key_string === 'added_at') return <span><Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
+		if (key_string === 'popularity') return <Popularity full popularity={value} />
 		if (key[0] === 'artists') return <ArtistSentence artists={value} />
 		if (value === true) return <Icon name="check" />
 		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>
