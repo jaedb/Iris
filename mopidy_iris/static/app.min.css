@@ -4852,41 +4852,11 @@ aside {
     .list .list-item .drag-zone * {
       pointer-events: none; }
   .list .list-item .context-menu-trigger {
-    position: relative;
     position: absolute;
     top: 0;
     right: 0;
     font-size: 14px;
     z-index: 2; }
-
-@keyframes click_feedback {
-  0% {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    padding-bottom: 100%;
-    opacity: 1; }
-  100% {
-    top: 25%;
-    left: -25%;
-    width: 150%;
-    padding-bottom: 150%;
-    opacity: 0; } }
-    .list .list-item .context-menu-trigger:after {
-      content: '';
-      display: block;
-      position: absolute;
-      background: rgba(255, 255, 255, 0.5);
-      z-index: 1;
-      opacity: 0;
-      border-radius: 50%;
-      margin-top: -50%;
-      pointer-events: none; }
-    .list .list-item .context-menu-trigger:focus:after, .list .list-item .context-menu-trigger:active:after {
-      animation-name: click_feedback;
-      animation-duration: 0.2s;
-      animation-timing-function: ease-out;
-      animation-iteration-count: 1; }
     .list .list-item .context-menu-trigger:before {
       display: none !important; }
   .list .list-item .icon.source {
