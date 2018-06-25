@@ -716,6 +716,23 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 }
 
 /**
+ * Shuffle items in place
+ *
+ * @param Array items
+ * @return Array
+ **/
+export let shuffle = function(array){
+    var j, x, i;
+    for (i = array.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = array[i];
+        array[i] = array[j];
+        array[j] = x;
+    }
+    return array;
+}
+
+/**
  * Figure out if a value is a number
  * @param value = mixed
  * @return boolean

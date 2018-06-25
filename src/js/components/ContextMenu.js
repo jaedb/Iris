@@ -215,6 +215,11 @@ class ContextMenu extends React.Component{
 		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
 	}
 
+	shufflePlayPlaylist(e){
+		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0], true);
+	}
+
 	playArtistTopTracks(e){
 		this.props.uiActions.hideContextMenu();
 		this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0]);
@@ -454,6 +459,14 @@ class ContextMenu extends React.Component{
 			</span>
 		)
 
+		var shuffle_play_playlist = (
+			<span className="menu-item-wrapper">
+				<a className="menu-item" onClick={e => this.shufflePlayPlaylist(e)}>
+					<span className="label">Shuffle play</span>
+				</a>
+			</span>
+		)
+
 		var play_queue_item = (
 			<span className="menu-item-wrapper">
 				<a className="menu-item" onClick={e => this.playQueueItem(e)}>
@@ -645,6 +658,7 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
@@ -658,6 +672,7 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />

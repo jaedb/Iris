@@ -56,7 +56,7 @@ class LibraryArtists extends React.Component{
 		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished'){
+			if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}
