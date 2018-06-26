@@ -12,7 +12,7 @@ from handlers import WebsocketHandler, HttpHandler
 from core import IrisCore
 
 logger = logging.getLogger(__name__)
-__version__ = '3.21.3'
+__version__ = '3.21.4'
 
 ##
 # Core extension class
