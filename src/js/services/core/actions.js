@@ -66,6 +66,12 @@ export function set(data){
     }
 }
 
+export function clearCurrentTrack(){
+    return {
+        type: 'CLEAR_CURRENT_TRACK'
+    }
+}
+
 
 
 

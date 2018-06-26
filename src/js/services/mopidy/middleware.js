@@ -807,16 +807,22 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CLEAR_TRACKLIST':
-                request(socket, store, 'tracklist.clear');
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            type: 'info',
-                            content: store.getState().pusher.username +' cleared queue'
-                        }
-                    }
-                ));
+                request(socket, store, 'tracklist.clear')
+                	.then(
+                		response => {
+                			store.dispatch(coreActions.clearCurrentTrack());
+                			                			
+			                store.dispatch(pusherActions.deliverBroadcast(
+			                    'notification',
+			                    {
+			                        notification: {
+			                            type: 'info',
+			                            content: store.getState().pusher.username +' cleared queue'
+			                        }
+			                    }
+			                ));
+                		}
+                	);
                 break;
 
 
@@ -1399,8 +1405,6 @@ const MopidyMiddleware = (function(){
                                         key: playlist.uri,
                                         playlist: playlist 
                                     });
-
-                                    console.log(playlist);
                                 })
                         }
                     })
@@ -1531,19 +1535,18 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_SAVE_PLAYLIST':
-                var uri = action.key
-
+                var uri = action.key;
                 request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
                         var playlist = Object.assign({}, response, { name: action.name })
-                        request(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist })
                             .then(response => {
 
                                 store.dispatch({ 
-                                    type: 'PLAYLIST_UPDATED', 
+                                    type: 'PLAYLIST_LOADED', 
                                     key: action.key,
                                     playlist: playlist
-                                })
+                                });
 
                                 // When we rename a playlist, the URI also changes to reflect the name change
                                 // We need to update our index, as well as redirect our current page URL
@@ -2053,7 +2056,8 @@ const MopidyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'CURRENT_TRACK_LOADED',
-                    track: track
+                    track: track,
+                    uri: track.uri
                 });
                 break;
 

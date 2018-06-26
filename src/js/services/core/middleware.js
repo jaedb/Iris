@@ -349,6 +349,7 @@ const CoreMiddleware = (function(){
 
                 // Set our window title to the track title
                 helpers.setWindowTitle(null, store.getState().mopidy.play_state);
+                next(action);
                 break;
 
             case 'QUEUE_LOADED':
