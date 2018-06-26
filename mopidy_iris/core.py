@@ -464,6 +464,7 @@ class IrisCore(object):
                 "locale": self.config['iris']['locale'],
                 "spotify_authorization_url": self.config['iris']['spotify_authorization_url'],
                 "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url'],
+                "genius_provider_url": self.config['iris']['genius_provider_url'],
                 "snapcast_enabled": self.config['iris']['snapcast_enabled']
             }
         }
