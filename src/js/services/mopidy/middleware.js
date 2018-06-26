@@ -546,14 +546,14 @@ const MopidyMiddleware = (function(){
                     // make sure we didn't get this playlist from Mopidy-Spotify
                     // if we did, we'd have a cached version on server so no need to fetch
                     if (!store.getState().core.playlists[action.uri].is_mopidy){
-                        store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
+                        store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
                         break
                     }
 
                 // it's a spotify playlist that we haven't loaded
                 // we need to fetch via HTTP API to avoid timeout
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri))
+                    store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
                     break
 
                 // Not in index, and Spotify HTTP not enabled, so just play it as-is
@@ -567,7 +567,10 @@ const MopidyMiddleware = (function(){
                             if (response.tracks === undefined){
                                 store.dispatch(uiActions.createNotification({content: 'Failed to load playlist tracks', type: 'bad'}));
                             } else {
-                                var tracks_uris = helpers.arrayOf('uri',response.tracks)
+                                var tracks_uris = helpers.arrayOf('uri',response.tracks);
+                                if (action.shuffle){
+                                	tracks_uris = helpers.shuffle(tracks_uris);
+                                }
                                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
                             }
                         },
@@ -804,16 +807,22 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CLEAR_TRACKLIST':
-                request(socket, store, 'tracklist.clear');
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            type: 'info',
-                            content: store.getState().pusher.username +' cleared queue'
-                        }
-                    }
-                ));
+                request(socket, store, 'tracklist.clear')
+                	.then(
+                		response => {
+                			store.dispatch(coreActions.clearCurrentTrack());
+                			                			
+			                store.dispatch(pusherActions.deliverBroadcast(
+			                    'notification',
+			                    {
+			                        notification: {
+			                            type: 'info',
+			                            content: store.getState().pusher.username +' cleared queue'
+			                        }
+			                    }
+			                ));
+                		}
+                	);
                 break;
 
 
@@ -1396,8 +1405,6 @@ const MopidyMiddleware = (function(){
                                         key: playlist.uri,
                                         playlist: playlist 
                                     });
-
-                                    console.log(playlist);
                                 })
                         }
                     })
@@ -1528,19 +1535,18 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_SAVE_PLAYLIST':
-                var uri = action.key
-
+                var uri = action.key;
                 request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
                         var playlist = Object.assign({}, response, { name: action.name })
-                        request(socket, store, 'playlists.save', { playlist: playlist } )
+                        request(socket, store, 'playlists.save', { playlist: playlist })
                             .then(response => {
 
                                 store.dispatch({ 
-                                    type: 'PLAYLIST_UPDATED', 
+                                    type: 'PLAYLIST_LOADED', 
                                     key: action.key,
                                     playlist: playlist
-                                })
+                                });
 
                                 // When we rename a playlist, the URI also changes to reflect the name change
                                 // We need to update our index, as well as redirect our current page URL
@@ -2050,7 +2056,8 @@ const MopidyMiddleware = (function(){
 
                 store.dispatch({
                     type: 'CURRENT_TRACK_LOADED',
-                    track: track
+                    track: track,
+                    uri: track.uri
                 });
                 break;
 

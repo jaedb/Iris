@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import ReactGA from 'react-ga'
 
 import Sidebar from './components/Sidebar'
-import PlaybackControls from './components/Fields/PlaybackControls'
+import PlaybackControls from './components/PlaybackControls'
 import ContextMenu from './components/ContextMenu'
 import Dragger from './components/Dragger'
 import Modal from './components/Modal/Modal'

@@ -131,7 +131,7 @@ class Queue extends React.Component{
 		}
 
 		var current_track_image = null;
-		if (current_track){
+		if (current_track && this.props.current_track_uri){
 			if (current_track.images !== undefined && current_track.images){
 				current_track_image = helpers.sizedImages(current_track.images).large;
 			}
@@ -206,6 +206,7 @@ const mapStateToProps = (state, ownProps) => {
 		queue: state.core.queue,
 		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,
+		current_track_uri: state.core.current_track_uri,
 		current_track: state.core.current_track
 	}
 }

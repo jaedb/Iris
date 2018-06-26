@@ -78,13 +78,13 @@ var initialState = {
 	},
 	lastfm: {
 		me: false,
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php'
 	},
 	genius: {},
 	spotify: {
 		me: false,
 		autocomplete_results: {},
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
 	}
 };
 

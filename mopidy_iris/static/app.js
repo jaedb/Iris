@@ -795,6 +795,23 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 };
 
 /**
+ * Shuffle items in place
+ *
+ * @param Array items
+ * @return Array
+ **/
+var shuffle = exports.shuffle = function shuffle(array) {
+	var j, x, i;
+	for (i = array.length - 1; i > 0; i--) {
+		j = Math.floor(Math.random() * (i + 1));
+		x = array[i];
+		array[i] = array[j];
+		array[j] = x;
+	}
+	return array;
+};
+
+/**
  * Figure out if a value is a number
  * @param value = mixed
  * @return boolean
@@ -3055,11 +3072,12 @@ function getLibraryTracksAndPlayProcessor(data) {
  * Recursively get .next until we have all tracks
  **/
 
-function getPlaylistTracksAndPlay(uri) {
+function getPlaylistTracksAndPlay(uri, shuffle) {
     return function (dispatch, getState) {
         dispatch(uiActions.startProcess('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 'Loading playlist tracks', {
             uri: uri,
-            next: 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country
+            next: 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
+            shuffle: shuffle
         }));
     };
 }
@@ -3095,13 +3113,20 @@ function getPlaylistTracksAndPlayProcessor(data) {
                 dispatch(uiActions.updateProcess('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 'Loading ' + (response.total - uris.length) + ' playlist tracks', {
                     next: response.next,
                     total: response.total,
-                    remaining: response.total - uris.length
+                    remaining: response.total - uris.length,
+                    shuffle: data.shuffle
                 }));
                 dispatch(uiActions.runProcess('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', {
                     next: response.next,
-                    uris: uris
+                    uris: uris,
+                    shuffle: data.shuffle
                 }));
             } else {
+
+                if (data.shuffle) {
+                    uris = helpers.shuffle(uris);
+                }
+
                 dispatch(mopidyActions.playURIs(uris, data.uri));
                 dispatch(uiActions.processFinishing('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'));
             }
@@ -3692,9 +3717,12 @@ function enqueueURIsBatchDone() {
 }
 
 function playPlaylist(uri) {
+	var shuffle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	return {
 		type: 'MOPIDY_PLAY_PLAYLIST',
-		uri: uri
+		uri: uri,
+		shuffle: shuffle
 	};
 }
 
@@ -4255,6 +4283,7 @@ exports.startSearch = startSearch;
 exports.handleException = handleException;
 exports.debugResponse = debugResponse;
 exports.set = set;
+exports.clearCurrentTrack = clearCurrentTrack;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
 exports.createPlaylist = createPlaylist;
@@ -4337,6 +4366,12 @@ function set(data) {
     return {
         type: 'CORE_SET',
         data: data
+    };
+}
+
+function clearCurrentTrack() {
+    return {
+        type: 'CLEAR_CURRENT_TRACK'
     };
 }
 
@@ -49403,13 +49438,13 @@ var initialState = {
 	},
 	lastfm: {
 		me: false,
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_lastfm.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php'
 	},
 	genius: {},
 	spotify: {
 		me: false,
 		autocomplete_results: {},
-		authorization_url: 'https://jamesbarnsley.co.nz/auth_spotify.php'
+		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
 	}
 };
 
@@ -50976,6 +51011,7 @@ var CoreMiddleware = function () {
 
                         // Set our window title to the track title
                         helpers.setWindowTitle(null, store.getState().mopidy.play_state);
+                        next(action);
                         break;
 
                     case 'QUEUE_LOADED':
@@ -52826,14 +52862,14 @@ var MopidyMiddleware = function () {
                             // make sure we didn't get this playlist from Mopidy-Spotify
                             // if we did, we'd have a cached version on server so no need to fetch
                             if (!store.getState().core.playlists[action.uri].is_mopidy) {
-                                store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri));
+                                store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle));
                                 break;
                             }
 
                             // it's a spotify playlist that we haven't loaded
                             // we need to fetch via HTTP API to avoid timeout
                         } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
-                            store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri));
+                            store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle));
                             break;
 
                             // Not in index, and Spotify HTTP not enabled, so just play it as-is
@@ -52846,6 +52882,9 @@ var MopidyMiddleware = function () {
                                 store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
                             } else {
                                 var tracks_uris = helpers.arrayOf('uri', response.tracks);
+                                if (action.shuffle) {
+                                    tracks_uris = helpers.shuffle(tracks_uris);
+                                }
                                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri));
                             }
                         }, function (error) {
@@ -53036,13 +53075,16 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_CLEAR_TRACKLIST':
-                        request(socket, store, 'tracklist.clear');
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                type: 'info',
-                                content: store.getState().pusher.username + ' cleared queue'
-                            }
-                        }));
+                        request(socket, store, 'tracklist.clear').then(function (response) {
+                            store.dispatch(coreActions.clearCurrentTrack());
+
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    type: 'info',
+                                    content: store.getState().pusher.username + ' cleared queue'
+                                }
+                            }));
+                        });
                         break;
 
                     /**
@@ -53512,8 +53554,6 @@ var MopidyMiddleware = function () {
                                         key: playlist.uri,
                                         playlist: playlist
                                     });
-
-                                    console.log(playlist);
                                 });
                             }
                         });
@@ -53637,13 +53677,12 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_SAVE_PLAYLIST':
                         var uri = action.key;
-
                         request(socket, store, 'playlists.lookup', { uri: action.key }).then(function (response) {
                             var playlist = Object.assign({}, response, { name: action.name });
                             request(socket, store, 'playlists.save', { playlist: playlist }).then(function (response) {
 
                                 store.dispatch({
-                                    type: 'PLAYLIST_UPDATED',
+                                    type: 'PLAYLIST_LOADED',
                                     key: action.key,
                                     playlist: playlist
                                 });
@@ -54086,7 +54125,8 @@ var MopidyMiddleware = function () {
 
                         store.dispatch({
                             type: 'CURRENT_TRACK_LOADED',
-                            track: track
+                            track: track,
+                            uri: track.uri
                         });
                         break;
 
@@ -59873,6 +59913,12 @@ var ContextMenu = function (_React$Component) {
 			this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
 		}
 	}, {
+		key: 'shufflePlayPlaylist',
+		value: function shufflePlayPlaylist(e) {
+			this.props.uiActions.hideContextMenu();
+			this.props.mopidyActions.playPlaylist(this.props.menu.uris[0], true);
+		}
+	}, {
 		key: 'playArtistTopTracks',
 		value: function playArtistTopTracks(e) {
 			this.props.uiActions.hideContextMenu();
@@ -60192,6 +60238,22 @@ var ContextMenu = function (_React$Component) {
 						'span',
 						{ className: 'label' },
 						'Play'
+					)
+				)
+			);
+
+			var shuffle_play_playlist = _react2.default.createElement(
+				'span',
+				{ className: 'menu-item-wrapper' },
+				_react2.default.createElement(
+					'a',
+					{ className: 'menu-item', onClick: function onClick(e) {
+							return _this3.shufflePlayPlaylist(e);
+						} },
+					_react2.default.createElement(
+						'span',
+						{ className: 'label' },
+						'Shuffle play'
 					)
 				)
 			);
@@ -60526,6 +60588,7 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						shuffle_play_playlist,
 						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
@@ -60539,6 +60602,7 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						play_playlist,
+						shuffle_play_playlist,
 						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
 						_react2.default.createElement('div', { className: 'divider' }),
@@ -66073,7 +66137,7 @@ var Queue = function (_React$Component) {
 			}
 
 			var current_track_image = null;
-			if (current_track) {
+			if (current_track && this.props.current_track_uri) {
 				if (current_track.images !== undefined && current_track.images) {
 					current_track_image = helpers.sizedImages(current_track.images).large;
 				}
@@ -66197,6 +66261,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		queue: state.core.queue,
 		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,
+		current_track_uri: state.core.current_track_uri,
 		current_track: state.core.current_track
 	};
 };
@@ -75906,7 +75971,7 @@ var LibraryArtists = function (_React$Component) {
 			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
-				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_artists_status != 'finished') {
+				if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started') {
 					this.props.spotifyActions.getLibraryArtists();
 				}
 			}
@@ -76298,7 +76363,7 @@ var LibraryAlbums = function (_React$Component) {
 			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
-				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
+				if (newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
 					this.props.spotifyActions.getLibraryAlbums();
 				}
 			}
@@ -76886,7 +76951,7 @@ var LibraryPlaylists = function (_React$Component) {
 			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
-				if (this.props.source != 'all' && this.props.source != 'spotify' && newProps.spotify_library_playlists_status !== 'finished') {
+				if (newProps.spotify_library_playlists_status != 'finished' && newProps.spotify_library_playlists_status != 'started') {
 					this.props.spotifyActions.getLibraryPlaylists();
 				}
 			}

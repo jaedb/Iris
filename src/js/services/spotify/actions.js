@@ -1655,14 +1655,15 @@ export function getLibraryTracksAndPlayProcessor(data){
  * Recursively get .next until we have all tracks
  **/
 
-export function getPlaylistTracksAndPlay(uri){
+export function getPlaylistTracksAndPlay(uri, shuffle){
     return (dispatch, getState) => {
         dispatch(uiActions.startProcess(
             'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR',
             'Loading playlist tracks', 
             {
                 uri: uri,
-                next: 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country
+                next: 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country,
+                shuffle: shuffle
             }
         ))
     }
@@ -1704,17 +1705,24 @@ export function getPlaylistTracksAndPlayProcessor(data){
                             {
                                 next: response.next,
                                 total: response.total,
-                                remaining: response.total - uris.length
+                                remaining: response.total - uris.length,
+                                shuffle: data.shuffle
                             }
                         ))
                         dispatch(uiActions.runProcess(
                             'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 
                             {
                                 next: response.next,
-                                uris: uris
+                                uris: uris,
+                                shuffle: data.shuffle
                             }
                         ))
                     } else {
+
+                    	if (data.shuffle){
+                    		uris = helpers.shuffle(uris);
+                    	}
+
                         dispatch(mopidyActions.playURIs(uris, data.uri))
                         dispatch(uiActions.processFinishing('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
                     }
