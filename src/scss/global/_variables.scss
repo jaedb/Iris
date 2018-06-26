@@ -140,6 +140,49 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
+@mixin click_feedback($duration: 0.2s, $easing: ease-out){
+	position: relative;
+
+	@keyframes click_feedback {
+	    0% {
+			top: 50%;
+			left: 0;
+			width: 100%;
+			padding-bottom: 100%;
+	    	opacity: 1;
+	    }
+	    100% {
+			top: 25%;
+			left: -25%;
+			width: 150%;
+			padding-bottom: 150%;
+	    	opacity: 0;
+	    }
+	}
+
+	&:after {
+		content: '';
+		display: block;
+		position: absolute;
+		background: rgba(255,255,255,0.5);
+		z-index: 1;
+		opacity: 0;
+		border-radius: 50%;
+		margin-top: -50%;
+		pointer-events: none;
+	}
+
+	&:focus,
+	&:active {
+		&:after {
+		    animation-name: click_feedback;
+		    animation-duration: $duration;
+		    animation-timing-function: $easing;
+		    animation-iteration-count: 1;
+		}
+	}
+}
+
 @keyframes slideloader {
     0% { 
     	left: 0%; 

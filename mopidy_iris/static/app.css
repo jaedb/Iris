@@ -4370,8 +4370,40 @@ input[type="submit"] {
     display: inline-block;
     vertical-align: bottom;
     opacity: 0.8; }
+    .playback-controls .control:not(.sidebar-toggle) {
+      position: relative; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+      .playback-controls .control:not(.sidebar-toggle):after {
+        content: '';
+        display: block;
+        position: absolute;
+        background: rgba(255, 255, 255, 0.5);
+        z-index: 1;
+        opacity: 0;
+        border-radius: 50%;
+        margin-top: -50%;
+        pointer-events: none; }
+      .playback-controls .control:not(.sidebar-toggle):focus:after, .playback-controls .control:not(.sidebar-toggle):active:after {
+        animation-name: click_feedback;
+        animation-duration: 0.2s;
+        animation-timing-function: ease-out;
+        animation-iteration-count: 1; }
     .playback-controls .control .icon {
-      font-size: 0.9em; }
+      font-size: 0.9em;
+      margin-bottom: 0; }
     .playback-controls .control.active {
       color: #08d58f !important; }
     .playback-controls .control:hover {

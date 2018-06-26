@@ -102,7 +102,7 @@ export default class DropdownField extends React.Component{
 			className += ' '+this.props.className;
 		}
 		var current_value = null;
-		if (this.props.value){
+		if (this.props.value !== undefined){
 			current_value = this.props.value;
 		} else if (this.props.options.length > 0){
 			current_value = this.props.options[0].value;
@@ -138,7 +138,7 @@ export default class DropdownField extends React.Component{
 								if (this.isMultiSelect()){
 									var is_selected = current_value.indexOf(option.value) > -1;
 								} else {
-									var is_selected = current_value == option.value;
+									var is_selected = current_value === option.value;
 								}
 								return (
 									<div className={"option "+(option.className ? option.className : '')} key={option.value} onClick={e => this.handleChange(option.value, is_selected)}>

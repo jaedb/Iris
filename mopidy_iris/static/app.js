@@ -20719,7 +20719,7 @@ var DropdownField = function (_React$Component) {
 				className += ' ' + this.props.className;
 			}
 			var current_value = null;
-			if (this.props.value) {
+			if (this.props.value !== undefined) {
 				current_value = this.props.value;
 			} else if (this.props.options.length > 0) {
 				current_value = this.props.options[0].value;
@@ -20765,7 +20765,7 @@ var DropdownField = function (_React$Component) {
 							if (_this2.isMultiSelect()) {
 								var is_selected = current_value.indexOf(option.value) > -1;
 							} else {
-								var is_selected = current_value == option.value;
+								var is_selected = current_value === option.value;
 							}
 							return _react2.default.createElement(
 								'div',
@@ -65566,7 +65566,10 @@ var Artist = function (_React$Component) {
 						albums.push(this.props.albums[uri]);
 					}
 				}
-				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+
+				if (this.props.sort) {
+					albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+				}
 
 				if (this.props.filter) {
 					albums = helpers.applyFilter('album_type', this.props.filter, albums);
@@ -65676,6 +65679,9 @@ var Artist = function (_React$Component) {
 				default:
 
 					var sort_options = [{
+						value: null,
+						label: 'Default'
+					}, {
 						value: 'name',
 						label: 'Name'
 					}, {
@@ -65767,7 +65773,7 @@ var Artist = function (_React$Component) {
 									name: 'Sort',
 									value: this.props.sort,
 									options: sort_options,
-									selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+									selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
 									handleChange: function handleChange(value) {
 										_this2.setSort(value);_this2.props.uiActions.hideContextMenu();
 									}
@@ -65890,7 +65896,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		local_library_artists: state.mopidy.library_artists,
 		albums: state.core.albums ? state.core.albums : [],
 		filter: state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null,
-		sort: state.ui.artist_albums_sort ? state.ui.artist_albums_sort : 'name',
+		sort: state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null,
 		sort_reverse: state.ui.artist_albums_sort_reverse ? true : false,
 		spotify_authorized: state.spotify.authorization,
 		mopidy_connected: state.mopidy.connected
@@ -77653,7 +77659,9 @@ var LibraryArtists = function (_React$Component) {
 				}
 			}
 
-			artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
+			if (this.props.sort) {
+				artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
+			}
 
 			if (this.state.filter !== '') {
 				artists = helpers.applyFilter('name', this.state.filter, artists);
@@ -77733,6 +77741,9 @@ var LibraryArtists = function (_React$Component) {
 			}];
 
 			var sort_options = [{
+				label: 'Default',
+				value: null
+			}, {
 				label: 'Name',
 				value: 'name'
 			}, {
@@ -77754,7 +77765,7 @@ var LibraryArtists = function (_React$Component) {
 					name: 'Sort',
 					value: this.props.sort,
 					options: sort_options,
-					selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+					selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
 					handleChange: function handleChange(value) {
 						_this3.setSort(value);_this3.props.uiActions.hideContextMenu();
 					}
@@ -77812,8 +77823,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		spotify_library_artists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null,
 		artists: state.core.artists,
 		source: state.ui.library_artists_source ? state.ui.library_artists_source : 'all',
-		sort: state.ui.library_artists_sort ? state.ui.library_artists_sort : 'name',
-		sort_reverse: state.ui.library_artists_sort_reverse ? true : false,
+		sort: state.ui.library_artists_sort ? state.ui.library_artists_sort : null,
+		sort_reverse: state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false,
 		view: state.ui.library_artists_view
 	};
 };
@@ -78052,7 +78063,9 @@ var LibraryAlbums = function (_React$Component) {
 				}
 			}
 
-			albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+			if (this.props.sort) {
+				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+			}
 
 			if (this.state.filter && this.state.filter !== '') {
 				albums = helpers.applyFilter('name', this.state.filter, albums);
@@ -78138,6 +78151,9 @@ var LibraryAlbums = function (_React$Component) {
 			}];
 
 			var sort_options = [{
+				value: null,
+				label: 'Default'
+			}, {
 				value: 'name',
 				label: 'Name'
 			}, {
@@ -78165,7 +78181,7 @@ var LibraryAlbums = function (_React$Component) {
 					name: 'Sort',
 					value: this.props.sort,
 					options: sort_options,
-					selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+					selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
 					handleChange: function handleChange(val) {
 						_this3.setSort(val);_this3.props.uiActions.hideContextMenu();
 					}
@@ -78225,8 +78241,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		spotify_library_albums_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null,
 		view: state.ui.library_albums_view,
 		source: state.ui.library_albums_source ? state.ui.library_albums_source : 'all',
-		sort: state.ui.library_albums_sort ? state.ui.library_albums_sort : 'name',
-		sort_reverse: state.ui.library_albums_sort_reverse ? true : false
+		sort: state.ui.library_albums_sort ? state.ui.library_albums_sort : null,
+		sort_reverse: state.ui.library_albums_sort_reverse ? state.ui.library_albums_sort_reverse : false
 	};
 };
 
@@ -78606,7 +78622,9 @@ var LibraryPlaylists = function (_React$Component) {
 				}
 			}
 
-			playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+			if (this.props.sort) {
+				playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+			}
 			playlists = helpers.removeDuplicates(playlists);
 
 			if (this.state.filter !== '') {
@@ -78694,6 +78712,9 @@ var LibraryPlaylists = function (_React$Component) {
 			}];
 
 			var sort_options = [{
+				value: null,
+				label: 'Default'
+			}, {
 				value: 'name',
 				label: 'Name'
 			}, {
@@ -78723,7 +78744,7 @@ var LibraryPlaylists = function (_React$Component) {
 					name: 'Sort',
 					value: this.props.sort,
 					options: sort_options,
-					selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+					selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
 					handleChange: function handleChange(value) {
 						_this3.setSort(value);_this3.props.uiActions.hideContextMenu();
 					}
@@ -78792,8 +78813,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		me_id: state.spotify.me ? state.spotify.me.id : false,
 		view: state.ui.library_playlists_view,
 		source: state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all',
-		sort: state.ui.library_playlists_sort ? state.ui.library_playlists_sort : 'name',
-		sort_reverse: state.ui.library_playlists_sort_reverse ? true : false,
+		sort: state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null,
+		sort_reverse: state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false,
 		playlists: state.core.playlists
 	};
 };
