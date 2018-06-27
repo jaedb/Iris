@@ -22,10 +22,35 @@ const UIMiddleware = (function(){
                 if (tracks[current_track_uri] !== undefined){
                     current_track = tracks[current_track_uri];
                 }
-                
-                helpers.setWindowTitle(current_track, action.data);
                 next(action);
                 break
+
+            case 'SET_WINDOW_TITLE':
+
+                var window_title = "";
+
+                if (action.play_state){
+                    var play_state = action.play_state;
+                } else {
+                    var play_state = store.getState().mopidy.play_state;
+                }
+
+                if (play_state == 'playing'){
+                    window_title = '\u25B6';
+                } else {
+                    window_title = '\u25A0';
+                }
+
+                if (action.title){
+                    var title = action.title;
+                } else {
+                    var title = store.getState().ui.window_title;
+                }
+                    
+                document.title = window_title+' '+title;
+
+                next(action);
+                break;
 
             case 'OPEN_MODAL':
                 if (store.getState().ui.allow_reporting){

@@ -753,37 +753,6 @@ export let isObject = function(value){
 
 
 /**
- * Set window title
- * @param track
- **/
-export let setWindowTitle = function (track = false, play_state = false){
-    var title = 'No track playing'
-    
-    if (track){
-        var icon = '\u25A0 ';
-        var artist_string = '';
-        
-        if (track.artists){
-            for (var i = 0; i < track.artists.length; i++){
-                if (artist_string != ''){
-                	artist_string += ', ';
-                }
-                artist_string += track.artists[i].name
-            }
-        }
-
-        if (play_state && play_state == 'playing'){
-        	icon = '\u25B6 ';
-        }
-
-        title = icon +' '+ track.name +' - '+ artist_string;
-    }
-    
-    document.title = title
-}
-
-
-/**
  * Detect if an item is in the loading queue. We simply loop all load items to
  * see if any items contain our searched key.
  *

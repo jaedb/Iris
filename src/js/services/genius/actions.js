@@ -20,14 +20,13 @@ const sendRequest = (dispatch, getState, endpoint) => {
         var config = {
             method: 'GET',
             url: getState().genius.provider_url+endpoint,
-            dataType: "json",
             timeout: 10000
         };
 
         $.ajax(config).then(
             response => {
                 dispatch(uiActions.stopLoading(loader_key));
-                resolve(response.result);
+                resolve(response);
             },
             (xhr, status, error) => {
                 dispatch(uiActions.stopLoading(loader_key));
@@ -64,6 +63,7 @@ export function getTrackLyrics(uri, url){
         sendRequest(dispatch, getState, "?action=lyrics&url="+url)
             .then(
                 response => {
+
                     var html = $(response);
                     var lyrics = html.find('.lyrics');
                     if (lyrics.length > 0){

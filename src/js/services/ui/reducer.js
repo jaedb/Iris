@@ -14,8 +14,14 @@ export default function reducer(ui = {}, action){
             return Object.assign({}, ui, { debug_response: action.response })
 
         case 'UI_SET':
-            console.log(action);
             return Object.assign({}, ui, action.data);
+
+        case 'SET_WINDOW_TITLE':
+            if (action.title){
+                return Object.assign({}, ui, { window_title: action.title });
+            } else {
+                return ui;
+            }
 
         case 'TOGGLE_SIDEBAR':
             var new_state = !ui.sidebar_open

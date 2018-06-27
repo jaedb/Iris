@@ -36,6 +36,10 @@ class Settings extends React.Component {
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Settings");
+	}
+
 	componentWillReceiveProps(nextProps){
 		var changed = false
 		var state = this.state

@@ -57,6 +57,8 @@ class Track extends React.Component{
 		// We have just received our full track info (with artists)
 		if (!this.props.track.artists && nextProps.track.artists){
 
+			this.props.uiActions.setWindowTitle(nextProps.track.name+" by XXXX");
+
 			// Ready to load LastFM
 			if (nextProps.lastfm_authorized){
 				this.props.lastfmActions.getTrack(nextProps.track.uri);

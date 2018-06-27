@@ -26,6 +26,10 @@ class Debug extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Debug");
+	}
+
 	callMopidy(e){
 		e.preventDefault()
 		this.props.mopidyActions.debug(this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
