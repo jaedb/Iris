@@ -80,7 +80,7 @@ var initialState = {
 		me: false,
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php'
 	},
-	genius: {,
+	genius: {
 		provider_url: 'https://jamesbarnsley.co.nz/iris/provider_genius.php'
 	},
 	spotify: {

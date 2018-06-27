@@ -8,7 +8,8 @@ var helpers = require('../../helpers')
  *
  * @param dispatch obj
  * @param getState obj
- * @param endpoint params = the url params to send
+ * @param endpoint = the action
+ * @param params = string for any URL prarams to pass on
  **/
 const sendRequest = (dispatch, getState, endpoint) => {
     return new Promise((resolve, reject) => {
@@ -16,22 +17,11 @@ const sendRequest = (dispatch, getState, endpoint) => {
         var loader_key = helpers.generateGuid();
         dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
 
-        var url = endpoint;
-        if (!url.startsWith('http')){
-            url = 'https://api.genius.com/'+url;
-        }
-
         var config = {
-            method: 'POST',
-            cache: false,
-            timeout: 30000,
-            headers: {
-                Authorization: 'Bearer nBNNEFekix8BOsfPyfK7LtX-CaUz7L7ak92qC3GfMAIQi8eWjuwb4P8SUxK1K-iY'
-            },
-            data: JSON.stringify({
-                url: url
-            }),
-            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/proxy_request'
+            method: 'GET',
+            url: getState().genius.provider_url+endpoint,
+            dataType: "json",
+            timeout: 10000
         };
 
         $.ajax(config).then(
@@ -71,7 +61,7 @@ export function getTrackLyrics(uri, url){
             }
         });
 
-        sendRequest(dispatch, getState, url)
+        sendRequest(dispatch, getState, "?action=lyrics&url="+url)
             .then(
                 response => {
                     var html = $(response);
@@ -117,7 +107,7 @@ export function findTrackLyrics(track){
         query = query.replace(/\([^)]*\) */g, '');        // anything in circle-braces
         query = query.replace(/\([^[]*\] */g, '');        // anything in square-braces
 
-        sendRequest(dispatch, getState, 'search?q='+encodeURIComponent(query))
+        sendRequest(dispatch, getState, '?action=search&query='+encodeURIComponent(query))
             .then(
                 response => {
                     if (response.response.hits && response.response.hits.length > 0){
