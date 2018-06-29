@@ -34,6 +34,8 @@ class LibraryAlbums extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Albums");
+
 		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryAlbums()
 		}

@@ -30,15 +30,32 @@ class Playlist extends React.Component{
 
 	componentDidMount(){
 		this.loadPlaylist();
+		this.setWindowTitle();
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadPlaylist(nextProps )
-		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+			this.loadPlaylist(nextProps);
+		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
-				this.loadPlaylist(nextProps )
+				this.loadPlaylist(nextProps);
 			}
+		}
+
+		if (!this.props.playlist && nextProps.playlist){
+			this.setWindowTitle(nextProps.playlist);
+		}
+
+		if (this.props.params.uri !== nextProps.params.uri && nextProps.playlist){
+			this.setWindowTitle(nextProps.playlist);
+		}
+	}
+
+	setWindowTitle(playlist = this.props.playlist){		
+		if (playlist){
+			this.props.uiActions.setWindowTitle(playlist.name+" (playlist)");
+		} else{
+			this.props.uiActions.setWindowTitle("Playlist");
 		}
 	}
 

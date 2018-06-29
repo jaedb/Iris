@@ -22,6 +22,7 @@ class DiscoverFeatured extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Featured playlists");
 		if (!this.props.featured_playlists){
 			this.props.spotifyActions.getFeaturedPlaylists();
 		}

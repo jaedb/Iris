@@ -26,6 +26,7 @@ class LibraryBrowse extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+		this.props.uiActions.setWindowTitle("Browse");
 
 		// mopidy goes online
 		if (!this.props.mopidy_connected && nextProps.mopidy_connected){

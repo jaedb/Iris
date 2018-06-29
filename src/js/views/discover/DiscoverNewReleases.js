@@ -24,6 +24,8 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("New releases");
+
 		if (!this.props.new_releases){
 			this.props.spotifyActions.getNewReleases();
 		}

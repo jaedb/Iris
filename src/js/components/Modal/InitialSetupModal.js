@@ -111,7 +111,7 @@ export default class InitialSetupModal extends React.Component{
 						</div>
 					</div>
 					
-					<div className="field checkbox">
+					{helpers.isHosted() ? null : <div className="field checkbox">
 						<div className="input">
 							<label>
 								<input 
@@ -124,7 +124,7 @@ export default class InitialSetupModal extends React.Component{
 								</span>
 							</label>
 						</div>
-					</div>
+					</div>}
 
 					{!this.state.allow_reporting ? <p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</p> : null}
 

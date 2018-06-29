@@ -784,6 +784,20 @@ export let isLoading = function(load_queue = [], keys = []){
 
 
 /**
+ * Is this app running from the hosted instance?
+ * For example the GitHub-hosted UI
+ *
+ * @param Array hosts = valid hosted domain names
+ * @return Boolean
+ **/
+export let isHosted = function(hosts = ['jaedb.github.io']){
+	var hostname = window.location.hostname;
+	return hosts.includes(hostname);
+}
+
+
+
+/**
  * Get indexed record(s) by URI from our asset index
  *
  * @param store = obj

@@ -27,6 +27,7 @@ class Album extends React.Component{
 	}
 
 	componentDidMount(){
+		this.setWindowTitle();
 		this.loadAlbum();
 	}
 
@@ -40,13 +41,32 @@ class Album extends React.Component{
 
 		// if our URI has changed, fetch new album
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadAlbum(nextProps )
+			this.loadAlbum(nextProps);
 
 		// if mopidy has just connected AND we're a local album, go get
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadAlbum(nextProps )
+				this.loadAlbum(nextProps);
 			}
+		}
+
+		if (!this.props.album && nextProps.album){
+			this.setWindowTitle(nextProps.album);
+		}
+	}
+
+	setWindowTitle(album = this.props.album){		
+		if (album){
+			var artists = "";
+			for (var i = 0; i < album.artists.length; i++){
+				if (artists != ""){
+					artists += ", ";
+				}
+				artists += album.artists[i].name;
+			}
+			this.props.uiActions.setWindowTitle(album.name+" by "+artists+" (album)");
+		} else{
+			this.props.uiActions.setWindowTitle("Album");
 		}
 	}
 
@@ -57,7 +77,7 @@ class Album extends React.Component{
 			items: [this.props.album],
 			uris: [this.props.params.uri]
 		}
-		this.props.uiActions.showContextMenu(data)
+		this.props.uiActions.showContextMenu(data);
 	}
 
 	loadAlbum(props = this.props){
@@ -77,7 +97,7 @@ class Album extends React.Component{
 					if (props.album && props.album.tracks){
 						console.info('Loading album from index')
 					} else {
-						this.props.mopidyActions.getAlbum(props.params.uri );
+						this.props.mopidyActions.getAlbum(props.params.uri);
 					}
 				}
 				break;

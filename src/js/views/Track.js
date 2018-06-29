@@ -69,6 +69,25 @@ class Track extends React.Component{
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 		}
+
+		if (!this.props.track && nextProps.track){
+			this.setWindowTitle(nextProps.track);
+		}
+	}
+
+	setWindowTitle(track = this.props.track){		
+		if (track){
+			var artists = "";
+			for (var i = 0; i < track.artists.length; i++){
+				if (artists != ""){
+					artists += ", ";
+				}
+				artists += track.artists[i].name;
+			}
+			this.props.uiActions.setWindowTitle(track.name+" by "+artists+" (track)");
+		} else{
+			this.props.uiActions.setWindowTitle("Track");
+		}
 	}
 
 	handleContextMenu(e){
