@@ -50602,6 +50602,7 @@ var initialState = {
 		http_streaming_url: "http://" + window.location.hostname + ":8000/mopidy"
 	},
 	ui: {
+		shortkeys_enabled: true,
 		allow_reporting: true,
 		slim_mode: false,
 		selected_tracks: [],
@@ -59919,6 +59920,10 @@ var App = function (_React$Component) {
 		key: 'shouldTriggerShortcut',
 		value: function shouldTriggerShortcut(e) {
 
+			if (!this.props.shortkeys_enabled) {
+				return false;
+			}
+
 			// When we're focussed on certian elements, don't fire any shortcuts
 			// Typically form inputs
 			var ignoreNodes = ['INPUT', 'TEXTAREA'];
@@ -60148,6 +60153,7 @@ var App = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		shortkeys_enabled: state.ui.shortkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,
@@ -70248,51 +70254,47 @@ var Settings = function (_React$Component) {
 					),
 					_react2.default.createElement(_Services2.default, { active: this.props.params.sub_view }),
 					helpers.isHosted() ? null : _react2.default.createElement(
+						'h4',
+						{ className: 'underline' },
+						'Privacy'
+					),
+					helpers.isHosted() ? null : _react2.default.createElement(
 						'div',
-						null,
+						{ className: 'field checkbox' },
 						_react2.default.createElement(
-							'h4',
-							{ className: 'underline' },
-							'Privacy'
+							'div',
+							{ className: 'name' },
+							'Reporting'
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'field checkbox' },
+							{ className: 'input' },
 							_react2.default.createElement(
-								'div',
-								{ className: 'name' },
-								'Reporting'
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'allow_reporting',
+									checked: this.props.ui.allow_reporting,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Allow reporting of anonymous usage statistics'
+								)
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'input' },
+								{ className: 'description' },
+								'Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the ',
 								_react2.default.createElement(
-									'label',
-									null,
-									_react2.default.createElement('input', {
-										type: 'checkbox',
-										name: 'allow_reporting',
-										checked: this.props.ui.allow_reporting,
-										onChange: function onChange(e) {
-											return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
-										} }),
-									_react2.default.createElement(
-										'span',
-										{ className: 'label' },
-										'Allow reporting of anonymous usage statistics'
-									)
+									'a',
+									{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
+									'privacy policy'
 								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'description' },
-									'Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the ',
-									_react2.default.createElement(
-										'a',
-										{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
-										'privacy policy'
-									),
-									'.'
-								)
+								'.'
 							)
 						)
 					),
@@ -70331,6 +70333,22 @@ var Settings = function (_React$Component) {
 										{ className: 'tooltip' },
 										'Playing one or more URIs will clear the current play queue first'
 									)
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'shortkeys_enabled',
+									checked: this.props.ui.shortkeys_enabled,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ shortkeys_enabled: !_this2.props.ui.shortkeys_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Enable shortkeys'
 								)
 							)
 						)
