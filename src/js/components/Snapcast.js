@@ -184,8 +184,15 @@ class Snapcast extends React.Component{
 			<div className="snapcast">
 
 				<div className="field checkbox">
+					<div className="name">
+						Display
+					</div>
 					<div className="input">
-						<button onClick={e => this.props.pusherActions.getSnapcast()}>Refresh</button>
+						<button 
+							className="small"
+							onClick={e => this.props.pusherActions.getSnapcast()}>
+								Refresh
+						</button>
 						<label>
 							<input 
 								type="checkbox"
@@ -199,74 +206,76 @@ class Snapcast extends React.Component{
 					</div>
 				</div>
 
-				{
-					groups.map(group => {
+				<div className="groups">
+					{
+						groups.map(group => {
 
-						// Average our clients' volume for an overall group volume
-						var group_volume = 0;
-						for (var i = 0; i < group.clients.length; i++){
-							var client = group.clients[i];
-							group_volume += client.config.volume.percent;
-						}
-						group_volume = group_volume / group.clients.length;
+							// Average our clients' volume for an overall group volume
+							var group_volume = 0;
+							for (var i = 0; i < group.clients.length; i++){
+								var client = group.clients[i];
+								group_volume += client.config.volume.percent;
+							}
+							group_volume = group_volume / group.clients.length;
 
-						return (
-							<div className="group" key={group.id}>
-								<div className="field">
-									<div className="name">
-										Name
+							return (
+								<div className="group" key={group.id}>
+									<div className="field">
+										<div className="name">
+											Name
+										</div>
+										<div className="input">	
+											<div className="text">
+												{group.name ? group.name : 'Group '+group.id.substring(0,3)} &nbsp;
+												<span className="grey-text">({group.id})</span>
+											</div>
+										</div>
 									</div>
-									<div className="input">	
-										<div className="text">
-											{group.name ? group.name : 'Group '+group.id.substring(0,3)} &nbsp;
-											<span className="grey-text">({group.id})</span>
+									<div className="field dropdown">
+										<div className="name">
+											Stream
+										</div>
+										<div className="input">										
+											<select onChange={e => this.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value)} value={group.stream_id}>
+												{
+													streams.map(stream => {
+														return (
+															<option value={stream.id} key={stream.id}>
+																{stream.id} ({stream.status})
+															</option>
+														);
+													})
+												}
+											</select>
+										</div>
+									</div>
+									<div className="field">
+										<div className="name">
+											Volume
+										</div>
+										<div className="input">	
+											<VolumeControl 
+												className="group-volume-control"
+												volume={group_volume}
+												mute={group.muted}
+												onVolumeChange={(percent, old_percent) => this.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent)}
+												onMuteChange={mute => this.props.pusherActions.setSnapcastGroupMute(group.id, mute)}
+											/>
+										</div>
+									</div>
+									<div className="field">
+										<div className="name">
+											Clients
+										</div>
+										<div className="input">	
+											{this.renderClientsList(group, groups)}
 										</div>
 									</div>
 								</div>
-								<div className="field dropdown">
-									<div className="name">
-										Stream
-									</div>
-									<div className="input">										
-										<select onChange={e => this.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value)} value={group.stream_id}>
-											{
-												streams.map(stream => {
-													return (
-														<option value={stream.id} key={stream.id}>
-															{stream.id} ({stream.status})
-														</option>
-													);
-												})
-											}
-										</select>
-									</div>
-								</div>
-								<div className="field">
-									<div className="name">
-										Volume
-									</div>
-									<div className="input">	
-										<VolumeControl 
-											className="group-volume-control"
-											volume={group_volume}
-											mute={group.muted}
-											onVolumeChange={(percent, old_percent) => this.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent)}
-											onMuteChange={mute => this.props.pusherActions.setSnapcastGroupMute(group.id, mute)}
-										/>
-									</div>
-								</div>
-								<div className="field">
-									<div className="name">
-										Clients
-									</div>
-									<div className="input">	
-										{this.renderClientsList(group, groups)}
-									</div>
-								</div>
-							</div>
-						);
-					})
-				}
+							);
+						})
+					}
+				</div>
 			</div>
 		);
 	}

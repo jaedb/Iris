@@ -1717,7 +1717,7 @@ exports.getLibraryAlbumsProcessor = getLibraryAlbumsProcessor;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var mopidyActions = __webpack_require__(9);
 var lastfmActions = __webpack_require__(19);
@@ -4144,128 +4144,6 @@ if (process.env.NODE_ENV !== 'production') {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Icon = __webpack_require__(5);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _ContextMenuTrigger = __webpack_require__(24);
-
-var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Header = function (_React$Component) {
-	_inherits(Header, _React$Component);
-
-	function Header(props) {
-		_classCallCheck(this, Header);
-
-		var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
-
-		_this.state = {
-			expanded: false
-		};
-		return _this;
-	}
-
-	_createClass(Header, [{
-		key: 'handleContextMenuTrigger',
-		value: function handleContextMenuTrigger(e, options) {
-
-			// We have an override trigger (eg Album, Playlist)
-			if (this.props.handleContextMenuTrigger) {
-				return this.props.handleContextMenuTrigger(e);
-			} else {
-				e.preventDefault();
-				var data = {
-					e: e,
-					context: 'custom',
-					title: this.props.title,
-					options: options
-				};
-				this.props.uiActions.showContextMenu(data);
-			}
-		}
-	}, {
-		key: 'renderContextMenuTrigger',
-		value: function renderContextMenuTrigger() {
-			var _this2 = this;
-
-			// No custom trigger, nor any options
-			if (!this.props.handleContextMenuTrigger && !this.props.options) {
-				return null;
-			}
-
-			return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-					return _this2.handleContextMenuTrigger(e, _this2.props.options);
-				} });
-		}
-	}, {
-		key: 'renderOptions',
-		value: function renderOptions() {
-			if (!this.props.options && !this.props.handleContextMenuTrigger) {
-				return null;
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'options' },
-				this.renderContextMenuTrigger(),
-				_react2.default.createElement(
-					'span',
-					{ className: 'items' },
-					_react2.default.createElement(
-						'span',
-						{ className: 'liner' },
-						this.props.options ? this.props.options : null
-					)
-				)
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			return _react2.default.createElement(
-				'header',
-				{ className: this.props.className ? this.props.className : null },
-				_react2.default.createElement(
-					'h1',
-					null,
-					this.props.children ? this.props.children : null
-				),
-				this.renderOptions()
-			);
-		}
-	}]);
-
-	return Header;
-}(_react2.default.Component);
-
-exports.default = Header;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4566,6 +4444,128 @@ function usersLoaded(users) {
     };
 }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _ContextMenuTrigger = __webpack_require__(24);
+
+var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Header = function (_React$Component) {
+	_inherits(Header, _React$Component);
+
+	function Header(props) {
+		_classCallCheck(this, Header);
+
+		var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
+
+		_this.state = {
+			expanded: false
+		};
+		return _this;
+	}
+
+	_createClass(Header, [{
+		key: 'handleContextMenuTrigger',
+		value: function handleContextMenuTrigger(e, options) {
+
+			// We have an override trigger (eg Album, Playlist)
+			if (this.props.handleContextMenuTrigger) {
+				return this.props.handleContextMenuTrigger(e);
+			} else {
+				e.preventDefault();
+				var data = {
+					e: e,
+					context: 'custom',
+					title: this.props.title,
+					options: options
+				};
+				this.props.uiActions.showContextMenu(data);
+			}
+		}
+	}, {
+		key: 'renderContextMenuTrigger',
+		value: function renderContextMenuTrigger() {
+			var _this2 = this;
+
+			// No custom trigger, nor any options
+			if (!this.props.handleContextMenuTrigger && !this.props.options) {
+				return null;
+			}
+
+			return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
+					return _this2.handleContextMenuTrigger(e, _this2.props.options);
+				} });
+		}
+	}, {
+		key: 'renderOptions',
+		value: function renderOptions() {
+			if (!this.props.options && !this.props.handleContextMenuTrigger) {
+				return null;
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'options' },
+				this.renderContextMenuTrigger(),
+				_react2.default.createElement(
+					'span',
+					{ className: 'items' },
+					_react2.default.createElement(
+						'span',
+						{ className: 'liner' },
+						this.props.options ? this.props.options : null
+					)
+				)
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'header',
+				{ className: this.props.className ? this.props.className : null },
+				_react2.default.createElement(
+					'h1',
+					null,
+					this.props.children ? this.props.children : null
+				),
+				this.renderOptions()
+			);
+		}
+	}]);
+
+	return Header;
+}(_react2.default.Component);
+
+exports.default = Header;
 
 /***/ }),
 /* 15 */
@@ -15372,7 +15372,7 @@ exports.loveTrack = loveTrack;
 exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
 
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var helpers = __webpack_require__(1);
 
@@ -50665,7 +50665,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var pusherActions = __webpack_require__(16);
 var mopidyActions = __webpack_require__(9);
@@ -51570,7 +51570,7 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var helpers = __webpack_require__(1);
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var mopidyActions = __webpack_require__(9);
 var pusherActions = __webpack_require__(16);
@@ -52397,7 +52397,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var mopidyActions = __webpack_require__(9);
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var spotifyActions = __webpack_require__(8);
 var pusherActions = __webpack_require__(16);
@@ -57870,7 +57870,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -58975,9 +58975,9 @@ var _VolumeControl = __webpack_require__(64);
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
 
-var _SnapcastVolumeControl = __webpack_require__(222);
+var _OutputControl = __webpack_require__(222);
 
-var _SnapcastVolumeControl2 = _interopRequireDefault(_SnapcastVolumeControl);
+var _OutputControl2 = _interopRequireDefault(_OutputControl);
 
 var _Dater = __webpack_require__(33);
 
@@ -59003,7 +59003,7 @@ var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(14);
+var _actions2 = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions2);
 
@@ -59059,19 +59059,44 @@ var PlaybackControls = function (_React$Component) {
 				return false;
 			}
 
+			// Use our track's URI as a cache mechanism. This prevents the browser from starting
+			// the stream right back at the beginning (which would play from the browser's cache, ie first render)
 			var url = props.http_streaming_url + "?cache_buster=" + props.current_track.uri;
 
-			console.log("Playing stream: " + url);
-
+			this.stream.muted = this.props.http_streaming_mute;
+			this.stream.volume = this.props.http_streaming_volume / 100;
 			this.stream.src = url;
 			this.stream.play();
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
+
+			// When the track changes, update our stream URL to reflect the cache buster
+			// TODO: This will crop the end of tracks by the duration of the buffer. Perhaps create
+			// a timestamp to only update the stream when a track has been skipped?
 			if (!this.props.current_track && nextProps.current_track || this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri) {
 
 				this.playStream(nextProps);
+			}
+
+			// Currently have a stream running
+			if (this.stream) {
+
+				// Just been muted
+				if (this.props.http_streaming_mute !== nextProps.http_streaming_mute) {
+					this.stream.muted = nextProps.http_streaming_mute;
+				}
+
+				// Just had volume changed
+				if (this.props.http_streaming_volume !== nextProps.http_streaming_volume) {
+					this.stream.volume = nextProps.http_streaming_volume / 100;
+				}
+
+				// Just been disabled
+				if (nextProps.http_streaming_enabled) {
+					this.stream = null;
+				}
 			}
 		}
 	}, {
@@ -59273,7 +59298,7 @@ var PlaybackControls = function (_React$Component) {
 					this.renderConsumeButton(),
 					this.renderRandomButton(),
 					this.renderRepeatButton(),
-					this.props.snapcast_enabled ? _react2.default.createElement(_SnapcastVolumeControl2.default, null) : null
+					_react2.default.createElement(_OutputControl2.default, null)
 				),
 				_react2.default.createElement(
 					'section',
@@ -59340,8 +59365,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		http_streaming_enabled: state.core.http_streaming_enabled,
-		http_streaming_encoding: state.core.http_streaming_encoding,
-		http_streaming_url: state.core.http_streaming_url,
+		http_streaming_volume: state.core.http_streaming_volume ? state.core.http_streaming_volume : 50,
+		http_streaming_mute: state.core.http_streaming_mute ? state.core.http_streaming_mute : false,
+		http_streaming_url: state.core.http_streaming_url ? state.core.http_streaming_url : null,
 		current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
 		next_track: state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null,
 		radio_enabled: state.ui.radio && state.ui.radio.enabled ? true : false,
@@ -59513,9 +59539,13 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(16);
+var _actions = __webpack_require__(13);
 
-var pusherActions = _interopRequireWildcard(_actions);
+var coreActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(16);
+
+var pusherActions = _interopRequireWildcard(_actions2);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -59527,13 +59557,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SnapcastVolumeControl = function (_React$Component) {
-	_inherits(SnapcastVolumeControl, _React$Component);
+var OutputControl = function (_React$Component) {
+	_inherits(OutputControl, _React$Component);
 
-	function SnapcastVolumeControl(props) {
-		_classCallCheck(this, SnapcastVolumeControl);
+	function OutputControl(props) {
+		_classCallCheck(this, OutputControl);
 
-		var _this = _possibleConstructorReturn(this, (SnapcastVolumeControl.__proto__ || Object.getPrototypeOf(SnapcastVolumeControl)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (OutputControl.__proto__ || Object.getPrototypeOf(OutputControl)).call(this, props));
 
 		_this.state = {
 			expanded: false
@@ -59543,17 +59573,10 @@ var SnapcastVolumeControl = function (_React$Component) {
 		return _this;
 	}
 
-	_createClass(SnapcastVolumeControl, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			if (this.props.pusher_connected && this.props.snapcast_enabled) {
-				this.props.pusherActions.getSnapcast();
-			}
-		}
-	}, {
+	_createClass(OutputControl, [{
 		key: 'handleClick',
 		value: function handleClick(e) {
-			if ($(e.target).closest('.snapcast-volume-control').length <= 0) {
+			if ($(e.target).closest('.output-control').length <= 0) {
 				this.setExpanded(false);
 			}
 		}
@@ -59565,14 +59588,21 @@ var SnapcastVolumeControl = function (_React$Component) {
 			if (expanded) {
 				this.setState({ expanded: expanded });
 				window.addEventListener("click", this.handleClick, false);
+
+				// Re-check our snapcast clients
+				// TODO: Once we have push events, remove this as it'll (marginally)
+				// slow down the reveal/render
+				if (this.props.pusher_connected && this.props.snapcast_enabled) {
+					this.props.pusherActions.getSnapcast();
+				}
 			} else {
 				this.setState({ expanded: expanded });
 				window.removeEventListener("click", this.handleClick, false);
 			}
 		}
 	}, {
-		key: 'renderVolumes',
-		value: function renderVolumes() {
+		key: 'renderOutputs',
+		value: function renderOutputs() {
 			var _this2 = this;
 
 			var clients = [];
@@ -59587,13 +59617,33 @@ var SnapcastVolumeControl = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'volumes' },
+				{ className: 'outputs' },
+				this.props.http_streaming_enabled ? _react2.default.createElement(
+					'div',
+					{ className: 'output icecast-output' },
+					_react2.default.createElement(
+						'span',
+						{ className: 'name' },
+						'Local browser'
+					),
+					_react2.default.createElement(_VolumeControl2.default, {
+						className: 'client-volume-control',
+						volume: this.props.http_streaming_volume,
+						mute: this.props.http_streaming_mute,
+						onVolumeChange: function onVolumeChange(percent) {
+							return _this2.props.coreActions.set({ http_streaming_volume: percent });
+						},
+						onMuteChange: function onMuteChange(mute) {
+							return _this2.props.coreActions.set({ http_streaming_mute: mute });
+						}
+					})
+				) : null,
 				clients.map(function (client) {
 					var name = client.config.name ? client.config.name : client.host.name;
 
 					return _react2.default.createElement(
 						'div',
-						{ className: 'client', key: client.id },
+						{ className: 'output snapcast-output', key: client.id },
 						_react2.default.createElement(
 							'span',
 							{ className: 'name' },
@@ -59622,7 +59672,7 @@ var SnapcastVolumeControl = function (_React$Component) {
 			if (this.state.expanded) {
 				return _react2.default.createElement(
 					'span',
-					{ className: 'snapcast-volume-control' },
+					{ className: 'output-control' },
 					_react2.default.createElement(
 						'a',
 						{ className: 'control speakers active', onClick: function onClick(e) {
@@ -59630,12 +59680,12 @@ var SnapcastVolumeControl = function (_React$Component) {
 							} },
 						_react2.default.createElement(_Icon2.default, { name: 'speaker' })
 					),
-					this.renderVolumes()
+					this.renderOutputs()
 				);
 			} else {
 				return _react2.default.createElement(
 					'span',
-					{ className: 'snapcast-volume-control' },
+					{ className: 'output-control' },
 					_react2.default.createElement(
 						'a',
 						{ className: 'control speakers', onClick: function onClick(e) {
@@ -59648,11 +59698,14 @@ var SnapcastVolumeControl = function (_React$Component) {
 		}
 	}]);
 
-	return SnapcastVolumeControl;
+	return OutputControl;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		http_streaming_enabled: state.core.http_streaming_enabled,
+		http_streaming_volume: state.core.http_streaming_volume,
+		http_streaming_mute: state.core.http_streaming_mute,
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
 		snapcast_clients: state.pusher.snapcast_clients
@@ -59661,11 +59714,12 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
 		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
 	};
 };
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SnapcastVolumeControl);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(OutputControl);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
 
 /***/ }),
@@ -59703,7 +59757,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -61019,7 +61073,7 @@ var _AuthorizationModal_Receive = __webpack_require__(235);
 
 var _AuthorizationModal_Receive2 = _interopRequireDefault(_AuthorizationModal_Receive);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -63582,7 +63636,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -63949,7 +64003,7 @@ var _LazyLoadListener = __webpack_require__(22);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64604,7 +64658,7 @@ var _FollowButton = __webpack_require__(44);
 
 var _FollowButton2 = _interopRequireDefault(_FollowButton);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64624,7 +64678,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -65320,7 +65374,7 @@ var _reactRouter = __webpack_require__(7);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -65952,7 +66006,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getTrackLyrics = getTrackLyrics;
 exports.findTrackLyrics = findTrackLyrics;
 
-var coreActions = __webpack_require__(14);
+var coreActions = __webpack_require__(13);
 var uiActions = __webpack_require__(2);
 var helpers = __webpack_require__(1);
 
@@ -66126,7 +66180,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -66461,7 +66515,7 @@ var _TrackList = __webpack_require__(21);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -66628,7 +66682,7 @@ var _reactRouter = __webpack_require__(7);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -67058,13 +67112,13 @@ var Debug = function (_React$Component) {
 									),
 									_react2.default.createElement(
 										'option',
-										{ value: '{"method":"perform_upgrade"}' },
-										'Perform upgrade (beta)'
+										{ value: '{"method":"broadcast","data":{"method":"reload","params":{}}}' },
+										'Forced reload for all connected clients'
 									),
 									_react2.default.createElement(
 										'option',
-										{ value: '{"method":"proxy_request","data":{"url":"https://jsonplaceholder.typicode.com/posts/1"}}' },
-										'Proxy request'
+										{ value: '{"method":"perform_upgrade"}' },
+										'Perform upgrade (beta)'
 									)
 								)
 							)
@@ -67174,7 +67228,7 @@ var _reactRouter = __webpack_require__(7);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -67218,7 +67272,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -67952,7 +68006,7 @@ var _SourcesPriority = __webpack_require__(252);
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -67980,7 +68034,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -70715,7 +70769,7 @@ var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(14);
+var _actions2 = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions2);
 
@@ -71114,51 +71168,6 @@ var Services = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'field radio' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'name' },
-						'Encoding'
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'input' },
-						_react2.default.createElement(
-							'label',
-							null,
-							_react2.default.createElement('input', {
-								type: 'radio',
-								name: 'http_streaming_encoding',
-								checked: this.props.core.http_streaming_encoding == 'mpeg',
-								onChange: function onChange(e) {
-									return _this3.props.coreActions.set({ http_streaming_encoding: 'mpeg' });
-								} }),
-							_react2.default.createElement(
-								'span',
-								{ className: 'label' },
-								'mpeg (mp3)'
-							)
-						),
-						_react2.default.createElement(
-							'label',
-							null,
-							_react2.default.createElement('input', {
-								type: 'radio',
-								name: 'http_streaming_encoding',
-								checked: this.props.core.http_streaming_encoding == 'ogg',
-								onChange: function onChange(e) {
-									return _this3.props.coreActions.set({ http_streaming_encoding: 'ogg' });
-								} }),
-							_react2.default.createElement(
-								'span',
-								{ className: 'label' },
-								'ogg'
-							)
-						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
 					{ className: 'field' },
 					_react2.default.createElement(
 						'div',
@@ -71254,7 +71263,7 @@ var Services = function (_React$Component) {
 					_react2.default.createElement(
 						_reactRouter.Link,
 						{ className: "menu-item" + (this.props.active == 'snapcast' ? ' active' : ''), to: this.props.active == 'snapcast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/snapcast' },
-						_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'sliders' }),
+						_react2.default.createElement(_Icon2.default, { name: 'devices' }),
 						_react2.default.createElement(
 							'div',
 							{ className: 'title' },
@@ -71277,7 +71286,7 @@ var Services = function (_React$Component) {
 					_react2.default.createElement(
 						_reactRouter.Link,
 						{ className: "menu-item" + (this.props.active == 'icecast' ? ' active' : ''), to: this.props.active == 'icecast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/icecast' },
-						_react2.default.createElement(_Icon2.default, { name: 'rss_feed' }),
+						_react2.default.createElement(_Icon2.default, { name: 'wifi_tethering' }),
 						_react2.default.createElement(
 							'div',
 							{ className: 'title' },
@@ -71405,7 +71414,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -71631,10 +71640,17 @@ var Snapcast = function (_React$Component) {
 					{ className: 'field checkbox' },
 					_react2.default.createElement(
 						'div',
+						{ className: 'name' },
+						'Display'
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'input' },
 						_react2.default.createElement(
 							'button',
-							{ onClick: function onClick(e) {
+							{
+								className: 'small',
+								onClick: function onClick(e) {
 									return _this3.props.pusherActions.getSnapcast();
 								} },
 							'Refresh'
@@ -71657,114 +71673,118 @@ var Snapcast = function (_React$Component) {
 						)
 					)
 				),
-				groups.map(function (group) {
+				_react2.default.createElement(
+					'div',
+					{ className: 'groups' },
+					groups.map(function (group) {
 
-					// Average our clients' volume for an overall group volume
-					var group_volume = 0;
-					for (var i = 0; i < group.clients.length; i++) {
-						var client = group.clients[i];
-						group_volume += client.config.volume.percent;
-					}
-					group_volume = group_volume / group.clients.length;
+						// Average our clients' volume for an overall group volume
+						var group_volume = 0;
+						for (var i = 0; i < group.clients.length; i++) {
+							var client = group.clients[i];
+							group_volume += client.config.volume.percent;
+						}
+						group_volume = group_volume / group.clients.length;
 
-					return _react2.default.createElement(
-						'div',
-						{ className: 'group', key: group.id },
-						_react2.default.createElement(
+						return _react2.default.createElement(
 							'div',
-							{ className: 'field' },
+							{ className: 'group', key: group.id },
 							_react2.default.createElement(
 								'div',
-								{ className: 'name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'input' },
+								{ className: 'field' },
 								_react2.default.createElement(
 									'div',
-									{ className: 'text' },
-									group.name ? group.name : 'Group ' + group.id.substring(0, 3),
-									' \xA0',
+									{ className: 'name' },
+									'Name'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'input' },
 									_react2.default.createElement(
-										'span',
-										{ className: 'grey-text' },
-										'(',
-										group.id,
-										')'
+										'div',
+										{ className: 'text' },
+										group.name ? group.name : 'Group ' + group.id.substring(0, 3),
+										' \xA0',
+										_react2.default.createElement(
+											'span',
+											{ className: 'grey-text' },
+											'(',
+											group.id,
+											')'
+										)
 									)
 								)
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'field dropdown' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'name' },
-								'Stream'
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'input' },
+								{ className: 'field dropdown' },
 								_react2.default.createElement(
-									'select',
-									{ onChange: function onChange(e) {
-											return _this3.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value);
-										}, value: group.stream_id },
-									streams.map(function (stream) {
-										return _react2.default.createElement(
-											'option',
-											{ value: stream.id, key: stream.id },
-											stream.id,
-											' (',
-											stream.status,
-											')'
-										);
+									'div',
+									{ className: 'name' },
+									'Stream'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'input' },
+									_react2.default.createElement(
+										'select',
+										{ onChange: function onChange(e) {
+												return _this3.props.pusherActions.setSnapcastGroupStream(group.id, e.target.value);
+											}, value: group.stream_id },
+										streams.map(function (stream) {
+											return _react2.default.createElement(
+												'option',
+												{ value: stream.id, key: stream.id },
+												stream.id,
+												' (',
+												stream.status,
+												')'
+											);
+										})
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'field' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'name' },
+									'Volume'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'input' },
+									_react2.default.createElement(_VolumeControl2.default, {
+										className: 'group-volume-control',
+										volume: group_volume,
+										mute: group.muted,
+										onVolumeChange: function onVolumeChange(percent, old_percent) {
+											return _this3.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent);
+										},
+										onMuteChange: function onMuteChange(mute) {
+											return _this3.props.pusherActions.setSnapcastGroupMute(group.id, mute);
+										}
 									})
 								)
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'field' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'name' },
-								'Volume'
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'input' },
-								_react2.default.createElement(_VolumeControl2.default, {
-									className: 'group-volume-control',
-									volume: group_volume,
-									mute: group.muted,
-									onVolumeChange: function onVolumeChange(percent, old_percent) {
-										return _this3.props.pusherActions.setSnapcastGroupVolume(group.id, percent, old_percent);
-									},
-									onMuteChange: function onMuteChange(mute) {
-										return _this3.props.pusherActions.setSnapcastGroupMute(group.id, mute);
-									}
-								})
+								{ className: 'field' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'name' },
+									'Clients'
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'input' },
+									_this3.renderClientsList(group, groups)
+								)
 							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'field' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'name' },
-								'Clients'
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'input' },
-								_this3.renderClientsList(group, groups)
-							)
-						)
-					);
-				})
+						);
+					})
+				)
 			);
 		}
 	}]);
@@ -72068,7 +72088,7 @@ var _reactInputRange = __webpack_require__(261);
 
 var _reactInputRange2 = _interopRequireDefault(_reactInputRange);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74950,7 +74970,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -75174,7 +75194,7 @@ var _PlaylistGrid = __webpack_require__(46);
 
 var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75410,7 +75430,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75621,7 +75641,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(3);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75822,7 +75842,7 @@ var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(7);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -76092,7 +76112,7 @@ var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(7);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -76478,7 +76498,7 @@ var _List = __webpack_require__(51);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -76514,7 +76534,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -76894,7 +76914,7 @@ var _TrackList = __webpack_require__(21);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -77090,7 +77110,7 @@ var _DropdownField = __webpack_require__(34);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -77110,7 +77130,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(14);
+var _actions = __webpack_require__(13);
 
 var coreActions = _interopRequireWildcard(_actions);
 
@@ -77472,7 +77492,7 @@ var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(7);
 
-var _Header = __webpack_require__(13);
+var _Header = __webpack_require__(14);
 
 var _Header2 = _interopRequireDefault(_Header);
 

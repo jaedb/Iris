@@ -7,9 +7,10 @@ import VolumeControl from './VolumeControl'
 import Icon from '../Icon'
 
 import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions'
 import * as pusherActions from '../../services/pusher/actions'
 
-class SnapcastVolumeControl extends React.Component{
+class OutputControl extends React.Component{
 
 	constructor(props){
 		super(props);
@@ -21,14 +22,8 @@ class SnapcastVolumeControl extends React.Component{
 		this.handleClick = this.handleClick.bind(this);
 	}
 
-	componentDidMount(){
-		if (this.props.pusher_connected && this.props.snapcast_enabled){
-			this.props.pusherActions.getSnapcast();
-		}
-	}
-
 	handleClick(e){
-		if ($(e.target).closest('.snapcast-volume-control').length <= 0){
+		if ($(e.target).closest('.output-control').length <= 0){
 			this.setExpanded(false);
 		}
 	}
@@ -37,13 +32,20 @@ class SnapcastVolumeControl extends React.Component{
 		if (expanded){
 			this.setState({expanded: expanded});
 			window.addEventListener("click", this.handleClick, false);
+
+			// Re-check our snapcast clients
+			// TODO: Once we have push events, remove this as it'll (marginally)
+			// slow down the reveal/render
+			if (this.props.pusher_connected && this.props.snapcast_enabled){
+				this.props.pusherActions.getSnapcast();
+			}
 		} else {
 			this.setState({expanded: expanded});
 			window.removeEventListener("click", this.handleClick, false);
 		}
 	}
 
-	renderVolumes(){
+	renderOutputs(){
 
 		var clients = [];
 		for (var key in this.props.snapcast_clients){
@@ -56,13 +58,25 @@ class SnapcastVolumeControl extends React.Component{
 		}
 
 		return (
-			<div className="volumes">
+			<div className="outputs">
+				{this.props.http_streaming_enabled ? <div className="output icecast-output">
+					<span className="name">
+						Local browser
+					</span>
+					<VolumeControl 
+						className="client-volume-control"
+						volume={this.props.http_streaming_volume}
+						mute={this.props.http_streaming_mute}
+						onVolumeChange={percent => this.props.coreActions.set({http_streaming_volume: percent})}
+						onMuteChange={mute => this.props.coreActions.set({http_streaming_mute: mute})}
+					/>
+				</div> : null}
 				{
 					clients.map(client => {
 						var name = client.config.name ? client.config.name : client.host.name;
 
 						return (
-							<div className="client" key={client.id}>
+							<div className="output snapcast-output" key={client.id}>
 								<span className="name">
 									{name}
 								</span>
@@ -84,14 +98,14 @@ class SnapcastVolumeControl extends React.Component{
 	render(){
 		if (this.state.expanded){
 			return (
-				<span className="snapcast-volume-control">
+				<span className="output-control">
 					<a className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
-					{this.renderVolumes()}
+					{this.renderOutputs()}
 				</span>
 			);
 		} else {
 			return (
-				<span className="snapcast-volume-control">
+				<span className="output-control">
 					<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
 				</span>
 			);
@@ -101,6 +115,9 @@ class SnapcastVolumeControl extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		http_streaming_enabled: state.core.http_streaming_enabled,
+		http_streaming_volume: state.core.http_streaming_volume,
+		http_streaming_mute: state.core.http_streaming_mute,
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		pusher_connected: state.pusher.connected,
 		snapcast_clients: state.pusher.snapcast_clients
@@ -109,8 +126,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SnapcastVolumeControl)
+export default connect(mapStateToProps, mapDispatchToProps)(OutputControl)

@@ -223,28 +223,6 @@ class Services extends React.Component{
 						</label>
 					</div>
 				</div>
-				<div className="field radio">
-					<div className="name">Encoding</div>
-					<div className="input">
-						<label>
-							<input 
-								type="radio"
-								name="http_streaming_encoding"
-								checked={this.props.core.http_streaming_encoding == 'mpeg'}
-								onChange={e => this.props.coreActions.set({http_streaming_encoding: 'mpeg'})} />
-							<span className="label">mpeg (mp3)</span>
-						</label>
-						<label>
-							<input 
-								type="radio"
-								name="http_streaming_encoding"
-								checked={this.props.core.http_streaming_encoding == 'ogg'}
-								onChange={e => this.props.coreActions.set({http_streaming_encoding: 'ogg'})} />
-							<span className="label">ogg</span>
-						</label>
-					</div>
-				</div>
-
 				<div className="field">
 					<div className="name">Location</div>
 					<div className="input">
@@ -297,7 +275,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
-						<Icon type="fontawesome" name="sliders" />
+						<Icon name="devices" />
 						<div className="title">
 							Snapcast
 						</div>
@@ -306,7 +284,7 @@ class Services extends React.Component{
 				</div>
 				<div className="menu-item-wrapper">
 					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
-						<Icon name="rss_feed" />
+						<Icon name="wifi_tethering" />
 						<div className="title">
 							Icecast
 						</div>

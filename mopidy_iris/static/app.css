@@ -3114,8 +3114,8 @@ input[type="submit"] {
     -o-transition: none !important;
     transition: none !important;
     background: #f2f2f2;
-    margin-top: 1px;
-    margin-bottom: 9px; }
+    transform: translate(1px, 1px);
+    opacity: 0.8; }
   .button.small,
   button.small,
   input[type="button"].small,
@@ -3138,11 +3138,6 @@ input[type="submit"] {
   input[type="submit"].primary {
     background: #08d58f;
     color: #FFFFFF; }
-    .button.primary:active,
-    button.primary:active,
-    input[type="button"].primary:active,
-    input[type="submit"].primary:active {
-      background: #000000; }
   .button.white,
   button.white,
   input[type="button"].white,
@@ -3299,7 +3294,7 @@ input[type="submit"] {
     padding: 0; }
   .field .description {
     display: inline-block;
-    padding: 10px 0 4px;
+    padding: 6px 0 4px;
     font-size: 12px;
     opacity: 0.6; }
     .field .description.error {
@@ -4527,7 +4522,7 @@ input[type="submit"] {
         right: 0; } }
 
 .snapcast button {
-  margin-bottom: 0; }
+  margin-bottom: 0px; }
 
 .snapcast .volume-control .mute-control {
   display: inline-block;
@@ -4555,89 +4550,91 @@ input[type="submit"] {
   vertical-align: middle;
   box-sizing: border-box; }
 
-.snapcast .group {
-  padding-top: 10px;
-  border-top: 1px solid #383734; }
-  .snapcast .group:not(:last-child) {
-    padding-bottom: 20px; }
-  .snapcast .group .clients {
-    padding: 0 10px; }
-    .snapcast .group .clients .client {
-      border: 0;
-      padding: 0;
-      clear: both; }
-      .snapcast .group .clients .client::after {
-        content: '';
-        clear: both;
-        display: block; }
-      .snapcast .group .clients .client:not(:first-child) {
-        padding-top: 8px; }
-      .snapcast .group .clients .client > .name {
-        width: 40%;
-        padding-bottom: 4px;
-        position: relative;
-        display: block;
-        box-sizing: border-box;
-        border: 0; }
-        .snapcast .group .clients .client > .name input {
-          width: 100%;
-          padding-right: 30px; }
-        .snapcast .group .clients .client > .name .group-dropdown-field {
-          float: right;
-          margin-bottom: -3.2rem; }
-          .snapcast .group .clients .client > .name .group-dropdown-field .icon {
-            padding-right: 0; }
-      .snapcast .group .clients .client > .volume {
-        width: 28%;
-        padding-left: 2%; }
-      .snapcast .group .clients .client > .latency {
-        width: 28%;
-        padding-left: 2%; }
-      .snapcast .group .clients .client > .volume input,
-      .snapcast .group .clients .client > .latency input {
-        width: 20%; }
-      .snapcast .group .clients .client .latency-control {
-        display: inline-block;
-        vertical-align: middle;
-        padding-top: 4px;
-        width: 80%;
-        padding-right: 10px;
-        box-sizing: border-box; }
-        .snapcast .group .clients .client .latency-control .zero {
-          position: absolute;
-          top: -4px;
-          left: 50%;
-          bottom: 0;
-          width: 1px;
-          background: #383734;
-          z-index: 1; }
-        .snapcast .group .clients .client .latency-control .progress.positive {
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0; }
-        .snapcast .group .clients .client .latency-control .progress.negative {
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0; }
-      @media (max-width: 800px) {
-        .snapcast .group .clients .client {
-          padding-left: 0 !important;
-          padding-right: 0 !important;
-          padding-top: 0 !important; }
-          .snapcast .group .clients .client .col {
-            clear: both;
-            display: block !important;
-            float: none !important;
-            width: auto !important;
-            padding: 0; }
-            .snapcast .group .clients .client .col::after {
-              content: '';
+.snapcast .groups {
+  padding-top: 10px; }
+  .snapcast .groups .group {
+    padding-top: 10px;
+    border-top: 1px solid #383734; }
+    .snapcast .groups .group:not(:last-child) {
+      padding-bottom: 20px; }
+    .snapcast .groups .group .clients {
+      padding: 0 10px; }
+      .snapcast .groups .group .clients .client {
+        border: 0;
+        padding: 0;
+        clear: both; }
+        .snapcast .groups .group .clients .client::after {
+          content: '';
+          clear: both;
+          display: block; }
+        .snapcast .groups .group .clients .client:not(:first-child) {
+          padding-top: 8px; }
+        .snapcast .groups .group .clients .client > .name {
+          width: 40%;
+          padding-bottom: 4px;
+          position: relative;
+          display: block;
+          box-sizing: border-box;
+          border: 0; }
+          .snapcast .groups .group .clients .client > .name input {
+            width: 100%;
+            padding-right: 30px; }
+          .snapcast .groups .group .clients .client > .name .group-dropdown-field {
+            float: right;
+            margin-bottom: -3.2rem; }
+            .snapcast .groups .group .clients .client > .name .group-dropdown-field .icon {
+              padding-right: 0; }
+        .snapcast .groups .group .clients .client > .volume {
+          width: 28%;
+          padding-left: 2%; }
+        .snapcast .groups .group .clients .client > .latency {
+          width: 28%;
+          padding-left: 2%; }
+        .snapcast .groups .group .clients .client > .volume input,
+        .snapcast .groups .group .clients .client > .latency input {
+          width: 20%; }
+        .snapcast .groups .group .clients .client .latency-control {
+          display: inline-block;
+          vertical-align: middle;
+          padding-top: 4px;
+          width: 80%;
+          padding-right: 10px;
+          box-sizing: border-box; }
+          .snapcast .groups .group .clients .client .latency-control .zero {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            bottom: 0;
+            width: 1px;
+            background: #383734;
+            z-index: 1; }
+          .snapcast .groups .group .clients .client .latency-control .progress.positive {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0; }
+          .snapcast .groups .group .clients .client .latency-control .progress.negative {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0; }
+        @media (max-width: 800px) {
+          .snapcast .groups .group .clients .client {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            padding-top: 0 !important; }
+            .snapcast .groups .group .clients .client .col {
               clear: both;
-              display: block; }
-            .snapcast .group .clients .client .col.volume, .snapcast .group .clients .client .col.latency {
-              padding-top: 5px; } }
+              display: block !important;
+              float: none !important;
+              width: auto !important;
+              padding: 0; }
+              .snapcast .groups .group .clients .client .col::after {
+                content: '';
+                clear: both;
+                display: block; }
+              .snapcast .groups .group .clients .client .col.volume, .snapcast .groups .group .clients .client .col.latency {
+                padding-top: 5px; } }
 
-.snapcast-volume-control {
+.output-control {
   position: relative; }
-  .snapcast-volume-control .volumes {
+  .output-control .outputs {
     position: absolute;
     bottom: 40px;
     right: -150px;
@@ -4650,7 +4647,7 @@ input[type="submit"] {
     border-radius: 3px;
     box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
     z-index: 9; }
-    .snapcast-volume-control .volumes:after {
+    .output-control .outputs:after {
       content: '';
       display: block;
       width: 6px;
@@ -4662,28 +4659,28 @@ input[type="submit"] {
       position: absolute;
       bottom: -3px;
       right: 159px; }
-    .snapcast-volume-control .volumes .client {
+    .output-control .outputs .output {
       padding: 16px 20px 12px; }
-      .snapcast-volume-control .volumes .client:not(:first-child) {
+      .output-control .outputs .output:not(:first-child) {
         border-top: 1px solid rgba(0, 0, 0, 0.05); }
-      .snapcast-volume-control .volumes .client .name {
+      .output-control .outputs .output .name {
         display: block;
         padding-bottom: 5px; }
-      .snapcast-volume-control .volumes .client .volume-control {
+      .output-control .outputs .output .volume-control {
         display: block;
         position: relative;
         padding-left: 22px; }
-        .snapcast-volume-control .volumes .client .volume-control .mute-control {
+        .output-control .outputs .output .volume-control .mute-control {
           position: absolute;
           top: -2px;
           left: -2px;
           padding: 2px;
           color: #000000; }
   @media (max-width: 800px) {
-    .snapcast-volume-control .volumes {
+    .output-control .outputs {
       width: 86vw;
       right: 0; }
-      .snapcast-volume-control .volumes:after {
+      .output-control .outputs:after {
         right: 9px; } }
 
 aside {
@@ -4774,6 +4771,12 @@ aside {
         cursor: not-allowed; }
       aside nav a:hover:not([disabled]):before {
         opacity: 0.15; }
+      aside nav a:active {
+        -webkit-transition: none !important;
+        -moz-transition: none !important;
+        -o-transition: none !important;
+        transition: none !important;
+        transform: translate(1px, 1px); }
     aside nav section {
       padding-bottom: 25px; }
       aside nav section title {

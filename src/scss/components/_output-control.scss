@@ -1,8 +1,8 @@
 
-.snapcast-volume-control {
+.output-control {
 	position: relative;
 
-	.volumes {
+	.outputs {
 		position: absolute;
 		bottom: 40px;
 		right: -150px;
@@ -30,7 +30,7 @@
 			right: 159px;
 		}
 
-		.client {
+		.output {
 			padding: 16px 20px 12px;
 
 			&:not(:first-child) {
@@ -59,7 +59,7 @@
 	}
 
 	@include responsive($bp_medium){
-		.volumes {
+		.outputs {
 			width: 86vw;
 			right: 0;
 

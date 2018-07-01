@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 
 import ProgressSlider from './Fields/ProgressSlider'
 import VolumeControl from './Fields/VolumeControl'
-import SnapcastVolumeControl from './Fields/SnapcastVolumeControl'
+import OutputControl from './Fields/OutputControl'
 import Dater from './Dater'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
@@ -45,19 +45,44 @@ class PlaybackControls extends React.Component{
 			return false;
 		}
 
+		// Use our track's URI as a cache mechanism. This prevents the browser from starting
+		// the stream right back at the beginning (which would play from the browser's cache, ie first render)
 		var url = props.http_streaming_url+"?cache_buster="+props.current_track.uri;
 
-		console.log("Playing stream: "+url);
-
+		this.stream.muted = this.props.http_streaming_mute;
+		this.stream.volume = this.props.http_streaming_volume / 100;
 		this.stream.src = url;
 		this.stream.play();
 	}
 
 	componentWillReceiveProps(nextProps){
+
+		// When the track changes, update our stream URL to reflect the cache buster
+		// TODO: This will crop the end of tracks by the duration of the buffer. Perhaps create
+		// a timestamp to only update the stream when a track has been skipped?
 		if (!this.props.current_track && nextProps.current_track ||
 			this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri){
 
 			this.playStream(nextProps);
+		}
+
+		// Currently have a stream running
+		if (this.stream){
+
+			// Just been muted
+			if (this.props.http_streaming_mute !== nextProps.http_streaming_mute){
+				this.stream.muted = nextProps.http_streaming_mute;
+			}
+
+			// Just had volume changed
+			if (this.props.http_streaming_volume !== nextProps.http_streaming_volume){
+				this.stream.volume = nextProps.http_streaming_volume / 100;
+			}
+
+			// Just been disabled
+			if (nextProps.http_streaming_enabled){
+				this.stream = null;
+			}
 		}
 	}
 
@@ -138,7 +163,7 @@ class PlaybackControls extends React.Component{
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
-					{this.props.snapcast_enabled ? <SnapcastVolumeControl /> : null}
+					<OutputControl />
 				</section>
 
 				<section className="progress">
@@ -182,8 +207,9 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		http_streaming_enabled: state.core.http_streaming_enabled,
-		http_streaming_encoding: state.core.http_streaming_encoding,
-		http_streaming_url: state.core.http_streaming_url,
+		http_streaming_volume: (state.core.http_streaming_volume ? state.core.http_streaming_volume : 50),
+		http_streaming_mute: (state.core.http_streaming_mute ? state.core.http_streaming_mute : false),
+		http_streaming_url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),

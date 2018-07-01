@@ -167,9 +167,9 @@ input[type="submit"] {
 
 	&:active {
 		@include noanimate();
-		background: darken($white,5%);
-		margin-top: 1px;
-		margin-bottom: 9px;
+		background: darken($white, 5%);
+		transform: translate(1px,1px);
+		opacity: 0.8;
 	}
 
 	&.small {
@@ -188,9 +188,6 @@ input[type="submit"] {
 	&.primary {
 		background: $turquoise;
 		color: $white;
-		&:active {
-			background: $black;
-		}
 	}
 
 	&.white {
@@ -329,7 +326,7 @@ input[type="submit"] {
 
 	.description {
 		display: inline-block;
-		padding: 10px 0 4px;
+		padding: 6px 0 4px;
 		font-size: 12px;
 		opacity: 0.6;
 
