@@ -7,6 +7,9 @@ export default function reducer(core = {}, action){
         case 'CORE_SET':
             return Object.assign({}, core, action.data)
 
+        case 'CACHEBUST_HTTP_STREAM':
+            return Object.assign({}, core, {http_streaming_cachebuster: new Date().getTime()})
+
         /**
          * Current track and tracklist
          **/

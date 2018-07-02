@@ -29,7 +29,9 @@ class PlaybackControls extends React.Component{
 
 	componentDidMount(){
 		if (this.props.http_streaming_enabled){
-			this.playStream();
+
+			// Bust our cache, and by consequence, play our stream
+			this.props.coreActions.cachebustHttpStream();
 		}
 	}
 
@@ -41,32 +43,33 @@ class PlaybackControls extends React.Component{
 			this.stream.src = null;
 		}
 
-		if (!props.current_track || !props.http_streaming_enabled || !props.http_streaming_url){
+		if (!props.http_streaming_enabled || !props.http_streaming_url){
 			return false;
 		}
 
-		// Use our track's URI as a cache mechanism. This prevents the browser from starting
-		// the stream right back at the beginning (which would play from the browser's cache, ie first render)
-		var url = props.http_streaming_url+"?cache_buster="+props.current_track.uri;
-
-		this.stream.muted = this.props.http_streaming_mute;
-		this.stream.volume = this.props.http_streaming_volume / 100;
-		this.stream.src = url;
+		this.stream.src = props.http_streaming_url+"?cb="+props.http_streaming_cachebuster;
+		this.stream.muted = props.http_streaming_mute;
+		this.stream.volume = props.http_streaming_volume / 100;
 		this.stream.play();
+
+		console.log("Playing stream: "+this.stream.src);
 	}
 
 	componentWillReceiveProps(nextProps){
 
-		// When the track changes, update our stream URL to reflect the cache buster
-		// TODO: This will crop the end of tracks by the duration of the buffer. Perhaps create
-		// a timestamp to only update the stream when a track has been skipped?
-		if (!this.props.current_track && nextProps.current_track ||
-			this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri){
-
+		// Cachebuster changed
+		// This happens when playback changes, so that the stream is "new", rather
+		// than the original stream. This prevents the browser cache from starting
+		// the stream right from the beginning (which could be hours of continuous playback).
+		if (this.props.http_streaming_cachebuster !== nextProps.http_streaming_cachebuster){
 			this.playStream(nextProps);
 		}
 
-		// Currently have a stream running
+		// Just been enabled
+		if (!this.props.http_streaming_enabled && nextProps.http_streaming_enabled){
+			this.playStream(nextProps);
+		}
+
 		if (this.stream){
 
 			// Just been muted
@@ -80,7 +83,7 @@ class PlaybackControls extends React.Component{
 			}
 
 			// Just been disabled
-			if (nextProps.http_streaming_enabled){
+			if (!nextProps.http_streaming_enabled){
 				this.stream = null;
 			}
 		}
@@ -210,6 +213,7 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_volume: (state.core.http_streaming_volume ? state.core.http_streaming_volume : 50),
 		http_streaming_mute: (state.core.http_streaming_mute ? state.core.http_streaming_mute : false),
 		http_streaming_url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
+		http_streaming_cachebuster: state.core.http_streaming_cachebuster,
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),
