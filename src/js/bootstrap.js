@@ -44,10 +44,11 @@ var initialState = {
 		users: {},
 		tracks: {},
 		http_streaming_enabled: false,
-		http_streaming_encoding: 'mpeg',
+		http_streaming_cachebuster: null,
 		http_streaming_url: "http://"+window.location.hostname+":8000/mopidy"
 	},
 	ui: {
+		shortkeys_enabled: true,
 		allow_reporting: true,
 		slim_mode: false,
 		selected_tracks: [],
@@ -80,7 +81,9 @@ var initialState = {
 		me: false,
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php'
 	},
-	genius: {},
+	genius: {
+		provider_url: 'https://james.barnsley.nz/iris/provider_genius.php'
+	},
 	spotify: {
 		me: false,
 		autocomplete_results: {},

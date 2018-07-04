@@ -9,6 +9,7 @@ import PlaylistGrid from '../../components/PlaylistGrid'
 import LazyLoadListener from '../../components/LazyLoadListener'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategory extends React.Component{
@@ -19,11 +20,24 @@ class DiscoverCategory extends React.Component{
 
 	componentDidMount(){
 		this.loadCategory();
+		this.setWindowTitle();
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.id != this.props.params.id){
-			this.loadCategory()
+			this.loadCategory();
+		}
+
+		if (!this.props.category && nextProps.category){
+			this.setWindowTitle(nextProps.category);
+		}
+	}
+
+	setWindowTitle(category = this.props.category){
+		if (category){
+			this.props.uiActions.setWindowTitle(category.name);
+		} else{
+			this.props.uiActions.setWindowTitle("Genre / Mood");
 		}
 	}
 
@@ -107,6 +121,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

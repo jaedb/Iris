@@ -24,6 +24,8 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("New releases");
+
 		if (!this.props.new_releases){
 			this.props.spotifyActions.getNewReleases();
 		}
@@ -120,9 +122,15 @@ class DiscoverNewReleases extends React.Component{
 			first_album = first_album[0]
 		}
 
+		var options = (
+			<button className="no-hover" onClick={e => this.props.spotifyActions.getNewReleases()}>
+				<Icon name="refresh" />Refresh
+			</button>
+		);
+
 		return (
 			<div className="view discover-new-releases-view">
-				<Header className="overlay">
+				<Header className="overlay" options={options}>
 					<Icon name="new_releases" type="material" />
 					New releases
 				</Header>

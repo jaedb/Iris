@@ -464,6 +464,7 @@ class IrisCore(object):
                 "locale": self.config['iris']['locale'],
                 "spotify_authorization_url": self.config['iris']['spotify_authorization_url'],
                 "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url'],
+                "genius_provider_url": self.config['iris']['genius_provider_url'],
                 "snapcast_enabled": self.config['iris']['snapcast_enabled']
             }
         }
@@ -931,82 +932,6 @@ class IrisCore(object):
                 callback(False, error)
             else:
                 return error
-
-
-    ##
-    # Proxy a request to an external provider
-    #
-    # This is required when requesting to non-CORS providers. We simply make the request
-    # server-side and pass that back. All we change is the response's Access-Control-Allow-Origin
-    # to prevent CORS-blocking by the browser.
-    ##
-
-    def proxy_request(self, *args, **kwargs):
-        callback = kwargs.get('callback', False)
-        origin_request = kwargs.get('request', None)
-        
-        try:
-            data = kwargs.get('data', {})
-        except:
-            callback(False, {
-                'message': 'Malformed data',
-                'source': 'proxy_request'
-            })
-            return
-
-        # Our request includes data, so make sure we POST the data
-        if 'url' not in data:
-            callback(False, {
-                'message': 'Malformed data (missing URL)',
-                'source': 'proxy_request',
-                'original_request': data
-            })
-            return
-
-        # Construct request headers
-        # If we have an original request, pass through it's headers
-        if origin_request:
-            headers = origin_request.headers
-        else:
-            headers = {}
-
-        # Adjust headers
-        headers["Accept-Language"] = "*" 
-        headers["Accept-Encoding"] = "deflate" 
-        if "Content-Type" in headers:
-            del headers["Content-Type"]
-        if "Host" in headers:
-            del headers["Host"]
-        if "X-Requested-With" in headers:
-            del headers["X-Requested-With"]
-        if "X-Forwarded-Server" in headers:
-            del headers["X-Forwarded-Server"]
-        if "X-Forwarded-Host" in headers:
-            del headers["X-Forwarded-Host"]
-        if "X-Forwarded-For" in headers:
-            del headers["X-Forwarded-For"]
-        if "Referrer" in headers:
-            del headers["Referrer"]
-
-        # Our request includes data, so make sure we POST the data
-        if ('data' in data and data['data']):
-            http_client = tornado.httpclient.AsyncHTTPClient()
-            request = tornado.httpclient.HTTPRequest(data['url'], method='POST', body=json.dumps(data['data']), headers=headers, validate_cert=False)
-            http_client.fetch(request, callback=callback)
-
-        # No data, so just a simple GET request
-        else:
-
-            # Strip out our origin content-length otherwise this confuses
-            # the target server as content-length doesn't apply to GET requests
-            if "Content-Length" in headers:
-                del headers["Content-Length"]
-
-            http_client = tornado.httpclient.AsyncHTTPClient()
-            request = tornado.httpclient.HTTPRequest(data['url'], headers=headers, validate_cert=False)
-            http_client.fetch(request, callback=callback)
-
-
 
 
     ##

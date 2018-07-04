@@ -150,6 +150,7 @@ class Discover extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Discover");
 
 		// We have seeds provided in the URL
 		if (this.props.params.seeds){

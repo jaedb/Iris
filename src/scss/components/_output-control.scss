@@ -1,8 +1,8 @@
 
-.snapcast-volume-control {
+.output-control {
 	position: relative;
 
-	.volumes {
+	.outputs {
 		position: absolute;
 		bottom: 40px;
 		right: -150px;
@@ -30,16 +30,30 @@
 			right: 159px;
 		}
 
-		.client {
+		.output {
 			padding: 16px 20px 12px;
+			position: relative;
 
 			&:not(:first-child) {
 				border-top: 1px solid rgba(0,0,0,0.05);
 			}
 
 			.name {
-				display: block;
 				padding-bottom: 5px;
+			}
+
+			.actions {
+				float: right;
+				
+				.action {
+					@include animate();
+					cursor: pointer;
+					color: $mid_grey;
+
+					&:hover {
+						color: $dark_grey;
+					}
+				}
 			}
 
 			.volume-control {
@@ -59,7 +73,7 @@
 	}
 
 	@include responsive($bp_medium){
-		.volumes {
+		.outputs {
 			width: 86vw;
 			right: 0;
 

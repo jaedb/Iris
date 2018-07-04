@@ -246,6 +246,11 @@ const MopidyMiddleware = (function(){
              * General playback
              **/
 
+            case 'MOPIDY_PLAY_STATE':
+                store.dispatch(uiActions.setWindowTitle(null, action.play_state));
+                next(action);
+                break
+
             case 'MOPIDY_GET_PLAY_STATE':
                 request(socket, store, 'playback.getState')
                     .then(

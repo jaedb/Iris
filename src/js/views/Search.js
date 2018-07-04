@@ -33,6 +33,7 @@ class Search extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Search");
 
 		// Auto-focus on the input field
 		$(document).find('.search-form input').focus();
@@ -86,6 +87,8 @@ class Search extends React.Component{
 	}
 
 	search(type = this.state.type, term = this.state.term, provider){
+
+		this.props.uiActions.setWindowTitle("Search: "+term);
 
 		this.props.mopidyActions.clearSearchResults();
 		this.props.spotifyActions.clearSearchResults();

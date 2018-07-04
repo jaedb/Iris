@@ -72,6 +72,12 @@ export function clearCurrentTrack(){
     }
 }
 
+export function cachebustHttpStream(){
+    return {
+        type: 'CACHEBUST_HTTP_STREAM'
+    }
+}
+
 
 
 

@@ -10,6 +10,7 @@ import LazyLoadListener from '../../components/LazyLoadListener'
 import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
@@ -21,6 +22,8 @@ class LibraryTracks extends React.Component{
 
 	// on render
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Tracks");
+
 		if (this.props.library_tracks === undefined){
 			this.props.spotifyActions.getLibraryTracks();
 		}
@@ -103,6 +106,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

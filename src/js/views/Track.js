@@ -57,6 +57,8 @@ class Track extends React.Component{
 		// We have just received our full track info (with artists)
 		if (!this.props.track.artists && nextProps.track.artists){
 
+			this.props.uiActions.setWindowTitle(nextProps.track);
+
 			// Ready to load LastFM
 			if (nextProps.lastfm_authorized){
 				this.props.lastfmActions.getTrack(nextProps.track.uri);
@@ -66,6 +68,25 @@ class Track extends React.Component{
 			if (!nextProps.track.lyrics_results){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
+		}
+
+		if (!this.props.track && nextProps.track){
+			this.setWindowTitle(nextProps.track);
+		}
+	}
+
+	setWindowTitle(track = this.props.track){		
+		if (track){
+			var artists = "";
+			for (var i = 0; i < track.artists.length; i++){
+				if (artists != ""){
+					artists += ", ";
+				}
+				artists += track.artists[i].name;
+			}
+			this.props.uiActions.setWindowTitle(track.name+" by "+artists+" (track)");
+		} else{
+			this.props.uiActions.setWindowTitle("Track");
 		}
 	}
 
@@ -151,9 +172,9 @@ class Track extends React.Component{
 							this.props.track.lyrics_results.map(result => {
 								return (
 									<option 
-										key={result.url} 
-										value={result.url}
-										defaultValue={result.url == this.props.track.lyrics_url}
+										key={result.path} 
+										value={result.path}
+										defaultValue={result.path == this.props.track.lyrics_path}
 									>
 											{result.title}
 									</option>
@@ -183,7 +204,7 @@ class Track extends React.Component{
 				<div className="lyrics">
 					<div className="content" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
 					<div className="origin grey-text">
-						Origin: <a href={this.props.track.lyrics_url} target="_blank">{this.props.track.lyrics_url}</a>
+						Origin: <a href={"https://genius.com"+this.props.track.lyrics_path} target="_blank">{"https://genius.com"+this.props.track.lyrics_path}</a>
 					</div>
 				</div>
 			)

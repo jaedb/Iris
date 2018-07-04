@@ -8,6 +8,7 @@ import Icon from '../../components/Icon'
 import CategoryGrid from '../../components/CategoryGrid'
 
 import * as helpers from '../../helpers'
+import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
 
 class DiscoverCategories extends React.Component{
@@ -20,6 +21,7 @@ class DiscoverCategories extends React.Component{
 		if (!this.props.categories){
 			this.props.spotifyActions.getCategories();
 		}
+		this.props.uiActions.setWindowTitle("Genre / Mood");
 	}
 
 	render(){
@@ -74,6 +76,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

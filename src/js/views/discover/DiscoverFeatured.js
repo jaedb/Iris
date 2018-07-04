@@ -22,6 +22,7 @@ class DiscoverFeatured extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Featured playlists");
 		if (!this.props.featured_playlists){
 			this.props.spotifyActions.getFeaturedPlaylists();
 		}
@@ -103,9 +104,15 @@ class DiscoverFeatured extends React.Component{
 			first_playlist = first_playlist[0]
 		}
 
+		var options = (
+			<button className="no-hover" onClick={e => this.props.spotifyActions.getFeaturedPlaylists()}>
+				<Icon name="refresh" />Refresh
+			</button>
+		);
+
 		return (
 			<div className="view discover-featured-view">
-				<Header className="overlay">
+				<Header className="overlay" options={options}>
 					<Icon name="star" type="material" />
 					Featured playlists
 				</Header>

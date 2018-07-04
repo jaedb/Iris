@@ -72,12 +72,13 @@ export default function reducer(spotify = {}, action){
             return Object.assign({}, spotify, { new_releases: action.data });
 
         case 'SPOTIFY_NEW_RELEASES_LOADED_MORE':
+        	console.log([ ...spotify.new_releases.items, ...action.data.albums.items]);
             return Object.assign({}, spotify, { new_releases: {
                 href: action.data.albums.href,
                 next: action.data.albums.next,
                 previous: action.data.albums.previous,
-                items: [ ...spotify.new_releases.items, ...action.data.albums.items ]
-            }})
+                items: [ ...spotify.new_releases.items, ...action.data.albums.items]
+            }});
 
         case 'SPOTIFY_DISCOVER_LOADED':
             if (!action.data ){

@@ -20,6 +20,7 @@ class QueueHistory extends React.Component{
 	}
 
 	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Queue history");
 		this.loadHistory() 
 	}
 

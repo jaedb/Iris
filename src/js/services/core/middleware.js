@@ -339,16 +339,6 @@ const CoreMiddleware = (function(){
                     tracks: [action.track]
                 });
 
-                // Set our window title to the track title
-                helpers.setWindowTitle(action.track, store.getState().mopidy.play_state);
-
-                next(action);
-                break;
-
-            case 'CLEAR_CURRENT_TRACK':
-
-                // Set our window title to the track title
-                helpers.setWindowTitle(null, store.getState().mopidy.play_state);
                 next(action);
                 break;
 

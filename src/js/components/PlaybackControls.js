@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 
 import ProgressSlider from './Fields/ProgressSlider'
 import VolumeControl from './Fields/VolumeControl'
-import SnapcastVolumeControl from './Fields/SnapcastVolumeControl'
+import OutputControl from './Fields/OutputControl'
 import Dater from './Dater'
 import ArtistSentence from './ArtistSentence'
 import Thumbnail from './Thumbnail'
@@ -21,9 +21,71 @@ class PlaybackControls extends React.Component{
 
 	constructor(props){
 		super(props)
-
+		this.stream = null;
 		this.state = {
 			expanded: false
+		}
+	}
+
+	componentDidMount(){
+		if (this.props.http_streaming_enabled){
+
+			// Bust our cache, and by consequence, play our stream
+			this.props.coreActions.cachebustHttpStream();
+		}
+	}
+
+	playStream(props = this.props){
+		
+		if (!this.stream){
+			this.stream = new Audio();
+		} else {
+			this.stream.src = null;
+		}
+
+		if (!props.http_streaming_enabled || !props.http_streaming_url){
+			return false;
+		}
+
+		this.stream.src = props.http_streaming_url+"?cb="+props.http_streaming_cachebuster;
+		this.stream.muted = props.http_streaming_mute;
+		this.stream.volume = props.http_streaming_volume / 100;
+		this.stream.play();
+
+		console.log("Playing stream: "+this.stream.src);
+	}
+
+	componentWillReceiveProps(nextProps){
+
+		// Cachebuster changed
+		// This happens when playback changes, so that the stream is "new", rather
+		// than the original stream. This prevents the browser cache from starting
+		// the stream right from the beginning (which could be hours of continuous playback).
+		if (this.props.http_streaming_cachebuster !== nextProps.http_streaming_cachebuster){
+			this.playStream(nextProps);
+		}
+
+		// Just been enabled
+		if (!this.props.http_streaming_enabled && nextProps.http_streaming_enabled){
+			this.playStream(nextProps);
+		}
+
+		if (this.stream){
+
+			// Just been muted
+			if (this.props.http_streaming_mute !== nextProps.http_streaming_mute){
+				this.stream.muted = nextProps.http_streaming_mute;
+			}
+
+			// Just had volume changed
+			if (this.props.http_streaming_volume !== nextProps.http_streaming_volume){
+				this.stream.volume = nextProps.http_streaming_volume / 100;
+			}
+
+			// Just been disabled
+			if (!nextProps.http_streaming_enabled){
+				this.stream = null;
+			}
 		}
 	}
 
@@ -73,10 +135,6 @@ class PlaybackControls extends React.Component{
 		return (
 			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
 
-				{this.props.http_streaming_enabled && this.props.play_state == 'playing' ? <audio id="http-streamer" autoPlay preload="none">
-					<source src={this.props.http_streaming_url} type={"audio/"+this.props.http_streaming_encoding} />
-				</audio> : null}
-
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div className="current-track">
@@ -108,7 +166,7 @@ class PlaybackControls extends React.Component{
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
-					{this.props.snapcast_enabled ? <SnapcastVolumeControl /> : null}
+					<OutputControl />
 				</section>
 
 				<section className="progress">
@@ -152,8 +210,10 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		snapcast_enabled: state.pusher.config.snapcast_enabled,
 		http_streaming_enabled: state.core.http_streaming_enabled,
-		http_streaming_encoding: state.core.http_streaming_encoding,
-		http_streaming_url: state.core.http_streaming_url,
+		http_streaming_volume: (state.core.http_streaming_volume ? state.core.http_streaming_volume : 50),
+		http_streaming_mute: (state.core.http_streaming_mute ? state.core.http_streaming_mute : false),
+		http_streaming_url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
+		http_streaming_cachebuster: state.core.http_streaming_cachebuster,
 		current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
 		next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
 		radio_enabled: (state.ui.radio && state.ui.radio.enabled ? true : false),

@@ -26,6 +26,10 @@ class Queue extends React.Component{
 		super(props)
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Now playing");
+	}
+
 	removeTracks(track_indexes){
 		var tlids = [];
 		for (var i = 0; i < track_indexes.length; i++){

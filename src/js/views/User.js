@@ -12,6 +12,7 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
+import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
 
@@ -22,12 +23,25 @@ class User extends React.Component{
 	}
 
 	componentDidMount(){
+		this.setWindowTitle();
 		this.loadUser();
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
 			this.loadUser(nextProps);
+		}
+
+		if (!this.props.user && nextProps.user){
+			this.setWindowTitle(nextProps.user);
+		}
+	}
+
+	setWindowTitle(user = this.props.user){		
+		if (user){
+			this.props.uiActions.setWindowTitle(user.name+" (user)");
+		} else{
+			this.props.uiActions.setWindowTitle("User");
 		}
 	}
 
@@ -129,6 +143,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

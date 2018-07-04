@@ -1,6 +1,14 @@
 
 import * as helpers from '../../helpers'
 
+export function setWindowTitle(title = null, play_state = null){
+    return {
+        type: 'SET_WINDOW_TITLE',
+        title: title,
+        play_state: play_state
+    }
+}
+
 export function setSelectedTracks(keys = []){
     if (typeof(keys) === 'string'){
         keys = [keys]

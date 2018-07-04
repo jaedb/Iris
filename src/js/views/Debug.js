@@ -26,6 +26,10 @@ class Debug extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Debug");
+	}
+
 	callMopidy(e){
 		e.preventDefault()
 		this.props.mopidyActions.debug(this.state.mopidy_call, JSON.parse(this.state.mopidy_data) )
@@ -177,8 +181,8 @@ class Debug extends React.Component{
 									<option value='{"method":"send_message","data":{"method":"notification","params":{"notification":{"type":"info","title":"Testing","content":"This is my message"}}}}'>Broadcast to one client</option>
 									<option value='{"method":"set_username","data":{"connection_id":"CONNECTION_ID_HERE","username":"NewUsername"}}'>Change username</option>
 									<option value='{"method":"refresh_spotify_token"}'>Refresh Spotify token</option>
+									<option value='{"method":"broadcast","data":{"method":"reload","params":{}}}'>Forced reload for all connected clients</option>
 									<option value='{"method":"perform_upgrade"}'>Perform upgrade (beta)</option>
-									<option value='{"method":"proxy_request","data":{"url":"https://jsonplaceholder.typicode.com/posts/1"}}'>Proxy request</option>
 								</select>
 							</div>
 						</div>

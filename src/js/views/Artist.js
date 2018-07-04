@@ -31,6 +31,7 @@ class Artist extends React.Component{
 	}
 
 	componentDidMount(){
+		this.setWindowTitle();
 		this.loadArtist();
 	}
 
@@ -41,6 +42,22 @@ class Artist extends React.Component{
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
 				this.loadArtist(nextProps);
 			}
+		}
+
+		if (!this.props.artist && nextProps.artist){
+			this.setWindowTitle(nextProps.artist);
+		}
+
+		if (this.props.params.uri !== nextProps.params.uri && nextProps.artist){
+			this.setWindowTitle(nextProps.artist);
+		}
+	}
+
+	setWindowTitle(artist = this.props.artist){		
+		if (artist){
+			this.props.uiActions.setWindowTitle(artist.name+" (artist)");
+		} else{
+			this.props.uiActions.setWindowTitle("Artist");
 		}
 	}
 

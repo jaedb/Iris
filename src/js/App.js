@@ -112,6 +112,10 @@ class App extends React.Component{
 
 	shouldTriggerShortcut(e){
 
+		if (!this.props.shortkeys_enabled){
+			return false;
+		}
+
 		// When we're focussed on certian elements, don't fire any shortcuts
 		// Typically form inputs
 		var ignoreNodes = ['INPUT', 'TEXTAREA'];
@@ -327,6 +331,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		shortkeys_enabled: state.ui.shortkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,
