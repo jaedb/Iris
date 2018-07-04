@@ -32,14 +32,28 @@
 
 		.output {
 			padding: 16px 20px 12px;
+			position: relative;
 
 			&:not(:first-child) {
 				border-top: 1px solid rgba(0,0,0,0.05);
 			}
 
 			.name {
-				display: block;
 				padding-bottom: 5px;
+			}
+
+			.actions {
+				float: right;
+				
+				.action {
+					@include animate();
+					cursor: pointer;
+					color: $mid_grey;
+
+					&:hover {
+						color: $dark_grey;
+					}
+				}
 			}
 
 			.volume-control {

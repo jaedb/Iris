@@ -46,9 +46,9 @@ const sendRequest = (dispatch, getState, endpoint) => {
  * We don't get the lyrics in the API, so we need to 'scrape' the HTML page instead
  *
  * @param uri = track uri
- * @param result = lyrics result (title, url)
+ * @param path = String, the relative API path for the HTML lyrics
  **/
-export function getTrackLyrics(uri, url){
+export function getTrackLyrics(uri, path){
     return (dispatch, getState) => {
 
         dispatch({
@@ -56,11 +56,11 @@ export function getTrackLyrics(uri, url){
             track: {
                 uri: uri,
                 lyrics: null,
-                lyrics_url: null
+                lyrics_path: null
             }
         });
 
-        sendRequest(dispatch, getState, "?action=lyrics&url="+url)
+        sendRequest(dispatch, getState, "?action=lyrics&path="+path)
             .then(
                 response => {
 
@@ -82,7 +82,7 @@ export function getTrackLyrics(uri, url){
                             track: {
                                 uri: uri,
                                 lyrics: lyrics_html,
-                                lyrics_url: url
+                                lyrics_path: path
                             }
                         });
                     }
@@ -115,7 +115,8 @@ export function findTrackLyrics(track){
                         for (var i = 0; i < response.response.hits.length; i++){
                             lyrics_results.push({
                                 title: response.response.hits[i].result.full_title,
-                                url: response.response.hits[i].result.url
+                                url: response.response.hits[i].result.url,
+                                path: response.response.hits[i].result.path
                             });
                         }
                         dispatch({
@@ -125,7 +126,10 @@ export function findTrackLyrics(track){
                                 lyrics_results: lyrics_results
                             }
                         });
-                        dispatch(getTrackLyrics(track.uri, lyrics_results[0].url));
+
+                        // Immediately go and get the first result's lyrics
+                        var lyrics_result = lyrics_results[0];
+                        dispatch(getTrackLyrics(track.uri, lyrics_result.path));
                     }
                 },
                 error => {

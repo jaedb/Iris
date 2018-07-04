@@ -60,9 +60,14 @@ class OutputControl extends React.Component{
 		return (
 			<div className="outputs">
 				{this.props.http_streaming_enabled ? <div className="output icecast-output">
-					<span className="name">
+					<div className="actions">
+						<span className="action" onClick={e => this.props.coreActions.cachebustHttpStream()}>
+							<Icon name="refresh" />
+						</span>
+					</div>
+					<div className="name">
 						Local browser
-					</span>
+					</div>
 					<VolumeControl 
 						className="client-volume-control"
 						volume={this.props.http_streaming_volume}
@@ -77,9 +82,9 @@ class OutputControl extends React.Component{
 
 						return (
 							<div className="output snapcast-output" key={client.id}>
-								<span className="name">
+								<div className="name">
 									{name}
-								</span>
+								</div>
 								<VolumeControl 
 									className="client-volume-control"
 									volume={client.config.volume.percent}

@@ -4660,12 +4660,23 @@ input[type="submit"] {
       bottom: -3px;
       right: 159px; }
     .output-control .outputs .output {
-      padding: 16px 20px 12px; }
+      padding: 16px 20px 12px;
+      position: relative; }
       .output-control .outputs .output:not(:first-child) {
         border-top: 1px solid rgba(0, 0, 0, 0.05); }
       .output-control .outputs .output .name {
-        display: block;
         padding-bottom: 5px; }
+      .output-control .outputs .output .actions {
+        float: right; }
+        .output-control .outputs .output .actions .action {
+          -webkit-transition: all 0.2s ease-in-out;
+          -moz-transition: all 0.2s ease-in-out;
+          -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+          cursor: pointer;
+          color: #a3a19f; }
+          .output-control .outputs .output .actions .action:hover {
+            color: #181818; }
       .output-control .outputs .output .volume-control {
         display: block;
         position: relative;

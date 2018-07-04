@@ -59638,7 +59638,18 @@ var OutputControl = function (_React$Component) {
 					'div',
 					{ className: 'output icecast-output' },
 					_react2.default.createElement(
-						'span',
+						'div',
+						{ className: 'actions' },
+						_react2.default.createElement(
+							'span',
+							{ className: 'action', onClick: function onClick(e) {
+									return _this2.props.coreActions.cachebustHttpStream();
+								} },
+							_react2.default.createElement(_Icon2.default, { name: 'refresh' })
+						)
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'name' },
 						'Local browser'
 					),
@@ -59661,7 +59672,7 @@ var OutputControl = function (_React$Component) {
 						'div',
 						{ className: 'output snapcast-output', key: client.id },
 						_react2.default.createElement(
-							'span',
+							'div',
 							{ className: 'name' },
 							name
 						),
@@ -65517,7 +65528,7 @@ var Track = function (_React$Component) {
 			// We have just received our full track info (with artists)
 			if (!this.props.track.artists && nextProps.track.artists) {
 
-				this.props.uiActions.setWindowTitle(nextProps.track.name + " by XXXX");
+				this.props.uiActions.setWindowTitle(nextProps.track);
 
 				// Ready to load LastFM
 				if (nextProps.lastfm_authorized) {
@@ -65655,9 +65666,9 @@ var Track = function (_React$Component) {
 							return _react2.default.createElement(
 								'option',
 								{
-									key: result.url,
-									value: result.url,
-									defaultValue: result.url == _this2.props.track.lyrics_url
+									key: result.path,
+									value: result.path,
+									defaultValue: result.path == _this2.props.track.lyrics_path
 								},
 								result.title
 							);
@@ -65695,8 +65706,8 @@ var Track = function (_React$Component) {
 						'Origin: ',
 						_react2.default.createElement(
 							'a',
-							{ href: this.props.track.lyrics_url, target: '_blank' },
-							this.props.track.lyrics_url
+							{ href: "https://genius.com" + this.props.track.lyrics_path, target: '_blank' },
+							"https://genius.com" + this.props.track.lyrics_path
 						)
 					)
 				);
@@ -66066,9 +66077,9 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
  * We don't get the lyrics in the API, so we need to 'scrape' the HTML page instead
  *
  * @param uri = track uri
- * @param result = lyrics result (title, url)
+ * @param path = String, the relative API path for the HTML lyrics
  **/
-function getTrackLyrics(uri, url) {
+function getTrackLyrics(uri, path) {
     return function (dispatch, getState) {
 
         dispatch({
@@ -66076,11 +66087,11 @@ function getTrackLyrics(uri, url) {
             track: {
                 uri: uri,
                 lyrics: null,
-                lyrics_url: null
+                lyrics_path: null
             }
         });
 
-        sendRequest(dispatch, getState, "?action=lyrics&url=" + url).then(function (response) {
+        sendRequest(dispatch, getState, "?action=lyrics&path=" + path).then(function (response) {
 
             var html = $(response);
             var lyrics = html.find('.lyrics');
@@ -66100,7 +66111,7 @@ function getTrackLyrics(uri, url) {
                     track: {
                         uri: uri,
                         lyrics: lyrics_html,
-                        lyrics_url: url
+                        lyrics_path: path
                     }
                 });
             }
@@ -66126,7 +66137,8 @@ function findTrackLyrics(track) {
                 for (var i = 0; i < response.response.hits.length; i++) {
                     lyrics_results.push({
                         title: response.response.hits[i].result.full_title,
-                        url: response.response.hits[i].result.url
+                        url: response.response.hits[i].result.url,
+                        path: response.response.hits[i].result.path
                     });
                 }
                 dispatch({
@@ -66136,7 +66148,10 @@ function findTrackLyrics(track) {
                         lyrics_results: lyrics_results
                     }
                 });
-                dispatch(getTrackLyrics(track.uri, lyrics_results[0].url));
+
+                // Immediately go and get the first result's lyrics
+                var lyrics_result = lyrics_results[0];
+                dispatch(getTrackLyrics(track.uri, lyrics_result.path));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not get track info', error));
