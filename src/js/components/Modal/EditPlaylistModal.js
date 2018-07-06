@@ -36,7 +36,8 @@ export default class EditPlaylistModal extends React.Component{
 		var file_reader = new FileReader();
     
 		file_reader.addEventListener("load", function(e){
-			self.setState({image: e.target.result});
+			var image_base64 = e.target.result.replace('data:image/jpeg;base64,','');
+			self.setState({image: image_base64});
 		}); 
 		
 		file_reader.readAsDataURL(e.target.files[0]);

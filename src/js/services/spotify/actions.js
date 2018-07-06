@@ -1505,10 +1505,13 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
             response => {
                 dispatch(uiActions.createNotification({content: 'Saved'}));
 
+                        console.log({image: image});
+
                 // Save the image
                 if (image){
-                    sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri)+'/image', 'PUT', image)
+                    sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri)+'/images', 'PUT', image)
                     .then(
+
                         response => {
                             dispatch({
                                 type: 'PLAYLIST_UPDATED',
@@ -1517,8 +1520,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
                                     name: name,
                                     public: is_public,
                                     collaborative: is_collaborative,
-                                    description: description,
-                                    image: image
+                                    description: description
                                 }
                             });
                         },
