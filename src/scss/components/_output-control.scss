@@ -2,6 +2,13 @@
 .output-control {
 	position: relative;
 
+	&.disabled {
+		& > .control {
+			opacity: 0.2;
+			cursor: not-allowed;
+		}
+	}
+
 	.outputs {
 		position: absolute;
 		bottom: 40px;

@@ -109,11 +109,21 @@ class OutputControl extends React.Component{
 				</span>
 			);
 		} else {
-			return (
-				<span className="output-control">
-					<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
-				</span>
-			);
+			
+			// No customisable outputs
+			if (!this.props.http_streaming_enabled && !this.props.snacast_enabled){
+				return (
+					<span className="output-control disabled">
+						<a className="control speakers"><Icon name="speaker" /></a>
+					</span>
+				);
+			} else {
+				return (
+					<span className="output-control">
+						<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
+					</span>
+				);
+			}
 		}
 	}
 }

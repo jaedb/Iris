@@ -4634,6 +4634,9 @@ input[type="submit"] {
 
 .output-control {
   position: relative; }
+  .output-control.disabled > .control {
+    opacity: 0.2;
+    cursor: not-allowed; }
   .output-control .outputs {
     position: absolute;
     bottom: 40px;
