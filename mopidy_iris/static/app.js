@@ -3062,7 +3062,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
     };
 }
 
-function savePlaylist(uri, name, description, is_public, is_collaborative) {
+function savePlaylist(uri, name, description, is_public, is_collaborative, image) {
     return function (dispatch, getState) {
 
         var data = {
@@ -3070,20 +3070,42 @@ function savePlaylist(uri, name, description, is_public, is_collaborative) {
             description: description,
             public: is_public,
             collaborative: is_collaborative
-        };
 
-        sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
-            dispatch({
-                type: 'PLAYLIST_UPDATED',
-                key: uri,
-                playlist: {
-                    name: name,
-                    public: is_public,
-                    collaborative: is_collaborative,
-                    description: description
-                }
-            });
+            // Update the playlist fields
+        };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
             dispatch(uiActions.createNotification({ content: 'Saved' }));
+
+            // Save the image
+            if (image) {
+                sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/image', 'PUT', image).then(function (response) {
+                    dispatch({
+                        type: 'PLAYLIST_UPDATED',
+                        key: uri,
+                        playlist: {
+                            name: name,
+                            public: is_public,
+                            collaborative: is_collaborative,
+                            description: description,
+                            image: image
+                        }
+                    });
+                }, function (error) {
+                    dispatch(coreActions.handleException('Could not save image', error));
+                });
+
+                // No image, so we're done here
+            } else {
+                dispatch({
+                    type: 'PLAYLIST_UPDATED',
+                    key: uri,
+                    playlist: {
+                        name: name,
+                        public: is_public,
+                        collaborative: is_collaborative,
+                        description: description
+                    }
+                });
+            }
         }, function (error) {
             dispatch(coreActions.handleException('Could not save playlist', error));
         });
@@ -4719,6 +4741,7 @@ function savePlaylist(uri, name) {
     var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
     var is_public = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     var is_collaborative = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var image = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
 
     switch (helpers.uriSource(uri)) {
 
@@ -4728,6 +4751,7 @@ function savePlaylist(uri, name) {
                 key: uri,
                 name: name,
                 description: description == '' ? null : description,
+                image: image,
                 is_public: is_public,
                 is_collaborative: is_collaborative
             };
@@ -59263,7 +59287,7 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_SAVE_PLAYLIST':
-                        store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative));
+                        store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative, action.image));
                         break;
 
                     case 'SPOTIFY_NEW_RELEASES_LOADED':
@@ -63873,6 +63897,7 @@ var EditPlaylistModal = function (_React$Component) {
 			name: _this.props.data.name,
 			description: _this.props.data.description ? _this.props.data.description : '',
 			public: _this.props.data.public,
+			image: null,
 			collaborative: _this.props.data.collaborative
 		};
 		return _this;
@@ -63887,10 +63912,22 @@ var EditPlaylistModal = function (_React$Component) {
 				this.setState({ error: 'Name is required' });
 				return false;
 			} else {
-				this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative);
+				this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image);
 				this.props.uiActions.closeModal();
 				return false;
 			}
+		}
+	}, {
+		key: 'setImage',
+		value: function setImage(e) {
+			var self = this;
+			var file_reader = new FileReader();
+
+			file_reader.addEventListener("load", function (e) {
+				self.setState({ image: e.target.result });
+			});
+
+			file_reader.readAsDataURL(e.target.files[0]);
 		}
 	}, {
 		key: 'renderFields',
@@ -63919,7 +63956,8 @@ var EditPlaylistModal = function (_React$Component) {
 									onChange: function onChange(e) {
 										return _this2.setState({ name: e.target.value });
 									},
-									value: this.state.name })
+									value: this.state.name
+								})
 							)
 						),
 						_react2.default.createElement(
@@ -63938,7 +63976,27 @@ var EditPlaylistModal = function (_React$Component) {
 									onChange: function onChange(e) {
 										return _this2.setState({ description: e.target.value });
 									},
-									value: this.state.description })
+									value: this.state.description
+								})
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'field text' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'name' },
+								'Cover image'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'input' },
+								_react2.default.createElement('input', {
+									type: 'file',
+									onChange: function onChange(e) {
+										return _this2.setImage(e);
+									}
+								})
 							)
 						),
 						_react2.default.createElement(

@@ -13,21 +13,33 @@ export default class EditPlaylistModal extends React.Component{
 			name: this.props.data.name,
 			description: (this.props.data.description ? this.props.data.description : ''),
 			public: this.props.data.public,
+			image: null,
 			collaborative: this.props.data.collaborative
 		}
 	}
 
-	savePlaylist(e){		
+	savePlaylist(e){	
 		e.preventDefault();
 
 		if (!this.state.name || this.state.name == ''){
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative)
+			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image)
 			this.props.uiActions.closeModal()
 			return false
 		}
+	}
+
+	setImage(e){
+		var self = this;		
+		var file_reader = new FileReader();
+    
+		file_reader.addEventListener("load", function(e){
+			self.setState({image: e.target.result});
+		}); 
+		
+		file_reader.readAsDataURL(e.target.files[0]);
 	}
 
 	renderFields(){
@@ -42,7 +54,8 @@ export default class EditPlaylistModal extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ name: e.target.value })} 
-									value={ this.state.name } />
+									value={ this.state.name }
+								/>
 							</div>
 						</div>
 						<div className="field text">
@@ -51,7 +64,17 @@ export default class EditPlaylistModal extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ description: e.target.value })} 
-									value={ this.state.description } />
+									value={ this.state.description }
+								/>
+							</div>
+						</div>
+						<div className="field text">
+							<div className="name">Cover image</div>
+							<div className="input">
+								<input 
+									type="file"
+									onChange={e => this.setImage(e)}
+								/>
 							</div>
 						</div>
 						<div className="field checkbox white">

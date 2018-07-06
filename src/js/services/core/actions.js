@@ -110,7 +110,7 @@ export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id =
     }
 }
 
-export function savePlaylist(uri, name, description = '', is_public = false, is_collaborative = false){
+export function savePlaylist(uri, name, description = '', is_public = false, is_collaborative = false, image = null){
     switch (helpers.uriSource(uri)){
 
         case 'spotify':
@@ -119,6 +119,7 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
                 key: uri,
                 name: name,
                 description: (description == '' ? null : description),
+                image: image,
                 is_public: is_public,
                 is_collaborative: is_collaborative
             }
