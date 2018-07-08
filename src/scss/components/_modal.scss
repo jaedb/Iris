@@ -1,18 +1,13 @@
 
-.modal-open {
-	.body {
-		@include blur(10px);
-	}
-}
-
 .modal {
+	@include fadein();
 	position: fixed;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	right: 0;
 	z-index: 999;
-	background: $overlay_dark;
+	background: darken($darkest_grey, 2%);
 	overflow-y: scroll;
 
 	.controls {

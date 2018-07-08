@@ -2504,7 +2504,7 @@ body {
     border-radius: 4px; }
     body::-webkit-scrollbar-thumb:hover {
       background: #a3a19f; }
-  body.touch-dragging, body.modal-open {
+  body.touch-dragging, body.no-scrollbars {
     overflow-y: hidden; }
   @media (max-width: 800px) {
     body.context-menu-open {
@@ -3706,19 +3706,27 @@ input[type="submit"] {
   .mini-loader .loader:before {
     border-color: #7b7b7b; }
 
-.modal-open .body {
-  -webkit-filter: blur(10px);
-  filter: blur(10px); }
-
 .modal {
+  animation-name: fadein;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.88);
+  background: #0d0d0d;
   overflow-y: scroll; }
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    transform: translateY(5px); }
+  100% {
+    opacity: 1;
+    transform: translateY(0px); } }
   .modal .controls {
     position: absolute;
     top: 10px;

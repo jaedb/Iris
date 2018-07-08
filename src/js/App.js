@@ -1,25 +1,24 @@
 
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, bindActionCreators } from 'redux'
-import { hashHistory, Link } from 'react-router'
-import { connect } from 'react-redux'
-import ReactGA from 'react-ga'
+import { createStore, bindActionCreators } from 'redux';
+import { hashHistory, Link } from 'react-router';
+import { connect } from 'react-redux';
+import ReactGA from 'react-ga';
 
-import Sidebar from './components/Sidebar'
-import PlaybackControls from './components/PlaybackControls'
-import ContextMenu from './components/ContextMenu'
-import Dragger from './components/Dragger'
-import Modal from './components/Modal/Modal'
-import Notifications from './components/Notifications'
-import DebugInfo from './components/DebugInfo'
+import Sidebar from './components/Sidebar';;
+import PlaybackControls from './components/PlaybackControls';
+import ContextMenu from './components/ContextMenu';
+import Dragger from './components/Dragger';
+import Notifications from './components/Notifications';
+import DebugInfo from './components/DebugInfo';
 
-import * as helpers from './helpers'
-import * as coreActions from './services/core/actions'
-import * as uiActions from './services/ui/actions'
-import * as pusherActions from './services/pusher/actions'
-import * as mopidyActions from './services/mopidy/actions'
-import * as spotifyActions from './services/spotify/actions'
+import * as helpers from './helpers';
+import * as coreActions from './services/core/actions';
+import * as uiActions from './services/ui/actions';
+import * as pusherActions from './services/pusher/actions';
+import * as mopidyActions from './services/mopidy/actions';
+import * as spotifyActions from './services/spotify/actions';
 
 
 /**
@@ -93,7 +92,7 @@ class App extends React.Component{
 
 		// show initial setup if required
 		if (!this.props.initial_setup_complete){
-			this.props.uiActions.openModal('initial_setup');
+			hashHistory.push(global.baseURL+'modal/initial-setup');
 		}
 	}
 
@@ -188,9 +187,6 @@ class App extends React.Component{
 				if (this.props.dragger && this.props.dragger.dragging){
 					this.props.uiActions.dragEnd();
 				}
-				if (this.props.modal){
-					this.props.uiActions.closeModal();
-				}
 				break;
 
 			case 40: // down
@@ -262,11 +258,7 @@ class App extends React.Component{
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					if (this.props.modal){
-						this.props.uiActions.closeModal();
-					} else {
-						this.props.uiActions.openModal('kiosk_mode');
-					}
+					hashHistory.push(global.baseURL+'modal/kiosk-mode');
 				}
 				break;
 		}
@@ -279,9 +271,6 @@ class App extends React.Component{
 		}
 		if (this.props.sidebar_open){
 			className += ' sidebar-open';
-		}
-		if (this.props.modal){
-			className += ' modal-open';
 		}
 		if (this.props.touch_dragging){
 			className += ' touch-dragging';
@@ -308,7 +297,6 @@ class App extends React.Component{
 
 		        <ContextMenu />
 		        <Dragger />
-		        <Modal />
 		        <Notifications 
 		        	uiActions={this.props.uiActions} 
 		        	notifications={this.props.notifications} 
@@ -348,7 +336,6 @@ const mapStateToProps = (state, ownProps) => {
 		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
 		dragger: state.ui.dragger,
-		modal: state.ui.modal,
 		context_menu: state.ui.context_menu,
 		debug_info: state.ui.debug_info
 	}

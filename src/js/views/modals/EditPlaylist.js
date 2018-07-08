@@ -1,20 +1,65 @@
 
-import React from 'react';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import ReactGA from 'react-ga'
 
-import Icon from '../Icon';
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 import * as helpers from '../../helpers';
 
-export default class EditPlaylistModal extends React.Component{
+class EditPlaylist extends React.Component{
 
 	constructor(props){
 		super(props)
 		this.state = {
 			error: null,
-			name: this.props.data.name,
-			description: (this.props.data.description ? this.props.data.description : ''),
-			public: this.props.data.public,
+			name: '',
+			description: '',
 			image: null,
-			collaborative: this.props.data.collaborative
+			public: false,
+			collaborative: false
+		}
+	}
+
+	componentDidMount(){
+		if (this.props.playlist){
+			this.setState({
+				name: this.props.playlist.name,
+				description: this.props.playlist.description,
+				public: (this.props.playlist.public == true),
+				collaborative: (this.props.playlist.collaborative == true)
+			});
+		} else {
+			switch (helpers.uriSource(this.props.params.uri)){
+
+				case 'spotify':
+					this.props.spotifyActions.getPlaylist(this.props.params.uri);
+					this.props.spotifyActions.following(this.props.params.uri);
+					break
+
+				default:
+					if (props.mopidy_connected){
+						this.props.mopidyActions.getPlaylist(this.props.params.uri);
+					}
+					break
+			}
+		}
+	}
+
+	componentWillReceiveProps(nextProps){
+		if (!this.props.playlist && nextProps.playlist){
+			this.setState({
+				name: nextProps.playlist.name,
+				description: nextProps.playlist.description,
+				public: (nextProps.playlist.public == true),
+				collaborative: (nextProps.playlist.collaborative == true)
+			});
 		}
 	}
 
@@ -25,7 +70,7 @@ export default class EditPlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image);
+			this.props.coreActions.savePlaylist(this.props.params.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image);
 			this.props.uiActions.closeModal();
 			return false;
 		}
@@ -48,7 +93,7 @@ export default class EditPlaylistModal extends React.Component{
 	}
 
 	renderFields(){
-		switch (helpers.uriSource(this.props.data.uri)){
+		switch (helpers.uriSource(this.props.params.uri)){
 
 			case 'spotify':
 				return (
@@ -132,7 +177,7 @@ export default class EditPlaylistModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="edit-playlist-modal">
 				<h1>Edit playlist</h1>
 				{this.state.error ? <h3 className="red-text">{this.state.error}</h3> : null}
 				<form onSubmit={(e) => this.savePlaylist(e)}>
@@ -143,7 +188,26 @@ export default class EditPlaylistModal extends React.Component{
 						<button type="submit" className="primary large">Save</button>
 					</div>
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		mopidy_connected: state.mopidy.connected,
+		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
+		playlists: state.core.playlists
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditPlaylist)

@@ -8,32 +8,34 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router'
 
-import store from './bootstrap.js'
+import store from './bootstrap.js';
 require('../scss/app.scss');
 
-import App from './App'
-import Album from './views/Album'
-import Artist from './views/Artist'
-import Playlist from './views/Playlist'
-import User from './views/User'
-import Track from './views/Track'
-import Queue from './views/Queue'
-import QueueHistory from './views/QueueHistory'
-import Debug from './views/Debug'
-import Search from './views/Search'
-import Settings from './views/Settings'
+import App from './App';
+import Album from './views/Album';
+import Artist from './views/Artist';
+import Playlist from './views/Playlist';
+import User from './views/User';
+import Track from './views/Track';
+import Queue from './views/Queue';
+import QueueHistory from './views/QueueHistory';
+import Debug from './views/Debug';
+import Search from './views/Search';
+import Settings from './views/Settings';
 
-import DiscoverRecommendations from './views/discover/DiscoverRecommendations'
-import DiscoverFeatured from './views/discover/DiscoverFeatured'
-import DiscoverCategories from './views/discover/DiscoverCategories'
-import DiscoverCategory from './views/discover/DiscoverCategory'
-import DiscoverNewReleases from './views/discover/DiscoverNewReleases'
+import DiscoverRecommendations from './views/discover/DiscoverRecommendations';
+import DiscoverFeatured from './views/discover/DiscoverFeatured';
+import DiscoverCategories from './views/discover/DiscoverCategories';
+import DiscoverCategory from './views/discover/DiscoverCategory';
+import DiscoverNewReleases from './views/discover/DiscoverNewReleases';
 
-import LibraryArtists from './views/library/LibraryArtists'
-import LibraryAlbums from './views/library/LibraryAlbums'
-import LibraryTracks from './views/library/LibraryTracks'
-import LibraryPlaylists from './views/library/LibraryPlaylists'
-import LibraryBrowse from './views/library/LibraryBrowse'
+import LibraryArtists from './views/library/LibraryArtists';
+import LibraryAlbums from './views/library/LibraryAlbums';
+import LibraryTracks from './views/library/LibraryTracks';
+import LibraryPlaylists from './views/library/LibraryPlaylists';
+import LibraryBrowse from './views/library/LibraryBrowse';
+
+import EditPlaylist from './views/modals/EditPlaylist';
 
 /*
 // Hijack console error for Raven to capture
@@ -43,7 +45,7 @@ console.error = function(message, error){
     originalConsoleError.apply(this, arguments)
 */
 
-global.baseURL = '/'
+global.baseURL = '/';
 
 ReactDOM.render(
 	<Provider store={store}>
@@ -60,6 +62,7 @@ ReactDOM.render(
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri(/:sub_view)" component={Artist} />
 				<Route path="playlist/:uri" component={Playlist} />
+				<Route path="playlist/:uri/edit" component={EditPlaylist} />
 				<Route path="user/:uri" component={User} />
 				<Route path="track/:uri" component={Track} />
 	
