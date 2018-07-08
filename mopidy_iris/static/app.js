@@ -2947,8 +2947,6 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
         };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
             dispatch(uiActions.createNotification({ content: 'Saved' }));
 
-            console.log({ image: image });
-
             // Save the image
             if (image) {
                 sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
@@ -62005,15 +62003,16 @@ var EditPlaylistModal = function (_React$Component) {
 		value: function setImage(e) {
 			var self = this;
 
-			// Create a file-reader to import the selected image
-			// as a base64 string
+			// Create a file-reader to import the selected image as a base64 string
 			var file_reader = new FileReader();
 
+			// Once the image is loaded, convert the result
 			file_reader.addEventListener("load", function (e) {
 				var image_base64 = e.target.result.replace('data:image/jpeg;base64,', '');
 				self.setState({ image: image_base64 });
 			});
 
+			// This calls the filereader to load the file
 			file_reader.readAsDataURL(e.target.files[0]);
 		}
 	}, {
@@ -62088,7 +62087,7 @@ var EditPlaylistModal = function (_React$Component) {
 								_react2.default.createElement(
 									'div',
 									{ className: 'description' },
-									'Leave empty to keep cover image unchanged'
+									'JPEG only, 256kB max. Leave empty to keep cover image unchanged.'
 								)
 							)
 						),

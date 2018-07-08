@@ -1505,8 +1505,6 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
             response => {
                 dispatch(uiActions.createNotification({content: 'Saved'}));
 
-                        console.log({image: image});
-
                 // Save the image
                 if (image){
                     sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri)+'/images', 'PUT', image)

@@ -34,15 +34,16 @@ export default class EditPlaylistModal extends React.Component{
 	setImage(e){
 		var self = this;
 
-		// Create a file-reader to import the selected image
-		// as a base64 string
+		// Create a file-reader to import the selected image as a base64 string
 		var file_reader = new FileReader();
-    
+    	
+    	// Once the image is loaded, convert the result
 		file_reader.addEventListener("load", function(e){
 			var image_base64 = e.target.result.replace('data:image/jpeg;base64,','');
 			self.setState({image: image_base64});
 		}); 
 		
+		// This calls the filereader to load the file
 		file_reader.readAsDataURL(e.target.files[0]);
 	}
 
@@ -81,7 +82,7 @@ export default class EditPlaylistModal extends React.Component{
 									onChange={e => this.setImage(e)}
 								/>
 								<div className="description">
-									Leave empty to keep cover image unchanged
+									JPEG only, 256kB max. Leave empty to keep cover image unchanged.
 								</div>
 							</div>
 						</div>
