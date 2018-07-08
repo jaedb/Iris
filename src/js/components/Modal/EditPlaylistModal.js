@@ -13,21 +13,38 @@ export default class EditPlaylistModal extends React.Component{
 			name: this.props.data.name,
 			description: (this.props.data.description ? this.props.data.description : ''),
 			public: this.props.data.public,
+			image: null,
 			collaborative: this.props.data.collaborative
 		}
 	}
 
-	savePlaylist(e){		
+	savePlaylist(e){	
 		e.preventDefault();
 
 		if (!this.state.name || this.state.name == ''){
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative)
-			this.props.uiActions.closeModal()
-			return false
+			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image);
+			this.props.uiActions.closeModal();
+			return false;
 		}
+	}
+
+	setImage(e){
+		var self = this;
+
+		// Create a file-reader to import the selected image as a base64 string
+		var file_reader = new FileReader();
+    	
+    	// Once the image is loaded, convert the result
+		file_reader.addEventListener("load", function(e){
+			var image_base64 = e.target.result.replace('data:image/jpeg;base64,','');
+			self.setState({image: image_base64});
+		}); 
+		
+		// This calls the filereader to load the file
+		file_reader.readAsDataURL(e.target.files[0]);
 	}
 
 	renderFields(){
@@ -42,7 +59,8 @@ export default class EditPlaylistModal extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ name: e.target.value })} 
-									value={ this.state.name } />
+									value={ this.state.name }
+								/>
 							</div>
 						</div>
 						<div className="field text">
@@ -51,7 +69,21 @@ export default class EditPlaylistModal extends React.Component{
 								<input 
 									type="text"
 									onChange={ e => this.setState({ description: e.target.value })} 
-									value={ this.state.description } />
+									value={ this.state.description }
+								/>
+							</div>
+						</div>
+						<div className="field file">
+							<div className="name">Cover image</div>
+							<div className="input">
+								<input 
+									type="file"
+									placeholder="Leave empty to keep existing image"
+									onChange={e => this.setImage(e)}
+								/>
+								<div className="description">
+									JPEG only, 256kB max. Leave empty to keep cover image unchanged.
+								</div>
 							</div>
 						</div>
 						<div className="field checkbox white">

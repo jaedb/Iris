@@ -831,5 +831,3 @@ export let getIndexedRecords = function(index, uris){
 export let titleCase = function(string){
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
-
-

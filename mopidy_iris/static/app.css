@@ -2920,6 +2920,7 @@ input[type="email"],
 input[type="number"],
 input[type="email"],
 input[type="date"],
+input[type="file"],
 select {
   padding: 10px 14px;
   background: rgba(255, 255, 255, 0.1);
@@ -2939,6 +2940,8 @@ select {
   input[type="email"]:active,
   input[type="date"]:focus,
   input[type="date"]:active,
+  input[type="file"]:focus,
+  input[type="file"]:active,
   select:focus,
   select:active {
     background: rgba(255, 255, 255, 0.2); }
@@ -2948,6 +2951,7 @@ select {
   input[type="number"]:disabled,
   input[type="email"]:disabled,
   input[type="date"]:disabled,
+  input[type="file"]:disabled,
   select:disabled {
     opacity: 0.5; }
   textarea.tiny,
@@ -2956,6 +2960,7 @@ select {
   input[type="number"].tiny,
   input[type="email"].tiny,
   input[type="date"].tiny,
+  input[type="file"].tiny,
   select.tiny {
     width: 50px;
     padding-left: 4px;
@@ -3301,7 +3306,9 @@ input[type="submit"] {
       color: #cf2d2d;
       display: inline-block;
       opacity: 1; }
-  .field.radio input, .field.checkbox input {
+  .field.radio input[type="radio"],
+  .field.radio input[type="checkbox"], .field.checkbox input[type="radio"],
+  .field.checkbox input[type="checkbox"] {
     display: none; }
   .field.radio .input, .field.checkbox .input {
     padding-top: 4px; }

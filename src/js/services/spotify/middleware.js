@@ -92,14 +92,12 @@ const SpotifyMiddleware = (function(){
                 store.dispatch(spotifyActions.addTracksToPlaylist(action.key, action.tracks_uris ))
                 break;
 
-
             case 'SPOTIFY_REORDER_PLAYLIST_TRACKS':
                 store.dispatch(spotifyActions.reorderPlaylistTracks(action.key, action.range_start, action.range_length, action.insert_before, action.snapshot_id ))
                 break;
 
-
             case 'SPOTIFY_SAVE_PLAYLIST':
-                store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative ))
+                store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative, action.image))
                 break;
 
             case 'SPOTIFY_NEW_RELEASES_LOADED':

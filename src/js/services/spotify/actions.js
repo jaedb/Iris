@@ -1488,7 +1488,7 @@ export function createPlaylist(name, description, is_public, is_collaborative){
     }
 }
 
-export function savePlaylist(uri, name, description, is_public, is_collaborative){
+export function savePlaylist(uri, name, description, is_public, is_collaborative, image){
     return (dispatch, getState) => {
 
         var data = {
@@ -1498,20 +1498,51 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
             collaborative: is_collaborative
         }
 
-        sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', data)
+        // Update the playlist fields
+        sendRequest(
+            dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', data)
         .then(
             response => {
-                dispatch({
-                    type: 'PLAYLIST_UPDATED',
-                    key: uri,
-                    playlist: {
-                        name: name,
-                        public: is_public,
-                        collaborative: is_collaborative,
-                        description: description
-                    }
-                })
                 dispatch(uiActions.createNotification({content: 'Saved'}));
+
+                // Save the image
+                if (image){
+                    sendRequest(dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri)+'/images', 'PUT', image)
+                    .then(
+
+                        response => {
+                            dispatch({
+                                type: 'PLAYLIST_UPDATED',
+                                key: uri,
+                                playlist: {
+                                    name: name,
+                                    public: is_public,
+                                    collaborative: is_collaborative,
+                                    description: description
+                                }
+                            });
+                        },
+                        error => {
+                            dispatch(coreActions.handleException(
+                                'Could not save image',
+                                error
+                            ));
+                        }
+                    );
+
+                // No image, so we're done here
+                } else {                        
+                    dispatch({
+                        type: 'PLAYLIST_UPDATED',
+                        key: uri,
+                        playlist: {
+                            name: name,
+                            public: is_public,
+                            collaborative: is_collaborative,
+                            description: description
+                        }
+                    });
+                }
             },
             error => {
                 dispatch(coreActions.handleException(
@@ -1519,7 +1550,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
                     error
                 ));
             }
-        )
+        );
     }
 }
 

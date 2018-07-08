@@ -13,6 +13,7 @@ input[type="email"],
 input[type="number"],
 input[type="email"],
 input[type="date"],
+input[type="file"],
 select {
 	padding: 10px 14px;
 	background: rgba(255,255,255,0.1);
@@ -339,7 +340,9 @@ input[type="submit"] {
 
 	&.radio,
 	&.checkbox {
-		input{
+
+		input[type="radio"],
+		input[type="checkbox"] {
 			display: none;
 		}
 
