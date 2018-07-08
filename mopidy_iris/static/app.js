@@ -62004,6 +62004,9 @@ var EditPlaylistModal = function (_React$Component) {
 		key: 'setImage',
 		value: function setImage(e) {
 			var self = this;
+
+			// Create a file-reader to import the selected image
+			// as a base64 string
 			var file_reader = new FileReader();
 
 			file_reader.addEventListener("load", function (e) {
@@ -62066,7 +62069,7 @@ var EditPlaylistModal = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'field text' },
+							{ className: 'field file' },
 							_react2.default.createElement(
 								'div',
 								{ className: 'name' },
@@ -62077,10 +62080,16 @@ var EditPlaylistModal = function (_React$Component) {
 								{ className: 'input' },
 								_react2.default.createElement('input', {
 									type: 'file',
+									placeholder: 'Leave empty to keep existing image',
 									onChange: function onChange(e) {
 										return _this2.setImage(e);
 									}
-								})
+								}),
+								_react2.default.createElement(
+									'div',
+									{ className: 'description' },
+									'Leave empty to keep cover image unchanged'
+								)
 							)
 						),
 						_react2.default.createElement(

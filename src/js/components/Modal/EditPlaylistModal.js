@@ -25,14 +25,17 @@ export default class EditPlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {
-			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image)
-			this.props.uiActions.closeModal()
-			return false
+			this.props.coreActions.savePlaylist(this.props.data.uri, this.state.name, this.state.description, this.state.public, this.state.collaborative, this.state.image);
+			this.props.uiActions.closeModal();
+			return false;
 		}
 	}
 
 	setImage(e){
-		var self = this;		
+		var self = this;
+
+		// Create a file-reader to import the selected image
+		// as a base64 string
 		var file_reader = new FileReader();
     
 		file_reader.addEventListener("load", function(e){
@@ -69,13 +72,17 @@ export default class EditPlaylistModal extends React.Component{
 								/>
 							</div>
 						</div>
-						<div className="field text">
+						<div className="field file">
 							<div className="name">Cover image</div>
 							<div className="input">
 								<input 
 									type="file"
+									placeholder="Leave empty to keep existing image"
 									onChange={e => this.setImage(e)}
 								/>
+								<div className="description">
+									Leave empty to keep cover image unchanged
+								</div>
 							</div>
 						</div>
 						<div className="field checkbox white">
