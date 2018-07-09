@@ -1,10 +1,17 @@
 
-import React, { PropTypes } from 'react';;
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import ReactGA from 'react-ga'
 
-import Icon from '../Icon';
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
 import * as helpers from '../../helpers';
 
-export default class CreatePlaylistModal extends React.Component{
+class CreatePlaylist extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -24,8 +31,14 @@ export default class CreatePlaylistModal extends React.Component{
 			this.setState({error: 'Name is required'})
 			return false
 		} else {	
-			this.props.coreActions.createPlaylist(this.state.scheme, this.state.name, this.state.description, this.state.is_public, this.state.is_collaborative )
-			this.props.uiActions.closeModal()
+			this.props.coreActions.createPlaylist(
+				this.state.scheme, 
+				this.state.name,
+				this.state.description,
+				this.state.is_public,
+				this.state.is_collaborative
+			);
+			window.history.back();
 		}
 
 		return false
@@ -103,7 +116,7 @@ export default class CreatePlaylistModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="create-playlist-modal">
 				<h1>Create playlist</h1>
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 
@@ -140,7 +153,20 @@ export default class CreatePlaylistModal extends React.Component{
 					</div>
 
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePlaylist)

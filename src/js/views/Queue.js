@@ -143,19 +143,19 @@ class Queue extends React.Component{
 
 		var options = (
 			<span>
-				{this.props.spotify_enabled ? <button className="no-hover" onClick={e => this.props.uiActions.openModal('edit_radio')}>
+				{this.props.spotify_enabled ? <Link className="button no-hover" to={global.baseURL+'queue/radio'}>
 					<Icon name="radio" />Radio
 					{this.props.radio && this.props.radio.enabled ? <span className="flag blue">On</span> : null}
-				</button> : null}
-				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue/history')}>
+				</Link> : null}
+				<Link className="button no-hover" to={global.baseURL+'queue/history'}>
 					<Icon name="history" />History
-				</button>
+				</Link>
 				<button className="no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
 					<Icon name="delete_sweep" />Clear
 				</button>
-				<button className="no-hover" onClick={e => this.props.uiActions.openModal('add_to_queue', {})}>
+				<Link className="button no-hover" to={global.baseURL+'queue/add-uri'}>
 					<Icon name="playlist_add" />Add URI
-				</button>
+				</Link>
 			</span>
 		)
 

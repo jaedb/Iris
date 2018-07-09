@@ -1,10 +1,19 @@
 
-import React, { PropTypes } from 'react';;
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import ReactGA from 'react-ga'
 
-import Icon from '../Icon';
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 import * as helpers from '../../helpers';
 
-export default class EditRadioModal extends React.Component{
+class EditRadio extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -191,7 +200,7 @@ export default class EditRadioModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="edit-radio-modal">
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
@@ -220,7 +229,26 @@ export default class EditRadioModal extends React.Component{
 						{this.state.enabled ? <button className="primary large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary large" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		mopidy_connected: state.mopidy.connected,
+		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
+		playlists: state.core.playlists
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditRadio)

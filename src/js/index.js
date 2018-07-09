@@ -36,6 +36,9 @@ import LibraryPlaylists from './views/library/LibraryPlaylists';
 import LibraryBrowse from './views/library/LibraryBrowse';
 
 import EditPlaylist from './views/modals/EditPlaylist';
+import CreatePlaylist from './views/modals/CreatePlaylist';
+import EditRadio from './views/modals/EditRadio';
+import AddToQueue from './views/modals/AddToQueue';
 
 /*
 // Hijack console error for Raven to capture
@@ -55,12 +58,15 @@ ReactDOM.render(
      			<IndexRoute component={Queue} />
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
+				<Route path="queue/radio" component={EditRadio} />
+				<Route path="queue/add-uri" component={AddToQueue} />
 				<Route path="settings/debug" component={Debug} />
 				<Route path="settings(/service/:sub_view)" component={Settings} />
 				
 				<Route path="search(/:query)" component={Search} />
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri(/:sub_view)" component={Artist} />
+				<Route path="playlist/create" component={CreatePlaylist} />
 				<Route path="playlist/:uri" component={Playlist} />
 				<Route path="playlist/:uri/edit" component={EditPlaylist} />
 				<Route path="user/:uri" component={User} />
