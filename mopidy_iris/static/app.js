@@ -35533,6 +35533,10 @@ var _AddToQueue = __webpack_require__(465);
 
 var _AddToQueue2 = _interopRequireDefault(_AddToQueue);
 
+var _InitialSetup = __webpack_require__(466);
+
+var _InitialSetup2 = _interopRequireDefault(_InitialSetup);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -35561,6 +35565,7 @@ _reactDom2.default.render(_react2.default.createElement(
 			_reactRouter.Route,
 			{ path: global.baseURL, component: _App2.default },
 			_react2.default.createElement(_reactRouter.IndexRoute, { component: _Queue2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'initial-setup', component: _InitialSetup2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue', component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/history', component: _QueueHistory2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/radio', component: _EditRadio2.default }),
@@ -59586,7 +59591,7 @@ var App = function (_React$Component) {
 
 			// show initial setup if required
 			if (!this.props.initial_setup_complete) {
-				_reactRouter.hashHistory.push(global.baseURL + 'modal/initial-setup');
+				_reactRouter.hashHistory.push(global.baseURL + 'initial-setup');
 			}
 		}
 	}, {
@@ -79049,6 +79054,307 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToQueue);
+
+/***/ }),
+/* 466 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(5);
+
+var _redux = __webpack_require__(3);
+
+var _reactRouter = __webpack_require__(9);
+
+var _reactGa = __webpack_require__(35);
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
+var _Modal = __webpack_require__(434);
+
+var _Modal2 = _interopRequireDefault(_Modal);
+
+var _Icon = __webpack_require__(7);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _SpotifyAuthenticationFrame = __webpack_require__(400);
+
+var _SpotifyAuthenticationFrame2 = _interopRequireDefault(_SpotifyAuthenticationFrame);
+
+var _LastfmAuthenticationFrame = __webpack_require__(401);
+
+var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
+
+var _actions = __webpack_require__(17);
+
+var coreActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(4);
+
+var uiActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var InitialSetup = function (_React$Component) {
+	_inherits(InitialSetup, _React$Component);
+
+	function InitialSetup(props) {
+		_classCallCheck(this, InitialSetup);
+
+		var _this = _possibleConstructorReturn(this, (InitialSetup.__proto__ || Object.getPrototypeOf(InitialSetup)).call(this, props));
+
+		_this.state = {
+			username: 'Anonymous',
+			allow_reporting: _this.props.allow_reporting,
+			host: _this.props.host,
+			port: _this.props.port,
+			ssl: _this.props.ssl
+		};
+		return _this;
+	}
+
+	_createClass(InitialSetup, [{
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			e.preventDefault();
+			var self = this;
+
+			// Force local username change, even if remote connection absent/failed
+			this.props.pusherActions.setUsername(this.state.username, true);
+
+			this.props.uiActions.set({
+				initial_setup_complete: true,
+				allow_reporting: this.state.allow_reporting
+			});
+			this.props.mopidyActions.set({
+				host: this.state.host,
+				port: this.state.port,
+				ssl: this.state.ssl
+			});
+
+			this.setState({ saving: true });
+
+			// Wait a second to allow changes to apply to store
+			setTimeout(function () {
+
+				// We've changed a connection setting, so need to reload
+				if (self.state.host !== self.props.host || self.state.port !== self.props.port || self.state.ssl !== self.props.ssl) {
+
+					window.location.reload(true);
+
+					// Safe to just close modal
+				} else {
+					self.props.uiActions.closeModal();
+				}
+			}, 1000);
+
+			return false;
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement(
+				_Modal2.default,
+				{ className: 'initial-setup-modal' },
+				_react2.default.createElement(
+					'h1',
+					null,
+					'Get started'
+				),
+				_react2.default.createElement(
+					'form',
+					{ onSubmit: function onSubmit(e) {
+							return _this2.handleSubmit(e);
+						} },
+					_react2.default.createElement(
+						'div',
+						{ className: 'field text' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Username'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this2.setState({ username: e.target.value.replace(/\W/g, '') });
+								},
+								value: this.state.username }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'A non-unique string used to identify this client (no special characters)'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Host'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this2.setState({ host: e.target.value });
+								},
+								value: this.state.host })
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Port'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('input', {
+								type: 'text',
+								onChange: function onChange(e) {
+									return _this2.setState({ port: e.target.value });
+								},
+								value: this.state.port })
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field checkbox' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'ssl',
+									checked: this.state.ssl,
+									onChange: function onChange(e) {
+										return _this2.setState({ ssl: !_this2.state.ssl });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Enable SSL',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Requires SSL proxy'
+									)
+								)
+							)
+						)
+					),
+					helpers.isHosted() ? null : _react2.default.createElement(
+						'div',
+						{ className: 'field checkbox' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'allow_reporting',
+									checked: this.state.allow_reporting,
+									onChange: function onChange(e) {
+										return _this2.setState({ allow_reporting: !_this2.state.allow_reporting });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Allow reporting of anonymous usage statistics'
+								)
+							)
+						)
+					),
+					!this.state.allow_reporting ? _react2.default.createElement(
+						'p',
+						{ className: 'description' },
+						'This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the ',
+						_react2.default.createElement(
+							'a',
+							{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
+							'privacy policy'
+						),
+						'.'
+					) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'actions centered-text' },
+						_react2.default.createElement(
+							'button',
+							{ className: "primary large" + (this.state.saving ? " working" : ""), onClick: function onClick(e) {
+									return _this2.handleSubmit(e);
+								} },
+							this.state.saving ? "Saving" : "Save"
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return InitialSetup;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		allow_reporting: state.core.allow_reporting,
+		host: state.mopidy.host,
+		port: state.mopidy.port,
+		ssl: state.mopidy.ssl
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(InitialSetup);
 
 /***/ })
 /******/ ]);

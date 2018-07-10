@@ -1,13 +1,20 @@
 
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
+import ReactGA from 'react-ga';
 
-import Icon from '../Icon'
-import SpotifyAuthenticationFrame from '../Fields/SpotifyAuthenticationFrame'
-import LastfmAuthenticationFrame from '../Fields/LastfmAuthenticationFrame'
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import SpotifyAuthenticationFrame from '../../components/Fields/SpotifyAuthenticationFrame';
+import LastfmAuthenticationFrame from '../../components/Fields/LastfmAuthenticationFrame';
 
-import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions';
+import * as uiActions from '../../services/ui/actions';
+import * as helpers from '../../helpers';
 
-export default class InitialSetupModal extends React.Component{
+class InitialSetup extends React.Component{
 	constructor(props){
 		super(props);
 
@@ -58,7 +65,7 @@ export default class InitialSetupModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="initial-setup-modal">
 				<h1>Get started</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
@@ -135,7 +142,25 @@ export default class InitialSetupModal extends React.Component{
 					</div>
 
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		allow_reporting: state.core.allow_reporting,
+		host: state.mopidy.host,
+		port: state.mopidy.port,
+		ssl: state.mopidy.ssl
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InitialSetup)

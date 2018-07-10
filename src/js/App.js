@@ -92,7 +92,7 @@ class App extends React.Component{
 
 		// show initial setup if required
 		if (!this.props.initial_setup_complete){
-			hashHistory.push(global.baseURL+'modal/initial-setup');
+			hashHistory.push(global.baseURL+'initial-setup');
 		}
 	}
 

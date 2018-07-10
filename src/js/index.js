@@ -39,6 +39,7 @@ import EditPlaylist from './views/modals/EditPlaylist';
 import CreatePlaylist from './views/modals/CreatePlaylist';
 import EditRadio from './views/modals/EditRadio';
 import AddToQueue from './views/modals/AddToQueue';
+import InitialSetup from './views/modals/InitialSetup';
 
 /*
 // Hijack console error for Raven to capture
@@ -55,7 +56,10 @@ ReactDOM.render(
 		<Router history={hashHistory}>
 			<Route path={global.baseURL} component={App}>
 
-     			<IndexRoute component={Queue} />
+				<IndexRoute component={Queue} />
+				 
+				<Route path="initial-setup" component={InitialSetup} />
+
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
 				<Route path="queue/radio" component={EditRadio} />
