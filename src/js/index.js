@@ -40,6 +40,8 @@ import CreatePlaylist from './views/modals/CreatePlaylist';
 import EditRadio from './views/modals/EditRadio';
 import AddToQueue from './views/modals/AddToQueue';
 import InitialSetup from './views/modals/InitialSetup';
+import KioskMode from './views/modals/KioskMode';
+import ShareAuthorization_Send from './views/modals/ShareAuthorization_Send';
 
 /*
 // Hijack console error for Raven to capture
@@ -59,6 +61,7 @@ ReactDOM.render(
 				<IndexRoute component={Queue} />
 				 
 				<Route path="initial-setup" component={InitialSetup} />
+				<Route path="kiosk-mode" component={KioskMode} />
 
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
@@ -66,6 +69,7 @@ ReactDOM.render(
 				<Route path="queue/add-uri" component={AddToQueue} />
 				<Route path="settings/debug" component={Debug} />
 				<Route path="settings(/service/:sub_view)" component={Settings} />
+				<Route path="settings/share-authorization/send" component={ShareAuthorization_Send} />
 				
 				<Route path="search(/:query)" component={Search} />
 				<Route path="album/:uri" component={Album} />

@@ -89,7 +89,13 @@ const PusherMiddleware = (function(){
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
                     case 'spotify_authorization_received':
-                        store.dispatch(uiActions.openModal('receive_authorization', message.params));
+                        console.log(message);
+                        store.dispatch(uiActions.createNotification({
+                            type: 'spotify-authorization-received',
+                            authorization: message.params.authorization,
+                            user: message.params.user,
+                            sticky: true
+                        }));
                         break;
                     case 'notification':
                         store.dispatch(uiActions.createNotification(message.params.notification));

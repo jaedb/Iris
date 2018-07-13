@@ -1336,8 +1336,6 @@ function createBrowserNotification(data) {
     };
 }
 
-// content, type = 'default', key = null, title = null, description = null, sticky = false
-
 function createNotification(data) {
     return {
         type: 'CREATE_NOTIFICATION',
@@ -1349,7 +1347,8 @@ function createNotification(data) {
             content: null,
             description: null,
             sticky: false,
-            closing: false
+            closing: false,
+            render_content: false
         }, data)
     };
 }
@@ -1797,7 +1796,6 @@ exports.authorizationGranted = authorizationGranted;
 exports.revokeAuthorization = revokeAuthorization;
 exports.refreshingToken = refreshingToken;
 exports.tokenChanged = tokenChanged;
-exports.authorizationReceived = authorizationReceived;
 exports.importAuthorization = importAuthorization;
 exports.getMe = getMe;
 exports.getTrack = getTrack;
@@ -2061,17 +2059,11 @@ function tokenChanged(spotify_token) {
     };
 }
 
-function authorizationReceived(data) {
-
-    // This is just an alias to open the modal
-    return uiActions.openModal('receive_authorization', data);
-}
-
-function importAuthorization(data) {
+function importAuthorization(user, authorization) {
     return {
         type: 'SPOTIFY_IMPORT_AUTHORIZATION',
-        user: data.user,
-        authorization: data.authorization
+        user: user,
+        authorization: authorization
     };
 }
 
@@ -4448,6 +4440,8 @@ var _reactRedux = __webpack_require__(5);
 
 var _redux = __webpack_require__(3);
 
+var _reactRouter = __webpack_require__(9);
+
 var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -4542,8 +4536,6 @@ var Thumbnail = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
-
 			var image = this.mapImageSizes();
 			var class_name = 'thumbnail ';
 			if (this.props.size) {
@@ -4559,10 +4551,8 @@ var Thumbnail = function (_React$Component) {
 			var zoom_icon = null;
 			if (this.props.canZoom) {
 				zoom_icon = _react2.default.createElement(
-					'span',
-					{ className: 'zoom', onClick: function onClick(e) {
-							return _this2.zoom(e, image);
-						} },
+					_reactRouter.Link,
+					{ className: 'zoom', target: '_blank', rel: 'external', href: image },
 					_react2.default.createElement(_Icon2.default, { name: 'search' })
 				);
 			}
@@ -35537,6 +35527,14 @@ var _InitialSetup = __webpack_require__(466);
 
 var _InitialSetup2 = _interopRequireDefault(_InitialSetup);
 
+var _KioskMode = __webpack_require__(467);
+
+var _KioskMode2 = _interopRequireDefault(_KioskMode);
+
+var _ShareAuthorization_Send = __webpack_require__(468);
+
+var _ShareAuthorization_Send2 = _interopRequireDefault(_ShareAuthorization_Send);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -35566,12 +35564,14 @@ _reactDom2.default.render(_react2.default.createElement(
 			{ path: global.baseURL, component: _App2.default },
 			_react2.default.createElement(_reactRouter.IndexRoute, { component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'initial-setup', component: _InitialSetup2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'kiosk-mode', component: _KioskMode2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue', component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/history', component: _QueueHistory2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/radio', component: _EditRadio2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/add-uri', component: _AddToQueue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings/debug', component: _Debug2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings(/service/:sub_view)', component: _Settings2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'settings/share-authorization/send', component: _ShareAuthorization_Send2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'search(/:query)', component: _Search2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'album/:uri', component: _Album2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'artist/:uri(/:sub_view)', component: _Artist2.default }),
@@ -53084,7 +53084,7 @@ var UIMiddleware = function () {
 
                     case 'BROADCASTS_LOADED':
                         var suppressed_broadcasts = [];
-                        if (typeof store.getState().ui.suppressed_broadcasts !== 'undefined') {
+                        if (store.getState().ui.suppressed_broadcasts !== undefined) {
                             suppressed_broadcasts = store.getState().ui.suppressed_broadcasts;
                         }
 
@@ -53097,7 +53097,7 @@ var UIMiddleware = function () {
                                         key: broadcast.key ? broadcast.key : null,
                                         title: broadcast.title ? broadcast.title : null,
                                         content: broadcast.message,
-                                        type: 'broadcast',
+                                        type: 'info',
                                         sticky: true
                                     };
                                     store.dispatch(uiActions.createNotification(data));
@@ -53261,7 +53261,13 @@ var PusherMiddleware = function () {
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
                     case 'spotify_authorization_received':
-                        store.dispatch(uiActions.openModal('receive_authorization', message.params));
+                        console.log(message);
+                        store.dispatch(uiActions.createNotification({
+                            type: 'spotify-authorization-received',
+                            authorization: message.params.authorization,
+                            user: message.params.user,
+                            sticky: true
+                        }));
                         break;
                     case 'notification':
                         store.dispatch(uiActions.createNotification(message.params.notification));
@@ -59814,6 +59820,7 @@ var App = function (_React$Component) {
 				_react2.default.createElement(_Dragger2.default, null),
 				_react2.default.createElement(_Notifications2.default, {
 					uiActions: this.props.uiActions,
+					spotifyActions: this.props.spotifyActions,
 					notifications: this.props.notifications,
 					processes: this.props.processes,
 					broadcasts: this.props.broadcasts
@@ -60547,7 +60554,7 @@ module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGlu
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -60824,12 +60831,6 @@ var PlaybackControls = function (_React$Component) {
 			return button;
 		}
 	}, {
-		key: 'handleThumbnailClick',
-		value: function handleThumbnailClick(e) {
-			e.preventDefault();
-			this.props.uiActions.openModal('kiosk_mode');
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this6 = this;
@@ -60847,10 +60848,8 @@ var PlaybackControls = function (_React$Component) {
 					'div',
 					{ className: 'current-track' },
 					_react2.default.createElement(
-						'div',
-						{ className: 'thumbnail-wrapper', onClick: function onClick(e) {
-								return _this6.handleThumbnailClick(e);
-							} },
+						_reactRouter.Link,
+						{ className: 'thumbnail-wrapper', to: global.baseURL + 'kiosk-mode' },
 						_react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
 					),
 					_react2.default.createElement(
@@ -60994,6 +60993,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaybackControls);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 375 */
@@ -62637,7 +62637,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -62648,6 +62648,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(9);
 
 var _Icon = __webpack_require__(7);
 
@@ -62671,6 +62673,13 @@ var Notifications = function (_React$Component) {
 	}
 
 	_createClass(Notifications, [{
+		key: 'importSpotifyAuthorization',
+		value: function importSpotifyAuthorization(notification_key, user, authorization) {
+			this.props.spotifyActions.importAuthorization(user, authorization);
+			this.props.uiActions.removeNotification(notification_key, true);
+			_reactRouter.hashHistory.push(global.baseURL + 'settings/service/spotify');
+		}
+	}, {
 		key: 'renderNotifications',
 		value: function renderNotifications() {
 			var _this2 = this;
@@ -62692,14 +62701,50 @@ var Notifications = function (_React$Component) {
 						case 'shortcut':
 							return _react2.default.createElement(
 								'div',
-								{ className: "notification shortcut-notification" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
+								{ className: "notification notification--shortcut" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: notification.content })
+							);
+
+						case 'spotify-authorization-received':
+							return _react2.default.createElement(
+								'div',
+								{ className: "notification", key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+								_react2.default.createElement(_Icon2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
+										return _this2.props.uiActions.removeNotification(notification.key, true);
+									} }),
+								_react2.default.createElement(
+									'h4',
+									null,
+									'Authorization shared'
+								),
+								_react2.default.createElement(
+									'p',
+									{ className: 'content' },
+									_react2.default.createElement(
+										'em',
+										null,
+										_react2.default.createElement(
+											_reactRouter.Link,
+											{ to: global.baseURL + 'user/' + notification.user.uri },
+											notification.user.display_name ? notification.user.display_name : notification.user.id
+										)
+									),
+									' has shared their Spotify authorization with you. Do you want to import this?'
+								),
+								_react2.default.createElement('br', null),
+								_react2.default.createElement(
+									'a',
+									{ className: 'button', onClick: function onClick(e) {
+											return _this2.importSpotifyAuthorization(notification.key, notification.user, notification.authorization);
+										} },
+									'Import'
+								)
 							);
 
 						default:
 							return _react2.default.createElement(
 								'div',
-								{ className: notification.type + " notification" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+								{ className: "notification notification--" + notification.type + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_Icon2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
 										return _this2.props.uiActions.removeNotification(notification.key, true);
 									} }),
@@ -62708,7 +62753,7 @@ var Notifications = function (_React$Component) {
 									null,
 									notification.title
 								) : null,
-								_react2.default.createElement('p', { className: 'content', dangerouslySetInnerHTML: { __html: notification.content } }),
+								notification.content ? _react2.default.createElement('p', { className: 'content', dangerouslySetInnerHTML: { __html: notification.content } }) : null,
 								notification.description ? _react2.default.createElement('p', { className: 'description', dangerouslySetInnerHTML: { __html: notification.description } }) : null
 							);
 					}
@@ -62729,7 +62774,7 @@ var Notifications = function (_React$Component) {
 				case 'running':
 					return _react2.default.createElement(
 						'div',
-						{ className: "process notification" + (process.closing ? ' closing' : ''), key: process.key },
+						{ className: "notification notification--process" + (process.closing ? ' closing' : ''), key: process.key },
 						_react2.default.createElement(
 							'div',
 							{ className: 'loader' },
@@ -62748,7 +62793,7 @@ var Notifications = function (_React$Component) {
 				case 'cancelling':
 					return _react2.default.createElement(
 						'div',
-						{ className: "process notification cancelling" + (process.closing ? ' closing' : ''), key: process.key },
+						{ className: "notification notification--process cancelling" + (process.closing ? ' closing' : ''), key: process.key },
 						_react2.default.createElement('div', { className: 'loader' }),
 						'Cancelling'
 					);
@@ -62830,6 +62875,7 @@ var Notifications = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Notifications;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ }),
 /* 380 */
@@ -70275,22 +70321,12 @@ var Services = function (_React$Component) {
 		value: function renderSpotify() {
 			var _this2 = this;
 
-			var authorization_button = null;
-			var send_authorization_button = null;
+			var share_authorization_button = null;
 			if (this.props.spotify.authorization) {
-				authorization_button = _react2.default.createElement(
-					'button',
-					{ onClick: function onClick(e) {
-							return _this2.props.uiActions.openModal('send_authorization', {});
-						} },
-					'Share authentication'
-				);
-				send_authorization_button = _react2.default.createElement(
-					'button',
-					{ onClick: function onClick(e) {
-							return _this2.props.uiActions.openModal('send_authorization', {});
-						} },
-					'Share authentication'
+				share_authorization_button = _react2.default.createElement(
+					_reactRouter.Link,
+					{ className: 'button', to: global.baseURL + 'settings/share-authorization/send' },
+					'Share authorization'
 				);
 			}
 
@@ -70468,7 +70504,7 @@ var Services = function (_React$Component) {
 						'div',
 						{ className: 'input' },
 						_react2.default.createElement(_SpotifyAuthenticationFrame2.default, null),
-						send_authorization_button,
+						share_authorization_button,
 						this.props.spotify.refreshing_token ? _react2.default.createElement(
 							'button',
 							{ className: 'working' },
@@ -77703,6 +77739,9 @@ var EditPlaylist = function (_React$Component) {
 	_createClass(EditPlaylist, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+
+			this.props.uiActions.setWindowTitle("Edit playlist");
+
 			if (this.props.playlist) {
 				this.setState({
 					name: this.props.playlist.name,
@@ -77926,7 +77965,7 @@ var EditPlaylist = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'edit-playlist-modal' },
+				{ className: 'modal--edit-playlist' },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -78207,6 +78246,11 @@ var CreatePlaylist = function (_React$Component) {
 	}
 
 	_createClass(CreatePlaylist, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.props.uiActions.setWindowTitle("Create playlist");
+		}
+	}, {
 		key: 'createPlaylist',
 		value: function createPlaylist(e) {
 			e.preventDefault();
@@ -78351,7 +78395,7 @@ var CreatePlaylist = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'create-playlist-modal' },
+				{ className: 'modal--create-playlist' },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -78532,6 +78576,8 @@ var EditRadio = function (_React$Component) {
 			this.setState({ seeds: seeds, enabled: this.props.radio.enabled });
 
 			this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+
+			this.props.uiActions.setWindowTitle("Edit radio");
 		}
 	}, {
 		key: 'handleStart',
@@ -78741,7 +78787,7 @@ var EditRadio = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'edit-radio-modal' },
+				{ className: 'modal--edit-radio' },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -78925,6 +78971,11 @@ var AddToQueue = function (_React$Component) {
 	}
 
 	_createClass(AddToQueue, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.props.uiActions.setWindowTitle("Add to queue");
+		}
+	}, {
 		key: 'handleSubmit',
 		value: function handleSubmit(e) {
 			e.preventDefault();
@@ -78939,7 +78990,7 @@ var AddToQueue = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'add-to-queue-modal' },
+				{ className: 'modal--add-to-queue' },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -79139,6 +79190,11 @@ var InitialSetup = function (_React$Component) {
 	}
 
 	_createClass(InitialSetup, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.props.uiActions.setWindowTitle("Welcome to Iris");
+		}
+	}, {
 		key: 'handleSubmit',
 		value: function handleSubmit(e) {
 			e.preventDefault();
@@ -79182,7 +79238,7 @@ var InitialSetup = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'initial-setup-modal' },
+				{ className: 'modal--initial-setup' },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -79305,20 +79361,25 @@ var InitialSetup = function (_React$Component) {
 									{ className: 'label' },
 									'Allow reporting of anonymous usage statistics'
 								)
+							),
+							_react2.default.createElement(
+								'p',
+								{ className: 'description' },
+								'This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the ',
+								_react2.default.createElement(
+									'a',
+									{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
+									'privacy policy'
+								),
+								!this.state.allow_reporting ? _react2.default.createElement(
+									'span',
+									{ className: 'red-text' },
+									' Are you sure you don\'t want to support this?'
+								) : null,
+								'. '
 							)
 						)
 					),
-					!this.state.allow_reporting ? _react2.default.createElement(
-						'p',
-						{ className: 'description' },
-						'This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the ',
-						_react2.default.createElement(
-							'a',
-							{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
-							'privacy policy'
-						),
-						'.'
-					) : null,
 					_react2.default.createElement(
 						'div',
 						{ className: 'actions centered-text' },
@@ -79355,6 +79416,310 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(InitialSetup);
+
+/***/ }),
+/* 467 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(5);
+
+var _reactRouter = __webpack_require__(9);
+
+var _redux = __webpack_require__(3);
+
+var _Modal = __webpack_require__(434);
+
+var _Modal2 = _interopRequireDefault(_Modal);
+
+var _Thumbnail = __webpack_require__(16);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
+var _ArtistSentence = __webpack_require__(29);
+
+var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(4);
+
+var uiActions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var KioskMode = function (_React$Component) {
+	_inherits(KioskMode, _React$Component);
+
+	function KioskMode(props) {
+		_classCallCheck(this, KioskMode);
+
+		return _possibleConstructorReturn(this, (KioskMode.__proto__ || Object.getPrototypeOf(KioskMode)).call(this, props));
+	}
+
+	_createClass(KioskMode, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.setWindowTitle();
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (!this.props.current_track && nextProps.current_track) {
+				this.setWindowTitle(nextProps.current_track);
+			}
+		}
+	}, {
+		key: 'setWindowTitle',
+		value: function setWindowTitle() {
+			var current_track = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.current_track;
+
+			if (current_track) {
+				var artists = "";
+				for (var i = 0; i < current_track.artists.length; i++) {
+					if (artists != "") {
+						artists += ", ";
+					}
+					artists += current_track.artists[i].name;
+				}
+				this.props.uiActions.setWindowTitle(current_track.name + " by " + artists + " (now playing)");
+			} else {
+				this.props.uiActions.setWindowTitle("Now playing");
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			if (this.props.current_track && this.props.current_track.images) {
+				var images = this.props.current_track.images;
+			} else {
+				var images = [];
+			}
+
+			return _react2.default.createElement(
+				_Modal2.default,
+				{ className: 'modal--kiosk-mode' },
+				_react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
+				_react2.default.createElement(_Thumbnail2.default, { className: 'foreground', images: images }),
+				_react2.default.createElement(
+					'div',
+					{ className: 'player' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'current-track' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							this.props.current_track ? this.props.current_track.name : _react2.default.createElement(
+								'span',
+								null,
+								'-'
+							)
+						),
+						this.props.current_track ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: this.props.current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
+					)
+				)
+			);
+		}
+	}]);
+
+	return KioskMode;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state) {
+	return {
+		current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KioskMode);
+
+/***/ }),
+/* 468 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(5);
+
+var _reactRouter = __webpack_require__(9);
+
+var _redux = __webpack_require__(3);
+
+var _Modal = __webpack_require__(434);
+
+var _Modal2 = _interopRequireDefault(_Modal);
+
+var _Icon = __webpack_require__(7);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _actions = __webpack_require__(4);
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(22);
+
+var pusherActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(2);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ShareAuthorization_Send = function (_React$Component) {
+	_inherits(ShareAuthorization_Send, _React$Component);
+
+	function ShareAuthorization_Send(props) {
+		_classCallCheck(this, ShareAuthorization_Send);
+
+		return _possibleConstructorReturn(this, (ShareAuthorization_Send.__proto__ || Object.getPrototypeOf(ShareAuthorization_Send)).call(this, props));
+	}
+
+	_createClass(ShareAuthorization_Send, [{
+		key: 'handleClick',
+		value: function handleClick(e, connection_id) {
+			e.preventDefault();
+			this.props.pusherActions.deliverMessage(connection_id, 'spotify_authorization_received', {
+				authorization: this.props.authorization,
+				user: this.props.me
+			});
+			this.props.uiActions.closeModal();
+			return false;
+		}
+	}, {
+		key: 'renderConnectionsList',
+		value: function renderConnectionsList() {
+			var _this2 = this;
+
+			var connections = [];
+			for (var connection_id in this.props.connections) {
+				if (this.props.connections.hasOwnProperty(connection_id) && connection_id !== this.props.connection_id) {
+					connections.push(this.props.connections[connection_id]);
+				}
+			}
+
+			if (connections.length <= 0) {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'no-results' },
+					'No peer connections available'
+				);
+			} else {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'list small pusher-connection-list' },
+					connections.map(function (connection, index) {
+						return _react2.default.createElement(
+							'div',
+							{ className: 'list-item connection', key: connection.connection_id, onClick: function onClick(e) {
+									return _this2.handleClick(e, connection.connection_id);
+								} },
+							connection.username,
+							'\xA0',
+							_react2.default.createElement(
+								'span',
+								{ className: 'grey-text' },
+								'(',
+								connection.ip,
+								')'
+							)
+						);
+					})
+				);
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				_Modal2.default,
+				{ className: 'modal--share-authorization--send' },
+				_react2.default.createElement(
+					'h1',
+					null,
+					'Share Spotify authentication'
+				),
+				_react2.default.createElement(
+					'h2',
+					{ className: 'grey-text' },
+					'Send your authentication tokens to another client. When the recipient client imports this, their Iris will have full access to your Spotify account (',
+					this.props.me.id,
+					').'
+				),
+				this.renderConnectionsList()
+			);
+		}
+	}]);
+
+	return ShareAuthorization_Send;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		me: state.spotify.me,
+		authorization: state.spotify.authorization,
+		connection_id: state.pusher.connection_id,
+		connections: state.pusher.connections
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ShareAuthorization_Send);
 
 /***/ })
 /******/ ]);

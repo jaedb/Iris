@@ -30,7 +30,9 @@ class EditRadio extends React.Component{
 		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
 		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
 
-		this.props.spotifyActions.resolveRadioSeeds(this.props.radio)
+		this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+		
+		this.props.uiActions.setWindowTitle("Edit radio");
 	}
 
 	handleStart(e){
@@ -200,7 +202,7 @@ class EditRadio extends React.Component{
 
 	render(){
 		return (
-			<Modal className="edit-radio-modal">
+			<Modal className="modal--edit-radio">
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 

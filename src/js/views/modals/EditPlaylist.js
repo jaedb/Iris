@@ -28,6 +28,9 @@ class EditPlaylist extends React.Component{
 	}
 
 	componentDidMount(){
+
+		this.props.uiActions.setWindowTitle("Edit playlist");
+
 		if (this.props.playlist){
 			this.setState({
 				name: this.props.playlist.name,
@@ -177,7 +180,7 @@ class EditPlaylist extends React.Component{
 
 	render(){
 		return (
-			<Modal className="edit-playlist-modal">
+			<Modal className="modal--edit-playlist">
 				<h1>Edit playlist</h1>
 				{this.state.error ? <h3 className="red-text">{this.state.error}</h3> : null}
 				<form onSubmit={(e) => this.savePlaylist(e)}>

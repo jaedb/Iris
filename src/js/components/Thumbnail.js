@@ -1,7 +1,8 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { createStore, bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { createStore, bindActionCreators } from 'redux';
+import { Link } from 'react-router';
 
 import Icon from './Icon'
 
@@ -85,7 +86,7 @@ class Thumbnail extends React.Component{
 		
 		var zoom_icon = null;
 		if (this.props.canZoom){
-			zoom_icon = <span className="zoom" onClick={e => this.zoom(e,image)}><Icon name="search" /></span>;
+			zoom_icon = <Link className="zoom" target="_blank" rel="external" href={image}><Icon name="search" /></Link>;
 		}
 
 		return (

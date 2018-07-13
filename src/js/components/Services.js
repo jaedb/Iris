@@ -61,18 +61,12 @@ class Services extends React.Component{
 	}
 
 	renderSpotify(){
-		var authorization_button = null;
-		var send_authorization_button = null;
+		var share_authorization_button = null;
 		if (this.props.spotify.authorization){
-			authorization_button = (
-				<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
-					Share authentication
-				</button>
-			);
-			send_authorization_button = (
-				<button onClick={e => this.props.uiActions.openModal('send_authorization', {}) }>
-					Share authentication
-				</button>
+			share_authorization_button = (
+				<Link className="button" to={global.baseURL+'settings/share-authorization/send'}>
+					Share authorization
+				</Link>
 			);
 		}
 
@@ -154,7 +148,7 @@ class Services extends React.Component{
 					<div className="name">Authorization</div>
 					<div className="input">
 						<SpotifyAuthenticationFrame />
-						{send_authorization_button}
+						{share_authorization_button}
 						{this.props.spotify.refreshing_token ? <button className="working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
 					</div>
 				</div>

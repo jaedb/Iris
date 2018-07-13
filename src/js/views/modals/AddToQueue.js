@@ -23,6 +23,10 @@ class AddToQueue extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Add to queue");
+	}
+
 	handleSubmit(e){
 		e.preventDefault();
 		var uris = this.state.uris.split(',');
@@ -32,7 +36,7 @@ class AddToQueue extends React.Component{
 
 	render(){
 		return (
-			<Modal className="add-to-queue-modal">
+			<Modal className="modal--add-to-queue">
 				<h1>Add to queue</h1>
 				<h2 className="grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
 

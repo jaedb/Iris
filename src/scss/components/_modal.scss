@@ -34,6 +34,16 @@
 		}
 	}
 
+	.actions {
+		padding-top: 50px;
+		text-align: center;
+
+		.button,
+		button {
+			margin: 0 3px;
+		}
+	}
+
 	.content {
 		padding: 80px 25%;
 		margin: 0 auto;
@@ -165,7 +175,7 @@
 		}
 	}
 
-	&.image_zoom {
+	&--image-zoom {
 		.content {
 			padding: 100px 5%;
 			width: 90%;
@@ -182,7 +192,7 @@
 		}
 	}
 
-	&.edit_radio {
+	&--edit-radio {
 		form {
 			.field {
 				position: relative;
@@ -195,7 +205,7 @@
 		}
 	}
 
-	&.kiosk_mode {
+	&--kiosk-mode {
 		background: #000000;
 		overflow: hidden;
 
@@ -241,13 +251,13 @@
 		}
 	}
 
-	&.send_authorization {
+	&--send-authorization {
 		.list {
 			padding-top: 40px;
 		}
 	}
 
-	&.receive_authorization {
+	&--receive-authorization {
 		.user-details {
 			@include clearfix();
 			padding: 70px 0 0 120px;
@@ -260,40 +270,6 @@
 				top: 50px;
 				left: 0;
 			}
-		}
-	}
-
-	&.track_info {
-		.lyrics {
-			font-size: 1.2em;
-			padding: 60px 0;
-		}
-	}
-
-	&.search_uri_schemes {
-		.available-schemes {
-			padding-top: 40px;
-
-			.scheme {
-				@include animate();
-				margin-left: 0;
-				margin-bottom: 8px;
-
-				&:hover {
-					cursor: pointer;
-					background: darken($blue, 8%);
-				}
-			}
-		}
-	}
-
-	.actions {
-		padding-top: 50px;
-		text-align: center;
-
-		.button,
-		button {
-			margin: 0 3px;
 		}
 	}
 

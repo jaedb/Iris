@@ -24,6 +24,10 @@ class CreatePlaylist extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Create playlist");
+	}
+
 	createPlaylist(e){		
 		e.preventDefault();	
 
@@ -116,7 +120,7 @@ class CreatePlaylist extends React.Component{
 
 	render(){
 		return (
-			<Modal className="create-playlist-modal">
+			<Modal className="modal--create-playlist">
 				<h1>Create playlist</h1>
 				<form onSubmit={(e) => this.createPlaylist(e)}>
 

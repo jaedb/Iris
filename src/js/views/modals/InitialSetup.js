@@ -27,6 +27,10 @@ class InitialSetup extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Welcome to Iris");
+	}
+
 	handleSubmit(e){
 		e.preventDefault();
 		var self = this;
@@ -65,7 +69,7 @@ class InitialSetup extends React.Component{
 
 	render(){
 		return (
-			<Modal className="initial-setup-modal">
+			<Modal className="modal--initial-setup">
 				<h1>Get started</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
@@ -130,10 +134,9 @@ class InitialSetup extends React.Component{
 									Allow reporting of anonymous usage statistics
 								</span>
 							</label>
+							<p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>{!this.state.allow_reporting ? <span className="red-text"> Are you sure you don't want to support this?</span> : null}. </p>
 						</div>
 					</div>}
-
-					{!this.state.allow_reporting ? <p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</p> : null}
 
 					<div className="actions centered-text">
 						<button className={"primary large"+(this.state.saving ? " working" : "")} onClick={e => this.handleSubmit(e)}>

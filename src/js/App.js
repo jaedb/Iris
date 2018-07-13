@@ -299,6 +299,7 @@ class App extends React.Component{
 		        <Dragger />
 		        <Notifications 
 		        	uiActions={this.props.uiActions} 
+		        	spotifyActions={this.props.spotifyActions} 
 		        	notifications={this.props.notifications} 
 		        	processes={this.props.processes}
 		        	broadcasts={this.props.broadcasts}
