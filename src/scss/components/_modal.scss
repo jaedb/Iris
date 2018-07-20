@@ -251,24 +251,12 @@
 		}
 	}
 
-	&--send-authorization {
+	&--share-authorization {
 		.list {
 			padding-top: 40px;
-		}
-	}
 
-	&--receive-authorization {
-		.user-details {
-			@include clearfix();
-			padding: 70px 0 0 120px;
-			min-height: 100px;
-			position: relative;
-
-			.thumbnail {
-				max-width: 100px;
-				position: absolute;
-				top: 50px;
-				left: 0;
+			.list-item {
+				cursor: pointer;
 			}
 		}
 	}

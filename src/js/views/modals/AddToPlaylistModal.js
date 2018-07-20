@@ -20,8 +20,8 @@ export default class AddToPlaylistModal extends React.Component{
 	}
 
 	playlistSelected(playlist_uri){
-		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.tracks_uris )
-		this.props.uiActions.closeModal()
+		this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.tracks_uris);
+		window.history.back();
 	}
 
 	render(){

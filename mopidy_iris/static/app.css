@@ -3898,21 +3898,10 @@ input[type="submit"] {
         font-size: 30px; }
         .modal--kiosk-mode .content .current-track .artist-sentence {
           opacity: 0.5; }
-  .modal--send-authorization .list {
+  .modal--share-authorization .list {
     padding-top: 40px; }
-  .modal--receive-authorization .user-details {
-    padding: 70px 0 0 120px;
-    min-height: 100px;
-    position: relative; }
-    .modal--receive-authorization .user-details::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .modal--receive-authorization .user-details .thumbnail {
-      max-width: 100px;
-      position: absolute;
-      top: 50px;
-      left: 0; }
+    .modal--share-authorization .list .list-item {
+      cursor: pointer; }
   @media (max-width: 800px) {
     .modal .content {
       padding: 40px 5%;

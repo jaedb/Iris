@@ -64,7 +64,7 @@ class Services extends React.Component{
 		var share_authorization_button = null;
 		if (this.props.spotify.authorization){
 			share_authorization_button = (
-				<Link className="button" to={global.baseURL+'settings/share-authorization/send'}>
+				<Link className="button" to={global.baseURL+'settings/share-authorization'}>
 					Share authorization
 				</Link>
 			);

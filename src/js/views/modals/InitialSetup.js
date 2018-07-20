@@ -56,11 +56,11 @@ class InitialSetup extends React.Component{
 			// We've changed a connection setting, so need to reload
 			if (self.state.host !== self.props.host || self.state.port !== self.props.port || self.state.ssl !== self.props.ssl){
 
-				window.location.reload(true);
+				window.location = global.baseURL;
 
 			// Safe to just close modal
 			} else {
-				self.props.uiActions.closeModal();
+				window.history.back();
 			}
 		}, 1000);
 

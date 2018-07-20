@@ -12,7 +12,7 @@ export default class Notifications extends React.Component{
 	importSpotifyAuthorization(notification_key, user, authorization){
 		this.props.spotifyActions.importAuthorization(user, authorization);
 		this.props.uiActions.removeNotification(notification_key, true);
-		hashHistory.push(global.baseURL+'settings/service/spotify');
+		this.props.uiActions.createNotification({content: 'Spotify authorization imported'});
 	}
 
 	renderNotifications(){
