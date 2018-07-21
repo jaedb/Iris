@@ -42,6 +42,7 @@ import AddToQueue from './views/modals/AddToQueue';
 import InitialSetup from './views/modals/InitialSetup';
 import KioskMode from './views/modals/KioskMode';
 import ShareAuthorization from './views/modals/ShareAuthorization';
+import AddToPlaylist from './views/modals/AddToPlaylist';
 
 /*
 // Hijack console error for Raven to capture
@@ -62,6 +63,7 @@ ReactDOM.render(
 				 
 				<Route path="initial-setup" component={InitialSetup} />
 				<Route path="kiosk-mode" component={KioskMode} />
+				<Route path="add-to-playlist/:uris" component={AddToPlaylist} />
 
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />

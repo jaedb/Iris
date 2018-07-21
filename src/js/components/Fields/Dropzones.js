@@ -58,7 +58,7 @@ class Dropzones extends React.Component{
 				break
 
 			case 'add_to_playlist':
-				hashHistory.push(global.baseURL+'add-to-playlist/');
+				hashHistory.push(global.baseURL+'add-to-playlist/'+encodeURIComponent(uris.join(',')));
 				//uris
 				break
 		}

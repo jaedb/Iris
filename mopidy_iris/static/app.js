@@ -25791,6 +25791,10 @@ var _ShareAuthorization = __webpack_require__(284);
 
 var _ShareAuthorization2 = _interopRequireDefault(_ShareAuthorization);
 
+var _AddToPlaylist = __webpack_require__(314);
+
+var _AddToPlaylist2 = _interopRequireDefault(_AddToPlaylist);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -25821,6 +25825,7 @@ _reactDom2.default.render(_react2.default.createElement(
 			_react2.default.createElement(_reactRouter.IndexRoute, { component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'initial-setup', component: _InitialSetup2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'kiosk-mode', component: _KioskMode2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'add-to-playlist/:uris', component: _AddToPlaylist2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue', component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/history', component: _QueueHistory2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/radio', component: _EditRadio2.default }),
@@ -58978,7 +58983,7 @@ var Dropzones = function (_React$Component) {
 					break;
 
 				case 'add_to_playlist':
-					_reactRouter.hashHistory.push(global.baseURL + 'add-to-playlist/');
+					_reactRouter.hashHistory.push(global.baseURL + 'add-to-playlist/' + encodeURIComponent(uris.join(',')));
 					//uris
 					break;
 			}
@@ -77886,6 +77891,219 @@ var Dropzone = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Dropzone;
+
+/***/ }),
+/* 314 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(3);
+
+var _reactRouter = __webpack_require__(5);
+
+var _reactGa = __webpack_require__(19);
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
+var _Modal = __webpack_require__(35);
+
+var _Modal2 = _interopRequireDefault(_Modal);
+
+var _Icon = __webpack_require__(6);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Thumbnail = __webpack_require__(12);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
+var _actions = __webpack_require__(11);
+
+var coreActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(2);
+
+var uiActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(9);
+
+var mopidyActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(8);
+
+var spotifyActions = _interopRequireWildcard(_actions4);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AddToPlaylist = function (_React$Component) {
+	_inherits(AddToPlaylist, _React$Component);
+
+	function AddToPlaylist(props) {
+		_classCallCheck(this, AddToPlaylist);
+
+		var _this = _possibleConstructorReturn(this, (AddToPlaylist.__proto__ || Object.getPrototypeOf(AddToPlaylist)).call(this, props));
+
+		if (!_this.props.spotify_library_playlists) {
+			_this.props.spotifyActions.getLibraryPlaylists();
+		}
+
+		if (!_this.props.mopidy_library_playlists && _this.props.mopidy_connected) {
+			_this.props.mopidyActions.getLibraryPlaylists();
+		}
+		return _this;
+	}
+
+	_createClass(AddToPlaylist, [{
+		key: 'playlistSelected',
+		value: function playlistSelected(playlist_uri) {
+			this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.uris);
+			window.history.back();
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			if (!this.props.playlists) return _react2.default.createElement(
+				'div',
+				{ className: 'empty' },
+				'No editable playlists'
+			);
+			var playlists = [];
+			for (var uri in this.props.playlists) {
+				if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri]);
+			}
+
+			playlists = helpers.sortItems(playlists, 'name');
+
+			var loader = null;
+			if (this.props.spotify_library_playlists_status == 'running') {
+				loader = _react2.default.createElement(
+					'div',
+					{ className: 'lazy-loader body-loader loading' },
+					_react2.default.createElement('div', { className: 'loader' })
+				);
+			}
+
+			return _react2.default.createElement(
+				_Modal2.default,
+				{ className: 'modal--add-to-playlist' },
+				_react2.default.createElement(
+					'h1',
+					null,
+					'Add to playlist'
+				),
+				_react2.default.createElement(
+					'h2',
+					{ className: 'grey-text' },
+					'Select playlist to add ',
+					this.props.uris.length,
+					' track',
+					this.props.uris.length > 1 ? 's' : null,
+					' to'
+				),
+				playlists.length <= 0 ? _react2.default.createElement(
+					'div',
+					{ className: 'no-results' },
+					'No playlists available'
+				) : null,
+				_react2.default.createElement(
+					'div',
+					{ className: 'list small playlists' },
+					playlists.map(function (playlist) {
+						return _react2.default.createElement(
+							'div',
+							{ className: 'list-item', key: playlist.uri, onClick: function onClick() {
+									return _this2.playlistSelected(playlist.uri);
+								} },
+							_react2.default.createElement(_Thumbnail2.default, { images: playlist.images, size: 'small' }),
+							_react2.default.createElement(
+								'h3',
+								{ className: 'name' },
+								playlist.name
+							),
+							_react2.default.createElement(
+								'ul',
+								{ className: 'details' },
+								_react2.default.createElement(
+									'li',
+									null,
+									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', className: 'source', name: helpers.sourceIcon(playlist.uri) })
+								),
+								_react2.default.createElement(
+									'li',
+									null,
+									playlist.tracks_total ? _react2.default.createElement(
+										'span',
+										{ className: 'grey-text' },
+										'\xA0',
+										playlist.tracks_total,
+										' tracks'
+									) : null
+								)
+							)
+						);
+					})
+				),
+				loader
+			);
+		}
+	}]);
+
+	return AddToPlaylist;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		uris: ownProps.params.uris ? decodeURIComponent(ownProps.params.uris).split(',') : [],
+		mopidy_connected: state.mopidy.connected,
+		mopidy_uri_schemes: state.mopidy.uri_schemes,
+		mopidy_library_playlists: state.mopidy.library_playlists,
+		mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
+		spotify_library_playlists: state.spotify.library_playlists,
+		spotify_library_playlists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
+		load_queue: state.ui.load_queue,
+		me_id: state.spotify.me ? state.spotify.me.id : false,
+		playlists: state.core.playlists
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToPlaylist);
 
 /***/ })
 /******/ ]);
