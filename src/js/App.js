@@ -49,6 +49,11 @@ class App extends React.Component{
 
 		if (this.props.allow_reporting){
 			ReactGA.initialize('UA-64701652-3');
+
+			if (Raven !== undefined){
+				console.log('mounted')
+				Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
+			}
 		}
 		
 		// Fire up our services

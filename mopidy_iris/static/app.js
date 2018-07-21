@@ -25803,14 +25803,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 __webpack_require__(287);
 
-/*
-// Hijack console error for Raven to capture
-var originalConsoleError = console.error;  
-console.error = function(message, error){  
-    Raven.captureException(message, error);
-    originalConsoleError.apply(this, arguments)
-*/
-
 global.baseURL = '/';
 
 _reactDom2.default.render(_react2.default.createElement(
@@ -58133,6 +58125,11 @@ var App = function (_React$Component) {
 
 			if (this.props.allow_reporting) {
 				_reactGa2.default.initialize('UA-64701652-3');
+
+				if (Raven !== undefined) {
+					console.log('mounted');
+					Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
+				}
 			}
 
 			// Fire up our services
