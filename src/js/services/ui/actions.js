@@ -150,8 +150,6 @@ export function createBrowserNotification(data){
     }
 }
 
-// content, type = 'default', key = null, title = null, description = null, sticky = false
-
 export function createNotification(data){
     return { 
         type: 'CREATE_NOTIFICATION',
@@ -164,7 +162,8 @@ export function createNotification(data){
                 content: null,
                 description: null,
                 sticky: false,
-                closing: false
+                closing: false,
+                render_content: false
             },
             data
         )

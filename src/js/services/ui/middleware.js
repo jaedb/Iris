@@ -147,7 +147,7 @@ const UIMiddleware = (function(){
 
             case 'BROADCASTS_LOADED':
                 var suppressed_broadcasts = []
-                if (typeof(store.getState().ui.suppressed_broadcasts) !== 'undefined'){
+                if (store.getState().ui.suppressed_broadcasts !== undefined){
                     suppressed_broadcasts = store.getState().ui.suppressed_broadcasts
                 }
 
@@ -160,7 +160,7 @@ const UIMiddleware = (function(){
                                 key: (broadcast.key ? broadcast.key : null),
                                 title: (broadcast.title ? broadcast.title : null),
                                 content: broadcast.message,
-                                type: 'broadcast',
+                                type: 'info',
                                 sticky: true
                             }
                             store.dispatch(uiActions.createNotification(data)); 

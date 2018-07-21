@@ -1,11 +1,18 @@
 
 import React, { PropTypes } from 'react';
+import { Link, hashHistory } from 'react-router';
 import Icon from './Icon';
 
 export default class Notifications extends React.Component{
 
 	constructor(props){
 		super(props)
+	}
+
+	importSpotifyAuthorization(notification_key, user, authorization){
+		this.props.spotifyActions.importAuthorization(user, authorization);
+		this.props.uiActions.removeNotification(notification_key, true);
+		this.props.uiActions.createNotification({content: 'Spotify authorization imported'});
 	}
 
 	renderNotifications(){
@@ -25,17 +32,31 @@ export default class Notifications extends React.Component{
 						switch (notification.type){
 							case 'shortcut':
 								return (
-									<div className={"notification shortcut-notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
+									<div className={"notification notification--shortcut"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
 										<Icon type="fontawesome" name={notification.content} />
+									</div>
+								)
+
+							case 'spotify-authorization-received':
+								return (
+									<div className={"notification"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
+										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
+										
+										<h4>Authorization shared</h4>
+										<p className="content">
+											<em><Link to={global.baseURL+'user/'+notification.user.uri}>{notification.user.display_name ? notification.user.display_name : notification.user.id}</Link></em> has shared their Spotify authorization with you. Do you want to import this?
+										</p>
+										<br />
+										<a className="button" onClick={e => this.importSpotifyAuthorization(notification.key, notification.user, notification.authorization)}>Import</a>
 									</div>
 								)
 
 							default:
 								return (
-									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
+									<div className={"notification notification--"+notification.type+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
-										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
+										{notification.content ? <p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p> :null}
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
 									</div>
 								)
@@ -56,7 +77,7 @@ export default class Notifications extends React.Component{
 		switch (process.status){
 			case 'running':
 				return(
-					<div className={"process notification"+(process.closing ? ' closing' : '')} key={process.key}>
+					<div className={"notification notification--process"+(process.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader">
 							<div className="progress">
 								<div className="fill" style={{width: progress+'%'}}></div>
@@ -69,7 +90,7 @@ export default class Notifications extends React.Component{
 
 			case 'cancelling':
 				return(
-					<div className={"process notification cancelling"+(process.closing ? ' closing' : '')} key={process.key}>
+					<div className={"notification notification--process cancelling"+(process.closing ? ' closing' : '')} key={process.key}>
 						<div className="loader"></div>
 						Cancelling
 					</div>

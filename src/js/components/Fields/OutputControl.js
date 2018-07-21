@@ -109,11 +109,21 @@ class OutputControl extends React.Component{
 				</span>
 			);
 		} else {
-			return (
-				<span className="output-control">
-					<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
-				</span>
-			);
+			
+			// No customisable outputs
+			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled){
+				return (
+					<span className="output-control disabled">
+						<a className="control speakers"><Icon name="speaker" /></a>
+					</span>
+				);
+			} else {
+				return (
+					<span className="output-control">
+						<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
+					</span>
+				);
+			}
 		}
 	}
 }
@@ -123,7 +133,7 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_volume: state.core.http_streaming_volume,
 		http_streaming_mute: state.core.http_streaming_mute,
-		snapcast_enabled: state.pusher.config.snapcast_enabled,
+		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
 		pusher_connected: state.pusher.connected,
 		snapcast_clients: state.pusher.snapcast_clients
 	}
