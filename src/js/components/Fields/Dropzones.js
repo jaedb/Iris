@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 
 import Dropzone from './Dropzone'
@@ -57,7 +58,8 @@ class Dropzones extends React.Component{
 				break
 
 			case 'add_to_playlist':
-				this.props.uiActions.openModal('add_to_playlist',{tracks_uris: uris})
+				hashHistory.push(global.baseURL+'add-to-playlist/'+encodeURIComponent(uris.join(',')));
+				//uris
 				break
 		}
 	}

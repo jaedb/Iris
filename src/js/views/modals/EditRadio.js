@@ -1,10 +1,19 @@
 
-import React, { PropTypes } from 'react';;
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import ReactGA from 'react-ga'
 
-import Icon from '../Icon';
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 import * as helpers from '../../helpers';
 
-export default class EditRadioModal extends React.Component{
+class EditRadio extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -21,7 +30,9 @@ export default class EditRadioModal extends React.Component{
 		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
 		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
 
-		this.props.spotifyActions.resolveRadioSeeds(this.props.radio)
+		this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+		
+		this.props.uiActions.setWindowTitle("Edit radio");
 	}
 
 	handleStart(e){
@@ -38,7 +49,7 @@ export default class EditRadioModal extends React.Component{
 
 		if (valid_seeds){
 			this.props.pusherActions.startRadio(this.state.seeds);
-			this.props.uiActions.closeModal();
+			window.history.back();
 		} else {
 			this.setState({error_message: "Invalid seed URI(s)"});
 		}
@@ -191,7 +202,7 @@ export default class EditRadioModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="modal--edit-radio">
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
@@ -220,7 +231,26 @@ export default class EditRadioModal extends React.Component{
 						{this.state.enabled ? <button className="primary large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary large" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		mopidy_connected: state.mopidy.connected,
+		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
+		playlists: state.core.playlists
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditRadio)

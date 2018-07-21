@@ -2504,7 +2504,7 @@ body {
     border-radius: 4px; }
     body::-webkit-scrollbar-thumb:hover {
       background: #a3a19f; }
-  body.touch-dragging, body.modal-open {
+  body.touch-dragging, body.no-scrollbars {
     overflow-y: hidden; }
   @media (max-width: 800px) {
     body.context-menu-open {
@@ -3155,6 +3155,12 @@ input[type="submit"] {
   input[type="submit"].grey {
     color: #FFFFFF;
     background: #383734; }
+  .button.black,
+  button.black,
+  input[type="button"].black,
+  input[type="submit"].black {
+    color: #FFFFFF;
+    background: #121212; }
   .button.confirming, .button.destructive,
   button.confirming,
   button.destructive,
@@ -3301,7 +3307,7 @@ input[type="submit"] {
     display: block;
     padding: 6px 0 4px;
     font-size: 12px;
-    opacity: 0.6; }
+    color: rgba(255, 255, 255, 0.6); }
     .field .description.error {
       color: #cf2d2d;
       display: inline-block;
@@ -3706,19 +3712,27 @@ input[type="submit"] {
   .mini-loader .loader:before {
     border-color: #7b7b7b; }
 
-.modal-open .body {
-  -webkit-filter: blur(10px);
-  filter: blur(10px); }
-
 .modal {
+  animation-name: fadein;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.88);
+  background: #0d0d0d;
   overflow-y: scroll; }
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    transform: translateY(5px); }
+  100% {
+    opacity: 1;
+    transform: translateY(0px); } }
   .modal .controls {
     position: absolute;
     top: 10px;
@@ -3738,6 +3752,12 @@ input[type="submit"] {
         opacity: 1; }
       .modal .controls .control .icon {
         font-size: 35px; }
+  .modal .actions {
+    padding-top: 50px;
+    text-align: center; }
+    .modal .actions .button,
+    .modal .actions button {
+      margin: 0 3px; }
   .modal .content {
     padding: 80px 25%;
     margin: 0 auto;
@@ -3829,31 +3849,31 @@ input[type="submit"] {
       font-size: inherit; }
       .modal .content .list.small .list-item:nth-child(2n) {
         margin-left: 2%; }
-  .modal.image_zoom .content {
+  .modal--image-zoom .content {
     padding: 100px 5%;
     width: 90%;
     height: 100%;
     box-sizing: border-box; }
-    .modal.image_zoom .content .image {
+    .modal--image-zoom .content .image {
       width: 100%;
       height: 100%;
       background-size: contain;
       background-position: 50% 50%;
       background-repeat: no-repeat; }
-  .modal.edit_radio form .field {
+  .modal--edit-radio form .field {
     position: relative;
     margin-top: 50px; }
-    .modal.edit_radio form .field input[type="text"] {
+    .modal--edit-radio form .field input[type="text"] {
       padding-right: 80px; }
-  .modal.kiosk_mode {
+  .modal--kiosk-mode {
     background: #000000;
     overflow: hidden; }
-    .modal.kiosk_mode .content {
+    .modal--kiosk-mode .content {
       padding: 5%;
       width: 90%;
       height: 90%;
       text-align: center; }
-      .modal.kiosk_mode .content .background {
+      .modal--kiosk-mode .content .background {
         position: absolute;
         top: -5vh;
         right: -5vw;
@@ -3862,58 +3882,26 @@ input[type="submit"] {
         width: auto;
         opacity: 0.2;
         max-width: none; }
-        .modal.kiosk_mode .content .background .image {
+        .modal--kiosk-mode .content .background .image {
           -webkit-filter: blur(10px);
           filter: blur(10px);
           width: 110vw;
           padding-bottom: 110vh; }
-      .modal.kiosk_mode .content .foreground {
+      .modal--kiosk-mode .content .foreground {
         width: 70vw;
         margin: 0 auto;
         max-width: 70vh;
         max-height: 70vh;
         z-index: 2; }
-      .modal.kiosk_mode .content .current-track {
+      .modal--kiosk-mode .content .current-track {
         padding-top: 50px;
         font-size: 30px; }
-        .modal.kiosk_mode .content .current-track .artist-sentence {
+        .modal--kiosk-mode .content .current-track .artist-sentence {
           opacity: 0.5; }
-  .modal.send_authorization .list {
+  .modal--share-authorization .list {
     padding-top: 40px; }
-  .modal.receive_authorization .user-details {
-    padding: 70px 0 0 120px;
-    min-height: 100px;
-    position: relative; }
-    .modal.receive_authorization .user-details::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .modal.receive_authorization .user-details .thumbnail {
-      max-width: 100px;
-      position: absolute;
-      top: 50px;
-      left: 0; }
-  .modal.track_info .lyrics {
-    font-size: 1.2em;
-    padding: 60px 0; }
-  .modal.search_uri_schemes .available-schemes {
-    padding-top: 40px; }
-    .modal.search_uri_schemes .available-schemes .scheme {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      margin-left: 0;
-      margin-bottom: 8px; }
-      .modal.search_uri_schemes .available-schemes .scheme:hover {
-        cursor: pointer;
-        background: #0fa6ec; }
-  .modal .actions {
-    padding-top: 50px;
-    text-align: center; }
-    .modal .actions .button,
-    .modal .actions button {
-      margin: 0 3px; }
+    .modal--share-authorization .list .list-item {
+      cursor: pointer; }
   @media (max-width: 800px) {
     .modal .content {
       padding: 40px 5%;
@@ -4040,7 +4028,8 @@ input[type="submit"] {
     background: rgba(0, 0, 0, 0.4);
     font-size: 12px;
     cursor: pointer;
-    color: #FFFFFF; }
+    color: #FFFFFF;
+    border: 0; }
     .thumbnail .zoom:hover {
       background: #000000; }
   .thumbnail.small {
@@ -5545,9 +5534,10 @@ main header {
     .notifications .notification h4 {
       padding-top: 0; }
     .notifications .notification p a {
-      color: inherit;
-      text-decoration: none;
-      border-bottom: 1px dotted #000000; }
+      text-decoration: none; }
+      .notifications .notification p a:not(.button) {
+        color: inherit;
+        border-bottom: 1px dotted #000000; }
     .notifications .notification p.description {
       font-size: 14px;
       opacity: 0.5;
@@ -5563,17 +5553,50 @@ main header {
       opacity: 0.5; }
       .notifications .notification .close-button:hover {
         opacity: 1; }
-    .notifications .notification.good {
+    .notifications .notification--good {
       background: #47af2a; }
-    .notifications .notification.broadcast {
+    .notifications .notification--info {
       background: #FFF39C;
       color: #000000; }
-    .notifications .notification.info {
+    .notifications .notification--subtle {
       background: #383734; }
-    .notifications .notification.warning {
+    .notifications .notification--warning {
       background: #f16f19; }
-    .notifications .notification.bad {
+    .notifications .notification--bad {
       background: #cf2d2d; }
+    .notifications .notification--process {
+      position: relative;
+      padding-right: 18px;
+      padding-left: 50px; }
+      .notifications .notification--process.cancelling {
+        color: rgba(255, 255, 255, 0.5); }
+      .notifications .notification--process .loader {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 16px;
+        left: 18px;
+        opacity: 1;
+        z-index: 2; }
+        .notifications .notification--process .loader:before {
+          border-color: transparent; }
+        .notifications .notification--process .loader:after {
+          border-right-color: #FFFFFF; }
+        .notifications .notification--process .loader .progress {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          bottom: 4px;
+          right: 4px;
+          border-radius: 50%;
+          overflow: hidden; }
+          .notifications .notification--process .loader .progress .fill {
+            background: #FFFFFF;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            opacity: 0.35; }
     .notifications .notification.closing, .notifications .notification.finishing {
       animation-name: fadeout;
       animation-duration: 0.2s;
@@ -5587,39 +5610,6 @@ main header {
   100% {
     opacity: 0;
     transform: translateY(5px); } }
-    .notifications .notification.process {
-      position: relative;
-      padding-right: 18px;
-      padding-left: 50px; }
-      .notifications .notification.process.cancelling {
-        color: rgba(255, 255, 255, 0.5); }
-      .notifications .notification.process .loader {
-        width: 20px;
-        height: 20px;
-        position: absolute;
-        top: 16px;
-        left: 18px;
-        opacity: 1;
-        z-index: 2; }
-        .notifications .notification.process .loader:before {
-          border-color: transparent; }
-        .notifications .notification.process .loader:after {
-          border-right-color: #FFFFFF; }
-        .notifications .notification.process .loader .progress {
-          position: absolute;
-          top: 4px;
-          left: 4px;
-          bottom: 4px;
-          right: 4px;
-          border-radius: 50%;
-          overflow: hidden; }
-          .notifications .notification.process .loader .progress .fill {
-            background: #FFFFFF;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            opacity: 0.35; }
   .notifications .shortcut-notification {
     position: fixed;
     top: 50vh;

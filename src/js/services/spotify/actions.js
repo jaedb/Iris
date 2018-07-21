@@ -239,17 +239,11 @@ export function tokenChanged(spotify_token){
     }
 }
 
-export function authorizationReceived(data){
-
-    // This is just an alias to open the modal
-    return uiActions.openModal('receive_authorization', data);
-}
-
-export function importAuthorization(data){
+export function importAuthorization(user, authorization){
     return {
         type: 'SPOTIFY_IMPORT_AUTHORIZATION',
-        user: data.user,
-        authorization: data.authorization
+        user: user,
+        authorization: authorization
     }
 }
 

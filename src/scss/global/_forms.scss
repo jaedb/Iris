@@ -201,6 +201,11 @@ input[type="submit"] {
 		background: $grey;
 	}
 
+	&.black {
+		color: $white;
+		background: $darkest_grey;
+	}
+
 	&.confirming,
 	&.destructive {
 		background: $red;
@@ -329,7 +334,7 @@ input[type="submit"] {
 		display: block;
 		padding: 6px 0 4px;
 		font-size: 12px;
-		opacity: 0.6;
+		color: rgba(255,255,255,0.6);
 
 		&.error {
 			color: $red;

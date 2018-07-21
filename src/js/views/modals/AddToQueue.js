@@ -1,10 +1,19 @@
 
-import React, { PropTypes } from 'react';;
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+import ReactGA from 'react-ga'
 
-import Icon from '../Icon';
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions'
+import * as uiActions from '../../services/ui/actions'
+import * as mopidyActions from '../../services/mopidy/actions'
+import * as spotifyActions from '../../services/spotify/actions'
 import * as helpers from '../../helpers';
 
-export default class AddToQueueModal extends React.Component{
+class AddToQueue extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -14,15 +23,20 @@ export default class AddToQueueModal extends React.Component{
 		}
 	}
 
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Add to queue");
+	}
+
 	handleSubmit(e){
+		e.preventDefault();
 		var uris = this.state.uris.split(',');
 		this.props.mopidyActions.enqueueURIs(uris, null, this.state.next);
-		this.props.uiActions.closeModal();
+		window.history.back();
 	}
 
 	render(){
 		return (
-			<div>
+			<Modal className="modal--add-to-queue">
 				<h1>Add to queue</h1>
 				<h2 className="grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
 
@@ -65,7 +79,26 @@ export default class AddToQueueModal extends React.Component{
 						<button type="submit" className="primary large">Add</button>
 					</div>
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		mopidy_connected: state.mopidy.connected,
+		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
+		playlists: state.core.playlists
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddToQueue)

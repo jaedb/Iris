@@ -1,13 +1,20 @@
 
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
+import ReactGA from 'react-ga';
 
-import Icon from '../Icon'
-import SpotifyAuthenticationFrame from '../Fields/SpotifyAuthenticationFrame'
-import LastfmAuthenticationFrame from '../Fields/LastfmAuthenticationFrame'
+import Modal from './Modal';
+import Icon from '../../components/Icon';
+import SpotifyAuthenticationFrame from '../../components/Fields/SpotifyAuthenticationFrame';
+import LastfmAuthenticationFrame from '../../components/Fields/LastfmAuthenticationFrame';
 
-import * as helpers from '../../helpers'
+import * as coreActions from '../../services/core/actions';
+import * as uiActions from '../../services/ui/actions';
+import * as helpers from '../../helpers';
 
-export default class InitialSetupModal extends React.Component{
+class InitialSetup extends React.Component{
 	constructor(props){
 		super(props);
 
@@ -18,6 +25,10 @@ export default class InitialSetupModal extends React.Component{
 			port: this.props.port,
 			ssl: this.props.ssl
 		}
+	}
+
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Welcome to Iris");
 	}
 
 	handleSubmit(e){
@@ -45,11 +56,11 @@ export default class InitialSetupModal extends React.Component{
 			// We've changed a connection setting, so need to reload
 			if (self.state.host !== self.props.host || self.state.port !== self.props.port || self.state.ssl !== self.props.ssl){
 
-				window.location.reload(true);
+				window.location = global.baseURL;
 
 			// Safe to just close modal
 			} else {
-				self.props.uiActions.closeModal();
+				window.history.back();
 			}
 		}, 1000);
 
@@ -58,7 +69,7 @@ export default class InitialSetupModal extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="modal--initial-setup">
 				<h1>Get started</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
@@ -123,10 +134,9 @@ export default class InitialSetupModal extends React.Component{
 									Allow reporting of anonymous usage statistics
 								</span>
 							</label>
+							<p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>{!this.state.allow_reporting ? <span className="red-text"> Are you sure you don't want to support this?</span> : null}. </p>
 						</div>
 					</div>}
-
-					{!this.state.allow_reporting ? <p className="description">This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</p> : null}
 
 					<div className="actions centered-text">
 						<button className={"primary large"+(this.state.saving ? " working" : "")} onClick={e => this.handleSubmit(e)}>
@@ -135,7 +145,25 @@ export default class InitialSetupModal extends React.Component{
 					</div>
 
 				</form>
-			</div>
+			</Modal>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		allow_reporting: state.core.allow_reporting,
+		host: state.mopidy.host,
+		port: state.mopidy.port,
+		ssl: state.mopidy.ssl
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
+		uiActions: bindActionCreators(uiActions, dispatch)
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InitialSetup)

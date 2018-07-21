@@ -1,18 +1,13 @@
 
-.modal-open {
-	.body {
-		@include blur(10px);
-	}
-}
-
 .modal {
+	@include fadein();
 	position: fixed;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	right: 0;
 	z-index: 999;
-	background: $overlay_dark;
+	background: darken($darkest_grey, 2%);
 	overflow-y: scroll;
 
 	.controls {
@@ -36,6 +31,16 @@
 			.icon {
 				font-size: 35px;
 			}
+		}
+	}
+
+	.actions {
+		padding-top: 50px;
+		text-align: center;
+
+		.button,
+		button {
+			margin: 0 3px;
 		}
 	}
 
@@ -170,7 +175,7 @@
 		}
 	}
 
-	&.image_zoom {
+	&--image-zoom {
 		.content {
 			padding: 100px 5%;
 			width: 90%;
@@ -187,7 +192,7 @@
 		}
 	}
 
-	&.edit_radio {
+	&--edit-radio {
 		form {
 			.field {
 				position: relative;
@@ -200,7 +205,7 @@
 		}
 	}
 
-	&.kiosk_mode {
+	&--kiosk-mode {
 		background: #000000;
 		overflow: hidden;
 
@@ -246,59 +251,13 @@
 		}
 	}
 
-	&.send_authorization {
+	&--share-authorization {
 		.list {
 			padding-top: 40px;
-		}
-	}
 
-	&.receive_authorization {
-		.user-details {
-			@include clearfix();
-			padding: 70px 0 0 120px;
-			min-height: 100px;
-			position: relative;
-
-			.thumbnail {
-				max-width: 100px;
-				position: absolute;
-				top: 50px;
-				left: 0;
+			.list-item {
+				cursor: pointer;
 			}
-		}
-	}
-
-	&.track_info {
-		.lyrics {
-			font-size: 1.2em;
-			padding: 60px 0;
-		}
-	}
-
-	&.search_uri_schemes {
-		.available-schemes {
-			padding-top: 40px;
-
-			.scheme {
-				@include animate();
-				margin-left: 0;
-				margin-bottom: 8px;
-
-				&:hover {
-					cursor: pointer;
-					background: darken($blue, 8%);
-				}
-			}
-		}
-	}
-
-	.actions {
-		padding-top: 50px;
-		text-align: center;
-
-		.button,
-		button {
-			margin: 0 3px;
 		}
 	}
 

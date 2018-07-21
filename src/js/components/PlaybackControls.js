@@ -121,11 +121,6 @@ class PlaybackControls extends React.Component{
 		return button;
 	}
 
-	handleThumbnailClick(e){
-		e.preventDefault();
-		this.props.uiActions.openModal('kiosk_mode');
-	}
-
 	render(){
 		var images = false
 		if (this.props.current_track && this.props.current_track.images){
@@ -138,9 +133,9 @@ class PlaybackControls extends React.Component{
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div className="current-track">
-					<div className="thumbnail-wrapper" onClick={e => this.handleThumbnailClick(e)}>
+					<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
 						<Thumbnail size="small" images={images} />
-					</div>
+					</Link>
 					<div className="title">
 						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
 					</div>

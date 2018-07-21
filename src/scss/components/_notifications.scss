@@ -24,9 +24,12 @@
 		}
 
 		p a {
-			color: inherit;
 			text-decoration: none;
-			border-bottom: 1px dotted $black;
+			
+			&:not(.button) {
+				color: inherit;
+				border-bottom: 1px dotted $black;
+			}
 		}
 
 		p.description {
@@ -50,33 +53,28 @@
 			}
 		}
 
-		&.good {
+		&--good {
 			background: $green;
 		}
 
-		&.broadcast {
+		&--info {
 			background: $yellow;
 			color: $black;
 		}
 
-		&.info {
+		&--subtle {
 			background: $grey;
 		}
 
-		&.warning {
+		&--warning {
 			background: $orange;
 		}
 
-		&.bad {
+		&--bad {
 			background: $red;
 		}
 
-		&.closing,
-		&.finishing {
-			@include fadeout();
-		}
-
-		&.process {
+		&--process {
 			position: relative;
 			padding-right: 18px;
 			padding-left: 50px;
@@ -121,6 +119,11 @@
 					}
 				}
 			}
+		}
+
+		&.closing,
+		&.finishing {
+			@include fadeout();
 		}
 	}
 

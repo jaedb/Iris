@@ -4,15 +4,21 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 
-import * as uiActions from '../../services/ui/actions'
-import * as helpers from '../../helpers'
+import Modal from './Modal';
+import Icon from '../../components/Icon';
 
-import Icon from '../Icon'
+import * as uiActions from '../../services/ui/actions';
+import * as pusherActions from '../../services/pusher/actions';
+import * as helpers from '../../helpers';
 
-class AuthorizationModal_Send extends React.Component{
+class ShareAuthorization_Send extends React.Component {
 
 	constructor(props){
 		super(props)
+	}
+
+	componentDidMount(){
+		this.props.uiActions.setWindowTitle("Share Spotify authorization");
 	}
 
 	handleClick(e, connection_id){		
@@ -25,14 +31,14 @@ class AuthorizationModal_Send extends React.Component{
 				user: this.props.me
 			}
 		);
-		this.props.uiActions.closeModal()
-		return false;
+		window.history.back();
+		return;
 	}
 
 	renderConnectionsList(){
 		var connections = []
 		for (var connection_id in this.props.connections){
-			if (this.props.connections.hasOwnProperty(connection_id) && connection_id !== this.props.connection_id){
+			if (this.props.connections.hasOwnProperty(connection_id) && connection_id != this.props.connection_id){
 				connections.push(this.props.connections[connection_id])
 			}
 		}
@@ -60,11 +66,11 @@ class AuthorizationModal_Send extends React.Component{
 
 	render(){
 		return (
-			<div>
+			<Modal className="modal--share-authorization">
 				<h1>Share Spotify authentication</h1>
 				<h2 className="grey-text">Send your authentication tokens to another client. When the recipient client imports this, their Iris will have full access to your Spotify account ({this.props.me.id}).</h2>
 				{this.renderConnectionsList()}
-			</div>
+			</Modal>
 		)
 	}
 }
@@ -80,8 +86,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthorizationModal_Send)
+export default connect(mapStateToProps, mapDispatchToProps)(ShareAuthorization_Send)
