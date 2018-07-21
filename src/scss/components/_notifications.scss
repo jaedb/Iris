@@ -74,6 +74,24 @@
 			background: $red;
 		}
 
+		&--shortcut {
+			position: fixed;
+			top: 50vh;
+			left: 50vw;
+			height: 400px;
+			width: 400px;
+			margin: -200px 0 0 -200px;
+			background: $overlay_dark;
+			color: $white;
+			border-radius: 10px;
+			text-align: center;
+
+			.icon {
+				font-size: 140px;
+				line-height: 400px;
+			}
+		}
+
 		&--process {
 			position: relative;
 			padding-right: 18px;
@@ -124,24 +142,6 @@
 		&.closing,
 		&.finishing {
 			@include fadeout();
-		}
-	}
-
-	.shortcut-notification {
-		position: fixed;
-		top: 50vh;
-		left: 50vw;
-		height: 400px;
-		width: 400px;
-		margin: -200px 0 0 -200px;
-		background: $overlay_dark;
-		color: $white;
-		border-radius: 10px;
-		text-align: center;
-
-		.icon {
-			font-size: 140px;
-			line-height: 400px;
 		}
 	}
 

@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Link } from 'react-router';
+import { Link, hashHistory } from 'react-router';
 import ReactGA from 'react-ga';
 
 import Modal from './Modal';
@@ -12,6 +12,8 @@ import LastfmAuthenticationFrame from '../../components/Fields/LastfmAuthenticat
 
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
+import * as pusherActions from '../../services/pusher/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
 import * as helpers from '../../helpers';
 
 class InitialSetup extends React.Component{
@@ -19,7 +21,7 @@ class InitialSetup extends React.Component{
 		super(props);
 
 		this.state = {
-			username: 'Anonymous',
+			username: (this.props.username ? this.props.username : 'Anonymous'),
 			allow_reporting: this.props.allow_reporting,
 			host: this.props.host,
 			port: this.props.port,
@@ -50,7 +52,7 @@ class InitialSetup extends React.Component{
 
 		this.setState({saving: true});
 
-		// Wait a second to allow changes to apply to store
+		// Wait a jiffy to allow changes to apply to store
 		setTimeout(function(){
 
 			// We've changed a connection setting, so need to reload
@@ -60,16 +62,16 @@ class InitialSetup extends React.Component{
 
 			// Safe to just close modal
 			} else {
-				window.history.back();
+				hashHistory.push(global.baseURL);
 			}
-		}, 1000);
+		}, 200);
 
 		return false;
 	}
 
 	render(){
 		return (
-			<Modal className="modal--initial-setup">
+			<Modal className="modal--initial-setup" noclose>
 				<h1>Get started</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
@@ -152,7 +154,8 @@ class InitialSetup extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		allow_reporting: state.core.allow_reporting,
+		allow_reporting: state.ui.allow_reporting,
+		username: state.pusher.username,
 		host: state.mopidy.host,
 		port: state.mopidy.port,
 		ssl: state.mopidy.ssl
@@ -162,7 +165,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		coreActions: bindActionCreators(coreActions, dispatch),
-		uiActions: bindActionCreators(uiActions, dispatch)
+		uiActions: bindActionCreators(uiActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch)
 	}
 }
 

@@ -18472,7 +18472,7 @@ var Modal = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'controls' },
-					_react2.default.createElement(
+					this.props.noclose ? null : _react2.default.createElement(
 						'div',
 						{ className: 'control close', onClick: function onClick(e) {
 								return window.history.back();
@@ -77286,6 +77286,14 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
+var _actions3 = __webpack_require__(16);
+
+var pusherActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(9);
+
+var mopidyActions = _interopRequireWildcard(_actions4);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -77309,7 +77317,7 @@ var InitialSetup = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (InitialSetup.__proto__ || Object.getPrototypeOf(InitialSetup)).call(this, props));
 
 		_this.state = {
-			username: 'Anonymous',
+			username: _this.props.username ? _this.props.username : 'Anonymous',
 			allow_reporting: _this.props.allow_reporting,
 			host: _this.props.host,
 			port: _this.props.port,
@@ -77344,7 +77352,7 @@ var InitialSetup = function (_React$Component) {
 
 			this.setState({ saving: true });
 
-			// Wait a second to allow changes to apply to store
+			// Wait a jiffy to allow changes to apply to store
 			setTimeout(function () {
 
 				// We've changed a connection setting, so need to reload
@@ -77354,9 +77362,9 @@ var InitialSetup = function (_React$Component) {
 
 					// Safe to just close modal
 				} else {
-					window.history.back();
+					_reactRouter.hashHistory.push(global.baseURL);
 				}
-			}, 1000);
+			}, 200);
 
 			return false;
 		}
@@ -77367,7 +77375,7 @@ var InitialSetup = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'modal--initial-setup' },
+				{ className: 'modal--initial-setup', noclose: true },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -77530,7 +77538,8 @@ var InitialSetup = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		allow_reporting: state.core.allow_reporting,
+		allow_reporting: state.ui.allow_reporting,
+		username: state.pusher.username,
 		host: state.mopidy.host,
 		port: state.mopidy.port,
 		ssl: state.mopidy.ssl
@@ -77540,7 +77549,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
 	};
 };
 
