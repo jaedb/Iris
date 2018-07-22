@@ -2905,7 +2905,7 @@ footer {
   margin: 0;
   padding: 0;
   outline: 0;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-tap-highlight-color: transparent; }
 
 :focus {
@@ -5564,6 +5564,20 @@ main header {
       background: #f16f19; }
     .notifications .notification--bad {
       background: #cf2d2d; }
+    .notifications .notification--shortcut {
+      position: fixed;
+      top: 50vh;
+      left: 50vw;
+      height: 400px;
+      width: 400px;
+      margin: -200px 0 0 -200px;
+      background: rgba(0, 0, 0, 0.88);
+      color: #FFFFFF;
+      border-radius: 10px;
+      text-align: center; }
+      .notifications .notification--shortcut .icon {
+        font-size: 140px;
+        line-height: 400px; }
     .notifications .notification--process {
       position: relative;
       padding-right: 18px;
@@ -5610,20 +5624,6 @@ main header {
   100% {
     opacity: 0;
     transform: translateY(5px); } }
-  .notifications .shortcut-notification {
-    position: fixed;
-    top: 50vh;
-    left: 50vw;
-    height: 400px;
-    width: 400px;
-    margin: -200px 0 0 -200px;
-    background: rgba(0, 0, 0, 0.88);
-    color: #FFFFFF;
-    border-radius: 10px;
-    text-align: center; }
-    .notifications .shortcut-notification .icon {
-      font-size: 140px;
-      line-height: 400px; }
   .notifications .loading {
     animation-name: pulse;
     animation-duration: 0.1s;
