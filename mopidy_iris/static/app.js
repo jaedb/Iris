@@ -50903,11 +50903,16 @@ var CoreMiddleware = function () {
                         });
 
                         // Log with Raven Sentry
-                        if (store.getState().ui.allow_reporting) {
-                            Raven.captureException(new Error(message), {
-                                extra: data
-                            });
+                        /*
+                        if (store.getState().ui.allow_reporting){
+                         Raven.captureException(
+                             new Error(message), 
+                             {
+                                 extra: data
+                             }
+                         );
                         }
+                        */
 
                         // Log with Analytics
                         if (store.getState().ui.allow_reporting) {
@@ -51655,7 +51660,7 @@ var UIMiddleware = function () {
                                         key: broadcast.key ? broadcast.key : null,
                                         title: broadcast.title ? broadcast.title : null,
                                         content: broadcast.message,
-                                        type: 'info',
+                                        type: 'broadcast',
                                         sticky: true
                                     };
                                     store.dispatch(uiActions.createNotification(data));
