@@ -31,18 +31,21 @@ class App extends React.Component{
 		this.handleKeyUp = this.handleKeyUp.bind(this);
 		this.handleKeyDown = this.handleKeyDown.bind(this);
 		this.handleWindowResize = this.handleWindowResize.bind(this);
+		this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
 	}
 
 	componentWillMount(){
 		window.addEventListener("keyup", this.handleKeyUp, false);
 		window.addEventListener("keydown", this.handleKeyDown, false);
 		window.addEventListener("resize", this.handleWindowResize, false);
+		window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 	}
 
 	componentWillUnmount(){
 		window.removeEventListener("keyup", this.handleKeyUp, false);
 		window.removeEventListener("keydown", this.handleKeyDown, false);
 		window.removeEventListener("resize", this.handleWindowResize, false);
+		window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 	}
 
 	componentDidMount(){
@@ -50,10 +53,11 @@ class App extends React.Component{
 		if (this.props.allow_reporting){
 			ReactGA.initialize('UA-64701652-3');
 
+			/*
 			if (Raven !== undefined){
-				console.log('mounted')
 				Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
 			}
+			*/
 		}
 		
 		// Fire up our services
@@ -147,6 +151,12 @@ class App extends React.Component{
 			e.preventDefault();
 			return true;
 		}
+	}
+
+	handleInstallPrompt(e){
+		e.preventDefault();
+		console.log("Install prompt detected");
+		this.props.uiActions.installPrompt(e);
 	}
 
 	handleWindowResize(e){

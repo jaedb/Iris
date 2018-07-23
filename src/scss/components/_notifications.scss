@@ -12,7 +12,7 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		background: $blue;
+		background: $grey;
 		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
 		color: $white;
@@ -57,13 +57,13 @@
 			background: $green;
 		}
 
-		&--info {
+		&--broadcast {
 			background: $yellow;
 			color: $black;
 		}
 
-		&--subtle {
-			background: $grey;
+		&--info {
+			background: $blue;
 		}
 
 		&--warning {
@@ -74,10 +74,29 @@
 			background: $red;
 		}
 
+		&--shortcut {
+			position: fixed;
+			top: 50vh;
+			left: 50vw;
+			height: 400px;
+			width: 400px;
+			margin: -200px 0 0 -200px;
+			background: $overlay_dark;
+			color: $white;
+			border-radius: 10px;
+			text-align: center;
+
+			.icon {
+				font-size: 140px;
+				line-height: 400px;
+			}
+		}
+
 		&--process {
 			position: relative;
 			padding-right: 18px;
 			padding-left: 50px;
+			background: $blue;
 
 			&.cancelling {
 				color: rgba(255,255,255,0.5);
@@ -124,24 +143,6 @@
 		&.closing,
 		&.finishing {
 			@include fadeout();
-		}
-	}
-
-	.shortcut-notification {
-		position: fixed;
-		top: 50vh;
-		left: 50vw;
-		height: 400px;
-		width: 400px;
-		margin: -200px 0 0 -200px;
-		background: $overlay_dark;
-		color: $white;
-		border-radius: 10px;
-		text-align: center;
-
-		.icon {
-			font-size: 140px;
-			line-height: 400px;
 		}
 	}
 

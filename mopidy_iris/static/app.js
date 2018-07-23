@@ -970,8 +970,7 @@ exports.dragStart = dragStart;
 exports.dragActive = dragActive;
 exports.dragEnd = dragEnd;
 exports.set = set;
-exports.openModal = openModal;
-exports.closeModal = closeModal;
+exports.installPrompt = installPrompt;
 exports.createBrowserNotification = createBrowserNotification;
 exports.createNotification = createNotification;
 exports.closeNotification = closeNotification;
@@ -1116,25 +1115,10 @@ function set(data) {
     };
 }
 
-/**
- * Modal
- *
- * Immersive full-screen dialog
- **/
-
-function openModal(name, data) {
+function installPrompt(event) {
     return {
-        type: 'OPEN_MODAL',
-        modal: {
-            name: name,
-            data: data
-        }
-    };
-}
-
-function closeModal() {
-    return {
-        type: 'CLOSE_MODAL'
+        type: 'INSTALL_PROMPT',
+        event: event
     };
 }
 
@@ -1654,6 +1638,539 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.set = set;
+exports.connect = connect;
+exports.connecting = connecting;
+exports.upgrading = upgrading;
+exports.restarting = restarting;
+exports.disconnect = disconnect;
+exports.debug = debug;
+exports.getPlayState = getPlayState;
+exports.play = play;
+exports.pause = pause;
+exports.stop = stop;
+exports.next = next;
+exports.previous = previous;
+exports.getMute = getMute;
+exports.setMute = setMute;
+exports.getVolume = getVolume;
+exports.setVolume = setVolume;
+exports.getConsume = getConsume;
+exports.setConsume = setConsume;
+exports.getRepeat = getRepeat;
+exports.setRepeat = setRepeat;
+exports.getRandom = getRandom;
+exports.setRandom = setRandom;
+exports.getTimePosition = getTimePosition;
+exports.setTimePosition = setTimePosition;
+exports.timePosition = timePosition;
+exports.getUriSchemes = getUriSchemes;
+exports.getCurrentTrack = getCurrentTrack;
+exports.currentTrackLoaded = currentTrackLoaded;
+exports.getNextTrack = getNextTrack;
+exports.clearCurrentTrack = clearCurrentTrack;
+exports.getQueue = getQueue;
+exports.changeTrack = changeTrack;
+exports.playURIs = playURIs;
+exports.enqueueURIs = enqueueURIs;
+exports.enqueueURIsBatchDone = enqueueURIsBatchDone;
+exports.playPlaylist = playPlaylist;
+exports.playAlbum = playAlbum;
+exports.removeTracks = removeTracks;
+exports.reorderTracklist = reorderTracklist;
+exports.clearTracklist = clearTracklist;
+exports.getImages = getImages;
+exports.createPlaylist = createPlaylist;
+exports.deletePlaylist = deletePlaylist;
+exports.getLibraryPlaylists = getLibraryPlaylists;
+exports.getPlaylist = getPlaylist;
+exports.getPlaylists = getPlaylists;
+exports.getDirectory = getDirectory;
+exports.getTrack = getTrack;
+exports.getLibraryArtists = getLibraryArtists;
+exports.clearLibraryArtists = clearLibraryArtists;
+exports.getArtist = getArtist;
+exports.getArtists = getArtists;
+exports.getAlbum = getAlbum;
+exports.getAlbums = getAlbums;
+exports.getLibraryAlbums = getLibraryAlbums;
+exports.clearLibraryAlbums = clearLibraryAlbums;
+exports.runProcessor = runProcessor;
+exports.cancelProcessor = cancelProcessor;
+exports.clearSearchResults = clearSearchResults;
+exports.getSearchResults = getSearchResults;
+exports.getQueueHistory = getQueueHistory;
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function set(data) {
+	return {
+		type: 'MOPIDY_SET',
+		data: data
+	};
+}
+
+function connect() {
+	return {
+		type: 'MOPIDY_CONNECT'
+	};
+}
+
+function connecting() {
+	return {
+		type: 'MOPIDY_CONNECTING'
+	};
+}
+
+function upgrading() {
+	return {
+		type: 'MOPIDY_UPGRADING'
+	};
+}
+
+function restarting() {
+	return {
+		type: 'MOPIDY_RESTARTING'
+	};
+}
+
+function disconnect() {
+	return {
+		type: 'MOPIDY_DISCONNECT'
+	};
+}
+
+function debug(call, value) {
+	return {
+		type: 'MOPIDY_DEBUG',
+		call: call,
+		value: value
+	};
+}
+
+/**
+ * Core play actions
+ **/
+
+function getPlayState() {
+	return {
+		type: 'MOPIDY_GET_PLAY_STATE'
+	};
+}
+
+function play() {
+	return {
+		type: 'MOPIDY_PLAY'
+	};
+}
+
+function pause() {
+	return {
+		type: 'MOPIDY_PAUSE'
+	};
+}
+
+function stop() {
+	return {
+		type: 'MOPIDY_STOP'
+	};
+}
+
+function next() {
+	return {
+		type: 'MOPIDY_NEXT'
+	};
+}
+
+function previous() {
+	return {
+		type: 'MOPIDY_PREVIOUS'
+	};
+}
+
+function getMute() {
+	return {
+		type: 'MOPIDY_GET_MUTE'
+	};
+}
+
+function setMute(mute) {
+	return {
+		type: 'MOPIDY_SET_MUTE',
+		mute: mute
+	};
+}
+
+function getVolume() {
+	return {
+		type: 'MOPIDY_GET_VOLUME'
+	};
+}
+
+function setVolume(volume) {
+	return {
+		type: 'MOPIDY_SET_VOLUME',
+		volume: volume
+	};
+}
+
+function getConsume() {
+	return {
+		type: 'MOPIDY_GET_CONSUME'
+	};
+}
+
+function setConsume(consume) {
+	return {
+		type: 'MOPIDY_SET_CONSUME',
+		consume: consume
+	};
+}
+
+function getRepeat() {
+	return {
+		type: 'MOPIDY_GET_REPEAT'
+	};
+}
+
+function setRepeat(repeat) {
+	return {
+		type: 'MOPIDY_SET_REPEAT',
+		repeat: repeat
+	};
+}
+
+function getRandom() {
+	return {
+		type: 'MOPIDY_GET_RANDOM'
+	};
+}
+
+function setRandom(random) {
+	return {
+		type: 'MOPIDY_SET_RANDOM',
+		random: random
+	};
+}
+
+function getTimePosition() {
+	return {
+		type: 'MOPIDY_GET_TIME_POSITION'
+	};
+}
+
+function setTimePosition(time_position) {
+	return {
+		type: 'MOPIDY_SET_TIME_POSITION',
+		time_position: parseInt(time_position)
+	};
+}
+
+function timePosition(time_position) {
+	return {
+		type: 'MOPIDY_TIME_POSITION',
+		time_position: parseInt(time_position)
+	};
+}
+
+function getUriSchemes() {
+	return {
+		type: 'MOPIDY_GET_URI_SCHEMES'
+	};
+}
+
+/**
+ * Advanced playback actions
+ **/
+
+function getCurrentTrack() {
+	return {
+		type: 'MOPIDY_GET_CURRENT_TRACK'
+	};
+}
+
+function currentTrackLoaded(tl_track) {
+	return {
+		type: 'MOPIDY_CURRENT_TRACK_LOADED',
+		tl_track: tl_track
+	};
+}
+
+function getNextTrack() {
+	return {
+		type: 'MOPIDY_GET_NEXT_TRACK'
+	};
+}
+
+function clearCurrentTrack() {
+	return {
+		type: 'CLEAR_CURRENT_TRACK'
+	};
+}
+
+function getQueue() {
+	return {
+		type: 'MOPIDY_GET_QUEUE'
+	};
+}
+
+function changeTrack(tlid) {
+	return {
+		type: 'MOPIDY_CHANGE_TRACK',
+		tlid: tlid
+	};
+}
+
+function playURIs(uris) {
+	var from_uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	return {
+		type: 'MOPIDY_PLAY_URIS',
+		uris: uris,
+		from_uri: from_uri
+	};
+}
+
+function enqueueURIs(uris) {
+	var from_uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	var at_position = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS',
+		uris: uris,
+		at_position: at_position,
+		next: next,
+		from_uri: from_uri,
+		offset: offset
+	};
+}
+
+function enqueueURIsBatchDone() {
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
+	};
+}
+
+function playPlaylist(uri) {
+	var shuffle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+	return {
+		type: 'MOPIDY_PLAY_PLAYLIST',
+		uri: uri,
+		shuffle: shuffle
+	};
+}
+
+function playAlbum(uri) {
+	return {
+		type: 'MOPIDY_PLAY_ALBUM',
+		uri: uri
+	};
+}
+
+function removeTracks(tlids) {
+	return {
+		type: 'MOPIDY_REMOVE_TRACKS',
+		tlids: tlids
+	};
+}
+
+function reorderTracklist(indexes, insert_before) {
+	var range = helpers.createRange(indexes);
+	if (insert_before > range.start) insert_before = insert_before - range.length;
+	return {
+		type: 'MOPIDY_REORDER_TRACKLIST',
+		range_start: range.start,
+		range_length: range.length,
+		insert_before: insert_before
+	};
+}
+
+function clearTracklist() {
+	return {
+		type: 'MOPIDY_CLEAR_TRACKLIST'
+	};
+}
+
+/**
+ * Asset-oriented actions
+ **/
+
+function getImages(context, uris) {
+	return {
+		type: 'MOPIDY_GET_IMAGES',
+		context: context,
+		uris: uris
+	};
+}
+
+function createPlaylist(name, scheme) {
+	return {
+		type: 'MOPIDY_CREATE_PLAYLIST',
+		name: name,
+		scheme: scheme
+	};
+}
+
+function deletePlaylist(uri) {
+	return {
+		type: 'MOPIDY_DELETE_PLAYLIST',
+		uri: uri
+	};
+}
+
+function getLibraryPlaylists() {
+	return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
+}
+
+function getPlaylist(uri) {
+	return {
+		type: 'MOPIDY_GET_PLAYLIST',
+		data: { uri: uri }
+	};
+}
+
+function getPlaylists(uris) {
+	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	return {
+		type: 'MOPIDY_GET_PLAYLISTS',
+		uris: uris,
+		processor: processor
+	};
+}
+
+function getDirectory(uri) {
+	return {
+		type: 'MOPIDY_GET_DIRECTORY',
+		data: { uri: uri }
+	};
+}
+
+function getTrack(uri) {
+	return {
+		type: 'MOPIDY_GET_TRACK',
+		data: { uri: uri }
+	};
+}
+
+function getLibraryArtists() {
+	return {
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS'
+	};
+}
+
+function clearLibraryArtists() {
+	return {
+		type: 'MOPIDY_CLEAR_LIBRARY_ARTISTS'
+	};
+}
+
+function getArtist(uri) {
+	return {
+		type: 'MOPIDY_GET_ARTIST',
+		data: { uri: uri }
+	};
+}
+
+function getArtists(uris) {
+	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	return {
+		type: 'MOPIDY_GET_ARTISTS',
+		uris: uris,
+		processor: processor
+	};
+}
+
+function getAlbum(uri) {
+	return {
+		type: 'MOPIDY_GET_ALBUM',
+		data: { uri: uri }
+	};
+}
+
+function getAlbums(uris) {
+	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	return {
+		type: 'MOPIDY_GET_ALBUMS',
+		uris: uris,
+		processor: processor
+	};
+}
+
+function getLibraryAlbums() {
+	return {
+		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+	};
+}
+
+function clearLibraryAlbums() {
+	return {
+		type: 'MOPIDY_CLEAR_LIBRARY_ALBUMS'
+	};
+}
+
+function runProcessor(processor) {
+	return {
+		type: processor
+	};
+}
+
+function cancelProcessor(processor) {
+	return {
+		type: processor + '_CANCEL'
+	};
+}
+
+/**
+ * Searching
+ **/
+
+function clearSearchResults() {
+	return {
+		type: 'MOPIDY_CLEAR_SEARCH_RESULTS'
+	};
+}
+
+function getSearchResults(context, query) {
+	var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
+
+	return {
+		type: 'MOPIDY_GET_SEARCH_RESULTS',
+		context: context,
+		query: query,
+		limit: limit
+	};
+}
+
+/**
+ * Other general actions
+ **/
+
+function getQueueHistory() {
+	return {
+		type: 'MOPIDY_GET_QUEUE_HISTORY'
+	};
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function($, global) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -1717,7 +2234,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
-var mopidyActions = __webpack_require__(9);
+var mopidyActions = __webpack_require__(8);
 var lastfmActions = __webpack_require__(20);
 var helpers = __webpack_require__(1);
 
@@ -3394,539 +3911,6 @@ function getLibraryAlbumsProcessor(data) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19), __webpack_require__(10)))
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.set = set;
-exports.connect = connect;
-exports.connecting = connecting;
-exports.upgrading = upgrading;
-exports.restarting = restarting;
-exports.disconnect = disconnect;
-exports.debug = debug;
-exports.getPlayState = getPlayState;
-exports.play = play;
-exports.pause = pause;
-exports.stop = stop;
-exports.next = next;
-exports.previous = previous;
-exports.getMute = getMute;
-exports.setMute = setMute;
-exports.getVolume = getVolume;
-exports.setVolume = setVolume;
-exports.getConsume = getConsume;
-exports.setConsume = setConsume;
-exports.getRepeat = getRepeat;
-exports.setRepeat = setRepeat;
-exports.getRandom = getRandom;
-exports.setRandom = setRandom;
-exports.getTimePosition = getTimePosition;
-exports.setTimePosition = setTimePosition;
-exports.timePosition = timePosition;
-exports.getUriSchemes = getUriSchemes;
-exports.getCurrentTrack = getCurrentTrack;
-exports.currentTrackLoaded = currentTrackLoaded;
-exports.getNextTrack = getNextTrack;
-exports.clearCurrentTrack = clearCurrentTrack;
-exports.getQueue = getQueue;
-exports.changeTrack = changeTrack;
-exports.playURIs = playURIs;
-exports.enqueueURIs = enqueueURIs;
-exports.enqueueURIsBatchDone = enqueueURIsBatchDone;
-exports.playPlaylist = playPlaylist;
-exports.playAlbum = playAlbum;
-exports.removeTracks = removeTracks;
-exports.reorderTracklist = reorderTracklist;
-exports.clearTracklist = clearTracklist;
-exports.getImages = getImages;
-exports.createPlaylist = createPlaylist;
-exports.deletePlaylist = deletePlaylist;
-exports.getLibraryPlaylists = getLibraryPlaylists;
-exports.getPlaylist = getPlaylist;
-exports.getPlaylists = getPlaylists;
-exports.getDirectory = getDirectory;
-exports.getTrack = getTrack;
-exports.getLibraryArtists = getLibraryArtists;
-exports.clearLibraryArtists = clearLibraryArtists;
-exports.getArtist = getArtist;
-exports.getArtists = getArtists;
-exports.getAlbum = getAlbum;
-exports.getAlbums = getAlbums;
-exports.getLibraryAlbums = getLibraryAlbums;
-exports.clearLibraryAlbums = clearLibraryAlbums;
-exports.runProcessor = runProcessor;
-exports.cancelProcessor = cancelProcessor;
-exports.clearSearchResults = clearSearchResults;
-exports.getSearchResults = getSearchResults;
-exports.getQueueHistory = getQueueHistory;
-
-var _helpers = __webpack_require__(1);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function set(data) {
-	return {
-		type: 'MOPIDY_SET',
-		data: data
-	};
-}
-
-function connect() {
-	return {
-		type: 'MOPIDY_CONNECT'
-	};
-}
-
-function connecting() {
-	return {
-		type: 'MOPIDY_CONNECTING'
-	};
-}
-
-function upgrading() {
-	return {
-		type: 'MOPIDY_UPGRADING'
-	};
-}
-
-function restarting() {
-	return {
-		type: 'MOPIDY_RESTARTING'
-	};
-}
-
-function disconnect() {
-	return {
-		type: 'MOPIDY_DISCONNECT'
-	};
-}
-
-function debug(call, value) {
-	return {
-		type: 'MOPIDY_DEBUG',
-		call: call,
-		value: value
-	};
-}
-
-/**
- * Core play actions
- **/
-
-function getPlayState() {
-	return {
-		type: 'MOPIDY_GET_PLAY_STATE'
-	};
-}
-
-function play() {
-	return {
-		type: 'MOPIDY_PLAY'
-	};
-}
-
-function pause() {
-	return {
-		type: 'MOPIDY_PAUSE'
-	};
-}
-
-function stop() {
-	return {
-		type: 'MOPIDY_STOP'
-	};
-}
-
-function next() {
-	return {
-		type: 'MOPIDY_NEXT'
-	};
-}
-
-function previous() {
-	return {
-		type: 'MOPIDY_PREVIOUS'
-	};
-}
-
-function getMute() {
-	return {
-		type: 'MOPIDY_GET_MUTE'
-	};
-}
-
-function setMute(mute) {
-	return {
-		type: 'MOPIDY_SET_MUTE',
-		mute: mute
-	};
-}
-
-function getVolume() {
-	return {
-		type: 'MOPIDY_GET_VOLUME'
-	};
-}
-
-function setVolume(volume) {
-	return {
-		type: 'MOPIDY_SET_VOLUME',
-		volume: volume
-	};
-}
-
-function getConsume() {
-	return {
-		type: 'MOPIDY_GET_CONSUME'
-	};
-}
-
-function setConsume(consume) {
-	return {
-		type: 'MOPIDY_SET_CONSUME',
-		consume: consume
-	};
-}
-
-function getRepeat() {
-	return {
-		type: 'MOPIDY_GET_REPEAT'
-	};
-}
-
-function setRepeat(repeat) {
-	return {
-		type: 'MOPIDY_SET_REPEAT',
-		repeat: repeat
-	};
-}
-
-function getRandom() {
-	return {
-		type: 'MOPIDY_GET_RANDOM'
-	};
-}
-
-function setRandom(random) {
-	return {
-		type: 'MOPIDY_SET_RANDOM',
-		random: random
-	};
-}
-
-function getTimePosition() {
-	return {
-		type: 'MOPIDY_GET_TIME_POSITION'
-	};
-}
-
-function setTimePosition(time_position) {
-	return {
-		type: 'MOPIDY_SET_TIME_POSITION',
-		time_position: parseInt(time_position)
-	};
-}
-
-function timePosition(time_position) {
-	return {
-		type: 'MOPIDY_TIME_POSITION',
-		time_position: parseInt(time_position)
-	};
-}
-
-function getUriSchemes() {
-	return {
-		type: 'MOPIDY_GET_URI_SCHEMES'
-	};
-}
-
-/**
- * Advanced playback actions
- **/
-
-function getCurrentTrack() {
-	return {
-		type: 'MOPIDY_GET_CURRENT_TRACK'
-	};
-}
-
-function currentTrackLoaded(tl_track) {
-	return {
-		type: 'MOPIDY_CURRENT_TRACK_LOADED',
-		tl_track: tl_track
-	};
-}
-
-function getNextTrack() {
-	return {
-		type: 'MOPIDY_GET_NEXT_TRACK'
-	};
-}
-
-function clearCurrentTrack() {
-	return {
-		type: 'CLEAR_CURRENT_TRACK'
-	};
-}
-
-function getQueue() {
-	return {
-		type: 'MOPIDY_GET_QUEUE'
-	};
-}
-
-function changeTrack(tlid) {
-	return {
-		type: 'MOPIDY_CHANGE_TRACK',
-		tlid: tlid
-	};
-}
-
-function playURIs(uris) {
-	var from_uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-	return {
-		type: 'MOPIDY_PLAY_URIS',
-		uris: uris,
-		from_uri: from_uri
-	};
-}
-
-function enqueueURIs(uris) {
-	var from_uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-	var at_position = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-	var offset = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS',
-		uris: uris,
-		at_position: at_position,
-		next: next,
-		from_uri: from_uri,
-		offset: offset
-	};
-}
-
-function enqueueURIsBatchDone() {
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
-	};
-}
-
-function playPlaylist(uri) {
-	var shuffle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-	return {
-		type: 'MOPIDY_PLAY_PLAYLIST',
-		uri: uri,
-		shuffle: shuffle
-	};
-}
-
-function playAlbum(uri) {
-	return {
-		type: 'MOPIDY_PLAY_ALBUM',
-		uri: uri
-	};
-}
-
-function removeTracks(tlids) {
-	return {
-		type: 'MOPIDY_REMOVE_TRACKS',
-		tlids: tlids
-	};
-}
-
-function reorderTracklist(indexes, insert_before) {
-	var range = helpers.createRange(indexes);
-	if (insert_before > range.start) insert_before = insert_before - range.length;
-	return {
-		type: 'MOPIDY_REORDER_TRACKLIST',
-		range_start: range.start,
-		range_length: range.length,
-		insert_before: insert_before
-	};
-}
-
-function clearTracklist() {
-	return {
-		type: 'MOPIDY_CLEAR_TRACKLIST'
-	};
-}
-
-/**
- * Asset-oriented actions
- **/
-
-function getImages(context, uris) {
-	return {
-		type: 'MOPIDY_GET_IMAGES',
-		context: context,
-		uris: uris
-	};
-}
-
-function createPlaylist(name, scheme) {
-	return {
-		type: 'MOPIDY_CREATE_PLAYLIST',
-		name: name,
-		scheme: scheme
-	};
-}
-
-function deletePlaylist(uri) {
-	return {
-		type: 'MOPIDY_DELETE_PLAYLIST',
-		uri: uri
-	};
-}
-
-function getLibraryPlaylists() {
-	return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
-}
-
-function getPlaylist(uri) {
-	return {
-		type: 'MOPIDY_GET_PLAYLIST',
-		data: { uri: uri }
-	};
-}
-
-function getPlaylists(uris) {
-	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-	return {
-		type: 'MOPIDY_GET_PLAYLISTS',
-		uris: uris,
-		processor: processor
-	};
-}
-
-function getDirectory(uri) {
-	return {
-		type: 'MOPIDY_GET_DIRECTORY',
-		data: { uri: uri }
-	};
-}
-
-function getTrack(uri) {
-	return {
-		type: 'MOPIDY_GET_TRACK',
-		data: { uri: uri }
-	};
-}
-
-function getLibraryArtists() {
-	return {
-		type: 'MOPIDY_GET_LIBRARY_ARTISTS'
-	};
-}
-
-function clearLibraryArtists() {
-	return {
-		type: 'MOPIDY_CLEAR_LIBRARY_ARTISTS'
-	};
-}
-
-function getArtist(uri) {
-	return {
-		type: 'MOPIDY_GET_ARTIST',
-		data: { uri: uri }
-	};
-}
-
-function getArtists(uris) {
-	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-	return {
-		type: 'MOPIDY_GET_ARTISTS',
-		uris: uris,
-		processor: processor
-	};
-}
-
-function getAlbum(uri) {
-	return {
-		type: 'MOPIDY_GET_ALBUM',
-		data: { uri: uri }
-	};
-}
-
-function getAlbums(uris) {
-	var processor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-	return {
-		type: 'MOPIDY_GET_ALBUMS',
-		uris: uris,
-		processor: processor
-	};
-}
-
-function getLibraryAlbums() {
-	return {
-		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
-	};
-}
-
-function clearLibraryAlbums() {
-	return {
-		type: 'MOPIDY_CLEAR_LIBRARY_ALBUMS'
-	};
-}
-
-function runProcessor(processor) {
-	return {
-		type: processor
-	};
-}
-
-function cancelProcessor(processor) {
-	return {
-		type: processor + '_CANCEL'
-	};
-}
-
-/**
- * Searching
- **/
-
-function clearSearchResults() {
-	return {
-		type: 'MOPIDY_CLEAR_SEARCH_RESULTS'
-	};
-}
-
-function getSearchResults(context, query) {
-	var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
-
-	return {
-		type: 'MOPIDY_GET_SEARCH_RESULTS',
-		context: context,
-		query: query,
-		limit: limit
-	};
-}
-
-/**
- * Other general actions
- **/
-
-function getQueueHistory() {
-	return {
-		type: 'MOPIDY_GET_QUEUE_HISTORY'
-	};
-}
-
-/***/ }),
 /* 10 */
 /***/ (function(module, exports) {
 
@@ -3992,8 +3976,8 @@ var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var spotifyActions = __webpack_require__(8);
-var mopidyActions = __webpack_require__(9);
+var spotifyActions = __webpack_require__(9);
+var mopidyActions = __webpack_require__(8);
 
 function getBroadcasts() {
     return function (dispatch, getState) {
@@ -4589,15 +4573,6 @@ exports.default = Header;
 
 /***/ }),
 /* 15 */
-/***/ (function(module, exports) {
-
-module.exports = function() {
-	throw new Error("define cannot be used indirect");
-};
-
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4939,6 +4914,15 @@ function setSnapcastGroupVolume(id, percent) {
 		old_percent: old_percent
 	};
 }
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = function() {
+	throw new Error("define cannot be used indirect");
+};
+
 
 /***/ }),
 /* 17 */
@@ -16972,7 +16956,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(9);
+var _actions = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions);
 
@@ -18472,7 +18456,7 @@ var Modal = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'controls' },
-					_react2.default.createElement(
+					this.props.noclose ? null : _react2.default.createElement(
 						'div',
 						{ className: 'control close', onClick: function onClick(e) {
 								return window.history.back();
@@ -19937,7 +19921,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions2);
 
@@ -21605,7 +21589,7 @@ var go = exports.go = function go(n) {
 	}
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
@@ -24195,7 +24179,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 	return TimeoutError;
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 /***/ }),
 /* 96 */
@@ -24236,7 +24220,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -24296,7 +24280,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 
@@ -25263,7 +25247,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions2);
 
@@ -49992,6 +49976,9 @@ function reducer() {
             icons[action.key] = action.icon;
             return Object.assign({}, ui, { icons: icons });
 
+        case 'INSTALL_PROMPT':
+            return Object.assign({}, ui, { install_prompt: action.event });
+
         /**
          * Context menu
          **/
@@ -50850,9 +50837,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
-var pusherActions = __webpack_require__(16);
-var mopidyActions = __webpack_require__(9);
-var spotifyActions = __webpack_require__(8);
+var pusherActions = __webpack_require__(15);
+var mopidyActions = __webpack_require__(8);
+var spotifyActions = __webpack_require__(9);
 var lastfmActions = __webpack_require__(20);
 var helpers = __webpack_require__(1);
 
@@ -50916,11 +50903,16 @@ var CoreMiddleware = function () {
                         });
 
                         // Log with Raven Sentry
-                        if (store.getState().ui.allow_reporting) {
-                            Raven.captureException(new Error(message), {
-                                extra: data
-                            });
+                        /*
+                        if (store.getState().ui.allow_reporting){
+                         Raven.captureException(
+                             new Error(message), 
+                             {
+                                 extra: data
+                             }
+                         );
                         }
+                        */
 
                         // Log with Analytics
                         if (store.getState().ui.allow_reporting) {
@@ -51514,7 +51506,7 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var uiActions = __webpack_require__(3);
-var mopidyActions = __webpack_require__(9);
+var mopidyActions = __webpack_require__(8);
 var helpers = __webpack_require__(1);
 
 var UIMiddleware = function () {
@@ -51668,7 +51660,7 @@ var UIMiddleware = function () {
                                         key: broadcast.key ? broadcast.key : null,
                                         title: broadcast.title ? broadcast.title : null,
                                         content: broadcast.message,
-                                        type: 'info',
+                                        type: 'broadcast',
                                         sticky: true
                                     };
                                     store.dispatch(uiActions.createNotification(data));
@@ -51755,10 +51747,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var helpers = __webpack_require__(1);
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
-var mopidyActions = __webpack_require__(9);
-var pusherActions = __webpack_require__(16);
+var mopidyActions = __webpack_require__(8);
+var pusherActions = __webpack_require__(15);
 var lastfmActions = __webpack_require__(20);
-var spotifyActions = __webpack_require__(8);
+var spotifyActions = __webpack_require__(9);
 
 var PusherMiddleware = function () {
 
@@ -52585,11 +52577,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var mopidyActions = __webpack_require__(9);
+var mopidyActions = __webpack_require__(8);
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
-var spotifyActions = __webpack_require__(8);
-var pusherActions = __webpack_require__(16);
+var spotifyActions = __webpack_require__(9);
+var pusherActions = __webpack_require__(15);
 var lastfmActions = __webpack_require__(20);
 
 var MopidyMiddleware = function () {
@@ -55221,7 +55213,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 	return when;
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(__webpack_require__(15));
+})(__webpack_require__(16));
 
 
 /***/ }),
@@ -55306,7 +55298,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55618,7 +55610,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55785,7 +55777,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55819,7 +55811,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55846,7 +55838,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55918,7 +55910,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55949,7 +55941,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -55993,7 +55985,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 
@@ -56087,7 +56079,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -56150,7 +56142,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -56174,7 +56166,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(__webpack_require__(15));
+})(__webpack_require__(16));
 
 
 /***/ }),
@@ -57136,7 +57128,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 	};
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
@@ -57224,7 +57216,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}(__webpack_require__(15)));
+}(__webpack_require__(16)));
 
 
 /***/ }),
@@ -57370,7 +57362,7 @@ Object.defineProperty(exports, "__esModule", {
 var helpers = __webpack_require__(1);
 var lastfmActions = __webpack_require__(20);
 var uiActions = __webpack_require__(3);
-var pusherActions = __webpack_require__(16);
+var pusherActions = __webpack_require__(15);
 
 var LastfmMiddleware = function () {
 
@@ -57428,9 +57420,9 @@ var _md2 = _interopRequireDefault(_md);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var helpers = __webpack_require__(1);
-var spotifyActions = __webpack_require__(8);
+var spotifyActions = __webpack_require__(9);
 var uiActions = __webpack_require__(3);
-var pusherActions = __webpack_require__(16);
+var pusherActions = __webpack_require__(15);
 
 var SpotifyMiddleware = function () {
 
@@ -58063,15 +58055,15 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(16);
+var _actions3 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(9);
+var _actions4 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(8);
+var _actions5 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions5);
 
@@ -58101,6 +58093,7 @@ var App = function (_React$Component) {
 		_this.handleKeyUp = _this.handleKeyUp.bind(_this);
 		_this.handleKeyDown = _this.handleKeyDown.bind(_this);
 		_this.handleWindowResize = _this.handleWindowResize.bind(_this);
+		_this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
 		return _this;
 	}
 
@@ -58110,6 +58103,7 @@ var App = function (_React$Component) {
 			window.addEventListener("keyup", this.handleKeyUp, false);
 			window.addEventListener("keydown", this.handleKeyDown, false);
 			window.addEventListener("resize", this.handleWindowResize, false);
+			window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
@@ -58117,6 +58111,7 @@ var App = function (_React$Component) {
 			window.removeEventListener("keyup", this.handleKeyUp, false);
 			window.removeEventListener("keydown", this.handleKeyDown, false);
 			window.removeEventListener("resize", this.handleWindowResize, false);
+			window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 		}
 	}, {
 		key: 'componentDidMount',
@@ -58126,10 +58121,11 @@ var App = function (_React$Component) {
 			if (this.props.allow_reporting) {
 				_reactGa2.default.initialize('UA-64701652-3');
 
-				if (Raven !== undefined) {
-					console.log('mounted');
-					Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
-				}
+				/*
+    if (Raven !== undefined){
+    	Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
+    }
+    */
 			}
 
 			// Fire up our services
@@ -58225,6 +58221,13 @@ var App = function (_React$Component) {
 				e.preventDefault();
 				return true;
 			}
+		}
+	}, {
+		key: 'handleInstallPrompt',
+		value: function handleInstallPrompt(e) {
+			e.preventDefault();
+			console.log("Install prompt detected");
+			this.props.uiActions.installPrompt(e);
 		}
 	}, {
 		key: 'handleWindowResize',
@@ -58491,7 +58494,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
@@ -58911,11 +58914,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -59192,7 +59195,7 @@ var _actions2 = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
@@ -59596,7 +59599,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _actions = __webpack_require__(9);
+var _actions = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions);
 
@@ -59726,7 +59729,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(16);
+var _actions2 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -59973,11 +59976,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(16);
+var _actions3 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(9);
+var _actions4 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
@@ -59985,7 +59988,7 @@ var _actions5 = __webpack_require__(20);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
-var _actions6 = __webpack_require__(8);
+var _actions6 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions6);
 
@@ -61158,11 +61161,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -61803,11 +61806,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -62170,11 +62173,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(16);
+var _actions3 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -62182,7 +62185,7 @@ var _actions4 = __webpack_require__(20);
 
 var lastfmActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(8);
+var _actions5 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions5);
 
@@ -62801,11 +62804,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -63255,11 +63258,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -63548,11 +63551,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -64314,15 +64317,15 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(16);
+var _actions2 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(9);
+var _actions4 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
@@ -64639,15 +64642,15 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(16);
+var _actions2 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(9);
+var _actions4 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
@@ -64810,15 +64813,15 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(16);
+var _actions2 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -65392,11 +65395,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -66154,11 +66157,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(16);
+var _actions3 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(9);
+var _actions4 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
@@ -66166,7 +66169,7 @@ var _actions5 = __webpack_require__(20);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
-var _actions6 = __webpack_require__(8);
+var _actions6 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions6);
 
@@ -66764,6 +66767,13 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'field' },
+						_react2.default.createElement(
+							'button',
+							{ onClick: function onClick(e) {
+									return _this2.props.ui.install_prompt.prompt();
+								}, disabled: this.props.ui.install_prompt ? false : true },
+							'Install as App'
+						),
 						upgrade_button,
 						_react2.default.createElement(
 							'button',
@@ -66876,7 +66886,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _actions = __webpack_require__(16);
+var _actions = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions);
 
@@ -68885,15 +68895,15 @@ var _actions2 = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(16);
+var _actions4 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(8);
+var _actions5 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions5);
 
@@ -69524,7 +69534,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(16);
+var _actions3 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -70250,11 +70260,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -73080,7 +73090,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -73320,11 +73330,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -73563,7 +73573,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions2);
 
@@ -73778,7 +73788,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions2);
 
@@ -73991,11 +74001,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -74270,11 +74280,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -74664,11 +74674,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -75056,11 +75066,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -75260,11 +75270,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -75640,11 +75650,11 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(9);
+var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(8);
+var _actions3 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
@@ -75976,11 +75986,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -76656,11 +76666,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -77062,11 +77072,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
@@ -77286,6 +77296,14 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
+var _actions3 = __webpack_require__(15);
+
+var pusherActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(8);
+
+var mopidyActions = _interopRequireWildcard(_actions4);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -77309,7 +77327,7 @@ var InitialSetup = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (InitialSetup.__proto__ || Object.getPrototypeOf(InitialSetup)).call(this, props));
 
 		_this.state = {
-			username: 'Anonymous',
+			username: _this.props.username,
 			allow_reporting: _this.props.allow_reporting,
 			host: _this.props.host,
 			port: _this.props.port,
@@ -77344,7 +77362,7 @@ var InitialSetup = function (_React$Component) {
 
 			this.setState({ saving: true });
 
-			// Wait a second to allow changes to apply to store
+			// Wait a jiffy to allow changes to apply to store
 			setTimeout(function () {
 
 				// We've changed a connection setting, so need to reload
@@ -77354,9 +77372,9 @@ var InitialSetup = function (_React$Component) {
 
 					// Safe to just close modal
 				} else {
-					window.history.back();
+					_reactRouter.hashHistory.push(global.baseURL);
 				}
-			}, 1000);
+			}, 200);
 
 			return false;
 		}
@@ -77367,7 +77385,7 @@ var InitialSetup = function (_React$Component) {
 
 			return _react2.default.createElement(
 				_Modal2.default,
-				{ className: 'modal--initial-setup' },
+				{ className: 'modal--initial-setup', noclose: true },
 				_react2.default.createElement(
 					'h1',
 					null,
@@ -77530,7 +77548,8 @@ var InitialSetup = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		allow_reporting: state.core.allow_reporting,
+		allow_reporting: state.ui.allow_reporting,
+		username: state.pusher && state.pusher.username ? state.pusher.username : 'Anonymous',
 		host: state.mopidy.host,
 		port: state.mopidy.port,
 		ssl: state.mopidy.ssl
@@ -77540,7 +77559,9 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
 	};
 };
 
@@ -77727,7 +77748,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(16);
+var _actions2 = __webpack_require__(15);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -77903,11 +77924,11 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(8);
+var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 

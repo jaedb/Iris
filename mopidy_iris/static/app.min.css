@@ -2905,7 +2905,7 @@ footer {
   margin: 0;
   padding: 0;
   outline: 0;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-tap-highlight-color: transparent; }
 
 :focus {
@@ -5517,7 +5517,7 @@ main header {
     animation-iteration-count: 1;
     display: block;
     position: relative;
-    background: #32b5f2;
+    background: #383734;
     padding: 16px 40px 16px 22px;
     margin: 10px 0 0 0;
     color: #FFFFFF;
@@ -5555,19 +5555,34 @@ main header {
         opacity: 1; }
     .notifications .notification--good {
       background: #47af2a; }
-    .notifications .notification--info {
+    .notifications .notification--broadcast {
       background: #FFF39C;
       color: #000000; }
-    .notifications .notification--subtle {
-      background: #383734; }
+    .notifications .notification--info {
+      background: #32b5f2; }
     .notifications .notification--warning {
       background: #f16f19; }
     .notifications .notification--bad {
       background: #cf2d2d; }
+    .notifications .notification--shortcut {
+      position: fixed;
+      top: 50vh;
+      left: 50vw;
+      height: 400px;
+      width: 400px;
+      margin: -200px 0 0 -200px;
+      background: rgba(0, 0, 0, 0.88);
+      color: #FFFFFF;
+      border-radius: 10px;
+      text-align: center; }
+      .notifications .notification--shortcut .icon {
+        font-size: 140px;
+        line-height: 400px; }
     .notifications .notification--process {
       position: relative;
       padding-right: 18px;
-      padding-left: 50px; }
+      padding-left: 50px;
+      background: #32b5f2; }
       .notifications .notification--process.cancelling {
         color: rgba(255, 255, 255, 0.5); }
       .notifications .notification--process .loader {
@@ -5610,20 +5625,6 @@ main header {
   100% {
     opacity: 0;
     transform: translateY(5px); } }
-  .notifications .shortcut-notification {
-    position: fixed;
-    top: 50vh;
-    left: 50vw;
-    height: 400px;
-    width: 400px;
-    margin: -200px 0 0 -200px;
-    background: rgba(0, 0, 0, 0.88);
-    color: #FFFFFF;
-    border-radius: 10px;
-    text-align: center; }
-    .notifications .shortcut-notification .icon {
-      font-size: 140px;
-      line-height: 400px; }
   .notifications .loading {
     animation-name: pulse;
     animation-duration: 0.1s;

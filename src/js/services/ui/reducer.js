@@ -36,6 +36,9 @@ export default function reducer(ui = {}, action){
             icons[action.key] = action.icon;
             return Object.assign({}, ui, {icons : icons});
 
+        case 'INSTALL_PROMPT':
+            return Object.assign({}, ui, {install_prompt : action.event});
+
 
         /**
          * Context menu

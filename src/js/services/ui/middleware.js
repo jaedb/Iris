@@ -160,7 +160,7 @@ const UIMiddleware = (function(){
                                 key: (broadcast.key ? broadcast.key : null),
                                 title: (broadcast.title ? broadcast.title : null),
                                 content: broadcast.message,
-                                type: 'info',
+                                type: 'broadcast',
                                 sticky: true
                             }
                             store.dispatch(uiActions.createNotification(data)); 
