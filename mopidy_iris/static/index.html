@@ -60,12 +60,13 @@
 		}
 		#app-loading-text {
 			position: fixed;
-			top: 60vh;
+			top: 55vh;
 			text-align: center;
 			width: 70vw;
 			margin: 0 15vw;
 			color: rgba(255,255,255,0.3);
 			font-size: 16px;
+			font-family: Arial, Helvetica, sans-serif;
 		}
 	</style>
 
@@ -97,7 +98,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1532291631";
+	var build = "1532336125";
 	var version = "3.22.0";
 
 	// Construct the script tag
@@ -119,18 +120,18 @@
 
 	// Test mode, use un-minified code
     if (test_mode){
-	    js.src = '/iris/app.js?v='+build;
 	    css.href = '/iris/app.css?v='+build;
+	    js.src = '/iris/app.js?v='+build;
 
     // Production-grade, minified app
     } else {
-	    js.src = '/iris/app.min.js?v='+build;
 	    css.href = '/iris/app.min.css?v='+build;
+	    js.src = '/iris/app.min.js?v='+build;
     }
 
 	// And finally inject our CSS/JS tags
-	document.body.appendChild(js);
 	document.body.appendChild(css);
+	document.body.appendChild(js);
 
 </script>
 

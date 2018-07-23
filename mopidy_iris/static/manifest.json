@@ -1,8 +1,7 @@
 {
   "manifest_version": 2.5,
-  "version": 22.0,
-  "name": "Iris",
   "short_name": "Iris",
+  "name": "Iris",
   "icons": [
     {
       "src": "/iris/assets/logo-app-192.png",
@@ -20,7 +19,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/iris/index.html",
+  "start_url": "/iris/#/",
   "background_color": "#08d58f",
   "theme_color": "#181818",
   "display": "fullscreen",

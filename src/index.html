@@ -120,18 +120,18 @@
 
 	// Test mode, use un-minified code
     if (test_mode){
-	    js.src = '/iris/app.js?v='+build;
 	    css.href = '/iris/app.css?v='+build;
+	    js.src = '/iris/app.js?v='+build;
 
     // Production-grade, minified app
     } else {
-	    js.src = '/iris/app.min.js?v='+build;
 	    css.href = '/iris/app.min.css?v='+build;
+	    js.src = '/iris/app.min.js?v='+build;
     }
 
 	// And finally inject our CSS/JS tags
-	document.body.appendChild(js);
 	document.body.appendChild(css);
+	document.body.appendChild(js);
 
 </script>
 
