@@ -155,6 +155,7 @@ class App extends React.Component{
 
 	handleInstallPrompt(e){
 		e.preventDefault();
+		console.log("Install prompt detected");
 		this.props.uiActions.installPrompt(e);
 	}
 

@@ -20,7 +20,7 @@ console.log('Building version '+version+' ('+build+')');
 copyfiles(
 	{
 		files: {
-			'service-worker.js': 'src/js/service-worker.js',
+			'service-worker.js': 'src/service-worker.js',
 			'manifest.json': 'src/manifest.json'
 		},
 		dest: 'mopidy_iris/static/'

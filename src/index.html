@@ -58,6 +58,16 @@
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
 		}
+		#app-loading-text {
+			position: fixed;
+			top: 55vh;
+			text-align: center;
+			width: 70vw;
+			margin: 0 15vw;
+			color: rgba(255,255,255,0.3);
+			font-size: 16px;
+			font-family: Arial, Helvetica, sans-serif;
+		}
 	</style>
 
 </head>
@@ -66,13 +76,14 @@
 	<div id="app">
 		<!-- ReactJS app gets injected here, replacing the loader -->
 		<div id="app-loading"></div>
-		Please wait while Iris loads...
+		<div id="app-loading-text">
+			Please wait, loading...
+		</div>
 	</div>
 
 </body>
 
 <script type="text/javascript">
-	// Check for browser support of service worker
 	if ('serviceWorker' in navigator){
 		navigator.serviceWorker.register('/service-worker.js')
 			.then(function(registration){
@@ -123,9 +134,6 @@
 	document.body.appendChild(css);
 
 </script>
-
-<!-- Raven Sentry -->
-<script src="https://cdn.ravenjs.com/3.26.4/raven.min.js" crossorigin="anonymous"></script>
 
 </html>
 
