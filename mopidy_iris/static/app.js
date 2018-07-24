@@ -61357,7 +61357,7 @@ var Notifications = function (_React$Component) {
 						case 'spotify-authorization-received':
 							return _react2.default.createElement(
 								'div',
-								{ className: "notification", key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+								{ className: "notification notification--info", key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_Icon2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
 										return _this2.props.uiActions.removeNotification(notification.key, true);
 									} }),
@@ -76710,13 +76710,13 @@ var EditRadio = function (_React$Component) {
 	_createClass(EditRadio, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (!this.props.radio || !this.props.radio.enabled) return null;
-			var seeds = [].concat(_toConsumableArray(this.props.radio.seed_tracks), _toConsumableArray(this.props.radio.seed_artists), _toConsumableArray(this.props.radio.seed_genres));
-			this.setState({ seeds: seeds, enabled: this.props.radio.enabled });
-
-			this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
-
 			this.props.uiActions.setWindowTitle("Edit radio");
+
+			if (this.props.radio && this.props.radio.enabled) {
+				var seeds = [].concat(_toConsumableArray(this.props.radio.seed_tracks), _toConsumableArray(this.props.radio.seed_artists), _toConsumableArray(this.props.radio.seed_genres));
+				this.setState({ seeds: seeds, enabled: this.props.radio.enabled });
+				this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+			}
 		}
 	}, {
 		key: 'handleStart',
@@ -76769,7 +76769,9 @@ var EditRadio = function (_React$Component) {
 		}
 	}, {
 		key: 'addSeed',
-		value: function addSeed() {
+		value: function addSeed(e) {
+			e.preventDefault();
+
 			if (this.state.uri == '') {
 				this.setState({ error_message: 'Cannot be empty' });
 				return;
@@ -76888,8 +76890,8 @@ var EditRadio = function (_React$Component) {
 									')'
 								) : null,
 								_react2.default.createElement(
-									'button',
-									{ className: 'discrete remove-uri no-hover', onClick: function onClick(e) {
+									'span',
+									{ className: 'button discrete remove-uri no-hover', onClick: function onClick(e) {
 											return _this2.removeSeed(seed.uri);
 										} },
 									_react2.default.createElement(_Icon2.default, { name: 'delete' }),
@@ -76902,20 +76904,8 @@ var EditRadio = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					null,
-					_react2.default.createElement(
-						'div',
-						{ className: 'list' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'list-item no-click' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'grey-text' },
-								'No seeds'
-							)
-						)
-					)
+					{ className: 'no-results' },
+					'No seeds'
 				);
 			}
 		}
@@ -76940,7 +76930,7 @@ var EditRadio = function (_React$Component) {
 				_react2.default.createElement(
 					'form',
 					{ onSubmit: function onSubmit(e) {
-							return _this3.addSeed();
+							return _this3.addSeed(e);
 						} },
 					this.renderSeeds(),
 					_react2.default.createElement(

@@ -26,13 +26,13 @@ class EditRadio extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.radio || !this.props.radio.enabled) return null
-		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
-		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
-
-		this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
-		
 		this.props.uiActions.setWindowTitle("Edit radio");
+
+		if (this.props.radio && this.props.radio.enabled){
+			var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres];
+			this.setState({seeds: seeds, enabled: this.props.radio.enabled});
+			this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+		}
 	}
 
 	handleStart(e){
@@ -81,7 +81,9 @@ class EditRadio extends React.Component{
 		this.props.uiActions.closeModal()
 	}
 
-	addSeed(){
+	addSeed(e){
+		e.preventDefault();
+
 		if (this.state.uri == ''){
 			this.setState({error_message: 'Cannot be empty'});
 			return;
@@ -177,9 +179,9 @@ class EditRadio extends React.Component{
 									<div className="list-item" key={seed.uri}>
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
-										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
+										<span className="button discrete remove-uri no-hover" onClick={e => this.removeSeed(seed.uri)}>
 											<Icon name="delete" />Remove
-										</button>
+										</span>
 									</div>
 								)
 							})
@@ -189,13 +191,7 @@ class EditRadio extends React.Component{
 			)
 		} else {
 			return (
-				<div>
-					<div className="list">
-						<div className="list-item no-click">
-							<span className="grey-text">No seeds</span>
-						</div>
-					</div>
-				</div>
+				<div className="no-results">No seeds</div>
 			)
 		}
 	}
@@ -206,7 +202,7 @@ class EditRadio extends React.Component{
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
-				<form onSubmit={e => this.addSeed()}>
+				<form onSubmit={e => this.addSeed(e)}>
 					{this.renderSeeds()}
 
 					<div className="field text">

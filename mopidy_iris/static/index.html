@@ -64,7 +64,7 @@
 			text-align: center;
 			width: 70vw;
 			margin: 0 15vw;
-			color: rgba(255,255,255,0.3);
+			color: rgba(255,255,255,0.2);
 			font-size: 16px;
 			font-family: Arial, Helvetica, sans-serif;
 		}
@@ -85,7 +85,7 @@
 
 <script type="text/javascript">
 	if ('serviceWorker' in navigator){
-		navigator.serviceWorker.register('/service-worker.js')
+		navigator.serviceWorker.register('/iris/service-worker.js')
 			.then(function(registration){
 				console.log('Service worker registered');
 			}).catch(function(error){
@@ -98,7 +98,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1532336125";
+	var build = "1532419598";
 	var version = "3.22.0";
 
 	// Construct the script tag

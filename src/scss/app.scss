@@ -8,7 +8,6 @@
 
 @import 'components/context-menu';
 @import 'components/loader';
-@import 'components/modal';
 @import 'components/dragger';
 @import 'components/images';
 @import 'components/icon';
@@ -42,5 +41,6 @@
 @import 'views/library';
 @import 'views/discover';
 @import 'views/settings';
+@import 'views/modal';
 
 @import "../../node_modules/react-input-range/lib/css/index.css";

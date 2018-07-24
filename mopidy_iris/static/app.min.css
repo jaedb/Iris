@@ -3712,219 +3712,6 @@ input[type="submit"] {
   .mini-loader .loader:before {
     border-color: #7b7b7b; }
 
-.modal {
-  animation-name: fadein;
-  animation-duration: 0.2s;
-  animation-timing-function: linear;
-  animation-iteration-count: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
-  background: #0d0d0d;
-  overflow-y: scroll; }
-
-@keyframes fadein {
-  0% {
-    opacity: 0;
-    transform: translateY(5px); }
-  100% {
-    opacity: 1;
-    transform: translateY(0px); } }
-  .modal .controls {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 99; }
-    .modal .controls .control {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      display: block;
-      float: right;
-      opacity: 0.5;
-      cursor: pointer;
-      padding: 20px; }
-      .modal .controls .control:hover {
-        opacity: 1; }
-      .modal .controls .control .icon {
-        font-size: 35px; }
-  .modal .actions {
-    padding-top: 50px;
-    text-align: center; }
-    .modal .actions .button,
-    .modal .actions button {
-      margin: 0 3px; }
-  .modal .content {
-    padding: 80px 25%;
-    margin: 0 auto;
-    width: 50%;
-    color: #FFFFFF; }
-    .modal .content h1 {
-      padding-bottom: 20px; }
-    .modal .content form {
-      padding-top: 50px; }
-      .modal .content form .field {
-        padding-bottom: 20px;
-        position: relative; }
-        .modal .content form .field .name {
-          font-size: 16px;
-          width: 18%;
-          padding-right: 2%;
-          float: left;
-          opacity: 0.5;
-          padding-top: 8px; }
-        .modal .content form .field .description {
-          padding-left: 0;
-          padding-right: 0; }
-        .modal .content form .field.radio, .modal .content form .field.checkbox {
-          padding-top: 8px; }
-      .modal .content form button[type="submit"] {
-        margin-top: 50px; }
-    .modal .content .add-uri,
-    .modal .content .remove-uri {
-      position: absolute;
-      top: 2px;
-      right: 6px;
-      padding: 8px;
-      margin: 0;
-      min-width: 0;
-      color: #FFFFFF;
-      background: transparent;
-      margin-top: 0 !important; }
-      .modal .content .add-uri:before,
-      .modal .content .remove-uri:before {
-        display: none !important; }
-      .modal .content .add-uri:hover,
-      .modal .content .remove-uri:hover {
-        color: #08d58f; }
-        .modal .content .add-uri:hover.remove-uri,
-        .modal .content .remove-uri:hover.remove-uri {
-          color: #cf2d2d; }
-    @media (max-width: 800px) {
-      .modal .content .add-uri {
-        top: 36px; } }
-    .modal .content .list::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .modal .content .list .list-item {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      box-sizing: border-box;
-      display: block;
-      padding: 14px 12px 12px;
-      position: relative;
-      border: 0;
-      border-radius: 3px;
-      margin-left: -12px;
-      margin-right: -12px;
-      font-size: 16px; }
-      .modal .content .list .list-item .source {
-        position: absolute;
-        top: 18px;
-        left: 10px; }
-      .modal .content .list .list-item:hover {
-        background: rgba(255, 255, 255, 0.1); }
-    .modal .content .list.playlists {
-      padding-top: 40px; }
-      .modal .content .list.playlists .list-item {
-        margin: 0 0 20px 0;
-        padding: 5px; }
-        .modal .content .list.playlists .list-item .thumbnail {
-          float: left;
-          margin-right: 20px; }
-        .modal .content .list.playlists .list-item .source {
-          position: static;
-          top: auto;
-          left: auto; }
-    .modal .content .list.small .list-item {
-      width: 49%;
-      float: left;
-      font-size: inherit; }
-      .modal .content .list.small .list-item:nth-child(2n) {
-        margin-left: 2%; }
-  .modal--image-zoom .content {
-    padding: 100px 5%;
-    width: 90%;
-    height: 100%;
-    box-sizing: border-box; }
-    .modal--image-zoom .content .image {
-      width: 100%;
-      height: 100%;
-      background-size: contain;
-      background-position: 50% 50%;
-      background-repeat: no-repeat; }
-  .modal--edit-radio form .field {
-    position: relative;
-    margin-top: 50px; }
-    .modal--edit-radio form .field input[type="text"] {
-      padding-right: 80px; }
-  .modal--kiosk-mode {
-    background: #000000;
-    overflow: hidden; }
-    .modal--kiosk-mode .content {
-      padding: 5%;
-      width: 90%;
-      height: 90%;
-      text-align: center; }
-      .modal--kiosk-mode .content .background {
-        position: absolute;
-        top: -5vh;
-        right: -5vw;
-        bottom: -5vh;
-        left: -5vw;
-        width: auto;
-        opacity: 0.2;
-        max-width: none; }
-        .modal--kiosk-mode .content .background .image {
-          -webkit-filter: blur(10px);
-          filter: blur(10px);
-          width: 110vw;
-          padding-bottom: 110vh; }
-      .modal--kiosk-mode .content .foreground {
-        width: 70vw;
-        margin: 0 auto;
-        max-width: 70vh;
-        max-height: 70vh;
-        z-index: 2; }
-      .modal--kiosk-mode .content .current-track {
-        padding-top: 50px;
-        font-size: 30px; }
-        .modal--kiosk-mode .content .current-track .artist-sentence {
-          opacity: 0.5; }
-  .modal--share-authorization .list {
-    padding-top: 40px; }
-    .modal--share-authorization .list .list-item {
-      cursor: pointer; }
-  @media (max-width: 800px) {
-    .modal .content {
-      padding: 40px 5%;
-      width: 90%; }
-      .modal .content form {
-        padding-top: 20px; }
-        .modal .content form .field {
-          padding-bottom: 8px; }
-          .modal .content form .field .name {
-            font-size: inherit;
-            width: auto;
-            float: none; }
-      .modal .content .list .list-item {
-        float: none !important;
-        width: auto;
-        margin-left: 0 !important;
-        border-top: 0;
-        width: auto !important;
-        margin: 0; }
-        .modal .content .list .list-item.draggable .drag-handle {
-          padding-top: 14px;
-          padding-bottom: 14px; } }
-
 .dragging * {
   cursor: grabbing !important;
   cursor: -moz-grabbing !important;
@@ -6797,5 +6584,220 @@ main .track-view {
 @media (max-width: 800px) {
   .debugger-view section {
     padding: 20px; } }
+
+.modal {
+  animation-name: fadein;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+  background: #0d0d0d;
+  overflow-y: scroll; }
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    transform: translateY(5px); }
+  100% {
+    opacity: 1;
+    transform: translateY(0px); } }
+  .modal .controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 99; }
+    .modal .controls .control {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      display: block;
+      float: right;
+      opacity: 0.5;
+      cursor: pointer;
+      padding: 20px; }
+      .modal .controls .control:hover {
+        opacity: 1; }
+      .modal .controls .control .icon {
+        font-size: 35px; }
+  .modal .actions {
+    padding-top: 50px;
+    text-align: center; }
+    .modal .actions .button,
+    .modal .actions button {
+      margin: 0 3px; }
+  .modal .content {
+    padding: 80px 25%;
+    margin: 0 auto;
+    width: 50%;
+    color: #FFFFFF; }
+    .modal .content h1 {
+      padding-bottom: 20px; }
+    .modal .content .no-results {
+      padding: 0; }
+    .modal .content form {
+      padding-top: 50px; }
+      .modal .content form .field {
+        padding-bottom: 20px;
+        position: relative; }
+        .modal .content form .field .name {
+          font-size: 16px;
+          width: 18%;
+          padding-right: 2%;
+          float: left;
+          opacity: 0.5;
+          padding-top: 8px; }
+        .modal .content form .field .description {
+          padding-left: 0;
+          padding-right: 0; }
+        .modal .content form .field.radio, .modal .content form .field.checkbox {
+          padding-top: 8px; }
+      .modal .content form button[type="submit"] {
+        margin-top: 50px; }
+    .modal .content .add-uri,
+    .modal .content .remove-uri {
+      position: absolute;
+      top: 2px;
+      right: 6px;
+      padding: 8px;
+      margin: 0;
+      min-width: 0;
+      color: #FFFFFF;
+      background: transparent;
+      margin-top: 0 !important; }
+      .modal .content .add-uri:before,
+      .modal .content .remove-uri:before {
+        display: none !important; }
+      .modal .content .add-uri:hover,
+      .modal .content .remove-uri:hover {
+        color: #08d58f; }
+        .modal .content .add-uri:hover.remove-uri,
+        .modal .content .remove-uri:hover.remove-uri {
+          color: #cf2d2d; }
+    @media (max-width: 800px) {
+      .modal .content .add-uri {
+        top: 36px; } }
+    .modal .content .list::after {
+      content: '';
+      clear: both;
+      display: block; }
+    .modal .content .list .list-item {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      box-sizing: border-box;
+      display: block;
+      padding: 14px 12px 12px;
+      position: relative;
+      border: 0;
+      border-radius: 3px;
+      margin-left: -12px;
+      margin-right: -12px;
+      font-size: 16px; }
+      .modal .content .list .list-item .source {
+        position: absolute;
+        top: 18px;
+        left: 10px; }
+      .modal .content .list .list-item:hover {
+        background: rgba(255, 255, 255, 0.1); }
+    .modal .content .list.playlists {
+      padding-top: 40px; }
+      .modal .content .list.playlists .list-item {
+        margin: 0 0 20px 0;
+        padding: 5px; }
+        .modal .content .list.playlists .list-item .thumbnail {
+          float: left;
+          margin-right: 20px; }
+        .modal .content .list.playlists .list-item .source {
+          position: static;
+          top: auto;
+          left: auto; }
+    .modal .content .list.small .list-item {
+      width: 49%;
+      float: left;
+      font-size: inherit; }
+      .modal .content .list.small .list-item:nth-child(2n) {
+        margin-left: 2%; }
+  .modal--image-zoom .content {
+    padding: 100px 5%;
+    width: 90%;
+    height: 100%;
+    box-sizing: border-box; }
+    .modal--image-zoom .content .image {
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-position: 50% 50%;
+      background-repeat: no-repeat; }
+  .modal--edit-radio form .field {
+    position: relative;
+    margin-top: 50px; }
+    .modal--edit-radio form .field input[type="text"] {
+      padding-right: 80px; }
+  .modal--kiosk-mode {
+    background: #000000;
+    overflow: hidden; }
+    .modal--kiosk-mode .content {
+      padding: 5%;
+      width: 90%;
+      height: 90%;
+      text-align: center; }
+      .modal--kiosk-mode .content .background {
+        position: absolute;
+        top: -5vh;
+        right: -5vw;
+        bottom: -5vh;
+        left: -5vw;
+        width: auto;
+        opacity: 0.2;
+        max-width: none; }
+        .modal--kiosk-mode .content .background .image {
+          -webkit-filter: blur(10px);
+          filter: blur(10px);
+          width: 110vw;
+          padding-bottom: 110vh; }
+      .modal--kiosk-mode .content .foreground {
+        width: 70vw;
+        margin: 0 auto;
+        max-width: 70vh;
+        max-height: 70vh;
+        z-index: 2; }
+      .modal--kiosk-mode .content .current-track {
+        padding-top: 50px;
+        font-size: 30px; }
+        .modal--kiosk-mode .content .current-track .artist-sentence {
+          opacity: 0.5; }
+  .modal--share-authorization .list {
+    padding-top: 40px; }
+    .modal--share-authorization .list .list-item {
+      cursor: pointer; }
+  @media (max-width: 800px) {
+    .modal .content {
+      padding: 40px 5%;
+      width: 90%; }
+      .modal .content form {
+        padding-top: 20px; }
+        .modal .content form .field {
+          padding-bottom: 8px; }
+          .modal .content form .field .name {
+            font-size: inherit;
+            width: auto;
+            float: none; }
+      .modal .content .list .list-item {
+        float: none !important;
+        width: auto;
+        margin-left: 0 !important;
+        border-top: 0;
+        width: auto !important;
+        margin: 0; }
+        .modal .content .list .list-item.draggable .drag-handle {
+          padding-top: 14px;
+          padding-bottom: 14px; } }
 
 /*# sourceMappingURL=app.min.css.map*/
