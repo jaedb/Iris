@@ -6169,7 +6169,8 @@ main .track-view {
     width: 60%;
     max-width: 60vh;
     display: block;
-    border: 0 !important; }
+    border: 0 !important;
+    z-index: 1; }
     .queue-view .current-track .artwork .thumbnail {
       margin: 0 auto;
       max-width: 100%; }
@@ -6184,11 +6185,15 @@ main .track-view {
       z-index: 2; }
   .queue-view .current-track .title {
     font-size: 18px;
-    padding-top: 20px; }
+    padding-top: 20px;
+    position: relative;
+    z-index: 2; }
   .queue-view .current-track .artist-sentence {
     display: block;
     font-size: 18px;
-    opacity: 0.5; }
+    opacity: 0.5;
+    position: relative;
+    z-index: 2; }
 
 .search-view .search-form {
   position: absolute;
@@ -6670,6 +6675,9 @@ main .track-view {
       color: #FFFFFF;
       background: transparent;
       margin-top: 0 !important; }
+      .modal .content .add-uri.remove-uri,
+      .modal .content .remove-uri.remove-uri {
+        top: 6px; }
       .modal .content .add-uri:before,
       .modal .content .remove-uri:before {
         display: none !important; }

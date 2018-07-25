@@ -102,6 +102,10 @@
 			background: transparent;
 			margin-top: 0 !important;
 
+			&.remove-uri {
+				top: 6px;
+			}
+
 			&:before {
 				display: none !important;
 			}

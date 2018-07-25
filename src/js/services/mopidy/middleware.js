@@ -1564,7 +1564,7 @@ const MopidyMiddleware = (function(){
                                     hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification({content: 'Saved'}));
+                                store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));
                             })
                     });
                 break
@@ -1614,7 +1614,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CREATE_PLAYLIST':
                 request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
                     .then(response => {            
-                        store.dispatch(uiActions.createNotification({content: 'Created playlist'}))
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}))
 
                         store.dispatch({
                             type: 'PLAYLIST_LOADED',

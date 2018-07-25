@@ -3436,7 +3436,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
                 uris: [response.uri]
             });
 
-            dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+            dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
         }, function (error) {
             dispatch(coreActions.handleException('Could not create playlist', error));
         });
@@ -3454,7 +3454,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
 
             // Update the playlist fields
         };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
-            dispatch(uiActions.createNotification({ content: 'Saved' }));
+            dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
 
             // Save the image
             if (image) {
@@ -51016,11 +51016,13 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'PLAYLIST_TRACKS_ADDED':
-                        store.dispatch(uiActions.createNotification({ content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
+                        store.dispatch(uiActions.createNotification({ type: 'info', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
                         switch (helpers.uriSource(action.key)) {
+
                             case 'spotify':
                                 store.dispatch(spotifyActions.getPlaylist(action.key));
                                 break;
+
                             case 'm3u':
                                 if (store.getState().mopidy.connected) store.dispatch(mopidyActions.getPlaylist(action.key));
                                 break;
@@ -53893,7 +53895,7 @@ var MopidyMiddleware = function () {
                                     _reactRouter.hashHistory.push(global.baseURL + 'playlist/' + encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification({ content: 'Saved' }));
+                                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
                             });
                         });
                         break;
@@ -53940,7 +53942,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_CREATE_PLAYLIST':
                         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-                            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+                            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
 
                             store.dispatch({
                                 type: 'PLAYLIST_LOADED',
@@ -62978,10 +62980,8 @@ var Playlist = function (_React$Component) {
 							'Play'
 						),
 						_react2.default.createElement(
-							'button',
-							{ className: 'secondary', onClick: function onClick(e) {
-									return _this2.props.uiActions.openModal('edit_playlist', { uri: _this2.props.params.uri, name: _this2.props.playlist.name });
-								} },
+							_reactRouter.Link,
+							{ className: 'button secondary', to: global.baseURL + 'playlist/' + encodeURIComponent(this.props.params.uri) + '/edit' },
 							'Edit'
 						),
 						_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
@@ -76674,6 +76674,10 @@ var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
+var _actions5 = __webpack_require__(15);
+
+var pusherActions = _interopRequireWildcard(_actions5);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -76713,10 +76717,22 @@ var EditRadio = function (_React$Component) {
 			this.props.uiActions.setWindowTitle("Edit radio");
 
 			if (this.props.radio && this.props.radio.enabled) {
-				var seeds = [].concat(_toConsumableArray(this.props.radio.seed_tracks), _toConsumableArray(this.props.radio.seed_artists), _toConsumableArray(this.props.radio.seed_genres));
-				this.setState({ seeds: seeds, enabled: this.props.radio.enabled });
-				this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
+				this.loadRadio(this.props.radio);
 			}
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (!this.props.radio && nextProps.radio) {
+				this.loadRadio(nextProps.radio);
+			}
+		}
+	}, {
+		key: 'loadRadio',
+		value: function loadRadio(radio) {
+			var seeds = [].concat(_toConsumableArray(radio.seed_tracks), _toConsumableArray(radio.seed_artists), _toConsumableArray(radio.seed_genres));
+			this.setState({ seeds: seeds, enabled: radio.enabled });
+			this.props.spotifyActions.resolveRadioSeeds(radio);
 		}
 	}, {
 		key: 'handleStart',
@@ -76930,7 +76946,7 @@ var EditRadio = function (_React$Component) {
 				_react2.default.createElement(
 					'form',
 					{ onSubmit: function onSubmit(e) {
-							return _this3.addSeed(e);
+							_this3.state.enabled ? _this3.handleUpdate(e) : _this3.handleStart(e);
 						} },
 					this.renderSeeds(),
 					_react2.default.createElement(
@@ -76952,8 +76968,10 @@ var EditRadio = function (_React$Component) {
 								value: this.state.uri
 							}),
 							_react2.default.createElement(
-								'button',
-								{ type: 'submit', className: 'discrete add-uri no-hover' },
+								'span',
+								{ className: 'button discrete add-uri no-hover', onClick: function onClick(e) {
+										return _this3.addSeed(e);
+									} },
 								_react2.default.createElement(_Icon2.default, { name: 'add' }),
 								'Add'
 							),
@@ -76963,17 +76981,13 @@ var EditRadio = function (_React$Component) {
 								this.state.error_message
 							) : null
 						)
-					)
-				),
-				_react2.default.createElement(
-					'form',
-					null,
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'actions centered-text' },
 						this.state.enabled ? _react2.default.createElement(
-							'button',
-							{ className: 'destructive large', onClick: function onClick(e) {
+							'span',
+							{ className: 'button destructive large', onClick: function onClick(e) {
 									return _this3.handleStop(e);
 								} },
 							'Stop'
@@ -77003,8 +77017,9 @@ var EditRadio = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		playlist: state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null,
-		playlists: state.core.playlists
+		radio: state.core.radio,
+		artists: state.core.artists,
+		tracks: state.core.tracks
 	};
 };
 
@@ -77013,6 +77028,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
 		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
 		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 	};
 };
