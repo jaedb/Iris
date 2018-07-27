@@ -8,7 +8,7 @@
 	right: 0;
 	z-index: 999;
 	background: darken($darkest_grey, 2%);
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	.controls {
 		position: absolute;
@@ -52,6 +52,7 @@
 
 		h1 {
 			padding-bottom: 20px;
+			padding-right: 60px;
 		}
 
 		.no-results {
