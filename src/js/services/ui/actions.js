@@ -113,28 +113,13 @@ export function set(data){
     }
 }
 
-
-/**
- * Modal
- *
- * Immersive full-screen dialog
- **/
-
-export function openModal(name, data){
-    return { 
-        type: 'OPEN_MODAL',
-        modal: {
-            name: name,
-            data: data
-        }
+export function installPrompt(event){
+    return {
+        type: 'INSTALL_PROMPT',
+        event: event
     }
 }
 
-export function closeModal(){
-    return { 
-        type: 'CLOSE_MODAL' 
-    }
-}
 
 
 /**

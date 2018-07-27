@@ -42,28 +42,28 @@ html {
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
 
+*::-webkit-scrollbar{
+	width: 8px;
+	height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+	background: $dark_grey;
+}
+
+*::-webkit-scrollbar-thumb {
+	@include animate();
+	background: $grey;
+	border-radius: 4px;
+
+	&:hover {
+		background: $mid_grey;
+	}
+}
+
 body {
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	&::-webkit-scrollbar{
-		width: 8px;
-		height: 8px;
-	}
-
-	&::-webkit-scrollbar-track {
-		background: $dark_grey;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		@include animate();
-		background: $grey;
-		border-radius: 4px;
-
-		&:hover {
-			background: $mid_grey;
-		}
-	}
 
 	&.touch-dragging,
 	&.no-scrollbars {

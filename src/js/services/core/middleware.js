@@ -72,6 +72,7 @@ const CoreMiddleware = (function(){
                 );
 
                 // Log with Raven Sentry
+                /*
                 if (store.getState().ui.allow_reporting){
 	                Raven.captureException(
 	                    new Error(message), 
@@ -80,6 +81,7 @@ const CoreMiddleware = (function(){
 	                    }
 	                );
 	            }
+                */
 
                 // Log with Analytics
                 if (store.getState().ui.allow_reporting){

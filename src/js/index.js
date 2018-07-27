@@ -44,14 +44,6 @@ import KioskMode from './views/modals/KioskMode';
 import ShareAuthorization from './views/modals/ShareAuthorization';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 
-/*
-// Hijack console error for Raven to capture
-var originalConsoleError = console.error;  
-console.error = function(message, error){  
-    Raven.captureException(message, error);
-    originalConsoleError.apply(this, arguments)
-*/
-
 global.baseURL = '/';
 
 ReactDOM.render(

@@ -10,11 +10,28 @@
 
 var fs = require('fs');
 var copydir = require('copy-dir');
+var copyfile = require('fs-copy-file');
 
 var version = fs.readFileSync("VERSION.md", "utf8");
 version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');
+
+copyfile('src/service-worker.js', 'mopidy_iris/static/service-worker.js', function(error){
+	if (error){
+		console.log('Build failed, could not copy service-worker.js', error);
+		return false;
+	}
+	console.log('Copied service-worker.js');
+});
+
+copyfile('src/manifest.json', 'mopidy_iris/static/manifest.json', function(error){
+	if (error){
+		console.log('Build failed, could not copy manifest.json', error);
+		return false;
+	}
+	console.log('Copied manifest.json');
+});
 
 copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 

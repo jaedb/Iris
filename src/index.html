@@ -5,28 +5,28 @@
 
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
-	<meta name="mobile-web-app-capable" content="yes" >
+	<meta name="viewport" content="width=device-width" />
+
+	<link rel="manifest" href="/iris/manifest.json" />
+
+	<!-- App setup -->
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="theme-color" content="#222222" />
-	<meta name="viewport" content="width=device-width">
-
-	<link rel="shortcut icon" type="image/ico" href="/iris/assets/favicon.ico" />
-	<link rel="shortcut icon" type="image/x-icon" href="/iris/assets/favicon.ico" />
-	<link rel="shortcut-icon" href="/iris/assets/favicon.ico" />
-
-	<!-- Chrome app -->
-	<link rel="manifest" href="/iris/assets/manifest.json">
-
-	<!-- Apple app -->
 	<meta name="apple-mobile-web-app-title" content="Iris" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="#121212">
-	<link rel="apple-touch-startup-image" href="/iris/assets/logo-full-512.png" />
-	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app-192.png" />
-	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app-512.png" />
-	<link rel="mask-icon" href="/iris/assets/icon_coloured.svg" color="#08d58f" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#121212" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="theme-color" content="#222222" />
+	
+	<!-- Icons -->
+	<link rel="apple-touch-startup-image" href="/iris/assets/app-icon_512.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/logo-app_192.png" />
+	<link rel="apple-touch-icon" sizes="512x512" href="/iris/assets/logo-app_512.png" />
+	<link rel="shortcut icon" type="image/ico" href="/iris/assets/app-icon_64.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="/iris/assets/app-icon_64.png" />
+	<link rel="shortcut-icon" href="/iris/assets/app-icon_64.png" />
+	<link rel="mask-icon" href="/iris/assets/app-icon.svg" color="#08d58f" />
 
-	<!-- Loading screen -->
+	<!-- Loading screen styles -->
 	<style>
 		html {			
 			background-color: #121212;
@@ -58,6 +58,16 @@
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
 		}
+		#app-loading-text {
+			position: fixed;
+			top: 55vh;
+			text-align: center;
+			width: 70vw;
+			margin: 0 15vw;
+			color: rgba(255,255,255,0.3);
+			font-size: 16px;
+			font-family: Arial, Helvetica, sans-serif;
+		}
 	</style>
 
 </head>
@@ -66,9 +76,23 @@
 	<div id="app">
 		<!-- ReactJS app gets injected here, replacing the loader -->
 		<div id="app-loading"></div>
+		<div id="app-loading-text">
+			Please wait, loading...
+		</div>
 	</div>
 
 </body>
+
+<script type="text/javascript">
+	if ('serviceWorker' in navigator){
+		navigator.serviceWorker.register('/iris/service-worker.js')
+			.then(function(registration){
+				console.log('Service worker registered');
+			}).catch(function(error){
+				console.error('Service worker registration failed:', error);
+			});
+	}
+</script>
 
 <script type="text/javascript">
 
@@ -96,23 +120,20 @@
 
 	// Test mode, use un-minified code
     if (test_mode){
-	    js.src = '/iris/app.js?v='+build;
 	    css.href = '/iris/app.css?v='+build;
+	    js.src = '/iris/app.js?v='+build;
 
     // Production-grade, minified app
     } else {
-	    js.src = '/iris/app.min.js?v='+build;
 	    css.href = '/iris/app.min.css?v='+build;
+	    js.src = '/iris/app.min.js?v='+build;
     }
 
 	// And finally inject our CSS/JS tags
-	document.body.appendChild(js);
 	document.body.appendChild(css);
+	document.body.appendChild(js);
 
 </script>
-
-<!-- Raven Sentry -->
-<script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
 
 </html>
 

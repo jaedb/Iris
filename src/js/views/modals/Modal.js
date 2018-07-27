@@ -40,9 +40,9 @@ class Modal extends React.Component{
 			<div className={className}>
 
 				<div className="controls">
-					<div className="control close" onClick={e => window.history.back()}>
+					{this.props.noclose ? null : <div className="control close" onClick={e => window.history.back()}>
 						<Icon name="close" className="white" />
-					</div>
+					</div> }
 				</div>
 
 				<div className="content">
