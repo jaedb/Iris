@@ -1,20 +1,25 @@
 {
-  "manifest_version": 2.5,
+  "manifest_version": 2.6,
   "short_name": "Iris",
   "name": "Iris",
   "icons": [
     {
-      "src": "/iris/assets/logo-app-192.png",
+      "src": "/iris/assets/app-icon_64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "/iris/assets/app-icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/iris/assets/logo-icon-256.png",
+      "src": "/iris/assets/app-icon_256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/iris/assets/logo-full-512.png",
+      "src": "/iris/assets/app-icon_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
