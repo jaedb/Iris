@@ -3,6 +3,32 @@
 	position: relative;
 	cursor: pointer;
 
+	input[type="range"]{
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		opacity: 0;
+		z-index: 2;
+		cursor: pointer;
+
+		&::-webkit-slider-thumb {
+			width: 1px;
+			border: 0;
+		}
+		
+		&::-moz-range-thumb {
+			width: 1px;
+			border: 0;
+		}
+
+		&::-ms-thumb {
+			width: 1px;
+			border: 0;
+		}
+	}
+
 	.track {
 		position: absolute;
 		background: rgba(0,0,0,0.2);
@@ -37,6 +63,34 @@
 				top: 0;
 				height: 100%;
 				max-width: 100%;
+				border-radius: 4px;
+
+				&:after {
+					@include animate(0.1s);
+					content: '';
+					display: block;
+					background: $turquoise;
+					position: absolute;
+					top: 0;
+					right: -1px;
+					width: 4px;
+					height: 4px;
+					border-radius: 50%;
+				}
+			}
+		}
+
+		&:hover {
+			.track {
+				.progress {
+					&:after {
+						width: 12px;
+						height: 12px;
+						top: -4px;
+						right: -6px;
+						background: lighten($turquoise, 10%);
+					}
+				}
 			}
 		}
 	}
