@@ -1,34 +1,26 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import * as mopidyActions from '../../services/mopidy/actions'
+import * as helpers from '../../helpers';
+import * as mopidyActions from '../../services/mopidy/actions';
 
 class ProgressSlider extends React.Component{
 
 	constructor(props){
 		super(props);
+		
+		this.handleChange = helpers.throttle(this.handleChange.bind(this), 250);
 	}
 
-	handleClick(e){
-		var slider = e.target;
-		if (slider.className != 'slider' ) slider = slider.parentElement;
-
-		var sliderX = e.clientX - slider.getBoundingClientRect().left;
-		var sliderWidth = slider.getBoundingClientRect().width;
-		var percent = (sliderX / sliderWidth ).toFixed(2);
-		
-		if (this.props.connected && this.props.current_track){
-			var destination_time = this.props.current_track.duration * percent;
-			this.props.mopidyActions.setTimePosition(destination_time);
-			this.setState({ animating: false });
-		}
-	} 
+	handleChange(value){
+		this.props.mopidyActions.setTimePosition(this.props.current_track.duration * (value / 100));
+	}
 
 	render(){
 		var percent = 0;
-		if (this.props.connected && this.props.current_track){
+		if (this.props.connected && this.props.time_position && this.props.current_track){
 			percent = this.props.time_position / this.props.current_track.duration;
 			percent = percent * 100;
 			if (percent > 1000){
@@ -37,8 +29,15 @@ class ProgressSlider extends React.Component{
 		}
 
 		return (
-			<div className={"progress slider horizontal "+this.props.play_state} onClick={ (e) => this.handleClick(e) } >
+			<div className={"progress slider horizontal "+this.props.play_state}>
 				<div className="track">
+					<input 
+						type="range" 
+						min="0" 
+						max="100"
+						value={percent}
+						onChange={e => this.handleChange(parseInt(e.target.value))}
+					/>
 					<div className="progress" style={{ width: (percent)+'%' }}></div>
 				</div>
 			</div>
