@@ -17,6 +17,7 @@
 			max-width: 60vh;
 			display: block;
 			border: 0 !important;
+			z-index: 1;
 
 			.thumbnail {
 				margin: 0 auto;
@@ -42,12 +43,16 @@
 		.title {
 			font-size: 18px;
 			padding-top: 20px;
+			position: relative;
+			z-index: 2;
 		}
 
 		.artist-sentence {
 			display: block;
 			font-size: 18px;
 			opacity: 0.5;
+			position: relative;
+			z-index: 2;
 		}
 	}
 }

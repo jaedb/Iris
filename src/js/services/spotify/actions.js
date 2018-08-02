@@ -1470,7 +1470,7 @@ export function createPlaylist(name, description, is_public, is_collaborative){
                     uris: [response.uri]
                 })
 
-                dispatch(uiActions.createNotification({content: 'Created playlist'}));
+                dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}));
             },
             error => {
                 dispatch(coreActions.handleException(
@@ -1497,7 +1497,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
             dispatch, getState, 'users/'+ getState().spotify.me.id +'/playlists/'+ helpers.getFromUri('playlistid',uri), 'PUT', data)
         .then(
             response => {
-                dispatch(uiActions.createNotification({content: 'Saved'}));
+                dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));
 
                 // Save the image
                 if (image){

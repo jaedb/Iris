@@ -278,7 +278,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +(store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')+' playback',
                             icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                         }
@@ -301,7 +300,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' paused playback',
                             icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                         }
@@ -320,7 +318,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
                             icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                         }
@@ -338,7 +335,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' stopped playback',
                             icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                         }
@@ -353,7 +349,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' changed track'
                         }
                     }
@@ -366,7 +361,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
                         }
                     }
@@ -439,7 +433,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
                         }
                     }
@@ -599,7 +592,6 @@ const MopidyMiddleware = (function(){
                     'notification',
                     {
                         notification: {
-                            type: 'info',
                             content: store.getState().pusher.username +' is adding '+action.uris.length+' URIs to queue',
                             icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                         }
@@ -821,7 +813,6 @@ const MopidyMiddleware = (function(){
 			                    'notification',
 			                    {
 			                        notification: {
-			                            type: 'info',
 			                            content: store.getState().pusher.username +' cleared queue'
 			                        }
 			                    }
@@ -1564,7 +1555,7 @@ const MopidyMiddleware = (function(){
                                     hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification({content: 'Saved'}));
+                                store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));
                             })
                     });
                 break
@@ -1614,7 +1605,7 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CREATE_PLAYLIST':
                 request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
                     .then(response => {            
-                        store.dispatch(uiActions.createNotification({content: 'Created playlist'}))
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}))
 
                         store.dispatch({
                             type: 'PLAYLIST_LOADED',

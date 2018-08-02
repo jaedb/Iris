@@ -146,7 +146,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<button className="secondary" onClick={ e => this.props.uiActions.openModal('edit_playlist', { uri: this.props.params.uri, name: this.props.playlist.name }) }>Edit</button>
+						<Link className="button secondary" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)

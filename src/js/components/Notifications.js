@@ -39,7 +39,7 @@ export default class Notifications extends React.Component{
 
 							case 'spotify-authorization-received':
 								return (
-									<div className={"notification"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
+									<div className={"notification notification--info"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										
 										<h4>Authorization shared</h4>

@@ -180,6 +180,33 @@ const localstorageMiddleware = (function(){
                     }
                 );
                 break;
+            
+            /**
+             * Experimental saving of stores to localStorage
+             * This uses way too much storage space (ie 10MB+) so won't work. We need
+             * to use the IndexedDB engine instead for storing this quantity of data
+
+            case 'UPDATE_TRACKS_INDEX':
+                helpers.setStorage('core', {tracks: action.tracks});
+                next(action);
+                break;
+            case 'UPDATE_ALBUMS_INDEX':
+                helpers.setStorage('core', {albums: action.albums});
+                next(action);
+                break;
+            case 'UPDATE_ARTISTS_INDEX':
+                helpers.setStorage('core', {artists: action.artists});
+                next(action);
+                break;
+            case 'UPDATE_PLAYLISTS_INDEX':
+                helpers.setStorage('core', {playlists: action.playlists});
+                next(action);
+                break;
+            case 'UPDATE_USERS_INDEX':
+                helpers.setStorage('core', {users: action.users});
+                next(action);
+                break;
+             */
         }
     }
 

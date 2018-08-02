@@ -1,52 +1,19 @@
 
-import React, { PropTypes } from 'react'
-import Icon from '../Icon'
+import React from 'react';
+
+import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 export default class VolumeControl extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
+		
+		this.handleChange = helpers.throttle(this.handleChange.bind(this), 100);
 	}
 
-	handleClick(e){
-		var old_percent = this.props.volume;
-		var slider = e.target;
-		if (slider.className != 'slider' ) slider = slider.parentElement;
-
-		var sliderX = e.clientX - slider.getBoundingClientRect().left;
-		var sliderWidth = slider.getBoundingClientRect().width;
-		var percent = Math.round((sliderX / sliderWidth ) * 100);
-
-		if (percent > 100){
-			percent = 100
-		} else if (percent < 0){
-			percent = 0
-		}
-
-		this.props.onVolumeChange(percent, old_percent);
-	}
-
-	handleWheel(e){
-		if (this.props.scrollWheel){
-			var old_percent = this.props.volume;
-			
-			// Identify which direction we've scrolled (inverted)
-			// This is simplified and doesn't consider momentum as it varies wildly
-			// between browsers and devices
-			var direction = (e.deltaY > 0 ? -1 : 1)
-			var percent = this.props.volume;
-
-			percent += direction * 5
-
-			if (percent > 100){
-				percent = 100
-			} else if (percent < 0){
-				percent = 0
-			}
-
-			this.props.onVolumeChange(percent, old_percent);
-			e.preventDefault();
-		}
+	handleChange(value){
+		this.props.onVolumeChange(value, this.props.volume);
 	}
 
 	renderMuteButton(){
@@ -77,10 +44,17 @@ export default class VolumeControl extends React.Component{
 		}
 
 		return (
-			<span className={className} onWheel={e => this.handleWheel(e)}>
+			<span className={className}>
 				{this.props.NoMuteButton ? null : this.renderMuteButton()}
 				<div className="slider-wrapper">
-					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
+					<div className="slider horizontal">
+						<input 
+							type="range" 
+							min="0" 
+							max="25" 
+							value={this.props.volume/4}
+							onChange={e => this.handleChange(parseInt(e.target.value)*4)}
+						/>
 						<div className="track">
 							<div className="progress" style={{ width: this.props.volume+'%' }}></div>
 						</div>

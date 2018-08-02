@@ -1,0 +1,312 @@
+
+.modal {
+	@include fadein();
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 999;
+	background: darken($darkest_grey, 2%);
+	overflow-y: auto;
+
+	.controls {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 99;
+
+		.control {
+			@include animate();
+			display: block;
+			float: right;
+			opacity: 0.5;
+			cursor: pointer;
+			padding: 20px;
+
+			&:hover {
+				opacity: 1;
+			}
+
+			.icon {
+				font-size: 35px;
+			}
+		}
+	}
+
+	.actions {
+		padding-top: 50px;
+		text-align: center;
+
+		.button,
+		button {
+			margin: 0 3px;
+		}
+	}
+
+	.content {
+		padding: 80px 25%;
+		margin: 0 auto;
+		width: 50%;
+		color: $white;
+
+		h1 {
+			padding-bottom: 20px;
+			padding-right: 60px;
+		}
+
+		.no-results {
+			padding: 0;
+		}
+
+		form {
+			padding-top: 50px;
+
+			.field {
+				padding-bottom: 20px;
+				position: relative;
+
+				.name {
+					font-size: 16px;
+					width: 18%;
+					padding-right: 2%;
+					float: left;
+					opacity: 0.5;
+					padding-top: 8px;
+				}
+
+				.description {
+					padding-left: 0;
+					padding-right: 0;
+				}
+
+				&.radio,
+				&.checkbox {
+					padding-top: 8px;
+				}
+			}
+
+			button[type="submit"]{
+				margin-top: 50px;
+			}
+		}
+
+		.add-uri,
+		.remove-uri {
+			position: absolute;
+			top: 2px;
+			right: 6px;
+			padding: 8px;
+			margin: 0;
+			min-width: 0;
+			color: #FFFFFF;
+			background: transparent;
+			margin-top: 0 !important;
+
+			&.remove-uri {
+				top: 6px;
+			}
+
+			&:before {
+				display: none !important;
+			}
+
+			&:hover {
+				color: $turquoise;
+
+				&.remove-uri {
+					color: $red;
+				}
+			}
+		}
+
+		@include responsive($bp_medium){
+			.add-uri {
+				top: 36px;
+			}
+		}
+
+		.list {
+			@include clearfix();
+
+			.list-item {
+				@include animate();
+				box-sizing: border-box;
+				display: block;
+				padding: 14px 12px 12px;
+				position: relative;
+				border: 0;
+				border-radius: 3px;
+				margin-left: -12px;
+				margin-right: -12px;
+				font-size: 16px;
+
+				.source {
+					position: absolute;
+					top: 18px;
+					left: 10px;
+				}
+
+				&:hover {
+					background: rgba(255,255,255,0.1);
+				}
+			}
+
+			&.playlists {
+				padding-top: 40px;
+
+				.list-item {
+					margin: 0 0 20px 0;
+					padding: 5px;
+
+					.thumbnail {
+						float: left;
+						margin-right: 20px;
+					}
+
+					.source {
+						position: static;
+						top: auto;
+						left: auto;
+					}
+				}
+			}
+
+			&.small .list-item {
+				width: 49%;
+				float: left;
+				font-size: inherit;
+
+				&:nth-child(2n){
+					margin-left: 2%;
+				}
+			}
+		}
+	}
+
+	&--image-zoom {
+		.content {
+			padding: 100px 5%;
+			width: 90%;
+			height: 100%;
+			box-sizing: border-box;
+
+			.image {
+				width: 100%;
+				height: 100%;
+				background-size: contain;
+				background-position: 50% 50%;
+				background-repeat: no-repeat;
+			}
+		}
+	}
+
+	&--edit-radio {
+		form {
+			.field {
+				position: relative;
+				margin-top: 50px;
+
+				input[type="text"]{
+					padding-right: 80px;
+				}
+			}			
+		}
+	}
+
+	&--kiosk-mode {
+		background: #000000;
+		overflow: hidden;
+
+		.content {
+			padding: 5%;
+			width: 90%;
+			height: 90%;
+			text-align: center;
+
+			.background {
+				position: absolute;
+				top: -5vh;
+				right: -5vw;
+				bottom: -5vh;
+				left: -5vw;
+				width: auto;
+				opacity: 0.2;
+				max-width: none;
+
+				.image {
+					@include blur();
+					width: 110vw;
+					padding-bottom: 110vh;
+				}
+			}
+
+			.foreground {
+				width: 70vw;
+				margin: 0 auto;
+				max-width: 70vh;
+				max-height: 70vh;
+				z-index: 2;
+			}
+
+			.current-track {
+				padding-top: 50px;
+				font-size: 30px;
+
+				.artist-sentence {
+					opacity: 0.5;
+				}
+			}
+		}
+	}
+
+	&--share-authorization {
+		.list {
+			padding-top: 40px;
+
+			.list-item {
+				cursor: pointer;
+			}
+		}
+	}
+
+	@include responsive($bp_medium){
+
+		.content {
+			padding: 40px 5%;
+			width: 90%;
+
+			form {
+				padding-top: 20px;
+
+				.field {
+					padding-bottom: 8px;
+
+					.name {
+						font-size: inherit;
+						width: auto;
+						float: none;
+					}
+				}
+			}
+
+			.list {
+				.list-item {
+					float: none !important;
+					width: auto;
+					margin-left: 0 !important;
+					border-top: 0;
+					width: auto !important;
+					margin: 0;
+
+					&.draggable {
+						.drag-handle {
+							padding-top: 14px;
+							padding-bottom: 14px;
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -7,10 +7,12 @@ import ReactGA from 'react-ga'
 
 import Modal from './Modal';
 import Icon from '../../components/Icon';
+
 import * as coreActions from '../../services/core/actions'
 import * as uiActions from '../../services/ui/actions'
 import * as mopidyActions from '../../services/mopidy/actions'
 import * as spotifyActions from '../../services/spotify/actions'
+import * as pusherActions from '../../services/pusher/actions'
 import * as helpers from '../../helpers';
 
 class EditRadio extends React.Component{
@@ -26,13 +28,23 @@ class EditRadio extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.radio || !this.props.radio.enabled) return null
-		var seeds = [...this.props.radio.seed_tracks, ...this.props.radio.seed_artists, ...this.props.radio.seed_genres]
-		this.setState({seeds: seeds, enabled: this.props.radio.enabled})
-
-		this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
-		
 		this.props.uiActions.setWindowTitle("Edit radio");
+
+		if (this.props.radio && this.props.radio.enabled){
+			this.loadRadio(this.props.radio);
+		}
+	}
+
+	componentWillReceiveProps(nextProps){
+		if (!this.props.radio && nextProps.radio){
+			this.loadRadio(nextProps.radio);
+		}
+	}
+
+	loadRadio(radio){
+		var seeds = [...radio.seed_tracks, ...radio.seed_artists, ...radio.seed_genres];
+		this.setState({seeds: seeds, enabled: radio.enabled});
+		this.props.spotifyActions.resolveRadioSeeds(radio);
 	}
 
 	handleStart(e){
@@ -81,7 +93,9 @@ class EditRadio extends React.Component{
 		this.props.uiActions.closeModal()
 	}
 
-	addSeed(){
+	addSeed(e){
+		e.preventDefault();
+
 		if (this.state.uri == ''){
 			this.setState({error_message: 'Cannot be empty'});
 			return;
@@ -177,9 +191,9 @@ class EditRadio extends React.Component{
 									<div className="list-item" key={seed.uri}>
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
-										<button className="discrete remove-uri no-hover"  onClick={e => this.removeSeed(seed.uri)}>
+										<span className="button discrete remove-uri no-hover" onClick={e => this.removeSeed(seed.uri)}>
 											<Icon name="delete" />Remove
-										</button>
+										</span>
 									</div>
 								)
 							})
@@ -189,13 +203,7 @@ class EditRadio extends React.Component{
 			)
 		} else {
 			return (
-				<div>
-					<div className="list">
-						<div className="list-item no-click">
-							<span className="grey-text">No seeds</span>
-						</div>
-					</div>
-				</div>
+				<div className="no-results">No seeds</div>
 			)
 		}
 	}
@@ -206,7 +214,8 @@ class EditRadio extends React.Component{
 				<h1>Radio</h1>
 				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
-				<form onSubmit={e => this.addSeed()}>
+				<form onSubmit={e => {(this.state.enabled ? this.handleUpdate(e) : this.handleStart(e))}}>
+
 					{this.renderSeeds()}
 
 					<div className="field text">
@@ -217,17 +226,16 @@ class EditRadio extends React.Component{
 								onChange={e => this.setState({uri: e.target.value, error_message: null})} 
 								value={this.state.uri}
 							/>
-							<button type="submit" className="discrete add-uri no-hover">
+							<span className="button discrete add-uri no-hover" onClick={e => this.addSeed(e)}>
 								<Icon name="add" />Add
-							</button>
+							</span>
 							{this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
 						</div>
 					</div>
-				</form>
 
-				<form>
 					<div className="actions centered-text">
-						{this.state.enabled ? <button className="destructive large" onClick={e => this.handleStop(e)}>Stop</button> : null}
+						{this.state.enabled ? <span className="button destructive large" onClick={e => this.handleStop(e)}>Stop</span> : null}
+
 						{this.state.enabled ? <button className="primary large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary large" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
@@ -239,8 +247,9 @@ class EditRadio extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
-		playlists: state.core.playlists
+		radio: state.core.radio,
+		artists: state.core.artists,
+		tracks: state.core.tracks
 	}
 }
 
@@ -249,6 +258,7 @@ const mapDispatchToProps = (dispatch) => {
 		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}
 }

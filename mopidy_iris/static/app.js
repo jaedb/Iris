@@ -96,6 +96,47 @@ var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
 };
 
 /**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ **/
+var debounce = exports.debounce = function debounce(fn, wait, immediate) {
+	var timeout;
+	return function () {
+		var context = this,
+		    args = arguments;
+
+		var later = function later() {
+			timeout = null;
+			if (!immediate) {
+				fn.apply(context, args);
+			}
+		};
+
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+
+		if (callNow) {
+			fn.apply(context, args);
+		}
+	};
+};
+
+var throttle = exports.throttle = function throttle(fn, delay) {
+	var lastCall = 0;
+	return function () {
+		var now = new Date().getTime();
+		if (now - lastCall < delay) {
+			return;
+		}
+		lastCall = now;
+		return fn.apply(undefined, arguments);
+	};
+};
+
+/**
  * Storage handler
  * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
  **/
@@ -3436,7 +3477,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
                 uris: [response.uri]
             });
 
-            dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+            dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
         }, function (error) {
             dispatch(coreActions.handleException('Could not create playlist', error));
         });
@@ -3454,7 +3495,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
 
             // Update the playlist fields
         };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
-            dispatch(uiActions.createNotification({ content: 'Saved' }));
+            dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
 
             // Save the image
             if (image) {
@@ -4424,6 +4465,8 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+<<<<<<< HEAD
+=======
 
 if (process.env.NODE_ENV !== 'production') {
   var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
@@ -4523,53 +4566,31 @@ var Header = function (_React$Component) {
 			if (!this.props.handleContextMenuTrigger && !this.props.options) {
 				return null;
 			}
+>>>>>>> master
 
-			return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-					return _this2.handleContextMenuTrigger(e, _this2.props.options);
-				} });
-		}
-	}, {
-		key: 'renderOptions',
-		value: function renderOptions() {
-			if (!this.props.options && !this.props.handleContextMenuTrigger) {
-				return null;
-			}
+if (process.env.NODE_ENV !== 'production') {
+  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+    Symbol.for &&
+    Symbol.for('react.element')) ||
+    0xeac7;
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'options' },
-				this.renderContextMenuTrigger(),
-				_react2.default.createElement(
-					'span',
-					{ className: 'items' },
-					_react2.default.createElement(
-						'span',
-						{ className: 'liner' },
-						this.props.options ? this.props.options : null
-					)
-				)
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			return _react2.default.createElement(
-				'header',
-				{ className: this.props.className ? this.props.className : null },
-				_react2.default.createElement(
-					'h1',
-					null,
-					this.props.children ? this.props.children : null
-				),
-				this.renderOptions()
-			);
-		}
-	}]);
+  var isValidElement = function(object) {
+    return typeof object === 'object' &&
+      object !== null &&
+      object.$$typeof === REACT_ELEMENT_TYPE;
+  };
 
-	return Header;
-}(_react2.default.Component);
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = __webpack_require__(118)(isValidElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = __webpack_require__(119)();
+}
 
-exports.default = Header;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 /* 15 */
@@ -4916,6 +4937,134 @@ function setSnapcastGroupVolume(id, percent) {
 }
 
 /***/ }),
+<<<<<<< HEAD
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+=======
+/* 16 */
+/***/ (function(module, exports) {
+>>>>>>> master
+
+"use strict";
+
+
+<<<<<<< HEAD
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Icon = __webpack_require__(6);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _ContextMenuTrigger = __webpack_require__(25);
+
+var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Header = function (_React$Component) {
+	_inherits(Header, _React$Component);
+
+	function Header(props) {
+		_classCallCheck(this, Header);
+
+		var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
+
+		_this.state = {
+			expanded: false
+		};
+		return _this;
+	}
+
+	_createClass(Header, [{
+		key: 'handleContextMenuTrigger',
+		value: function handleContextMenuTrigger(e, options) {
+
+			// We have an override trigger (eg Album, Playlist)
+			if (this.props.handleContextMenuTrigger) {
+				return this.props.handleContextMenuTrigger(e);
+			} else {
+				e.preventDefault();
+				var data = {
+					e: e,
+					context: 'custom',
+					title: this.props.title,
+					options: options
+				};
+				this.props.uiActions.showContextMenu(data);
+			}
+		}
+	}, {
+		key: 'renderContextMenuTrigger',
+		value: function renderContextMenuTrigger() {
+			var _this2 = this;
+
+			// No custom trigger, nor any options
+			if (!this.props.handleContextMenuTrigger && !this.props.options) {
+				return null;
+			}
+
+			return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
+					return _this2.handleContextMenuTrigger(e, _this2.props.options);
+				} });
+		}
+	}, {
+		key: 'renderOptions',
+		value: function renderOptions() {
+			if (!this.props.options && !this.props.handleContextMenuTrigger) {
+				return null;
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'options' },
+				this.renderContextMenuTrigger(),
+				_react2.default.createElement(
+					'span',
+					{ className: 'items' },
+					_react2.default.createElement(
+						'span',
+						{ className: 'liner' },
+						this.props.options ? this.props.options : null
+					)
+				)
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'header',
+				{ className: this.props.className ? this.props.className : null },
+				_react2.default.createElement(
+					'h1',
+					null,
+					this.props.children ? this.props.children : null
+				),
+				this.renderOptions()
+			);
+		}
+	}]);
+
+	return Header;
+}(_react2.default.Component);
+
+exports.default = Header;
+
+/***/ }),
 /* 16 */
 /***/ (function(module, exports) {
 
@@ -4924,6 +5073,8 @@ module.exports = function() {
 };
 
 
+=======
+>>>>>>> master
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -21614,6 +21765,12 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21628,51 +21785,16 @@ var VolumeControl = function (_React$Component) {
 	function VolumeControl(props) {
 		_classCallCheck(this, VolumeControl);
 
-		return _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).call(this, props));
+
+		_this.handleChange = helpers.throttle(_this.handleChange.bind(_this), 100);
+		return _this;
 	}
 
 	_createClass(VolumeControl, [{
-		key: 'handleClick',
-		value: function handleClick(e) {
-			var old_percent = this.props.volume;
-			var slider = e.target;
-			if (slider.className != 'slider') slider = slider.parentElement;
-
-			var sliderX = e.clientX - slider.getBoundingClientRect().left;
-			var sliderWidth = slider.getBoundingClientRect().width;
-			var percent = Math.round(sliderX / sliderWidth * 100);
-
-			if (percent > 100) {
-				percent = 100;
-			} else if (percent < 0) {
-				percent = 0;
-			}
-
-			this.props.onVolumeChange(percent, old_percent);
-		}
-	}, {
-		key: 'handleWheel',
-		value: function handleWheel(e) {
-			if (this.props.scrollWheel) {
-				var old_percent = this.props.volume;
-
-				// Identify which direction we've scrolled (inverted)
-				// This is simplified and doesn't consider momentum as it varies wildly
-				// between browsers and devices
-				var direction = e.deltaY > 0 ? -1 : 1;
-				var percent = this.props.volume;
-
-				percent += direction * 5;
-
-				if (percent > 100) {
-					percent = 100;
-				} else if (percent < 0) {
-					percent = 0;
-				}
-
-				this.props.onVolumeChange(percent, old_percent);
-				e.preventDefault();
-			}
+		key: 'handleChange',
+		value: function handleChange(value) {
+			this.props.onVolumeChange(value, this.props.volume);
 		}
 	}, {
 		key: 'renderMuteButton',
@@ -21722,18 +21844,23 @@ var VolumeControl = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'span',
-				{ className: className, onWheel: function onWheel(e) {
-						return _this3.handleWheel(e);
-					} },
+				{ className: className },
 				this.props.NoMuteButton ? null : this.renderMuteButton(),
 				_react2.default.createElement(
 					'div',
 					{ className: 'slider-wrapper' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'slider horizontal', onClick: function onClick(e) {
-								return _this3.handleClick(e);
-							} },
+						{ className: 'slider horizontal' },
+						_react2.default.createElement('input', {
+							type: 'range',
+							min: '0',
+							max: '25',
+							value: this.props.volume / 4,
+							onChange: function onChange(e) {
+								return _this3.handleChange(parseInt(e.target.value) * 4);
+							}
+						}),
 						_react2.default.createElement(
 							'div',
 							{ className: 'track' },
@@ -50837,7 +50964,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
+<<<<<<< HEAD
+var pusherActions = __webpack_require__(14);
+=======
 var pusherActions = __webpack_require__(15);
+>>>>>>> master
 var mopidyActions = __webpack_require__(8);
 var spotifyActions = __webpack_require__(9);
 var lastfmActions = __webpack_require__(20);
@@ -51016,11 +51147,13 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'PLAYLIST_TRACKS_ADDED':
-                        store.dispatch(uiActions.createNotification({ content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
+                        store.dispatch(uiActions.createNotification({ type: 'info', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
                         switch (helpers.uriSource(action.key)) {
+
                             case 'spotify':
                                 store.dispatch(spotifyActions.getPlaylist(action.key));
                                 break;
+
                             case 'm3u':
                                 if (store.getState().mopidy.connected) store.dispatch(mopidyActions.getPlaylist(action.key));
                                 break;
@@ -51143,6 +51276,7 @@ var CoreMiddleware = function () {
                         for (var i = 0; i < indexes.length; i++) {
                             tracks_uris.splice(indexes[i], 1);
                         }
+<<<<<<< HEAD
 
                         var snapshot_id = null;
                         if (action.snapshot_id) {
@@ -51472,6 +51606,337 @@ var CoreMiddleware = function () {
                         records_action[records_type_plural] = records;
                         store.dispatch(records_action);
 
+=======
+
+                        var snapshot_id = null;
+                        if (action.snapshot_id) {
+                            snapshot_id = action.snapshot_id;
+                        }
+
+                        // Update our playlist 
+                        playlist.tracks_uris = tracks_uris;
+                        playlist.snapshot_id = snapshot_id;
+
+                        // Trigger normal playlist updating
+                        store.dispatch({
+                            type: 'PLAYLISTS_LOADED',
+                            playlists: [playlist]
+                        });
+                        break;
+
+                    /**
+                     * Queue and playback info
+                     **/
+
+                    case 'CURRENT_TRACK_LOADED':
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: [action.track]
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'QUEUE_LOADED':
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: action.tracks
+                        });
+
+                        next(action);
+                        break;
+
+                    /**
+                     * Index actions
+                     * These modify our asset indexes, which are used globally
+                     **/
+
+                    // Array wrapper for TRACKS_LOADED
+                    case 'TRACK_LOADED':
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: [action.track]
+                        });
+                        break;
+
+                    // Array wrapper for ALBUMS_LOADED
+                    case 'ALBUM_LOADED':
+                        store.dispatch({
+                            type: 'ALBUMS_LOADED',
+                            albums: [action.album]
+                        });
+                        break;
+
+                    // Array wrapper for ARTISTS_LOADED
+                    case 'ARTIST_LOADED':
+                        store.dispatch({
+                            type: 'ARTISTS_LOADED',
+                            artists: [action.artist]
+                        });
+                        break;
+
+                    // Array wrapper for PLAYLISTS_LOADED
+                    case 'PLAYLIST_LOADED':
+                        store.dispatch({
+                            type: 'PLAYLISTS_LOADED',
+                            playlists: [action.playlist]
+                        });
+                        break;
+
+                    // Array wrapper for USERS_LOADED
+                    case 'USER_LOADED':
+                        store.dispatch({
+                            type: 'USERS_LOADED',
+                            users: [action.user]
+                        });
+                        break;
+
+                    case 'TRACKS_LOADED':
+                        var tracks = Object.assign({}, core.tracks);
+
+                        for (var i = 0; i < action.tracks.length; i++) {
+                            var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
+
+                            if (tracks[track.uri] !== undefined) {
+                                track = Object.assign({}, tracks[track.uri], track);
+                            }
+
+                            if (track.album && track.album.images && track.album.images.length > 0) {
+                                track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
+                                track.images = track.album.images;
+                            }
+
+                            tracks[track.uri] = track;
+                        }
+
+                        // Update index
+                        store.dispatch({
+                            type: 'UPDATE_TRACKS_INDEX',
+                            tracks: tracks
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'ALBUMS_LOADED':
+                        var albums = Object.assign({}, core.albums);
+                        var tracks_loaded = [];
+
+                        for (var i = 0; i < action.albums.length; i++) {
+                            var album = Object.assign({}, action.albums[i]);
+                            helpers.formatAlbum(album);
+
+                            if (albums[album.uri]) {
+                                album = Object.assign({}, albums[album.uri], album);
+                            }
+
+                            if (album.images && album.images.length > 0) {
+                                album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
+                            }
+
+                            // Load our tracks
+                            if (album.tracks) {
+                                var tracks = helpers.formatTracks(album.tracks);
+                                var tracks_uris = helpers.arrayOf('uri', tracks);
+                                album.tracks_uris = tracks_uris;
+                                delete album.tracks;
+                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                            }
+
+                            albums[album.uri] = album;
+                        }
+
+                        // Load these new tracks
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks_loaded
+                        });
+
+                        // Update index
+                        store.dispatch({
+                            type: 'UPDATE_ALBUMS_INDEX',
+                            albums: albums
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'ARTISTS_LOADED':
+                        var artists = Object.assign({}, core.artists);
+                        var tracks_loaded = [];
+
+                        for (var i = 0; i < action.artists.length; i++) {
+                            var artist = action.artists[i];
+
+                            if (artists[artist.uri]) {
+
+                                // if we've already got images, remove and add as additional_images
+                                // this is to prevent LastFM overwriting Spotify images
+                                if (artists[artist.uri].images) {
+                                    artist.images_additional = artist.images;
+                                    delete artist.images;
+                                }
+
+                                artist = Object.assign({}, artists[artist.uri], artist);
+                            }
+
+                            if (artist.tracks) {
+                                var tracks = helpers.formatTracks(artist.tracks);
+                                var tracks_uris = helpers.arrayOf('uri', tracks);
+                                artist.tracks_uris = tracks_uris;
+                                delete artist.tracks;
+                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                            }
+
+                            // Update index
+                            artists[artist.uri] = artist;
+                        }
+
+                        // Load our tracks
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks_loaded
+                        });
+
+                        store.dispatch({
+                            type: 'UPDATE_ARTISTS_INDEX',
+                            artists: artists
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'PLAYLISTS_LOADED':
+                        var playlists = Object.assign({}, core.playlists);
+                        var tracks_loaded = [];
+
+                        for (var i = 0; i < action.playlists.length; i++) {
+                            var playlist = Object.assign({}, action.playlists[i]);
+
+                            // Detect editability
+                            switch (helpers.uriSource(playlist.uri)) {
+
+                                case 'm3u':
+                                    playlist.can_edit = true;
+                                    break;
+
+                                case 'spotify':
+                                    if (store.getState().spotify.authorization && store.getState().spotify.me) {
+                                        playlist.can_edit = helpers.getFromUri('playlistowner', playlist.uri) == store.getState().spotify.me.id;
+                                    }
+                            }
+
+                            if (playlists[playlist.uri] !== undefined) {
+                                playlist = Object.assign({}, playlists[playlist.uri], playlist);
+                            }
+
+                            // Load our tracks
+                            if (playlist.tracks) {
+                                var tracks = helpers.formatTracks(playlist.tracks);
+                                var tracks_uris = helpers.arrayOf('uri', tracks);
+                                playlist.tracks_uris = tracks_uris;
+                                delete playlist.tracks;
+                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                            }
+
+                            // Update index
+                            playlists[playlist.uri] = playlist;
+                        }
+
+                        // Load our tracks
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: tracks_loaded
+                        });
+
+                        store.dispatch({
+                            type: 'UPDATE_PLAYLISTS_INDEX',
+                            playlists: playlists
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'USERS_LOADED':
+                        var users = Object.assign({}, core.users);
+
+                        for (var i = 0; i < action.users.length; i++) {
+                            var user = Object.assign({}, action.users[i]);
+
+                            if (users[user.uri]) {
+                                user = Object.assign({}, users[user.uri], user);
+                            }
+
+                            users[user.uri] = user;
+                        }
+
+                        // Update index
+                        store.dispatch({
+                            type: 'UPDATE_USERS_INDEX',
+                            users: users
+                        });
+
+                        next(action);
+                        break;
+
+                    /**
+                     * Loaded more linked assets
+                     * Often fired during lazy-loading or async asset grabbing.
+                     * We link the parent to these indexed records by {type}s_uris
+                     **/
+
+                    case 'LOADED_MORE':
+                        var parent_type_plural = action.parent_type + 's';
+                        var parent_index = Object.assign({}, core[action.parent_type + 's']);
+                        var parent = Object.assign({}, parent_index[action.parent_key]);
+
+                        if (action.records_data.items !== undefined) {
+                            var records = action.records_data.items;
+                        } else if (action.records_data.tracks !== undefined) {
+                            var records = action.records_data.tracks;
+                        } else if (action.records_data.artists !== undefined) {
+                            var records = action.records_data.artists;
+                        } else if (action.records_data.albums !== undefined) {
+                            var records = action.records_data.albums;
+                        } else if (action.records_data.playlists !== undefined) {
+                            var records = action.records_data.playlists;
+                        } else {
+                            var records = action.records_data;
+                        }
+
+                        if (action.records_type == 'track') {
+                            records = helpers.formatTracks(records);
+                        }
+
+                        var records_type_plural = action.records_type + 's';
+                        var records_index = Object.assign({});
+                        var records_uris = helpers.arrayOf('uri', records);
+
+                        // Append our records_uris array with our new records
+                        var uris = records_uris;
+                        if (parent[records_type_plural + '_uris'] !== undefined) {
+                            uris = [].concat(_toConsumableArray(parent[records_type_plural + '_uris']), _toConsumableArray(uris));
+                        }
+                        parent[records_type_plural + '_uris'] = uris;
+                        if (action.records_data.next !== undefined) {
+                            parent[records_type_plural + '_more'] = action.records_data.next;
+                        }
+
+                        // Parent loaded (well, changed)
+                        var parent_action = {
+                            type: parent_type_plural.toUpperCase() + '_LOADED'
+                        };
+                        parent_action[parent_type_plural] = [parent];
+                        store.dispatch(parent_action);
+
+                        // Records loaded
+                        var records_action = {
+                            type: records_type_plural.toUpperCase() + '_LOADED'
+                        };
+                        records_action[records_type_plural] = records;
+                        store.dispatch(records_action);
+
+>>>>>>> master
                         next(action);
                         break;
 
@@ -52835,7 +53300,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + (store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started') + ' playback',
                                 icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
                             }
@@ -52852,7 +53316,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' paused playback',
                                 icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
                             }
@@ -52868,7 +53331,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' skipped <em>' + store.getState().core.current_track.name + '</em>',
                                 icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
                             }
@@ -52882,7 +53344,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' stopped playback',
                                 icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
                             }
@@ -52894,7 +53355,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' changed track'
                             }
                         }));
@@ -52904,7 +53364,6 @@ var MopidyMiddleware = function () {
                         request(socket, store, 'tracklist.remove', { tlid: action.tlids });
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
                             }
                         }));
@@ -52962,7 +53421,6 @@ var MopidyMiddleware = function () {
                         request(socket, store, 'mixer.setMute', [action.mute]);
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + (action.mute ? ' muted' : ' unmuted') + ' playback'
                             }
                         }));
@@ -53096,7 +53554,6 @@ var MopidyMiddleware = function () {
 
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
-                                type: 'info',
                                 content: store.getState().pusher.username + ' is adding ' + action.uris.length + ' URIs to queue',
                                 icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
                             }
@@ -53275,7 +53732,6 @@ var MopidyMiddleware = function () {
 
                             store.dispatch(pusherActions.deliverBroadcast('notification', {
                                 notification: {
-                                    type: 'info',
                                     content: store.getState().pusher.username + ' cleared queue'
                                 }
                             }));
@@ -53893,7 +54349,7 @@ var MopidyMiddleware = function () {
                                     _reactRouter.hashHistory.push(global.baseURL + 'playlist/' + encodeURIComponent(response.uri));
                                 }
 
-                                store.dispatch(uiActions.createNotification({ content: 'Saved' }));
+                                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
                             });
                         });
                         break;
@@ -53940,7 +54396,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_CREATE_PLAYLIST':
                         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-                            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+                            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
 
                             store.dispatch({
                                 type: 'PLAYLIST_LOADED',
@@ -57362,7 +57818,11 @@ Object.defineProperty(exports, "__esModule", {
 var helpers = __webpack_require__(1);
 var lastfmActions = __webpack_require__(20);
 var uiActions = __webpack_require__(3);
+<<<<<<< HEAD
+var pusherActions = __webpack_require__(14);
+=======
 var pusherActions = __webpack_require__(15);
+>>>>>>> master
 
 var LastfmMiddleware = function () {
 
@@ -57422,7 +57882,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var helpers = __webpack_require__(1);
 var spotifyActions = __webpack_require__(9);
 var uiActions = __webpack_require__(3);
+<<<<<<< HEAD
+var pusherActions = __webpack_require__(14);
+=======
 var pusherActions = __webpack_require__(15);
+>>>>>>> master
 
 var SpotifyMiddleware = function () {
 
@@ -57980,6 +58444,32 @@ var localstorageMiddleware = function () {
                             session: null
                         });
                         break;
+
+                    /**
+                     * Experimental saving of stores to localStorage
+                     * This uses way too much storage space (ie 10MB+) so won't work. We need
+                     * to use the IndexedDB engine instead for storing this quantity of data
+                      case 'UPDATE_TRACKS_INDEX':
+                        helpers.setStorage('core', {tracks: action.tracks});
+                        next(action);
+                        break;
+                    case 'UPDATE_ALBUMS_INDEX':
+                        helpers.setStorage('core', {albums: action.albums});
+                        next(action);
+                        break;
+                    case 'UPDATE_ARTISTS_INDEX':
+                        helpers.setStorage('core', {artists: action.artists});
+                        next(action);
+                        break;
+                    case 'UPDATE_PLAYLISTS_INDEX':
+                        helpers.setStorage('core', {playlists: action.playlists});
+                        next(action);
+                        break;
+                    case 'UPDATE_USERS_INDEX':
+                        helpers.setStorage('core', {users: action.users});
+                        next(action);
+                        break;
+                     */
                 }
             };
         };
@@ -59596,8 +60086,17 @@ var _react = __webpack_require__(0);
 var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
+<<<<<<< HEAD
 
 var _redux = __webpack_require__(2);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+=======
+
+var _redux = __webpack_require__(2);
+>>>>>>> master
 
 var _actions = __webpack_require__(8);
 
@@ -59619,24 +60118,16 @@ var ProgressSlider = function (_React$Component) {
 	function ProgressSlider(props) {
 		_classCallCheck(this, ProgressSlider);
 
-		return _possibleConstructorReturn(this, (ProgressSlider.__proto__ || Object.getPrototypeOf(ProgressSlider)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (ProgressSlider.__proto__ || Object.getPrototypeOf(ProgressSlider)).call(this, props));
+
+		_this.handleChange = helpers.throttle(_this.handleChange.bind(_this), 250);
+		return _this;
 	}
 
 	_createClass(ProgressSlider, [{
-		key: 'handleClick',
-		value: function handleClick(e) {
-			var slider = e.target;
-			if (slider.className != 'slider') slider = slider.parentElement;
-
-			var sliderX = e.clientX - slider.getBoundingClientRect().left;
-			var sliderWidth = slider.getBoundingClientRect().width;
-			var percent = (sliderX / sliderWidth).toFixed(2);
-
-			if (this.props.connected && this.props.current_track) {
-				var destination_time = this.props.current_track.duration * percent;
-				this.props.mopidyActions.setTimePosition(destination_time);
-				this.setState({ animating: false });
-			}
+		key: 'handleChange',
+		value: function handleChange(value) {
+			this.props.mopidyActions.setTimePosition(this.props.current_track.duration * (value / 100));
 		}
 	}, {
 		key: 'render',
@@ -59644,7 +60135,7 @@ var ProgressSlider = function (_React$Component) {
 			var _this2 = this;
 
 			var percent = 0;
-			if (this.props.connected && this.props.current_track) {
+			if (this.props.connected && this.props.time_position && this.props.current_track) {
 				percent = this.props.time_position / this.props.current_track.duration;
 				percent = percent * 100;
 				if (percent > 1000) {
@@ -59654,12 +60145,19 @@ var ProgressSlider = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: "progress slider horizontal " + this.props.play_state, onClick: function onClick(e) {
-						return _this2.handleClick(e);
-					} },
+				{ className: "progress slider horizontal " + this.props.play_state },
 				_react2.default.createElement(
 					'div',
 					{ className: 'track' },
+					_react2.default.createElement('input', {
+						type: 'range',
+						min: '0',
+						max: '100',
+						value: percent,
+						onChange: function onChange(e) {
+							return _this2.handleChange(parseInt(e.target.value));
+						}
+					}),
 					_react2.default.createElement('div', { className: 'progress', style: { width: percent + '%' } })
 				)
 			);
@@ -61357,7 +61855,7 @@ var Notifications = function (_React$Component) {
 						case 'spotify-authorization-received':
 							return _react2.default.createElement(
 								'div',
-								{ className: "notification", key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+								{ className: "notification notification--info", key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
 								_react2.default.createElement(_Icon2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
 										return _this2.props.uiActions.removeNotification(notification.key, true);
 									} }),
@@ -61577,6 +62075,28 @@ var DebugInfo = function (_React$Component) {
 	}
 
 	_createClass(DebugInfo, [{
+		key: 'localStorageSize',
+		value: function localStorageSize() {
+			var data = '';
+
+			for (var key in window.localStorage) {
+				if (window.localStorage.hasOwnProperty(key)) {
+					data += window.localStorage[key];
+				}
+			}
+
+			var used = 0;
+			var total = 5000;
+			if (data !== '') {
+				used = (data.length * 16 / (8 * 1024)).toFixed(2);
+			}
+
+			return {
+				used: used,
+				percent: (used / total * 100).toFixed(2)
+			};
+		}
+	}, {
 		key: 'renderLoadQueue',
 		value: function renderLoadQueue() {
 			if (!this.props.ui.load_queue) {
@@ -61588,7 +62108,7 @@ var DebugInfo = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'item' },
+				{ className: 'debug-info-item' },
 				queue
 			);
 		}
@@ -61596,7 +62116,11 @@ var DebugInfo = function (_React$Component) {
 		key: 'renderLoadQueue',
 		value: function renderLoadQueue() {
 			if (!this.props.ui.load_queue) {
-				return null;
+				return _react2.default.createElement(
+					'div',
+					{ className: 'debug-info-item grey-text' },
+					'Nothing loading'
+				);
 			}
 
 			var load_queue = this.props.ui.load_queue;
@@ -61614,102 +62138,142 @@ var DebugInfo = function (_React$Component) {
 			if (queue.length > 0) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					_react2.default.createElement('br', null),
+					{ className: 'debug-info-item' },
 					queue
 				);
 			} else {
-				return null;
+				return _react2.default.createElement(
+					'div',
+					{ className: 'debug-info-item grey-text' },
+					'Nothing loading'
+				);
 			}
 		}
 	}, {
 		key: 'render',
 		value: function render() {
+			var localStorageUsage = this.localStorageSize();
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'debug-info' },
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Albums: ',
-					this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Indexes'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Albums: ',
+						this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Artists: ',
+						this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Playlists: ',
+						this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Tracks: ',
+						this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Users: ',
+						this.props.core.users ? Object.keys(this.props.core.users).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Notifications: ',
+						this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Processes: ',
+						this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Enqueue batches: ',
+						this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'
+					)
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Artists: ',
-					this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Config'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Slim mode: ',
+						this.props.ui.slim_mode ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Test mode: ',
+						this.props.ui.test_mode ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Touch: ',
+						helpers.isTouchDevice() ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'LocalStorage usage: ',
+						localStorageUsage.used,
+						'kb (~',
+						localStorageUsage.percent,
+						'%)'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Selected tracks: ',
+						this.props.ui.selected_tracks.length,
+						_react2.default.createElement('br', null),
+						this.props.ui.selected_tracks.map(function (track_key, index) {
+							return _react2.default.createElement(
+								'div',
+								{ key: track_key + '_' + index },
+								track_key
+							);
+						})
+					)
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Playlists: ',
-					this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Tracks: ',
-					this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Users: ',
-					this.props.core.users ? Object.keys(this.props.core.users).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Notifications: ',
-					this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Processes: ',
-					this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Enqueue batches: ',
-					this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'
-				),
-				_react2.default.createElement('br', null),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Slim mode: ',
-					this.props.ui.slim_mode ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Test mode: ',
-					this.props.ui.test_mode ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Touch: ',
-					helpers.isTouchDevice() ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Selected tracks: ',
-					this.props.ui.selected_tracks.length,
-					_react2.default.createElement('br', null),
-					this.props.ui.selected_tracks.map(function (track_key, index) {
-						return _react2.default.createElement(
-							'div',
-							{ key: track_key + '_' + index },
-							track_key
-						);
-					})
-				),
-				this.renderLoadQueue()
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Load queue'
+					),
+					this.renderLoadQueue()
+				)
 			);
 		}
 	}]);
@@ -61754,7 +62318,11 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -62121,7 +62689,11 @@ var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -62776,7 +63348,11 @@ var _FollowButton = __webpack_require__(45);
 
 var _FollowButton2 = _interopRequireDefault(_FollowButton);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -62978,10 +63554,8 @@ var Playlist = function (_React$Component) {
 							'Play'
 						),
 						_react2.default.createElement(
-							'button',
-							{ className: 'secondary', onClick: function onClick(e) {
-									return _this2.props.uiActions.openModal('edit_playlist', { uri: _this2.props.params.uri, name: _this2.props.playlist.name });
-								} },
+							_reactRouter.Link,
+							{ className: 'button secondary', to: global.baseURL + 'playlist/' + encodeURIComponent(this.props.params.uri) + '/edit' },
 							'Edit'
 						),
 						_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
@@ -63491,7 +64065,11 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64301,7 +64879,11 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64630,7 +65212,11 @@ var _TrackList = __webpack_require__(22);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64797,7 +65383,11 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -65343,7 +65933,11 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -66121,7 +66715,11 @@ var _SourcesPriority = __webpack_require__(243);
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -70200,7 +70798,11 @@ var _reactInputRange = __webpack_require__(252);
 
 var _reactInputRange2 = _interopRequireDefault(_reactInputRange);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -73306,7 +73908,11 @@ var _PlaylistGrid = __webpack_require__(47);
 
 var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -73553,7 +74159,11 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -73764,7 +74374,11 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -73965,7 +74579,11 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74244,7 +74862,11 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74630,7 +75252,11 @@ var _List = __webpack_require__(52);
 
 var _List2 = _interopRequireDefault(_List);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75046,7 +75672,11 @@ var _TrackList = __webpack_require__(22);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75242,7 +75872,11 @@ var _DropdownField = __webpack_require__(35);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75622,7 +76256,11 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
+<<<<<<< HEAD
+var _Header = __webpack_require__(15);
+=======
 var _Header = __webpack_require__(14);
+>>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -76674,6 +77312,10 @@ var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
+var _actions5 = __webpack_require__(14);
+
+var pusherActions = _interopRequireWildcard(_actions5);
+
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -76710,13 +77352,25 @@ var EditRadio = function (_React$Component) {
 	_createClass(EditRadio, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (!this.props.radio || !this.props.radio.enabled) return null;
-			var seeds = [].concat(_toConsumableArray(this.props.radio.seed_tracks), _toConsumableArray(this.props.radio.seed_artists), _toConsumableArray(this.props.radio.seed_genres));
-			this.setState({ seeds: seeds, enabled: this.props.radio.enabled });
-
-			this.props.spotifyActions.resolveRadioSeeds(this.props.radio);
-
 			this.props.uiActions.setWindowTitle("Edit radio");
+
+			if (this.props.radio && this.props.radio.enabled) {
+				this.loadRadio(this.props.radio);
+			}
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (!this.props.radio && nextProps.radio) {
+				this.loadRadio(nextProps.radio);
+			}
+		}
+	}, {
+		key: 'loadRadio',
+		value: function loadRadio(radio) {
+			var seeds = [].concat(_toConsumableArray(radio.seed_tracks), _toConsumableArray(radio.seed_artists), _toConsumableArray(radio.seed_genres));
+			this.setState({ seeds: seeds, enabled: radio.enabled });
+			this.props.spotifyActions.resolveRadioSeeds(radio);
 		}
 	}, {
 		key: 'handleStart',
@@ -76769,7 +77423,9 @@ var EditRadio = function (_React$Component) {
 		}
 	}, {
 		key: 'addSeed',
-		value: function addSeed() {
+		value: function addSeed(e) {
+			e.preventDefault();
+
 			if (this.state.uri == '') {
 				this.setState({ error_message: 'Cannot be empty' });
 				return;
@@ -76888,8 +77544,8 @@ var EditRadio = function (_React$Component) {
 									')'
 								) : null,
 								_react2.default.createElement(
-									'button',
-									{ className: 'discrete remove-uri no-hover', onClick: function onClick(e) {
+									'span',
+									{ className: 'button discrete remove-uri no-hover', onClick: function onClick(e) {
 											return _this2.removeSeed(seed.uri);
 										} },
 									_react2.default.createElement(_Icon2.default, { name: 'delete' }),
@@ -76902,20 +77558,8 @@ var EditRadio = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					null,
-					_react2.default.createElement(
-						'div',
-						{ className: 'list' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'list-item no-click' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'grey-text' },
-								'No seeds'
-							)
-						)
-					)
+					{ className: 'no-results' },
+					'No seeds'
 				);
 			}
 		}
@@ -76940,7 +77584,7 @@ var EditRadio = function (_React$Component) {
 				_react2.default.createElement(
 					'form',
 					{ onSubmit: function onSubmit(e) {
-							return _this3.addSeed();
+							_this3.state.enabled ? _this3.handleUpdate(e) : _this3.handleStart(e);
 						} },
 					this.renderSeeds(),
 					_react2.default.createElement(
@@ -76962,8 +77606,10 @@ var EditRadio = function (_React$Component) {
 								value: this.state.uri
 							}),
 							_react2.default.createElement(
-								'button',
-								{ type: 'submit', className: 'discrete add-uri no-hover' },
+								'span',
+								{ className: 'button discrete add-uri no-hover', onClick: function onClick(e) {
+										return _this3.addSeed(e);
+									} },
 								_react2.default.createElement(_Icon2.default, { name: 'add' }),
 								'Add'
 							),
@@ -76973,17 +77619,13 @@ var EditRadio = function (_React$Component) {
 								this.state.error_message
 							) : null
 						)
-					)
-				),
-				_react2.default.createElement(
-					'form',
-					null,
+					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'actions centered-text' },
 						this.state.enabled ? _react2.default.createElement(
-							'button',
-							{ className: 'destructive large', onClick: function onClick(e) {
+							'span',
+							{ className: 'button destructive large', onClick: function onClick(e) {
 									return _this3.handleStop(e);
 								} },
 							'Stop'
@@ -77013,8 +77655,9 @@ var EditRadio = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		playlist: state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null,
-		playlists: state.core.playlists
+		radio: state.core.radio,
+		artists: state.core.artists,
+		tracks: state.core.tracks
 	};
 };
 
@@ -77023,6 +77666,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
 		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
 		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 	};
 };

@@ -12,4 +12,12 @@
 	pointer-events: none;
 	width: 220px;
 	max-width: 98vw;
+
+	&-section {
+		padding-top: 14px;
+
+		&:first-child {
+			padding-top: 0;
+		}
+	}
 }
