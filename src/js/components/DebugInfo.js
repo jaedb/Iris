@@ -80,7 +80,7 @@ class DebugInfo extends React.Component{
 			<div className="debug-info">
 
 				<div className="debug-info-section">
-					<h5>Indexes ({localStorageUsage.percent}%, {localStorageUsage.used}KB)</h5>
+					<h5>Indexes</h5>
 					<div className="debug-info-item">
 						Albums: {this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'}
 					</div>
@@ -117,6 +117,9 @@ class DebugInfo extends React.Component{
 					</div>
 					<div className="debug-info-item">
 						Touch: {helpers.isTouchDevice() ? 'on' : 'off'}
+					</div>
+					<div className="debug-info-item">
+						LocalStorage usage: {localStorageUsage.used}kb (~{localStorageUsage.percent}%)
 					</div>
 					<div className="debug-info-item">
 						Selected tracks: {this.props.ui.selected_tracks.length}<br />
