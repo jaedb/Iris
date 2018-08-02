@@ -2601,6 +2601,11 @@ h4 {
   h4 .dropdown-field {
     margin-left: 10px; }
 
+h5 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 700; }
+
 p a {
   color: inherit; }
   p a:hover {
@@ -5736,6 +5741,10 @@ main header {
   pointer-events: none;
   width: 220px;
   max-width: 98vw; }
+  .debug-info-section {
+    padding-top: 14px; }
+    .debug-info-section:first-child {
+      padding-top: 0; }
 
 .has-tooltip {
   position: relative; }

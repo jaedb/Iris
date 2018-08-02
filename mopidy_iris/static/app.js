@@ -4465,8 +4465,6 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-<<<<<<< HEAD
-=======
 
 if (process.env.NODE_ENV !== 'production') {
   var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
@@ -4494,106 +4492,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Icon = __webpack_require__(6);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _ContextMenuTrigger = __webpack_require__(25);
-
-var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Header = function (_React$Component) {
-	_inherits(Header, _React$Component);
-
-	function Header(props) {
-		_classCallCheck(this, Header);
-
-		var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
-
-		_this.state = {
-			expanded: false
-		};
-		return _this;
-	}
-
-	_createClass(Header, [{
-		key: 'handleContextMenuTrigger',
-		value: function handleContextMenuTrigger(e, options) {
-
-			// We have an override trigger (eg Album, Playlist)
-			if (this.props.handleContextMenuTrigger) {
-				return this.props.handleContextMenuTrigger(e);
-			} else {
-				e.preventDefault();
-				var data = {
-					e: e,
-					context: 'custom',
-					title: this.props.title,
-					options: options
-				};
-				this.props.uiActions.showContextMenu(data);
-			}
-		}
-	}, {
-		key: 'renderContextMenuTrigger',
-		value: function renderContextMenuTrigger() {
-			var _this2 = this;
-
-			// No custom trigger, nor any options
-			if (!this.props.handleContextMenuTrigger && !this.props.options) {
-				return null;
-			}
->>>>>>> master
-
-if (process.env.NODE_ENV !== 'production') {
-  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-    Symbol.for &&
-    Symbol.for('react.element')) ||
-    0xeac7;
-
-  var isValidElement = function(object) {
-    return typeof object === 'object' &&
-      object !== null &&
-      object.$$typeof === REACT_ELEMENT_TYPE;
-  };
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(118)(isValidElement, throwOnDirectAccess);
-} else {
-  // By explicitly using `prop-types` you are opting into new production behavior.
-  // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(119)();
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
-
-/***/ }),
-/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4937,18 +4835,12 @@ function setSnapcastGroupVolume(id, percent) {
 }
 
 /***/ }),
-<<<<<<< HEAD
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
-=======
-/* 16 */
-/***/ (function(module, exports) {
->>>>>>> master
 
 "use strict";
 
 
-<<<<<<< HEAD
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
@@ -5073,8 +4965,6 @@ module.exports = function() {
 };
 
 
-=======
->>>>>>> master
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -50964,11 +50854,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
-<<<<<<< HEAD
 var pusherActions = __webpack_require__(14);
-=======
-var pusherActions = __webpack_require__(15);
->>>>>>> master
 var mopidyActions = __webpack_require__(8);
 var spotifyActions = __webpack_require__(9);
 var lastfmActions = __webpack_require__(20);
@@ -51276,7 +51162,6 @@ var CoreMiddleware = function () {
                         for (var i = 0; i < indexes.length; i++) {
                             tracks_uris.splice(indexes[i], 1);
                         }
-<<<<<<< HEAD
 
                         var snapshot_id = null;
                         if (action.snapshot_id) {
@@ -51606,337 +51491,6 @@ var CoreMiddleware = function () {
                         records_action[records_type_plural] = records;
                         store.dispatch(records_action);
 
-=======
-
-                        var snapshot_id = null;
-                        if (action.snapshot_id) {
-                            snapshot_id = action.snapshot_id;
-                        }
-
-                        // Update our playlist 
-                        playlist.tracks_uris = tracks_uris;
-                        playlist.snapshot_id = snapshot_id;
-
-                        // Trigger normal playlist updating
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: [playlist]
-                        });
-                        break;
-
-                    /**
-                     * Queue and playback info
-                     **/
-
-                    case 'CURRENT_TRACK_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: [action.track]
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'QUEUE_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: action.tracks
-                        });
-
-                        next(action);
-                        break;
-
-                    /**
-                     * Index actions
-                     * These modify our asset indexes, which are used globally
-                     **/
-
-                    // Array wrapper for TRACKS_LOADED
-                    case 'TRACK_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: [action.track]
-                        });
-                        break;
-
-                    // Array wrapper for ALBUMS_LOADED
-                    case 'ALBUM_LOADED':
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: [action.album]
-                        });
-                        break;
-
-                    // Array wrapper for ARTISTS_LOADED
-                    case 'ARTIST_LOADED':
-                        store.dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: [action.artist]
-                        });
-                        break;
-
-                    // Array wrapper for PLAYLISTS_LOADED
-                    case 'PLAYLIST_LOADED':
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: [action.playlist]
-                        });
-                        break;
-
-                    // Array wrapper for USERS_LOADED
-                    case 'USER_LOADED':
-                        store.dispatch({
-                            type: 'USERS_LOADED',
-                            users: [action.user]
-                        });
-                        break;
-
-                    case 'TRACKS_LOADED':
-                        var tracks = Object.assign({}, core.tracks);
-
-                        for (var i = 0; i < action.tracks.length; i++) {
-                            var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
-
-                            if (tracks[track.uri] !== undefined) {
-                                track = Object.assign({}, tracks[track.uri], track);
-                            }
-
-                            if (track.album && track.album.images && track.album.images.length > 0) {
-                                track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
-                                track.images = track.album.images;
-                            }
-
-                            tracks[track.uri] = track;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_TRACKS_INDEX',
-                            tracks: tracks
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'ALBUMS_LOADED':
-                        var albums = Object.assign({}, core.albums);
-                        var tracks_loaded = [];
-
-                        for (var i = 0; i < action.albums.length; i++) {
-                            var album = Object.assign({}, action.albums[i]);
-                            helpers.formatAlbum(album);
-
-                            if (albums[album.uri]) {
-                                album = Object.assign({}, albums[album.uri], album);
-                            }
-
-                            if (album.images && album.images.length > 0) {
-                                album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
-                            }
-
-                            // Load our tracks
-                            if (album.tracks) {
-                                var tracks = helpers.formatTracks(album.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                album.tracks_uris = tracks_uris;
-                                delete album.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
-                            }
-
-                            albums[album.uri] = album;
-                        }
-
-                        // Load these new tracks
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_ALBUMS_INDEX',
-                            albums: albums
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'ARTISTS_LOADED':
-                        var artists = Object.assign({}, core.artists);
-                        var tracks_loaded = [];
-
-                        for (var i = 0; i < action.artists.length; i++) {
-                            var artist = action.artists[i];
-
-                            if (artists[artist.uri]) {
-
-                                // if we've already got images, remove and add as additional_images
-                                // this is to prevent LastFM overwriting Spotify images
-                                if (artists[artist.uri].images) {
-                                    artist.images_additional = artist.images;
-                                    delete artist.images;
-                                }
-
-                                artist = Object.assign({}, artists[artist.uri], artist);
-                            }
-
-                            if (artist.tracks) {
-                                var tracks = helpers.formatTracks(artist.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                artist.tracks_uris = tracks_uris;
-                                delete artist.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
-                            }
-
-                            // Update index
-                            artists[artist.uri] = artist;
-                        }
-
-                        // Load our tracks
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
-
-                        store.dispatch({
-                            type: 'UPDATE_ARTISTS_INDEX',
-                            artists: artists
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'PLAYLISTS_LOADED':
-                        var playlists = Object.assign({}, core.playlists);
-                        var tracks_loaded = [];
-
-                        for (var i = 0; i < action.playlists.length; i++) {
-                            var playlist = Object.assign({}, action.playlists[i]);
-
-                            // Detect editability
-                            switch (helpers.uriSource(playlist.uri)) {
-
-                                case 'm3u':
-                                    playlist.can_edit = true;
-                                    break;
-
-                                case 'spotify':
-                                    if (store.getState().spotify.authorization && store.getState().spotify.me) {
-                                        playlist.can_edit = helpers.getFromUri('playlistowner', playlist.uri) == store.getState().spotify.me.id;
-                                    }
-                            }
-
-                            if (playlists[playlist.uri] !== undefined) {
-                                playlist = Object.assign({}, playlists[playlist.uri], playlist);
-                            }
-
-                            // Load our tracks
-                            if (playlist.tracks) {
-                                var tracks = helpers.formatTracks(playlist.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                playlist.tracks_uris = tracks_uris;
-                                delete playlist.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
-                            }
-
-                            // Update index
-                            playlists[playlist.uri] = playlist;
-                        }
-
-                        // Load our tracks
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
-
-                        store.dispatch({
-                            type: 'UPDATE_PLAYLISTS_INDEX',
-                            playlists: playlists
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'USERS_LOADED':
-                        var users = Object.assign({}, core.users);
-
-                        for (var i = 0; i < action.users.length; i++) {
-                            var user = Object.assign({}, action.users[i]);
-
-                            if (users[user.uri]) {
-                                user = Object.assign({}, users[user.uri], user);
-                            }
-
-                            users[user.uri] = user;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_USERS_INDEX',
-                            users: users
-                        });
-
-                        next(action);
-                        break;
-
-                    /**
-                     * Loaded more linked assets
-                     * Often fired during lazy-loading or async asset grabbing.
-                     * We link the parent to these indexed records by {type}s_uris
-                     **/
-
-                    case 'LOADED_MORE':
-                        var parent_type_plural = action.parent_type + 's';
-                        var parent_index = Object.assign({}, core[action.parent_type + 's']);
-                        var parent = Object.assign({}, parent_index[action.parent_key]);
-
-                        if (action.records_data.items !== undefined) {
-                            var records = action.records_data.items;
-                        } else if (action.records_data.tracks !== undefined) {
-                            var records = action.records_data.tracks;
-                        } else if (action.records_data.artists !== undefined) {
-                            var records = action.records_data.artists;
-                        } else if (action.records_data.albums !== undefined) {
-                            var records = action.records_data.albums;
-                        } else if (action.records_data.playlists !== undefined) {
-                            var records = action.records_data.playlists;
-                        } else {
-                            var records = action.records_data;
-                        }
-
-                        if (action.records_type == 'track') {
-                            records = helpers.formatTracks(records);
-                        }
-
-                        var records_type_plural = action.records_type + 's';
-                        var records_index = Object.assign({});
-                        var records_uris = helpers.arrayOf('uri', records);
-
-                        // Append our records_uris array with our new records
-                        var uris = records_uris;
-                        if (parent[records_type_plural + '_uris'] !== undefined) {
-                            uris = [].concat(_toConsumableArray(parent[records_type_plural + '_uris']), _toConsumableArray(uris));
-                        }
-                        parent[records_type_plural + '_uris'] = uris;
-                        if (action.records_data.next !== undefined) {
-                            parent[records_type_plural + '_more'] = action.records_data.next;
-                        }
-
-                        // Parent loaded (well, changed)
-                        var parent_action = {
-                            type: parent_type_plural.toUpperCase() + '_LOADED'
-                        };
-                        parent_action[parent_type_plural] = [parent];
-                        store.dispatch(parent_action);
-
-                        // Records loaded
-                        var records_action = {
-                            type: records_type_plural.toUpperCase() + '_LOADED'
-                        };
-                        records_action[records_type_plural] = records;
-                        store.dispatch(records_action);
-
->>>>>>> master
                         next(action);
                         break;
 
@@ -52213,7 +51767,7 @@ var helpers = __webpack_require__(1);
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
 var mopidyActions = __webpack_require__(8);
-var pusherActions = __webpack_require__(15);
+var pusherActions = __webpack_require__(14);
 var lastfmActions = __webpack_require__(20);
 var spotifyActions = __webpack_require__(9);
 
@@ -53046,7 +52600,7 @@ var mopidyActions = __webpack_require__(8);
 var coreActions = __webpack_require__(11);
 var uiActions = __webpack_require__(3);
 var spotifyActions = __webpack_require__(9);
-var pusherActions = __webpack_require__(15);
+var pusherActions = __webpack_require__(14);
 var lastfmActions = __webpack_require__(20);
 
 var MopidyMiddleware = function () {
@@ -57818,11 +57372,7 @@ Object.defineProperty(exports, "__esModule", {
 var helpers = __webpack_require__(1);
 var lastfmActions = __webpack_require__(20);
 var uiActions = __webpack_require__(3);
-<<<<<<< HEAD
 var pusherActions = __webpack_require__(14);
-=======
-var pusherActions = __webpack_require__(15);
->>>>>>> master
 
 var LastfmMiddleware = function () {
 
@@ -57882,11 +57432,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var helpers = __webpack_require__(1);
 var spotifyActions = __webpack_require__(9);
 var uiActions = __webpack_require__(3);
-<<<<<<< HEAD
 var pusherActions = __webpack_require__(14);
-=======
-var pusherActions = __webpack_require__(15);
->>>>>>> master
 
 var SpotifyMiddleware = function () {
 
@@ -58545,7 +58091,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -60086,17 +59632,12 @@ var _react = __webpack_require__(0);
 var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
-<<<<<<< HEAD
 
 var _redux = __webpack_require__(2);
 
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
-=======
-
-var _redux = __webpack_require__(2);
->>>>>>> master
 
 var _actions = __webpack_require__(8);
 
@@ -60227,7 +59768,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(15);
+var _actions2 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -60474,7 +60015,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -62318,11 +61859,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -62689,11 +62226,7 @@ var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -62749,7 +62282,7 @@ var _actions2 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -63348,11 +62881,7 @@ var _FollowButton = __webpack_require__(45);
 
 var _FollowButton2 = _interopRequireDefault(_FollowButton);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64065,11 +63594,7 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64879,11 +64404,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -64899,7 +64420,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(15);
+var _actions2 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -65212,11 +64733,7 @@ var _TrackList = __webpack_require__(22);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -65228,7 +64745,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(15);
+var _actions2 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -65383,11 +64900,7 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -65403,7 +64916,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(15);
+var _actions2 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
@@ -65933,11 +65446,7 @@ var _reactRouter = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -66715,11 +66224,7 @@ var _SourcesPriority = __webpack_require__(243);
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -66755,7 +66260,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -67484,7 +66989,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _actions = __webpack_require__(15);
+var _actions = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions);
 
@@ -69497,7 +69002,7 @@ var _actions3 = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(15);
+var _actions4 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions4);
 
@@ -70132,7 +69637,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -70798,11 +70303,7 @@ var _reactInputRange = __webpack_require__(252);
 
 var _reactInputRange2 = _interopRequireDefault(_reactInputRange);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -73908,11 +73409,7 @@ var _PlaylistGrid = __webpack_require__(47);
 
 var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74159,11 +73656,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74374,11 +73867,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74579,11 +74068,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -74862,11 +74347,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75252,11 +74733,7 @@ var _List = __webpack_require__(52);
 
 var _List2 = _interopRequireDefault(_List);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75672,11 +75149,7 @@ var _TrackList = __webpack_require__(22);
 
 var _TrackList2 = _interopRequireDefault(_TrackList);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -75872,11 +75345,7 @@ var _DropdownField = __webpack_require__(35);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -76256,11 +75725,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(5);
 
-<<<<<<< HEAD
 var _Header = __webpack_require__(15);
-=======
-var _Header = __webpack_require__(14);
->>>>>>> master
 
 var _Header2 = _interopRequireDefault(_Header);
 
@@ -77940,7 +77405,7 @@ var _actions2 = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(15);
+var _actions3 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions3);
 
@@ -78392,7 +77857,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(15);
+var _actions2 = __webpack_require__(14);
 
 var pusherActions = _interopRequireWildcard(_actions2);
 
