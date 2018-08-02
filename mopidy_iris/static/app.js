@@ -61265,6 +61265,32 @@ var localstorageMiddleware = function () {
                             session: null
                         });
                         break;
+
+                    /**
+                     * Experimental saving of stores to localStorage
+                     * This uses way too much storage space (ie 10MB+) so won't work. We need
+                     * to use the IndexedDB engine instead for storing this quantity of data
+                      case 'UPDATE_TRACKS_INDEX':
+                        helpers.setStorage('core', {tracks: action.tracks});
+                        next(action);
+                        break;
+                    case 'UPDATE_ALBUMS_INDEX':
+                        helpers.setStorage('core', {albums: action.albums});
+                        next(action);
+                        break;
+                    case 'UPDATE_ARTISTS_INDEX':
+                        helpers.setStorage('core', {artists: action.artists});
+                        next(action);
+                        break;
+                    case 'UPDATE_PLAYLISTS_INDEX':
+                        helpers.setStorage('core', {playlists: action.playlists});
+                        next(action);
+                        break;
+                    case 'UPDATE_USERS_INDEX':
+                        helpers.setStorage('core', {users: action.users});
+                        next(action);
+                        break;
+                     */
                 }
             };
         };
@@ -64865,6 +64891,28 @@ var DebugInfo = function (_React$Component) {
 	}
 
 	_createClass(DebugInfo, [{
+		key: 'localStorageSize',
+		value: function localStorageSize() {
+			var data = '';
+
+			for (var key in window.localStorage) {
+				if (window.localStorage.hasOwnProperty(key)) {
+					data += window.localStorage[key];
+				}
+			}
+
+			var used = 0;
+			var total = 5000;
+			if (data !== '') {
+				used = (data.length * 16 / (8 * 1024)).toFixed(2);
+			}
+
+			return {
+				used: used,
+				percent: (used / total * 100).toFixed(2)
+			};
+		}
+	}, {
 		key: 'renderLoadQueue',
 		value: function renderLoadQueue() {
 			if (!this.props.ui.load_queue) {
@@ -64876,7 +64924,7 @@ var DebugInfo = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'item' },
+				{ className: 'debug-info-item' },
 				queue
 			);
 		}
@@ -64884,7 +64932,11 @@ var DebugInfo = function (_React$Component) {
 		key: 'renderLoadQueue',
 		value: function renderLoadQueue() {
 			if (!this.props.ui.load_queue) {
-				return null;
+				return _react2.default.createElement(
+					'div',
+					{ className: 'debug-info-item grey-text' },
+					'Nothing loading'
+				);
 			}
 
 			var load_queue = this.props.ui.load_queue;
@@ -64902,102 +64954,137 @@ var DebugInfo = function (_React$Component) {
 			if (queue.length > 0) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					_react2.default.createElement('br', null),
+					{ className: 'debug-info-item' },
 					queue
 				);
 			} else {
-				return null;
+				return _react2.default.createElement(
+					'div',
+					{ className: 'debug-info-item grey-text' },
+					'Nothing loading'
+				);
 			}
 		}
 	}, {
 		key: 'render',
 		value: function render() {
+			var localStorageUsage = this.localStorageSize();
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'debug-info' },
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Albums: ',
-					this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Indexes (',
+						localStorageUsage.percent,
+						'%, ',
+						localStorageUsage.used,
+						'KB)'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Albums: ',
+						this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Artists: ',
+						this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Playlists: ',
+						this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Tracks: ',
+						this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Users: ',
+						this.props.core.users ? Object.keys(this.props.core.users).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Notifications: ',
+						this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Processes: ',
+						this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Enqueue batches: ',
+						this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'
+					)
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Artists: ',
-					this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Config'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Slim mode: ',
+						this.props.ui.slim_mode ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Test mode: ',
+						this.props.ui.test_mode ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Touch: ',
+						helpers.isTouchDevice() ? 'on' : 'off'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Selected tracks: ',
+						this.props.ui.selected_tracks.length,
+						_react2.default.createElement('br', null),
+						this.props.ui.selected_tracks.map(function (track_key, index) {
+							return _react2.default.createElement(
+								'div',
+								{ key: track_key + '_' + index },
+								track_key
+							);
+						})
+					)
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'item' },
-					'Playlists: ',
-					this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Tracks: ',
-					this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Users: ',
-					this.props.core.users ? Object.keys(this.props.core.users).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Notifications: ',
-					this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Processes: ',
-					this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Enqueue batches: ',
-					this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'
-				),
-				_react2.default.createElement('br', null),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Slim mode: ',
-					this.props.ui.slim_mode ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Test mode: ',
-					this.props.ui.test_mode ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Touch: ',
-					helpers.isTouchDevice() ? 'on' : 'off'
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'item' },
-					'Selected tracks: ',
-					this.props.ui.selected_tracks.length,
-					_react2.default.createElement('br', null),
-					this.props.ui.selected_tracks.map(function (track_key, index) {
-						return _react2.default.createElement(
-							'div',
-							{ key: track_key + '_' + index },
-							track_key
-						);
-					})
-				),
-				this.renderLoadQueue()
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'h5',
+						null,
+						'Load queue'
+					),
+					this.renderLoadQueue()
+				)
 			);
 		}
 	}]);
