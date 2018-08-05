@@ -74426,7 +74426,7 @@ var LibraryArtists = function (_React$Component) {
 				this.props.mopidyActions.getLibraryArtists();
 			}
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}
@@ -74446,7 +74446,7 @@ var LibraryArtists = function (_React$Component) {
 				}
 			}
 
-			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
+			if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started') {
@@ -74587,7 +74587,7 @@ var LibraryArtists = function (_React$Component) {
 				label: 'Local'
 			}];
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:')) {
+			if (this.props.spotify_enabled) {
 				source_options.push({
 					value: 'spotify',
 					label: 'Spotify'
@@ -74681,6 +74681,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null,
+		spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
 		spotify_library_artists: state.spotify.library_artists,
 		spotify_library_artists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null,
 		artists: state.core.artists,
@@ -74816,11 +74817,11 @@ var LibraryAlbums = function (_React$Component) {
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Albums");
 
-			if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')) {
+			if (this.props.mopidy_connected && this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'local')) {
 				this.props.mopidyActions.getLibraryAlbums();
 			}
 
-			if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.spotify_enabled && this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryAlbums();
 			}
 		}
@@ -74840,7 +74841,7 @@ var LibraryAlbums = function (_React$Component) {
 				}
 			}
 
-			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
+			if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
@@ -74999,7 +75000,7 @@ var LibraryAlbums = function (_React$Component) {
 				label: 'Local'
 			}];
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:')) {
+			if (this.props.spotify_enabled) {
 				source_options.push({
 					value: 'spotify',
 					label: 'Spotify'
@@ -75101,6 +75102,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		mopidy_library_albums_status: state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null,
+		spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
 		spotify_library_albums: state.spotify.library_albums,
 		spotify_library_albums_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null,
 		view: state.ui.library_albums_view,
@@ -75204,7 +75206,11 @@ var LibraryTracks = function (_React$Component) {
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Tracks");
 
-			if (this.props.library_tracks === undefined) {
+			if (!this.props.spotify_enabled) {
+				this.props.uiActions.createNotification({ type: 'warning', content: 'Enable Spotify to browse tracks' });
+			}
+
+			if (this.props.spotify_enabled && this.props.library_tracks === undefined) {
 				this.props.spotifyActions.getLibraryTracks();
 			}
 		}
@@ -75295,6 +75301,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
+		spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
 		library_tracks: state.spotify.library_tracks,
 		library_tracks_more: state.spotify.library_tracks_more
 	};
@@ -75416,7 +75423,7 @@ var LibraryPlaylists = function (_React$Component) {
 				this.props.mopidyActions.getLibraryPlaylists();
 			}
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+			if (this.props.spotify_enabled && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
 				this.props.spotifyActions.getLibraryPlaylists();
 			}
 		}
@@ -75437,7 +75444,7 @@ var LibraryPlaylists = function (_React$Component) {
 				}
 			}
 
-			if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')) {
+			if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
 				if (newProps.spotify_library_playlists_status != 'finished' && newProps.spotify_library_playlists_status != 'started') {
@@ -75569,7 +75576,7 @@ var LibraryPlaylists = function (_React$Component) {
 				label: 'Local'
 			}];
 
-			if (this.props.mopidy_uri_schemes.includes('spotify:')) {
+			if (this.props.spotify_enabled) {
 				source_options.push({
 					value: 'spotify',
 					label: 'Spotify'
@@ -75678,6 +75685,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_playlists: state.mopidy.library_playlists,
 		mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
+		spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
 		spotify_library_playlists: state.spotify.library_playlists,
 		spotify_library_playlists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
 		load_queue: state.ui.load_queue,

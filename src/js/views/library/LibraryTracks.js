@@ -24,7 +24,11 @@ class LibraryTracks extends React.Component{
 	componentDidMount(){
 		this.props.uiActions.setWindowTitle("Tracks");
 
-		if (this.props.library_tracks === undefined){
+		if (!this.props.spotify_enabled){
+			this.props.uiActions.createNotification({type: 'warning', content: 'Enable Spotify to browse tracks'});
+		}
+
+		if (this.props.spotify_enabled && this.props.library_tracks === undefined){
 			this.props.spotifyActions.getLibraryTracks();
 		}
 	}
@@ -99,6 +103,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
+		spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
 		library_tracks: state.spotify.library_tracks,
 		library_tracks_more: state.spotify.library_tracks_more
 	}

@@ -36,7 +36,7 @@ class LibraryArtists extends React.Component{
 			this.props.mopidyActions.getLibraryArtists();
 		}
 
-		if (this.props.mopidy_uri_schemes.includes('spotify:') && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
+		if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryArtists();
 		}
 	}
@@ -55,7 +55,7 @@ class LibraryArtists extends React.Component{
 			}			
 		}
 
-		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){		
+		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){		
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
@@ -186,7 +186,7 @@ class LibraryArtists extends React.Component{
 			}
 		];
 
-		if (this.props.mopidy_uri_schemes.includes('spotify:')){
+		if (this.props.spotify_enabled){
 			source_options.push({
 				value: 'spotify',
 				label: 'Spotify'
@@ -276,6 +276,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),
+		spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
 		spotify_library_artists: state.spotify.library_artists,
 		spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
 		artists: state.core.artists,
