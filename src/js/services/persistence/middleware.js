@@ -1,7 +1,17 @@
 
-var helpers = require('../../helpers.js')
+import Dexie from 'dexie';
+var helpers = require('../../helpers.js');
 
-const localstorageMiddleware = (function(){
+const persistenceMiddleware = (function(){
+
+    var db = new Dexie("Iris");
+    db.version(1).stores({
+        albums: "&uri,name",
+        artists: "&uri,name",
+        playlists: "&uri,name",
+        tracks: "&uri,name",
+        users: "&uri"
+    });
 
     /**
      * The actual middleware inteceptor
@@ -181,6 +191,16 @@ const localstorageMiddleware = (function(){
                 );
                 break;
             
+            case 'UPDATE_ALBUMS_INDEX':
+                console.log(db.albums);
+                for (var uri in action.albums){
+                    if (action.albums.hasOwnProperty(uri)){
+                        db.albums.add(action.albums[uri]);
+                    }
+                }
+                next(action);
+                break;
+
             /**
              * Experimental saving of stores to localStorage
              * This uses way too much storage space (ie 10MB+) so won't work. We need
@@ -212,4 +232,4 @@ const localstorageMiddleware = (function(){
 
 })();
 
-export default localstorageMiddleware
+export default persistenceMiddleware
