@@ -192,10 +192,9 @@ const persistenceMiddleware = (function(){
                 break;
             
             case 'UPDATE_ALBUMS_INDEX':
-                console.log(db.albums);
                 for (var uri in action.albums){
                     if (action.albums.hasOwnProperty(uri)){
-                        db.albums.add(action.albums[uri]);
+                        db.albums.put(action.albums[uri]);
                     }
                 }
                 next(action);
