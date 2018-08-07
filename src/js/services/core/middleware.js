@@ -429,16 +429,17 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'ALBUMS_LOADED':
-                var albums = Object.assign({}, core.albums);
+                var albums_loaded = [];
                 var tracks_loaded = [];
 
                 for (var i = 0; i < action.albums.length; i++){
                     var album = Object.assign({}, action.albums[i]);
                     helpers.formatAlbum(album)
-
+/*
                     if (albums[album.uri]){
                         album = Object.assign({}, albums[album.uri], album);
                     }
+                    */
 
                     if (album.images && album.images.length > 0){
                         album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
@@ -453,7 +454,7 @@ const CoreMiddleware = (function(){
                         tracks_loaded = [...tracks_loaded, ...tracks];
                     }
 
-                    albums[album.uri] = album;
+                    albums_loaded.push(album);
                 }
 
                 // Load these new tracks
@@ -464,8 +465,8 @@ const CoreMiddleware = (function(){
 
                 // Update index
                 store.dispatch({
-                    type: 'UPDATE_ALBUMS_INDEX',
-                    albums: albums
+                    type: 'DB_UPDATE_ALBUMS',
+                    albums: albums_loaded
                 });
 
                 next(action);

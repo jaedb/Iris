@@ -23,7 +23,40 @@ const persistenceMiddleware = (function(){
         next(action);
 
         // append our state to a global variable. This gives us access to debug the store at any point
-        window._store = store
+        window._store = store;
+
+        // Add the ability to echo out our database
+        window._db = {
+            get: function(table){
+                db[table].toArray()
+                    .then(
+                        result => {
+                            console.log(result);
+                        }
+                    );
+            },
+            drop: function(table){
+                db[table].clear()
+                    .then(
+                        result => {
+                            console.log(result);
+                        }
+                    )
+                    .catch(function(e){
+                        console.log(e);
+                    });
+            }
+        }
+
+        // Add the ability to echo out our database
+        window._db_table = function(table){
+            db[table].toArray()
+                .then(
+                    result => {
+                        console.log(result);
+                    }
+                );
+        }
 
         // if debug enabled
         if (store.getState().ui.log_actions){
@@ -191,12 +224,23 @@ const persistenceMiddleware = (function(){
                 );
                 break;
             
-            case 'UPDATE_ALBUMS_INDEX':
-                for (var uri in action.albums){
-                    if (action.albums.hasOwnProperty(uri)){
-                        db.albums.put(action.albums[uri]);
+            case 'DB_UPDATE_ALBUMS':
+                db.transaction('rw', db.albums, () => {
+                    for (var album of action.albums){
+                        db.albums.get(album.uri, existing_record => {
+                            if (existing_record){
+                                var updated_album = Object.assign({}, existing_record, album);
+                            } else {
+                                var updated_album = Object.assign({}, album);
+                            }
+
+                            db.albums.put(updated_album);
+                        });
                     }
-                }
+                }).catch(function (e) {
+                    // handle errors
+                });
+
                 next(action);
                 break;
 
