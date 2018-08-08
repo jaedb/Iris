@@ -226,8 +226,13 @@ const persistenceMiddleware = (function(){
             
             case 'DB_UPDATE_ALBUMS':
                 db.transaction('rw', db.albums, () => {
-                    for (var album of action.albums){
+                    action.albums.forEach(album => {
+
+                        // See if we've got a record already that we need to merge with.
+                        // This is particularly important as an album may collate information
+                        // from multiple sources, or a reference record may be fully loaded later
                         db.albums.get(album.uri, existing_record => {
+
                             if (existing_record){
                                 var updated_album = Object.assign({}, existing_record, album);
                             } else {
@@ -236,9 +241,9 @@ const persistenceMiddleware = (function(){
 
                             db.albums.put(updated_album);
                         });
-                    }
+                    });
                 }).catch(function (e) {
-                    // handle errors
+                    store.dispatch(coreActions.handleException("Failed to update albums table", e));
                 });
 
                 next(action);

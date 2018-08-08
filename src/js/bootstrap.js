@@ -1,24 +1,24 @@
 
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 
-import * as helpers from './helpers'
+import * as helpers from './helpers';
 
-import core from './services/core/reducer'
-import ui from './services/ui/reducer'
-import pusher from './services/pusher/reducer'
-import mopidy from './services/mopidy/reducer'
-import lastfm from './services/lastfm/reducer'
-import spotify from './services/spotify/reducer'
-import genius from './services/genius/reducer'
+import core from './services/core/reducer';
+import ui from './services/ui/reducer';
+import pusher from './services/pusher/reducer';
+import mopidy from './services/mopidy/reducer';
+import lastfm from './services/lastfm/reducer';
+import spotify from './services/spotify/reducer';
+import genius from './services/genius/reducer';
 
-import thunk from 'redux-thunk'
-import coreMiddleware from './services/core/middleware'
-import uiMiddleware from './services/ui/middleware'
-import pusherMiddleware from './services/pusher/middleware'
-import mopidyMiddleware from './services/mopidy/middleware'
-import lastfmMiddleware from './services/lastfm/middleware'
-import spotifyMiddleware from './services/spotify/middleware'
-import persistenceMiddleware from './services/persistence/middleware'
+import thunk from 'redux-thunk';
+import coreMiddleware from './services/core/middleware';
+import uiMiddleware from './services/ui/middleware';
+import pusherMiddleware from './services/pusher/middleware';
+import mopidyMiddleware from './services/mopidy/middleware';
+import lastfmMiddleware from './services/lastfm/middleware';
+import spotifyMiddleware from './services/spotify/middleware';
+import persistenceMiddleware from './services/persistence/middleware';
 
 let reducers = combineReducers({
     core,

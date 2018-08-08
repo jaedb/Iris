@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';

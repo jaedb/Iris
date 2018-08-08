@@ -4,9 +4,8 @@
 
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router'
+import { Provider } from 'react-redux';
+import { Router, Route, Link, IndexRoute, hashHistory } from 'react-router';
 
 import store from './bootstrap.js';
 require('../scss/app.scss');

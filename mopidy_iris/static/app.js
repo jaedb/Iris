@@ -25672,8 +25672,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
-
 var _reactRouter = __webpack_require__(5);
 
 var _bootstrap = __webpack_require__(177);
@@ -25798,11 +25796,9 @@ var _AddToPlaylist2 = _interopRequireDefault(_AddToPlaylist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Base-level application wrapper
- **/
-
-__webpack_require__(290);
+__webpack_require__(290); /**
+                              * Base-level application wrapper
+                              **/
 
 global.baseURL = '/';
 
@@ -58031,40 +58027,24 @@ var persistenceMiddleware = function () {
 
                     case 'DB_UPDATE_ALBUMS':
                         db.transaction('rw', db.albums, function () {
-                            var _iteratorNormalCompletion = true;
-                            var _didIteratorError = false;
-                            var _iteratorError = undefined;
+                            action.albums.forEach(function (album) {
 
-                            try {
-                                for (var _iterator = action.albums[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                    var album = _step.value;
+                                // See if we've got a record already that we need to merge with.
+                                // This is particularly important as an album may collate information
+                                // from multiple sources, or a reference record may be fully loaded later
+                                db.albums.get(album.uri, function (existing_record) {
 
-                                    db.albums.get(album.uri, function (existing_record) {
-                                        if (existing_record) {
-                                            var updated_album = Object.assign({}, existing_record, album);
-                                        } else {
-                                            var updated_album = Object.assign({}, album);
-                                        }
-
-                                        db.albums.put(updated_album);
-                                    });
-                                }
-                            } catch (err) {
-                                _didIteratorError = true;
-                                _iteratorError = err;
-                            } finally {
-                                try {
-                                    if (!_iteratorNormalCompletion && _iterator.return) {
-                                        _iterator.return();
+                                    if (existing_record) {
+                                        var updated_album = Object.assign({}, existing_record, album);
+                                    } else {
+                                        var updated_album = Object.assign({}, album);
                                     }
-                                } finally {
-                                    if (_didIteratorError) {
-                                        throw _iteratorError;
-                                    }
-                                }
-                            }
+
+                                    db.albums.put(updated_album);
+                                });
+                            });
                         }).catch(function (e) {
-                            // handle errors
+                            store.dispatch(coreActions.handleException("Failed to update albums table", e));
                         });
 
                         next(action);
