@@ -122,20 +122,40 @@ export default function reducer(core = {}, action){
          * and appended to their relevant index.
          **/
 
-        case 'UPDATE_TRACKS_INDEX':
-            return Object.assign({}, core, { tracks: action.tracks });
+        case 'TRACKS_LOADED':
+            var tracks = Object.assign({}, core.tracks);
+            action.tracks.forEach(track => {
+                tracks[track.uri] = track;
+            });
+            return Object.assign({}, core, { tracks: tracks });
 
-        case 'UPDATE_ALBUMS_INDEX':
-            return Object.assign({}, core, { albums: action.albums });
+        case 'ALBUMS_LOADED':
+            var albums = Object.assign({}, core.albums);
+            action.albums.forEach(album => {
+                albums[album.uri] = album;
+            });
+            return Object.assign({}, core, { albums: albums });
 
-        case 'UPDATE_ARTISTS_INDEX':
-            return Object.assign({}, core, { artists: action.artists });
+        case 'ARTISTS_LOADED':
+            var artists = Object.assign({}, core.artists);
+            action.artists.forEach(artist => {
+                artists[artist.uri] = artist;
+            });
+            return Object.assign({}, core, { artists: artists });
 
-        case 'UPDATE_PLAYLISTS_INDEX':
-            return Object.assign({}, core, { playlists: action.playlists });
+        case 'PLAYLISTS_LOADED':
+            var playlists = Object.assign({}, core.playlists);
+            action.playlists.forEach(playlist => {
+                playlists[playlist.uri] = playlist;
+            });
+            return Object.assign({}, core, { playlists: playlists });
 
-        case 'UPDATE_USERS_INDEX':
-            return Object.assign({}, core, { users: action.users });
+        case 'USERS_LOADED':
+            var users = Object.assign({}, core.users);
+            action.users.forEach(user => {
+                users[user.uri] = user;
+            });
+            return Object.assign({}, core, { users: users });
 
 
 

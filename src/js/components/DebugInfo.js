@@ -27,11 +27,8 @@ class DebugInfo extends React.Component{
 		if (data !== ''){
 			used = ((data.length * 16)/(8 * 1024)).toFixed(2);
 		}
-		
-		return {
-			used: used,
-			percent: (used / total * 100).toFixed(2)
-		};
+
+		return used;
 	}
 
 	renderLoadQueue(){
@@ -74,15 +71,16 @@ class DebugInfo extends React.Component{
 	}
 
 	render(){
-		var localStorageUsage = this.localStorageSize();
-
 		return (
 			<div className="debug-info">
 
 				<div className="debug-info-section">
-					<h5>Indexes</h5>
+					<h5>Storage (state/persistent)</h5>
 					<div className="debug-info-item">
-						Albums: {this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'}
+						LocalStorage: {this.localStorageSize()}kb
+					</div>
+					<div className="debug-info-item">
+						Albums: {Object.keys(this.props.core.albums).length}
 					</div>
 					<div className="debug-info-item">
 						Artists: {this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'}
@@ -117,9 +115,6 @@ class DebugInfo extends React.Component{
 					</div>
 					<div className="debug-info-item">
 						Touch: {helpers.isTouchDevice() ? 'on' : 'off'}
-					</div>
-					<div className="debug-info-item">
-						LocalStorage usage: {localStorageUsage.used}kb (~{localStorageUsage.percent}%)
 					</div>
 					<div className="debug-info-item">
 						Selected tracks: {this.props.ui.selected_tracks.length}<br />

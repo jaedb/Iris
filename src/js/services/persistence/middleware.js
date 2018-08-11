@@ -1,15 +1,17 @@
 
 import Dexie from 'dexie';
+
 var helpers = require('../../helpers.js');
+var coreActions = require('../core/actions.js');
 
 const persistenceMiddleware = (function(){
 
-    var db = new Dexie("Iris");
+    var db = new Dexie("iris");
     db.version(1).stores({
+        tracks: "&uri,name",
         albums: "&uri,name",
         artists: "&uri,name",
         playlists: "&uri,name",
-        tracks: "&uri,name",
         users: "&uri"
     });
 
@@ -33,7 +35,10 @@ const persistenceMiddleware = (function(){
                         result => {
                             console.log(result);
                         }
-                    );
+                    )
+                    .catch(function(e){
+                        console.error(e);
+                    });
             },
             drop: function(table){
                 db[table].clear()
@@ -43,7 +48,7 @@ const persistenceMiddleware = (function(){
                         }
                     )
                     .catch(function(e){
-                        console.log(e);
+                        console.error(e);
                     });
             }
         }
@@ -224,26 +229,97 @@ const persistenceMiddleware = (function(){
                 );
                 break;
             
-            case 'DB_UPDATE_ALBUMS':
-                db.transaction('rw', db.albums, () => {
-                    action.albums.forEach(album => {
-
-                        // See if we've got a record already that we need to merge with.
-                        // This is particularly important as an album may collate information
-                        // from multiple sources, or a reference record may be fully loaded later
-                        db.albums.get(album.uri, existing_record => {
-
-                            if (existing_record){
-                                var updated_album = Object.assign({}, existing_record, album);
+            case 'LOAD_ALBUM':
+                db.albums.get(action.uri)
+                    .then(
+                        album => {
+                            if (album){
+                                console.log('Restoring album from persistent store');
+                                store.dispatch(coreActions.albumLoaded(album));
                             } else {
-                                var updated_album = Object.assign({}, album);
+                                next(action);
                             }
+                        }
+                    );
+                break;
+            
+            case 'LOAD_ARTIST':
+                db.artists.get(action.uri)
+                    .then(
+                        artist => {
+                            if (artist){
+                                console.log('Restoring artist from persistent store');
+                                store.dispatch(coreActions.artistLoaded(artist));
+                            } else {
+                                next(action);
+                            }
+                        }
+                    );
+                break;
+            
+            case 'LOAD_PLAYLIST':
+                db.playlists.get(action.uri)
+                    .then(
+                        playlist => {
+                            if (playlist){
+                                console.log('Restoring playlist from persistent store');
+                                store.dispatch(coreActions.playlistLoaded(playlist));
+                            } else {
+                                next(action);
+                            }
+                        }
+                    );
+                break;
+            
+            case 'LOAD_TRACK':
+                db.tracks.get(action.uri)
+                    .then(
+                        track => {
+                            if (track){
+                                console.log('Restoring track from persistent store');
+                                store.dispatch(coreActions.trackLoaded(track));
+                            } else {
+                                next(action);
+                            }
+                        }
+                    );
+                break;
+            
+            case 'TRACKS_LOADED':
+                db.transaction('rw', db.tracks, () => {
+                    db.tracks.bulkPut(action.tracks);
+                }).catch(function (e) {
+                    store.dispatch(coreActions.handleException("Failed to update tracks table", e));
+                });
 
-                            db.albums.put(updated_album);
-                        });
-                    });
+                next(action);
+                break;
+            
+            case 'ARTISTS_LOADED':
+                db.transaction('rw', db.artists, () => {
+                    db.artists.bulkPut(action.artists);
+                }).catch(function (e) {
+                    store.dispatch(coreActions.handleException("Failed to update artists table", e));
+                });
+
+                next(action);
+                break;
+            
+            case 'ALBUMS_LOADED':
+                db.transaction('rw', db.albums, () => {
+                    db.albums.bulkPut(action.albums);
                 }).catch(function (e) {
                     store.dispatch(coreActions.handleException("Failed to update albums table", e));
+                });
+
+                next(action);
+                break;
+            
+            case 'PLAYLISTS_LOADED':
+                db.transaction('rw', db.playlists, () => {
+                    db.playlists.bulkPut(action.playlists);
+                }).catch(function (e) {
+                    store.dispatch(coreActions.handleException("Failed to update playlists table", e));
                 });
 
                 next(action);

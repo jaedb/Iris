@@ -104,7 +104,16 @@ console.log('Bootstrapping', initialState)
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, persistenceMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware )
+	applyMiddleware(
+		thunk,
+		persistenceMiddleware,
+		coreMiddleware,
+		uiMiddleware,
+		mopidyMiddleware,
+		pusherMiddleware,
+		spotifyMiddleware,
+		lastfmMiddleware
+	)
 );
 
 export default store;

@@ -953,43 +953,6 @@ var titleCase = exports.titleCase = function titleCase(string) {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(76);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(136);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(137);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(80);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(79);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return __WEBPACK_IMPORTED_MODULE_1__combineReducers__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "applyMiddleware", function() { return __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return __WEBPACK_IMPORTED_MODULE_4__compose__["a"]; });
-
-
-
-
-
-
-
-/*
-* This is a dummy function to check if the function name has been altered by minification.
-* If the function has been minified and NODE_ENV !== 'production', warn the user.
-*/
-function isCrushed() {}
-
-if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
-  Object(__WEBPACK_IMPORTED_MODULE_5__utils_warning__["a" /* default */])('You are currently using minified code outside of NODE_ENV === \'production\'. ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or DefinePlugin for webpack (http://stackoverflow.com/questions/30030031) ' + 'to ensure you have the correct code for your production build.');
-}
-
-
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7)))
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1296,6 +1259,43 @@ function processFinished(key) {
         key: key
     };
 }
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(137);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(80);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(79);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["b"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return __WEBPACK_IMPORTED_MODULE_1__combineReducers__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "applyMiddleware", function() { return __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return __WEBPACK_IMPORTED_MODULE_4__compose__["a"]; });
+
+
+
+
+
+
+
+/*
+* This is a dummy function to check if the function name has been altered by minification.
+* If the function has been minified and NODE_ENV !== 'production', warn the user.
+*/
+function isCrushed() {}
+
+if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
+  Object(__WEBPACK_IMPORTED_MODULE_5__utils_warning__["a" /* default */])('You are currently using minified code outside of NODE_ENV === \'production\'. ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or DefinePlugin for webpack (http://stackoverflow.com/questions/30030031) ' + 'to ensure you have the correct code for your production build.');
+}
+
+
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7)))
 
 /***/ }),
 /* 4 */
@@ -2274,7 +2274,7 @@ exports.getLibraryAlbumsProcessor = getLibraryAlbumsProcessor;
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var mopidyActions = __webpack_require__(8);
 var lastfmActions = __webpack_require__(20);
 var helpers = __webpack_require__(1);
@@ -3995,6 +3995,21 @@ exports.debugResponse = debugResponse;
 exports.set = set;
 exports.clearCurrentTrack = clearCurrentTrack;
 exports.cachebustHttpStream = cachebustHttpStream;
+exports.loadTrack = loadTrack;
+exports.loadAlbum = loadAlbum;
+exports.loadArtist = loadArtist;
+exports.loadPlaylist = loadPlaylist;
+exports.loadUser = loadUser;
+exports.trackLoaded = trackLoaded;
+exports.tracksLoaded = tracksLoaded;
+exports.artistLoaded = artistLoaded;
+exports.artistsLoaded = artistsLoaded;
+exports.albumLoaded = albumLoaded;
+exports.albumsLoaded = albumsLoaded;
+exports.playlistLoaded = playlistLoaded;
+exports.playlistsLoaded = playlistsLoaded;
+exports.userLoaded = userLoaded;
+exports.usersLoaded = usersLoaded;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
 exports.createPlaylist = createPlaylist;
@@ -4005,11 +4020,6 @@ exports.getLibraryPlaylists = getLibraryPlaylists;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryArtists = getLibraryArtists;
 exports.loadedMore = loadedMore;
-exports.tracksLoaded = tracksLoaded;
-exports.albumsLoaded = albumsLoaded;
-exports.artistsLoaded = artistsLoaded;
-exports.playlistsLoaded = playlistsLoaded;
-exports.usersLoaded = usersLoaded;
 
 var _helpers = __webpack_require__(1);
 
@@ -4089,6 +4099,105 @@ function clearCurrentTrack() {
 function cachebustHttpStream() {
     return {
         type: 'CACHEBUST_HTTP_STREAM'
+    };
+}
+
+/**
+ * Record getters
+ *
+ * Calling this through the common core enables us to detect whether we've already
+ * got the record in the state or persistent storage. Failing that, we pass off to the
+ * relevant service to load the record - all from one neat package.
+ **/
+
+function loadTrack(uri) {
+    return {
+        type: 'LOAD_TRACK',
+        uri: uri
+    };
+}
+
+function loadAlbum(uri) {
+    return {
+        type: 'LOAD_ALBUM',
+        uri: uri
+    };
+}
+
+function loadArtist(uri) {
+    return {
+        type: 'LOAD_ARTIST',
+        uri: uri
+    };
+}
+
+function loadPlaylist(uri) {
+    return {
+        type: 'LOAD_PLAYLIST',
+        uri: uri
+    };
+}
+
+function loadUser(uri) {
+    return {
+        type: 'LOAD_USER',
+        uri: uri
+    };
+}
+
+/**
+ * Record loaders
+ *
+ * We've got a loaded record, now we just need to plug it in to our state and stores.
+ **/
+
+function trackLoaded(track) {
+    return tracksLoaded([track]);
+}
+function tracksLoaded(tracks) {
+    return {
+        type: 'TRACKS_LOADED',
+        tracks: tracks
+    };
+}
+
+function artistLoaded(artist) {
+    return artistsLoaded([artist]);
+}
+function artistsLoaded(artists) {
+    return {
+        type: 'ARTISTS_LOADED',
+        artists: artists
+    };
+}
+
+function albumLoaded(album) {
+    return albumsLoaded([album]);
+}
+function albumsLoaded(albums) {
+    return {
+        type: 'ALBUMS_LOADED',
+        albums: albums
+    };
+}
+
+function playlistLoaded(playlist) {
+    return playlistsLoaded([playlist]);
+}
+function playlistsLoaded(playlists) {
+    return {
+        type: 'PLAYLISTS_LOADED',
+        playlists: playlists
+    };
+}
+
+function userLoaded(user) {
+    return usersLoaded([user]);
+}
+function usersLoaded(users) {
+    return {
+        type: 'USERS_LOADED',
+        users: users
     };
 }
 
@@ -4243,10 +4352,6 @@ function getLibraryArtists() {
     };
 }
 
-/**
- * Assets loaded
- **/
-
 function loadedMore(parent_type, parent_key, records_type, records_data) {
     return {
         type: 'LOADED_MORE',
@@ -4254,41 +4359,6 @@ function loadedMore(parent_type, parent_key, records_type, records_data) {
         parent_key: parent_key,
         records_type: records_type,
         records_data: records_data
-    };
-}
-
-function tracksLoaded(tracks) {
-    return {
-        type: 'TRACKS_LOADED',
-        tracks: tracks
-    };
-}
-
-function albumsLoaded(albums) {
-    return {
-        type: 'ALBUMS_LOADED',
-        albums: albums
-    };
-}
-
-function artistsLoaded(artists) {
-    return {
-        type: 'ARTISTS_LOADED',
-        artists: artists
-    };
-}
-
-function playlistsLoaded(playlists) {
-    return {
-        type: 'PLAYLISTS_LOADED',
-        playlists: playlists
-    };
-}
-
-function usersLoaded(users) {
-    return {
-        type: 'USERS_LOADED',
-        users: users
     };
 }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
@@ -4312,7 +4382,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -4324,7 +4394,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -16480,7 +16550,7 @@ exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
 
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var helpers = __webpack_require__(1);
 
 /**
@@ -16983,7 +17053,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Track = __webpack_require__(100);
 
@@ -17001,7 +17071,7 @@ var _actions = __webpack_require__(8);
 
 var mopidyActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -18430,7 +18500,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
@@ -18857,7 +18927,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Icon = __webpack_require__(6);
 
@@ -19512,7 +19582,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -19528,7 +19598,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -19952,13 +20022,13 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -20082,7 +20152,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -20090,7 +20160,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -20200,7 +20270,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -20208,7 +20278,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -20519,7 +20589,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -20551,7 +20621,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -25250,7 +25320,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactGa = __webpack_require__(18);
 
@@ -25260,7 +25330,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -25433,7 +25503,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactGa = __webpack_require__(18);
 
@@ -25443,7 +25513,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -45248,7 +45318,7 @@ function shallowEqual(objA, objB) {
 /* unused harmony export whenMapDispatchToPropsIsFunction */
 /* unused harmony export whenMapDispatchToPropsIsMissing */
 /* unused harmony export whenMapDispatchToPropsIsObject */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__wrapMapToProps__ = __webpack_require__(81);
 
 
@@ -49479,7 +49549,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
@@ -49764,20 +49834,40 @@ function reducer() {
          * and appended to their relevant index.
          **/
 
-        case 'UPDATE_TRACKS_INDEX':
-            return Object.assign({}, core, { tracks: action.tracks });
+        case 'TRACKS_LOADED':
+            var tracks = Object.assign({}, core.tracks);
+            action.tracks.forEach(function (track) {
+                tracks[track.uri] = track;
+            });
+            return Object.assign({}, core, { tracks: tracks });
 
-        case 'UPDATE_ALBUMS_INDEX':
-            return Object.assign({}, core, { albums: action.albums });
+        case 'ALBUMS_LOADED':
+            var albums = Object.assign({}, core.albums);
+            action.albums.forEach(function (album) {
+                albums[album.uri] = album;
+            });
+            return Object.assign({}, core, { albums: albums });
 
-        case 'UPDATE_ARTISTS_INDEX':
-            return Object.assign({}, core, { artists: action.artists });
+        case 'ARTISTS_LOADED':
+            var artists = Object.assign({}, core.artists);
+            action.artists.forEach(function (artist) {
+                artists[artist.uri] = artist;
+            });
+            return Object.assign({}, core, { artists: artists });
 
-        case 'UPDATE_PLAYLISTS_INDEX':
-            return Object.assign({}, core, { playlists: action.playlists });
+        case 'PLAYLISTS_LOADED':
+            var playlists = Object.assign({}, core.playlists);
+            action.playlists.forEach(function (playlist) {
+                playlists[playlist.uri] = playlist;
+            });
+            return Object.assign({}, core, { playlists: playlists });
 
-        case 'UPDATE_USERS_INDEX':
-            return Object.assign({}, core, { users: action.users });
+        case 'USERS_LOADED':
+            var users = Object.assign({}, core.users);
+            action.users.forEach(function (user) {
+                users[user.uri] = user;
+            });
+            return Object.assign({}, core, { users: users });
 
         case 'NEW_RELEASES_LOADED':
             if (!action.uris) {
@@ -50849,7 +50939,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var pusherActions = __webpack_require__(14);
 var mopidyActions = __webpack_require__(8);
 var spotifyActions = __webpack_require__(9);
@@ -51198,58 +51288,30 @@ var CoreMiddleware = function () {
                         break;
 
                     /**
+                      case 'LOAD_ALBUM':
+                        store.dispatch({
+                            type: 'TRACKS_LOADED',
+                            tracks: action.tracks
+                        });
+                        
+                        next(action);
+                        break;
+                     **/
+
+                    /**
                      * Index actions
                      * These modify our asset indexes, which are used globally
                      **/
 
-                    // Array wrapper for TRACKS_LOADED
-                    case 'TRACK_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: [action.track]
-                        });
-                        break;
-
-                    // Array wrapper for ALBUMS_LOADED
-                    case 'ALBUM_LOADED':
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: [action.album]
-                        });
-                        break;
-
-                    // Array wrapper for ARTISTS_LOADED
-                    case 'ARTIST_LOADED':
-                        store.dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: [action.artist]
-                        });
-                        break;
-
-                    // Array wrapper for PLAYLISTS_LOADED
-                    case 'PLAYLIST_LOADED':
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: [action.playlist]
-                        });
-                        break;
-
-                    // Array wrapper for USERS_LOADED
-                    case 'USER_LOADED':
-                        store.dispatch({
-                            type: 'USERS_LOADED',
-                            users: [action.user]
-                        });
-                        break;
-
                     case 'TRACKS_LOADED':
-                        var tracks = Object.assign({}, core.tracks);
+                        var tracks_index = Object.assign({}, core.tracks);
+                        var tracks_loaded = [];
 
-                        for (var i = 0; i < action.tracks.length; i++) {
-                            var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
+                        action.tracks.forEach(function (track) {
+                            track = helpers.formatTracks(track);
 
-                            if (tracks[track.uri] !== undefined) {
-                                track = Object.assign({}, tracks[track.uri], track);
+                            if (tracks_index[track.uri] !== undefined) {
+                                track = Object.assign({}, tracks_index[track.uri], track);
                             }
 
                             if (track.album && track.album.images && track.album.images.length > 0) {
@@ -51257,30 +51319,25 @@ var CoreMiddleware = function () {
                                 track.images = track.album.images;
                             }
 
-                            tracks[track.uri] = track;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_TRACKS_INDEX',
-                            tracks: tracks
+                            tracks_loaded.push(track);
                         });
+
+                        action.tracks = tracks_loaded;
 
                         next(action);
                         break;
 
                     case 'ALBUMS_LOADED':
+                        var albums_index = Object.assign({}, core.albums);
                         var albums_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.albums.length; i++) {
-                            var album = Object.assign({}, action.albums[i]);
+                        action.albums.forEach(function (album) {
                             helpers.formatAlbum(album);
-                            /*
-                                                if (albums[album.uri]){
-                                                    album = Object.assign({}, albums[album.uri], album);
-                                                }
-                                                */
+
+                            if (albums_index[album.uri]) {
+                                album = Object.assign({}, albums_index[album.uri], album);
+                            }
 
                             if (album.images && album.images.length > 0) {
                                 album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
@@ -51296,40 +51353,35 @@ var CoreMiddleware = function () {
                             }
 
                             albums_loaded.push(album);
-                        }
+                        });
 
-                        // Load these new tracks
+                        action.albums = albums_loaded;
+
+                        // Trigger the tracks load action
                         store.dispatch({
                             type: 'TRACKS_LOADED',
                             tracks: tracks_loaded
-                        });
-
-                        // Update index
-                        store.dispatch({
-                            type: 'DB_UPDATE_ALBUMS',
-                            albums: albums_loaded
                         });
 
                         next(action);
                         break;
 
                     case 'ARTISTS_LOADED':
-                        var artists = Object.assign({}, core.artists);
+                        var artists_index = Object.assign({}, core.artists);
+                        var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.artists.length; i++) {
-                            var artist = action.artists[i];
-
-                            if (artists[artist.uri]) {
+                        action.artists.forEach(function (artist) {
+                            if (artists_index[artist.uri]) {
 
                                 // if we've already got images, remove and add as additional_images
                                 // this is to prevent LastFM overwriting Spotify images
-                                if (artists[artist.uri].images) {
+                                if (artists_index[artist.uri].images) {
                                     artist.images_additional = artist.images;
                                     delete artist.images;
                                 }
 
-                                artist = Object.assign({}, artists[artist.uri], artist);
+                                artist = Object.assign({}, artists_index[artist.uri], artist);
                             }
 
                             if (artist.tracks) {
@@ -51340,9 +51392,10 @@ var CoreMiddleware = function () {
                                 tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
                             }
 
-                            // Update index
-                            artists[artist.uri] = artist;
-                        }
+                            artists_loaded.push(artist);
+                        });
+
+                        action.artists = artists_loaded;
 
                         // Load our tracks
                         store.dispatch({
@@ -51350,20 +51403,15 @@ var CoreMiddleware = function () {
                             tracks: tracks_loaded
                         });
 
-                        store.dispatch({
-                            type: 'UPDATE_ARTISTS_INDEX',
-                            artists: artists
-                        });
-
                         next(action);
                         break;
 
                     case 'PLAYLISTS_LOADED':
-                        var playlists = Object.assign({}, core.playlists);
+                        var playlists_index = Object.assign({}, core.playlists);
+                        var playlists_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.playlists.length; i++) {
-                            var playlist = Object.assign({}, action.playlists[i]);
+                        action.playlists.forEach(function (playlist) {
 
                             // Detect editability
                             switch (helpers.uriSource(playlist.uri)) {
@@ -51378,8 +51426,8 @@ var CoreMiddleware = function () {
                                     }
                             }
 
-                            if (playlists[playlist.uri] !== undefined) {
-                                playlist = Object.assign({}, playlists[playlist.uri], playlist);
+                            if (playlists_index[playlist.uri]) {
+                                playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
                             }
 
                             // Load our tracks
@@ -51392,8 +51440,10 @@ var CoreMiddleware = function () {
                             }
 
                             // Update index
-                            playlists[playlist.uri] = playlist;
-                        }
+                            playlists_loaded.push(playlist);
+                        });
+
+                        action.playlists = playlists_loaded;
 
                         // Load our tracks
                         store.dispatch({
@@ -51401,32 +51451,23 @@ var CoreMiddleware = function () {
                             tracks: tracks_loaded
                         });
 
-                        store.dispatch({
-                            type: 'UPDATE_PLAYLISTS_INDEX',
-                            playlists: playlists
-                        });
-
                         next(action);
                         break;
 
                     case 'USERS_LOADED':
-                        var users = Object.assign({}, core.users);
+                        var users_index = Object.assign({}, core.users);
+                        var users_loaded = [];
 
-                        for (var i = 0; i < action.users.length; i++) {
-                            var user = Object.assign({}, action.users[i]);
+                        action.users.forEach(function (user) {
 
-                            if (users[user.uri]) {
-                                user = Object.assign({}, users[user.uri], user);
+                            if (users_index[user.uri]) {
+                                user = Object.assign({}, users_index[user.uri], user);
                             }
 
-                            users[user.uri] = user;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_USERS_INDEX',
-                            users: users
+                            users_loaded.push(user);
                         });
+
+                        action.users = users_loaded;
 
                         next(action);
                         break;
@@ -51521,7 +51562,7 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var mopidyActions = __webpack_require__(8);
 var helpers = __webpack_require__(1);
 
@@ -51762,7 +51803,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var helpers = __webpack_require__(1);
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var mopidyActions = __webpack_require__(8);
 var pusherActions = __webpack_require__(14);
 var lastfmActions = __webpack_require__(20);
@@ -52595,7 +52636,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var mopidyActions = __webpack_require__(8);
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var spotifyActions = __webpack_require__(9);
 var pusherActions = __webpack_require__(14);
 var lastfmActions = __webpack_require__(20);
@@ -57368,7 +57409,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var helpers = __webpack_require__(1);
 var lastfmActions = __webpack_require__(20);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var pusherActions = __webpack_require__(14);
 
 var LastfmMiddleware = function () {
@@ -57428,7 +57469,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var helpers = __webpack_require__(1);
 var spotifyActions = __webpack_require__(9);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var pusherActions = __webpack_require__(14);
 
 var SpotifyMiddleware = function () {
@@ -57859,15 +57900,16 @@ var _dexie2 = _interopRequireDefault(_dexie);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var helpers = __webpack_require__(1);
+var coreActions = __webpack_require__(11);
 
 var persistenceMiddleware = function () {
 
-    var db = new _dexie2.default("Iris");
+    var db = new _dexie2.default("iris");
     db.version(1).stores({
+        tracks: "&uri,name",
         albums: "&uri,name",
         artists: "&uri,name",
         playlists: "&uri,name",
-        tracks: "&uri,name",
         users: "&uri"
     });
 
@@ -57890,13 +57932,15 @@ var persistenceMiddleware = function () {
                     get: function get(table) {
                         db[table].toArray().then(function (result) {
                             console.log(result);
+                        }).catch(function (e) {
+                            console.error(e);
                         });
                     },
                     drop: function drop(table) {
                         db[table].clear().then(function (result) {
                             console.log(result);
                         }).catch(function (e) {
-                            console.log(e);
+                            console.error(e);
                         });
                     }
 
@@ -58025,26 +58069,85 @@ var persistenceMiddleware = function () {
                         });
                         break;
 
-                    case 'DB_UPDATE_ALBUMS':
+                    case 'LOAD_ALBUM':
+                        db.albums.get(action.uri).then(function (album) {
+                            if (album) {
+                                console.log('Restoring album from persistent store');
+                                store.dispatch(coreActions.albumLoaded(album));
+                            } else {
+                                next(action);
+                            }
+                        });
+                        break;
+
+                    case 'LOAD_ARTIST':
+                        db.artists.get(action.uri).then(function (artist) {
+                            if (artist) {
+                                console.log('Restoring artist from persistent store');
+                                store.dispatch(coreActions.artistLoaded(artist));
+                            } else {
+                                next(action);
+                            }
+                        });
+                        break;
+
+                    case 'LOAD_PLAYLIST':
+                        db.playlists.get(action.uri).then(function (playlist) {
+                            if (playlist) {
+                                console.log('Restoring playlist from persistent store');
+                                store.dispatch(coreActions.playlistLoaded(playlist));
+                            } else {
+                                next(action);
+                            }
+                        });
+                        break;
+
+                    case 'LOAD_TRACK':
+                        db.tracks.get(action.uri).then(function (track) {
+                            if (track) {
+                                console.log('Restoring track from persistent store');
+                                store.dispatch(coreActions.trackLoaded(track));
+                            } else {
+                                next(action);
+                            }
+                        });
+                        break;
+
+                    case 'TRACKS_LOADED':
+                        db.transaction('rw', db.tracks, function () {
+                            db.tracks.bulkPut(action.tracks);
+                        }).catch(function (e) {
+                            store.dispatch(coreActions.handleException("Failed to update tracks table", e));
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'ARTISTS_LOADED':
+                        db.transaction('rw', db.artists, function () {
+                            db.artists.bulkPut(action.artists);
+                        }).catch(function (e) {
+                            store.dispatch(coreActions.handleException("Failed to update artists table", e));
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'ALBUMS_LOADED':
                         db.transaction('rw', db.albums, function () {
-                            action.albums.forEach(function (album) {
-
-                                // See if we've got a record already that we need to merge with.
-                                // This is particularly important as an album may collate information
-                                // from multiple sources, or a reference record may be fully loaded later
-                                db.albums.get(album.uri, function (existing_record) {
-
-                                    if (existing_record) {
-                                        var updated_album = Object.assign({}, existing_record, album);
-                                    } else {
-                                        var updated_album = Object.assign({}, album);
-                                    }
-
-                                    db.albums.put(updated_album);
-                                });
-                            });
+                            db.albums.bulkPut(action.albums);
                         }).catch(function (e) {
                             store.dispatch(coreActions.handleException("Failed to update albums table", e));
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'PLAYLISTS_LOADED':
+                        db.transaction('rw', db.playlists, function () {
+                            db.playlists.bulkPut(action.playlists);
+                        }).catch(function (e) {
+                            store.dispatch(coreActions.handleException("Failed to update playlists table", e));
                         });
 
                         next(action);
@@ -62839,7 +62942,7 @@ var _reactDom = __webpack_require__(48);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -62881,7 +62984,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -63304,7 +63407,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -63320,7 +63423,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -63734,13 +63837,13 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Dropzone = __webpack_require__(222);
 
 var _Dropzone2 = _interopRequireDefault(_Dropzone);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -63876,7 +63979,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Icon = __webpack_require__(6);
 
@@ -63983,7 +64086,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _ProgressSlider = __webpack_require__(225);
 
@@ -64017,7 +64120,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -64427,7 +64530,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
@@ -64544,7 +64647,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _VolumeControl = __webpack_require__(65);
 
@@ -64787,7 +64890,7 @@ var _reactRouter = __webpack_require__(5);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _TrackList = __webpack_require__(22);
 
@@ -64805,7 +64908,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -65988,9 +66091,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -66380,13 +66483,13 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -66426,10 +66529,7 @@ var DebugInfo = function (_React$Component) {
 				used = (data.length * 16 / (8 * 1024)).toFixed(2);
 			}
 
-			return {
-				used: used,
-				percent: (used / total * 100).toFixed(2)
-			};
+			return used;
 		}
 	}, {
 		key: 'renderLoadQueue',
@@ -66487,8 +66587,6 @@ var DebugInfo = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var localStorageUsage = this.localStorageSize();
-
 			return _react2.default.createElement(
 				'div',
 				{ className: 'debug-info' },
@@ -66498,13 +66596,20 @@ var DebugInfo = function (_React$Component) {
 					_react2.default.createElement(
 						'h5',
 						null,
-						'Indexes'
+						'Storage (state/persistent)'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'LocalStorage: ',
+						this.localStorageSize(),
+						'kb'
 					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'debug-info-item' },
 						'Albums: ',
-						this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'
+						Object.keys(this.props.core.albums).length
 					),
 					_react2.default.createElement(
 						'div',
@@ -66578,15 +66683,6 @@ var DebugInfo = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'debug-info-item' },
-						'LocalStorage usage: ',
-						localStorageUsage.used,
-						'kb (~',
-						localStorageUsage.percent,
-						'%)'
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'debug-info-item' },
 						'Selected tracks: ',
 						this.props.ui.selected_tracks.length,
 						_react2.default.createElement('br', null),
@@ -66651,7 +66747,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -66701,17 +66797,21 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(11);
 
-var uiActions = _interopRequireWildcard(_actions);
+var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(2);
 
-var mopidyActions = _interopRequireWildcard(_actions2);
+var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(9);
+var _actions3 = __webpack_require__(8);
 
-var spotifyActions = _interopRequireWildcard(_actions3);
+var mopidyActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(9);
+
+var spotifyActions = _interopRequireWildcard(_actions4);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -66736,7 +66836,7 @@ var Album = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.setWindowTitle();
-			this.loadAlbum();
+			this.props.coreActions.loadAlbum(this.props.params.uri);
 		}
 	}, {
 		key: 'handleContextMenu',
@@ -66751,12 +66851,12 @@ var Album = function (_React$Component) {
 
 			// if our URI has changed, fetch new album
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadAlbum(nextProps);
+				this.props.coreActions.loadAlbum(nextProps.params.uri);
 
 				// if mopidy has just connected AND we're a local album, go get
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 				if (helpers.uriSource(this.props.params.uri) != 'spotify') {
-					this.loadAlbum(nextProps);
+					this.props.coreActions.loadAlbum(nextProps.params.uri);
 				}
 			}
 
@@ -66792,33 +66892,6 @@ var Album = function (_React$Component) {
 				uris: [this.props.params.uri]
 			};
 			this.props.uiActions.showContextMenu(data);
-		}
-	}, {
-		key: 'loadAlbum',
-		value: function loadAlbum() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-			switch (helpers.uriSource(props.params.uri)) {
-
-				case 'spotify':
-					if (props.album && props.album.tracks && props.album.artists_uris) {
-						console.info('Loading album from index');
-					} else {
-						this.props.spotifyActions.getAlbum(props.params.uri);
-					}
-					this.props.spotifyActions.following(props.params.uri);
-					break;
-
-				default:
-					if (props.mopidy_connected) {
-						if (props.album && props.album.tracks) {
-							console.info('Loading album from index');
-						} else {
-							this.props.mopidyActions.getAlbum(props.params.uri);
-						}
-					}
-					break;
-			}
 		}
 	}, {
 		key: 'loadMore',
@@ -66986,6 +67059,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
 		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
 		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
 	};
@@ -67012,7 +67086,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -67068,25 +67142,29 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(11);
 
-var uiActions = _interopRequireWildcard(_actions);
+var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(8);
+var _actions2 = __webpack_require__(2);
 
-var mopidyActions = _interopRequireWildcard(_actions2);
+var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(14);
+var _actions3 = __webpack_require__(8);
 
-var pusherActions = _interopRequireWildcard(_actions3);
+var mopidyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(20);
+var _actions4 = __webpack_require__(14);
 
-var lastfmActions = _interopRequireWildcard(_actions4);
+var pusherActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(9);
+var _actions5 = __webpack_require__(20);
 
-var spotifyActions = _interopRequireWildcard(_actions5);
+var lastfmActions = _interopRequireWildcard(_actions5);
+
+var _actions6 = __webpack_require__(9);
+
+var spotifyActions = _interopRequireWildcard(_actions6);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -67111,16 +67189,16 @@ var Artist = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.setWindowTitle();
-			this.loadArtist();
+			this.props.coreActions.loadArtist(this.props.params.uri);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadArtist(nextProps);
+				this.props.coreActions.loadArtist(nextProps.params.uri);
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 				if (helpers.uriSource(this.props.params.uri) != 'spotify') {
-					this.loadArtist(nextProps);
+					this.props.coreActions.loadArtist(nextProps.params.uri);
 				}
 			}
 
@@ -67155,33 +67233,6 @@ var Artist = function (_React$Component) {
 			this.props.uiActions.showContextMenu(data);
 		}
 	}, {
-		key: 'loadArtist',
-		value: function loadArtist() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-			switch (helpers.uriSource(props.params.uri)) {
-
-				case 'spotify':
-					if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris) {
-						console.info('Loading spotify artist from index');
-					} else {
-						this.props.spotifyActions.getArtist(props.params.uri, true);
-					}
-					this.props.spotifyActions.following(props.params.uri);
-					break;
-
-				default:
-					if (props.mopidy_connected) {
-						if (props.artist && props.artist.images && props.artist.albums_uris) {
-							console.info('Loading local artist from index');
-						} else {
-							this.props.mopidyActions.getArtist(props.params.uri);
-						}
-					}
-					break;
-			}
-		}
-	}, {
 		key: 'loadMore',
 		value: function loadMore() {
 			this.props.spotifyActions.getMore(this.props.artist.albums_more, {
@@ -67190,6 +67241,9 @@ var Artist = function (_React$Component) {
 				records_type: 'album'
 			});
 		}
+
+		// TODO: This should be in the Artist model
+
 	}, {
 		key: 'inLibrary',
 		value: function inLibrary() {
@@ -67614,6 +67668,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
 		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
 		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
 		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
@@ -67643,7 +67698,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -67699,7 +67754,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -68117,7 +68172,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Thumbnail = __webpack_require__(12);
 
@@ -68151,7 +68206,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -68386,7 +68441,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -68444,7 +68499,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -68901,13 +68956,13 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -69021,7 +69076,7 @@ exports.getTrackLyrics = getTrackLyrics;
 exports.findTrackLyrics = findTrackLyrics;
 
 var coreActions = __webpack_require__(11);
-var uiActions = __webpack_require__(3);
+var uiActions = __webpack_require__(2);
 var helpers = __webpack_require__(1);
 
 /**
@@ -69168,7 +69223,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Icon = __webpack_require__(6);
 
@@ -69210,7 +69265,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -69521,7 +69576,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _TrackList = __webpack_require__(22);
 
@@ -69535,7 +69590,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -69692,7 +69747,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -69706,7 +69761,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -70238,7 +70293,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -70288,7 +70343,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -70878,13 +70933,13 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -71004,7 +71059,11 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
+
+var _dexie = __webpack_require__(214);
+
+var _dexie2 = _interopRequireDefault(_dexie);
 
 var _ConfirmationButton = __webpack_require__(102);
 
@@ -71050,7 +71109,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -71681,7 +71740,14 @@ var Settings = function (_React$Component) {
 						),
 						_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
 								return _this2.resetAllSettings();
-							} })
+							} }),
+						_react2.default.createElement(
+							'button',
+							{ className: 'destructive', onClick: function onClick() {
+									return _dexie2.default.delete('iris');
+								} },
+							'Flush persistent storage'
+						)
 					),
 					_react2.default.createElement(
 						'h4',
@@ -71781,7 +71847,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _actions = __webpack_require__(14);
 
@@ -73758,7 +73824,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Thumbnail = __webpack_require__(12);
 
@@ -73784,7 +73850,7 @@ var _Snapcast = __webpack_require__(251);
 
 var _Snapcast2 = _interopRequireDefault(_Snapcast);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -74395,7 +74461,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -74427,7 +74493,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -75091,7 +75157,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactInputRange = __webpack_require__(255);
 
@@ -75153,7 +75219,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -77967,7 +78033,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -77983,7 +78049,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -78195,7 +78261,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -78223,7 +78289,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -78448,7 +78514,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -78466,7 +78532,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -78659,7 +78725,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Header = __webpack_require__(15);
 
@@ -78681,7 +78747,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -78858,7 +78924,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -78894,7 +78960,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -79137,7 +79203,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -79173,7 +79239,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -79516,7 +79582,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -79568,7 +79634,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -79937,7 +80003,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -79961,7 +80027,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -80130,7 +80196,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -80170,7 +80236,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -80523,7 +80589,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -80551,7 +80617,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -80867,7 +80933,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -80887,7 +80953,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -81233,7 +81299,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -81253,7 +81319,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -81547,7 +81613,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -81567,7 +81633,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -81959,7 +82025,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -81979,7 +82045,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -82175,7 +82241,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -82203,7 +82269,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 
@@ -82500,7 +82566,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Modal = __webpack_require__(31);
 
@@ -82518,7 +82584,7 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -82645,7 +82711,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(5);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _Modal = __webpack_require__(31);
 
@@ -82655,7 +82721,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _actions = __webpack_require__(3);
+var _actions = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions);
 
@@ -82807,7 +82873,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _redux = __webpack_require__(2);
+var _redux = __webpack_require__(3);
 
 var _reactRouter = __webpack_require__(5);
 
@@ -82831,7 +82897,7 @@ var _actions = __webpack_require__(11);
 
 var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(3);
+var _actions2 = __webpack_require__(2);
 
 var uiActions = _interopRequireWildcard(_actions2);
 

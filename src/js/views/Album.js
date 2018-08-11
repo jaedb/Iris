@@ -16,6 +16,7 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -28,7 +29,7 @@ class Album extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.loadAlbum();
+		this.props.coreActions.loadAlbum(this.props.params.uri);
 	}
 
 	handleContextMenu(e){
@@ -41,12 +42,12 @@ class Album extends React.Component{
 
 		// if our URI has changed, fetch new album
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadAlbum(nextProps);
+			this.props.coreActions.loadAlbum(nextProps.params.uri);
 
 		// if mopidy has just connected AND we're a local album, go get
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadAlbum(nextProps);
+				this.props.coreActions.loadAlbum(nextProps.params.uri);
 			}
 		}
 
@@ -78,30 +79,6 @@ class Album extends React.Component{
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data);
-	}
-
-	loadAlbum(props = this.props){
-		switch(helpers.uriSource(props.params.uri)){
-
-			case 'spotify':
-				if (props.album && props.album.tracks && props.album.artists_uris){
-					console.info('Loading album from index')
-				} else {
-					this.props.spotifyActions.getAlbum(props.params.uri);
-				}
-				this.props.spotifyActions.following(props.params.uri);
-				break;
-
-			default:
-				if (props.mopidy_connected){
-					if (props.album && props.album.tracks){
-						console.info('Loading album from index')
-					} else {
-						this.props.mopidyActions.getAlbum(props.params.uri);
-					}
-				}
-				break;
-		}
 	}
 
 	loadMore(){
@@ -218,6 +195,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
+		coreActions: bindActionCreators(coreActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

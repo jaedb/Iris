@@ -357,58 +357,32 @@ const CoreMiddleware = (function(){
 
 
             /**
+
+            case 'LOAD_ALBUM':
+                store.dispatch({
+                    type: 'TRACKS_LOADED',
+                    tracks: action.tracks
+                });
+                
+                next(action);
+                break;
+             **/
+
+
+            /**
              * Index actions
              * These modify our asset indexes, which are used globally
              **/
 
-            // Array wrapper for TRACKS_LOADED
-            case 'TRACK_LOADED':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: [action.track]
-                });
-                break;
-
-            // Array wrapper for ALBUMS_LOADED
-            case 'ALBUM_LOADED':
-                store.dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: [action.album]
-                });
-                break;
-
-            // Array wrapper for ARTISTS_LOADED
-            case 'ARTIST_LOADED':
-                store.dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: [action.artist]
-                });
-                break;
-
-            // Array wrapper for PLAYLISTS_LOADED
-            case 'PLAYLIST_LOADED':
-                store.dispatch({
-                    type: 'PLAYLISTS_LOADED',
-                    playlists: [action.playlist]
-                });
-                break;
-
-            // Array wrapper for USERS_LOADED
-            case 'USER_LOADED':
-                store.dispatch({
-                    type: 'USERS_LOADED',
-                    users: [action.user]
-                });
-                break;
-
             case 'TRACKS_LOADED':
-                var tracks = Object.assign({}, core.tracks);
+                var tracks_index = Object.assign({}, core.tracks);
+                var tracks_loaded = [];
 
-                for (var i = 0; i < action.tracks.length; i++){
-                    var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
+                action.tracks.forEach(track => {
+                    track = helpers.formatTracks(track);
 
-                    if (tracks[track.uri] !== undefined){
-                        track = Object.assign({}, tracks[track.uri], track);
+                    if (tracks_index[track.uri] !== undefined){
+                        track = Object.assign({}, tracks_index[track.uri], track);
                     }
 
                     if (track.album && track.album.images && track.album.images.length > 0){
@@ -416,30 +390,25 @@ const CoreMiddleware = (function(){
                         track.images = track.album.images;
                     }
 
-                    tracks[track.uri] = track;
-                }
-
-                // Update index
-                store.dispatch({
-                    type: 'UPDATE_TRACKS_INDEX',
-                    tracks: tracks
+                    tracks_loaded.push(track);
                 });
+
+                action.tracks = tracks_loaded;
 
                 next(action);
                 break;
 
             case 'ALBUMS_LOADED':
+                var albums_index = Object.assign({}, core.albums);
                 var albums_loaded = [];
                 var tracks_loaded = [];
 
-                for (var i = 0; i < action.albums.length; i++){
-                    var album = Object.assign({}, action.albums[i]);
+                action.albums.forEach(album => {
                     helpers.formatAlbum(album)
-/*
-                    if (albums[album.uri]){
-                        album = Object.assign({}, albums[album.uri], album);
+
+                    if (albums_index[album.uri]){
+                        album = Object.assign({}, albums_index[album.uri], album);
                     }
-                    */
 
                     if (album.images && album.images.length > 0){
                         album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
@@ -455,40 +424,35 @@ const CoreMiddleware = (function(){
                     }
 
                     albums_loaded.push(album);
-                }
+                });
 
-                // Load these new tracks
+                action.albums = albums_loaded;
+
+                // Trigger the tracks load action
                 store.dispatch({
                     type: 'TRACKS_LOADED',
                     tracks: tracks_loaded
-                });
-
-                // Update index
-                store.dispatch({
-                    type: 'DB_UPDATE_ALBUMS',
-                    albums: albums_loaded
                 });
 
                 next(action);
                 break
 
             case 'ARTISTS_LOADED':
-                var artists = Object.assign({}, core.artists);
+                var artists_index = Object.assign({}, core.artists);
+                var artists_loaded = [];
                 var tracks_loaded = [];
 
-                for (var i = 0; i < action.artists.length; i++){
-                    var artist = action.artists[i];
-
-                    if (artists[artist.uri]){
+                action.artists.forEach(artist => {
+                    if (artists_index[artist.uri]){
 
                         // if we've already got images, remove and add as additional_images
                         // this is to prevent LastFM overwriting Spotify images
-                        if (artists[artist.uri].images){
+                        if (artists_index[artist.uri].images){
                             artist.images_additional = artist.images
                             delete artist.images
                         }
 
-                        artist = Object.assign({}, artists[artist.uri], artist);
+                        artist = Object.assign({}, artists_index[artist.uri], artist);
                     }
 
                     if (artist.tracks){
@@ -499,9 +463,10 @@ const CoreMiddleware = (function(){
                         tracks_loaded = [...tracks_loaded, ...tracks];
                     }
 
-                    // Update index
-                    artists[artist.uri] = artist;
-                }
+                    artists_loaded.push(artist);
+                });
+
+                action.artists = artists_loaded;
 
                 // Load our tracks
                 store.dispatch({
@@ -509,20 +474,15 @@ const CoreMiddleware = (function(){
                     tracks: tracks_loaded
                 });
 
-                store.dispatch({
-                    type: 'UPDATE_ARTISTS_INDEX',
-                    artists: artists
-                });
-
                 next(action);
                 break;
 
             case 'PLAYLISTS_LOADED':
-                var playlists = Object.assign({}, core.playlists);
+                var playlists_index = Object.assign({}, core.playlists);
+                var playlists_loaded = [];
                 var tracks_loaded = [];
 
-                for (var i = 0; i < action.playlists.length; i++){
-                    var playlist = Object.assign({}, action.playlists[i]);
+                action.playlists.forEach(playlist => {
 
                     // Detect editability
                     switch (helpers.uriSource(playlist.uri)){
@@ -537,8 +497,8 @@ const CoreMiddleware = (function(){
                             }
                     }
 
-                    if (playlists[playlist.uri] !== undefined){
-                        playlist = Object.assign({}, playlists[playlist.uri], playlist);
+                    if (playlists_index[playlist.uri]){
+                        playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
                     }
 
                     // Load our tracks
@@ -551,8 +511,10 @@ const CoreMiddleware = (function(){
                     }
 
                     // Update index
-                    playlists[playlist.uri] = playlist;
-                }
+                    playlists_loaded.push(playlist);
+                });
+
+                action.playlists = playlists_loaded;
 
                 // Load our tracks
                 store.dispatch({
@@ -560,32 +522,23 @@ const CoreMiddleware = (function(){
                     tracks: tracks_loaded
                 });
 
-                store.dispatch({
-                    type: 'UPDATE_PLAYLISTS_INDEX',
-                    playlists: playlists
-                });
-
                 next(action);
                 break;
 
             case 'USERS_LOADED':
-                var users = Object.assign({}, core.users);
+                var users_index = Object.assign({}, core.users);
+                var users_loaded = [];
 
-                for (var i = 0; i < action.users.length; i++){
-                    var user = Object.assign({}, action.users[i]);
+                action.users.forEach(user => {
 
-                    if (users[user.uri]){
-                        user = Object.assign({}, users[user.uri], user);
+                    if (users_index[user.uri]){
+                        user = Object.assign({}, users_index[user.uri], user);
                     }
 
-                    users[user.uri] = user;
-                }
-
-                // Update index
-                store.dispatch({
-                    type: 'UPDATE_USERS_INDEX',
-                    users: users
+                    users_loaded.push(user);
                 });
+
+                action.users = users_loaded;
 
                 next(action);
                 break;

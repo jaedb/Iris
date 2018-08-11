@@ -1693,7 +1693,7 @@ const MopidyMiddleware = (function(){
                             uris: uris,
                             remaining: uris.length
                         }
-                    ))
+                    ));
                     store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
@@ -1706,7 +1706,7 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         if (response.length <= 0) return
 
-                        var albums = []
+                        var albums = [];
 
                         for (var uri in response){
                             if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0] && response[uri][0].album){

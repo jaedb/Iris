@@ -1,8 +1,9 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { hashHistory, Link } from 'react-router'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { hashHistory, Link } from 'react-router';
+import { bindActionCreators } from 'redux';
+import Dexie from 'dexie';
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
@@ -371,6 +372,7 @@ class Settings extends React.Component {
 						{upgrade_button}
 				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+				        <button className="destructive" onClick={() => Dexie.delete('iris')}>Flush persistent storage</button>
 			        </div>
 
 					<h4 className="underline">About</h4>
