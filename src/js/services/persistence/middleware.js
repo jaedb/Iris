@@ -22,36 +22,13 @@ const persistenceMiddleware = (function(){
 
         // proceed as normal first
         // this way, any reducers and middleware do their thing BEFORE we store our new state
-        next(action);
+        //next(action);
 
         // append our state to a global variable. This gives us access to debug the store at any point
         window._store = store;
 
         // Add the ability to echo out our database
-        window._db = {
-            get: function(table){
-                db[table].toArray()
-                    .then(
-                        result => {
-                            console.log(result);
-                        }
-                    )
-                    .catch(function(e){
-                        console.error(e);
-                    });
-            },
-            drop: function(table){
-                db[table].clear()
-                    .then(
-                        result => {
-                            console.log(result);
-                        }
-                    )
-                    .catch(function(e){
-                        console.error(e);
-                    });
-            }
-        }
+        window._db = db;
 
         // Add the ability to echo out our database
         window._db_table = function(table){
@@ -233,9 +210,16 @@ const persistenceMiddleware = (function(){
                 db.albums.get(action.uri)
                     .then(
                         album => {
-                            if (album){
+                            if (album && album.complete){
                                 console.log('Restoring album from persistent store');
                                 store.dispatch(coreActions.albumLoaded(album));
+
+                                // We need to load all it's tracks too
+                                if (album.tracks_uris){
+                                    album.tracks_uris.forEach(track_uri => {
+                                        store.dispatch(coreActions.loadTrack(track_uri));
+                                    });
+                                }
                             } else {
                                 next(action);
                             }
@@ -247,9 +231,23 @@ const persistenceMiddleware = (function(){
                 db.artists.get(action.uri)
                     .then(
                         artist => {
-                            if (artist){
-                                console.log('Restoring artist from persistent store');
+                            if (artist && artist.complete){
+                                console.log('Restoring artist from persistent store', artist);
                                 store.dispatch(coreActions.artistLoaded(artist));
+
+                                // We need to load all it's tracks too
+                                if (artist.tracks_uris){
+                                    artist.tracks_uris.forEach(track_uri => {
+                                        store.dispatch(coreActions.loadTrack(track_uri));
+                                    });
+                                }
+
+                                // We need to load all it's albums too
+                                if (artist.albums_uris){
+                                    artist.albums_uris.forEach(album_uri => {
+                                        store.dispatch(coreActions.loadAlbum(album_uri));
+                                    });
+                                }
                             } else {
                                 next(action);
                             }
@@ -261,7 +259,7 @@ const persistenceMiddleware = (function(){
                 db.playlists.get(action.uri)
                     .then(
                         playlist => {
-                            if (playlist){
+                            if (playlist && playlist.complete){
                                 console.log('Restoring playlist from persistent store');
                                 store.dispatch(coreActions.playlistLoaded(playlist));
                             } else {
@@ -351,6 +349,10 @@ const persistenceMiddleware = (function(){
                 next(action);
                 break;
              */
+
+            default:
+                next(action);
+                break;
         }
     }
 

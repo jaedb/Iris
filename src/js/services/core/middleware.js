@@ -357,16 +357,53 @@ const CoreMiddleware = (function(){
 
 
             /**
+             **/
 
-            case 'LOAD_ALBUM':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: action.tracks
-                });
+            case 'LOAD_TRACK':
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+                        store.dispatch(spotifyActions.getTrack(action.uri));
+                        //store.dispatch(spotifyActions.following(action.uri));
+                        break;
+
+                    default:
+                        store.dispatch(mopidyActions.getTrack(action.uri));
+                        break;
+                }
                 
                 next(action);
                 break;
-             **/
+
+            case 'LOAD_ALBUM':
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+                        store.dispatch(spotifyActions.getAlbum(action.uri));
+                        store.dispatch(spotifyActions.following(action.uri));
+                        break;
+
+                    default:
+                        store.dispatch(mopidyActions.getAlbum(action.uri));
+                        break;
+                }
+                
+                next(action);
+                break;
+
+            case 'LOAD_ARTIST':
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+                        console.log(action);
+                        store.dispatch(spotifyActions.getArtist(action.uri, true));
+                        store.dispatch(spotifyActions.following(action.uri));
+                        break;
+
+                    default:
+                        store.dispatch(mopidyActions.getArtist(action.uri));
+                        break;
+                }
+                
+                next(action);
+                break;
 
 
             /**
@@ -455,6 +492,7 @@ const CoreMiddleware = (function(){
                         artist = Object.assign({}, artists_index[artist.uri], artist);
                     }
 
+                    // Migrate nested tracks objects into references to our tracks index
                     if (artist.tracks){
                         var tracks = helpers.formatTracks(artist.tracks);
                         var tracks_uris = helpers.arrayOf('uri', tracks);
@@ -468,11 +506,7 @@ const CoreMiddleware = (function(){
 
                 action.artists = artists_loaded;
 
-                // Load our tracks
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracks_loaded
-                });
+                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                 next(action);
                 break;

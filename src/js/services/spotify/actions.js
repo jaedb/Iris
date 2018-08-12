@@ -1073,14 +1073,16 @@ export function getGenres(){
  * Get a single artist
  *
  * @param uri string
- * @param full boolean (whether we want a full artist object)
+ * @param complete boolean (whether we want a complete artist object)
  **/
-export function getArtist(uri, full = false){
+export function getArtist(uri, complete = false){
     return (dispatch, getState) => {
 
         // Start with an empty object
         // As each requests completes, they'll add to this object
-        var artist = {}
+        var artist = {
+            complete: complete
+        }
 
         // We need our artist, obviously
         var requests = [        
@@ -1099,7 +1101,7 @@ export function getArtist(uri, full = false){
         ];
 
         // Do we want a full artist, with all supporting material?
-        if (full){
+        if (complete){
 
             requests.push(
                 sendRequest(dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/top-tracks?country='+getState().spotify.country )
@@ -1120,10 +1122,7 @@ export function getArtist(uri, full = false){
                 sendRequest(dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then(
                     response => {
-                        dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: response.artists
-                        }); 
+                        dispatch(coreActions.artistsLoaded(response.artists));
                         Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri',response.artists) });
                     },
                     error => {
@@ -1145,14 +1144,10 @@ export function getArtist(uri, full = false){
                 dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and')))
             }
 
-            dispatch({
-                type: 'ARTIST_LOADED',
-                key: artist.uri,
-                artist: artist
-            })
+            dispatch(coreActions.artistLoaded(artist));
 
             // Now go get our artist albums
-            if (full){
+            if (complete){
                 sendRequest(dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/albums?market='+getState().spotify.country )
                 .then(
                     response => {
@@ -1335,20 +1330,18 @@ export function getAlbum(uri){
     return (dispatch, getState) => {
 
         // get the album
-        sendRequest(dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri) )
+        sendRequest(dispatch, getState, 'albums/'+ helpers.getFromUri('albumid', uri))
             .then(
                 response => {
 
                     // dispatch our loaded artists (simple objects)
-                    dispatch({
-                        type: 'ARTISTS_LOADED',
-                        artists: response.artists
-                    });
+                    dispatch(coreActions.artistsLoaded(response.artists));
 
                     var album = Object.assign(
                         {},
                         response,
                         {
+                            complete: true,
                             artists_uris: helpers.arrayOf('uri',response.artists),
                             tracks: response.tracks.items,
                             tracks_more: response.tracks.next,
@@ -1364,27 +1357,20 @@ export function getAlbum(uri){
                         }
                     }
 
-                    dispatch({
-                        type: 'ALBUM_LOADED',
-                        key: album.uri,
-                        album: album
-                    });
+                    dispatch(coreActions.albumLoaded(album));
 
                     // now get all the artists for this album (full objects)
                     // we do this to get the artist artwork
                     var artist_ids = [];
-                    for(var i = 0; i < response.artists.length; i++){
-                        artist_ids.push(helpers.getFromUri('artistid', response.artists[i].uri ) )
-                    }
+                    response.artists.forEach(artist => {
+                        artist_ids.push(helpers.getFromUri('artistid', artist.uri));
+                    });
 
                     // get all album artists as full objects
                     sendRequest(dispatch, getState, 'artists/?ids='+artist_ids )
                         .then(
                             response => {
-                                dispatch({
-                                    type: 'ARTISTS_LOADED',
-                                    artists: response.artists
-                                });
+                                dispatch(coreActions.artistsLoaded(response.artists));
                             },
                             error => {
                                 dispatch(coreActions.handleException(

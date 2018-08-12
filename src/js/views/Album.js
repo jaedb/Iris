@@ -45,7 +45,7 @@ class Album extends React.Component{
 			this.props.coreActions.loadAlbum(nextProps.params.uri);
 
 		// if mopidy has just connected AND we're a local album, go get
-		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
 				this.props.coreActions.loadAlbum(nextProps.params.uri);
 			}

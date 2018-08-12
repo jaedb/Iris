@@ -3,6 +3,7 @@ import ReactGA from 'react-ga';
 import md5 from 'md5';
 
 var helpers = require('./../../helpers');
+var coreActions = require('../core/actions');
 var spotifyActions = require('./actions');
 var uiActions = require('../ui/actions');
 var pusherActions = require('../pusher/actions');
@@ -118,13 +119,13 @@ const SpotifyMiddleware = (function(){
                     type: 'ALBUMS_LOADED',
                     albums: action.data.items
                 });
-                store.dispatch({
-                    type: 'ARTIST_ALBUMS_LOADED',
-                    key: action.key,
-                    uris: helpers.arrayOf('uri',action.data.items),
+                var artist = {
+                    uri: action.key,
+                    albums_uris: helpers.arrayOf('uri', action.data.items),
                     more: action.data.next,
                     total: action.data.total
-                });
+                }
+                store.dispatch(coreActions.artistLoaded(artist));
                 break
 
             case 'SPOTIFY_USER_PLAYLISTS_LOADED':

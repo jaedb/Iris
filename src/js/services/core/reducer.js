@@ -177,11 +177,15 @@ export default function reducer(core = {}, action){
                 new_releases_total: action.total
             });
 
-
+/*
+    using artistLoaded and albumsLoaded instead
+    
         case 'ARTIST_ALBUMS_LOADED':
             var artists = Object.assign([], core.artists)
             var albums_uris = []
-            if (artists[action.key].albums_uris) albums_uris = artists[action.key].albums_uris
+            if (artists[action.key].albums_uris){
+                albums_uris = artists[action.key].albums_uris;
+            }
 
             var artist = Object.assign(
                 {}, 
@@ -192,8 +196,9 @@ export default function reducer(core = {}, action){
                     albums_total: action.total
                 }
             )
-            artists[action.key] = artist
+            artists[action.key] = artist;
             return Object.assign({}, core, { artists: artists });
+            */
 
 
         case 'USER_PLAYLISTS_LOADED':
