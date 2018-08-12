@@ -1120,10 +1120,7 @@ export function getArtist(uri, full = false){
                 sendRequest(dispatch, getState, 'artists/'+ helpers.getFromUri('artistid', uri) +'/related-artists' )
                 .then(
                     response => {
-                        dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: response.artists
-                        }); 
+                        dispatch(coreActions.artistsLoaded(response.artists));
                         Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri',response.artists) });
                     },
                     error => {
@@ -1145,11 +1142,7 @@ export function getArtist(uri, full = false){
                 dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&','and')))
             }
 
-            dispatch({
-                type: 'ARTIST_LOADED',
-                key: artist.uri,
-                artist: artist
-            })
+            dispatch(coreActions.artistLoaded(artist));
 
             // Now go get our artist albums
             if (full){
@@ -1158,8 +1151,8 @@ export function getArtist(uri, full = false){
                     response => {
                         dispatch({
                             type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                            data: response,
-                            key: uri
+                            artist_uri: uri,
+                            data: response
                         })
                     },
                     error => {
@@ -1578,11 +1571,7 @@ export function getPlaylist(uri){
                     }
                 )
 
-                dispatch({
-                    type: 'PLAYLIST_LOADED',
-                    key: playlist.uri,
-                    playlist: playlist
-                })
+                dispatch(coreActions.playlistLoaded(playlist));
             },
             error => {
                 dispatch(coreActions.handleException(

@@ -3211,10 +3211,7 @@ function getArtist(uri) {
             }));
 
             requests.push(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
-                dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: response.artists
-                });
+                dispatch(coreActions.artistsLoaded(response.artists));
                 Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri', response.artists) });
             }, function (error) {
                 dispatch(coreActions.handleException('Could not load artist\'s related artists', error));
@@ -3230,19 +3227,15 @@ function getArtist(uri) {
                 dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&', 'and')));
             }
 
-            dispatch({
-                type: 'ARTIST_LOADED',
-                key: artist.uri,
-                artist: artist
-            });
+            dispatch(coreActions.artistLoaded(artist));
 
             // Now go get our artist albums
             if (full) {
                 sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                        data: response,
-                        key: uri
+                        artist_uri: uri,
+                        data: response
                     });
                 }, function (error) {
                     dispatch(coreActions.handleException('Could not load artist\'s albums', error));
@@ -3557,11 +3550,7 @@ function getPlaylist(uri) {
                 description: description
             });
 
-            dispatch({
-                type: 'PLAYLIST_LOADED',
-                key: playlist.uri,
-                playlist: playlist
-            });
+            dispatch(coreActions.playlistLoaded(playlist));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load playlist', error));
         });
@@ -3995,6 +3984,22 @@ exports.debugResponse = debugResponse;
 exports.set = set;
 exports.clearCurrentTrack = clearCurrentTrack;
 exports.cachebustHttpStream = cachebustHttpStream;
+exports.loadTrack = loadTrack;
+exports.loadAlbum = loadAlbum;
+exports.loadArtist = loadArtist;
+exports.loadPlaylist = loadPlaylist;
+exports.loadUser = loadUser;
+exports.trackLoaded = trackLoaded;
+exports.tracksLoaded = tracksLoaded;
+exports.artistLoaded = artistLoaded;
+exports.artistsLoaded = artistsLoaded;
+exports.albumLoaded = albumLoaded;
+exports.albumsLoaded = albumsLoaded;
+exports.playlistLoaded = playlistLoaded;
+exports.playlistsLoaded = playlistsLoaded;
+exports.userLoaded = userLoaded;
+exports.usersLoaded = usersLoaded;
+exports.loadedMore = loadedMore;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
 exports.createPlaylist = createPlaylist;
@@ -4004,12 +4009,6 @@ exports.addTracksToPlaylist = addTracksToPlaylist;
 exports.getLibraryPlaylists = getLibraryPlaylists;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryArtists = getLibraryArtists;
-exports.loadedMore = loadedMore;
-exports.tracksLoaded = tracksLoaded;
-exports.albumsLoaded = albumsLoaded;
-exports.artistsLoaded = artistsLoaded;
-exports.playlistsLoaded = playlistsLoaded;
-exports.usersLoaded = usersLoaded;
 
 var _helpers = __webpack_require__(1);
 
@@ -4089,6 +4088,115 @@ function clearCurrentTrack() {
 function cachebustHttpStream() {
     return {
         type: 'CACHEBUST_HTTP_STREAM'
+    };
+}
+
+/**
+ * Record getters
+ *
+ * Calling this through the common core enables us to detect whether we've already
+ * got the record in the state or persistent storage. Failing that, we pass off to the
+ * relevant service to load the record - all from one neat package.
+ **/
+
+function loadTrack(uri) {
+    return {
+        type: 'LOAD_TRACK',
+        uri: uri
+    };
+}
+
+function loadAlbum(uri) {
+    return {
+        type: 'LOAD_ALBUM',
+        uri: uri
+    };
+}
+
+function loadArtist(uri) {
+    return {
+        type: 'LOAD_ARTIST',
+        uri: uri
+    };
+}
+
+function loadPlaylist(uri) {
+    return {
+        type: 'LOAD_PLAYLIST',
+        uri: uri
+    };
+}
+
+function loadUser(uri) {
+    return {
+        type: 'LOAD_USER',
+        uri: uri
+    };
+}
+
+/**
+ * Record loaders
+ *
+ * We've got a loaded record, now we just need to plug it in to our state and stores.
+ **/
+
+function trackLoaded(track) {
+    return tracksLoaded([track]);
+}
+function tracksLoaded(tracks) {
+    return {
+        type: 'TRACKS_LOADED',
+        tracks: tracks
+    };
+}
+
+function artistLoaded(artist) {
+    return artistsLoaded([artist]);
+}
+function artistsLoaded(artists) {
+    return {
+        type: 'ARTISTS_LOADED',
+        artists: artists
+    };
+}
+
+function albumLoaded(album) {
+    return albumsLoaded([album]);
+}
+function albumsLoaded(albums) {
+    return {
+        type: 'ALBUMS_LOADED',
+        albums: albums
+    };
+}
+
+function playlistLoaded(playlist) {
+    return playlistsLoaded([playlist]);
+}
+function playlistsLoaded(playlists) {
+    return {
+        type: 'PLAYLISTS_LOADED',
+        playlists: playlists
+    };
+}
+
+function userLoaded(user) {
+    return usersLoaded([user]);
+}
+function usersLoaded(users) {
+    return {
+        type: 'USERS_LOADED',
+        users: users
+    };
+}
+
+function loadedMore(parent_type, parent_key, records_type, records_data) {
+    return {
+        type: 'LOADED_MORE',
+        parent_type: parent_type,
+        parent_key: parent_key,
+        records_type: records_type,
+        records_data: records_data
     };
 }
 
@@ -4240,55 +4348,6 @@ function getLibraryAlbums() {
 function getLibraryArtists() {
     return {
         type: 'GET_LIBRARY_ARTISTS'
-    };
-}
-
-/**
- * Assets loaded
- **/
-
-function loadedMore(parent_type, parent_key, records_type, records_data) {
-    return {
-        type: 'LOADED_MORE',
-        parent_type: parent_type,
-        parent_key: parent_key,
-        records_type: records_type,
-        records_data: records_data
-    };
-}
-
-function tracksLoaded(tracks) {
-    return {
-        type: 'TRACKS_LOADED',
-        tracks: tracks
-    };
-}
-
-function albumsLoaded(albums) {
-    return {
-        type: 'ALBUMS_LOADED',
-        albums: albums
-    };
-}
-
-function artistsLoaded(artists) {
-    return {
-        type: 'ARTISTS_LOADED',
-        artists: artists
-    };
-}
-
-function playlistsLoaded(playlists) {
-    return {
-        type: 'PLAYLISTS_LOADED',
-        playlists: playlists
-    };
-}
-
-function usersLoaded(users) {
-    return {
-        type: 'USERS_LOADED',
-        users: users
     };
 }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
@@ -49768,20 +49827,40 @@ function reducer() {
          * and appended to their relevant index.
          **/
 
-        case 'UPDATE_TRACKS_INDEX':
-            return Object.assign({}, core, { tracks: action.tracks });
+        case 'TRACKS_LOADED':
+            var tracks = Object.assign({}, core.tracks);
+            action.tracks.forEach(function (track) {
+                tracks[track.uri] = track;
+            });
+            return Object.assign({}, core, { tracks: tracks });
 
-        case 'UPDATE_ALBUMS_INDEX':
-            return Object.assign({}, core, { albums: action.albums });
+        case 'ALBUMS_LOADED':
+            var albums = Object.assign({}, core.albums);
+            action.albums.forEach(function (album) {
+                albums[album.uri] = album;
+            });
+            return Object.assign({}, core, { albums: albums });
 
-        case 'UPDATE_ARTISTS_INDEX':
-            return Object.assign({}, core, { artists: action.artists });
+        case 'ARTISTS_LOADED':
+            var artists = Object.assign({}, core.artists);
+            action.artists.forEach(function (artist) {
+                artists[artist.uri] = artist;
+            });
+            return Object.assign({}, core, { artists: artists });
 
-        case 'UPDATE_PLAYLISTS_INDEX':
-            return Object.assign({}, core, { playlists: action.playlists });
+        case 'PLAYLISTS_LOADED':
+            var playlists = Object.assign({}, core.playlists);
+            action.playlists.forEach(function (playlist) {
+                playlists[playlist.uri] = playlist;
+            });
+            return Object.assign({}, core, { playlists: playlists });
 
-        case 'UPDATE_USERS_INDEX':
-            return Object.assign({}, core, { users: action.users });
+        case 'USERS_LOADED':
+            var users = Object.assign({}, core.users);
+            action.users.forEach(function (user) {
+                users[user.uri] = user;
+            });
+            return Object.assign({}, core, { users: users });
 
         case 'NEW_RELEASES_LOADED':
             if (!action.uris) {
@@ -49802,20 +49881,22 @@ function reducer() {
             });
 
         case 'ARTIST_ALBUMS_LOADED':
-            var artists = Object.assign([], core.artists);
+            var artists = Object.assign({}, core.artists);
             var albums_uris = [];
-            if (artists[action.key].albums_uris) albums_uris = artists[action.key].albums_uris;
+            if (artists[action.artist_uri].albums_uris) {
+                albums_uris = artists[action.artist_uri].albums_uris;
+            }
 
-            var artist = Object.assign({}, artists[action.key], {
-                albums_uris: [].concat(_toConsumableArray(albums_uris), _toConsumableArray(action.uris)),
+            var artist = Object.assign({}, artists[action.artist_uri], {
+                albums_uris: [].concat(_toConsumableArray(albums_uris), _toConsumableArray(action.albums_uris)),
                 albums_more: action.more,
                 albums_total: action.total
             });
-            artists[action.key] = artist;
+            artists[action.artist_uri] = artist;
             return Object.assign({}, core, { artists: artists });
 
         case 'USER_PLAYLISTS_LOADED':
-            var users = Object.assign([], core.users);
+            var users = Object.assign({}, core.users);
             var playlists_uris = [];
             if (users[action.key] && users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris;
 
@@ -49832,7 +49913,7 @@ function reducer() {
          **/
 
         case 'PLAYLIST_TRACKS':
-            var playlists = Object.assign([], core.playlists);
+            var playlists = Object.assign({}, core.playlists);
             var playlist = Object.assign({}, playlists[action.key], { tracks_uris: action.tracks_uris });
 
             playlists[action.key] = playlist;
@@ -51201,59 +51282,80 @@ var CoreMiddleware = function () {
                         next(action);
                         break;
 
+                    case 'LOAD_TRACK':
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getTrack(action.uri));
+                                //store.dispatch(spotifyActions.following(action.uri));
+                                break;
+
+                            default:
+                                store.dispatch(mopidyActions.getTrack(action.uri));
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
+                    case 'LOAD_ALBUM':
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getAlbum(action.uri));
+                                store.dispatch(spotifyActions.following(action.uri));
+                                break;
+
+                            default:
+                                store.dispatch(mopidyActions.getAlbum(action.uri));
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
+                    case 'LOAD_ARTIST':
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getArtist(action.uri, true));
+                                store.dispatch(spotifyActions.following(action.uri));
+                                break;
+
+                            default:
+                                store.dispatch(mopidyActions.getArtist(action.uri));
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
+                    case 'LOAD_PLAYLIST':
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getPlaylist(action.uri));
+                                store.dispatch(spotifyActions.following(action.uri));
+                                break;
+
+                            default:
+                                store.dispatch(mopidyActions.getPlaylist(action.uri));
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
                     /**
                      * Index actions
                      * These modify our asset indexes, which are used globally
                      **/
 
-                    // Array wrapper for TRACKS_LOADED
-                    case 'TRACK_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: [action.track]
-                        });
-                        break;
-
-                    // Array wrapper for ALBUMS_LOADED
-                    case 'ALBUM_LOADED':
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: [action.album]
-                        });
-                        break;
-
-                    // Array wrapper for ARTISTS_LOADED
-                    case 'ARTIST_LOADED':
-                        store.dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: [action.artist]
-                        });
-                        break;
-
-                    // Array wrapper for PLAYLISTS_LOADED
-                    case 'PLAYLIST_LOADED':
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: [action.playlist]
-                        });
-                        break;
-
-                    // Array wrapper for USERS_LOADED
-                    case 'USER_LOADED':
-                        store.dispatch({
-                            type: 'USERS_LOADED',
-                            users: [action.user]
-                        });
-                        break;
-
                     case 'TRACKS_LOADED':
-                        var tracks = Object.assign({}, core.tracks);
+                        var tracks_index = Object.assign({}, core.tracks);
+                        var tracks_loaded = [];
 
-                        for (var i = 0; i < action.tracks.length; i++) {
-                            var track = Object.assign({}, helpers.formatTracks(action.tracks[i]));
+                        action.tracks.forEach(function (track) {
+                            track = helpers.formatTracks(track);
 
-                            if (tracks[track.uri] !== undefined) {
-                                track = Object.assign({}, tracks[track.uri], track);
+                            if (tracks_index[track.uri] !== undefined) {
+                                track = Object.assign({}, tracks_index[track.uri], track);
                             }
 
                             if (track.album && track.album.images && track.album.images.length > 0) {
@@ -51261,28 +51363,24 @@ var CoreMiddleware = function () {
                                 track.images = track.album.images;
                             }
 
-                            tracks[track.uri] = track;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_TRACKS_INDEX',
-                            tracks: tracks
+                            tracks_loaded.push(track);
                         });
+
+                        action.tracks = tracks_loaded;
 
                         next(action);
                         break;
 
                     case 'ALBUMS_LOADED':
-                        var albums = Object.assign({}, core.albums);
+                        var albums_index = Object.assign({}, core.albums);
+                        var albums_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.albums.length; i++) {
-                            var album = Object.assign({}, action.albums[i]);
+                        action.albums.forEach(function (album) {
                             helpers.formatAlbum(album);
 
-                            if (albums[album.uri]) {
-                                album = Object.assign({}, albums[album.uri], album);
+                            if (albums_index[album.uri]) {
+                                album = Object.assign({}, albums_index[album.uri], album);
                             }
 
                             if (album.images && album.images.length > 0) {
@@ -51298,43 +51396,39 @@ var CoreMiddleware = function () {
                                 tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
                             }
 
-                            albums[album.uri] = album;
-                        }
+                            albums_loaded.push(album);
+                        });
 
-                        // Load these new tracks
+                        action.albums = albums_loaded;
+
+                        // Trigger the tracks load action
                         store.dispatch({
                             type: 'TRACKS_LOADED',
                             tracks: tracks_loaded
-                        });
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_ALBUMS_INDEX',
-                            albums: albums
                         });
 
                         next(action);
                         break;
 
                     case 'ARTISTS_LOADED':
-                        var artists = Object.assign({}, core.artists);
+                        var artists_index = Object.assign({}, core.artists);
+                        var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.artists.length; i++) {
-                            var artist = action.artists[i];
-
-                            if (artists[artist.uri]) {
+                        action.artists.forEach(function (artist) {
+                            if (artists_index[artist.uri]) {
 
                                 // if we've already got images, remove and add as additional_images
                                 // this is to prevent LastFM overwriting Spotify images
-                                if (artists[artist.uri].images) {
+                                if (artists_index[artist.uri].images) {
                                     artist.images_additional = artist.images;
                                     delete artist.images;
                                 }
 
-                                artist = Object.assign({}, artists[artist.uri], artist);
+                                artist = Object.assign({}, artists_index[artist.uri], artist);
                             }
 
+                            // Migrate nested tracks objects into references to our tracks index
                             if (artist.tracks) {
                                 var tracks = helpers.formatTracks(artist.tracks);
                                 var tracks_uris = helpers.arrayOf('uri', tracks);
@@ -51343,30 +51437,22 @@ var CoreMiddleware = function () {
                                 tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
                             }
 
-                            // Update index
-                            artists[artist.uri] = artist;
-                        }
-
-                        // Load our tracks
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
+                            artists_loaded.push(artist);
                         });
 
-                        store.dispatch({
-                            type: 'UPDATE_ARTISTS_INDEX',
-                            artists: artists
-                        });
+                        action.artists = artists_loaded;
+
+                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                         next(action);
                         break;
 
                     case 'PLAYLISTS_LOADED':
-                        var playlists = Object.assign({}, core.playlists);
+                        var playlists_index = Object.assign({}, core.playlists);
+                        var playlists_loaded = [];
                         var tracks_loaded = [];
 
-                        for (var i = 0; i < action.playlists.length; i++) {
-                            var playlist = Object.assign({}, action.playlists[i]);
+                        action.playlists.forEach(function (playlist) {
 
                             // Detect editability
                             switch (helpers.uriSource(playlist.uri)) {
@@ -51381,8 +51467,8 @@ var CoreMiddleware = function () {
                                     }
                             }
 
-                            if (playlists[playlist.uri] !== undefined) {
-                                playlist = Object.assign({}, playlists[playlist.uri], playlist);
+                            if (playlists_index[playlist.uri]) {
+                                playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
                             }
 
                             // Load our tracks
@@ -51395,41 +51481,31 @@ var CoreMiddleware = function () {
                             }
 
                             // Update index
-                            playlists[playlist.uri] = playlist;
-                        }
+                            playlists_loaded.push(playlist);
+                        });
+
+                        action.playlists = playlists_loaded;
 
                         // Load our tracks
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
-
-                        store.dispatch({
-                            type: 'UPDATE_PLAYLISTS_INDEX',
-                            playlists: playlists
-                        });
+                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                         next(action);
                         break;
 
                     case 'USERS_LOADED':
-                        var users = Object.assign({}, core.users);
+                        var users_index = Object.assign({}, core.users);
+                        var users_loaded = [];
 
-                        for (var i = 0; i < action.users.length; i++) {
-                            var user = Object.assign({}, action.users[i]);
+                        action.users.forEach(function (user) {
 
-                            if (users[user.uri]) {
-                                user = Object.assign({}, users[user.uri], user);
+                            if (users_index[user.uri]) {
+                                user = Object.assign({}, users_index[user.uri], user);
                             }
 
-                            users[user.uri] = user;
-                        }
-
-                        // Update index
-                        store.dispatch({
-                            type: 'UPDATE_USERS_INDEX',
-                            users: users
+                            users_loaded.push(user);
                         });
+
+                        action.users = users_loaded;
 
                         next(action);
                         break;
@@ -57430,6 +57506,7 @@ var _md2 = _interopRequireDefault(_md);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var helpers = __webpack_require__(1);
+var coreActions = __webpack_require__(11);
 var spotifyActions = __webpack_require__(9);
 var uiActions = __webpack_require__(3);
 var pusherActions = __webpack_require__(14);
@@ -57542,14 +57619,12 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: action.data.items
-                        });
+                        console.log(action);
+                        store.dispatch(coreActions.albumsLoaded(action.data.items));
                         store.dispatch({
                             type: 'ARTIST_ALBUMS_LOADED',
-                            key: action.key,
-                            uris: helpers.arrayOf('uri', action.data.items),
+                            artist_uri: action.artist_uri,
+                            albums_uris: helpers.arrayOf('uri', action.data.items),
                             more: action.data.next,
                             total: action.data.total
                         });
