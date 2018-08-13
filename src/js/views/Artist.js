@@ -18,6 +18,7 @@ import DropdownField from '../components/Fields/DropdownField'
 import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -53,7 +54,7 @@ class Artist extends React.Component{
 		}
 	}
 
-	setWindowTitle(artist = this.props.artist){		
+	setWindowTitle(artist = this.props.artist){
 		if (artist){
 			this.props.uiActions.setWindowTitle(artist.name+" (artist)");
 		} else{
@@ -126,7 +127,7 @@ class Artist extends React.Component{
 		this.props.uiActions.set({artist_albums_filter: value});
 	}
 
-	renderSubViewMenu(){		
+	renderSubViewMenu(){
 		return (
 			<div className="sub-views">
 				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
@@ -136,7 +137,7 @@ class Artist extends React.Component{
 		)
 	}
 
-	renderBody(){		
+	renderBody(){
 		var scheme = helpers.uriSource(this.props.params.uri);
 
 		var related_artists = []
@@ -276,18 +277,18 @@ class Artist extends React.Component{
 						<div className="albums">
 							<h4>
 								Albums
-								<DropdownField 
-									icon="sort" 
-									name="Sort" 
-									value={this.props.sort} 
-									options={sort_options} 
+								<DropdownField
+									icon="sort"
+									name="Sort"
+									value={this.props.sort}
+									options={sort_options}
 									selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
 									handleChange={value => {this.setSort(value); this.props.uiActions.hideContextMenu() }}
 								/>
-								<DropdownField 
-									icon="filter_list" 
-									name="Filter" 
-									value={this.props.filter} 
+								<DropdownField
+									icon="filter_list"
+									name="Filter"
+									value={this.props.filter}
 									options={filter_options}
 									handleChange={value => {this.setFilter(value); this.props.uiActions.hideContextMenu() }}
 								/>
@@ -325,7 +326,7 @@ class Artist extends React.Component{
 		}
 
 		var is_spotify = (scheme == 'spotify')
-		
+
 		if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0){
 			var uris_to_play = this.props.artist.tracks_uris
 		} else {
@@ -384,6 +385,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),

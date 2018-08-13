@@ -19,6 +19,7 @@ import Icon from '../components/Icon'
 import Popularity from '../components/Popularity'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -75,7 +76,7 @@ class Track extends React.Component{
 		}
 	}
 
-	setWindowTitle(track = this.props.track){		
+	setWindowTitle(track = this.props.track){
 		if (track){
 			var artists = "";
 			for (var i = 0; i < track.artists.length; i++){
@@ -102,7 +103,7 @@ class Track extends React.Component{
 
 	/**
 	 * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
-	 * we need to accommodate? 
+	 * we need to accommodate?
 	 **/
 	loadTrack(props = this.props){
 		switch (helpers.uriSource(props.params.uri)){
@@ -171,8 +172,8 @@ class Track extends React.Component{
 						{
 							this.props.track.lyrics_results.map(result => {
 								return (
-									<option 
-										key={result.path} 
+									<option
+										key={result.path}
 										value={result.path}
 										defaultValue={result.path == this.props.track.lyrics_path}
 									>
@@ -231,10 +232,10 @@ class Track extends React.Component{
 		return (
 			<div className="view track-view content-wrapper">
 
-				{this.props.slim_mode ? <Header 
-					icon="music" 
-					title="Track" 
-					handleContextMenuTrigger={e => this.handleContextMenu(e)} 
+				{this.props.slim_mode ? <Header
+					icon="music"
+					title="Track"
+					handleContextMenuTrigger={e => this.handleContextMenu(e)}
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
@@ -307,7 +308,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		lastfmActions: bindActionCreators(lastfmActions, dispatch),

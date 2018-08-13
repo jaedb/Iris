@@ -26,7 +26,7 @@ const CoreMiddleware = (function(){
                 if (action.description){
                     var description = action.description;
                 } else if (action.data.xhr && action.data.xhr.responseText){
-                    var xhr_response = JSON.parse(action.data.xhr.responseText);        
+                    var xhr_response = JSON.parse(action.data.xhr.responseText);
                     if (xhr_response.error && xhr_response.error.message){
                         var description = xhr_response.error.message;
                     }
@@ -63,7 +63,7 @@ const CoreMiddleware = (function(){
 
                 var data = Object.assign(
                     {},
-                    action.data, 
+                    action.data,
                     {
                         message: message,
                         description: description,
@@ -75,7 +75,7 @@ const CoreMiddleware = (function(){
                 /*
                 if (store.getState().ui.allow_reporting){
 	                Raven.captureException(
-	                    new Error(message), 
+	                    new Error(message),
 	                    {
 	                        extra: data
 	                    }
@@ -185,7 +185,7 @@ const CoreMiddleware = (function(){
                 break
 
             case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification({type: 'info', content: 'Added '+action.tracks_uris.length+' tracks to playlist'}))                
+                store.dispatch(uiActions.createNotification({type: 'info', content: 'Added '+action.tracks_uris.length+' tracks to playlist'}))
                 switch(helpers.uriSource(action.key)){
 
                     case 'spotify':
@@ -267,7 +267,7 @@ const CoreMiddleware = (function(){
                     type: 'TRACKS_LOADED',
                     tracks: tracks
                 });
-                
+
                 next(action);
                 break;
 
@@ -295,7 +295,7 @@ const CoreMiddleware = (function(){
                     snapshot_id = action.snapshot_id;
                 }
 
-                // Update our playlist 
+                // Update our playlist
                 playlist.tracks_uris = tracks_uris;
                 playlist.snapshot_id = snapshot_id;
 
@@ -321,7 +321,7 @@ const CoreMiddleware = (function(){
                     snapshot_id = action.snapshot_id;
                 }
 
-                // Update our playlist 
+                // Update our playlist
                 playlist.tracks_uris = tracks_uris;
                 playlist.snapshot_id = snapshot_id;
 
@@ -351,7 +351,7 @@ const CoreMiddleware = (function(){
                     type: 'TRACKS_LOADED',
                     tracks: action.tracks
                 });
-                
+
                 next(action);
                 break;
 
@@ -360,14 +360,16 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getTrack(action.uri));
-                        //store.dispatch(spotifyActions.following(action.uri));
+                        store.dispatch(spotifyActions.following(action.uri));
                         break;
 
                     default:
-                        store.dispatch(mopidyActions.getTrack(action.uri));
+                        if (store.getState().mopidy.connected){
+                            store.dispatch(mopidyActions.getTrack(action.uri));
+                        }
                         break;
                 }
-                
+
                 next(action);
                 break;
 
@@ -379,10 +381,12 @@ const CoreMiddleware = (function(){
                         break;
 
                     default:
-                        store.dispatch(mopidyActions.getAlbum(action.uri));
+                        if (store.getState().mopidy.connected){
+                            store.dispatch(mopidyActions.getAlbum(action.uri));
+                        }
                         break;
                 }
-                
+
                 next(action);
                 break;
 
@@ -394,10 +398,12 @@ const CoreMiddleware = (function(){
                         break;
 
                     default:
-                        store.dispatch(mopidyActions.getArtist(action.uri));
+                        if (store.getState().mopidy.connected){
+                            store.dispatch(mopidyActions.getArtist(action.uri));
+                        }
                         break;
                 }
-                
+
                 next(action);
                 break;
 
@@ -409,10 +415,12 @@ const CoreMiddleware = (function(){
                         break;
 
                     default:
-                        store.dispatch(mopidyActions.getPlaylist(action.uri));
+                        if (store.getState().mopidy.connected){
+                            store.dispatch(mopidyActions.getPlaylist(action.uri));
+                        }
                         break;
                 }
-                
+
                 next(action);
                 break;
 

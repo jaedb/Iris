@@ -16,6 +16,7 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -28,7 +29,7 @@ class Album extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.loadAlbum();
+		this.props.coreActions.loadAlbum(this.props.params.uri);
 	}
 
 	handleContextMenu(e){
@@ -41,12 +42,12 @@ class Album extends React.Component{
 
 		// if our URI has changed, fetch new album
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadAlbum(nextProps);
+			this.props.coreActions.loadAlbum(nextProps.params.uri);
 
 		// if mopidy has just connected AND we're a local album, go get
-		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadAlbum(nextProps);
+		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+			if (helpers.uriSource(nextProps.params.uri) != 'spotify'){
+				this.props.coreActions.loadAlbum(nextProps.params.uri);
 			}
 		}
 
@@ -55,7 +56,7 @@ class Album extends React.Component{
 		}
 	}
 
-	setWindowTitle(album = this.props.album){		
+	setWindowTitle(album = this.props.album){
 		if (album){
 			var artists = "";
 			for (var i = 0; i < album.artists.length; i++){
@@ -80,30 +81,6 @@ class Album extends React.Component{
 		this.props.uiActions.showContextMenu(data);
 	}
 
-	loadAlbum(props = this.props){
-		switch(helpers.uriSource(props.params.uri)){
-
-			case 'spotify':
-				if (props.album && props.album.tracks && props.album.artists_uris){
-					console.info('Loading album from index')
-				} else {
-					this.props.spotifyActions.getAlbum(props.params.uri);
-				}
-				this.props.spotifyActions.following(props.params.uri);
-				break;
-
-			default:
-				if (props.mopidy_connected){
-					if (props.album && props.album.tracks){
-						console.info('Loading album from index')
-					} else {
-						this.props.mopidyActions.getAlbum(props.params.uri);
-					}
-				}
-				break;
-		}
-	}
-
 	loadMore(){
 		this.props.spotifyActions.getMore(
 			this.props.album.tracks_more,
@@ -125,7 +102,7 @@ class Album extends React.Component{
 	}
 
 	render(){
-		if (!this.props.album){		
+		if (!this.props.album){
 			if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
 				return (
 					<div className="body-loader loading">
@@ -217,6 +194,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
