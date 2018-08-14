@@ -17831,7 +17831,8 @@ var URILink = function (_React$Component) {
 					break;
 
 				case 'search':
-					to = global.baseURL + 'search/' + uri;
+					var exploded = uri.split('%3A');
+					to = global.baseURL + 'search/' + exploded[1] + '/' + exploded[2];
 					break;
 
 				default:
@@ -25885,7 +25886,7 @@ _reactDom2.default.render(_react2.default.createElement(
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings/debug', component: _Debug2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings(/service/:sub_view)', component: _Settings2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'settings/share-authorization', component: _ShareAuthorization2.default }),
-			_react2.default.createElement(_reactRouter.Route, { path: 'search(/:query)', component: _Search2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'search(/:type/:term)', component: _Search2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'album/:uri', component: _Album2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'artist/:uri(/:sub_view)', component: _Artist2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'playlist/create', component: _CreatePlaylist2.default }),
@@ -65702,21 +65703,14 @@ var Search = function (_React$Component) {
 		value: function digestUri() {
 			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 
-			if (props.params && props.params.query && props.params.query !== '') {
-				var type = helpers.getFromUri("searchtype", props.params.query);
-				var term = helpers.getFromUri("searchterm", props.params.query);
+			if (props.params && props.params.type && props.params.term) {
 
-				if (type) {
-					this.setState({ type: type });
-				}
+				this.setState({
+					type: props.params.type,
+					term: props.params.term
+				});
 
-				if (term) {
-					this.setState({ term: term });
-				}
-
-				if (type && term) {
-					this.search(type, term);
-				}
+				this.search(props.params.type, props.params.term);
 			}
 		}
 	}, {
@@ -65921,7 +65915,7 @@ var Search = function (_React$Component) {
 						_react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
@@ -66026,7 +66020,7 @@ var Search = function (_React$Component) {
 						var tracks_section = _react2.default.createElement(
 							'section',
 							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:' + this.props.params.query, show_source_icon: true }),
+							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
 							_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
 									return _this2.loadMore('tracks');
 								} })
