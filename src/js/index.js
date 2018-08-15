@@ -65,7 +65,7 @@ ReactDOM.render(
 				<Route path="settings(/service/:sub_view)" component={Settings} />
 				<Route path="settings/share-authorization" component={ShareAuthorization} />
 				
-				<Route path="search(/:query)" component={Search} />
+				<Route path="search(/:type/:term)" component={Search} />
 				<Route path="album/:uri" component={Album} />
 				<Route path="artist/:uri(/:sub_view)" component={Artist} />
 				<Route path="playlist/create" component={CreatePlaylist} />

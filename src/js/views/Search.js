@@ -68,21 +68,14 @@ class Search extends React.Component{
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
-		if (props.params && props.params.query && props.params.query !== ''){
-			var type = helpers.getFromUri("searchtype", props.params.query);
-			var term = helpers.getFromUri("searchterm", props.params.query);
+		if (props.params && props.params.type && props.params.term){
 
-			if (type){
-				this.setState({type: type});
-			}
+			this.setState({
+				type: props.params.type,
+				term: props.params.term
+			});
 
-			if (term){
-				this.setState({term: term});
-			}
-
-			if (type && term){
-				this.search(type, term);
-			}
+			this.search(props.params.type, props.params.term);
 		}
 	}
 
@@ -242,7 +235,7 @@ class Search extends React.Component{
 							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -309,7 +302,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)

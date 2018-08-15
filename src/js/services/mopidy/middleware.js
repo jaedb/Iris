@@ -865,11 +865,11 @@ const MopidyMiddleware = (function(){
 
 
             case 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR':
-                var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR
+                var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
 
                 // Cancelling
                 if (last_run && last_run.status == 'cancelling'){
-                    store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'))
+                    store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                     return
 
                 // No more schemes, so we're done!
@@ -895,6 +895,13 @@ const MopidyMiddleware = (function(){
 
                     // Albums
                     case 'albums':
+                            
+                        // Quick check to see if we should be cancelling
+                        var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                        if (last_run && last_run.status == 'cancelling'){
+                            store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                            return;
+                        }
 
                         store.dispatch(uiActions.updateProcess(
                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -961,6 +968,13 @@ const MopidyMiddleware = (function(){
 
                     // Artists
                     case 'artists':
+                            
+                        // Quick check to see if we should be cancelling
+                        var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                        if (last_run && last_run.status == 'cancelling'){
+                            store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                            return;
+                        }
 
                         store.dispatch(uiActions.updateProcess(
                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1036,6 +1050,13 @@ const MopidyMiddleware = (function(){
 
                     // Playlists
                     case 'playlists':
+                            
+                        // Quick check to see if we should be cancelling
+                        var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                        if (last_run && last_run.status == 'cancelling'){
+                            store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                            return;
+                        }
 
                         store.dispatch(uiActions.updateProcess(
                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1085,6 +1106,13 @@ const MopidyMiddleware = (function(){
 
                     // Tracks
                     case 'tracks':
+                            
+                        // Quick check to see if we should be cancelling
+                        var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                        if (last_run && last_run.status == 'cancelling'){
+                            store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                            return;
+                        }
 
                         store.dispatch(uiActions.updateProcess(
                             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1132,38 +1160,57 @@ const MopidyMiddleware = (function(){
                     // Search for all types
                     case 'all':
                     default:
-                        store.dispatch(uiActions.updateProcess(
-                            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                            'Searching '+action.data.uri_scheme.replace(':','')+' tracks',
-                            {
-                                remaining: (action.data.uri_schemes.length) + 1
+
+                        var process_tracks = () => {
+                            
+                            // Quick check to see if we should be cancelling
+                            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                            if (last_run && last_run.status == 'cancelling'){
+                                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                                return;
                             }
-                        ));
-                        request(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
-                            .then(
-                                response => {
-                                    if (response.length > 0 && response[0].tracks !== undefined){
-                                        var tracks = response[0].tracks;
 
-                                        store.dispatch({
-                                            type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                                            context: 'tracks',
-                                            results: helpers.formatTracks(tracks)
-                                        });
-                                    }
-
-                                    process_albums();
-                                },
-                                error => {
-                                    store.dispatch(coreActions.handleException(
-                                        "Mopidy: "+(error.message ? error.message : "Search failed"),
-                                        error
-                                    ));
-                                    process_albums();
+                            store.dispatch(uiActions.updateProcess(
+                                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                'Searching '+action.data.uri_scheme.replace(':','')+' tracks',
+                                {
+                                    remaining: (action.data.uri_schemes.length) + 1
                                 }
-                            );
+                            ));
+                            request(socket, store, 'library.search', {query: {any: [action.data.query]}, uris: [action.data.uri_scheme]})
+                                .then(
+                                    response => {
+                                        if (response.length > 0 && response[0].tracks !== undefined){
+                                            var tracks = response[0].tracks;
+
+                                            store.dispatch({
+                                                type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                context: 'tracks',
+                                                results: helpers.formatTracks(tracks)
+                                            });
+                                        }
+
+                                        process_albums();
+                                    },
+                                    error => {
+                                        store.dispatch(coreActions.handleException(
+                                            "Mopidy: "+(error.message ? error.message : "Search failed"),
+                                            error
+                                        ));
+                                        process_albums();
+                                    }
+                                );
+                        }
 
                         var process_albums = () => {
+                            
+                            // Quick check to see if we should be cancelling
+                            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                            if (last_run && last_run.status == 'cancelling'){
+                                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                                return;
+                            }
+
                             store.dispatch(uiActions.updateProcess(
                                 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
                                 'Searching '+action.data.uri_scheme.replace(':','')+' albums',
@@ -1217,6 +1264,14 @@ const MopidyMiddleware = (function(){
                         }
 
                         var process_artists = () => {
+                            
+                            // Quick check to see if we should be cancelling
+                            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                            if (last_run && last_run.status == 'cancelling'){
+                                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                                return;
+                            }
+
                             store.dispatch(uiActions.updateProcess(
                                 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
                                 'Searching '+action.data.uri_scheme.replace(':','')+' artists',
@@ -1277,23 +1332,15 @@ const MopidyMiddleware = (function(){
                                     }
                             );
                         }
-
-                        var finished = () => {
-                            // We're finally done searching for types on this provider
-                            // On to the next scheme!
-                            store.dispatch(uiActions.runProcess(
-                                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                                {
-                                    context: action.data.context,
-                                    query: action.data.query,
-                                    limit: action.data.limit,
-                                    uri_scheme: next_uri_scheme,
-                                    uri_schemes: next_uri_schemes,
-                                    remaining: action.data.uri_schemes.length
-                                }
-                            ))
-                        }
                         var process_playlists = () => {
+                            
+                            // Quick check to see if we should be cancelling
+                            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
+                            if (last_run && last_run.status == 'cancelling'){
+                                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                                return;
+                            }
+
                             if (action.data.uri_scheme == 'm3u:'){
                                 store.dispatch(uiActions.updateProcess(
                                     'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1344,6 +1391,25 @@ const MopidyMiddleware = (function(){
                                 finished();
                             }
                         }
+
+                        var finished = () => {
+                            // We're finally done searching for types on this provider
+                            // On to the next scheme!
+                            store.dispatch(uiActions.runProcess(
+                                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
+                                {
+                                    context: action.data.context,
+                                    query: action.data.query,
+                                    limit: action.data.limit,
+                                    uri_scheme: next_uri_scheme,
+                                    uri_schemes: next_uri_schemes,
+                                    remaining: action.data.uri_schemes.length
+                                }
+                            ))
+                        }
+
+                        // Kick things off with the tracks
+                        process_tracks();
                 }
 
                 break
