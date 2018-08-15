@@ -4,41 +4,112 @@ var uiActions = require('../ui/actions')
 var helpers = require('../../helpers')
 
 /**
- * Send an ajax request
+ * Send an ajax request to the Genius API
  *
  * @param dispatch obj
  * @param getState obj
- * @param endpoint = the action
- * @param params = string for any URL prarams to pass on
+ * @param endpoint string = the url to query (ie /song/:id)
+ * @param method string
+ * @param data mixed = request payload
+ * @return Promise
  **/
-const sendRequest = (dispatch, getState, endpoint) => {
+const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) => {
+
     return new Promise((resolve, reject) => {
+        getToken(dispatch, getState )
+            .then(
+                response => {
 
-        var loader_key = helpers.generateGuid();
-        dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
+                    // create our ajax request config
+                    var config = {
+                        method: method,
+                        url: 'https://api.genius.com/'+endpoint,
+                        cached: true,
+                        timeout: 30000,
+                        headers: {
+                            Authorization: 'Bearer '+ response,
+                            Accept: 'application/json'
+                        }
+                    }
 
-        var config = {
-            method: 'GET',
-            url: getState().genius.provider_url+endpoint,
-            timeout: 10000
-        };
+                    // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
+                    if (data){
+                        if (typeof(data) === 'string'){
+                            config.data = data
+                        } else {
+                            config.data = JSON.stringify(data)
+                        }
+                    }
 
-        $.ajax(config).then(
-            response => {
-                dispatch(uiActions.stopLoading(loader_key));
-                resolve(response);
-            },
-            (xhr, status, error) => {
-                dispatch(uiActions.stopLoading(loader_key));
-                reject({
-                    config: config,
-                    xhr: xhr,
-                    status: status,
-                    error: error
-                });
-            }
-        )
-    })
+                    // add reference to loader queue
+                    var loader_key = helpers.generateGuid()
+                    dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint))
+
+                    $.ajax(config).then(
+                            response => {
+                                dispatch(uiActions.stopLoading(loader_key))
+                                resolve(response)
+                            },
+                            (xhr, status, error) => {
+                                dispatch(uiActions.stopLoading(loader_key));
+
+                                reject({
+                                    config: config,
+                                    xhr: xhr,
+                                    status: status,
+                                    error: error
+                                });
+                            }
+                        )
+                },
+                error => {
+                    reject(error)
+                }
+            );
+        }
+    );
+}
+
+
+/**
+ * Handle authorization process
+ **/
+
+export function authorizationGranted(data){
+    return {
+        type: 'GENIUS_AUTHORIZATION_GRANTED',
+        data: data
+    }
+}
+
+export function revokeAuthorization(){
+    return {
+        type: 'GENIUS_AUTHORIZATION_REVOKED'
+    }
+}
+
+
+/**
+ * Get current user
+ **/
+export function getMe(){
+    return (dispatch, getState) => {
+        sendRequest(dispatch, getState, 'me')
+            .then(
+                response => {
+                    dispatch({
+                        type: 'GENIUS_ME_LOADED',
+                        data: response
+                    });
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        'Could not load your profile',
+                        error
+                    ));
+                }
+            );
+    }
 }
 
 /**
@@ -69,7 +140,7 @@ export function getTrackLyrics(uri, path){
                     if (lyrics.length > 0){
 
                         lyrics = lyrics.first();
-                        lyrics.find('a').replaceWith(function(){ 
+                        lyrics.find('a').replaceWith(function(){
                             return this.innerHTML;
                         });
 

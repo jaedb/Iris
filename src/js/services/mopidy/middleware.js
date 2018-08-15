@@ -937,10 +937,7 @@ const MopidyMiddleware = (function(){
                                         var albums_uris = helpers.arrayOf('uri',albums)
                                         albums_uris = helpers.removeDuplicates(albums_uris)
 
-                                        store.dispatch({
-                                            type: 'ALBUMS_LOADED',
-                                            albums: albums
-                                        })
+                                        store.dispatch(coreActions.albumsLoaded(albums));
 
                                         // and plug in their URIs
                                         store.dispatch({
@@ -1197,10 +1194,7 @@ const MopidyMiddleware = (function(){
                                             var albums_uris = helpers.arrayOf('uri',albums)
                                             albums_uris = helpers.removeDuplicates(albums_uris)
 
-                                            store.dispatch({
-                                                type: 'ALBUMS_LOADED',
-                                                albums: albums
-                                            })
+                                            store.dispatch(coreActions.albumsLoaded(albums));
 
                                             // and plug in their URIs
                                             store.dispatch({
@@ -1396,11 +1390,7 @@ const MopidyMiddleware = (function(){
                                         }
                                     )
 
-                                    store.dispatch({
-                                        type: 'PLAYLIST_LOADED',
-                                        key: playlist.uri,
-                                        playlist: playlist
-                                    });
+                                    store.dispatch(coreActions.playlistLoaded(playlist));
                                 })
                         }
                     })
@@ -1431,11 +1421,7 @@ const MopidyMiddleware = (function(){
                             });
                         }
 
-                        store.dispatch({
-                            type: 'PLAYLIST_LOADED',
-                            key: playlist.uri,
-                            playlist: playlist
-                        })
+                        store.dispatch(coreActions.playlistLoaded(playlist));
                     })
                 break;
 
@@ -1470,7 +1456,7 @@ const MopidyMiddleware = (function(){
                             type: 'PLAYLIST_TRACKS',
                             tracks: tracks,
                             key: action.key
-                        })
+                        });
                     })
                 break
 
@@ -1538,11 +1524,7 @@ const MopidyMiddleware = (function(){
                         request(socket, store, 'playlists.save', { playlist: playlist })
                             .then(response => {
 
-                                store.dispatch({
-                                    type: 'PLAYLIST_LOADED',
-                                    key: action.key,
-                                    playlist: playlist
-                                });
+                                store.dispatch(coreActions.playlistLoaded(playlist));
 
                                 // When we rename a playlist, the URI also changes to reflect the name change
                                 // We need to update our index, as well as redirect our current page URL
@@ -1607,11 +1589,7 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         store.dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}))
 
-                        store.dispatch({
-                            type: 'PLAYLIST_LOADED',
-                            key: action.uri,
-                            playlist: response
-                        })
+                        store.dispatch(coreActions.playlistLoaded(response));
 
                         store.dispatch({
                             type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -1725,10 +1703,7 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        store.dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: albums
-                        })
+                        store.dispatch(coreActions.albumsLoaded(albums));
 
                         // Re-run any consequential processes in 100ms. This allows a small window for other
                         // server requests before our next batch. It's a little crude but it means the server isn't
