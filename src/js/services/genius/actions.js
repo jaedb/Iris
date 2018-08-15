@@ -3,6 +3,13 @@ var coreActions = require('../core/actions')
 var uiActions = require('../ui/actions')
 var helpers = require('../../helpers')
 
+export function set(data){
+    return {
+        type: 'GENIUS_SET',
+        data: data
+    }
+}
+
 /**
  * Send an ajax request to the Genius API
  *
@@ -16,54 +23,56 @@ var helpers = require('../../helpers')
 const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) => {
 
     return new Promise((resolve, reject) => {
-        getToken(dispatch, getState )
-            .then(
+
+        // create our ajax request config
+        var config = {
+            method: method,
+            url: 'https://api.genius.com/'+endpoint,
+            cached: true,
+            timeout: 30000,
+            headers: {
+                Authorization: 'Bearer '+ response,
+                Accept: 'application/json'
+            }
+        }
+
+        // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
+        if (data){
+            if (typeof(data) === 'string'){
+                config.data = data
+            } else {
+                config.data = JSON.stringify(data)
+            }
+        }
+
+        // add reference to loader queue
+        var loader_key = helpers.generateGuid()
+        dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint))
+
+        $.ajax(config).then(
                 response => {
+                    dispatch(uiActions.stopLoading(loader_key));
 
-                    // create our ajax request config
-                    var config = {
-                        method: method,
-                        url: 'https://api.genius.com/'+endpoint,
-                        cached: true,
-                        timeout: 30000,
-                        headers: {
-                            Authorization: 'Bearer '+ response,
-                            Accept: 'application/json'
-                        }
+                    if (response.meta.status >= 200 && response.meta.status < 300 && response.response){
+                        resolve(response.response);
+                    } else {
+                        reject({
+                            config: config,
+                            xhr: xhr,
+                            status: status,
+                            error: error
+                        });
                     }
-
-                    // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
-                    if (data){
-                        if (typeof(data) === 'string'){
-                            config.data = data
-                        } else {
-                            config.data = JSON.stringify(data)
-                        }
-                    }
-
-                    // add reference to loader queue
-                    var loader_key = helpers.generateGuid()
-                    dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint))
-
-                    $.ajax(config).then(
-                            response => {
-                                dispatch(uiActions.stopLoading(loader_key))
-                                resolve(response)
-                            },
-                            (xhr, status, error) => {
-                                dispatch(uiActions.stopLoading(loader_key));
-
-                                reject({
-                                    config: config,
-                                    xhr: xhr,
-                                    status: status,
-                                    error: error
-                                });
-                            }
-                        )
                 },
-                error => {
-                    reject(error)
+                (xhr, status, error) => {
+                    dispatch(uiActions.stopLoading(loader_key));
+
+                    reject({
+                        config: config,
+                        xhr: xhr,
+                        status: status,
+                        error: error
+                    });
                 }
             );
         }
@@ -94,17 +103,17 @@ export function revokeAuthorization(){
  **/
 export function getMe(){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'me')
+        sendRequest(dispatch, getState, 'account')
             .then(
                 response => {
                     dispatch({
                         type: 'GENIUS_ME_LOADED',
-                        data: response
+                        user: response.user
                     });
                 },
                 error => {
                     dispatch(coreActions.handleException(
-                        'Could not load your profile',
+                        'Could not load your Genius profile',
                         error
                     ));
                 }

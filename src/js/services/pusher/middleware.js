@@ -578,6 +578,10 @@ const PusherMiddleware = (function(){
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
                 }));
+                
+                store.dispatch(geniusActions.set({
+                    authorization_url: (action.config.genius_authorization_url ? action.config.genius_authorization_url : null)
+                }));
 
                 next(action);
                 break

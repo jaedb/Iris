@@ -117,6 +117,27 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
+            case 'GENIUS_AUTHORIZATION_GRANTED':
+                helpers.setStorage(
+                    'genius', 
+                    {
+                        authorization_code: action.data.authorization_code,
+                        access_token: action.data.access_token
+                    }
+                );
+                break;
+
+            case 'GENIUS_AUTHORIZATION_REVOKED':
+                helpers.setStorage(
+                    'genius', 
+                    {
+                        me: null,
+                        authorization_code: null, 
+                        access_token: null
+                    }
+                );
+                break;
+
             case 'CORE_SET':
                 helpers.setStorage(
                     'core', 

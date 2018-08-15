@@ -24,10 +24,15 @@ class GeniusAuthenticationFrame extends React.Component{
 
 		// Listen for incoming messages from the authorization popup
 		window.addEventListener('message', function(event){
-			var data = JSON.parse(event.data);
+			try {
+				var data = JSON.parse(event.data);
+			} catch (e){
+				console.error("Failed to parse JSON", e, event);
+				return;
+			}
 
 			// Only digest messages relevant to us
-			if (data.origin == 'auth_lastfm'){
+			if (data.origin == 'auth_genius'){
 				self.handleMessage(event, data);
 			}
 		}, false);
@@ -62,7 +67,7 @@ class GeniusAuthenticationFrame extends React.Component{
 		this.setState({authorizing: true})
 
 		// Open an authentication request window
-		var url = this.props.authorization_url+'?action=authorize'
+		var url = this.props.authorization_url+'?action=authorize&scope=me'
 		var popup = window.open(url,"popup","height=580,width=350");
 		popup.name = "GeniusAuthenticationWindow";
 
@@ -108,7 +113,7 @@ class GeniusAuthenticationFrame extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorization_url: state.genius.authorization_url,
-		authorized: state.genius.session,
+		authorized: state.genius.authorization,
 		authorizing: state.genius.authorizing
 	}
 }

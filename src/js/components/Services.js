@@ -202,13 +202,13 @@ class Services extends React.Component{
 	}
 
 	renderGenius(){
-		var user_object = (this.props.genius.session ? this.props.core.users["genius:user:"+this.props.genius.session.name] : null);
+		var user_object = (this.props.genius.user ? this.props.core.users["genius:user:"+this.props.genius.user.id] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
-					<Thumbnail circle={true} size="small" images={user_object.image} />
+					<Thumbnail circle={true} size="small" images={user_object.avatar} />
 					<span className="user-name">
-						{user_object.realname ? user_object.realname : user_object.name}
+						{user_object.name}
 					</span>
 				</span>
 			)
@@ -225,7 +225,7 @@ class Services extends React.Component{
 
 		return (
 			<div>
-				{this.props.genius.session ? <div className="field current-user">
+				{this.props.genius.user ? <div className="field current-user">
 					<div className="name">Current user</div>
 					<div className="input">
 						<div className="text">
@@ -292,7 +292,11 @@ class Services extends React.Component{
 			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
 		}
 
-		var genius_icon = <Icon type="fontawesome" name="genius" />
+		if (this.props.genius.user && this.props.core.users["lastfm:user:"+this.props.genius.user.id]){
+			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["genius:user:"+this.props.genius.user.id].avatar} />
+		} else {
+			var genius_icon = <Icon name="extension" />
+		}
 
 		return (
 			<div className="menu">
