@@ -11,7 +11,7 @@ var helpers = require('../../helpers');
  * @param params = string, the url params to send
  * @params signed = boolean, whether we've got a signed request with baked-in api_key
  **/
-const sendRequest = (dispatch, getState, params, signed = false) => {
+var sendRequest = (dispatch, getState, params, signed = false) => {
     return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid();
@@ -27,7 +27,7 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
             url: 'https://ws.audioscrobbler.com/2.0/?format=json&'+params
         }
 
-        // Signed requests don't need our api_key as the proxy has it's own 
+        // Signed requests don't need our api_key as the proxy has it's own
         if (!signed){
             config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
         } else {

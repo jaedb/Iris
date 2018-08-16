@@ -21,6 +21,7 @@ class GeniusAuthenticationFrame extends React.Component{
 
 	componentDidMount(){
 		let self = this;
+		this.props.geniusActions.getMe();
 
 		// Listen for incoming messages from the authorization popup
 		window.addEventListener('message', function(event){
@@ -54,7 +55,7 @@ class GeniusAuthenticationFrame extends React.Component{
 		// No errors? We're in!
 		} else {
 			this.props.geniusActions.authorizationGranted(data)
-			this.props.geniusActions.getMe()
+			this.props.geniusActions.getMe();
 		}
 
 		// Turn off our authorizing switch

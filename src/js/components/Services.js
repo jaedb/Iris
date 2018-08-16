@@ -202,7 +202,7 @@ class Services extends React.Component{
 	}
 
 	renderGenius(){
-		var user_object = (this.props.genius.user ? this.props.core.users["genius:user:"+this.props.genius.user.id] : null);
+		var user_object = (this.props.genius.me ? this.props.core.users["genius:user:"+this.props.genius.me.id] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
@@ -225,7 +225,7 @@ class Services extends React.Component{
 
 		return (
 			<div>
-				{this.props.genius.user ? <div className="field current-user">
+				{this.props.genius.me ? <div className="field current-user">
 					<div className="name">Current user</div>
 					<div className="input">
 						<div className="text">

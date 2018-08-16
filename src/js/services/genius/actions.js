@@ -20,19 +20,22 @@ export function set(data){
  * @param data mixed = request payload
  * @return Promise
  **/
-const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) => {
-
+var sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) => {
     return new Promise((resolve, reject) => {
 
         // create our ajax request config
         var config = {
             method: method,
-            url: 'https://api.genius.com/'+endpoint,
-            cached: true,
+            url: 'https://api.genius.com/'+endpoint+'?access_token='+getState().genius.access_token,
+            dataType: 'jsonp',
             timeout: 30000,
+         	crossDomain: true,
+         	async: true,
             headers: {
-                Authorization: 'Bearer '+ response,
-                Accept: 'application/json'
+                // We can't use headers as this seems to trigger CORS issues. Instead we have to post as URL params
+                // Authorization: 'Bearer '+ getState().genius.access_token,
+                Accept: 'application/json',
+              	"Access-Control-Allow-Origin": "*"
             }
         }
 
@@ -46,14 +49,14 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
         }
 
         // add reference to loader queue
-        var loader_key = helpers.generateGuid()
-        dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint))
+        var loader_key = helpers.generateGuid();
+        dispatch(uiActions.startLoading(loader_key, 'genius_'+endpoint));
 
         $.ajax(config).then(
                 response => {
                     dispatch(uiActions.stopLoading(loader_key));
 
-                    if (response.meta.status >= 200 && response.meta.status < 300 && response.response){
+                    if (response.meta && response.meta.status >= 200 && response.meta.status < 300 && response.response){
                         resolve(response.response);
                     } else {
                         reject({
@@ -66,7 +69,6 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                 },
                 (xhr, status, error) => {
                     dispatch(uiActions.stopLoading(loader_key));
-
                     reject({
                         config: config,
                         xhr: xhr,
@@ -74,9 +76,8 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
                         error: error
                     });
                 }
-            );
-        }
-    );
+            )
+    });
 }
 
 
@@ -108,14 +109,17 @@ export function getMe(){
                 response => {
                     dispatch({
                         type: 'GENIUS_ME_LOADED',
-                        user: response.user
+                        me: response.user
                     });
                 },
                 error => {
+                    console.log(error);
+                    /*
                     dispatch(coreActions.handleException(
                         'Could not load your Genius profile',
                         error
                     ));
+                    */
                 }
             );
     }
