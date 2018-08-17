@@ -12,6 +12,11 @@ export default function reducer(lastfm = {}, action){
         case 'LASTFM_SET':
             return Object.assign({}, lastfm, action.data)
 
+        case 'LASTFM_ME_LOADED':
+            return Object.assign({}, lastfm, {
+                me: action.me
+            })
+
         case 'LASTFM_AUTHORIZATION_GRANTED':
             return Object.assign({}, lastfm, {
                 authorizing: false, 

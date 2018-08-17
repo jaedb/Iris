@@ -117,6 +117,15 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
+            case 'LASTFM_ME_LOADED':
+                helpers.setStorage(
+                    'lastfm',
+                    {
+                        me: action.data.session.user
+                    }
+                );
+                break;
+
             case 'LASTFM_AUTHORIZATION_GRANTED':
                 helpers.setStorage(
                     'lastfm',
@@ -131,6 +140,15 @@ const localstorageMiddleware = (function(){
                     'lastfm',
                     {
                         session: null
+                    }
+                );
+                break;
+
+            case 'GENIUS_ME_LOADED':
+                helpers.setStorage(
+                    'genius',
+                    {
+                        me: action.me
                     }
                 );
                 break;

@@ -17,6 +17,7 @@ import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
 import lastfmMiddleware from './services/lastfm/middleware'
+import geniusMiddleware from './services/genius/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
@@ -106,7 +107,7 @@ console.log('Bootstrapping', initialState)
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware )
+	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware, geniusMiddleware)
 );
 
 export default store;

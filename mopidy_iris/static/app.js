@@ -16689,10 +16689,9 @@ function getMe() {
         sendRequest(dispatch, getState, params).then(function (response) {
             if (response.user) {
                 dispatch({
-                    type: 'LASTFM_USER_LOADED',
-                    user: response.user
+                    type: 'LASTFM_ME_LOADED',
+                    me: response.user
                 });
-                dispatch({ type: 'LASTFM_CONNECTED' });
             }
         });
     };
@@ -22096,16 +22095,8 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
         var config = {
             method: method,
             url: 'https://api.genius.com/' + endpoint + '?access_token=' + getState().genius.access_token,
-            dataType: 'jsonp',
             timeout: 30000,
-            crossDomain: true,
-            async: true,
-            headers: {
-                // We can't use headers as this seems to trigger CORS issues. Instead we have to post as URL params
-                // Authorization: 'Bearer '+ getState().genius.access_token,
-                Accept: 'application/json',
-                "Access-Control-Allow-Origin": "*"
-            }
+            crossDomain: true
 
             // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
         };if (data) {
@@ -22173,13 +22164,7 @@ function getMe() {
                 me: response.user
             });
         }, function (error) {
-            console.log(error);
-            /*
-            dispatch(coreActions.handleException(
-                'Could not load your Genius profile',
-                error
-            ));
-            */
+            dispatch(coreActions.handleException('Could not load your Genius profile', error));
         });
     };
 }
@@ -52393,13 +52378,17 @@ var _middleware9 = __webpack_require__(237);
 
 var _middleware10 = _interopRequireDefault(_middleware9);
 
-var _middleware11 = __webpack_require__(238);
+var _middleware11 = __webpack_require__(341);
 
 var _middleware12 = _interopRequireDefault(_middleware11);
 
-var _middleware13 = __webpack_require__(239);
+var _middleware13 = __webpack_require__(238);
 
 var _middleware14 = _interopRequireDefault(_middleware13);
+
+var _middleware15 = __webpack_require__(239);
+
+var _middleware16 = _interopRequireDefault(_middleware15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52488,7 +52477,7 @@ initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage(
 
 console.log('Bootstrapping', initialState);
 
-var store = (0, _redux.createStore)(reducers, initialState, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware14.default, _middleware2.default, _middleware4.default, _middleware8.default, _middleware6.default, _middleware12.default, _middleware10.default));
+var store = (0, _redux.createStore)(reducers, initialState, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware16.default, _middleware2.default, _middleware4.default, _middleware8.default, _middleware6.default, _middleware14.default, _middleware10.default, _middleware12.default));
 
 exports.default = store;
 
@@ -53343,6 +53332,11 @@ function reducer() {
 
         case 'LASTFM_SET':
             return Object.assign({}, lastfm, action.data);
+
+        case 'LASTFM_ME_LOADED':
+            return Object.assign({}, lastfm, {
+                me: action.me
+            });
 
         case 'LASTFM_AUTHORIZATION_GRANTED':
             return Object.assign({}, lastfm, {
@@ -61035,14 +61029,19 @@ var LastfmMiddleware = function () {
 
                 switch (action.type) {
 
+                    case 'LASTFM_ME_LOADED':
+                        store.dispatch({
+                            type: 'LASTFM_USER_LOADED',
+                            user: action.me
+                        });
+                        next(action);
+                        break;
+
                     case 'LASTFM_USER_LOADED':
                         var user = Object.assign({}, action.user, {
                             uri: "lastfm:user:" + action.user.name
                         });
-                        store.dispatch({
-                            type: "USERS_LOADED",
-                            users: [user]
-                        });
+                        store.dispatch(coreActions.userLoaded(user));
                         next(action);
                         break;
 
@@ -61596,6 +61595,12 @@ var localstorageMiddleware = function () {
                         });
                         break;
 
+                    case 'LASTFM_ME_LOADED':
+                        helpers.setStorage('lastfm', {
+                            me: action.data.session.user
+                        });
+                        break;
+
                     case 'LASTFM_AUTHORIZATION_GRANTED':
                         helpers.setStorage('lastfm', {
                             session: action.data.session
@@ -61605,6 +61610,12 @@ var localstorageMiddleware = function () {
                     case 'LASTFM_AUTHORIZATION_REVOKED':
                         helpers.setStorage('lastfm', {
                             session: null
+                        });
+                        break;
+
+                    case 'GENIUS_ME_LOADED':
+                        helpers.setStorage('genius', {
+                            me: action.me
                         });
                         break;
 
@@ -72565,6 +72576,9 @@ var Services = function (_React$Component) {
 			if (this.props.lastfm.session && this.props.core.users["lastfm:user:" + this.props.lastfm.session.name] === undefined) {
 				this.props.lastfmActions.getMe();
 			}
+			if (this.props.genius.me && this.props.core.users["genius:user:" + this.props.genius.me.id] === undefined) {
+				this.props.geniusActions.getMe();
+			}
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -72871,7 +72885,7 @@ var Services = function (_React$Component) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.avatar }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', image: user_object.photo_url }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
@@ -72894,7 +72908,7 @@ var Services = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				null,
-				this.props.genius.me ? _react2.default.createElement(
+				this.props.genius.authorization ? _react2.default.createElement(
 					'div',
 					{ className: 'field current-user' },
 					_react2.default.createElement(
@@ -73001,14 +73015,14 @@ var Services = function (_React$Component) {
 				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small' });
 			}
 
-			if (this.props.lastfm.session && this.props.core.users["lastfm:user:" + this.props.lastfm.session.name]) {
-				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["lastfm:user:" + this.props.lastfm.session.name].image });
+			if (this.props.lastfm.me && this.props.core.users["lastfm:user:" + this.props.lastfm.me.name]) {
+				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["lastfm:user:" + this.props.lastfm.me.name].image });
 			} else {
 				var lastfm_icon = _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'lastfm' });
 			}
 
-			if (this.props.genius.user && this.props.core.users["lastfm:user:" + this.props.genius.user.id]) {
-				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["genius:user:" + this.props.genius.user.id].avatar });
+			if (this.props.genius.me && this.props.core.users["genius:user:" + this.props.genius.me.id]) {
+				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', image: this.props.core.users["genius:user:" + this.props.genius.me.id].photo_url });
 			} else {
 				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'extension' });
 			}
@@ -73074,7 +73088,7 @@ var Services = function (_React$Component) {
 							{ className: 'title' },
 							'Genius'
 						),
-						this.props.genius.session ? _react2.default.createElement(
+						this.props.genius.authorization ? _react2.default.createElement(
 							'span',
 							{ className: 'status green-text' },
 							'Authorized'
@@ -73264,7 +73278,6 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			var self = this;
-			this.props.geniusActions.getMe();
 
 			// Listen for incoming messages from the authorization popup
 			window.addEventListener('message', function (event) {
@@ -82017,6 +82030,82 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 314 */,
+/* 315 */,
+/* 316 */,
+/* 317 */,
+/* 318 */,
+/* 319 */,
+/* 320 */,
+/* 321 */,
+/* 322 */,
+/* 323 */,
+/* 324 */,
+/* 325 */,
+/* 326 */,
+/* 327 */,
+/* 328 */,
+/* 329 */,
+/* 330 */,
+/* 331 */,
+/* 332 */,
+/* 333 */,
+/* 334 */,
+/* 335 */,
+/* 336 */,
+/* 337 */,
+/* 338 */,
+/* 339 */,
+/* 340 */,
+/* 341 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var helpers = __webpack_require__(1);
+var coreActions = __webpack_require__(11);
+
+var GeniusMiddleware = function () {
+    return function (store) {
+        return function (next) {
+            return function (action) {
+                var state = store.getState();
+
+                switch (action.type) {
+
+                    case 'GENIUS_ME_LOADED':
+                        store.dispatch({
+                            type: 'GENIUS_USER_LOADED',
+                            user: action.me
+                        });
+                        next(action);
+                        break;
+
+                    case 'GENIUS_USER_LOADED':
+                        var user = Object.assign({}, action.user, {
+                            uri: "genius:user:" + action.user.id
+                        });
+                        store.dispatch(coreActions.userLoaded(user));
+                        next(action);
+                        break;
+
+                    // This action is irrelevant to us, pass it on to the next middleware
+                    default:
+                        return next(action);
+                }
+            };
+        };
+    };
+}();
+
+exports.default = GeniusMiddleware;
 
 /***/ })
 /******/ ]);

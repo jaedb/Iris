@@ -35,6 +35,9 @@ class Services extends React.Component{
 		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}
+		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined){
+			this.props.geniusActions.getMe();
+		}
 	}
 	componentWillReceiveProps(newProps){
 		var changed = false
@@ -206,7 +209,7 @@ class Services extends React.Component{
 		if (user_object){
 			var user = (
 				<span className="user">
-					<Thumbnail circle={true} size="small" images={user_object.avatar} />
+					<Thumbnail circle={true} size="small" image={user_object.photo_url} />
 					<span className="user-name">
 						{user_object.name}
 					</span>
@@ -225,7 +228,7 @@ class Services extends React.Component{
 
 		return (
 			<div>
-				{this.props.genius.me ? <div className="field current-user">
+				{this.props.genius.authorization ? <div className="field current-user">
 					<div className="name">Current user</div>
 					<div className="input">
 						<div className="text">
@@ -286,14 +289,14 @@ class Services extends React.Component{
 			var spotify_icon = <Thumbnail circle={true} size="small" />
 		}
 
-		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name]){
-			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.session.name].image} />
+		if (this.props.lastfm.me && this.props.core.users["lastfm:user:"+this.props.lastfm.me.name]){
+			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.me.name].image} />
 		} else {
 			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
 		}
 
-		if (this.props.genius.user && this.props.core.users["lastfm:user:"+this.props.genius.user.id]){
-			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["genius:user:"+this.props.genius.user.id].avatar} />
+		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id]){
+			var genius_icon = <Thumbnail circle={true} size="small" image={this.props.core.users["genius:user:"+this.props.genius.me.id].photo_url} />
 		} else {
 			var genius_icon = <Icon name="extension" />
 		}
@@ -324,7 +327,7 @@ class Services extends React.Component{
 						<div className="title">
 							Genius
 						</div>
-						{this.props.genius.session ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
+						{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
 					</Link>
 				</div>
 				<div className="menu-item-wrapper">

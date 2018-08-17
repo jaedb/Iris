@@ -21,7 +21,6 @@ class GeniusAuthenticationFrame extends React.Component{
 
 	componentDidMount(){
 		let self = this;
-		this.props.geniusActions.getMe();
 
 		// Listen for incoming messages from the authorization popup
 		window.addEventListener('message', function(event){

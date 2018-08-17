@@ -27,16 +27,8 @@ var sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) =
         var config = {
             method: method,
             url: 'https://api.genius.com/'+endpoint+'?access_token='+getState().genius.access_token,
-            dataType: 'jsonp',
             timeout: 30000,
-         	crossDomain: true,
-         	async: true,
-            headers: {
-                // We can't use headers as this seems to trigger CORS issues. Instead we have to post as URL params
-                // Authorization: 'Bearer '+ getState().genius.access_token,
-                Accept: 'application/json',
-              	"Access-Control-Allow-Origin": "*"
-            }
+         	crossDomain: true
         }
 
         // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
@@ -113,13 +105,10 @@ export function getMe(){
                     });
                 },
                 error => {
-                    console.log(error);
-                    /*
                     dispatch(coreActions.handleException(
                         'Could not load your Genius profile',
                         error
                     ));
-                    */
                 }
             );
     }

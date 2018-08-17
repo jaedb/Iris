@@ -164,10 +164,9 @@ export function getMe(){
                 response => {
                     if (response.user){
                         dispatch({
-                            type: 'LASTFM_USER_LOADED',
-                            user: response.user
+                            type: 'LASTFM_ME_LOADED',
+                            me: response.user
                         });
-                        dispatch({ type: 'LASTFM_CONNECTED' })
                     }
                 }
             )
