@@ -290,11 +290,7 @@ export function getTrack(uri){
                         }
                     )
 
-                    dispatch({
-                        type: 'TRACK_LOADED',
-                        key: uri,
-                        track: track
-                    });
+                    dispatch(coreActions.trackLoaded(track));
                 },
                 error => {
                     dispatch(coreActions.handleException(
@@ -1333,10 +1329,7 @@ export function getAlbum(uri){
                 response => {
 
                     // dispatch our loaded artists (simple objects)
-                    dispatch({
-                        type: 'ARTISTS_LOADED',
-                        artists: response.artists
-                    });
+                    dispatch(coreActions.artistsLoaded(response.artists));
 
                     var album = Object.assign(
                         {},
@@ -1357,11 +1350,7 @@ export function getAlbum(uri){
                         }
                     }
 
-                    dispatch({
-                        type: 'ALBUM_LOADED',
-                        key: album.uri,
-                        album: album
-                    });
+                    dispatch(coreActions.albumLoaded(album));
 
                     // now get all the artists for this album (full objects)
                     // we do this to get the artist artwork
@@ -1374,10 +1363,7 @@ export function getAlbum(uri){
                     sendRequest(dispatch, getState, 'artists/?ids='+artist_ids )
                         .then(
                             response => {
-                                dispatch({
-                                    type: 'ARTISTS_LOADED',
-                                    artists: response.artists
-                                });
+                                dispatch(coreActions.artistsLoaded(response.artists));
                             },
                             error => {
                                 dispatch(coreActions.handleException(

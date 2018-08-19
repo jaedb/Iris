@@ -23,10 +23,16 @@ export function set(data){
 var sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) => {
     return new Promise((resolve, reject) => {
 
+        if (endpoint.startsWith('https://') || endpoint.startsWith('http://')){
+            var url = endpoint;
+        } else {
+            var url = 'https://api.genius.com/'+endpoint+'?access_token='+getState().genius.access_token;
+        }
+
         // create our ajax request config
         var config = {
             method: method,
-            url: 'https://api.genius.com/'+endpoint+'?access_token='+getState().genius.access_token,
+            url: url,
             timeout: 30000,
          	crossDomain: true
         }
@@ -124,19 +130,21 @@ export function getMe(){
 export function getTrackLyrics(uri, path){
     return (dispatch, getState) => {
 
-        dispatch({
-            type: 'TRACK_LOADED',
-            track: {
+        dispatch(coreActions.trackLoaded({
                 uri: uri,
                 lyrics: null,
                 lyrics_path: null
-            }
-        });
+            }));
 
-        sendRequest(dispatch, getState, "?action=lyrics&path="+path)
+        var config = {
+            method: 'GET',
+            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/get_lyrics',
+            timeout: 10000
+        }
+
+        $.ajax(config)
             .then(
-                response => {
-
+                (response, status, xhr) => {
                     var html = $(response);
                     var lyrics = html.find('.lyrics');
                     if (lyrics.length > 0){
@@ -150,19 +158,17 @@ export function getTrackLyrics(uri, path){
                         lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
                         lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-                        dispatch({
-                            type: 'TRACK_LOADED',
-                            track: {
+                        dispatch(coreActions.trackLoaded({
                                 uri: uri,
                                 lyrics: lyrics_html,
                                 lyrics_path: path
-                            }
-                        });
+                            }));
                     }
+
                 },
-                error => {
+                (xhr, status, error) => {
                     dispatch(coreActions.handleException(
-                        'Could not extract track lyrics',
+                        'Could not get track lyrics',
                         error
                     ));
                 }
@@ -180,25 +186,22 @@ export function findTrackLyrics(track){
         query = query.replace(/\([^)]*\) */g, '');        // anything in circle-braces
         query = query.replace(/\([^[]*\] */g, '');        // anything in square-braces
 
-        sendRequest(dispatch, getState, '?action=search&query='+encodeURIComponent(query))
+        sendRequest(dispatch, getState, 'search', 'GET', 'q='+encodeURIComponent(query))
             .then(
                 response => {
-                    if (response.response.hits && response.response.hits.length > 0){
+                    if (response.hits && response.hits.length > 0){
                         var lyrics_results = [];
-                        for (var i = 0; i < response.response.hits.length; i++){
+                        for (var i = 0; i < response.hits.length; i++){
                             lyrics_results.push({
-                                title: response.response.hits[i].result.full_title,
-                                url: response.response.hits[i].result.url,
-                                path: response.response.hits[i].result.path
+                                title: response.hits[i].result.full_title,
+                                url: response.hits[i].result.url,
+                                path: response.hits[i].result.path
                             });
                         }
-                        dispatch({
-                            type: 'TRACK_LOADED',
-                            track: {
+                        dispatch(coreActions.trackLoaded({
                                 uri: track.uri,
                                 lyrics_results: lyrics_results
-                            }
-                        });
+                            }));
 
                         // Immediately go and get the first result's lyrics
                         var lyrics_result = lyrics_results[0];
@@ -207,7 +210,7 @@ export function findTrackLyrics(track){
                 },
                 error => {
                     dispatch(coreActions.handleException(
-                        'Could not get track info',
+                        'Could not search for track lyrics',
                         error
                     ));
                 }

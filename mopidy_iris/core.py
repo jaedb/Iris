@@ -967,6 +967,26 @@ class IrisCore(object):
 
 
     ##
+    # Spotify authentication
+    #
+    # Uses the Client Credentials Flow, so is invisible to the user. We need this token for
+    # any backend spotify requests (we don't tap in to Mopidy-Spotify, yet). Also used for
+    # passing token to frontend for javascript requests without use of the Authorization Code Flow.
+    ##
+
+    def get_lyrics(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+        data = kwargs.get('data', False)
+        error = False
+
+        url = 'https://genius.com'+data['path']
+
+        http_client = tornado.httpclient.HTTPClient()
+        request = tornado.httpclient.HTTPRequest(url)
+        response = http_client.fetch(request, callback=callback)
+
+
+    ##
     # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):

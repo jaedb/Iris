@@ -1,13 +1,14 @@
 
 import ReactGA from 'react-ga'
 
-var helpers = require('../../helpers.js')
-var coreActions = require('../core/actions.js')
-var uiActions = require('../ui/actions.js')
-var mopidyActions = require('../mopidy/actions.js')
-var pusherActions = require('./actions.js')
-var lastfmActions = require('../lastfm/actions.js')
-var spotifyActions = require('../spotify/actions.js')
+var helpers = require('../../helpers')
+var coreActions = require('../core/actions')
+var uiActions = require('../ui/actions')
+var mopidyActions = require('../mopidy/actions')
+var pusherActions = require('./actions')
+var lastfmActions = require('../lastfm/actions')
+var geniusActions = require('../lastfm/actions')
+var spotifyActions = require('../spotify/actions')
 
 const PusherMiddleware = (function(){ 
 
