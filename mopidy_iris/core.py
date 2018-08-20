@@ -976,14 +976,46 @@ class IrisCore(object):
 
     def get_lyrics(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
-        data = kwargs.get('data', False)
+        request = kwargs.get('request', False)
         error = False
+        url = ""
 
-        url = 'https://genius.com'+data['path']
+        try:
+            path = request.get_argument('path')
+            url = 'https://genius.com'+path
+        except Exception, e:
+            logger.error(e)
+            error = {
+                'message': "Path not valid",
+                'description': str(e)
+            }
 
+        try:
+            client_id = request.get_argument('client_id')
+
+            if client_id not in self.connections:
+                error = {
+                    'message': 'Unauthorized request',
+                    'description': client_id+' not connected'
+                }
+
+        except Exception, e:
+            logger.error(e)
+            error = {
+                'message': "Unauthorized request",
+                'description': "client_id missing"
+            }
+
+        if error:
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        http_request = tornado.httpclient.HTTPRequest(url)
         http_client = tornado.httpclient.HTTPClient()
-        request = tornado.httpclient.HTTPRequest(url)
-        response = http_client.fetch(request, callback=callback)
+        http_client.fetch(http_request, callback=callback)
 
 
     ##
