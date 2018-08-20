@@ -138,7 +138,7 @@ export function getTrackLyrics(uri, path){
 
         var config = {
             method: 'GET',
-            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/get_lyrics',
+            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/get_lyrics?path='+path+'&client_id='+store.getState.pusher.client_id,
             timeout: 10000
         }
 
