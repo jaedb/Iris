@@ -147,7 +147,9 @@ export function authorizationGranted(data){
 }
 
 export function revokeAuthorization(){
-    return { type: 'LASTFM_AUTHORIZATION_REVOKED' }
+    return {
+    	type: 'LASTFM_AUTHORIZATION_REVOKED'
+    }
 }
 
 

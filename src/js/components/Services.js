@@ -162,7 +162,7 @@ class Services extends React.Component{
 	}
 
 	renderLastfm(){
-		var user_object = (this.props.lastfm.session ? this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] : null);
+		var user_object = (this.props.lastfm.me ? this.props.core.users["lastfm:user:"+this.props.lastfm.me.name] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
@@ -298,8 +298,9 @@ class Services extends React.Component{
 		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id]){
 			var genius_icon = <Thumbnail circle={true} size="small" image={this.props.core.users["genius:user:"+this.props.genius.me.id].photo_url} />
 		} else {
-			var genius_icon = <Icon name="extension" />
+			var genius_icon = <Icon name="genius" type="svg" />
 		}
+		
 
 		return (
 			<div className="menu">

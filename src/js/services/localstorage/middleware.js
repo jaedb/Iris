@@ -121,7 +121,7 @@ const localstorageMiddleware = (function(){
                 helpers.setStorage(
                     'lastfm',
                     {
-                        me: action.data.session.user
+                        me: action.me
                     }
                 );
                 break;
