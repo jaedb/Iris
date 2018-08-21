@@ -7,7 +7,7 @@ var uiActions = require('../ui/actions')
 var mopidyActions = require('../mopidy/actions')
 var pusherActions = require('./actions')
 var lastfmActions = require('../lastfm/actions')
-var geniusActions = require('../lastfm/actions')
+var geniusActions = require('../genius/actions')
 var spotifyActions = require('../spotify/actions')
 
 const PusherMiddleware = (function(){ 

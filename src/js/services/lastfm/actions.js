@@ -3,6 +3,14 @@ var coreActions = require('../core/actions');
 var uiActions = require('../ui/actions');
 var helpers = require('../../helpers');
 
+
+export function set(data){
+    return {
+        type: 'LASTFM_SET',
+        data: data
+    }
+}
+
 /**
  * Send an ajax request to the LastFM API
  *
@@ -123,14 +131,6 @@ const sendSignedRequest = (dispatch, getState, params) => {
             }
         );
     })
-}
-
-
-export function set(data){
-    return {
-        type: 'LASTFM_SET',
-        data: data
-    }
 }
 
 

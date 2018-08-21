@@ -14,6 +14,11 @@ const LastfmMiddleware = (function(){
 
         switch(action.type){
 
+            case 'LASTFM_SET':
+            	console.log(action);
+            	next(action);
+            	break;
+
             case 'LASTFM_ME_LOADED':
             	store.dispatch({
             		type: 'LASTFM_USER_LOADED',

@@ -66,7 +66,7 @@ class Track extends React.Component{
 			}
 
 			// Ready to load lyrics
-			if (!nextProps.track.lyrics_results){
+			if (nextProps.genius_authorized && !nextProps.track.lyrics_results){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 		}
@@ -274,8 +274,9 @@ class Track extends React.Component{
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
-				{this.renderLyricsSelector()}
-				{this.renderLyrics()}
+				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={global.baseURL+"settings/service/genius"}>Settings</Link>.</p> : null}
+				{this.props.genius_authorized ? this.renderLyricsSelector() : null}
+				{this.props.genius_authorized ? this.renderLyrics() : null}
 
 			</div>
 		)
@@ -302,6 +303,7 @@ const mapStateToProps = (state, ownProps) => {
 		local_library_albums: state.mopidy.library_albums,
 		lastfm_authorized: state.lastfm.session,
 		spotify_authorized: state.spotify.authorization,
+		genius_authorized: state.genius.authorization,
 		mopidy_connected: state.mopidy.connected
 	};
 }

@@ -131,42 +131,56 @@ export function getTrackLyrics(uri, path){
     return (dispatch, getState) => {
 
         dispatch(coreActions.trackLoaded({
-                uri: uri,
-                lyrics: null,
-                lyrics_path: null
-            }));
+            uri: uri,
+            lyrics: null,
+            lyrics_path: null
+        }));
 
         var config = {
             method: 'GET',
-            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/get_lyrics?path='+path+'&client_id='+store.getState.pusher.client_id,
+            url: '//'+getState().mopidy.host+':'+getState().mopidy.port+'/iris/http/get_lyrics?path='+path+'&connection_id='+getState().pusher.connection_id,
             timeout: 10000
         }
+
+        // add reference to loader queue
+        var loader_key = helpers.generateGuid();
+        dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
 
         $.ajax(config)
             .then(
                 (response, status, xhr) => {
-                    var html = $(response);
-                    var lyrics = html.find('.lyrics');
-                    if (lyrics.length > 0){
+                    dispatch(uiActions.stopLoading(loader_key));
 
-                        lyrics = lyrics.first();
-                        lyrics.find('a').replaceWith(function(){
-                            return this.innerHTML;
-                        });
+                	if (response && response.result){
+	                    var html = $(response.result);
+	                    var lyrics = html.find('.lyrics');
+	                    if (lyrics.length > 0){
 
-                        var lyrics_html = lyrics.html();
-                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
-                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
+	                        lyrics = lyrics.first();
+	                        lyrics.find('a').replaceWith(function(){
+	                            return this.innerHTML;
+	                        });
 
-                        dispatch(coreActions.trackLoaded({
-                                uri: uri,
-                                lyrics: lyrics_html,
-                                lyrics_path: path
-                            }));
+	                        var lyrics_html = lyrics.html();
+	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
+	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
+
+	                        dispatch(coreActions.trackLoaded({
+	                                uri: uri,
+	                                lyrics: lyrics_html,
+	                                lyrics_path: path
+	                            }));
+	                    }
+                    } else {
+	                    dispatch(coreActions.handleException(
+	                        'Could not get track lyrics',
+	                        response.error
+	                    ));
                     }
 
                 },
                 (xhr, status, error) => {
+                    dispatch(uiActions.stopLoading(loader_key));
                     dispatch(coreActions.handleException(
                         'Could not get track lyrics',
                         error

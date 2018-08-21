@@ -991,19 +991,19 @@ class IrisCore(object):
             }
 
         try:
-            client_id = request.get_argument('client_id')
+            connection_id = request.get_argument('connection_id')
 
-            if client_id not in self.connections:
+            if connection_id not in self.connections:
                 error = {
                     'message': 'Unauthorized request',
-                    'description': client_id+' not connected'
+                    'description': 'Connection '+connection_id+' not connected'
                 }
 
         except Exception, e:
             logger.error(e)
             error = {
                 'message': "Unauthorized request",
-                'description': "client_id missing"
+                'description': "connection_id missing"
             }
 
         if error:
