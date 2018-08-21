@@ -256,7 +256,7 @@ $bp_shallow: 650px;
 	}
 }
 
-@mixin blur($size: 10px ){
+@mixin blur($size: 10px){
 	-webkit-filter: blur($size );
 	filter: blur($size );
 }

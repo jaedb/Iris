@@ -239,9 +239,7 @@ class Track extends React.Component{
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<URILink type="album" uri={track.album ? track.album.uri : null}>
-						<Thumbnail size="large" canZoom images={track.images} />
-					</URILink>
+					<Thumbnail size="large" canZoom images={track.images} />
 				</div>
 
 				<div className="title">

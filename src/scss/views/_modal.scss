@@ -215,7 +215,7 @@
 	}
 
 	&--kiosk-mode {
-		background: #000000;
+		background: $black;
 		overflow: hidden;
 
 		.content {
@@ -235,27 +235,59 @@
 				max-width: none;
 
 				.image {
-					@include blur();
+					@include blur(100px);
 					width: 110vw;
 					padding-bottom: 110vh;
 				}
 			}
 
-			.foreground {
+			.artwork {
 				width: 70vw;
 				margin: 0 auto;
-				max-width: 70vh;
-				max-height: 70vh;
+				max-width: 60vh;
+				max-height: 60vh;
 				z-index: 2;
+				position: relative;
+				cursor: pointer;
+
+				.thumbnail {
+					max-width: none;
+				}
+
+				.icon {
+					@include animate();
+					display: inline-block;
+					position: absolute;
+					color: $darkest_grey;
+					font-size: 20rem;
+					top: 25%;
+					left: 0;
+					right: 0;
+					text-align: center;
+					opacity: 0;
+				}
+
+				&:hover {
+					.icon {
+						opacity: 0.75;
+					}
+				}
 			}
 
 			.current-track {
-				padding-top: 50px;
+				padding-top: 80px;
 				font-size: 30px;
 
 				.artist-sentence {
 					opacity: 0.5;
 				}
+			}
+
+			.progress-wrapper {
+				margin: 0 auto;
+				padding-top: 50px;
+				width: 60vw;
+				max-width: 60vh;
 			}
 		}
 	}

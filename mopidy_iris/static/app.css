@@ -6818,21 +6818,46 @@ main .track-view {
         opacity: 0.2;
         max-width: none; }
         .modal--kiosk-mode .content .background .image {
-          -webkit-filter: blur(10px);
-          filter: blur(10px);
+          -webkit-filter: blur(100px);
+          filter: blur(100px);
           width: 110vw;
           padding-bottom: 110vh; }
-      .modal--kiosk-mode .content .foreground {
+      .modal--kiosk-mode .content .artwork {
         width: 70vw;
         margin: 0 auto;
-        max-width: 70vh;
-        max-height: 70vh;
-        z-index: 2; }
+        max-width: 60vh;
+        max-height: 60vh;
+        z-index: 2;
+        position: relative;
+        cursor: pointer; }
+        .modal--kiosk-mode .content .artwork .thumbnail {
+          max-width: none; }
+        .modal--kiosk-mode .content .artwork .icon {
+          -webkit-transition: all 0.2s ease-in-out;
+          -moz-transition: all 0.2s ease-in-out;
+          -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+          display: inline-block;
+          position: absolute;
+          color: #121212;
+          font-size: 20rem;
+          top: 25%;
+          left: 0;
+          right: 0;
+          text-align: center;
+          opacity: 0; }
+        .modal--kiosk-mode .content .artwork:hover .icon {
+          opacity: 0.75; }
       .modal--kiosk-mode .content .current-track {
-        padding-top: 50px;
+        padding-top: 80px;
         font-size: 30px; }
         .modal--kiosk-mode .content .current-track .artist-sentence {
           opacity: 0.5; }
+      .modal--kiosk-mode .content .progress-wrapper {
+        margin: 0 auto;
+        padding-top: 50px;
+        width: 60vw;
+        max-width: 60vh; }
   .modal--share-authorization .list {
     padding-top: 40px; }
     .modal--share-authorization .list .list-item {
