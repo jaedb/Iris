@@ -174,7 +174,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -192,7 +192,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -210,7 +210,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -228,7 +228,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -249,11 +249,11 @@ class Search extends React.Component{
 					var artists_section = (					
 						<section>
 							<div className="inner">								
-								<URILink unencoded type="search" uri={"search:artist:"+this.state.term}>
+								<URILink type="search" uri={"search:artist:"+this.state.term}>
 									<h4>Artists</h4>
 								</URILink>
 								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
-								{artists.length > 4 ? <URILink unencoded type="search" uri={"search:artist:"+this.state.term} className="button grey">
+								{artists.length > 4 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button grey">
 									All artists ({artists.length})
 								</URILink> : null}
 							</div>
@@ -267,11 +267,11 @@ class Search extends React.Component{
 					var albums_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:album:"+this.state.term}>
+								<URILink type="search" uri={"search:album:"+this.state.term}>
 									<h4>Albums</h4>
 								</URILink>
 								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
-								{albums.length > 4 ? <URILink unencoded type="search" uri={"search:album:"+this.state.term} className="button grey">
+								{albums.length > 4 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button grey">
 									All albums ({albums.length})
 								</URILink> : null}
 							</div>
@@ -285,11 +285,11 @@ class Search extends React.Component{
 					var playlists_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:playlist:"+this.state.term}>
+								<URILink type="search" uri={"search:playlist:"+this.state.term}>
 									<h4>Playlists</h4>
 								</URILink>
 								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
-								{playlists.length > 4 ? <URILink unencoded type="search" uri={"search:playlist:"+this.state.term} className="button grey">
+								{playlists.length > 4 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button grey">
 									All playlists ({playlists.length})
 								</URILink> : null}
 							</div>
