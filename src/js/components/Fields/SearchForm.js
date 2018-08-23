@@ -17,6 +17,15 @@ class SearchForm extends React.Component{
 		}
 	}
 
+	componentWillReceiveProps(nextProps){
+
+		// Term has been changed on us! This will be where the URL parameters have been
+		// digested and updated in the parent view
+		if (nextProps.term != '' && nextProps.term != this.state.term){
+			this.setState({term: nextProps.term});
+		}
+	}
+
 	handleSubmit(e){
 		e.preventDefault()
 

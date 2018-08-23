@@ -51,7 +51,7 @@ class Search extends React.Component{
 	componentWillReceiveProps(nextProps){
 
 		// Query changed
-		if (nextProps.params.query !== this.props.params.query){
+		if (nextProps.params.term !== this.props.params.term || nextProps.params.type !== this.props.params.type){
 			this.digestUri(nextProps);
 		}
 
@@ -69,7 +69,6 @@ class Search extends React.Component{
 	// Triggered when the URL changes
 	digestUri(props = this.props){
 		if (props.params && props.params.type && props.params.term){
-
 			this.setState({
 				type: props.params.type,
 				term: props.params.term
