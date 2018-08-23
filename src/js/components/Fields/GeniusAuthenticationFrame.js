@@ -7,9 +7,9 @@ import ReactGA from 'react-ga'
 import Thumbnail from '../Thumbnail'
 
 import * as uiActions from '../../services/ui/actions'
-import * as lastfmActions from '../../services/lastfm/actions'
+import * as geniusActions from '../../services/genius/actions'
 
-class LastfmAuthenticationFrame extends React.Component{
+class GeniusAuthenticationFrame extends React.Component{
 
 	constructor(props){
 		super(props);
@@ -32,14 +32,14 @@ class LastfmAuthenticationFrame extends React.Component{
 			}
 
 			// Only digest messages relevant to us
-			if (data.origin == 'auth_lastfm'){
+			if (data.origin == 'auth_genius'){
 				self.handleMessage(event, data);
 			}
 		}, false);
 	}
 
 	handleMessage(event, data){
-				
+
 		// Only allow incoming data from our authorized authenticator proxy
 		var authorization_domain = this.props.authorization_url.substring(0,this.props.authorization_url.indexOf('/',8))
 		if (event.origin != authorization_domain){
@@ -53,8 +53,8 @@ class LastfmAuthenticationFrame extends React.Component{
 
 		// No errors? We're in!
 		} else {
-			this.props.lastfmActions.authorizationGranted(data)
-			this.props.lastfmActions.getMe()
+			this.props.geniusActions.authorizationGranted(data)
+			this.props.geniusActions.getMe();
 		}
 
 		// Turn off our authorizing switch
@@ -67,9 +67,9 @@ class LastfmAuthenticationFrame extends React.Component{
 		this.setState({authorizing: true})
 
 		// Open an authentication request window
-		var url = this.props.authorization_url+'?action=authorize'
+		var url = this.props.authorization_url+'?action=authorize&scope=me'
 		var popup = window.open(url,"popup","height=580,width=350");
-		popup.name = "LastfmAuthenticationWindow";
+		popup.name = "GeniusAuthenticationWindow";
 
 		// Start timer to check our popup's state
 		var timer = setInterval(checkPopup, 1000);
@@ -100,7 +100,7 @@ class LastfmAuthenticationFrame extends React.Component{
 			)
 		} else if (this.props.authorized){
 			return (
-				<button className="destructive" onClick={() => this.props.lastfmActions.revokeAuthorization()}>Log out</button>
+				<button className="destructive" onClick={() => this.props.geniusActions.revokeAuthorization()}>Log out</button>
 			)
 		} else {
 			return (
@@ -112,17 +112,17 @@ class LastfmAuthenticationFrame extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		authorization_url: state.lastfm.authorization_url,
-		authorized: state.lastfm.session,
-		authorizing: state.lastfm.authorizing
+		authorization_url: state.genius.authorization_url,
+		authorized: state.genius.authorization,
+		authorizing: state.genius.authorizing
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch)
+		geniusActions: bindActionCreators(geniusActions, dispatch)
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LastfmAuthenticationFrame)
+export default connect(mapStateToProps, mapDispatchToProps)(GeniusAuthenticationFrame)

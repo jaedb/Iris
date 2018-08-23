@@ -33,7 +33,7 @@ const localstorageMiddleware = (function(){
 
             case 'PUSHER_CONNECTED':
                 helpers.setStorage(
-                    'pusher', 
+                    'pusher',
                     {
                         connection_id: action.connection_id
                     }
@@ -42,7 +42,7 @@ const localstorageMiddleware = (function(){
 
             case 'PUSHER_SET_PORT':
                 helpers.setStorage(
-                    'pusher', 
+                    'pusher',
                     {
                         port: action.port
                     }
@@ -51,7 +51,7 @@ const localstorageMiddleware = (function(){
 
             case 'PUSHER_USERNAME_CHANGED':
                 helpers.setStorage(
-                    'pusher', 
+                    'pusher',
                     {
                         username: action.username
                     }
@@ -60,7 +60,7 @@ const localstorageMiddleware = (function(){
 
             case 'MOPIDY_URISCHEMES_FILTERED':
                 helpers.setStorage(
-                    'mopidy', 
+                    'mopidy',
                     {
                         uri_schemes: action.data
                     }
@@ -75,11 +75,11 @@ const localstorageMiddleware = (function(){
                     var authorization = action.data;
                 }
                 helpers.setStorage(
-                    'spotify', 
+                    'spotify',
                     {
                         authorization: authorization,
-                        access_token: authorization.access_token, 
-                        refresh_token: authorization.refresh_token, 
+                        access_token: authorization.access_token,
+                        refresh_token: authorization.refresh_token,
                         token_expiry: authorization.token_expiry
                     }
                 );
@@ -87,11 +87,11 @@ const localstorageMiddleware = (function(){
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
                 helpers.setStorage(
-                    'spotify', 
+                    'spotify',
                     {
-                        authorization: false, 
-                        access_token: false, 
-                        refresh_token: false, 
+                        authorization: false,
+                        access_token: false,
+                        refresh_token: false,
                         token_expiry: false
                     }
                 );
@@ -99,7 +99,7 @@ const localstorageMiddleware = (function(){
 
             case 'SPOTIFY_TOKEN_REFRESHED':
                 helpers.setStorage(
-                    'spotify', 
+                    'spotify',
                     {
                         access_token: action.data.access_token,
                         token_expiry: action.data.token_expiry,
@@ -110,37 +110,96 @@ const localstorageMiddleware = (function(){
 
             case 'SPOTIFY_ME_LOADED':
                 helpers.setStorage(
-                    'spotify', 
+                    'spotify',
                     {
                         me: action.data
                     }
                 );
                 break;
 
+            case 'LASTFM_ME_LOADED':
+                helpers.setStorage(
+                    'lastfm',
+                    {
+                        me: action.me
+                    }
+                );
+                break;
+
+            case 'LASTFM_AUTHORIZATION_GRANTED':
+                helpers.setStorage(
+                    'lastfm',
+                    {
+                        session: action.data.session
+                    }
+                );
+                break;
+
+            case 'LASTFM_AUTHORIZATION_REVOKED':
+                helpers.setStorage(
+                    'lastfm',
+                    {
+                        session: null
+                    }
+                );
+                break;
+
+            case 'GENIUS_ME_LOADED':
+                helpers.setStorage(
+                    'genius',
+                    {
+                        me: action.me
+                    }
+                );
+                break;
+
+            case 'GENIUS_AUTHORIZATION_GRANTED':
+                helpers.setStorage(
+                    'genius',
+                    {
+                        authorization: action.data,
+                        authorization_code: action.data.authorization_code,
+                        access_token: action.data.access_token
+                    }
+                );
+                break;
+
+            case 'GENIUS_AUTHORIZATION_REVOKED':
+                helpers.setStorage(
+                    'genius',
+                    {
+                        me: null,
+                        authorization: null,
+                        authorization_code: null,
+                        access_token: null
+                    }
+                );
+                break;
+
             case 'CORE_SET':
                 helpers.setStorage(
-                    'core', 
+                    'core',
                     action.data
                 );
                 break
 
             case 'UI_SET':
                 helpers.setStorage(
-                    'ui', 
+                    'ui',
                     action.data
                 );
                 break
 
             case 'MOPIDY_SET':
                 helpers.setStorage(
-                    'mopidy', 
+                    'mopidy',
                     action.data
                 );
                 break;
 
             case 'SPOTIFY_SET':
                 helpers.setStorage(
-                    'spotify', 
+                    'spotify',
                     action.data
                 );
                 break;
@@ -156,31 +215,13 @@ const localstorageMiddleware = (function(){
                 suppressed_broadcasts.push(action.key);
 
                 helpers.setStorage(
-                    'ui', 
+                    'ui',
                     {
                         suppressed_broadcasts: suppressed_broadcasts
                     }
                 );
                 break
 
-            case 'LASTFM_AUTHORIZATION_GRANTED':
-                helpers.setStorage(
-                    'lastfm', 
-                    {
-                        session: action.data.session
-                    }
-                );
-                break;
-
-            case 'LASTFM_AUTHORIZATION_REVOKED':
-                helpers.setStorage(
-                    'lastfm', 
-                    {
-                        session: null
-                    }
-                );
-                break;
-            
             /**
              * Experimental saving of stores to localStorage
              * This uses way too much storage space (ie 10MB+) so won't work. We need

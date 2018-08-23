@@ -36,12 +36,12 @@ class LibraryAlbums extends React.Component{
 	componentDidMount(){
 		this.props.uiActions.setWindowTitle("Albums");
 
-		if (this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
-			this.props.mopidyActions.getLibraryAlbums()
+		if (this.props.mopidy_connected && this.props.mopidy_library_albums_status != 'finished' && this.props.mopidy_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'local')){
+			this.props.mopidyActions.getLibraryAlbums();
 		}
 
-		if (this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')){
-			this.props.spotifyActions.getLibraryAlbums()
+		if (this.props.spotify_enabled && this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')){
+			this.props.spotifyActions.getLibraryAlbums();
 		}
 	}
 
@@ -59,7 +59,7 @@ class LibraryAlbums extends React.Component{
 			}			
 		}
 
-		if (newProps.mopidy_uri_schemes.includes('spotify:') && (newProps.source == 'all' || newProps.source == 'spotify')){	
+		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){	
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started'){
@@ -210,7 +210,7 @@ class LibraryAlbums extends React.Component{
 			}
 		];
 
-		if (this.props.mopidy_uri_schemes.includes('spotify:')){
+		if (this.props.spotify_enabled){
 			source_options.push({
 				value: 'spotify',
 				label: 'Spotify'
@@ -310,6 +310,7 @@ const mapStateToProps = (state, ownProps) => {
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		mopidy_library_albums_status: (state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null),
+		spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
 		spotify_library_albums: state.spotify.library_albums,
 		spotify_library_albums_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null),
 		view: state.ui.library_albums_view,

@@ -12,6 +12,7 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger'
 import Icon from '../components/Icon'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -37,7 +38,7 @@ class User extends React.Component{
 		}
 	}
 
-	setWindowTitle(user = this.props.user){		
+	setWindowTitle(user = this.props.user){
 		if (user){
 			this.props.uiActions.setWindowTitle(user.name+" (user)");
 		} else{
@@ -71,7 +72,7 @@ class User extends React.Component{
 	render(){
 		var user_id = helpers.getFromUri('userid',this.props.params.uri);
 
-		if (!this.props.user){			
+		if (!this.props.user){
 			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
 				return (
 					<div className="body-loader loading">
@@ -117,7 +118,7 @@ class User extends React.Component{
 						</div>
 					</div>
 				</div>
-				
+
 				<div className="content-wrapper">
 					<section className="grid-wrapper">
 						<h4>Playlists</h4>
@@ -143,6 +144,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch)
 	}

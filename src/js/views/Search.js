@@ -51,7 +51,7 @@ class Search extends React.Component{
 	componentWillReceiveProps(nextProps){
 
 		// Query changed
-		if (nextProps.params.query !== this.props.params.query){
+		if (nextProps.params.term !== this.props.params.term || nextProps.params.type !== this.props.params.type){
 			this.digestUri(nextProps);
 		}
 
@@ -68,21 +68,13 @@ class Search extends React.Component{
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
-		if (props.params && props.params.query && props.params.query !== ''){
-			var type = helpers.getFromUri("searchtype", props.params.query);
-			var term = helpers.getFromUri("searchterm", props.params.query);
+		if (props.params && props.params.type && props.params.term){
+			this.setState({
+				type: props.params.type,
+				term: props.params.term
+			});
 
-			if (type){
-				this.setState({type: type});
-			}
-
-			if (term){
-				this.setState({term: term});
-			}
-
-			if (type && term){
-				this.search(type, term);
-			}
+			this.search(props.params.type, props.params.term);
 		}
 	}
 
@@ -181,7 +173,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -199,7 +191,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -217,7 +209,7 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
@@ -235,14 +227,14 @@ class Search extends React.Component{
 				return (
 					<div>
 						<h4>
-							<URILink unencoded type="search" uri={"search:all:"+this.state.term}>
+							<URILink type="search" uri={"search:all:"+this.state.term}>
 								Search
 							</URILink>
 							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
 							Tracks
 						</h4>
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
 							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					</div>
@@ -256,11 +248,11 @@ class Search extends React.Component{
 					var artists_section = (					
 						<section>
 							<div className="inner">								
-								<URILink unencoded type="search" uri={"search:artist:"+this.state.term}>
+								<URILink type="search" uri={"search:artist:"+this.state.term}>
 									<h4>Artists</h4>
 								</URILink>
 								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
-								{artists.length > 4 ? <URILink unencoded type="search" uri={"search:artist:"+this.state.term} className="button grey">
+								{artists.length > 4 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button grey">
 									All artists ({artists.length})
 								</URILink> : null}
 							</div>
@@ -274,11 +266,11 @@ class Search extends React.Component{
 					var albums_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:album:"+this.state.term}>
+								<URILink type="search" uri={"search:album:"+this.state.term}>
 									<h4>Albums</h4>
 								</URILink>
 								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
-								{albums.length > 4 ? <URILink unencoded type="search" uri={"search:album:"+this.state.term} className="button grey">
+								{albums.length > 4 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button grey">
 									All albums ({albums.length})
 								</URILink> : null}
 							</div>
@@ -292,11 +284,11 @@ class Search extends React.Component{
 					var playlists_section = (					
 						<section>
 							<div className="inner">						
-								<URILink unencoded type="search" uri={"search:playlist:"+this.state.term}>
+								<URILink type="search" uri={"search:playlist:"+this.state.term}>
 									<h4>Playlists</h4>
 								</URILink>
 								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
-								{playlists.length > 4 ? <URILink unencoded type="search" uri={"search:playlist:"+this.state.term} className="button grey">
+								{playlists.length > 4 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button grey">
 									All playlists ({playlists.length})
 								</URILink> : null}
 							</div>
@@ -309,7 +301,7 @@ class Search extends React.Component{
 				if (tracks.length > 0){
 					var tracks_section = (
 						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:'+this.props.params.query} show_source_icon />
+							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
 							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
 						</section>
 					)

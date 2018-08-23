@@ -15,17 +15,20 @@ export default class Icon extends React.Component{
 	}
 
 	render(){
-		var className = "icon";
+		var className = "icon icon--"+(this.props.type ? this.props.type : 'material');
 		if (this.props.className){
 			className += ' '+this.props.className;
 		}
 
 		switch (this.props.type){
+			case 'svg':	
+				var src = require('../../assets/icons/'+this.props.name+'.svg');
+				return <img className={className} src={src} onClick={e => this.handleClick(e)} />;
+
 			case 'fontawesome':	
 				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 
 			default:
-				className += ' material-icon';		
 				return <i className={className} onClick={e => this.handleClick(e)}>{this.props.name}</i>;
 		}
 	}

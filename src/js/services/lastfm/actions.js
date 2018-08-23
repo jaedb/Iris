@@ -3,6 +3,14 @@ var coreActions = require('../core/actions');
 var uiActions = require('../ui/actions');
 var helpers = require('../../helpers');
 
+
+export function set(data){
+    return {
+        type: 'LASTFM_SET',
+        data: data
+    }
+}
+
 /**
  * Send an ajax request to the LastFM API
  *
@@ -11,7 +19,7 @@ var helpers = require('../../helpers');
  * @param params = string, the url params to send
  * @params signed = boolean, whether we've got a signed request with baked-in api_key
  **/
-const sendRequest = (dispatch, getState, params, signed = false) => {
+var sendRequest = (dispatch, getState, params, signed = false) => {
     return new Promise((resolve, reject) => {
 
         var loader_key = helpers.generateGuid();
@@ -27,7 +35,7 @@ const sendRequest = (dispatch, getState, params, signed = false) => {
             url: 'https://ws.audioscrobbler.com/2.0/?format=json&'+params
         }
 
-        // Signed requests don't need our api_key as the proxy has it's own 
+        // Signed requests don't need our api_key as the proxy has it's own
         if (!signed){
             config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
         } else {
@@ -126,14 +134,6 @@ const sendSignedRequest = (dispatch, getState, params) => {
 }
 
 
-export function set(data){
-    return {
-        type: 'LASTFM_SET',
-        data: data
-    }
-}
-
-
 /**
  * Handle authorization process
  **/
@@ -147,7 +147,9 @@ export function authorizationGranted(data){
 }
 
 export function revokeAuthorization(){
-    return { type: 'LASTFM_AUTHORIZATION_REVOKED' }
+    return {
+    	type: 'LASTFM_AUTHORIZATION_REVOKED'
+    }
 }
 
 
@@ -164,10 +166,9 @@ export function getMe(){
                 response => {
                     if (response.user){
                         dispatch({
-                            type: 'LASTFM_USER_LOADED',
-                            user: response.user
+                            type: 'LASTFM_ME_LOADED',
+                            me: response.user
                         });
-                        dispatch({ type: 'LASTFM_CONNECTED' })
                     }
                 }
             )

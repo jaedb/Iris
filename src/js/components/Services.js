@@ -9,6 +9,7 @@ import Icon from './Icon'
 import URILink from './URILink'
 import SpotifyAuthenticationFrame from '../components/Fields/SpotifyAuthenticationFrame'
 import LastfmAuthenticationFrame from '../components/Fields/LastfmAuthenticationFrame'
+import GeniusAuthenticationFrame from '../components/Fields/GeniusAuthenticationFrame'
 import Snapcast from '../components/Snapcast'
 
 import * as uiActions from '../services/ui/actions'
@@ -17,6 +18,7 @@ import * as mopidyActions from '../services/mopidy/actions'
 import * as pusherActions from '../services/pusher/actions'
 import * as spotifyActions from '../services/spotify/actions'
 import * as lastfmActions from '../services/lastfm/actions'
+import * as geniusActions from '../services/genius/actions'
 
 class Services extends React.Component{
 
@@ -33,16 +35,19 @@ class Services extends React.Component{
 		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}
+		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined){
+			this.props.geniusActions.getMe();
+		}
 	}
 	componentWillReceiveProps(newProps){
 		var changed = false
 		var state = this.state
-		
+
 		if (newProps.spotify.country != this.state.country && this.state.input_in_focus != 'country'){
 			state.country = newProps.spotify.country
 			changed = true
 		}
-		
+
 		if (newProps.spotify.locale != this.state.locale && this.state.input_in_focus != 'locale'){
 			state.locale = newProps.spotify.locale
 			changed = true
@@ -109,11 +114,11 @@ class Services extends React.Component{
 				<div className="field">
 					<div className="name">Country</div>
 					<div className="input">
-						<input 
+						<input
 							type="text"
-							onChange={e => this.setState({country: e.target.value})} 
+							onChange={e => this.setState({country: e.target.value})}
 							onFocus={e => this.setState({input_in_focus: 'country'})}
-							onBlur={e => this.props.spotifyActions.set({country: e.target.value})} 
+							onBlur={e => this.props.spotifyActions.set({country: e.target.value})}
 							value={ this.state.country } />
 						<div className="description">
 							An <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code (eg <em>NZ</em>)
@@ -123,11 +128,11 @@ class Services extends React.Component{
 				<div className="field">
 					<div className="name">Locale</div>
 					<div className="input">
-						<input 
+						<input
 							type="text"
 							onChange={e => this.setState({locale: e.target.value})}
-							onFocus={e => this.setState({input_in_focus: 'locale'})} 
-							onBlur={e => this.props.spotifyActions.set({locale: e.target.value})} 
+							onFocus={e => this.setState({input_in_focus: 'locale'})}
+							onBlur={e => this.props.spotifyActions.set({locale: e.target.value})}
 							value={this.state.locale} />
 						<div className="description">
 							Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a> and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>, joined by an underscore (eg <em>en_NZ</em>)
@@ -142,7 +147,7 @@ class Services extends React.Component{
 							{user}
 						</div>
 					</div>
-				</div>	
+				</div>
 
 				<div className="field">
 					<div className="name">Authorization</div>
@@ -157,7 +162,7 @@ class Services extends React.Component{
 	}
 
 	renderLastfm(){
-		var user_object = (this.props.lastfm.session ? this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] : null);
+		var user_object = (this.props.lastfm.me ? this.props.core.users["lastfm:user:"+this.props.lastfm.me.name] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
@@ -199,14 +204,57 @@ class Services extends React.Component{
 		);
 	}
 
+	renderGenius(){
+		var user_object = (this.props.genius.me ? this.props.core.users["genius:user:"+this.props.genius.me.id] : null);
+		if (user_object){
+			var user = (
+				<span className="user">
+					<Thumbnail circle={true} size="small" images={user_object.avatar} />
+					<span className="user-name">
+						{user_object.name}
+					</span>
+				</span>
+			)
+		} else {
+			var user = (
+				<span className="user">
+					<Thumbnail circle={true} size="small" />
+					<span className="user-name">
+						Unknown
+					</span>
+				</span>
+			)
+		}
+
+		return (
+			<div>
+				{this.props.genius.authorization ? <div className="field current-user">
+					<div className="name">Current user</div>
+					<div className="input">
+						<div className="text">
+							{user}
+						</div>
+					</div>
+				</div> : null}
+
+				<div className="field">
+					<div className="name">Authorization</div>
+					<div className="input">
+						<GeniusAuthenticationFrame />
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	renderIcecast(){
 		return (
-			<div>				
+			<div>
 				<div className="field checkbox">
 					<div className="name">Enable</div>
 					<div className="input">
 						<label>
-							<input 
+							<input
 								type="checkbox"
 								name="ssl"
 								checked={this.props.core.http_streaming_enabled}
@@ -220,7 +268,7 @@ class Services extends React.Component{
 				<div className="field">
 					<div className="name">Location</div>
 					<div className="input">
-						<input 
+						<input
 							type="text"
 							onChange={e => this.props.coreActions.set({http_streaming_url: e.target.value})}
 							value={this.props.core.http_streaming_url} />
@@ -228,7 +276,7 @@ class Services extends React.Component{
 							The full URL to your stream endpoint
 						</div>
 					</div>
-				</div>		
+				</div>
 			</div>
 		);
 	}
@@ -241,10 +289,16 @@ class Services extends React.Component{
 			var spotify_icon = <Thumbnail circle={true} size="small" />
 		}
 
-		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name]){
-			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.session.name].image} />
+		if (this.props.lastfm.me && this.props.core.users["lastfm:user:"+this.props.lastfm.me.name]){
+			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.me.name].image} />
 		} else {
 			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
+		}
+
+		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id]){
+			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["genius:user:"+this.props.genius.me.id].avatar} />
+		} else {
+			var genius_icon = <Icon name="genius" type="svg" />
 		}
 
 		return (
@@ -265,6 +319,15 @@ class Services extends React.Component{
 							LastFM
 						</div>
 						{this.props.lastfm.session ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+					</Link>
+				</div>
+				<div className="menu-item-wrapper">
+					<Link className={"menu-item"+(this.props.active == 'genius' ? ' active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
+						{genius_icon}
+						<div className="title">
+							Genius
+						</div>
+						{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
 					</Link>
 				</div>
 				<div className="menu-item-wrapper">
@@ -297,6 +360,9 @@ class Services extends React.Component{
 				break;
 			case 'lastfm':
 				service = this.renderLastfm();
+				break;
+			case 'genius':
+				service = this.renderGenius();
 				break;
 			case 'icecast':
 				service = this.renderIcecast();
@@ -338,7 +404,8 @@ const mapDispatchToProps = (dispatch) => {
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch)
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
+		geniusActions: bindActionCreators(geniusActions, dispatch)
 	}
 }
 

@@ -17,6 +17,7 @@ import uiMiddleware from './services/ui/middleware'
 import pusherMiddleware from './services/pusher/middleware'
 import mopidyMiddleware from './services/mopidy/middleware'
 import lastfmMiddleware from './services/lastfm/middleware'
+import geniusMiddleware from './services/genius/middleware'
 import spotifyMiddleware from './services/spotify/middleware'
 import localstorageMiddleware from './services/localstorage/middleware'
 
@@ -63,14 +64,14 @@ var initialState = {
 		mute: false,
 		volume: 0,
 		progress: 0,
-		play_state: false,
+		play_state: null,
 		uri_schemes: [],
 		library_albums_uri: 'local:directory?type=album',
 		library_artists_uri: 'local:directory?type=artist'
 	},
 	pusher: {
 		connected: false,
-		username: false,
+		username: null,
 		connections: {},
 		version: {
 			current: '0.0.0'
@@ -78,14 +79,15 @@ var initialState = {
 		config: {}
 	},
 	lastfm: {
-		me: false,
+		me: null,
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php'
 	},
 	genius: {
-		provider_url: 'https://james.barnsley.nz/iris/provider_genius.php'
+		me: null,
+		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_genius.php'
 	},
 	spotify: {
-		me: false,
+		me: null,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
 	}
@@ -98,13 +100,14 @@ initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage(
 initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
 initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
 initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
+initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage('genius'));
 
 console.log('Bootstrapping', initialState)
 
 let store = createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware )
+	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware, geniusMiddleware)
 );
 
 export default store;

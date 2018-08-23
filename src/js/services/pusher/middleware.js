@@ -1,13 +1,14 @@
 
 import ReactGA from 'react-ga'
 
-var helpers = require('../../helpers.js')
-var coreActions = require('../core/actions.js')
-var uiActions = require('../ui/actions.js')
-var mopidyActions = require('../mopidy/actions.js')
-var pusherActions = require('./actions.js')
-var lastfmActions = require('../lastfm/actions.js')
-var spotifyActions = require('../spotify/actions.js')
+var helpers = require('../../helpers')
+var coreActions = require('../core/actions')
+var uiActions = require('../ui/actions')
+var mopidyActions = require('../mopidy/actions')
+var pusherActions = require('./actions')
+var lastfmActions = require('../lastfm/actions')
+var geniusActions = require('../genius/actions')
+var spotifyActions = require('../spotify/actions')
 
 const PusherMiddleware = (function(){ 
 
@@ -577,6 +578,10 @@ const PusherMiddleware = (function(){
                 
                 store.dispatch(lastfmActions.set({
                     authorization_url: (action.config.lastfm_authorization_url ? action.config.lastfm_authorization_url : null)
+                }));
+                
+                store.dispatch(geniusActions.set({
+                    authorization_url: (action.config.genius_authorization_url ? action.config.genius_authorization_url : null)
                 }));
 
                 next(action);

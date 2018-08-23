@@ -51,7 +51,8 @@ export default class URILink extends React.Component{
 				break;
 
 			case 'search':
-				to = global.baseURL+'search/'+uri;
+				var exploded = uri.split('%3A');
+				to = global.baseURL+'search/'+exploded[1]+'/'+exploded[2];
 				break;
 
 			default:

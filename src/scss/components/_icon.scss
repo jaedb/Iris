@@ -1,7 +1,58 @@
 
-/**
- * Iris icon font
- **/
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;;
+    src: url(../assets/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+      local('MaterialIcons-Regular'),
+      url(../assets/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+      url(../assets/fonts/MaterialIcons-Regular.woff) format('woff'),
+      url(../assets/fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@font-face {
+	font-family: 'iris';
+	src:
+		url('../assets/fonts/iris.ttf?wncwx9') format('truetype'),
+		url('../assets/fonts/iris.woff?wncwx9') format('woff'),
+		url('../assets/fonts/iris.svg?wncwx9#iris') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.icon {
+	@include noselect();
+
+	&--material {
+	    font-family: 'Material Icons';
+	    font-weight: normal;
+	    font-style: normal;
+	    display: inline-block;
+	    line-height: 1;
+	    text-transform: none;
+	    letter-spacing: normal;
+	    word-wrap: normal;
+	    white-space: nowrap;
+	    direction: ltr;
+	    vertical-align: bottom;
+	    font-size: 1.3em;
+	    margin-bottom: 0.1em;
+	    -webkit-font-smoothing: antialiased;
+	    text-rendering: optimizeLegibility;
+	    -moz-osx-font-smoothing: grayscale;
+	    font-feature-settings: 'liga';
+	}
+
+	&--fontawesome {
+
+	}
+
+	&--svg {
+	}
+}
+
+/*
 
 @font-face {
 	font-family: 'iris';
@@ -168,40 +219,4 @@ $icon-websocket: \e920;
   content: "\e922";
 }
 
-
-/**
-* Material icons
-**/
-
-@font-face {
-    font-family: 'Material Icons';
-    font-style: normal;
-    font-weight: 400;;
-    src: url(../assets/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
-    src: local('Material Icons'),
-      local('MaterialIcons-Regular'),
-      url(../assets/fonts/MaterialIcons-Regular.woff2) format('woff2'),
-      url(../assets/fonts/MaterialIcons-Regular.woff) format('woff'),
-      url(../assets/fonts/MaterialIcons-Regular.ttf) format('truetype');
-}
-
-.material-icon {
-    @include noselect();
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
-    vertical-align: bottom;
-    font-size: 1.3em;
-    margin-bottom: 0.1em;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: 'liga';
-}
+*/

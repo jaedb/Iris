@@ -78,6 +78,115 @@ export function cachebustHttpStream(){
     }
 }
 
+/**
+ * Record getters
+ *
+ * Calling this through the common core enables us to detect whether we've already
+ * got the record in the state or persistent storage. Failing that, we pass off to the
+ * relevant service to load the record - all from one neat package.
+ **/
+
+export function loadTrack(uri){
+    return {
+        type: 'LOAD_TRACK',
+        uri: uri
+    }
+}
+
+export function loadAlbum(uri){
+    return {
+        type: 'LOAD_ALBUM',
+        uri: uri
+    }
+}
+
+export function loadArtist(uri){
+    return {
+        type: 'LOAD_ARTIST',
+        uri: uri
+    }
+}
+
+export function loadPlaylist(uri){
+    return {
+        type: 'LOAD_PLAYLIST',
+        uri: uri
+    }
+}
+
+export function loadUser(uri){
+    return {
+        type: 'LOAD_USER',
+        uri: uri
+    }
+}
+
+
+/**
+ * Record loaders
+ *
+ * We've got a loaded record, now we just need to plug it in to our state and stores.
+ **/
+
+export function trackLoaded(track){
+    return tracksLoaded([track]);
+}
+export function tracksLoaded(tracks){
+    return {
+        type: 'TRACKS_LOADED',
+        tracks: tracks
+    }
+}
+
+export function artistLoaded(artist){
+    return artistsLoaded([artist]);
+}
+export function artistsLoaded(artists){
+    return {
+        type: 'ARTISTS_LOADED',
+        artists: artists
+    }
+}
+
+export function albumLoaded(album){
+    return albumsLoaded([album]);
+}
+export function albumsLoaded(albums){
+    return {
+        type: 'ALBUMS_LOADED',
+        albums: albums
+    }
+}
+
+export function playlistLoaded(playlist){
+    return playlistsLoaded([playlist]);
+}
+export function playlistsLoaded(playlists){
+    return {
+        type: 'PLAYLISTS_LOADED',
+        playlists: playlists
+    }
+}
+
+export function userLoaded(user){
+    return usersLoaded([user]);
+}
+export function usersLoaded(users){
+    return {
+        type: 'USERS_LOADED',
+        users: users
+    }
+}
+
+export function loadedMore(parent_type, parent_key, records_type, records_data){
+    return {
+        type: 'LOADED_MORE',
+        parent_type: parent_type,
+        parent_key: parent_key,
+        records_type: records_type,
+        records_data: records_data
+    }
+}
 
 
 
@@ -219,55 +328,5 @@ export function getLibraryAlbums(){
 export function getLibraryArtists(){
     return {
         type: 'GET_LIBRARY_ARTISTS'
-    }
-}
-
-
-/**
- * Assets loaded
- **/
-
-export function loadedMore(parent_type, parent_key, records_type, records_data){
-    return {
-        type: 'LOADED_MORE',
-        parent_type: parent_type,
-        parent_key: parent_key,
-        records_type: records_type,
-        records_data: records_data
-    }
-}
-
-export function tracksLoaded(tracks){
-    return {
-        type: 'TRACKS_LOADED',
-        tracks: tracks
-    }
-}
-
-export function albumsLoaded(albums){
-    return {
-        type: 'ALBUMS_LOADED',
-        albums: albums
-    }
-}
-
-export function artistsLoaded(artists){
-    return {
-        type: 'ARTISTS_LOADED',
-        artists: artists
-    }
-}
-
-export function playlistsLoaded(playlists){
-    return {
-        type: 'PLAYLISTS_LOADED',
-        playlists: playlists
-    }
-}
-
-export function usersLoaded(users){
-    return {
-        type: 'USERS_LOADED',
-        users: users
     }
 }

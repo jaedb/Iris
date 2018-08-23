@@ -24,7 +24,12 @@ class SpotifyAuthenticationFrame extends React.Component{
 
 		// Listen for incoming messages from the authorization popup
 		window.addEventListener('message', function(event){
-			var data = JSON.parse(event.data);
+			try {
+				var data = JSON.parse(event.data);
+			} catch (e){
+				console.error("Failed to parse JSON", e, event);
+				return;
+			}
 
 			// Only digest messages relevant to us
 			if (data.origin == 'auth_spotify'){

@@ -19,6 +19,7 @@ import Icon from '../components/Icon'
 import Popularity from '../components/Popularity'
 
 import * as helpers from '../helpers'
+import * as coreActions from '../services/core/actions'
 import * as uiActions from '../services/ui/actions'
 import * as mopidyActions from '../services/mopidy/actions'
 import * as spotifyActions from '../services/spotify/actions'
@@ -65,7 +66,7 @@ class Track extends React.Component{
 			}
 
 			// Ready to load lyrics
-			if (!nextProps.track.lyrics_results){
+			if (nextProps.genius_authorized && !nextProps.track.lyrics_results){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 		}
@@ -75,7 +76,7 @@ class Track extends React.Component{
 		}
 	}
 
-	setWindowTitle(track = this.props.track){		
+	setWindowTitle(track = this.props.track){
 		if (track){
 			var artists = "";
 			for (var i = 0; i < track.artists.length; i++){
@@ -102,7 +103,7 @@ class Track extends React.Component{
 
 	/**
 	 * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
-	 * we need to accommodate? 
+	 * we need to accommodate?
 	 **/
 	loadTrack(props = this.props){
 		switch (helpers.uriSource(props.params.uri)){
@@ -171,8 +172,8 @@ class Track extends React.Component{
 						{
 							this.props.track.lyrics_results.map(result => {
 								return (
-									<option 
-										key={result.path} 
+									<option
+										key={result.path}
 										value={result.path}
 										defaultValue={result.path == this.props.track.lyrics_path}
 									>
@@ -231,16 +232,14 @@ class Track extends React.Component{
 		return (
 			<div className="view track-view content-wrapper">
 
-				{this.props.slim_mode ? <Header 
-					icon="music" 
-					title="Track" 
-					handleContextMenuTrigger={e => this.handleContextMenu(e)} 
+				{this.props.slim_mode ? <Header
+					icon="music"
+					title="Track"
+					handleContextMenuTrigger={e => this.handleContextMenu(e)}
 					uiActions={this.props.uiActions} /> : null}
 
 				<div className="thumbnail-wrapper">
-					<URILink type="album" uri={track.album ? track.album.uri : null}>
-						<Thumbnail size="large" canZoom images={track.images} />
-					</URILink>
+					<Thumbnail size="large" canZoom images={track.images} />
 				</div>
 
 				<div className="title">
@@ -273,8 +272,9 @@ class Track extends React.Component{
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
-				{this.renderLyricsSelector()}
-				{this.renderLyrics()}
+				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={global.baseURL+"settings/service/genius"}>Settings</Link>.</p> : null}
+				{this.props.genius_authorized ? this.renderLyricsSelector() : null}
+				{this.props.genius_authorized ? this.renderLyrics() : null}
 
 			</div>
 		)
@@ -301,13 +301,14 @@ const mapStateToProps = (state, ownProps) => {
 		local_library_albums: state.mopidy.library_albums,
 		lastfm_authorized: state.lastfm.session,
 		spotify_authorized: state.spotify.authorization,
+		genius_authorized: state.genius.authorization,
 		mopidy_connected: state.mopidy.connected
 	};
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		lastfmActions: bindActionCreators(lastfmActions, dispatch),
