@@ -44,16 +44,12 @@ class Thumbnail extends React.Component{
 
 	mapImageSizes(props = this.props){
 
-		// no images
-		if (!this.props.image && (!this.props.images || this.props.images.length <= 0)){
-			return require('../../assets/no-image.svg');
-
-		// single image
-		} else if (this.props.image){
+		// Single image
+		if (this.props.image){
 			return this.props.image;
 
-		// multiple images
-		} else if (this.props.images && this.props.images.length > 0){
+		// Multiple images
+		} else if (this.props.images){
 			var images = helpers.sizedImages(this.props.images);
 
 			// Default to medium-sized image, but accept size property as override
@@ -63,6 +59,10 @@ class Thumbnail extends React.Component{
 			}
 
 			return images[size];
+
+		// No images
+		} else {
+			return require('../../assets/no-image.svg');
 		}
 	}
 

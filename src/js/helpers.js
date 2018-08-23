@@ -132,57 +132,73 @@ export let sizedImages = function(images){
 		huge: false
 	}
 
-	if (images.length <= 0) return sizes;
+	// An array of images has been provided
+	if (Array.isArray(images)){
 
-	for (var i = 0; i < images.length; i++){
-		let image = images[i]
+		if (images.length <= 0){
+			return sizes;
+		}
 
-		// Mopidy image object
-		if (image.__model__ && image.__model__ == 'Image'){
+		for (var i = 0; i < images.length; i++){
+			let image = images[i]
 
-			if (image.width < 400){
-				sizes.small = image.url;
-			}else if (image.width < 800){
-				sizes.medium = image.url;
-			}else if (image.width < 1000){
-				sizes.large = image.url;
-			} else {
-				sizes.huge = image.url;
-			}
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image'){
 
-		// Mopidy image string
-		} else if (typeof(image) == 'string'){
-			sizes.small = image
-		
-		// spotify-styled images
-		} else if (image.width !== undefined){
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
 
-			if (image.width < 400){
-				sizes.small = image.url;
-			}else if (image.width < 800){
-				sizes.medium = image.url;
-			}else if (image.width < 1000){
-				sizes.large = image.url;
-			} else {
-				sizes.huge = image.url;
-			}
+			// Mopidy image string
+			} else if (typeof(image) == 'string'){
+				sizes.small = image
+			
+			// spotify-styled images
+			} else if (image.width !== undefined){
 
-		// lastfm-styled images
-		} else if (image.size !== undefined){
-			switch(image.size){
-				case 'mega':
-				case 'extralarge':
-				case 'large':
-					sizes.medium = image['#text']
-					break;
-				case 'medium':
-				case 'small':
-					sizes.small = image['#text']
-					break;
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+			// lastfm-styled images
+			} else if (image.size !== undefined){
+				switch(image.size){
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text']
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text']
+						break;
+				}
 			}
 		}
+
+	// An object of images has been provided
+	// The Genius avatar object is an example of this 
+	} else {
+		if (images.small) sizes.small = images.small.url;
+		if (images.medium) sizes.medium = images.medium.url;
+		if (images.large) sizes.large = images.large.url;
+		if (images.huge) sizes.huge = images.huge.url;
 	}
 
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
 	if (!sizes.small){
 		if (sizes.medium) sizes.small = sizes.medium
 		else if (sizes.large) sizes.small = sizes.large

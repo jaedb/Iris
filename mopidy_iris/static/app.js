@@ -218,59 +218,74 @@ var sizedImages = exports.sizedImages = function sizedImages(images) {
 		medium: false,
 		large: false,
 		huge: false
-	};
 
-	if (images.length <= 0) return sizes;
+		// An array of images has been provided
+	};if (Array.isArray(images)) {
 
-	for (var i = 0; i < images.length; i++) {
-		var image = images[i];
+		if (images.length <= 0) {
+			return sizes;
+		}
 
-		// Mopidy image object
-		if (image.__model__ && image.__model__ == 'Image') {
+		for (var i = 0; i < images.length; i++) {
+			var image = images[i];
 
-			if (image.width < 400) {
-				sizes.small = image.url;
-			} else if (image.width < 800) {
-				sizes.medium = image.url;
-			} else if (image.width < 1000) {
-				sizes.large = image.url;
-			} else {
-				sizes.huge = image.url;
-			}
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image') {
 
-			// Mopidy image string
-		} else if (typeof image == 'string') {
-			sizes.small = image;
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
 
-			// spotify-styled images
-		} else if (image.width !== undefined) {
+				// Mopidy image string
+			} else if (typeof image == 'string') {
+				sizes.small = image;
 
-			if (image.width < 400) {
-				sizes.small = image.url;
-			} else if (image.width < 800) {
-				sizes.medium = image.url;
-			} else if (image.width < 1000) {
-				sizes.large = image.url;
-			} else {
-				sizes.huge = image.url;
-			}
+				// spotify-styled images
+			} else if (image.width !== undefined) {
 
-			// lastfm-styled images
-		} else if (image.size !== undefined) {
-			switch (image.size) {
-				case 'mega':
-				case 'extralarge':
-				case 'large':
-					sizes.medium = image['#text'];
-					break;
-				case 'medium':
-				case 'small':
-					sizes.small = image['#text'];
-					break;
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+				// lastfm-styled images
+			} else if (image.size !== undefined) {
+				switch (image.size) {
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text'];
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text'];
+						break;
+				}
 			}
 		}
+
+		// An object of images has been provided
+		// The Genius avatar object is an example of this 
+	} else {
+		if (images.small) sizes.small = images.small.url;
+		if (images.medium) sizes.medium = images.medium.url;
+		if (images.large) sizes.large = images.large.url;
+		if (images.huge) sizes.huge = images.huge.url;
 	}
 
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
 	if (!sizes.small) {
 		if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
 	}
@@ -4430,16 +4445,12 @@ var Thumbnail = function (_React$Component) {
 			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 
 
-			// no images
-			if (!this.props.image && (!this.props.images || this.props.images.length <= 0)) {
-				return __webpack_require__(285);
-
-				// single image
-			} else if (this.props.image) {
+			// Single image
+			if (this.props.image) {
 				return this.props.image;
 
-				// multiple images
-			} else if (this.props.images && this.props.images.length > 0) {
+				// Multiple images
+			} else if (this.props.images) {
 				var images = helpers.sizedImages(this.props.images);
 
 				// Default to medium-sized image, but accept size property as override
@@ -4449,6 +4460,10 @@ var Thumbnail = function (_React$Component) {
 				}
 
 				return images[size];
+
+				// No images
+			} else {
+				return __webpack_require__(285);
 			}
 		}
 	}, {
@@ -73214,7 +73229,7 @@ var Services = function (_React$Component) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', image: user_object.photo_url }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.avatar }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
@@ -73351,7 +73366,7 @@ var Services = function (_React$Component) {
 			}
 
 			if (this.props.genius.me && this.props.core.users["genius:user:" + this.props.genius.me.id]) {
-				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', image: this.props.core.users["genius:user:" + this.props.genius.me.id].photo_url });
+				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["genius:user:" + this.props.genius.me.id].avatar });
 			} else {
 				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'genius', type: 'svg' });
 			}
