@@ -277,6 +277,32 @@ class Settings extends React.Component {
 
 					<h4 className="underline">Advanced</h4>
 
+					<div className="field radio">
+						<div className="name">
+							Theme
+						</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="theme"
+									value="dark"
+									checked={this.props.ui.theme == 'dark'}
+									onChange={ e => this.props.uiActions.set({theme: e.target.value})} />
+								<span className="label">Dark</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="theme"
+									value="light"
+									checked={this.props.ui.theme == 'light'}
+									onChange={e => this.props.uiActions.set({theme: e.target.value})} />
+								<span className="label">Light</span>
+							</label>
+						</div>
+					</div>
+
 					<div className="field checkbox">
 						<div className="name">UI behavior</div>
 						<div className="input">

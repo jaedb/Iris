@@ -52557,6 +52557,7 @@ var initialState = {
 		http_streaming_url: "http://" + window.location.hostname + ":8000/mopidy"
 	},
 	ui: {
+		theme: 'dark',
 		shortkeys_enabled: true,
 		allow_reporting: true,
 		slim_mode: false,
@@ -62242,7 +62243,7 @@ var App = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var className = '';
+			var className = this.props.theme + '-theme';
 			if (this.props.dragger && this.props.dragger.active) {
 				className += ' dragging';
 			}
@@ -62300,6 +62301,7 @@ var App = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		theme: state.ui.theme,
 		shortkeys_enabled: state.ui.shortkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
@@ -70554,6 +70556,53 @@ var Settings = function (_React$Component) {
 						'h4',
 						{ className: 'underline' },
 						'Advanced'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field radio' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Theme'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'theme',
+									value: 'dark',
+									checked: this.props.ui.theme == 'dark',
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ theme: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Dark'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'theme',
+									value: 'light',
+									checked: this.props.ui.theme == 'light',
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ theme: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Light'
+								)
+							)
+						)
 					),
 					_react2.default.createElement(
 						'div',

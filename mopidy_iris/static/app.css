@@ -2486,6 +2486,9 @@ html {
   letter-spacing: -0.01rem;
   touch-action: manipulation;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
+  body .light-theme,
+  html .light-theme {
+    background: #FFFFFF; }
 
 *::-webkit-scrollbar {
   width: 8px;
@@ -4579,6 +4582,9 @@ aside {
   border-right: 1px solid #1d1d1d;
   color: #FFFFFF;
   box-sizing: border-box; }
+  .light-theme aside {
+    background: #f4f2f0;
+    border-right: 1px solid #eeeae7; }
   aside .liner {
     overflow-y: auto;
     position: absolute;
@@ -4634,6 +4640,9 @@ aside {
         background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+      .light-theme aside nav a {
+        color: #181818;
+        font-weight: 600; }
       aside nav a .icon {
         padding-right: 8px;
         vertical-align: top;
