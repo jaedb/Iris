@@ -3811,6 +3811,8 @@ input[type="submit"] {
     background-position: 50% 50%;
     background-size: cover;
     border-radius: 3px; }
+    .light-theme .thumbnail .image {
+      background-color: #cecac4; }
   .thumbnail .zoom {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;

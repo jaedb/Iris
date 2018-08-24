@@ -15,6 +15,10 @@
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
+
+		.light-theme & {
+			background-color: $light_grey;
+		}
 	}
 
 	.zoom {
