@@ -17,6 +17,15 @@
 		border-bottom: 1px solid rgba(255,255,255,0.05);
 		border-top: 1px solid rgba(255,255,255,0.05);
 
+		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
+			background: rgba(255,255,255,0.03);
+			cursor: pointer;
+
+			.light-theme & {
+				background: rgba(0,0,0,0.03);
+			}
+		}
+
 		&.selected {
 			background: rgba(255,255,255,0.08) !important;
 
@@ -25,6 +34,14 @@
 					background: $blue;
 					border-color: $blue !important;
 				}
+			}
+		}
+
+		.light-theme & {
+			border-color: rgba(0,0,0,0.05);
+
+			&.selected {
+				background: rgba(0,0,0,0.08) !important;
 			}
 		}
 
@@ -58,11 +75,6 @@
 			position: absolute;
 			top: 16px;
 			right: 40px;
-		}
-
-		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
-			background: rgba(255,255,255,0.03);
-			cursor: pointer;
 		}
 
 		&.header {

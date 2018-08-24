@@ -43,6 +43,7 @@ html {
 
 	.light-theme {
 		background: $white;
+		color: $dark_grey;
 	}
 }
 
@@ -146,6 +147,10 @@ h1 {
 	font-weight: 700;
 	font-size: 3rem;
 	line-height: 3.2rem;
+
+	.light-theme & {
+		color: $dark_grey;
+	}
 }
 
 h2 {

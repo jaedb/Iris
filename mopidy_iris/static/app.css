@@ -2488,7 +2488,8 @@ html {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
   body .light-theme,
   html .light-theme {
-    background: #FFFFFF; }
+    background: #FFFFFF;
+    color: #181818; }
 
 *::-webkit-scrollbar {
   width: 8px;
@@ -2565,6 +2566,8 @@ h1 {
   font-weight: 700;
   font-size: 3rem;
   line-height: 3.2rem; }
+  .light-theme h1 {
+    color: #181818; }
 
 h2 {
   font-family: "Overpass";
@@ -4736,11 +4739,20 @@ aside {
     content: '';
     clear: both;
     display: block; }
+  :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer; }
+    .light-theme :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
+      background: rgba(0, 0, 0, 0.03); }
   .list .list-item.selected {
     background: rgba(255, 255, 255, 0.08) !important; }
     .list .list-item.selected .select-zone::after {
       background: #32b5f2;
       border-color: #32b5f2 !important; }
+  .light-theme .list .list-item {
+    border-color: rgba(0, 0, 0, 0.05); }
+    .light-theme .list .list-item.selected {
+      background: rgba(0, 0, 0, 0.08) !important; }
   .list .list-item.playing {
     color: #08d58f; }
   .list .list-item .select-zone,
@@ -4762,9 +4774,6 @@ aside {
     position: absolute;
     top: 16px;
     right: 40px; }
-  :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
-    background: rgba(255, 255, 255, 0.03);
-    cursor: pointer; }
   .list .list-item.header {
     font-size: 10px;
     color: #383734;
