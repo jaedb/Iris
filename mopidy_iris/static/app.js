@@ -4460,11 +4460,10 @@ var Thumbnail = function (_React$Component) {
 				}
 
 				return images[size];
-
-				// No images
-			} else {
-				return __webpack_require__(285);
 			}
+
+			// No images
+			return null;
 		}
 	}, {
 		key: 'zoom',
@@ -4488,7 +4487,7 @@ var Thumbnail = function (_React$Component) {
 			}
 
 			var zoom_icon = null;
-			if (this.props.canZoom) {
+			if (this.props.canZoom && image) {
 				zoom_icon = _react2.default.createElement(
 					_reactRouter.Link,
 					{ className: 'zoom', target: '_blank', rel: 'external', href: image },
@@ -4499,7 +4498,7 @@ var Thumbnail = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: class_name },
-				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + image + '")' } }),
+				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + (image ? image : __webpack_require__(285)) + '")' } }),
 				zoom_icon
 			);
 		}
@@ -16836,10 +16835,7 @@ function getTrack(uri) {
                 var merged_track = Object.assign({}, {
                     uri: track.uri
                 }, response.track, track);
-                dispatch({
-                    type: 'TRACK_LOADED',
-                    track: merged_track
-                });
+                dispatch(coreActions.trackLoaded(merged_track));
             }
         });
     };
@@ -16859,18 +16855,17 @@ function getArtist(uri, artist) {
         }
         sendRequest(dispatch, getState, params).then(function (response) {
             if (response.artist) {
-                dispatch({
-                    type: 'ARTIST_LOADED',
-                    artist: {
-                        uri: uri,
-                        images: response.artist.image,
-                        mbid: response.artist.mbid,
-                        bio: response.artist.bio,
-                        listeners: parseInt(response.artist.stats.listeners),
-                        play_count: parseInt(response.artist.stats.playcount),
-                        on_tour: response.artist.stats.ontour
-                    }
-                });
+                var artist = {
+                    uri: uri,
+                    images: response.artist.image,
+                    mbid: response.artist.mbid,
+                    bio: response.artist.bio,
+                    listeners: parseInt(response.artist.stats.listeners),
+                    play_count: parseInt(response.artist.stats.playcount),
+                    on_tour: response.artist.stats.ontour
+                };
+
+                dispatch(coreActions.artistLoaded(artist));
             }
         });
     };
@@ -16889,7 +16884,7 @@ function getAlbum(artist, album) {
         }
         sendRequest(dispatch, getState, params).then(function (response) {
             if (response.album) {
-                dispatch(coreActions.albumsLoaded([response.album]));
+                dispatch(coreActions.albumLoaded(response.album));
             }
         });
     };
@@ -16916,8 +16911,8 @@ function getImages(context, uri) {
                         sendRequest(dispatch, getState, params).then(function (response) {
                             if (response.album) {
                                 record = Object.assign({}, record, { images: response.album.image });
-                                dispatch(coreActions.tracksLoaded([record]));
-                                dispatch(coreActions.albumsLoaded([response.album]));
+                                dispatch(coreActions.trackLoaded(record));
+                                dispatch(coreActions.albumLoaded(response.album));
                             }
                         });
                     }
@@ -16937,7 +16932,7 @@ function getImages(context, uri) {
                         sendRequest(dispatch, getState, params).then(function (response) {
                             if (response.album) {
                                 record = Object.assign({}, record, { images: response.album.image });
-                                dispatch(coreActions.albumsLoaded([record]));
+                                dispatch(coreActions.albumLoaded(record));
                             }
                         });
                     }
@@ -19523,6 +19518,13 @@ var ArtistGrid = function (_React$Component) {
 	}
 
 	_createClass(ArtistGrid, [{
+		key: 'itemMounted',
+		value: function itemMounted(item) {
+			if (!item.images) {
+				this.props.lastfmActions.getArtist(item.uri, item.name);
+			}
+		}
+	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e, item) {
 			console.log(item);
@@ -19557,12 +19559,12 @@ var ArtistGrid = function (_React$Component) {
 							onClick: function onClick(e) {
 								_reactRouter.hashHistory.push(global.baseURL + 'artist/' + encodeURIComponent(artist.uri));
 							},
-							onLoad: function onLoad() {
-								return _this2.handleLoad(artist.uri);
-							},
 							lastfmActions: _this2.props.lastfmActions,
 							onContextMenu: function onContextMenu(e) {
 								return _this2.handleContextMenu(e, artist);
+							},
+							onMount: function onMount() {
+								return _this2.itemMounted(artist);
 							}
 						});
 					})
@@ -19683,12 +19685,11 @@ var GridItem = function (_React$Component) {
 	_createClass(GridItem, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (this.props.item && !this.props.item.images) {
-				switch (this.props.item.type) {
-					case 'artist':
-						this.props.lastfmActions.getArtist(this.props.item.uri, this.props.item.name);
-						break;
-				}
+
+			// A mount callback allows us to run checks on render
+			// We use this for loading artwork, but only when it's displayed
+			if (this.props.onMount) {
+				this.props.onMount();
 			}
 		}
 	}, {
@@ -20024,9 +20025,6 @@ var AlbumGrid = function (_React$Component) {
 							show_source_icon: _this2.props.show_source_icon,
 							onClick: function onClick(e) {
 								_reactRouter.hashHistory.push(global.baseURL + 'album/' + encodeURIComponent(album.uri));
-							},
-							onLoad: function onLoad() {
-								return _this2.handleLoad(album.uri);
 							},
 							onContextMenu: function onContextMenu(e) {
 								return _this2.handleContextMenu(e, album);

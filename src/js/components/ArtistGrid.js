@@ -17,6 +17,12 @@ class ArtistGrid extends React.Component{
 		super(props);
 	}
 
+	itemMounted(item){
+		if (!item.images){
+			this.props.lastfmActions.getArtist(item.uri, item.name);
+		}
+	}
+
 	handleContextMenu(e,item){
 		console.log(item);
 		e.preventDefault();
@@ -47,9 +53,9 @@ class ArtistGrid extends React.Component{
 										item={artist}
 										show_source_icon={this.props.show_source_icon}
 										onClick={e => {hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(artist.uri))}}
-										onLoad={() => this.handleLoad(artist.uri)}
 										lastfmActions={this.props.lastfmActions}
 										onContextMenu={e => this.handleContextMenu(e,artist)}
+										onMount={() => this.itemMounted(artist)}
 									/>
 								)
 							}
