@@ -2,6 +2,7 @@
 .slider {
 	position: relative;
 	cursor: pointer;
+	height: 20px;
 
 	input[type="range"]{
 		position: absolute;
@@ -33,82 +34,58 @@
 		position: absolute;
 		background: rgba(0,0,0,0.2);
 		border-radius: 2px;
+		height: 4px;
+		top: 42%;
+		right: 0;
+		left: 0;
+		margin-top: -3px;
 
 		.progress {
 			position: absolute;
 			background: $turquoise;
 			pointer-events: none;
+			top: 0;
 			left: 0;
 			border-radius: 2px;
+			height: 100%;
+			max-width: 100%;
+			border-radius: 4px;
+
+			&:after {
+				@include animate(0.1s);
+				content: '';
+				display: block;
+				background: $turquoise;
+				position: absolute;
+				top: 0;
+				right: -1px;
+				width: 4px;
+				height: 4px;
+				border-radius: 50%;
+			}
 		}
 	}
 
 	&.disabled {
 		.progress {
-			background: rgba(255,255,255,0.25);
+			background: $mid_grey;
+
+			&:after {
+				background: $mid_grey !important;
+			}
 		}
 	}
 
-	&.horizontal {
-		height: 20px;
-
+	&:hover {
 		.track {
-			height: 4px;
-			top: 42%;
-			right: 0;
-			left: 0;
-			margin-top: -3px;
-
 			.progress {
-				top: 0;
-				height: 100%;
-				max-width: 100%;
-				border-radius: 4px;
-
 				&:after {
-					@include animate(0.1s);
-					content: '';
-					display: block;
-					background: $turquoise;
-					position: absolute;
-					top: 0;
-					right: -1px;
-					width: 4px;
-					height: 4px;
-					border-radius: 50%;
+					width: 12px;
+					height: 12px;
+					top: -4px;
+					right: -6px;
+					background: lighten($turquoise, 10%);
 				}
-			}
-		}
-
-		&:hover {
-			.track {
-				.progress {
-					&:after {
-						width: 12px;
-						height: 12px;
-						top: -4px;
-						right: -6px;
-						background: lighten($turquoise, 10%);
-					}
-				}
-			}
-		}
-	}
-
-	&.vertical {
-		width: 20px;
-		height: 100%;
-
-		.track {
-			width: 5px;
-			top: 0;
-			bottom: 0;
-			left: 12px;
-
-			.progress {
-				bottom: 0;
-				width: 100%;
-				max-height: 100%;
 			}
 		}
 	}

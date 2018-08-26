@@ -2486,6 +2486,10 @@ html {
   letter-spacing: -0.01rem;
   touch-action: manipulation;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
+  body .light-theme,
+  html .light-theme {
+    background: #FFFFFF;
+    color: #121212; }
 
 *::-webkit-scrollbar {
   width: 8px;
@@ -2562,6 +2566,8 @@ h1 {
   font-weight: 700;
   font-size: 3rem;
   line-height: 3.2rem; }
+  .light-theme h1 {
+    color: #181818; }
 
 h2 {
   font-family: "Overpass";
@@ -2974,6 +2980,32 @@ select {
     padding-left: 4px;
     padding-right: 4px;
     text-align: center; }
+  .light-theme textarea, .light-theme
+  input[type="text"], .light-theme
+  input[type="email"], .light-theme
+  input[type="number"], .light-theme
+  input[type="email"], .light-theme
+  input[type="date"], .light-theme
+  input[type="file"], .light-theme
+  select {
+    background: #f4f2f0;
+    color: #121212; }
+    .light-theme textarea:focus, .light-theme textarea:active, .light-theme
+    input[type="text"]:focus, .light-theme
+    input[type="text"]:active, .light-theme
+    input[type="email"]:focus, .light-theme
+    input[type="email"]:active, .light-theme
+    input[type="number"]:focus, .light-theme
+    input[type="number"]:active, .light-theme
+    input[type="email"]:focus, .light-theme
+    input[type="email"]:active, .light-theme
+    input[type="date"]:focus, .light-theme
+    input[type="date"]:active, .light-theme
+    input[type="file"]:focus, .light-theme
+    input[type="file"]:active, .light-theme
+    select:focus, .light-theme
+    select:active {
+      background: #eeeae7; }
 
 input[type="radio"] + .label:before {
   content: ' ';
@@ -3001,6 +3033,16 @@ input[type="radio"]:focus + .label:before,
 input[type="radio"]:active + .label:before {
   background: rgba(255, 255, 255, 0.3); }
 
+.light-theme input[type="radio"] + .label:before {
+  background: #f4f2f0; }
+
+.light-theme input[type="radio"]:checked + .label:after {
+  background: #121212; }
+
+.light-theme input[type="radio"]:focus + .label:before,
+.light-theme input[type="radio"]:active + .label:before {
+  background: #383734; }
+
 input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
   font-size: 14px;
@@ -3023,6 +3065,14 @@ input[type="checkbox"]:checked + .label:before {
 input[type="checkbox"]:focus + .label:before,
 input[type="checkbox"]:active + .label:before {
   background: rgba(255, 255, 255, 0.3); }
+
+.light-theme input[type="checkbox"] + .label:before {
+  background: #f4f2f0;
+  color: #121212; }
+
+.light-theme input[type="checkbox"]:focus + .label:before,
+.light-theme input[type="checkbox"]:active + .label:before {
+  background: #383734; }
 
 select {
   max-width: 100%; }
@@ -3129,6 +3179,17 @@ input[type="submit"] {
     background: #f2f2f2;
     transform: translate(1px, 1px);
     opacity: 0.8; }
+  .light-theme .button, .light-theme
+  button, .light-theme
+  input[type="button"], .light-theme
+  input[type="submit"] {
+    background: #181818;
+    color: #FFFFFF; }
+    .light-theme .button:active, .light-theme
+    button:active, .light-theme
+    input[type="button"]:active, .light-theme
+    input[type="submit"]:active {
+      background: #000000; }
   .button.small,
   button.small,
   input[type="button"].small,
@@ -3687,6 +3748,8 @@ input[type="submit"] {
     top: 0;
     left: 0;
     border-color: #252525; }
+    .light-theme .loader:before {
+      border-color: #f4f2f0; }
   .loader:after {
     animation-name: spin;
     animation-duration: 0.5s;
@@ -3719,6 +3782,8 @@ input[type="submit"] {
   opacity: 1; }
   .mini-loader .loader:before {
     border-color: #7b7b7b; }
+    .light-theme .mini-loader .loader:before {
+      border-color: #f4f2f0; }
 
 .dragging * {
   cursor: grabbing !important;
@@ -3808,6 +3873,8 @@ input[type="submit"] {
     background-position: 50% 50%;
     background-size: cover;
     border-radius: 3px; }
+    .light-theme .thumbnail .image {
+      background-color: #cecac4; }
   .thumbnail .zoom {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -3843,6 +3910,8 @@ input[type="submit"] {
   overflow: hidden;
   background: #181818;
   position: relative; }
+  .light-theme .parallax {
+    background: #FFFFFF; }
   .parallax canvas {
     width: 110%;
     height: 110%;
@@ -4163,6 +4232,8 @@ $icon-websocket: \e920;
     font-size: 14px;
     color: #FFFFFF;
     text-decoration: none; }
+    .light-theme .playback-controls .current-track {
+      color: #121212; }
     .playback-controls .current-track .thumbnail {
       float: left;
       margin: 12px;
@@ -4579,6 +4650,9 @@ aside {
   border-right: 1px solid #1d1d1d;
   color: #FFFFFF;
   box-sizing: border-box; }
+  .light-theme aside {
+    background: #f4f2f0;
+    border-right: 1px solid #eeeae7; }
   aside .liner {
     overflow-y: auto;
     position: absolute;
@@ -4634,6 +4708,9 @@ aside {
         background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+      .light-theme aside nav a {
+        color: #181818;
+        font-weight: 600; }
       aside nav a .icon {
         padding-right: 8px;
         vertical-align: top;
@@ -4725,11 +4802,20 @@ aside {
     content: '';
     clear: both;
     display: block; }
+  :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer; }
+    .light-theme :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
+      background: rgba(0, 0, 0, 0.03); }
   .list .list-item.selected {
     background: rgba(255, 255, 255, 0.08) !important; }
     .list .list-item.selected .select-zone::after {
       background: #32b5f2;
       border-color: #32b5f2 !important; }
+  .light-theme .list .list-item {
+    border-color: rgba(0, 0, 0, 0.05); }
+    .light-theme .list .list-item.selected {
+      background: rgba(0, 0, 0, 0.08) !important; }
   .list .list-item.playing {
     color: #08d58f; }
   .list .list-item .select-zone,
@@ -4751,9 +4837,6 @@ aside {
     position: absolute;
     top: 16px;
     right: 40px; }
-  :root .notouch:not(.dragging) .list .list-item:not(.header):not(.no-click).hover {
-    background: rgba(255, 255, 255, 0.03);
-    cursor: pointer; }
   .list .list-item.header {
     font-size: 10px;
     color: #383734;
@@ -5352,6 +5435,9 @@ main header {
         main header .options .button:hover:before,
         main header .options button:hover:before {
           display: none; }
+      .light-theme main header .options .button, .light-theme
+      main header .options button {
+        color: #121212; }
   main header.overlay {
     position: absolute;
     top: 0;
@@ -5686,11 +5772,11 @@ main header {
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   width: 0;
-  padding-left: 25px;
-  background: transparent; }
+  padding-left: 25px; }
 
 .filter-field:not(.active) input {
-  cursor: pointer; }
+  cursor: pointer;
+  background: transparent !important; }
 
 .filter-field:not(.active):hover .icon {
   color: #32b5f2; }

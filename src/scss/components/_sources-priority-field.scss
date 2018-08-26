@@ -34,5 +34,20 @@
 			background: $blue;
 			color: $white;
 		}
+
+		.light-theme & {
+			background: $faint_grey;
+			color: inherit;
+
+			&:hover {
+				background: darken($faint_grey, 4%);
+			}
+
+			&:focus,
+			&:active {
+				background: $blue;
+				color: $white;
+			}
+		}
 	}
 }

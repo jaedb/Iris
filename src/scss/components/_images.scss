@@ -17,7 +17,7 @@
 		border-radius: 3px;
 
 		.light-theme & {
-			background-color: $light_grey;
+			background-color: $faint_grey;
 		}
 	}
 
@@ -37,7 +37,7 @@
 		border: 0;
 
 		&:hover {
-			background: #000000;
+			background: $black;
 		}
 	}
 

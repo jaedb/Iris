@@ -13,8 +13,8 @@ aside{
 	box-sizing: border-box;
 
 	.light-theme & {
-		background: $faint_grey;
-		border-right: 1px solid darken($faint_grey, 3%);
+		background: lighten($faint_grey, 2%);
+		border-right: none;
 	}
 
 	.liner {

@@ -17,12 +17,6 @@
 		.slider-wrapper {
 			margin-left: 30px;
 		}
-
-		&.muted {
-			.slider .progress {
-				background: $mid_grey;
-			}
-		}
 		
 		&.group-volume-control {
 			padding: 10px 0 5px;
@@ -32,10 +26,9 @@
 		}
 
 		&.client-volume-control {
-			padding-top: 4px;
-			width: 80%;
+			padding-top: 11px;
 			padding-right: 10px;
-			display: inline-block;
+			display: block;
 			vertical-align: middle;
 			box-sizing: border-box;
 		}
@@ -96,11 +89,8 @@
 					& > .latency {
 						width: 28%;
 						padding-left: 2%;
-					}
 
-					& > .volume,
-					& > .latency {
-						input {
+						input[type="number"] {
 							width: 20%;
 						}
 					}
@@ -120,7 +110,7 @@
 							bottom: 0;
 							width: 1px;
 							background: $grey;
-							z-index: 1;
+							z-index: 0;
 						}
 
 						.progress.positive {
@@ -131,6 +121,11 @@
 						.progress.negative {
 							border-top-right-radius: 0;
 							border-bottom-right-radius: 0;
+
+							&:after {
+								right: auto;
+								left: -1px;
+							}
 						}
 					}
 

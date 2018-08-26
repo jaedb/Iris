@@ -48,6 +48,10 @@ main {
 						display: none;
 					}
 				}
+
+				.light-theme & {
+					color: $darkest_grey;
+				}
 			}
 		}
 
@@ -57,6 +61,17 @@ main {
 			left: 0;
 			width: 100%;
 			z-index: 98;
+
+			.light-theme & {
+				h1 {
+					color: $white;
+				}
+
+				.button,
+				button {
+					color: $white;
+				}
+			}
 		}
 
 		@include responsive($bp_medium){

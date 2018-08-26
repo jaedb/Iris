@@ -18,6 +18,10 @@
 		color: $white;
 		text-decoration: none;
 
+		.light-theme & {
+			color: $darkest_grey;
+		}
+
 		.thumbnail {
 			float: left;
 			margin: 12px;

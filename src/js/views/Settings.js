@@ -8,7 +8,6 @@ import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import SourcesPriority from '../components/Fields/SourcesPriority'
 import Header from '../components/Header'
-import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 import URILink from '../components/URILink'
@@ -172,16 +171,10 @@ class Settings extends React.Component {
 
 		return (
 			<div className="view settings-view">
-				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+				<Header options={options} uiActions={this.props.uiActions}>
 					<Icon name="settings" type="material" />
 					Settings
 				</Header>
-
-				<div className="intro">
-					<div className="liner">
-						<Parallax image="assets/backgrounds/settings.jpg" />
-					</div>
-				</div>
 
 				<section className="content-wrapper">
 

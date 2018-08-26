@@ -47,7 +47,7 @@ export default class VolumeControl extends React.Component{
 			<span className={className}>
 				{this.props.NoMuteButton ? null : this.renderMuteButton()}
 				<div className="slider-wrapper">
-					<div className="slider horizontal">
+					<div className={"slider horizontal"+(this.props.mute ? " disabled" : "")}>
 						<input 
 							type="range" 
 							min="0" 

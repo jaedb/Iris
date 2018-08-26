@@ -1,36 +1,6 @@
 
 .settings-view {
 
-	.intro {
-		position: relative;
-		@include clearfix();
-
-		.parallax {
-			position: absolute;
-			z-index: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			height: auto;
-			opacity: 0.5;
-		}
-
-		.liner {
-			position: relative;
-			z-index: 1;
-			padding: 20vh 40px 0;
-
-			.sub-views {
-				position: relative;
-			}
-		}
-	}
-
-	.content-wrapper {
-		padding-top: 0;
-	}
-
 	.field.current-user {
 		.text {
 			.user {
@@ -69,12 +39,6 @@
 	}
 
 	@include responsive($bp_medium){
-		.intro {
-			.liner {
-				padding: 15vh 20px 0;
-			}
-		}
-
 		.content-wrapper {
 			padding-bottom: 60px;
 		}

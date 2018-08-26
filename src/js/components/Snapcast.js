@@ -103,11 +103,6 @@ class Snapcast extends React.Component{
 										onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
 										onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
 									/>
-									<TextField
-										className="tiny"
-										onChange={value => this.props.pusherActions.setSnapcastClientVolume(client.id, parseInt(value))}
-										value={client.config.volume.percent}
-									/>
 								</div>
 								<div className="col latency">
 									<LatencyControl 
@@ -117,6 +112,7 @@ class Snapcast extends React.Component{
 									/>
 									<TextField
 										className="tiny"
+										type="number"
 										onChange={value => this.props.pusherActions.setSnapcastClientLatency(client.id, parseInt(value))}
 										value={String(client.config.latency)}
 									/>

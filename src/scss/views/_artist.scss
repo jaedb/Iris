@@ -28,6 +28,10 @@
 				padding-bottom: 25px;
 				font-size: 5rem;
 				line-height: 5rem;
+
+				.light-theme & {
+					color: $white;
+				}
 			}
 
 			.actions {
