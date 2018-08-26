@@ -88,4 +88,8 @@
 			@include blur();
 		}
 	}
+
+	.light-theme & {
+		background: $faint_grey;
+	}
 }

@@ -187,8 +187,8 @@ export default class Parallax extends React.Component{
 
 		switch (this.props.theme){
 			case 'light':
-				gradient.addColorStop(0.5, 'rgba(24,24,24,0)');
-				gradient.addColorStop(0.9, 'rgba(24,24,24,0.6)');
+				gradient.addColorStop(0, 'rgba(255,255,255,0.4)');
+				gradient.addColorStop(0.9, 'rgba(255,255,255,1)');
 				break;
 
 			case 'dark':

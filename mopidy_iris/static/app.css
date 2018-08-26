@@ -3930,6 +3930,8 @@ input[type="submit"] {
   .parallax.blur canvas {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
+  .light-theme .parallax {
+    background: #f4f2f0; }
 
 @font-face {
   font-family: 'Material Icons';
@@ -4806,7 +4808,7 @@ aside {
   .light-theme .list .list-item {
     border-color: rgba(0, 0, 0, 0.05); }
     .light-theme .list .list-item.selected {
-      background: rgba(0, 0, 0, 0.08) !important; }
+      background: #f4f2f0 !important; }
   .list .list-item.playing {
     color: #08d58f; }
   .list .list-item .select-zone,
@@ -5435,11 +5437,6 @@ main header {
     left: 0;
     width: 100%;
     z-index: 98; }
-    .light-theme main header.overlay h1 {
-      color: #FFFFFF; }
-    .light-theme main header.overlay .button,
-    .light-theme main header.overlay button {
-      color: #FFFFFF; }
   @media (max-width: 800px) {
     main header {
       padding: 10px 10px 10px 0;
@@ -6073,12 +6070,12 @@ main header {
       padding-bottom: 25px;
       font-size: 5rem;
       line-height: 5rem; }
-      .light-theme .artist-view .intro .liner h1 {
-        color: #FFFFFF; }
     .artist-view .intro .liner .actions {
       padding-bottom: 25px; }
       .artist-view .intro .liner .actions .context-menu-trigger {
         color: #FFFFFF; }
+        .light-theme .artist-view .intro .liner .actions .context-menu-trigger {
+          color: #121212; }
 
 .artist-view .body.overview .albums {
   padding-top: 30px; }
@@ -6513,6 +6510,8 @@ main .track-view {
     color: #FFFFFF; }
     .discover-view .intro .liner h2 {
       padding-bottom: 8px; }
+    .light-theme .discover-view .intro .liner {
+      color: #121212; }
 
 .discover-view .parameters {
   padding-top: 50px; }
@@ -6549,6 +6548,8 @@ main .track-view {
   .discover-view .seeds .seed.has-thumbnail .label,
   .discover-view .seeds .seed.has-thumbnail .name {
     padding-left: 52px; }
+  .light-theme .discover-view .seeds .seed {
+    color: #121212; }
 
 .discover-view .tunabilities::after {
   content: '';
@@ -6688,6 +6689,9 @@ main .track-view {
     .discover-featured-view .intro .content .actions,
     .discover-new-releases-view .intro .content .actions {
       padding-top: 40px; }
+    .light-theme .discover-featured-view .intro .content, .light-theme
+    .discover-new-releases-view .intro .content {
+      color: #121212; }
 
 @media (max-width: 800px) {
   .discover-featured-view .intro,
