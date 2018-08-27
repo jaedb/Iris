@@ -57,9 +57,38 @@ class OutputControl extends React.Component{
 			}
 		}
 
-		return (
-			<div className="outputs">
-				{this.props.http_streaming_enabled ? <div className="output icecast-output">
+		var snapcast_clients = null;
+		if (clients.length > 0){
+			snapcast_clients = (
+				<div>	
+					{
+						clients.map(client => {
+							var name = client.config.name ? client.config.name : client.host.name;
+
+							return (
+								<div className="output snapcast-output" key={client.id}>
+									<div className="name">
+										{name}
+									</div>
+									<VolumeControl 
+										className="client-volume-control"
+										volume={client.config.volume.percent}
+										mute={client.config.volume.muted}
+										onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
+										onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
+									/>
+								</div>
+							);
+						})
+					}
+				</div>
+			);
+		}
+
+		var local_streaming = null;
+		if (this.props.http_streaming_enabled){
+			local_streaming = (
+				<div className="output icecast-output">
 					<div className="actions">
 						<span className="action" onClick={e => this.props.coreActions.cachebustHttpStream()}>
 							<Icon name="refresh" />
@@ -75,29 +104,24 @@ class OutputControl extends React.Component{
 						onVolumeChange={percent => this.props.coreActions.set({http_streaming_volume: percent})}
 						onMuteChange={mute => this.props.coreActions.set({http_streaming_mute: mute})}
 					/>
-				</div> : null}
-				{
-					clients.map(client => {
-						var name = client.config.name ? client.config.name : client.host.name;
+				</div>
+			);
+		}
 
-						return (
-							<div className="output snapcast-output" key={client.id}>
-								<div className="name">
-									{name}
-								</div>
-								<VolumeControl 
-									className="client-volume-control"
-									volume={client.config.volume.percent}
-									mute={client.config.volume.muted}
-									onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
-									onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
-								/>
-							</div>
-						)
-					})
-				}
-			</div>
-		);
+		if (!local_streaming && !snapcast_clients){
+			return (
+				<div className="outputs">
+					<p className="no-results">No outputs</p>
+				</div>
+			);
+		} else {
+			return (
+				<div className="outputs">
+					{local_streaming}
+					{snapcast_clients}
+				</div>
+			);
+		}
 	}
 
 	render(){

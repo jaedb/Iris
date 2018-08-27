@@ -66,6 +66,10 @@
 			position: absolute;
 			top: -3px;
 			right: 9px;
+
+			.light-theme & {
+				background: $faint_grey;
+			}
 		}
 
 		& > .liner {
@@ -75,6 +79,10 @@
 			max-height: 70vh;
 			overflow-y: auto;
 			border-radius: 3px;
+
+			.light-theme & {
+				background: $faint_grey;
+			}
 
 			.option {
 				@include animate();

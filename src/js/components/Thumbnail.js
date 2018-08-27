@@ -65,11 +65,6 @@ class Thumbnail extends React.Component{
 		return null;
 	}
 
-	zoom(e, image){
-		e.preventDefault();
-		this.props.uiActions.openModal('image_zoom', {url: image});
-	}
-
 	render(){
 		var image = this.mapImageSizes();
 		var class_name = 'thumbnail ';
@@ -85,7 +80,7 @@ class Thumbnail extends React.Component{
 		
 		var zoom_icon = null;
 		if (this.props.canZoom && image){
-			zoom_icon = <Link className="zoom" target="_blank" rel="external" href={image}><Icon name="search" /></Link>;
+			zoom_icon = <Link className="zoom" to={global.baseURL+'image-zoom?url='+image}><Icon name="search" /></Link>;
 		}
 
 		return (

@@ -30,6 +30,10 @@
 	z-index: 98;
 	background: darken($dark_grey, 1%);
 
+	.light-theme & {
+		background: $faint_grey;
+	}
+
 	.dropzone {
 		@include animate();
 		@include gradient_overlay(3px,0);
@@ -41,6 +45,11 @@
 		color: $white;
 		font-size: 18px;
 		text-align: center;
+
+		.light-theme & {
+			background: $light_grey;
+			color: $darkest_grey;
+		}
 
 		& * {
 			pointer-events: none;

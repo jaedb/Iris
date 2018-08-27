@@ -199,6 +199,11 @@
 		z-index: 1;
 		float: left;
 		overflow: hidden;
+		border-radius: 3px;
+
+		.light-theme & {
+			color: $darkest_grey;
+		}
 
 		.content {
 			display: block;
@@ -221,8 +226,12 @@
 			display: block;
 			width: 100%;
 			padding-bottom: 100%;
-			background: lighten($dark_grey,2%);
+			background: lighten($dark_grey, 2%);
 			z-index: -2;
+
+			.light-theme & {
+				background: $faint_grey;
+			}
 		}
 
 		&.thumbnail-wrapper {

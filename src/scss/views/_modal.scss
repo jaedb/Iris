@@ -10,6 +10,10 @@
 	background: darken($darkest_grey, 2%);
 	overflow-y: auto;
 
+	.light-theme & {
+		color: $white;
+	}
+
 	.controls {
 		position: absolute;
 		top: 10px;
@@ -53,6 +57,10 @@
 		h1 {
 			padding-bottom: 20px;
 			padding-right: 60px;
+
+			.light-theme & {
+				color: $white;
+			}
 		}
 
 		.no-results {
@@ -186,17 +194,13 @@
 
 	&--image-zoom {
 		.content {
+			text-align: center;
 			padding: 100px 5%;
 			width: 90%;
-			height: 100%;
 			box-sizing: border-box;
 
-			.image {
-				width: 100%;
-				height: 100%;
-				background-size: contain;
-				background-position: 50% 50%;
-				background-repeat: no-repeat;
+			img {
+				max-width: 100%;
 			}
 		}
 	}
@@ -303,6 +307,15 @@
 	}
 
 	@include responsive($bp_medium){
+
+		.controls {
+			top: 0;
+			right: 0;
+
+			.control {
+				padding: 12px;
+			}
+		}
 
 		.content {
 			padding: 40px 5%;
