@@ -3931,7 +3931,7 @@ input[type="submit"] {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
   .light-theme .parallax {
-    background: #f4f2f0; }
+    background: #FFFFFF; }
 
 @font-face {
   font-family: 'Material Icons';
@@ -4850,6 +4850,9 @@ aside {
   cursor: pointer; }
   .list.track-list .list-item .col.name {
     width: 36%; }
+    .light-theme .list.track-list .list-item .col.name .flag {
+      background: #cecac4;
+      color: #FFFFFF; }
   .list.track-list .list-item .col.artists, .list.track-list .list-item .col.album {
     width: 25%; }
   .list.track-list .list-item .col.duration {
@@ -5844,12 +5847,18 @@ main header {
   font-weight: 500;
   border-bottom: 3px solid transparent;
   cursor: pointer; }
+  .light-theme .sub-views .option {
+    color: #121212; }
   .sub-views .option h4 {
     margin: 8px 0 4px; }
   .sub-views .option.active {
     border-color: #FFFFFF; }
+    .light-theme .sub-views .option.active {
+      border-color: #121212; }
   .sub-views .option:not(.active):hover {
     border-color: rgba(255, 255, 255, 0.2); }
+    .light-theme .sub-views .option:not(.active):hover {
+      border-color: rgba(0, 0, 0, 0.2); }
 
 @media (max-width: 800px) {
   .sub-views .option {

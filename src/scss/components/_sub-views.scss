@@ -10,16 +10,28 @@
 		border-bottom: 3px solid transparent;
 		cursor: pointer;
 
+		.light-theme & {
+			color: $darkest_grey;
+		}
+
 		h4 {
 			margin: 8px 0 4px;
 		}
 
 		&.active {
 			border-color: $white;
+
+			.light-theme & {
+				border-color: $darkest_grey
+			}
 		}
 
 		&:not(.active):hover {
 			border-color: rgba(255,255,255,0.2);
+
+			.light-theme & {
+				border-color: rgba(0,0,0,0.2);
+			}
 		}
 	}
 

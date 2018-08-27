@@ -108,6 +108,11 @@
 			.col {
 				&.name { 
 					width: 36%;
+
+					.light-theme & .flag {
+						background: $light_grey;
+						color: $white;
+					}
 				}
 				&.artists,
 				&.album { 

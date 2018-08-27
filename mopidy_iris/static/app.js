@@ -66777,7 +66777,7 @@ var Artist = function (_React$Component) {
 									} },
 								'Play'
 							),
-							is_spotify ? _react2.default.createElement(_FollowButton2.default, { className: 'white', uri: this.props.params.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
+							is_spotify ? _react2.default.createElement(_FollowButton2.default, { uri: this.props.params.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
 							_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'white', onTrigger: function onTrigger(e) {
 									return _this3.handleContextMenu(e);
 								} })
