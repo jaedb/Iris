@@ -8,7 +8,6 @@ import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
 import SourcesPriority from '../components/Fields/SourcesPriority'
 import Header from '../components/Header'
-import Parallax from '../components/Parallax'
 import Icon from '../components/Icon'
 import Thumbnail from '../components/Thumbnail'
 import URILink from '../components/URILink'
@@ -172,16 +171,10 @@ class Settings extends React.Component {
 
 		return (
 			<div className="view settings-view">
-				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+				<Header options={options} uiActions={this.props.uiActions}>
 					<Icon name="settings" type="material" />
 					Settings
 				</Header>
-
-				<div className="intro">
-					<div className="liner">
-						<Parallax image="assets/backgrounds/settings.jpg" />
-					</div>
-				</div>
 
 				<section className="content-wrapper">
 
@@ -276,6 +269,32 @@ class Settings extends React.Component {
 					</div>}
 
 					<h4 className="underline">Advanced</h4>
+
+					<div className="field radio">
+						<div className="name">
+							Theme
+						</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="theme"
+									value="dark"
+									checked={this.props.ui.theme == 'dark'}
+									onChange={ e => this.props.uiActions.set({theme: e.target.value})} />
+								<span className="label">Dark</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="theme"
+									value="light"
+									checked={this.props.ui.theme == 'light'}
+									onChange={e => this.props.uiActions.set({theme: e.target.value})} />
+								<span className="label">Light</span>
+							</label>
+						</div>
+					</div>
 
 					<div className="field checkbox">
 						<div className="name">UI behavior</div>

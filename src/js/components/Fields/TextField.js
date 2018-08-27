@@ -37,7 +37,7 @@ export default class TextField extends React.Component{
 		return (
 			<input
 				className={this.props.className ? this.props.className : ''}
-				type="text"
+				type={this.props.type ? this.props.type : "text"}
 				onChange={e => this.handleChange(e)}
 				onFocus={e => this.handleFocus(e)}
 				onBlur={e => this.handleBlur(e)}

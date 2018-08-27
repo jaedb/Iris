@@ -214,10 +214,7 @@ export function getTrack(uri){
                             response.track,
                             track
                         );
-                        dispatch({
-                            type: 'TRACK_LOADED',
-                            track: merged_track
-                        });
+                        dispatch(coreActions.trackLoaded(merged_track));
                     }
                 }
             )
@@ -238,18 +235,17 @@ export function getArtist(uri, artist, mbid = false){
             .then(
                 response => {
                     if (response.artist){
-                        dispatch({
-                            type: 'ARTIST_LOADED',
-                            artist: {
-                                uri: uri,
-                                images: response.artist.image,
-                                mbid: response.artist.mbid,
-                                bio: response.artist.bio,
-                                listeners: parseInt(response.artist.stats.listeners),
-                                play_count: parseInt(response.artist.stats.playcount),
-                                on_tour: response.artist.stats.ontour
-                            }
-                        });
+                    	var artist = {
+                            uri: uri,
+                            images: response.artist.image,
+                            mbid: response.artist.mbid,
+                            bio: response.artist.bio,
+                            listeners: parseInt(response.artist.stats.listeners),
+                            play_count: parseInt(response.artist.stats.playcount),
+                            on_tour: response.artist.stats.ontour
+                        };
+
+                        dispatch(coreActions.artistLoaded(artist));
                     }
                 }
             )
@@ -269,7 +265,7 @@ export function getAlbum(artist, album, mbid = false){
             .then(
                 response => {
                     if (response.album){
-                        dispatch(coreActions.albumsLoaded([response.album]));
+                        dispatch(coreActions.albumLoaded(response.album));
                     }
                 }
             );
@@ -300,8 +296,8 @@ export function getImages(context, uri){
                                 response => {
                                     if (response.album){
                                         record = Object.assign({}, record, {images: response.album.image});
-                                        dispatch(coreActions.tracksLoaded([record]));
-                                        dispatch(coreActions.albumsLoaded([response.album]));
+                                        dispatch(coreActions.trackLoaded(record));
+                                        dispatch(coreActions.albumLoaded(response.album));
                                     }
                                 }
                             );
@@ -324,7 +320,7 @@ export function getImages(context, uri){
                                 response => {
                                     if (response.album){
                                         record = Object.assign({}, record, {images: response.album.image});
-                                        dispatch(coreActions.albumsLoaded([record]));
+                                        dispatch(coreActions.albumLoaded(record));
                                     }
                                 }
                             );

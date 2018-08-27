@@ -310,22 +310,12 @@
 	text-align: center;
 
 	.actions & {
-		@include gradient_overlay(3px);
 		font-size: 24px;
 		padding: 2px 10px 1px;
 
-		&:hover{
+		&:hover {
 			cursor: pointer;
-			box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
-
-			&:before {
-				opacity: 0.15;
-			}
-		}
-
-		&:active {
-			margin-top: 0px;
-			margin-bottom: -1px;
+			color: $blue !important;
 		}
 	}
 

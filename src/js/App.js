@@ -280,7 +280,7 @@ class App extends React.Component{
 	}
 
 	render(){
-		var className = '';
+		var className = this.props.theme+'-theme';
 		if (this.props.dragger && this.props.dragger.active){
 			className += ' dragging';
 		}
@@ -335,6 +335,7 @@ class App extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		theme: state.ui.theme,
 		shortkeys_enabled: state.ui.shortkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,

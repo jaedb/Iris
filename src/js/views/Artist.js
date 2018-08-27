@@ -337,13 +337,13 @@ class Artist extends React.Component{
 			<div className="view artist-view">
 				<div className="intro">
 
-					<Parallax image={image} />
+					<Parallax image={image} theme={this.props.theme} />
 
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 						<div className="actions">
 							<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
-							{is_spotify ? <FollowButton className="white" uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
+							{is_spotify ? <FollowButton uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
 							<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 						{ this.renderSubViewMenu() }
@@ -367,6 +367,7 @@ class Artist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
+		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		artist: (state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),

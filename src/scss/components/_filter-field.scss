@@ -16,12 +16,12 @@
 		@include animate();
 		width: 0;
 		padding-left: 25px;
-		background: transparent;
 	}
 
 	&:not(.active){
 		input {
 			cursor: pointer;
+			background: transparent !important;
 		}
 		
 		&:hover {

@@ -38,6 +38,26 @@ select {
 		padding-right: 4px;
 		text-align: center;
 	}
+
+	.light-theme & {
+		background: $faint_grey;
+		color: $darkest_grey;
+
+		&:focus,
+		&:active {
+			background: darken($faint_grey, 3%);
+		}
+	}
+}
+
+input[type="number"]{
+    -moz-appearance: textfield;
+
+	&::-webkit-inner-spin-button, 
+	&::-webkit-outer-spin-button { 
+		-webkit-appearance: none; 
+		margin: 0; 
+	}
 }
 
 input[type="radio"]{
@@ -70,6 +90,22 @@ input[type="radio"]{
 	&:active + .label:before {
 		background: rgba(255,255,255,0.3);
 	}
+
+	.light-theme & {
+
+		& + .label:before {
+			background: $faint_grey;
+		}
+
+		&:checked + .label:after {
+			background: $darkest_grey;
+		}
+
+		&:focus + .label:before,
+		&:active + .label:before {
+			background: $grey;
+		}
+	}
 }
 
 input[type="checkbox"]{
@@ -97,6 +133,18 @@ input[type="checkbox"]{
 	&:focus + .label:before,
 	&:active + .label:before {
 		background: rgba(255,255,255,0.3);
+	}
+
+	.light-theme & {
+		& + .label:before {
+			background: $faint_grey;
+			color: $darkest_grey;
+		}
+
+		&:focus + .label:before,
+		&:active + .label:before {
+			background: $grey;
+		}
 	}
 }
 
@@ -173,6 +221,15 @@ input[type="submit"] {
 		opacity: 0.8;
 	}
 
+	.light-theme & {
+		background: $dark_grey;
+		color: $white;
+
+		&:active {
+			background: $black;
+		}
+	}
+
 	&.small {
 		padding: 6px 18px 4px;
 	}
@@ -219,6 +276,7 @@ input[type="submit"] {
 
 	&.timing-out {
 		position: relative;
+
 		&:before {
 			@include animate_timeout(2s);
 			content: '';
@@ -415,6 +473,12 @@ input[type="submit"] {
 					margin-left: -12px;
 				}
 			}
+		}
+	}
+
+	.light-theme & {
+		.description {
+			color: rgba(0,0,0,0.6);
 		}
 	}
 }

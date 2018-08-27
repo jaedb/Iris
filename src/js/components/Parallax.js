@@ -139,7 +139,16 @@ export default class Parallax extends React.Component{
 		// Fill the background with mid-grey
 		context.beginPath();
 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
-		context.fillStyle = "#121212";
+
+		switch (this.props.theme){
+			case 'light':
+				context.fillStyle = "#EDEDED";
+				break;
+
+			case 'dark':
+			default:
+				context.fillStyle = "#121212";
+		}
 		context.fill();
 
 		if (image && !self.state.loading){
@@ -175,8 +184,19 @@ export default class Parallax extends React.Component{
 		// Construct a gradient overlay
 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
 		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height);
-		gradient.addColorStop(0, 'rgba(24,24,24,0)');
-		gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
+
+		switch (this.props.theme){
+			case 'light':
+				gradient.addColorStop(0, 'rgba(255,255,255,0.4)');
+				gradient.addColorStop(0.9, 'rgba(255,255,255,1)');
+				break;
+
+			case 'dark':
+			default:
+				gradient.addColorStop(0, 'rgba(24,24,24,0)');
+				gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
+		}
+
 		context.fillStyle = gradient;
 
 		// And now drop it into place

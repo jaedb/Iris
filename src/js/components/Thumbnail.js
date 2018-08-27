@@ -59,16 +59,10 @@ class Thumbnail extends React.Component{
 			}
 
 			return images[size];
+		}
 
 		// No images
-		} else {
-			return require('../../assets/no-image.svg');
-		}
-	}
-
-	zoom(e, image){
-		e.preventDefault();
-		this.props.uiActions.openModal('image_zoom', {url: image});
+		return null;
 	}
 
 	render(){
@@ -85,13 +79,13 @@ class Thumbnail extends React.Component{
 		}
 		
 		var zoom_icon = null;
-		if (this.props.canZoom){
-			zoom_icon = <Link className="zoom" target="_blank" rel="external" href={image}><Icon name="search" /></Link>;
+		if (this.props.canZoom && image){
+			zoom_icon = <Link className="zoom" to={global.baseURL+'image-zoom?url='+image}><Icon name="search" /></Link>;
 		}
 
 		return (
 			<div className={class_name}>
-				<div className="image loaded" style={{backgroundImage: 'url("'+image+'")'}}></div>
+				<div className="image loaded" style={{backgroundImage: 'url("'+(image ? image : require('../../assets/no-image.svg'))+'")'}}></div>
 				{zoom_icon}
 			</div>
 		);

@@ -48,6 +48,14 @@ main {
 						display: none;
 					}
 				}
+
+				.light-theme & {
+					color: $darkest_grey;
+
+					&:hover {
+						color: $blue;
+					}
+				}
 			}
 		}
 

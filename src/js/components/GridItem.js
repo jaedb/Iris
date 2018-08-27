@@ -15,12 +15,11 @@ export default class GridItem extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.item && !this.props.item.images){
-			switch (this.props.item.type){
-				case 'artist':
-					this.props.lastfmActions.getArtist(this.props.item.uri, this.props.item.name);
-					break;
-			}
+
+		// A mount callback allows us to run checks on render
+		// We use this for loading artwork, but only when it's displayed
+		if (this.props.onMount){
+			this.props.onMount();
 		}
 	}
 

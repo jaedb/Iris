@@ -1,73 +1,18 @@
 
 import React, { PropTypes } from 'react';
 
+import * as helpers from '../../helpers';
+
 export default class LatencyControl extends React.Component{
 
 	constructor(props){
 		super(props);
+		
+		this.handleChange = helpers.throttle(this.handleChange.bind(this), 100);
 	}
 
-	handleClick(e){
-		var slider = e.target;
-		if (slider.className != 'slider'){
-			slider = slider.parentElement;
-		}
-
-		var sliderX = e.clientX - slider.getBoundingClientRect().left;
-		var sliderWidth = slider.getBoundingClientRect().width;
-
-		// Clicked left half
-		if (sliderX < (sliderWidth/2)){
-			var percent = Math.round((sliderX / (sliderWidth/2) ) * 100);
-
-			// Invert our percentage
-			percent = 100 - percent;
-
-			var value = -(this.props.max * (percent / 100));
-
-			// Handle maximum value limits
-			if (value < -this.props.max){
-				value = -this.props.max;
-			}
-
-		// Second half
-		} else {
-
-			// Subtract half the slider's width from our click position
-			sliderX = sliderX - (sliderWidth/2);
-			var percent = Math.round((sliderX / (sliderWidth/2) ) * 100);
-
-			var value = this.props.max * (percent / 100);
-
-			// Handle maximum value limits
-			if (value > this.props.max){
-				value = this.props.max;
-			}
-		}
-
-		this.props.onChange(value);
-	}
-
-	handleWheel(e){
-		if (this.props.scrollWheel){
-
-			// Identify which direction we've scrolled (inverted)
-			// This is simplified and doesn't consider momentum as it varies wildly
-			// between browsers and devices
-			var direction = (e.deltaY > 0 ? -1 : 1)
-			var value = this.props.value;
-
-			value += direction * 5
-
-			if (value > this.props.max){
-				value = this.props.max;
-			} else if (value < -this.props.max){
-				value = -this.props.max;
-			}
-
-			this.props.onChange(value);
-			e.preventDefault();
-		}
+	handleChange(value){
+		this.props.onChange(value, this.props.value);
 	}
 
 	render(){
@@ -83,6 +28,8 @@ export default class LatencyControl extends React.Component{
 			var width = percentage;
 			var negative = false;
 
+			if (width > 50) width = 50;
+
 		// Negative value
 		// We reverse it to a positive for easier maths and style rules
 		} else {
@@ -94,12 +41,22 @@ export default class LatencyControl extends React.Component{
 			var left = 50 - percentage;
 			var width = percentage;
 			var negative = true;
+
+			if (left < 0) left = 0;
+			if (width > 50) width = 50;
 		}
 
 		return (
-			<span className="latency-control" onWheel={e => this.handleWheel(e)}>
+			<span className="latency-control">
 				<div className="slider-wrapper">
-					<div className="slider horizontal" onClick={e => this.handleClick(e)}>
+					<div className="slider horizontal">
+						<input 
+							type="range" 
+							min="-100" 
+							max="100" 
+							value={this.props.value}
+							onChange={e => this.handleChange(parseInt(e.target.value))}
+						/>
 						<div className="zero"></div>
 						<div className="track">
 							<div className={"progress "+(negative ? 'negative' : 'positive')} style={{ width: width+'%', left: left+'%' }}></div>

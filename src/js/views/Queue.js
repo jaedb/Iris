@@ -165,7 +165,7 @@ class Queue extends React.Component{
 					<Icon name="play_arrow" type="material" />
 					Now playing
 				</Header>
-				<Parallax blur image={current_track_image} />
+				<Parallax blur image={current_track_image} theme={this.props.theme} />
 				<div className="content-wrapper">
 				
 					<div className="current-track">
@@ -203,6 +203,7 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),

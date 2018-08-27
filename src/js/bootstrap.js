@@ -49,6 +49,7 @@ var initialState = {
 		http_streaming_url: "http://"+window.location.hostname+":8000/mopidy"
 	},
 	ui: {
+		theme: 'dark',
 		shortkeys_enabled: true,
 		allow_reporting: true,
 		slim_mode: false,

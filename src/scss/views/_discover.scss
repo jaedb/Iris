@@ -28,6 +28,10 @@
 			h2 {
 				padding-bottom: 8px;
 			}
+
+			.light-theme & {
+				color: $darkest_grey;
+			}
 		}
 	}
 
@@ -77,6 +81,10 @@
 				.name {
 					padding-left: 52px;
 				}
+			}
+
+			.light-theme & {
+				color: $darkest_grey;
 			}
 		}
 	}
@@ -291,6 +299,10 @@
 
 			.actions {
 				padding-top: 40px;
+			}
+
+			.light-theme & {
+				color: $darkest_grey;
 			}
 		}
 	}

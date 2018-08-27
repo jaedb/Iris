@@ -501,7 +501,7 @@ class Discover extends React.Component{
 			<div className="view discover-view">
 				<div className="intro">
 
-					<Parallax image="assets/backgrounds/discover.jpg" />
+					<Parallax image="assets/backgrounds/discover.jpg" theme={this.props.theme} />
 
 					<div className="liner">
 						<h1>Explore new music</h1>
@@ -545,6 +545,7 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,
 		tracks: state.core.tracks,

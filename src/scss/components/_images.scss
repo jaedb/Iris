@@ -15,6 +15,10 @@
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
+
+		.light-theme & {
+			background-color: $faint_grey;
+		}
 	}
 
 	.zoom {
@@ -33,7 +37,7 @@
 		border: 0;
 
 		&:hover {
-			background: #000000;
+			background: $black;
 		}
 	}
 
@@ -83,5 +87,9 @@
 		canvas {
 			@include blur();
 		}
+	}
+
+	.light-theme & {
+		background: $white;
 	}
 }

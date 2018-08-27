@@ -71,6 +71,10 @@
 
 					&--svg {
 						opacity: 0.8;
+
+						.light-theme & {
+							@include invert();
+						}
 					}
 				}
 
@@ -79,6 +83,22 @@
 					padding: 0;
 					font-weight: bold;
 					font-size: 16px;
+				}
+
+				.light-theme & {
+					background: $faint_grey;
+
+					&:hover{
+						background: darken($faint_grey, 4%);
+					}
+
+					&.active {
+						background: darken($faint_grey, 4%);
+					}
+
+					&:after {
+						background: darken($faint_grey, 4%);
+					}
 				}
 			}
 		}
@@ -91,6 +111,10 @@
 
 		.field:last-child {
 			padding-bottom: 0;
+		}
+
+		.light-theme & {
+			background: darken($faint_grey, 4%);
 		}
 	}
 

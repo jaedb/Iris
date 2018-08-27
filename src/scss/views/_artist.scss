@@ -35,6 +35,10 @@
 
 				.context-menu-trigger {
 					color: $white;
+
+					.light-theme & {
+						color: $darkest_grey;
+					}
 				}
 			}
 		}

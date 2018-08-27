@@ -37,6 +37,15 @@
 			bottom: -3px;
 			left: 9px;
 		}
+
+		.light-theme & {
+			background: $grey;
+			color: $white;
+
+			&:after {
+				background: $grey;
+			}
+		}
 	}
 
 	&:hover {

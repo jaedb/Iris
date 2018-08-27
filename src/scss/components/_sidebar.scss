@@ -12,6 +12,11 @@ aside{
 	color: $white;
 	box-sizing: border-box;
 
+	.light-theme & {
+		background: lighten($faint_grey, 2%);
+		border-right: none;
+	}
+
 	.liner {
 		overflow-y: auto;
 		position: absolute;
@@ -54,6 +59,11 @@ aside{
 			padding: 10px 10px 8px;
 			margin: 0 16px;
 			border-radius: 3px;
+	
+			.light-theme & {
+				color: $dark_grey;
+				font-weight: 600;
+			}
 
 			.icon {
 				padding-right: 8px;
