@@ -276,6 +276,7 @@ input[type="submit"] {
 
 	&.timing-out {
 		position: relative;
+
 		&:before {
 			@include animate_timeout(2s);
 			content: '';

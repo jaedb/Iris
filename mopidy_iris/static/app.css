@@ -3699,38 +3699,11 @@ input[type="submit"] {
   border-radius: 3px;
   text-align: center; }
   .actions .context-menu-trigger {
-    position: relative;
-    border-radius: 3px;
     font-size: 24px;
     padding: 2px 10px 1px; }
-    .actions .context-menu-trigger:before {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      border-radius: 3px;
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      opacity: 0;
-      z-index: 9;
-      pointer-events: none;
-      background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-      background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-      background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
     .actions .context-menu-trigger:hover {
       cursor: pointer;
-      box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
-      .actions .context-menu-trigger:hover:before {
-        opacity: 0.15; }
-    .actions .context-menu-trigger:active {
-      margin-top: 0px;
-      margin-bottom: -1px; }
+      color: #32b5f2 !important; }
   h4 .context-menu-trigger,
   h4 .context-menu-trigger:active {
     margin: -8px 0 0 10px; }
@@ -5450,6 +5423,9 @@ main header {
       .light-theme main header .options .button, .light-theme
       main header .options button {
         color: #121212; }
+        .light-theme main header .options .button:hover, .light-theme
+        main header .options button:hover {
+          color: #32b5f2; }
   main header.overlay {
     position: absolute;
     top: 0;
@@ -6020,6 +5996,9 @@ main header {
         margin-bottom: 15px; }
         .services .menu .menu-item-wrapper .menu-item .icon--svg {
           opacity: 0.8; }
+          .light-theme .services .menu .menu-item-wrapper .menu-item .icon--svg {
+            -webkit-filter: invert(1);
+            filter: invert(1); }
       .services .menu .menu-item-wrapper .menu-item .title {
         margin: 0;
         padding: 0;

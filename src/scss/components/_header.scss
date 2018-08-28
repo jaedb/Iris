@@ -51,6 +51,10 @@ main {
 
 				.light-theme & {
 					color: $darkest_grey;
+
+					&:hover {
+						color: $blue;
+					}
 				}
 			}
 		}
