@@ -42,7 +42,7 @@ export default class GridItem extends React.Component{
 	renderSecondary(item){
 		var output = ''
 
-		switch (item.type){
+		switch (helpers.uriType(item.uri)){
 
 			case 'playlist':
 				return (

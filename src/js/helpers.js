@@ -310,11 +310,115 @@ export let getTrackIcon = function(current_track = false, core = false){
  * @param album obj
  * @return album obj
  **/
-export let formatAlbum = function(album){
-	if (album.release_date !== undefined){
-		album.date = album.release_date;
+export let formatAlbum = function(data){
+	var album = {
+		uri: null,
+		name: null,
+		type: null,
+		artists_uris: null,
+		tracks_uris: null,
+		release_date: null,
+		popularity: null,
+		images: null
+	};
+
+	// Loop fields and import from data
+	for (var key in album){
+		if (album.hasOwnProperty(key) && data.hasOwnProperty(key)){
+			album[key] = data[key];
+		}
 	}
+
+	if (data.date) album.release_date = data.date;
+
 	return album;
+}
+
+
+/**
+ * Collate an object with external references into a fully self-contained object
+ * We merge *_uris references (ie tracks_uris) into the main object
+ *
+ * @param object Obj
+ * @param indexes Obj (the relevant core indexes)
+ * @return object Obj
+ **/
+export let collateObject = function(object, indexes = {}){
+
+	// Setup empty arrays for the appropriate reference objects
+	// This helps create a consistent object structure
+	if (object.artists_uris !== undefined) 	object.artists = [];
+	if (object.albums_uris !== undefined) 	object.albums = [];
+	if (object.tracks_uris !== undefined) 	object.tracks = [];
+	if (object.users_uris !== undefined) 	object.users = [];
+
+	if (indexes.artists){
+
+		if (object.artists_uris){
+			for (var uri of object.artists_uris){
+				if (indexes.artists[uri]){
+					object.artists.push(indexes.artists[uri]);
+				}
+			}
+		}
+
+		if (object.artist_uri){
+			if (indexes.artists[object.artist_uri]){
+				object.artist = indexes.artists[object.artist_uri];
+			}
+		}
+	}
+
+	if (indexes.albums){
+		if (object.albums_uris){
+			for (var uri of object.albums_uris){
+				if (indexes.albums[uri]){
+					object.albums.push(indexes.albums[uri]);
+				}
+			}
+		}
+
+		if (object.album_uri){
+			if (indexes.albums[object.album_uri]){
+				object.album = indexes.albums[object.album_uri];
+			}
+		}
+	}
+
+	if (indexes.tracks){
+
+		if (object.tracks_uris){
+			for (var uri of object.tracks_uris){
+				if (indexes.tracks[uri]){
+					object.tracks.push(indexes.tracks[uri]);
+				}
+			}
+		}
+
+		if (object.track_uri){
+			if (indexes.tracks[object.track_uri]){
+				object.track = indexes.tracks[object.track_uri];
+			}
+		}
+	}
+
+	if (indexes.users){
+		if (object.users_uris){
+			for (var uri of object.users_uris){
+				if (indexes.users[uri]){
+					object.users.push(indexes.users[uri]);
+				}
+			}
+		}
+
+		if (object.user_uri){
+			if (indexes.users[object.user_uri]){
+				object.user = indexes.users[object.user_uri];
+			}
+		}
+	}
+
+	return object;
 }
 
 
@@ -523,10 +627,13 @@ export let getFromUri = function(element, uri = ""){
 
 /**
  * Identify what kind of asset a URI is (playlist, album, etc)
+ *
  * @param uri = string
  * @return string
  **/
 export let uriType = function(uri){
+	if (!uri) return null;
+
     var exploded = uri.split(':')
 
     if (exploded[0] == 'm3u'){
@@ -559,8 +666,6 @@ export let uriType = function(uri){
     		return exploded[1]
     		break
     }
-
-    return null;
 }
 
 

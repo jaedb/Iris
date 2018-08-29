@@ -457,26 +457,28 @@ const CoreMiddleware = (function(){
             case 'ALBUMS_LOADED':
                 var albums_index = Object.assign({}, core.albums);
                 var albums_loaded = [];
+                var artists_loaded = [];
                 var tracks_loaded = [];
 
-                action.albums.forEach(album => {
-                    helpers.formatAlbum(album)
+                action.albums.forEach(raw_album => {
+                    var album = helpers.formatAlbum(raw_album);
 
                     if (albums_index[album.uri]){
                         album = Object.assign({}, albums_index[album.uri], album);
                     }
 
-                    if (album.images && album.images.length > 0){
-                        album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
+                    if (raw_album.images && raw_album.images.length > 0){
+                        album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
                     }
 
-                    // Load our tracks
-                    if (album.tracks){
-                        var tracks = helpers.formatTracks(album.tracks);
-                        var tracks_uris = helpers.arrayOf('uri', tracks);
-                        album.tracks_uris = tracks_uris;
-                        delete album.tracks;
-                        tracks_loaded = [...tracks_loaded, ...tracks];
+                    if (raw_album.tracks){
+                        album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);
+                        tracks_loaded = [...tracks_loaded, ...raw_album.tracks];
+                    }
+
+                    if (raw_album.artists){
+                        album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+                        artists_loaded = [...artists_loaded, ...raw_album.artists];
                     }
 
                     albums_loaded.push(album);
@@ -484,7 +486,11 @@ const CoreMiddleware = (function(){
 
                 action.albums = albums_loaded;
 
-                // Trigger the tracks load action
+                store.dispatch({
+                    type: 'ARTISTS_LOADED',
+                    artists: artists_loaded
+                });
+
                 store.dispatch({
                     type: 'TRACKS_LOADED',
                     tracks: tracks_loaded

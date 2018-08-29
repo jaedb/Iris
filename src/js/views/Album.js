@@ -59,11 +59,16 @@ class Album extends React.Component{
 	setWindowTitle(album = this.props.album){
 		if (album){
 			var artists = "";
-			for (var i = 0; i < album.artists.length; i++){
-				if (artists != ""){
-					artists += ", ";
+			if (album.artists_uris && this.props.artists){
+				for (var i = 0; i < album.artists_uris.length; i++){
+					var uri = album.artists_uris[i]
+					if (this.props.artists.hasOwnProperty(uri)){
+						if (artists != ""){
+							artists += ", ";
+						}
+						artists += this.props.artists[uri].name;
+					}
 				}
-				artists += album.artists[i].name;
 			}
 			this.props.uiActions.setWindowTitle(album.name+" by "+artists+" (album)");
 		} else{
@@ -114,27 +119,9 @@ class Album extends React.Component{
 			}
 		}
 
-		var artists = []
-		if (this.props.album.artists_uris && this.props.artists){
-			for (var i = 0; i < this.props.album.artists_uris.length; i++){
-				var uri = this.props.album.artists_uris[i]
-				if (this.props.artists.hasOwnProperty(uri)){
-					artists.push(this.props.artists[uri])
-				}
-			}
-		}
+		var album = helpers.collateObject(this.props.album, {tracks: this.props.tracks, artists: this.props.artists});
 
-		var tracks = [];
-		if (this.props.album.tracks_uris && this.props.tracks){
-			for (var i = 0; i < this.props.album.tracks_uris.length; i++){
-				var uri = this.props.album.tracks_uris[i]
-				if (this.props.tracks.hasOwnProperty(uri)){
-					tracks.push(this.props.tracks[uri])
-				}
-			}
-		}
-
-		if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+		if (album.tracks && album.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;
@@ -143,19 +130,19 @@ class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper">
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={this.props.album.images} />
+					<Thumbnail size="large" canZoom images={album.images} />
 				</div>
 
 				<div className="title">
 
-					<h1>{ this.props.album.name }</h1>
+					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {this.props.album.album_type ? this.props.album.album_type : 'album'}</span></li> : null }
-						{ !this.props.slim_mode && artists.length > 0 ? <li><ArtistSentence artists={artists} /></li> : null }
-						{ this.props.album.date ? <li><Dater type="date" data={ this.props.album.date } /></li> : null }
+						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
+						{!this.props.slim_mode && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
+						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
 						<li>
-							{tracks ? <span>{tracks.length} tracks, <Dater type="total-time" data={tracks} /></span> : '0 tracks, 0 mins' }
+							{album.tracks ? <span>{album.tracks.length} tracks, <Dater type="total-time" data={album.tracks} /></span> : '0 tracks, 0 mins' }
 						</li>
 					</ul>
 				</div>
@@ -167,8 +154,8 @@ class Album extends React.Component{
 				</div>
 
 				<section className="list-wrapper">
-					<TrackList className="album-track-list" tracks={tracks} uri={this.props.params.uri} />
-					<LazyLoadListener loading={this.props.album.tracks_more} forceLoader={is_loading_tracks} loadMore={() => this.loadMore()}/>
+					<TrackList className="album-track-list" tracks={album.tracks} uri={this.props.params.uri} />
+					<LazyLoadListener loading={album.tracks_more} forceLoader={is_loading_tracks} loadMore={() => this.loadMore()}/>
 				</section>
 
 			</div>

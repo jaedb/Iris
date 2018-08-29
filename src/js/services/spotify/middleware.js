@@ -115,7 +115,6 @@ const SpotifyMiddleware = (function(){
                 break
 
             case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-                console.log(action)
                 store.dispatch(coreActions.albumsLoaded(action.data.items));
                 store.dispatch({
                     type: 'ARTIST_ALBUMS_LOADED',
