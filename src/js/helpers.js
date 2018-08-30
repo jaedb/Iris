@@ -307,31 +307,150 @@ export let getTrackIcon = function(current_track = false, core = false){
 /**
  * Format our album objects into a universal format
  *
- * @param album obj
+ * @param data obj
  * @return album obj
  **/
 export let formatAlbum = function(data){
-	var album = {
-		uri: null,
-		name: null,
-		type: null,
-		artists_uris: null,
-		tracks_uris: null,
-		release_date: null,
-		popularity: null,
-		images: null
-	};
+	var album = {};
+	console.log("VANILLA",album);
+	var fields = [
+		'uri',
+		'name',
+		'type',
+		'provider',
+		'artists_uris',
+		'tracks_uris',
+		'release_date',
+		'popularity',
+		'images'
+	];
 
 	// Loop fields and import from data
-	for (var key in album){
-		if (album.hasOwnProperty(key) && data.hasOwnProperty(key)){
-			album[key] = data[key];
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			album[field] = data[field];
+			console.log(field, data[field]);
 		}
 	}
 
-	if (data.date) album.release_date = data.date;
+	console.log("FORMATTED",album);
+
+	if (data.date && !album.date) album.release_date = data.date;
 
 	return album;
+}
+
+
+/**
+ * Format our artist objects into a universal format
+ *
+ * @param data obj
+ * @return artist obj
+ **/
+export let formatArtist = function(data){
+	var artist = {}
+	var fields = [
+		'uri',
+		'name',
+		'type',
+		'provider',
+		'popularity',
+		'images',
+		'biography',
+		'biography_link',
+		'followers',
+		'related_artists_uris',
+		'albums_uris',
+		'tracks_uris'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			artist[field] = data[field];
+		}
+	}
+
+	return artist;
+}
+
+
+/**
+ * Format tracks into our universal format
+ *
+ * @param tracks = object or array of objects
+ * @return array
+ **/
+export let formatTracks = function(tracks){
+
+	if (!tracks || tracks === undefined){
+		return null;
+	}
+
+	// Handle single records
+	var singular = false;
+	if (tracks.constructor !== Array){
+		tracks = [tracks];
+		singular = true;
+	}
+
+    var formatted = [];
+    for (var i = 0; i < tracks.length; i++){
+
+    	// Nested track object (eg in spotify playlist)
+    	if (tracks[i].track && isObject(tracks[i].track)){
+    		var track = Object.assign({}, tracks[i].track);
+
+    		// Copy supporting values
+    		if (tracks[i].added_by){
+    			track.added_by = tracks[i].added_by;
+    		}
+    		if (tracks[i].added_at){
+    			track.added_at = tracks[i].added_at;
+    		}
+    		if (tracks[i].tlid){
+    			track.tlid = tracks[i].tlid;
+    		}
+
+    	} else {
+    		var track = Object.assign({}, tracks[i]);
+    	}
+
+    	if (track.duration_ms){
+    		track.duration = track.duration_ms;
+    	} else if (track.length){
+    		track.duration = track.length;
+    	}
+
+        if (track.track_no){
+        	track.track_number = track.track_no;
+        } else if (track.track_number){
+        	track.track_number = track.track_number;
+        }
+
+        if (track.disc_no){
+        	track.disc_number = track.disc_no;
+        }
+
+        if (track.release_date){
+        	track.date = track.release_date;
+        }
+
+	    // Copy images from albums (if applicable)
+	    if (track.album && track.album.images){
+	    	if (!track.images || track.images.length > 0){
+	    		track.images = track.album.images;
+	    	}
+	    }
+
+        formatted.push(track);
+    }
+
+    if (singular){
+    	return formatted[0];
+    } else {
+    	return formatted;
+    }
 }
 
 
@@ -419,85 +538,6 @@ export let collateObject = function(object, indexes = {}){
 	}
 
 	return object;
-}
-
-
-/**
- * Format tracks into our universal format
- *
- * @param tracks = object or array of objects
- * @return array
- **/
-export let formatTracks = function(tracks){
-
-	if (!tracks || tracks === undefined){
-		return null;
-	}
-
-	// Handle single records
-	var singular = false;
-	if (tracks.constructor !== Array){
-		tracks = [tracks];
-		singular = true;
-	}
-
-    var formatted = [];
-    for (var i = 0; i < tracks.length; i++){
-
-    	// Nested track object (eg in spotify playlist)
-    	if (tracks[i].track && isObject(tracks[i].track)){
-    		var track = Object.assign({}, tracks[i].track);
-
-    		// Copy supporting values
-    		if (tracks[i].added_by){
-    			track.added_by = tracks[i].added_by;
-    		}
-    		if (tracks[i].added_at){
-    			track.added_at = tracks[i].added_at;
-    		}
-    		if (tracks[i].tlid){
-    			track.tlid = tracks[i].tlid;
-    		}
-
-    	} else {
-    		var track = Object.assign({}, tracks[i]);
-    	}
-
-    	if (track.duration_ms){
-    		track.duration = track.duration_ms;
-    	} else if (track.length){
-    		track.duration = track.length;
-    	}
-
-        if (track.track_no){
-        	track.track_number = track.track_no;
-        } else if (track.track_number){
-        	track.track_number = track.track_number;
-        }
-
-        if (track.disc_no){
-        	track.disc_number = track.disc_no;
-        }
-
-        if (track.release_date){
-        	track.date = track.release_date;
-        }
-
-	    // Copy images from albums (if applicable)
-	    if (track.album && track.album.images){
-	    	if (!track.images || track.images.length > 0){
-	    		track.images = track.album.images;
-	    	}
-	    }
-
-        formatted.push(track);
-    }
-
-    if (singular){
-    	return formatted[0];
-    } else {
-    	return formatted;
-    }
 }
 
 

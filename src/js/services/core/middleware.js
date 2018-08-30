@@ -460,8 +460,9 @@ const CoreMiddleware = (function(){
                 var artists_loaded = [];
                 var tracks_loaded = [];
 
-                action.albums.forEach(raw_album => {
+                for (var raw_album of action.albums){
                     var album = helpers.formatAlbum(raw_album);
+                	console.log(album)
 
                     if (albums_index[album.uri]){
                         album = Object.assign({}, albums_index[album.uri], album);
@@ -482,19 +483,12 @@ const CoreMiddleware = (function(){
                     }
 
                     albums_loaded.push(album);
-                });
+                };
 
                 action.albums = albums_loaded;
 
-                store.dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: artists_loaded
-                });
-
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracks_loaded
-                });
+                store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                 next(action);
                 break
@@ -504,30 +498,33 @@ const CoreMiddleware = (function(){
                 var artists_loaded = [];
                 var tracks_loaded = [];
 
-                action.artists.forEach(artist => {
+                action.artists.forEach(raw_artist => {
+                	var artist = helpers.formatArtist(raw_artist);
+
+                	// Already have an artist in the index
                     if (artists_index[artist.uri]){
 
-                        // if we've already got images, remove and add as additional_images
+                        // Don't replace existing images, instead add them as supplementary
                         // this is to prevent LastFM overwriting Spotify images
                         if (artists_index[artist.uri].images){
-                            artist.images_additional = artist.images
-                            delete artist.images
+                            artist.images_additional = artist.images;
+                            delete artist.images;
                         }
 
                         artist = Object.assign({}, artists_index[artist.uri], artist);
                     }
 
                     // Migrate nested tracks objects into references to our tracks index
-                    if (artist.tracks){
-                        var tracks = helpers.formatTracks(artist.tracks);
+                    if (raw_artist.tracks){
+                        var tracks = helpers.formatTracks(raw_artist.tracks);
                         var tracks_uris = helpers.arrayOf('uri', tracks);
                         artist.tracks_uris = tracks_uris;
-                        delete artist.tracks;
                         tracks_loaded = [...tracks_loaded, ...tracks];
                     }
 
                     artists_loaded.push(artist);
                 });
+
 
                 action.artists = artists_loaded;
 

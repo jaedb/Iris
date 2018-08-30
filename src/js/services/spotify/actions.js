@@ -1000,17 +1000,11 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null){
                     }
                     
                     if (albums.length > 0){
-                        dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: albums
-                        });
+                        dispatch(coreActions.albumsLoaded(albums));
                     }
 
                     if (tracks.length > 0){
-                        dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks
-                        });
+                        dispatch(coreActions.tracksLoaded(tracks));
                     }
 
                     dispatch({
@@ -1184,12 +1178,9 @@ export function getArtists(uris){
                                 album: artist.albums[i]
                             }); 
                         }
-                        artist.albums = helpers.arrayOf('uri',artist.albums)
+                        artist.albums_uris = helpers.arrayOf('uri',artist.albums)
                         artist.albums_more = artist.albums.next
-                        dispatch({
-                            type: 'ARTIST_LOADED',
-                            artist: artist
-                        });                    
+                        dispatch(coreActions.artistLoaded(artist));
                     }
                 },
                 error => {
