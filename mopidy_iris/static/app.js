@@ -391,203 +391,101 @@ var getTrackIcon = exports.getTrackIcon = function getTrackIcon() {
 /**
  * Format our album objects into a universal format
  *
- * @param album obj
+ * @param data obj
  * @return album obj
  **/
 var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
-	var album = {
-		uri: null,
-		name: null,
-		type: null,
-		artists_uris: null,
-		tracks_uris: null,
-		release_date: null,
-		popularity: null,
-		images: null
-	};
+	var album = {};
+	var fields = ['uri', 'name', 'type', 'provider', 'artists_uris', 'tracks_uris', 'release_date', 'popularity', 'images'];
 
 	// Loop fields and import from data
-	for (var key in album) {
-		if (album.hasOwnProperty(key) && data.hasOwnProperty(key)) {
-			album[key] = data[key];
+	var _iteratorNormalCompletion = true;
+	var _didIteratorError = false;
+	var _iteratorError = undefined;
+
+	try {
+		for (var _iterator = fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+			var field = _step.value;
+
+			if (data.hasOwnProperty(field)) {
+				album[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError = true;
+		_iteratorError = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion && _iterator.return) {
+				_iterator.return();
+			}
+		} finally {
+			if (_didIteratorError) {
+				throw _iteratorError;
+			}
 		}
 	}
 
-	if (data.date) album.release_date = data.date;
+	if (data.date && !album.date) album.release_date = data.date;
 
 	return album;
 };
 
 /**
- * Collate an object with external references into a fully self-contained object
- * We merge *_uris references (ie tracks_uris) into the main object
+ * Format our artist objects into a universal format
  *
- * @param object Obj
- * @param indexes Obj (the relevant core indexes)
- * @return object Obj
+ * @param data obj
+ * @return artist obj
  **/
-var collateObject = exports.collateObject = function collateObject(object) {
-	var indexes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+var formatArtist = exports.formatArtist = function formatArtist(data) {
+	var artist = {};
+	var fields = ['uri', 'name', 'type', 'provider', 'popularity', 'images', 'biography', 'biography_link', 'biography_publish_date', 'followers', 'related_artists_uris', 'albums_uris', 'tracks_uris'];
 
+	// Loop fields and import from data
+	var _iteratorNormalCompletion2 = true;
+	var _didIteratorError2 = false;
+	var _iteratorError2 = undefined;
 
-	// Setup empty arrays for the appropriate reference objects
-	// This helps create a consistent object structure
-	if (object.artists_uris !== undefined) object.artists = [];
-	if (object.albums_uris !== undefined) object.albums = [];
-	if (object.tracks_uris !== undefined) object.tracks = [];
-	if (object.users_uris !== undefined) object.users = [];
+	try {
+		for (var _iterator2 = fields[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+			var field = _step2.value;
 
-	if (indexes.artists) {
-
-		if (object.artists_uris) {
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
-
-			try {
-				for (var _iterator = object.artists_uris[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var uri = _step.value;
-
-					if (indexes.artists[uri]) {
-						object.artists.push(indexes.artists[uri]);
-					}
-				}
-			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
-					}
-				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
-					}
-				}
+			if (data.hasOwnProperty(field)) {
+				artist[field] = data[field];
 			}
 		}
-
-		if (object.artist_uri) {
-			if (indexes.artists[object.artist_uri]) {
-				object.artist = indexes.artists[object.artist_uri];
+	} catch (err) {
+		_didIteratorError2 = true;
+		_iteratorError2 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion2 && _iterator2.return) {
+				_iterator2.return();
+			}
+		} finally {
+			if (_didIteratorError2) {
+				throw _iteratorError2;
 			}
 		}
 	}
 
-	if (indexes.albums) {
-		if (object.albums_uris) {
-			var _iteratorNormalCompletion2 = true;
-			var _didIteratorError2 = false;
-			var _iteratorError2 = undefined;
+	if (data.followers && data.followers.total) {
+		artist.followers = data.followers.total;
+	}
 
-			try {
-				for (var _iterator2 = object.albums_uris[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-					var uri = _step2.value;
-
-					if (indexes.albums[uri]) {
-						object.albums.push(indexes.albums[uri]);
-					}
-				}
-			} catch (err) {
-				_didIteratorError2 = true;
-				_iteratorError2 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion2 && _iterator2.return) {
-						_iterator2.return();
-					}
-				} finally {
-					if (_didIteratorError2) {
-						throw _iteratorError2;
-					}
-				}
-			}
+	if (data.bio) {
+		if (data.bio.content && !artist.biography) {
+			artist.biography = data.bio.content;
 		}
-
-		if (object.album_uri) {
-			if (indexes.albums[object.album_uri]) {
-				object.album = indexes.albums[object.album_uri];
-			}
+		if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link) {
+			artist.biography_link = data.bio.links.link.href;
+		}
+		if (data.bio.published && !artist.biography_publish_date) {
+			artist.biography_publish_date = data.bio.published;
 		}
 	}
 
-	if (indexes.tracks) {
-
-		if (object.tracks_uris) {
-			var _iteratorNormalCompletion3 = true;
-			var _didIteratorError3 = false;
-			var _iteratorError3 = undefined;
-
-			try {
-				for (var _iterator3 = object.tracks_uris[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-					var uri = _step3.value;
-
-					if (indexes.tracks[uri]) {
-						object.tracks.push(indexes.tracks[uri]);
-					}
-				}
-			} catch (err) {
-				_didIteratorError3 = true;
-				_iteratorError3 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion3 && _iterator3.return) {
-						_iterator3.return();
-					}
-				} finally {
-					if (_didIteratorError3) {
-						throw _iteratorError3;
-					}
-				}
-			}
-		}
-
-		if (object.track_uri) {
-			if (indexes.tracks[object.track_uri]) {
-				object.track = indexes.tracks[object.track_uri];
-			}
-		}
-	}
-
-	if (indexes.users) {
-		if (object.users_uris) {
-			var _iteratorNormalCompletion4 = true;
-			var _didIteratorError4 = false;
-			var _iteratorError4 = undefined;
-
-			try {
-				for (var _iterator4 = object.users_uris[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-					var uri = _step4.value;
-
-					if (indexes.users[uri]) {
-						object.users.push(indexes.users[uri]);
-					}
-				}
-			} catch (err) {
-				_didIteratorError4 = true;
-				_iteratorError4 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion4 && _iterator4.return) {
-						_iterator4.return();
-					}
-				} finally {
-					if (_didIteratorError4) {
-						throw _iteratorError4;
-					}
-				}
-			}
-		}
-
-		if (object.user_uri) {
-			if (indexes.users[object.user_uri]) {
-				object.user = indexes.users[object.user_uri];
-			}
-		}
-	}
-
-	return object;
+	return artist;
 };
 
 /**
@@ -665,6 +563,184 @@ var formatTracks = exports.formatTracks = function formatTracks(tracks) {
 	} else {
 		return formatted;
 	}
+};
+
+/**
+ * Collate an object with external references into a fully self-contained object
+ * We merge *_uris references (ie tracks_uris) into the main object
+ *
+ * @param object Obj
+ * @param indexes Obj (the relevant core indexes)
+ * @return object Obj
+ **/
+var collateObject = exports.collateObject = function collateObject(obj) {
+	var indexes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+	// First, let's reset this object
+	// This is important because by changing this object, we inadvertently
+	// change the source object (ie the indexed record), which undoes the
+	// efficiencies of a lean index object
+	obj = Object.assign({}, obj);
+
+	// Setup empty arrays for the appropriate reference objects
+	// This helps create a consistent object structure
+	if (obj.artists_uris !== undefined) obj.artists = [];
+	if (obj.albums_uris !== undefined) obj.albums = [];
+	if (obj.tracks_uris !== undefined) obj.tracks = [];
+	if (obj.users_uris !== undefined) obj.users = [];
+
+	if (indexes.artists) {
+
+		if (obj.artists_uris) {
+			var _iteratorNormalCompletion3 = true;
+			var _didIteratorError3 = false;
+			var _iteratorError3 = undefined;
+
+			try {
+				for (var _iterator3 = obj.artists_uris[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+					var uri = _step3.value;
+
+					if (indexes.artists[uri]) {
+						obj.artists.push(indexes.artists[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError3 = true;
+				_iteratorError3 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion3 && _iterator3.return) {
+						_iterator3.return();
+					}
+				} finally {
+					if (_didIteratorError3) {
+						throw _iteratorError3;
+					}
+				}
+			}
+		}
+
+		if (obj.artist_uri) {
+			if (indexes.artists[obj.artist_uri]) {
+				obj.artist = indexes.artists[obj.artist_uri];
+			}
+		}
+	}
+
+	if (indexes.albums) {
+		if (obj.albums_uris) {
+			var _iteratorNormalCompletion4 = true;
+			var _didIteratorError4 = false;
+			var _iteratorError4 = undefined;
+
+			try {
+				for (var _iterator4 = obj.albums_uris[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+					var uri = _step4.value;
+
+					if (indexes.albums[uri]) {
+						obj.albums.push(indexes.albums[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError4 = true;
+				_iteratorError4 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion4 && _iterator4.return) {
+						_iterator4.return();
+					}
+				} finally {
+					if (_didIteratorError4) {
+						throw _iteratorError4;
+					}
+				}
+			}
+		}
+
+		if (obj.album_uri) {
+			if (indexes.albums[obj.album_uri]) {
+				obj.album = indexes.albums[obj.album_uri];
+			}
+		}
+	}
+
+	if (indexes.tracks) {
+
+		if (obj.tracks_uris) {
+			var _iteratorNormalCompletion5 = true;
+			var _didIteratorError5 = false;
+			var _iteratorError5 = undefined;
+
+			try {
+				for (var _iterator5 = obj.tracks_uris[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+					var uri = _step5.value;
+
+					if (indexes.tracks[uri]) {
+						obj.tracks.push(indexes.tracks[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError5 = true;
+				_iteratorError5 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion5 && _iterator5.return) {
+						_iterator5.return();
+					}
+				} finally {
+					if (_didIteratorError5) {
+						throw _iteratorError5;
+					}
+				}
+			}
+		}
+
+		if (obj.track_uri) {
+			if (indexes.tracks[obj.track_uri]) {
+				obj.track = indexes.tracks[obj.track_uri];
+			}
+		}
+	}
+
+	if (indexes.users) {
+		if (obj.users_uris) {
+			var _iteratorNormalCompletion6 = true;
+			var _didIteratorError6 = false;
+			var _iteratorError6 = undefined;
+
+			try {
+				for (var _iterator6 = obj.users_uris[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+					var uri = _step6.value;
+
+					if (indexes.users[uri]) {
+						obj.users.push(indexes.users[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError6 = true;
+				_iteratorError6 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion6 && _iterator6.return) {
+						_iterator6.return();
+					}
+				} finally {
+					if (_didIteratorError6) {
+						throw _iteratorError6;
+					}
+				}
+			}
+		}
+
+		if (obj.user_uri) {
+			if (indexes.users[obj.user_uri]) {
+				obj.user = indexes.users[obj.user_uri];
+			}
+		}
+	}
+
+	return obj;
 };
 
 /**
@@ -3336,17 +3412,11 @@ function getRecommendations() {
             }
 
             if (albums.length > 0) {
-                dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: albums
-                });
+                dispatch(coreActions.albumsLoaded(albums));
             }
 
             if (tracks.length > 0) {
-                dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracks
-                });
+                dispatch(coreActions.tracksLoaded(tracks));
             }
 
             dispatch({
@@ -3470,12 +3540,9 @@ function getArtists(uris) {
                         album: artist.albums[i]
                     });
                 }
-                artist.albums = helpers.arrayOf('uri', artist.albums);
+                artist.albums_uris = helpers.arrayOf('uri', artist.albums);
                 artist.albums_more = artist.albums.next;
-                dispatch({
-                    type: 'ARTIST_LOADED',
-                    artist: artist
-                });
+                dispatch(coreActions.artistLoaded(artist));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load artists', error));
@@ -51991,41 +52058,57 @@ var CoreMiddleware = function () {
                         var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.albums.forEach(function (raw_album) {
-                            var album = helpers.formatAlbum(raw_album);
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
 
-                            if (albums_index[album.uri]) {
-                                album = Object.assign({}, albums_index[album.uri], album);
+                        try {
+                            for (var _iterator = action.albums[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var raw_album = _step.value;
+
+                                var album = helpers.formatAlbum(raw_album);
+
+                                if (albums_index[album.uri]) {
+                                    album = Object.assign({}, albums_index[album.uri], album);
+                                }
+
+                                if (raw_album.images && raw_album.images.length > 0) {
+                                    album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
+                                }
+
+                                if (raw_album.tracks) {
+                                    album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);
+                                    tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(raw_album.tracks));
+                                }
+
+                                if (raw_album.artists) {
+                                    album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+                                    artists_loaded = [].concat(_toConsumableArray(artists_loaded), _toConsumableArray(raw_album.artists));
+                                }
+
+                                albums_loaded.push(album);
                             }
-
-                            if (raw_album.images && raw_album.images.length > 0) {
-                                album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                    _iterator.return();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
                             }
+                        }
 
-                            if (raw_album.tracks) {
-                                album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(raw_album.tracks));
-                            }
-
-                            if (raw_album.artists) {
-                                album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
-                                artists_loaded = [].concat(_toConsumableArray(artists_loaded), _toConsumableArray(raw_album.artists));
-                            }
-
-                            albums_loaded.push(album);
-                        });
+                        ;
 
                         action.albums = albums_loaded;
 
-                        store.dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: artists_loaded
-                        });
-
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
+                        store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                         next(action);
                         break;
@@ -52035,10 +52118,13 @@ var CoreMiddleware = function () {
                         var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.artists.forEach(function (artist) {
+                        action.artists.forEach(function (raw_artist) {
+                            var artist = helpers.formatArtist(raw_artist);
+
+                            // Already have an artist in the index
                             if (artists_index[artist.uri]) {
 
-                                // if we've already got images, remove and add as additional_images
+                                // Don't replace existing images, instead add them as supplementary
                                 // this is to prevent LastFM overwriting Spotify images
                                 if (artists_index[artist.uri].images) {
                                     artist.images_additional = artist.images;
@@ -52049,11 +52135,10 @@ var CoreMiddleware = function () {
                             }
 
                             // Migrate nested tracks objects into references to our tracks index
-                            if (artist.tracks) {
-                                var tracks = helpers.formatTracks(artist.tracks);
+                            if (raw_artist.tracks) {
+                                var tracks = helpers.formatTracks(raw_artist.tracks);
                                 var tracks_uris = helpers.arrayOf('uri', tracks);
                                 artist.tracks_uris = tracks_uris;
-                                delete artist.tracks;
                                 tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
                             }
 
@@ -63468,7 +63553,7 @@ var Artist = function (_React$Component) {
 									'span',
 									{ className: 'content' },
 									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'users' }),
-									this.props.artist.followers.total.toLocaleString(),
+									this.props.artist.followers.toLocaleString(),
 									' followers'
 								)
 							) : null,
@@ -63501,20 +63586,20 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'section',
 								null,
-								this.props.artist.bio ? _react2.default.createElement(
+								this.props.artist.biography ? _react2.default.createElement(
 									'div',
 									{ className: 'biography-text' },
 									_react2.default.createElement(
 										'p',
 										null,
-										this.props.artist.bio.content
+										this.props.artist.biography
 									),
 									_react2.default.createElement('br', null),
 									_react2.default.createElement(
 										'div',
 										{ className: 'grey-text' },
 										'Published: ',
-										this.props.artist.bio.published
+										this.props.artist.biography_publish_date
 									),
 									_react2.default.createElement(
 										'div',
@@ -63522,8 +63607,8 @@ var Artist = function (_React$Component) {
 										'Origin: ',
 										_react2.default.createElement(
 											'a',
-											{ href: this.props.artist.bio.links.link.href, target: '_blank' },
-											this.props.artist.bio.links.link.href
+											{ href: this.props.artist.biography_link, target: '_blank' },
+											this.props.artist.biography_link
 										)
 									)
 								) : null

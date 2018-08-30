@@ -312,7 +312,6 @@ export let getTrackIcon = function(current_track = false, core = false){
  **/
 export let formatAlbum = function(data){
 	var album = {};
-	console.log("VANILLA",album);
 	var fields = [
 		'uri',
 		'name',
@@ -329,11 +328,8 @@ export let formatAlbum = function(data){
 	for (var field of fields){
 		if (data.hasOwnProperty(field)){
 			album[field] = data[field];
-			console.log(field, data[field]);
 		}
 	}
-
-	console.log("FORMATTED",album);
 
 	if (data.date && !album.date) album.release_date = data.date;
 
@@ -358,6 +354,7 @@ export let formatArtist = function(data){
 		'images',
 		'biography',
 		'biography_link',
+		'biography_publish_date',
 		'followers',
 		'related_artists_uris',
 		'albums_uris',
@@ -368,6 +365,22 @@ export let formatArtist = function(data){
 	for (var field of fields){
 		if (data.hasOwnProperty(field)){
 			artist[field] = data[field];
+		}
+	}
+
+	if (data.followers && data.followers.total){
+		artist.followers = data.followers.total;
+	}
+
+	if (data.bio){
+		if (data.bio.content && !artist.biography){
+			artist.biography = data.bio.content;
+		}
+		if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link){
+			artist.biography_link = data.bio.links.link.href;
+		}
+		if (data.bio.published && !artist.biography_publish_date){
+			artist.biography_publish_date = data.bio.published;
 		}
 	}
 
@@ -462,82 +475,88 @@ export let formatTracks = function(tracks){
  * @param indexes Obj (the relevant core indexes)
  * @return object Obj
  **/
-export let collateObject = function(object, indexes = {}){
+export let collateObject = function(obj, indexes = {}){
+
+	// First, let's reset this object
+	// This is important because by changing this object, we inadvertently
+	// change the source object (ie the indexed record), which undoes the
+	// efficiencies of a lean index object
+	obj = Object.assign({}, obj);
 
 	// Setup empty arrays for the appropriate reference objects
 	// This helps create a consistent object structure
-	if (object.artists_uris !== undefined) 	object.artists = [];
-	if (object.albums_uris !== undefined) 	object.albums = [];
-	if (object.tracks_uris !== undefined) 	object.tracks = [];
-	if (object.users_uris !== undefined) 	object.users = [];
+	if (obj.artists_uris !== undefined) 	obj.artists = [];
+	if (obj.albums_uris !== undefined) 	obj.albums = [];
+	if (obj.tracks_uris !== undefined) 	obj.tracks = [];
+	if (obj.users_uris !== undefined) 	obj.users = [];
 
 	if (indexes.artists){
 
-		if (object.artists_uris){
-			for (var uri of object.artists_uris){
+		if (obj.artists_uris){
+			for (var uri of obj.artists_uris){
 				if (indexes.artists[uri]){
-					object.artists.push(indexes.artists[uri]);
+					obj.artists.push(indexes.artists[uri]);
 				}
 			}
 		}
 
-		if (object.artist_uri){
-			if (indexes.artists[object.artist_uri]){
-				object.artist = indexes.artists[object.artist_uri];
+		if (obj.artist_uri){
+			if (indexes.artists[obj.artist_uri]){
+				obj.artist = indexes.artists[obj.artist_uri];
 			}
 		}
 	}
 
 	if (indexes.albums){
-		if (object.albums_uris){
-			for (var uri of object.albums_uris){
+		if (obj.albums_uris){
+			for (var uri of obj.albums_uris){
 				if (indexes.albums[uri]){
-					object.albums.push(indexes.albums[uri]);
+					obj.albums.push(indexes.albums[uri]);
 				}
 			}
 		}
 
-		if (object.album_uri){
-			if (indexes.albums[object.album_uri]){
-				object.album = indexes.albums[object.album_uri];
+		if (obj.album_uri){
+			if (indexes.albums[obj.album_uri]){
+				obj.album = indexes.albums[obj.album_uri];
 			}
 		}
 	}
 
 	if (indexes.tracks){
 
-		if (object.tracks_uris){
-			for (var uri of object.tracks_uris){
+		if (obj.tracks_uris){
+			for (var uri of obj.tracks_uris){
 				if (indexes.tracks[uri]){
-					object.tracks.push(indexes.tracks[uri]);
+					obj.tracks.push(indexes.tracks[uri]);
 				}
 			}
 		}
 
-		if (object.track_uri){
-			if (indexes.tracks[object.track_uri]){
-				object.track = indexes.tracks[object.track_uri];
+		if (obj.track_uri){
+			if (indexes.tracks[obj.track_uri]){
+				obj.track = indexes.tracks[obj.track_uri];
 			}
 		}
 	}
 
 	if (indexes.users){
-		if (object.users_uris){
-			for (var uri of object.users_uris){
+		if (obj.users_uris){
+			for (var uri of obj.users_uris){
 				if (indexes.users[uri]){
-					object.users.push(indexes.users[uri]);
+					obj.users.push(indexes.users[uri]);
 				}
 			}
 		}
 
-		if (object.user_uri){
-			if (indexes.users[object.user_uri]){
-				object.user = indexes.users[object.user_uri];
+		if (obj.user_uri){
+			if (indexes.users[obj.user_uri]){
+				obj.user = indexes.users[obj.user_uri];
 			}
 		}
 	}
 
-	return object;
+	return obj;
 }
 
 

@@ -462,7 +462,6 @@ const CoreMiddleware = (function(){
 
                 for (var raw_album of action.albums){
                     var album = helpers.formatAlbum(raw_album);
-                	console.log(album)
 
                     if (albums_index[album.uri]){
                         album = Object.assign({}, albums_index[album.uri], album);

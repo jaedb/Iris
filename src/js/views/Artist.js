@@ -187,16 +187,16 @@ class Artist extends React.Component{
 						<div className="col w40 tiles artist-stats">
 							{this.props.artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images} /></div> : null}
 							{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images_additional} /></div> : null}
-							{this.props.artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
+							{this.props.artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{this.props.artist.followers.toLocaleString()} followers</span></div> : null}
 							{this.props.artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
 							{this.props.artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
 						</div>
 
 						<div className="col w60 biography">
 							<section>
-								{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
-								<div className="grey-text">Published: { this.props.artist.bio.published }</div>
-								<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
+								{ this.props.artist.biography ? <div className="biography-text"><p>{this.props.artist.biography}</p><br />
+								<div className="grey-text">Published: { this.props.artist.biography_publish_date }</div>
+								<div className="grey-text">Origin: <a href={ this.props.artist.biography_link } target="_blank">{ this.props.artist.biography_link }</a></div></div> : null }
 							</section>
 						</div>
 					</div>
