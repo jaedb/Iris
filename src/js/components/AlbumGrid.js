@@ -35,7 +35,7 @@ class AlbumGrid extends React.Component{
 				<div className={className}>
 					{
 						this.props.albums.map(item => {
-							var album = helpers.collateObject(item, {artists: this.props.artists});
+							var album = helpers.collate(item, {artists: this.props.artists});
 							return (
 								<GridItem
 									key={album.uri}

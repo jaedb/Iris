@@ -119,7 +119,7 @@ class Album extends React.Component{
 			}
 		}
 
-		var album = helpers.collateObject(this.props.album, {tracks: this.props.tracks, artists: this.props.artists});
+		var album = helpers.collate(this.props.album, {tracks: this.props.tracks, artists: this.props.artists});
 
 		if (album.tracks && album.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
 			var is_loading_tracks = true;
@@ -138,8 +138,8 @@ class Album extends React.Component{
 					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
-						{!this.props.slim_mode && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
+						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
+						{!this.props.slim_mode && album.artists && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
 						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
 						<li>
 							{album.tracks ? <span>{album.tracks.length} tracks, <Dater type="total-time" data={album.tracks} /></span> : '0 tracks, 0 mins' }

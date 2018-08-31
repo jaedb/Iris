@@ -33,15 +33,15 @@ class Artist extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.loadArtist();
+		this.props.coreActions.loadArtist(this.props.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadArtist(nextProps);
+			this.props.coreActions.loadArtist(nextProps.params.uri);
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadArtist(nextProps);
+				this.props.coreActions.loadArtist(nextProps.params.uri);
 			}
 		}
 
@@ -70,30 +70,6 @@ class Artist extends React.Component{
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data);
-	}
-
-	loadArtist(props = this.props){
-		switch(helpers.uriSource(props.params.uri )){
-
-			case 'spotify':
-				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
-					console.info('Loading spotify artist from index');
-				} else {
-					this.props.spotifyActions.getArtist(props.params.uri, true);
-				}
-				this.props.spotifyActions.following(props.params.uri);
-				break
-
-			default:
-				if (props.mopidy_connected){
-					if (props.artist && props.artist.images && props.artist.albums_uris){
-						console.info('Loading local artist from index');
-					} else {
-						this.props.mopidyActions.getArtist(props.params.uri);
-					}
-				}
-				break
-		}
 	}
 
 	loadMore(){

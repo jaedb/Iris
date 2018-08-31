@@ -357,6 +357,14 @@ const CoreMiddleware = (function(){
 
 
             case 'LOAD_TRACK':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.tracks[action.uri]){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+            	
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getTrack(action.uri));
@@ -374,6 +382,15 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ALBUM':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.albums[action.uri] && 
+            		store.getState().core.albums[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+            	
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getAlbum(action.uri));
@@ -391,6 +408,16 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ARTIST':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.artists[action.uri] && 
+            		store.getState().core.artists[action.uri].albums_uris && 
+            		store.getState().core.artists[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getArtist(action.uri, true));
@@ -408,6 +435,15 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_PLAYLIST':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.playlists[action.uri] && 
+            		store.getState().core.playlists[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.uri));
@@ -418,6 +454,46 @@ const CoreMiddleware = (function(){
                         if (store.getState().mopidy.connected){
                             store.dispatch(mopidyActions.getPlaylist(action.uri));
                         }
+                        break;
+                }
+
+                next(action);
+                break;
+
+            case 'LOAD_USER':
+
+            	console.log(action);
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.playlists[action.uri] &&
+            		store.getState().core.playlists[action.uri].albums_uris ){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+						store.dispatch(spotifyActions.getUser(action.uri));
+						store.dispatch(spotifyActions.following(action.uri));
+                        break;
+
+                    default:
+                        // No Mopidy mechanism for users
+                        break;
+                }
+
+                next(action);
+                break;
+
+            case 'LOAD_USER_PLAYLISTS':
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+						store.dispatch(spotifyActions.getUserPlaylists(action.uri));
+                        break;
+
+                    default:
+                        // No Mopidy mechanism for users
                         break;
                 }
 
@@ -537,7 +613,9 @@ const CoreMiddleware = (function(){
                 var playlists_loaded = [];
                 var tracks_loaded = [];
 
-                action.playlists.forEach(playlist => {
+                for (var playlist of action.playlists){
+
+                	playlist = helpers.formatPlaylist(playlist);
 
                     // Detect editability
                     switch (helpers.uriSource(playlist.uri)){
@@ -567,7 +645,7 @@ const CoreMiddleware = (function(){
 
                     // Update index
                     playlists_loaded.push(playlist);
-                });
+                }
 
                 action.playlists = playlists_loaded;
 
@@ -581,17 +659,22 @@ const CoreMiddleware = (function(){
                 var users_index = Object.assign({}, core.users);
                 var users_loaded = [];
 
-                action.users.forEach(user => {
+                for (var user of action.users){
 
                     if (users_index[user.uri]){
                         user = Object.assign({}, users_index[user.uri], user);
                     }
 
                     users_loaded.push(user);
-                });
+                }
 
                 action.users = users_loaded;
 
+                next(action);
+                break;
+
+            case 'USER_PLAYLISTS_LOADED':
+            	store.dispatch(coreActions.playlistsLoaded(action.playlists));
                 next(action);
                 break;
 

@@ -55,7 +55,7 @@ export default class GridItem extends React.Component{
 			case 'artist':
 				return (
 					<span>
-						{item.followers ? item.followers.total.toLocaleString()+' followers' : null}
+						{item.followers ? item.followers.toLocaleString()+' followers' : null}
 						{item.albums_uris ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
@@ -73,7 +73,7 @@ export default class GridItem extends React.Component{
 				return (
 					<span>
 						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-						{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
+						{ item.followers ? item.followers.toLocaleString()+' followers' : null }
 					</span>
 				)
 		}

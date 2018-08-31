@@ -124,37 +124,37 @@ export default function reducer(core = {}, action){
 
         case 'TRACKS_LOADED':
             var tracks = Object.assign({}, core.tracks);
-            action.tracks.forEach(track => {
+            for (var track of action.tracks){
                 tracks[track.uri] = track;
-            });
+            }
             return Object.assign({}, core, { tracks: tracks });
 
         case 'ALBUMS_LOADED':
             var albums = Object.assign({}, core.albums);
-            action.albums.forEach(album => {
+            for (var album of action.albums){
                 albums[album.uri] = album;
-            });
+            }
             return Object.assign({}, core, { albums: albums });
 
         case 'ARTISTS_LOADED':
             var artists = Object.assign({}, core.artists);
-            action.artists.forEach(artist => {
+            for (var artist of action.artists){
                 artists[artist.uri] = artist;
-            });
+            }
             return Object.assign({}, core, { artists: artists });
 
         case 'PLAYLISTS_LOADED':
             var playlists = Object.assign({}, core.playlists);
-            action.playlists.forEach(playlist => {
+            for (var playlist of action.playlists){
                 playlists[playlist.uri] = playlist;
-            });
+            }
             return Object.assign({}, core, { playlists: playlists });
 
         case 'USERS_LOADED':
             var users = Object.assign({}, core.users);
-            action.users.forEach(user => {
+            for (var user of action.users){
                 users[user.uri] = user;
-            });
+            }
             return Object.assign({}, core, { users: users });
 
 
@@ -167,8 +167,10 @@ export default function reducer(core = {}, action){
                 });
             }
 
-            var new_releases = []
-            if (core.new_releases) new_releases = Object.assign([], core.new_releases)
+            var new_releases = [];
+            if (core.new_releases){
+            	new_releases = Object.assign([], core.new_releases);
+            }
 
             return Object.assign({}, core, { 
                 new_releases: [...new_releases, ...action.uris],
@@ -199,19 +201,23 @@ export default function reducer(core = {}, action){
 
         case 'USER_PLAYLISTS_LOADED':
             var users = Object.assign({}, core.users)
-            var playlists_uris = []
-            if (users[action.key] && users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris
+            var existing_playlists_uris = [];
+            if (users[action.uri] && users[action.uri].playlists_uris){
+            	existing_playlists_uris = users[action.uri].playlists_uris;
+            }
 
-            var artist = Object.assign(
+            var playlists_uris = [...existing_playlists_uris, ...helpers.arrayOf('uri',action.playlists)]
+
+            var user = Object.assign(
                 {}, 
-                users[action.key],
+                users[action.uri],
                 {
-                    playlists_uris: [...playlists_uris, ...action.uris],
+                    playlists_uris: playlists_uris,
                     playlists_more: action.more,
                     playlists_total: action.total
                 }
             )
-            users[action.key] = artist
+            users[action.uri] = user;
             return Object.assign({}, core, { users: users });
 
 

@@ -239,10 +239,10 @@ export function getArtist(uri, artist, mbid = false){
                             uri: uri,
                             images: response.artist.image,
                             mbid: response.artist.mbid,
-                            bio: response.artist.bio,
-                            listeners: parseInt(response.artist.stats.listeners),
-                            play_count: parseInt(response.artist.stats.playcount),
-                            on_tour: response.artist.stats.ontour
+                            biography: response.artist.bio.content,
+                            biography_publish_date: response.artist.bio.published,
+                            biography_link: response.artist.bio.links.link.href,
+                            listeners: parseInt(response.artist.stats.listeners)
                         };
 
                         dispatch(coreActions.artistLoaded(artist));

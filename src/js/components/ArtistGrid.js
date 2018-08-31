@@ -50,7 +50,7 @@ class ArtistGrid extends React.Component{
 									<GridItem
 										key={artist.uri}
 										type="artist"
-										item={artist}
+										item={helpers.collate(artist, {albums: this.props.albums})}
 										show_source_icon={this.props.show_source_icon}
 										onClick={e => {hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(artist.uri))}}
 										lastfmActions={this.props.lastfmActions}
@@ -69,7 +69,9 @@ class ArtistGrid extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	return {}
+	return {
+		albums: state.core.albums
+	}
 }
 
 const mapDispatchToProps = (dispatch) => {

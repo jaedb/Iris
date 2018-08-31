@@ -1750,26 +1750,43 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         if (response.length <= 0) return
 
-                        var albums = []
+                        var albums_loaded = [];
+                    	var artists_loaded = [];
+                    	var tracks_loaded = [];
 
                         for (var uri in response){
                             if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0] && response[uri][0].album){
+
+                            	var artists_uris = [];
+                            	for (var artist in response[uri][0].artists){
+                            		artists_loaded.push(helpers.formatArtist(artist));
+                            		artists_uris.push(artist.uri);
+                            	}
+
+                            	var tracks_uris = [];
+                            	for (var track in response[uri]){
+                            		tracks_loaded.push(helpers.formatTrack(track));
+                            		tracks_uris.push(track.uri);
+                            	}
+
                                 var album = Object.assign(
                                     {},
                                     {
                                         source: 'local',
-                                        artists: response[uri][0].artists,
-                                        tracks: response[uri],
-                                        tracks_total: response[uri].length
+                                        artists_uris: artists_uris,
+                                        tracks_uris: tracks_uris,
+                                        tracks_total: tracks_uris.length
                                     },
                                     response[uri][0].album
                                 )
 
-                                albums.push(album)
+                                albums_loaded.push(album);
                             }
                         }
 
-                        store.dispatch(coreActions.albumsLoaded(albums));
+                        store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                        store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
                         // Re-run any consequential processes in 100ms. This allows a small window for other
                         // server requests before our next batch. It's a little crude but it means the server isn't
@@ -1788,26 +1805,31 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUM':
                 request(socket, store, 'library.lookup', action.data)
                     .then(response => {
-                        if (response.length <= 0){
+                        if (!response || response.length <= 0){
                             return;
+                        }
+
+                        var artists = [];
+                        for (var artist of response[0].artists){
+                        	artists.push(helpers.formatArtist(artist));
                         }
 
                         var album = Object.assign(
                             {},
-                            { images: [] },
-                            response[0].album,
+                            { 
+                            	images: []
+                            },
+                            helpers.formatAlbum(response[0].album),
                             {
                                 source: 'local',
-                                artists: response[0].artists,
-                                tracks: response,
+                                artists_uris: helpers.arrayOf('uri', artists),
+                                tracks_uris: helpers.arrayOf('uri', response),
                                 tracks_total: response.length
                             }
-                        )
-
-                        var uris = [];
-                        for(var i = 0; i < album.tracks.length; i++){
-                            uris.push(album.tracks[i].uri );
-                        }
+                        );
+                        
+                        store.dispatch(coreActions.albumLoaded(album));
+                        store.dispatch(coreActions.artistsLoaded(artists));
 
                          // load artwork from LastFM
                         if (album.images.length <= 0){
@@ -1819,29 +1841,17 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        request(socket, store, 'library.lookup', { uris: uris } )
+                        request(socket, store, 'library.lookup', { uris: album.tracks_uris } )
                             .then(response => {
+                            	var tracks_loaded = [];
 
-                                for(var uri in response){
+                                for (var uri in response){
                                     if (response.hasOwnProperty(uri)){
-
-                                        var track = response[uri][0];
-
-                                        // find the track reference, and drop in the full track data
-                                        function getByURI(trackReference){
-                                            return track.uri == trackReference.uri
-                                        }
-                                        var trackReferences = album.tracks.filter(getByURI);
-
-                                        // there could be multiple instances of this track, so accommodate this
-                                        for(var j = 0; j < trackReferences.length; j++){
-                                            var key = album.tracks.indexOf(trackReferences[j] );
-                                            album.tracks[ key ] = track;
-                                        }
+                                        tracks_loaded.push(response[uri][0]);
                                     }
                                 }
 
-                                store.dispatch(coreActions.albumLoaded(album));
+                                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
                             })
                     })
                 break;

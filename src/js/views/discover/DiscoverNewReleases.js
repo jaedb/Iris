@@ -119,7 +119,7 @@ class DiscoverNewReleases extends React.Component{
 		// Pull the first playlist out and we'll use this as a banner
 		var first_album = albums.splice(0,1)
 		if (first_album){
-			first_album = first_album[0]
+			first_album = helpers.collate(first_album[0], {artists: this.props.artists});
 		}
 
 		var options = (
@@ -155,6 +155,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
+		artists: state.core.artists,
 		albums: state.core.albums,
 		new_releases: state.core.new_releases,
 		new_releases_more: state.core.new_releases_more,

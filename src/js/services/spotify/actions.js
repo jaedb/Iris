@@ -1229,17 +1229,12 @@ export function playArtistTopTracks(uri){
  * ======================================================================================
  **/
 
-export function getUser(uri, and_playlists = false){
+export function getUser(uri){
     return (dispatch, getState) => {
-
-        // get the user
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) )
+        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri))
             .then(
                 response => {
-                    dispatch({
-                        type: 'USERS_LOADED',
-                        users: [response]
-                    });
+                    dispatch(coreActions.userLoaded(helpers.formatUser(response)));
                 },
                 error => {
                     dispatch(coreActions.handleException(
@@ -1247,46 +1242,38 @@ export function getUser(uri, and_playlists = false){
                         error
                     ));
                 }
-            )
-
-        if (and_playlists){
-            dispatch(getUserPlaylists(uri));
-        }
+            );
     }
 }
 
-export function getUserPlaylists(user_uri){
+export function getUserPlaylists(uri){
     return (dispatch, getState) => {
 
         // get the first page of playlists
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid', user_uri) +'/playlists?limit=40' )
+        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid', uri) +'/playlists?limit=40' )
             .then(
                 response => {
-                    var playlists = []
-                    for (var i = 0; i < response.items.length; i++){
+                    var playlists = [];
+                    for (var raw_playlist of response.items){
 
-                        var can_edit = false
-                        if (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id){
-                            can_edit = true
+                        var can_edit = false;
+                        if (getState().spotify.me && raw_playlist.owner.id == getState().spotify.me.id){
+                            can_edit = true;
                         }
 
-                        playlists.push(Object.assign(
+                        var playlist = Object.assign(
                             {},
-                            response.items[i],
+                            helpers.formatPlaylist(raw_playlist),
                             {
                                 can_edit: can_edit,
-                                tracks_total: response.items[i].tracks.total
+                                tracks_total: raw_playlist.tracks.total
                             }
-                        ))
+                        );
+
+                        playlists.push(playlist);
                     }
 
-                    dispatch({
-                        type: 'LOADED_MORE',
-                        parent_type: 'user',
-                        parent_key: user_uri,
-                        records_type: 'playlist',
-                        records_data: response
-                    });
+                    dispatch(coreActions.userPlaylistsLoaded(uri, playlists, response.more, response.total));
                 },
                 error => {
                     dispatch(coreActions.handleException(
@@ -1322,26 +1309,29 @@ export function getAlbum(uri){
                     // dispatch our loaded artists (simple objects)
                     dispatch(coreActions.artistsLoaded(response.artists));
 
+                    var tracks = Object.assign([], response.tracks.items);
+
                     var album = Object.assign(
                         {},
-                        response,
+                        helpers.formatAlbum(response),
                         {
                             artists_uris: helpers.arrayOf('uri',response.artists),
-                            tracks: response.tracks.items,
+                            tracks_uris: helpers.arrayOf('uri', tracks),
                             tracks_more: response.tracks.next,
                             tracks_total: response.tracks.total
                         }
-                    )
+                    );
 
                     // add our album to all the tracks
-                    for (var i = 0; i < album.tracks.length; i++){
-                        album.tracks[i].album = {
+                    for (var i = 0; i < tracks.length; i++){
+                        tracks[i].album = {
                             name: album.name,
                             uri: album.uri
                         }
                     }
 
                     dispatch(coreActions.albumLoaded(album));
+                    dispatch(coreActions.tracksLoaded(tracks));
 
                     // now get all the artists for this album (full objects)
                     // we do this to get the artist artwork
@@ -1535,19 +1525,24 @@ export function getPlaylist(uri){
                     description = description.split('<a href="spotify:user:').join('<a href="#'+global.baseURL+'user/spotify:user:')
                 }
 
+                var tracks = helpers.formatTracks(response.tracks.items);
+
                 var playlist = Object.assign(
                     {},
-                    response,
+                    helpers.formatPlaylist(response),
                     {
                         is_completely_loaded: true,
                         can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
-                        tracks: helpers.formatTracks(response.tracks.items),
+                        user_uri: response.owner.uri,
+                        tracks_uris: helpers.arrayOf('uri', tracks),
                         tracks_more: response.tracks.next,
                         tracks_total: response.tracks.total,
                         description: description
                     }
                 )
 
+                //dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+                dispatch(coreActions.tracksLoaded(tracks));
                 dispatch(coreActions.playlistLoaded(playlist));
             },
             error => {

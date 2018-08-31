@@ -132,6 +132,10 @@ export let sizedImages = function(images){
 		huge: false
 	}
 
+	if (!images){
+		return sizes;
+	}
+
 	// An array of images has been provided
 	if (Array.isArray(images)){
 
@@ -314,9 +318,9 @@ export let formatAlbum = function(data){
 	var album = {};
 	var fields = [
 		'uri',
+		'provider',
 		'name',
 		'type',
-		'provider',
 		'artists_uris',
 		'tracks_uris',
 		'release_date',
@@ -347,15 +351,17 @@ export let formatArtist = function(data){
 	var artist = {}
 	var fields = [
 		'uri',
+		'provider',
+		'mbid',
 		'name',
 		'type',
-		'provider',
-		'popularity',
 		'images',
+		'popularity',
+		'followers',
+		'listeners',
 		'biography',
 		'biography_link',
 		'biography_publish_date',
-		'followers',
 		'related_artists_uris',
 		'albums_uris',
 		'tracks_uris'
@@ -385,6 +391,78 @@ export let formatArtist = function(data){
 	}
 
 	return artist;
+}
+
+
+/**
+ * Format our playlist objects into a universal format
+ *
+ * @param data obj
+ * @return playlist obj
+ **/
+export let formatPlaylist = function(data){
+	var playlist = {}
+	var fields = [
+		'uri',
+		'provider',
+		'type',
+		'name',
+		'description',
+		'images',
+		'popularity',
+		'followers',
+		'last_modified_date',
+		'can_edit',
+		'user_uri',
+		'tracks_uris'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			playlist[field] = data[field];
+		}
+	}
+
+	if (data.followers && data.followers.total){
+		playlist.followers = data.followers.total;
+	}
+
+	return playlist;
+}
+
+
+/**
+ * Format a user objects into a universal format
+ *
+ * @param data obj
+ * @return playlist obj
+ **/
+export let formatUser = function(data){
+	var user = {}
+	var fields = [
+		'uri',
+		'provider',
+		'name',
+		'images',
+		'followers'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			user[field] = data[field];
+		}
+	}
+
+	if (data.followers && data.followers.total){
+		user.followers = data.followers.total;
+	}
+
+	if (data.display_name && !user.name) user.name = data.display_name;
+	if (data.id && !user.name) user.name = data.id;
+
+	return user;
 }
 
 
@@ -475,7 +553,7 @@ export let formatTracks = function(tracks){
  * @param indexes Obj (the relevant core indexes)
  * @return object Obj
  **/
-export let collateObject = function(obj, indexes = {}){
+export let collate = function(obj, indexes = {}){
 
 	// First, let's reset this object
 	// This is important because by changing this object, we inadvertently
@@ -486,12 +564,12 @@ export let collateObject = function(obj, indexes = {}){
 	// Setup empty arrays for the appropriate reference objects
 	// This helps create a consistent object structure
 	if (obj.artists_uris !== undefined) 	obj.artists = [];
-	if (obj.albums_uris !== undefined) 	obj.albums = [];
-	if (obj.tracks_uris !== undefined) 	obj.tracks = [];
-	if (obj.users_uris !== undefined) 	obj.users = [];
+	if (obj.albums_uris !== undefined) 		obj.albums = [];
+	if (obj.tracks_uris !== undefined) 		obj.tracks = [];
+	if (obj.users_uris !== undefined) 		obj.users = [];
+	if (obj.playlists_uris !== undefined) 	obj.playlists = [];
 
 	if (indexes.artists){
-
 		if (obj.artists_uris){
 			for (var uri of obj.artists_uris){
 				if (indexes.artists[uri]){
@@ -499,7 +577,6 @@ export let collateObject = function(obj, indexes = {}){
 				}
 			}
 		}
-
 		if (obj.artist_uri){
 			if (indexes.artists[obj.artist_uri]){
 				obj.artist = indexes.artists[obj.artist_uri];
@@ -515,7 +592,6 @@ export let collateObject = function(obj, indexes = {}){
 				}
 			}
 		}
-
 		if (obj.album_uri){
 			if (indexes.albums[obj.album_uri]){
 				obj.album = indexes.albums[obj.album_uri];
@@ -524,7 +600,6 @@ export let collateObject = function(obj, indexes = {}){
 	}
 
 	if (indexes.tracks){
-
 		if (obj.tracks_uris){
 			for (var uri of obj.tracks_uris){
 				if (indexes.tracks[uri]){
@@ -532,7 +607,6 @@ export let collateObject = function(obj, indexes = {}){
 				}
 			}
 		}
-
 		if (obj.track_uri){
 			if (indexes.tracks[obj.track_uri]){
 				obj.track = indexes.tracks[obj.track_uri];
@@ -548,10 +622,24 @@ export let collateObject = function(obj, indexes = {}){
 				}
 			}
 		}
-
 		if (obj.user_uri){
 			if (indexes.users[obj.user_uri]){
 				obj.user = indexes.users[obj.user_uri];
+			}
+		}
+	}
+
+	if (indexes.playlists){
+		if (obj.playlists_uris){
+			for (var uri of obj.playlists_uris){
+				if (indexes.playlists[uri]){
+					obj.playlists.push(indexes.playlists[uri]);
+				}
+			}
+		}
+		if (obj.playlist_uri){
+			if (indexes.playlists[obj.playlist_uri]){
+				obj.playlist = indexes.playlists[obj.playlist_uri];
 			}
 		}
 	}
