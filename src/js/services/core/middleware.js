@@ -461,13 +461,10 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_USER':
-
-            	console.log(action);
-
             	if (
             		!action.force_reload &&
-            		store.getState().core.playlists[action.uri] &&
-            		store.getState().core.playlists[action.uri].albums_uris ){
+            		store.getState().core.users[action.uri] &&
+            		store.getState().core.users[action.uri].playlists_uris ){
 	            		console.info('Loading "'+action.uri+'" from index');
 	            		break;
             	}
@@ -487,6 +484,14 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_USER_PLAYLISTS':
+                if (
+                    !action.force_reload &&
+                    store.getState().core.users[action.uri] &&
+                    store.getState().core.users[action.uri].playlists_uris ){
+                        console.info('Loading "'+action.uri+'" playlists from index');
+                        break;
+                }
+
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
 						store.dispatch(spotifyActions.getUserPlaylists(action.uri));

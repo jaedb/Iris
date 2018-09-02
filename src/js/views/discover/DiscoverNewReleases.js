@@ -32,6 +32,11 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	loadMore(){
+
+		// TODO: Figure out how to check for duplicated requests
+		// perhaps we catch this at Spotify actions, by checking for
+		// pending requests on the same URL, and invalidate the Promise?
+
 		this.props.spotifyActions.getMore(
 			this.props.new_releases_more,
 			null,
@@ -138,7 +143,11 @@ class DiscoverNewReleases extends React.Component{
 				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
-				<LazyLoadListener loading={this.props.new_releases_more} loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener
+					loadKey={this.props.new_releases_more}
+					showLoader={this.props.new_releases_more}
+					loadMore={() => this.loadMore()}
+				/>
 			</div>
 		);
 	}

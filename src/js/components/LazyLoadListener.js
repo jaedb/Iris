@@ -1,14 +1,17 @@
 
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
+import * as helpers from '../helpers';
 
 export default class LazyLoadListener extends React.Component{
 
 	constructor(props){
 		super(props);
 		this.state = {
-			loading: false
+			listening: false,
+			loadKey: this.props.loadKey
 		}
-		this.handleScroll = this.handleScroll.bind(this);
+		
+		this.handleScroll = helpers.throttle(this.handleScroll.bind(this), 50);
 	}
 
 	componentWillMount(){
@@ -19,21 +22,37 @@ export default class LazyLoadListener extends React.Component{
 		window.removeEventListener("scroll", this.handleScroll, false);
 	}
 
+	componentWillReceiveProps(nextProps){
+		if (nextProps.loadKey !== this.state.loadKey){
+			this.setState({
+				loadKey: nextProps.loadKey,
+				listening: true
+			});
+		}
+	}
+
 	handleScroll(e){
-	    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80)){
-	    	if (!this.state.loading && this.props.loading){
-				this.setState({ loading: true })
-				this.props.loadMore();
-			}
-	    }else if (this.state.loading){
-			this.setState({ loading: false })
-	    }
+		if (this.state.listening){
+
+			// At, or nearly at the bottom of the page
+		    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80)){
+
+				// Immediately stop listening to avoid duplicating pagination requests
+				this.setState(
+					{listening: false},
+					() => {
+						this.props.loadMore();
+					}
+				);
+
+		    }
+		}
 	}
 
 	render(){
 		return (
-			<div className={"lazy-loader body-loader"+(this.state.loading || this.props.forceLoader ? ' loading' : '')}>
-				{this.state.loading || this.props.forceLoader ? <div className="loader"></div> : null}
+			<div className={"lazy-loader body-loader"+(this.props.showLoader ? ' loading' : '')}>
+				{this.props.showLoader ? <div className="loader"></div> : null}
 			</div>
 		)
 	}

@@ -1273,7 +1273,7 @@ export function getUserPlaylists(uri){
                         playlists.push(playlist);
                     }
 
-                    dispatch(coreActions.userPlaylistsLoaded(uri, playlists, response.more, response.total));
+                    dispatch(coreActions.userPlaylistsLoaded(uri, playlists, response.next, response.total));
                 },
                 error => {
                     dispatch(coreActions.handleException(

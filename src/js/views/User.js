@@ -110,7 +110,11 @@ class User extends React.Component{
 					<section className="grid-wrapper">
 						<h4>Playlists</h4>
 						<PlaylistGrid playlists={user.playlists} />
-						<LazyLoadListener loading={user.playlists_more} loadMore={() => this.loadMore()} />
+						<LazyLoadListener
+							loadKey={user.playlists_more}
+							showLoader={user.playlists_more}
+							loadMore={() => this.loadMore()}
+						/>
 					</section>
 				</div>
 			</div>

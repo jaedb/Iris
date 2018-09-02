@@ -337,6 +337,9 @@ export let formatAlbum = function(data){
 
 	if (data.date && !album.date) album.release_date = data.date;
 
+	// Actively overwrite "type" with "album_type"
+	if (data.album_type) album.type = data.album_type;
+
 	return album;
 }
 
@@ -364,7 +367,11 @@ export let formatArtist = function(data){
 		'biography_publish_date',
 		'related_artists_uris',
 		'albums_uris',
-		'tracks_uris'
+		'albums_total',
+		'albums_more',
+		'tracks_uris',
+		'tracks_total',
+		'tracks_more'
 	];
 
 	// Loop fields and import from data
@@ -414,7 +421,9 @@ export let formatPlaylist = function(data){
 		'last_modified_date',
 		'can_edit',
 		'user_uri',
-		'tracks_uris'
+		'tracks_uris',
+		'tracks_total',
+		'tracks_more'
 	];
 
 	// Loop fields and import from data
@@ -445,7 +454,10 @@ export let formatUser = function(data){
 		'provider',
 		'name',
 		'images',
-		'followers'
+		'followers',
+		'playlists_uris',
+		'playlists_total',
+		'playlists_more'
 	];
 
 	// Loop fields and import from data
@@ -563,17 +575,25 @@ export let collate = function(obj, indexes = {}){
 
 	// Setup empty arrays for the appropriate reference objects
 	// This helps create a consistent object structure
-	if (obj.artists_uris !== undefined) 	obj.artists = [];
-	if (obj.albums_uris !== undefined) 		obj.albums = [];
-	if (obj.tracks_uris !== undefined) 		obj.tracks = [];
-	if (obj.users_uris !== undefined) 		obj.users = [];
-	if (obj.playlists_uris !== undefined) 	obj.playlists = [];
+	if (obj.artists_uris !== undefined) 		obj.artists = [];
+	if (obj.albums_uris !== undefined) 			obj.albums = [];
+	if (obj.tracks_uris !== undefined) 			obj.tracks = [];
+	if (obj.users_uris !== undefined) 			obj.users = [];
+	if (obj.playlists_uris !== undefined) 		obj.playlists = [];
+	if (obj.related_artists_uris !== undefined) obj.related_artists = [];
 
 	if (indexes.artists){
 		if (obj.artists_uris){
 			for (var uri of obj.artists_uris){
 				if (indexes.artists[uri]){
 					obj.artists.push(indexes.artists[uri]);
+				}
+			}
+		}
+		if (obj.related_artists_uris){
+			for (var uri of obj.related_artists_uris){
+				if (indexes.artists[uri]){
+					obj.related_artists.push(indexes.artists[uri]);
 				}
 			}
 		}

@@ -185,7 +185,8 @@ class Queue extends React.Component{
 							removeTracks={track_indexes => this.removeTracks(track_indexes)}
 							playTracks={tracks => this.playTracks(tracks)}
 							playTrack={track => this.playTrack(track)}
-							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)} />
+							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}
+						/>
 					</section>
 				
 				</div>
