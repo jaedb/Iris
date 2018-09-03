@@ -160,7 +160,7 @@ class LibraryArtists extends React.Component{
 						className="artist-list"
 						link_prefix={global.baseURL+"artist/"} />
 					<LazyLoadListener 
-						loadKey={total_artists}
+						loadKey={this.state.limit}
 						showLoader={this.state.limit < total_artists}
 						loadMore={() => this.loadMore()}
 					/>
@@ -173,7 +173,7 @@ class LibraryArtists extends React.Component{
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />
 					<LazyLoadListener 
-						loadKey={total_artists}
+						loadKey={this.state.limit}
 						showLoader={this.state.limit < total_artists} 
 						loadMore={() => this.loadMore()}
 					/>

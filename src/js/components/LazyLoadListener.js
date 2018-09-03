@@ -7,7 +7,7 @@ export default class LazyLoadListener extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			listening: false,
+			listening: (this.props.loadKey ? true : false),
 			loadKey: this.props.loadKey
 		}
 		
@@ -23,7 +23,7 @@ export default class LazyLoadListener extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (nextProps.loadKey !== this.state.loadKey){
+		if (nextProps.loadKey && nextProps.loadKey !== this.state.loadKey){
 			this.setState({
 				loadKey: nextProps.loadKey,
 				listening: true

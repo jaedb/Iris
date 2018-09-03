@@ -106,12 +106,14 @@ const SpotifyMiddleware = (function(){
                     type: 'ALBUMS_LOADED',
                     albums: action.data.albums.items
                 });
-                store.dispatch({
-                    type: 'NEW_RELEASES_LOADED',
-                    uris: helpers.arrayOf('uri',action.data.albums.items),
-                    more: action.data.albums.next,
-                    total: action.data.albums.total
-                });
+
+                // Collate result into the three key values we want
+                action.uris = helpers.arrayOf('uri', action.data.albums.items);
+                action.more = action.data.albums.next;
+                action.total = action.data.albums.total;
+
+                // And pass on to our reducer
+                next(action);
                 break
 
             case 'SPOTIFY_ARTIST_ALBUMS_LOADED':

@@ -32,17 +32,11 @@ class DiscoverNewReleases extends React.Component{
 	}
 
 	loadMore(){
-
-		// TODO: Figure out how to check for duplicated requests
-		// perhaps we catch this at Spotify actions, by checking for
-		// pending requests on the same URL, and invalidate the Promise?
-
 		this.props.spotifyActions.getMore(
 			this.props.new_releases_more,
 			null,
 			{
-				type: 'SPOTIFY_NEW_RELEASES_LOADED',
-				key: null
+				type: 'SPOTIFY_NEW_RELEASES_LOADED'
 			}
 		);
 	}
@@ -111,12 +105,11 @@ class DiscoverNewReleases extends React.Component{
 			)
 		}
 
-		var albums = []
+		var albums = [];
 		if (this.props.new_releases){
-			for (var i = 0; i < this.props.new_releases.length; i++){
-				var uri = this.props.new_releases[i]
+			for (var uri of this.props.new_releases){
 				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
+					albums.push(this.props.albums[uri]);
 				}
 			}
 		}
@@ -166,9 +159,9 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,
 		albums: state.core.albums,
-		new_releases: state.core.new_releases,
-		new_releases_more: state.core.new_releases_more,
-		new_releases_total: state.core.new_releases_total
+		new_releases: state.spotify.new_releases,
+		new_releases_more: state.spotify.new_releases_more,
+		new_releases_total: state.spotify.new_releases_total
 	}
 }
 

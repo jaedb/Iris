@@ -158,27 +158,6 @@ export default function reducer(core = {}, action){
             return Object.assign({}, core, { users: users });
 
 
-        case 'NEW_RELEASES_LOADED':
-            if (!action.uris){
-                return Object.assign({}, core, { 
-                    new_releases: null,
-                    new_releases_more: null,
-                    new_releases_total: null
-                });
-            }
-
-            var new_releases = [];
-            if (core.new_releases){
-            	new_releases = Object.assign([], core.new_releases);
-            }
-
-            return Object.assign({}, core, { 
-                new_releases: [...new_releases, ...action.uris],
-                new_releases_more: action.more,
-                new_releases_total: action.total
-            });
-
-
         case 'ARTIST_ALBUMS_LOADED':
             var artists = Object.assign({}, core.artists)
             var albums_uris = [];
