@@ -26,7 +26,9 @@ export function getBroadcasts(){
                                 xhr: xhr,
                                 status: status,
                                 error: error
-                            }
+                            },
+                            null,
+                            false
                         )
                     );
                 }
@@ -43,12 +45,13 @@ export function startSearch(search_type, query, only_mopidy = false){
 	}
 }
 
-export function handleException(message, data = {}, description = null){
+export function handleException(message, data = {}, description = null, show_notification = true){
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
         description: description,
-        data: data
+        data: data,
+        show_notification: show_notification
     }
 }
 

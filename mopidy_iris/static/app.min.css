@@ -4378,8 +4378,8 @@ $icon-websocket: \e920;
       width: auto;
       bottom: auto;
       bottom: 8px;
-      left: 60px;
-      right: 60px;
+      left: 70px;
+      right: 70px;
       text-align: center;
       font-size: 12px;
       color: #FFFFFF !important; }
@@ -6046,9 +6046,11 @@ main header {
     height: 0.5em;
     margin: 0.25em 1px;
     background: #cecac4;
-    opacity: 0.25; }
+    opacity: 0.2; }
     .popularity-bars .bar.filled {
       opacity: 1; }
+    .light-theme .popularity-bars .bar {
+      background: #121212; }
 
 .popularity-value {
   display: none; }
@@ -6422,7 +6424,8 @@ main .track-view {
       height: 4rem;
       margin-top: -1rem; }
     .search-view .search-form input:focus, .search-view .search-form input:active {
-      border-color: #08d58f; }
+      border-color: #08d58f;
+      background: transparent; }
 
 .search-view .search-result-sections {
   padding-bottom: 30px; }

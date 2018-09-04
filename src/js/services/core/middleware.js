@@ -71,18 +71,6 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                // Log with Raven Sentry
-                /*
-                if (store.getState().ui.allow_reporting){
-	                Raven.captureException(
-	                    new Error(message),
-	                    {
-	                        extra: data
-	                    }
-	                );
-	            }
-                */
-
                 // Log with Analytics
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({
@@ -93,8 +81,12 @@ const CoreMiddleware = (function(){
 	                });
 	            }
 
-                store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
+	            if (action.show_notification){
+	                store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
+	            }
+
                 console.error(message, description, data);
+                
                 break;
 
             case 'PLAY_PLAYLIST':
