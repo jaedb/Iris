@@ -5426,6 +5426,9 @@ main header {
         .light-theme main header .options .button:hover, .light-theme
         main header .options button:hover {
           color: #32b5f2; }
+        .light-theme main header .options .button:active, .light-theme
+        main header .options button:active {
+          background: transparent; }
   main header.overlay {
     position: absolute;
     top: 0;

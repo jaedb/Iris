@@ -2041,7 +2041,7 @@ const MopidyMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'QUEUE_LOADED',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         }
                     );
@@ -2053,7 +2053,7 @@ const MopidyMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'MOPIDY_QUEUE_HISTORY',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         }
                     );
@@ -2071,10 +2071,10 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CURRENT_TRACK_LOADED':
-                var track = helpers.formatTracks(action.tl_track);
+                var track = helpers.formatTrack(action.tl_track);
 
                 // We don't have the track already in our index
-                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
+                if (!store.getState().core.tracks[track.uri]){
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
                     if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
