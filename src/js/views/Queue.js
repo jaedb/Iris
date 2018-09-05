@@ -209,6 +209,8 @@ const mapStateToProps = (state, ownProps) => {
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		tracks: state.core.tracks,
+		artists: state.core.artists,
+		albums: state.core.albums,
 		queue: state.core.queue,
 		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,

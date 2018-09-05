@@ -326,30 +326,14 @@ const CoreMiddleware = (function(){
 
 
             /**
-             * Queue and playback info
+             * Asset Load commands
+             *
+             * These are called from views and other middleware to load
+             * assets. This is where we can return already indexed records
+             * where appropriate
              **/
 
-            case 'CURRENT_TRACK_LOADED':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: [action.track]
-                });
-
-                next(action);
-                break;
-
-            case 'QUEUE_LOADED':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: action.tracks
-                });
-
-                next(action);
-                break;
-
-
             case 'LOAD_TRACK':
-
             	if (
             		!action.force_reload &&
             		store.getState().core.tracks[action.uri]){
@@ -503,26 +487,69 @@ const CoreMiddleware = (function(){
              * These modify our asset indexes, which are used globally
              **/
 
+            case 'CURRENT_TRACK_LOADED':
+                store.dispatch(coreActions.trackLoaded(action.track));
+                next(action);
+                break;
+/*
+            case 'QUEUE_LOADED':
+                store.dispatch(coreActions.tracksLoaded(action.tracks));
+                next(action);
+                break;*/
+
+            case 'QUEUE_LOADED':
             case 'TRACKS_LOADED':
                 var tracks_index = Object.assign({}, core.tracks);
+                var artists_index = core.artists;
+                var albums_index = core.albums;
                 var tracks_loaded = [];
+                var artists_loaded = [];
+                var albums_loaded = [];
 
-                action.tracks.forEach(track => {
-                    track = helpers.formatTracks(track);
+                action.tracks.forEach(raw_track => {
+                    var track = helpers.formatTrack(raw_track);
 
                     if (tracks_index[track.uri] !== undefined){
                         track = Object.assign({}, tracks_index[track.uri], track);
                     }
 
-                    if (track.album && track.album.images && track.album.images.length > 0){
-                        track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
-                        track.images = track.album.images;
+                    if (raw_track.album){
+                        track.album = helpers.formatSimpleObject(raw_track.album);
+
+                        if (!albums_index[raw_track.album.uri]){
+                            albums_loaded.push(raw_track.album);
+                        }
+
+                        // Copy the images to the track
+                        if (raw_track.album.images){
+                            track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
+                        }
+                    }
+
+                    if (raw_track.artists && raw_track.artists.length > 0){
+                        track.artists = [];
+
+                        for (var artist of raw_track.artists){
+                            track.artists.push(helpers.formatSimpleObject(artist));
+
+                            // Not already in our index, so let's add it
+                            if (!artists_index[artist.uri]){
+                                artists_loaded.push(artist);
+                            }
+                        }
                     }
 
                     tracks_loaded.push(track);
                 });
 
                 action.tracks = tracks_loaded;
+
+                if (artists_loaded.length > 0){
+                    store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                }
+                if (albums_loaded.length > 0){
+                    store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                }
 
                 next(action);
                 break;
@@ -559,8 +586,12 @@ const CoreMiddleware = (function(){
 
                 action.albums = albums_loaded;
 
-                store.dispatch(coreActions.artistsLoaded(artists_loaded));
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                if (artists_loaded.length > 0){
+                    store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                }
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break
@@ -600,7 +631,9 @@ const CoreMiddleware = (function(){
 
                 action.artists = artists_loaded;
 
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break;
@@ -646,8 +679,9 @@ const CoreMiddleware = (function(){
 
                 action.playlists = playlists_loaded;
 
-                // Load our tracks
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break;

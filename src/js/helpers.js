@@ -309,10 +309,35 @@ export let getTrackIcon = function(current_track = false, core = false){
 
 
 /**
+ * Format a simple object
+ * This is a shell record containing only the bare essentials. Typically
+ * a tracks' artists/album
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatSimpleObject = function(data){
+	var simple_object = {}
+	var fields = [
+		'uri',
+		'name'
+	];
+
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			simple_object[field] = data[field];
+		}
+	}
+
+	return simple_object;
+}
+
+
+/**
  * Format our album objects into a universal format
  *
  * @param data obj
- * @return album obj
+ * @return obj
  **/
 export let formatAlbum = function(data){
 	var album = {};
@@ -335,10 +360,12 @@ export let formatAlbum = function(data){
 		}
 	}
 
-	if (data.date && !album.date) album.release_date = data.date;
-
-	// Actively overwrite "type" with "album_type"
-	if (data.album_type) album.type = data.album_type;
+	if (data.date && !album.date){
+		album.release_date = data.date;
+	}
+	if (data.album_type){
+		album.type = data.album_type;
+	}
 
 	return album;
 }
@@ -348,7 +375,7 @@ export let formatAlbum = function(data){
  * Format our artist objects into a universal format
  *
  * @param data obj
- * @return artist obj
+ * @return obj
  **/
 export let formatArtist = function(data){
 	var artist = {}
@@ -405,7 +432,7 @@ export let formatArtist = function(data){
  * Format our playlist objects into a universal format
  *
  * @param data obj
- * @return playlist obj
+ * @return obj
  **/
 export let formatPlaylist = function(data){
 	var playlist = {}
@@ -445,7 +472,7 @@ export let formatPlaylist = function(data){
  * Format a user objects into a universal format
  *
  * @param data obj
- * @return playlist obj
+ * @return obj
  **/
 export let formatUser = function(data){
 	var user = {}
@@ -470,9 +497,12 @@ export let formatUser = function(data){
 	if (data.followers && data.followers.total){
 		user.followers = data.followers.total;
 	}
-
-	if (data.display_name && !user.name) user.name = data.display_name;
-	if (data.id && !user.name) user.name = data.id;
+	if (data.display_name && !user.name){
+		user.name = data.display_name;
+	}
+	if (data.id && !user.name){
+		user.name = data.id;
+	}
 
 	return user;
 }
@@ -481,79 +511,100 @@ export let formatUser = function(data){
 /**
  * Format tracks into our universal format
  *
- * @param tracks = object or array of objects
- * @return array
+ * @param data obj
+ * @return obj
+ **/
+export let formatTrack = function(data){
+	var track = {}
+	var fields = [
+		'uri',
+		'tlid',
+		'provider',
+		'name',
+		'images',
+		'release_date',
+		'disc_number',
+		'track_number',
+		'duration',
+		'followers',
+		'artists',	// Array of simple records
+		'album'		// Array of simple records
+	];
+
+	// Nested track object (eg in spotify playlist)
+	if (data.track && isObject(data.track)){
+
+		// Copy wrapper's details (if applicable)
+		if (data.added_by){
+			data.track.added_by = data.added_by;
+		}
+		if (data.added_at){
+			data.track.added_at = data.added_at;
+		}
+		if (data.tlid){
+			data.track.tlid = data.tlid;
+		}
+
+		// And now flatten
+		data = data.track;
+	}
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			track[field] = data[field];
+		}
+	}
+
+	if (data.followers && data.followers.total){
+		track.followers = data.followers.total;
+	}
+
+	if (!track.duration && data.duration_ms){
+		track.duration = data.duration_ms;
+	} else if (!track.duration && data.length){
+		track.duration = data.length;
+	}
+
+    if (!track.track_number && data.track_no){
+    	track.track_number = data.track_no;
+    }
+
+    if (!track.disc_number && data.disc_no){
+    	track.disc_number = data.disc_no;
+    }
+
+    if (!track.release_date && data.date){
+    	track.release_date = data.date;
+    }
+
+    // Copy images from albums (if applicable)
+    // TOOD: Identify if we stil need this...
+    if (data.album && data.album.images){
+    	if (!track.images || track.images.length > 0){
+    		track.images = data.album.images;
+    	}
+    }
+
+	return track;
+}
+
+/**
+ * Format multiple tracks
+ *
+ * @param tracks Array
+ * @return Array
  **/
 export let formatTracks = function(tracks){
-
 	if (!tracks || tracks === undefined){
 		return null;
 	}
 
-	// Handle single records
-	var singular = false;
-	if (tracks.constructor !== Array){
-		tracks = [tracks];
-		singular = true;
-	}
-
     var formatted = [];
     for (var i = 0; i < tracks.length; i++){
-
-    	// Nested track object (eg in spotify playlist)
-    	if (tracks[i].track && isObject(tracks[i].track)){
-    		var track = Object.assign({}, tracks[i].track);
-
-    		// Copy supporting values
-    		if (tracks[i].added_by){
-    			track.added_by = tracks[i].added_by;
-    		}
-    		if (tracks[i].added_at){
-    			track.added_at = tracks[i].added_at;
-    		}
-    		if (tracks[i].tlid){
-    			track.tlid = tracks[i].tlid;
-    		}
-
-    	} else {
-    		var track = Object.assign({}, tracks[i]);
-    	}
-
-    	if (track.duration_ms){
-    		track.duration = track.duration_ms;
-    	} else if (track.length){
-    		track.duration = track.length;
-    	}
-
-        if (track.track_no){
-        	track.track_number = track.track_no;
-        } else if (track.track_number){
-        	track.track_number = track.track_number;
-        }
-
-        if (track.disc_no){
-        	track.disc_number = track.disc_no;
-        }
-
-        if (track.release_date){
-        	track.date = track.release_date;
-        }
-
-	    // Copy images from albums (if applicable)
-	    if (track.album && track.album.images){
-	    	if (!track.images || track.images.length > 0){
-	    		track.images = track.album.images;
-	    	}
-	    }
-
-        formatted.push(track);
+        formatted.push(formatTrack(tracks[i]));
     }
-
-    if (singular){
-    	return formatted[0];
-    } else {
-    	return formatted;
-    }
+    return formatted;
 }
 
 
