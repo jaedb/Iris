@@ -486,17 +486,19 @@ const CoreMiddleware = (function(){
              * Index actions
              * These modify our asset indexes, which are used globally
              **/
+/*
 
             case 'CURRENT_TRACK_LOADED':
                 store.dispatch(coreActions.trackLoaded(action.track));
                 next(action);
                 break;
-/*
             case 'QUEUE_LOADED':
                 store.dispatch(coreActions.tracksLoaded(action.tracks));
                 next(action);
-                break;*/
+                break;
+                */
 
+            case 'CURRENT_TRACK_LOADED':
             case 'QUEUE_LOADED':
             case 'TRACKS_LOADED':
                 var tracks_index = Object.assign({}, core.tracks);
@@ -506,7 +508,13 @@ const CoreMiddleware = (function(){
                 var artists_loaded = [];
                 var albums_loaded = [];
 
-                action.tracks.forEach(raw_track => {
+                if (action.tracks){
+                	var tracks = action.tracks;
+                } else if (action.track){
+                	var tracks = [action.track];
+                }
+
+                tracks.forEach(raw_track => {
                     var track = helpers.formatTrack(raw_track);
 
                     if (tracks_index[track.uri] !== undefined){
@@ -542,7 +550,12 @@ const CoreMiddleware = (function(){
                     tracks_loaded.push(track);
                 });
 
-                action.tracks = tracks_loaded;
+                if (action.type == 'CURRENT_TRACK_LOADED'){
+                	action.current_track = tracks_loaded[0];
+                	action.current_track_uri = tracks_loaded[0].uri;
+                } else {
+                	action.tracks = tracks_loaded;
+                }
 
                 if (artists_loaded.length > 0){
                     store.dispatch(coreActions.artistsLoaded(artists_loaded));
