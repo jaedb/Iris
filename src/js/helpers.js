@@ -527,6 +527,9 @@ export let formatTrack = function(data){
 		'track_number',
 		'duration',
 		'followers',
+		'lyrics',
+		'lyrics_path',
+		'lyrics_results',
 		'artists',	// Array of simple records
 		'album'		// Array of simple records
 	];

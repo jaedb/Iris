@@ -167,7 +167,7 @@ class PlaybackControls extends React.Component{
 				<section className="progress">
 					<ProgressSlider />
 					<span className="current">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
-					<span className="total">{ this.props.current_track ? <Dater type="length" data={this.props.current_track.length} /> : '-' }</span>
+					<span className="total">{ this.props.current_track ? <Dater type="length" data={this.props.current_track.duration} /> : '-' }</span>
 				</section>
 
 				<section className="volume">

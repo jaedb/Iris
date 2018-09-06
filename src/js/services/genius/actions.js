@@ -166,10 +166,10 @@ export function getTrackLyrics(uri, path){
 	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
 	                        dispatch(coreActions.trackLoaded({
-	                                uri: uri,
-	                                lyrics: lyrics_html,
-	                                lyrics_path: path
-	                            }));
+                                uri: uri,
+                                lyrics: lyrics_html,
+                                lyrics_path: path
+                            }));
 	                    }
                     } else {
 	                    dispatch(coreActions.handleException(
