@@ -2155,7 +2155,6 @@ const MopidyMiddleware = (function(){
 
                 request(socket, store, 'library.getImages', {uris: action.uris})
                     .then(response => {
-
                         var records = [];
                         for (var uri in response){
                             if (response.hasOwnProperty(uri)){

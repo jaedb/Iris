@@ -486,20 +486,19 @@ const CoreMiddleware = (function(){
              * Index actions
              * These modify our asset indexes, which are used globally
              **/
-/*
 
             case 'CURRENT_TRACK_LOADED':
                 store.dispatch(coreActions.trackLoaded(action.track));
+                action.track = helpers.formatTrack(action.track);
                 next(action);
                 break;
+
             case 'QUEUE_LOADED':
                 store.dispatch(coreActions.tracksLoaded(action.tracks));
+                action.tracks = helpers.formatTracks(action.tracks);
                 next(action);
                 break;
-                */
 
-            case 'CURRENT_TRACK_LOADED':
-            case 'QUEUE_LOADED':
             case 'TRACKS_LOADED':
                 var tracks_index = Object.assign({}, core.tracks);
                 var artists_index = core.artists;
@@ -508,19 +507,13 @@ const CoreMiddleware = (function(){
                 var artists_loaded = [];
                 var albums_loaded = [];
 
-                if (action.tracks){
-                	var tracks = action.tracks;
-                } else if (action.track){
-                	var tracks = [action.track];
-                }
-
-                tracks.forEach(raw_track => {
+                action.tracks.forEach(raw_track => {
                     var track = helpers.formatTrack(raw_track);
 
                     if (tracks_index[track.uri] !== undefined){
                         track = Object.assign({}, tracks_index[track.uri], track);
                     }
-
+                    
                     if (raw_track.album){
                         track.album = helpers.formatSimpleObject(raw_track.album);
 
@@ -549,13 +542,6 @@ const CoreMiddleware = (function(){
 
                     tracks_loaded.push(track);
                 });
-
-                if (action.type == 'CURRENT_TRACK_LOADED'){
-                	action.current_track = tracks_loaded[0];
-                	action.current_track_uri = tracks_loaded[0].uri;
-                } else {
-                	action.tracks = tracks_loaded;
-                }
 
                 if (artists_loaded.length > 0){
                     store.dispatch(coreActions.artistsLoaded(artists_loaded));
