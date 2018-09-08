@@ -527,6 +527,9 @@ export let formatTrack = function(data){
 		'track_number',
 		'duration',
 		'followers',
+		'userloved',
+		'is_explicit',
+		'is_local',
 		'lyrics',
 		'lyrics_path',
 		'lyrics_results',
@@ -563,28 +566,32 @@ export let formatTrack = function(data){
 		track.followers = data.followers.total;
 	}
 
-	if (!track.duration && data.duration_ms){
+	if (track.duration === undefined && data.duration_ms !== undefined){
 		track.duration = data.duration_ms;
-	} else if (!track.duration && data.length){
+	} else if (track.duration === undefined && data.length !== undefined){
 		track.duration = data.length;
 	}
 
-    if (!track.track_number && data.track_no){
+    if (track.track_number === undefined && data.track_no !== undefined){
     	track.track_number = data.track_no;
     }
 
-    if (!track.disc_number && data.disc_no){
+    if (track.disc_number === undefined && data.disc_no !== undefined){
     	track.disc_number = data.disc_no;
     }
 
-    if (!track.release_date && data.date){
+    if (track.release_date === undefined && data.date !== undefined){
     	track.release_date = data.date;
+    }
+
+    if (track.explicit === undefined && data.explicit !== undefined){
+    	track.is_explicit = data.explicit;
     }
 
     // Copy images from albums (if applicable)
     // TOOD: Identify if we stil need this...
     if (data.album && data.album.images){
-    	if (!track.images || track.images.length > 0){
+    	if (track.images === undefined){
     		track.images = data.album.images;
     	}
     }

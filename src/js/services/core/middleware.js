@@ -507,7 +507,7 @@ const CoreMiddleware = (function(){
                 var artists_loaded = [];
                 var albums_loaded = [];
 
-                action.tracks.forEach(raw_track => {
+                for (var raw_track of action.tracks){
                     var track = helpers.formatTrack(raw_track);
 
                     if (tracks_index[track.uri] !== undefined){
@@ -541,7 +541,7 @@ const CoreMiddleware = (function(){
                     }
 
                     tracks_loaded.push(track);
-                });
+                };
 
                 if (artists_loaded.length > 0){
                     store.dispatch(coreActions.artistsLoaded(artists_loaded));
@@ -549,6 +549,8 @@ const CoreMiddleware = (function(){
                 if (albums_loaded.length > 0){
                     store.dispatch(coreActions.albumsLoaded(albums_loaded));
                 }
+
+                action.tracks = tracks_loaded;
 
                 next(action);
                 break;

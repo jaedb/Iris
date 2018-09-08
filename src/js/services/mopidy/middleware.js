@@ -1759,13 +1759,13 @@ const MopidyMiddleware = (function(){
 
                             	var artists_uris = [];
                             	for (var artist in response[uri][0].artists){
-                            		artists_loaded.push(helpers.formatArtist(artist));
+                            		artists_loaded.push(artist);
                             		artists_uris.push(artist.uri);
                             	}
 
                             	var tracks_uris = [];
                             	for (var track in response[uri]){
-                            		tracks_loaded.push(helpers.formatTrack(track));
+                            		tracks_loaded.push(helpers.track);
                             		tracks_uris.push(track.uri);
                             	}
 
@@ -1811,7 +1811,7 @@ const MopidyMiddleware = (function(){
 
                         var artists = [];
                         for (var artist of response[0].artists){
-                        	artists.push(helpers.formatArtist(artist));
+                        	artists.push(artist);
                         }
 
                         var album = Object.assign(
@@ -1819,7 +1819,7 @@ const MopidyMiddleware = (function(){
                             { 
                             	images: []
                             },
-                            helpers.formatAlbum(response[0].album),
+                            response[0].album,
                             {
                                 source: 'local',
                                 artists_uris: helpers.arrayOf('uri', artists),
@@ -2073,8 +2073,8 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CURRENT_TRACK_LOADED':
                 var track = helpers.formatTrack(action.tl_track);
 
-                // We don't have the track already in our index
-                if (!store.getState().core.tracks[track.uri]){
+                // We don't have the track already in our index, or we do but it's a partial record
+                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
                     if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
