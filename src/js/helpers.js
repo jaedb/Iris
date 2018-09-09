@@ -116,110 +116,6 @@ export let setStorage = function(key, value, replace = false){
 }
 
 
-/**
- * Image sizing
- * We digest all our known image source formats into a universal small,medium,large,huge object
- *
- * @param images = array
- * @return obj
- **/
-export let sizedImages = function(images){
-
-	var sizes = {
-		small: false,
-		medium: false,
-		large: false,
-		huge: false
-	}
-
-	if (!images){
-		return sizes;
-	}
-
-	// An array of images has been provided
-	if (Array.isArray(images)){
-
-		if (images.length <= 0){
-			return sizes;
-		}
-
-		for (var i = 0; i < images.length; i++){
-			let image = images[i]
-
-			// Mopidy image object
-			if (image.__model__ && image.__model__ == 'Image'){
-
-				if (image.width < 400){
-					sizes.small = image.url;
-				}else if (image.width < 800){
-					sizes.medium = image.url;
-				}else if (image.width < 1000){
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-			// Mopidy image string
-			} else if (typeof(image) == 'string'){
-				sizes.small = image
-			
-			// spotify-styled images
-			} else if (image.width !== undefined){
-
-				if (image.width < 400){
-					sizes.small = image.url;
-				}else if (image.width < 800){
-					sizes.medium = image.url;
-				}else if (image.width < 1000){
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-			// lastfm-styled images
-			} else if (image.size !== undefined){
-				switch(image.size){
-					case 'mega':
-					case 'extralarge':
-					case 'large':
-						sizes.medium = image['#text']
-						break;
-					case 'medium':
-					case 'small':
-						sizes.small = image['#text']
-						break;
-				}
-			}
-		}
-
-	// An object of images has been provided
-	// The Genius avatar object is an example of this 
-	} else {
-		if (images.small) sizes.small = images.small.url;
-		if (images.medium) sizes.medium = images.medium.url;
-		if (images.large) sizes.large = images.large.url;
-		if (images.huge) sizes.huge = images.huge.url;
-	}
-
-	// Inherit images where we haven't been given the appropriate size
-	// Ie small duplicated to tiny, large duplicated to medium, etc
-	if (!sizes.small){
-		if (sizes.medium) sizes.small = sizes.medium
-		else if (sizes.large) sizes.small = sizes.large
-		else if (sizes.huge) sizes.small = sizes.huge
-		else sizes.small = null
-	}
-	if (!sizes.medium){
-		if (sizes.large) sizes.medium = sizes.large
-		else if (sizes.huge) sizes.medium = sizes.huge
-		else sizes.medium = sizes.small
-	}
-	if (!sizes.large) sizes.large = sizes.medium;
-	if (!sizes.huge) sizes.huge = sizes.large;
-	
-	return sizes;
-}
-
 
 /**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
@@ -304,7 +200,112 @@ export let getTrackIcon = function(current_track = false, core = false){
 	if (typeof(core.tracks[current_track.uri]) === 'undefined') return false
 	var track = core.tracks[current_track.uri]
 	if (!track.images) return false
-	return sizedImages(track.images).small
+	return formatImages(track.images).small
+}
+
+/**
+ * Format image URLs into a consistent size-based object
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param $data mixed
+ * @return Object
+ **/
+export let formatImages = function(data){
+
+	var sizes = {
+		formatted: true,
+		small: null,
+		medium: null,
+		large: null,
+		huge: null
+	}
+
+	if (!data){
+		return sizes;
+	}
+
+	// An array of images has been provided
+	if (Array.isArray(data)){
+
+		if (data.length <= 0){
+			return sizes;
+		}
+
+		for (var i = 0; i < data.length; i++){
+			let image = data[i]
+
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image'){
+
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+			// Mopidy image string
+			} else if (typeof(image) == 'string'){
+				sizes.small = image
+			
+			// spotify-styled images
+			} else if (image.width !== undefined){
+
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+			// lastfm-styled images
+			} else if (image.size !== undefined){
+				switch(image.size){
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text']
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text']
+						break;
+				}
+			}
+		}
+
+	// An object of images has been provided
+	// The Genius avatar object is an example of this 
+	} else {
+		if (data.small) sizes.small = data.small.url;
+		if (data.medium) sizes.medium = data.medium.url;
+		if (data.large) sizes.large = data.large.url;
+		if (data.huge) sizes.huge = data.huge.url;
+	}
+
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
+	if (!sizes.small){
+		if (sizes.medium) sizes.small = sizes.medium
+		else if (sizes.large) sizes.small = sizes.large
+		else if (sizes.huge) sizes.small = sizes.huge
+		else sizes.small = null
+	}
+	if (!sizes.medium){
+		if (sizes.large) sizes.medium = sizes.large
+		else if (sizes.huge) sizes.medium = sizes.huge
+		else sizes.medium = sizes.small
+	}
+	if (!sizes.large) sizes.large = sizes.medium;
+	if (!sizes.huge) sizes.huge = sizes.large;
+	
+	return sizes;
 }
 
 
@@ -360,6 +361,10 @@ export let formatAlbum = function(data){
 		}
 	}
 
+	if (album.images && !album.images.formatted){
+		album.images = formatImages(album.images);
+	}
+
 	if (data.date && !album.date){
 		album.release_date = data.date;
 	}
@@ -406,6 +411,10 @@ export let formatArtist = function(data){
 		if (data.hasOwnProperty(field)){
 			artist[field] = data[field];
 		}
+	}
+
+	if (artist.images && !artist.images.formatted){
+		artist.images = formatImages(artist.images);
 	}
 
 	if (data.followers && data.followers.total){
@@ -460,6 +469,10 @@ export let formatPlaylist = function(data){
 		}
 	}
 
+	if (playlist.images && !playlist.images.formatted){
+		playlist.images = formatImages(playlist.images);
+	}
+
 	if (data.followers && data.followers.total){
 		playlist.followers = data.followers.total;
 	}
@@ -492,6 +505,10 @@ export let formatUser = function(data){
 		if (data.hasOwnProperty(field)){
 			user[field] = data[field];
 		}
+	}
+
+	if (user.images && !user.images.formatted){
+		user.images = formatImages(user.images);
 	}
 
 	if (data.followers && data.followers.total){
@@ -591,8 +608,8 @@ export let formatTrack = function(data){
     // Copy images from albums (if applicable)
     // TOOD: Identify if we stil need this...
     if (data.album && data.album.images){
-    	if (track.images === undefined){
-    		track.images = data.album.images;
+    	if (track.images === undefined || !track.images.formatted){
+    		track.images = formatImages(data.album.images);
     	}
     }
 

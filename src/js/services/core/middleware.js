@@ -522,9 +522,10 @@ const CoreMiddleware = (function(){
                         }
 
                         // Copy the images to the track
+                        /*
                         if (raw_track.album.images){
                             track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
-                        }
+                        }*/
                     }
 
                     if (raw_track.artists && raw_track.artists.length > 0){
@@ -543,14 +544,14 @@ const CoreMiddleware = (function(){
                     tracks_loaded.push(track);
                 };
 
+                action.tracks = tracks_loaded;
+
                 if (artists_loaded.length > 0){
                     store.dispatch(coreActions.artistsLoaded(artists_loaded));
                 }
                 if (albums_loaded.length > 0){
                     store.dispatch(coreActions.albumsLoaded(albums_loaded));
                 }
-
-                action.tracks = tracks_loaded;
 
                 next(action);
                 break;
@@ -567,10 +568,10 @@ const CoreMiddleware = (function(){
                     if (albums_index[album.uri]){
                         album = Object.assign({}, albums_index[album.uri], album);
                     }
-
+/*
                     if (raw_album.images && raw_album.images.length > 0){
                         album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
-                    }
+                    }*/
 
                     if (raw_album.tracks){
                         album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);

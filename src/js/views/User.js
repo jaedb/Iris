@@ -82,7 +82,7 @@ class User extends React.Component{
 		var user = helpers.collate(this.props.user, {playlists: this.props.playlists});
 
 		if (user && user.images){
-			var image = helpers.sizedImages(user.images).huge;
+			var image = user.images.huge;
 		} else {
 			var image = null;
 		}

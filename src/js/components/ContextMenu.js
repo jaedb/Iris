@@ -388,12 +388,7 @@ class ContextMenu extends React.Component{
 			case 'artist':
 			case 'album':
 			case 'playlist':
-				var style = null
-				if (context.item && context.item.images){
-					style = {
-						backgroundImage: 'url('+helpers.sizedImages(context.item.images).medium+')'
-					}
-				}
+				var style = null;
 
 				return (
 					<Link className="title" to={global.baseURL+context.type+'/'+context.item.uri}>

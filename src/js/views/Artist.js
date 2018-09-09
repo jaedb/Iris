@@ -277,7 +277,7 @@ class Artist extends React.Component{
 		}
 
 		if (this.props.artist && this.props.artist.images){
-			var image = helpers.sizedImages(this.props.artist.images).huge;
+			var image = this.props.artist.images.huge;
 		} else {
 			var image = null;
 		}

@@ -137,7 +137,7 @@ class Queue extends React.Component{
 		var current_track_image = null;
 		if (current_track && this.props.current_track_uri){
 			if (current_track.images !== undefined && current_track.images){
-				current_track_image = helpers.sizedImages(current_track.images).large;
+				current_track_image = current_track.images.large;
 			}
 		}
 

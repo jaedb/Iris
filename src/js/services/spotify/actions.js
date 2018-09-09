@@ -282,15 +282,7 @@ export function getTrack(uri){
         sendRequest(dispatch, getState, 'tracks/'+ helpers.getFromUri('trackid', uri))
             .then(
                 response => {
-                    let track = Object.assign(
-                        {},
-                        response,
-                        {
-                            images: response.album.images
-                        }
-                    )
-
-                    dispatch(coreActions.trackLoaded(track));
+                    dispatch(coreActions.trackLoaded(response));
                 },
                 error => {
                     dispatch(coreActions.handleException(

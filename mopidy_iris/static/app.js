@@ -205,105 +205,6 @@ var setStorage = exports.setStorage = function setStorage(key, value) {
 };
 
 /**
- * Image sizing
- * We digest all our known image source formats into a universal small,medium,large,huge object
- *
- * @param images = array
- * @return obj
- **/
-var sizedImages = exports.sizedImages = function sizedImages(images) {
-
-	var sizes = {
-		small: false,
-		medium: false,
-		large: false,
-		huge: false
-	};
-
-	if (!images) {
-		return sizes;
-	}
-
-	// An array of images has been provided
-	if (Array.isArray(images)) {
-
-		if (images.length <= 0) {
-			return sizes;
-		}
-
-		for (var i = 0; i < images.length; i++) {
-			var image = images[i];
-
-			// Mopidy image object
-			if (image.__model__ && image.__model__ == 'Image') {
-
-				if (image.width < 400) {
-					sizes.small = image.url;
-				} else if (image.width < 800) {
-					sizes.medium = image.url;
-				} else if (image.width < 1000) {
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-				// Mopidy image string
-			} else if (typeof image == 'string') {
-				sizes.small = image;
-
-				// spotify-styled images
-			} else if (image.width !== undefined) {
-
-				if (image.width < 400) {
-					sizes.small = image.url;
-				} else if (image.width < 800) {
-					sizes.medium = image.url;
-				} else if (image.width < 1000) {
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-				// lastfm-styled images
-			} else if (image.size !== undefined) {
-				switch (image.size) {
-					case 'mega':
-					case 'extralarge':
-					case 'large':
-						sizes.medium = image['#text'];
-						break;
-					case 'medium':
-					case 'small':
-						sizes.small = image['#text'];
-						break;
-				}
-			}
-		}
-
-		// An object of images has been provided
-		// The Genius avatar object is an example of this 
-	} else {
-		if (images.small) sizes.small = images.small.url;
-		if (images.medium) sizes.medium = images.medium.url;
-		if (images.large) sizes.large = images.large.url;
-		if (images.huge) sizes.huge = images.huge.url;
-	}
-
-	// Inherit images where we haven't been given the appropriate size
-	// Ie small duplicated to tiny, large duplicated to medium, etc
-	if (!sizes.small) {
-		if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
-	}
-	if (!sizes.medium) {
-		if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
-	}
-	if (!sizes.large) sizes.large = sizes.medium;
-	if (!sizes.huge) sizes.huge = sizes.large;
-
-	return sizes;
-};
-
-/**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
  * image URLs to be absolute to the mopidy server (required for proxy setups).
  *
@@ -390,7 +291,107 @@ var getTrackIcon = exports.getTrackIcon = function getTrackIcon() {
 	if (typeof core.tracks[current_track.uri] === 'undefined') return false;
 	var track = core.tracks[current_track.uri];
 	if (!track.images) return false;
-	return sizedImages(track.images).small;
+	return formatImages(track.images).small;
+};
+
+/**
+ * Format image URLs into a consistent size-based object
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param $data mixed
+ * @return Object
+ **/
+var formatImages = exports.formatImages = function formatImages(data) {
+
+	var sizes = {
+		formatted: true,
+		small: null,
+		medium: null,
+		large: null,
+		huge: null
+	};
+
+	if (!data) {
+		return sizes;
+	}
+
+	// An array of images has been provided
+	if (Array.isArray(data)) {
+
+		if (data.length <= 0) {
+			return sizes;
+		}
+
+		for (var i = 0; i < data.length; i++) {
+			var image = data[i];
+
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image') {
+
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+				// Mopidy image string
+			} else if (typeof image == 'string') {
+				sizes.small = image;
+
+				// spotify-styled images
+			} else if (image.width !== undefined) {
+
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+				// lastfm-styled images
+			} else if (image.size !== undefined) {
+				switch (image.size) {
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text'];
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text'];
+						break;
+				}
+			}
+		}
+
+		// An object of images has been provided
+		// The Genius avatar object is an example of this 
+	} else {
+		if (data.small) sizes.small = data.small.url;
+		if (data.medium) sizes.medium = data.medium.url;
+		if (data.large) sizes.large = data.large.url;
+		if (data.huge) sizes.huge = data.huge.url;
+	}
+
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
+	if (!sizes.small) {
+		if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
+	}
+	if (!sizes.medium) {
+		if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
+	}
+	if (!sizes.large) sizes.large = sizes.medium;
+	if (!sizes.huge) sizes.huge = sizes.large;
+
+	return sizes;
 };
 
 /**
@@ -473,6 +474,10 @@ var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
 		}
 	}
 
+	if (album.images && !album.images.formatted) {
+		album.images = formatImages(album.images);
+	}
+
 	if (data.date && !album.date) {
 		album.release_date = data.date;
 	}
@@ -519,6 +524,10 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
 				throw _iteratorError3;
 			}
 		}
+	}
+
+	if (artist.images && !artist.images.formatted) {
+		artist.images = formatImages(artist.images);
 	}
 
 	if (data.followers && data.followers.total) {
@@ -578,6 +587,10 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 		}
 	}
 
+	if (playlist.images && !playlist.images.formatted) {
+		playlist.images = formatImages(playlist.images);
+	}
+
 	if (data.followers && data.followers.total) {
 		playlist.followers = data.followers.total;
 	}
@@ -621,6 +634,10 @@ var formatUser = exports.formatUser = function formatUser(data) {
 				throw _iteratorError5;
 			}
 		}
+	}
+
+	if (user.images && !user.images.formatted) {
+		user.images = formatImages(user.images);
 	}
 
 	if (data.followers && data.followers.total) {
@@ -723,8 +740,8 @@ var formatTrack = exports.formatTrack = function formatTrack(data) {
 	// Copy images from albums (if applicable)
 	// TOOD: Identify if we stil need this...
 	if (data.album && data.album.images) {
-		if (track.images === undefined) {
-			track.images = data.album.images;
+		if (track.images === undefined || !track.images.formatted) {
+			track.images = formatImages(data.album.images);
 		}
 	}
 
@@ -3051,11 +3068,7 @@ function getMe() {
 function getTrack(uri) {
     return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
-            var track = Object.assign({}, response, {
-                images: response.album.images
-            });
-
-            dispatch(coreActions.trackLoaded(track));
+            dispatch(coreActions.trackLoaded(response));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load track', error));
         });
@@ -5007,7 +5020,6 @@ var Thumbnail = function (_React$Component) {
 
 				// Multiple images
 			} else if (this.props.images) {
-				var images = helpers.sizedImages(this.props.images);
 
 				// Default to medium-sized image, but accept size property as override
 				var size = 'medium';
@@ -5015,7 +5027,7 @@ var Thumbnail = function (_React$Component) {
 					size = this.props.size;
 				}
 
-				return images[size];
+				return this.props.images[size];
 			}
 
 			// No images
@@ -52598,9 +52610,10 @@ var CoreMiddleware = function () {
                                     }
 
                                     // Copy the images to the track
-                                    if (raw_track.album.images) {
+                                    /*
+                                    if (raw_track.album.images){
                                         track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
-                                    }
+                                    }*/
                                 }
 
                                 if (raw_track.artists && raw_track.artists.length > 0) {
@@ -52656,14 +52669,14 @@ var CoreMiddleware = function () {
 
                         ;
 
+                        action.tracks = tracks_loaded;
+
                         if (artists_loaded.length > 0) {
                             store.dispatch(coreActions.artistsLoaded(artists_loaded));
                         }
                         if (albums_loaded.length > 0) {
                             store.dispatch(coreActions.albumsLoaded(albums_loaded));
                         }
-
-                        action.tracks = tracks_loaded;
 
                         next(action);
                         break;
@@ -52687,10 +52700,10 @@ var CoreMiddleware = function () {
                                 if (albums_index[album.uri]) {
                                     album = Object.assign({}, albums_index[album.uri], album);
                                 }
-
-                                if (raw_album.images && raw_album.images.length > 0) {
-                                    album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
-                                }
+                                /*
+                                                    if (raw_album.images && raw_album.images.length > 0){
+                                                        album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
+                                                    }*/
 
                                 if (raw_album.tracks) {
                                     album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);
@@ -62258,11 +62271,6 @@ var ContextMenu = function (_React$Component) {
 				case 'album':
 				case 'playlist':
 					var style = null;
-					if (context.item && context.item.images) {
-						style = {
-							backgroundImage: 'url(' + helpers.sizedImages(context.item.images).medium + ')'
-						};
-					}
 
 					return _react2.default.createElement(
 						_reactRouter.Link,
@@ -64355,7 +64363,7 @@ var Artist = function (_React$Component) {
 			}
 
 			if (this.props.artist && this.props.artist.images) {
-				var image = helpers.sizedImages(this.props.artist.images).huge;
+				var image = this.props.artist.images.huge;
 			} else {
 				var image = null;
 			}
@@ -65055,7 +65063,7 @@ var User = function (_React$Component) {
 			var user = helpers.collate(this.props.user, { playlists: this.props.playlists });
 
 			if (user && user.images) {
-				var image = helpers.sizedImages(user.images).huge;
+				var image = user.images.huge;
 			} else {
 				var image = null;
 			}
@@ -65989,7 +65997,7 @@ var Queue = function (_React$Component) {
 			var current_track_image = null;
 			if (current_track && this.props.current_track_uri) {
 				if (current_track.images !== undefined && current_track.images) {
-					current_track_image = helpers.sizedImages(current_track.images).large;
+					current_track_image = current_track.images.large;
 				}
 			}
 
@@ -75202,7 +75210,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: helpers.sizedImages(playlist.images).huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: playlist.images.huge, blur: true, theme: this.props.theme }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -75886,7 +75894,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: helpers.sizedImages(album.images).huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: album.images.huge, blur: true, theme: this.props.theme }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
