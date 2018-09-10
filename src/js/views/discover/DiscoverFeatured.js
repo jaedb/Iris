@@ -47,7 +47,7 @@ class DiscoverFeatured extends React.Component{
 		if (playlist){
 			return (
 				<div className="intro">
-					<Parallax image={playlist.images.huge} blur theme={this.props.theme} />
+					<Parallax image={playlist.images ? playlist.images.large : null} blur theme={this.props.theme} />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'playlist/'+playlist.uri}

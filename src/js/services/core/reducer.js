@@ -65,55 +65,6 @@ export default function reducer(core = {}, action){
 
 
 
-        /**
-         * Categories
-         **/
-
-        case 'CATEGORY_LOADED':
-            var categories = Object.assign([], core.categories)
-
-            if (categories[action.key]){
-                var category = Object.assign({}, categories[action.key], action.category)
-            } else {
-                var category = Object.assign({}, action.category)
-            }
-
-            categories[action.key] = category
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORIES_LOADED':
-            var categories = Object.assign([], core.categories)
-
-            for (var i = 0; i < action.categories.length; i++){
-                var key = 'category:'+action.categories[i].id
-                if (categories[key]){
-                    var category = Object.assign({}, categories[key], action.categories[i])
-                } else {
-                    var category = Object.assign({}, action.categories[i])
-                }
-                categories[key] = category
-            }
-
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORY_PLAYLISTS_LOADED':
-            var categories = Object.assign([], core.categories)
-            var playlists_uris = []
-            if (categories[action.key].playlists_uris) playlists_uris = categories[action.key].playlists_uris
-
-            var category = Object.assign(
-                {}, 
-                categories[action.key],
-                {
-                    playlists_uris: [...playlists_uris, ...action.uris],
-                    playlists_more: action.more,
-                    playlists_total: action.total
-                }
-            )
-            categories[action.key] = category
-            return Object.assign({}, core, { categories: categories });
-
-
 
 
         /**

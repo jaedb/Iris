@@ -18,7 +18,11 @@ class DiscoverCategories extends React.Component{
 	}
 
 	componentDidMount(){
-		if (!this.props.categories){
+
+		// Check for an empty category index, or where we've only got one loaded
+		// This would be the case if you've refreshed from within a category and only loaded
+		// the single record.
+		if (!this.props.categories || Object.keys(this.props.categories).length <= 1){
 			this.props.spotifyActions.getCategories();
 		}
 		this.props.uiActions.setWindowTitle("Genre / Mood");
@@ -69,7 +73,7 @@ class DiscoverCategories extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		categories: state.core.categories,
+		categories: state.spotify.categories,
 		load_queue: state.ui.load_queue
 	}
 }

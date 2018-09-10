@@ -63,18 +63,6 @@ class AddSeedField extends React.Component{
 		this.setState({value: ''})
 		this.props.onSelect(e,item.uri)
 		this.props.spotifyActions.clearAutocompleteResults(this.id)
-
-		// Add our selected item to our global index
-		switch (helpers.uriType(item.uri)){
-
-			case 'artist':
-				this.props.coreActions.artistsLoaded(item);
-				break;
-
-			case 'track':
-				this.props.coreActions.tracksLoaded(item);
-				break;
-		}
 	}
 
 	results(){

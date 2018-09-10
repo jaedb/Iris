@@ -384,7 +384,7 @@ export function getCategories(){
             .then(
                 response => {
                     dispatch({
-                        type: 'CATEGORIES_LOADED',
+                        type: 'SPOTIFY_CATEGORIES_LOADED',
                         categories: response.categories.items
                     });
                 },
@@ -400,24 +400,18 @@ export function getCategories(){
 
 export function getCategory(id){
     return (dispatch, getState) => {
-
-        dispatch({
-            type: 'CATEGORY_LOADED',
-            key: 'category:'+id,
-            category: {
-                playlists_uris: null
-            }
-        });
-
-        // get the category
         sendRequest(dispatch, getState, 'browse/categories/'+id+'?country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then(
                 response => {
-                    var category = Object.assign({}, response)
                     dispatch({
-                        type: 'CATEGORY_LOADED',
-                        key: 'category:'+id,
-                        category: Object.assign({}, response)
+                        type: 'SPOTIFY_CATEGORY_LOADED',
+                        category: Object.assign(
+                            {
+                                uri: 'category:'+response.id,
+                                playlist_uris: []
+                            }, 
+                            response
+                        )
                     });
                 },
                 error => {
@@ -427,33 +421,18 @@ export function getCategory(id){
                     ));
                 }
             )
+    }
+}
 
-        // and the category's playlists
+export function getCategoryPlaylists(id){
+    return (dispatch, getState) => {
         sendRequest(dispatch, getState, 'browse/categories/'+id+'/playlists?limit=50&country='+getState().spotify.country+'&locale='+getState().spotify.locale )
             .then(
                 response => {
-                    var playlists = []
-                    for (var i = 0; i < response.playlists.items.length; i++){
-                        playlists.push(Object.assign(
-                            {},
-                            response.playlists.items[i],
-                            {
-                                tracks: null,
-                                tracks_more: null,
-                                tracks_total: response.playlists.items[i].tracks.total
-                            }
-                        ))
-                    }
-
-                    dispatch({
-                        type: 'PLAYLISTS_LOADED',
-                        playlists: playlists
-                    });
-
                     dispatch({
                         type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-                        key: 'category:'+id,
-                        data: response
+                        uri: 'category:'+id,
+                        playlists: response.playlists
                     });                
                 },
                 error => {
@@ -670,31 +649,19 @@ export function getAutocompleteResults(field_id, query, types = ['album','artist
                     }
                     
                     if (response.artists && response.artists.items){
-                        dispatch({
-                            type: 'ARTISTS_LOADED',
-                            artists: response.artists.items
-                        });
+                        dispatch(coreActions.artistsLoaded(response.artists.items));
                     }
 
                     if (response.albums && response.albums.items){
-                        dispatch({
-                            type: 'ALBUMS_LOADED',
-                            albums: response.albums.items
-                        });
+                        dispatch(coreActions.albumsLoaded(response.albums.items));
                     }
 
                     if (response.playlists && response.playlists.items){
-                        dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: response.playlists.items
-                        });
+                        dispatch(coreActions.playlistsLoaded(response.playlists.items));
                     }
 
                     if (response.tracks && response.tracks.items){
-                        dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: response.tracks.items
-                        });
+                        dispatch(coreActions.tracksLoaded(response.tracks.items));
                     }
 
                     dispatch({

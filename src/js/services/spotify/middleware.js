@@ -14,7 +14,7 @@ const SpotifyMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
-        var state = store.getState();
+        var spotify = store.getState().spotify;
 
         switch(action.type){
 
@@ -84,7 +84,7 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = Object.assign({},state.core.playlists[action.key]);
+                var playlist = Object.assign({}, store.getState().core.playlists[action.key]);
                 store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break;
 
@@ -158,9 +158,11 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+/*
+
             case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
                 var playlists = []
-                for(var i = 0; i < action.data.playlists.items.length; i++){
+                for (var i = 0; i < action.data.playlists.items.length; i++){
                     var playlist = Object.assign(
                         {},
                         action.data.playlists.items[i],
@@ -188,6 +190,59 @@ const SpotifyMiddleware = (function(){
                     total: action.data.playlists.total
                 });
                 break
+                */
+
+            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+                store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
+                
+                action.uris = helpers.arrayOf('uri',action.playlists.items);
+                action.more = action.playlists.next;
+                action.total = action.playlists.total;
+                delete action.playlists;
+
+                next(action);
+                break;
+
+            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+                store.dispatch({
+                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                    uri: action.uri,
+                    playlists: action.data.playlists
+                });
+                break;
+
+            case 'SPOTIFY_CATEGORY_LOADED':
+                store.dispatch({
+                    type: 'SPOTIFY_CATEGORIES_LOADED',
+                    categories: [action.category]
+                });
+                break;
+
+            case 'SPOTIFY_CATEGORIES_LOADED':
+                var categories_index = Object.assign({}, spotify.categories);
+                var categories_loaded = [];
+
+                for (var raw_category of action.categories){
+                    var category = Object.assign({}, raw_category);
+
+                    if (!category.uri){
+                        category.uri = "category:"+category.id;
+                    }
+
+                    if (categories_index[category.uri] !== undefined){
+                        category = Object.assign({}, categories_index[category.uri], category);
+                    }
+
+                    if (category.icons){
+                        category.icons = helpers.formatImages(category.icons);
+                    }
+
+                    categories_loaded.push(category);
+                }
+
+                action.categories = categories_loaded;
+                next(action);
+                break;
 
             case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
                 store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data))

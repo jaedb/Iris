@@ -165,6 +165,39 @@ export default function reducer(spotify = {}, action){
 
 
         /**
+         * Categories
+         **/
+
+        case 'SPOTIFY_CATEGORIES_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            for (var category of action.categories){
+                categories[category.uri] = category
+            }
+            return Object.assign({}, spotify, { categories: categories });
+
+        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+            var categories = Object.assign({}, spotify.categories)
+            var playlists_uris = [];
+
+            if (categories[action.uri].playlists_uris){
+                playlists_uris = categories[action.uri].playlists_uris;
+            }
+
+            var category = Object.assign(
+                {}, 
+                categories[action.uri],
+                {
+                    playlists_uris: [...playlists_uris, ...action.uris],
+                    playlists_more: action.more,
+                    playlists_total: action.total
+                }
+            )
+            categories[action.uri] = category
+            return Object.assign({}, spotify, { categories: categories });
+
+
+
+        /**
          * Library
          **/
 

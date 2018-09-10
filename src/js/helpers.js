@@ -555,7 +555,7 @@ export let formatTrack = function(data){
 	];
 
 	// Nested track object (eg in spotify playlist)
-	if (data.track && isObject(data.track)){
+	if (data && data.track && isObject(data.track)){
 
 		// Copy wrapper's details (if applicable)
 		if (data.added_by){
@@ -629,7 +629,7 @@ export let formatTracks = function(tracks){
 
     var formatted = [];
     for (var i = 0; i < tracks.length; i++){
-        formatted.push(formatTrack(tracks[i]));
+	    formatted.push(formatTrack(tracks[i]));
     }
     return formatted;
 }

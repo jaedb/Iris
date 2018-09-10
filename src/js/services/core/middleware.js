@@ -602,8 +602,8 @@ const CoreMiddleware = (function(){
                 var artists_index = Object.assign({}, core.artists);
                 var artists_loaded = [];
                 var tracks_loaded = [];
-
-                action.artists.forEach(raw_artist => {
+                
+                for (var raw_artist of action.artists){
                 	var artist = helpers.formatArtist(raw_artist);
 
                 	// Already have an artist in the index
@@ -628,7 +628,7 @@ const CoreMiddleware = (function(){
                     }
 
                     artists_loaded.push(artist);
-                });
+                };
 
 
                 action.artists = artists_loaded;
@@ -734,10 +734,6 @@ const CoreMiddleware = (function(){
                     var records = action.records_data.playlists;
                 } else {
                     var records = action.records_data;
-                }
-
-                if (action.records_type == 'track'){
-                    records = helpers.formatTracks(records);
                 }
 
                 var records_type_plural = action.records_type+'s';

@@ -60,7 +60,7 @@ class DiscoverNewReleases extends React.Component{
 		if (album){
 			return (
 				<div className="intro">
-					<Parallax image={album.images.huge} blur theme={this.props.theme} />
+					<Parallax image={album.images ? album.images.large : null} blur theme={this.props.theme} />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'album/'+album.uri}

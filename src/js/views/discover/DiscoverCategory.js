@@ -42,8 +42,12 @@ class DiscoverCategory extends React.Component{
 	}
 
 	loadCategory(){
-		if (!this.props.category || !this.props.category.playlists_uris){
-			this.props.spotifyActions.getCategory(this.props.params.id);
+		if (!this.props.category){
+			this.props.spotifyActions.getCategory(this.props.params.id);			
+		}
+
+		if (!this.props.category.playlists_uris){
+			this.props.spotifyActions.getCategoryPlaylists(this.props.params.id);			
 		}
 	}
 
@@ -52,8 +56,8 @@ class DiscoverCategory extends React.Component{
 			this.props.category.playlists_more,
 			null,
 			{
-				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-				key: 'category:'+this.props.params.id
+				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
+				uri: 'category:'+this.props.params.id
 			}
 		);
 	}
@@ -74,32 +78,24 @@ class DiscoverCategory extends React.Component{
 		}
 
 		if (!this.props.category){
-			return null
+			return null;
 		}
 
-		var playlists = []
-		if (this.props.category.playlists_uris){
-			for (var i = 0; i < this.props.category.playlists_uris.length; i++){
-				var key = this.props.category.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(key)){
-					playlists.push(this.props.playlists[key])
-				}
-			}
-		}
+		var category = helpers.collate(this.props.category, {playlists: this.props.playlists});
 
 		return (
 			<div className="view discover-categories-view">
 				<Header>
 					<Icon name="mood" type="material" />
-					{this.props.category.name}
+					{category.name}
 				</Header>
 				<div className="content-wrapper">
 					<section className="grid-wrapper">
-						<PlaylistGrid playlists={playlists} />
+						<PlaylistGrid playlists={category.playlists} />
 					</section>
 					<LazyLoadListener 
-						loadKey={this.props.category.playlists_more} 
-						showLoader={this.props.category.playlists_more} 
+						loadKey={category.playlists_more} 
+						showLoader={category.playlists_more} 
 						loadMore={() => this.loadMore()}
 					/>
 				</div>
@@ -119,7 +115,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		playlists: state.core.playlists,
-		category: (state.core.categories && state.core.categories['category:'+ownProps.params.id] !== undefined ? state.core.categories['category:'+ownProps.params.id] : false )
+		category: (state.spotify.categories && state.spotify.categories['category:'+ownProps.params.id] !== undefined ? state.spotify.categories['category:'+ownProps.params.id] : false )
 	}
 }
 

@@ -666,7 +666,7 @@ var formatTrack = exports.formatTrack = function formatTrack(data) {
 	];
 
 	// Nested track object (eg in spotify playlist)
-	if (data.track && isObject(data.track)) {
+	if (data && data.track && isObject(data.track)) {
 
 		// Copy wrapper's details (if applicable)
 		if (data.added_by) {
@@ -2780,6 +2780,7 @@ exports.getLibraryTracks = getLibraryTracks;
 exports.getFeaturedPlaylists = getFeaturedPlaylists;
 exports.getCategories = getCategories;
 exports.getCategory = getCategory;
+exports.getCategoryPlaylists = getCategoryPlaylists;
 exports.getNewReleases = getNewReleases;
 exports.getURL = getURL;
 exports.getMore = getMore;
@@ -3145,7 +3146,7 @@ function getCategories() {
     return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
-                type: 'CATEGORIES_LOADED',
+                type: 'SPOTIFY_CATEGORIES_LOADED',
                 categories: response.categories.items
             });
         }, function (error) {
@@ -3156,47 +3157,27 @@ function getCategories() {
 
 function getCategory(id) {
     return function (dispatch, getState) {
-
-        dispatch({
-            type: 'CATEGORY_LOADED',
-            key: 'category:' + id,
-            category: {
-                playlists_uris: null
-            }
-        });
-
-        // get the category
         sendRequest(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
-            var category = Object.assign({}, response);
             dispatch({
-                type: 'CATEGORY_LOADED',
-                key: 'category:' + id,
-                category: Object.assign({}, response)
+                type: 'SPOTIFY_CATEGORY_LOADED',
+                category: Object.assign({
+                    uri: 'category:' + response.id,
+                    playlist_uris: []
+                }, response)
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load category', error));
         });
+    };
+}
 
-        // and the category's playlists
+function getCategoryPlaylists(id) {
+    return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
-            var playlists = [];
-            for (var i = 0; i < response.playlists.items.length; i++) {
-                playlists.push(Object.assign({}, response.playlists.items[i], {
-                    tracks: null,
-                    tracks_more: null,
-                    tracks_total: response.playlists.items[i].tracks.total
-                }));
-            }
-
-            dispatch({
-                type: 'PLAYLISTS_LOADED',
-                playlists: playlists
-            });
-
             dispatch({
                 type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-                key: 'category:' + id,
-                data: response
+                uri: 'category:' + id,
+                playlists: response.playlists
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load category playlists', error));
@@ -3377,31 +3358,19 @@ function getAutocompleteResults(field_id, query) {
             }
 
             if (response.artists && response.artists.items) {
-                dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: response.artists.items
-                });
+                dispatch(coreActions.artistsLoaded(response.artists.items));
             }
 
             if (response.albums && response.albums.items) {
-                dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: response.albums.items
-                });
+                dispatch(coreActions.albumsLoaded(response.albums.items));
             }
 
             if (response.playlists && response.playlists.items) {
-                dispatch({
-                    type: 'PLAYLISTS_LOADED',
-                    playlists: response.playlists.items
-                });
+                dispatch(coreActions.playlistsLoaded(response.playlists.items));
             }
 
             if (response.tracks && response.tracks.items) {
-                dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: response.tracks.items
-                });
+                dispatch(coreActions.tracksLoaded(response.tracks.items));
             }
 
             dispatch({
@@ -50825,50 +50794,6 @@ function reducer() {
             return Object.assign({}, core, { radio: radio });
 
         /**
-         * Categories
-         **/
-
-        case 'CATEGORY_LOADED':
-            var categories = Object.assign([], core.categories);
-
-            if (categories[action.key]) {
-                var category = Object.assign({}, categories[action.key], action.category);
-            } else {
-                var category = Object.assign({}, action.category);
-            }
-
-            categories[action.key] = category;
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORIES_LOADED':
-            var categories = Object.assign([], core.categories);
-
-            for (var i = 0; i < action.categories.length; i++) {
-                var key = 'category:' + action.categories[i].id;
-                if (categories[key]) {
-                    var category = Object.assign({}, categories[key], action.categories[i]);
-                } else {
-                    var category = Object.assign({}, action.categories[i]);
-                }
-                categories[key] = category;
-            }
-
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORY_PLAYLISTS_LOADED':
-            var categories = Object.assign([], core.categories);
-            var playlists_uris = [];
-            if (categories[action.key].playlists_uris) playlists_uris = categories[action.key].playlists_uris;
-
-            var category = Object.assign({}, categories[action.key], {
-                playlists_uris: [].concat(_toConsumableArray(playlists_uris), _toConsumableArray(action.uris)),
-                playlists_more: action.more,
-                playlists_total: action.total
-            });
-            categories[action.key] = category;
-            return Object.assign({}, core, { categories: categories });
-
-        /**
          * Index updates
          * These actions are only ever called by middleware after we've digested one more many assets
          * and appended to their relevant index.
@@ -51874,6 +51799,55 @@ function reducer() {
             });
 
         /**
+         * Categories
+         **/
+
+        case 'SPOTIFY_CATEGORIES_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = action.categories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var category = _step.value;
+
+                    categories[category.uri] = category;
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return Object.assign({}, spotify, { categories: categories });
+
+        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            var playlists_uris = [];
+
+            if (categories[action.uri].playlists_uris) {
+                playlists_uris = categories[action.uri].playlists_uris;
+            }
+
+            var category = Object.assign({}, categories[action.uri], {
+                playlists_uris: [].concat(_toConsumableArray(playlists_uris), _toConsumableArray(action.uris)),
+                playlists_more: action.more,
+                playlists_total: action.total
+            });
+            categories[action.uri] = category;
+            return Object.assign({}, spotify, { categories: categories });
+
+        /**
          * Library
          **/
 
@@ -52751,32 +52725,55 @@ var CoreMiddleware = function () {
                         var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.artists.forEach(function (raw_artist) {
-                            var artist = helpers.formatArtist(raw_artist);
+                        var _iteratorNormalCompletion4 = true;
+                        var _didIteratorError4 = false;
+                        var _iteratorError4 = undefined;
 
-                            // Already have an artist in the index
-                            if (artists_index[artist.uri]) {
+                        try {
+                            for (var _iterator4 = action.artists[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                var raw_artist = _step4.value;
 
-                                // Don't replace existing images, instead add them as supplementary
-                                // this is to prevent LastFM overwriting Spotify images
-                                if (artists_index[artist.uri].images) {
-                                    artist.images_additional = artist.images;
-                                    delete artist.images;
+                                var artist = helpers.formatArtist(raw_artist);
+
+                                // Already have an artist in the index
+                                if (artists_index[artist.uri]) {
+
+                                    // Don't replace existing images, instead add them as supplementary
+                                    // this is to prevent LastFM overwriting Spotify images
+                                    if (artists_index[artist.uri].images) {
+                                        artist.images_additional = artist.images;
+                                        delete artist.images;
+                                    }
+
+                                    artist = Object.assign({}, artists_index[artist.uri], artist);
                                 }
 
-                                artist = Object.assign({}, artists_index[artist.uri], artist);
-                            }
+                                // Migrate nested tracks objects into references to our tracks index
+                                if (raw_artist.tracks) {
+                                    var tracks = helpers.formatTracks(raw_artist.tracks);
+                                    var tracks_uris = helpers.arrayOf('uri', tracks);
+                                    artist.tracks_uris = tracks_uris;
+                                    tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                                }
 
-                            // Migrate nested tracks objects into references to our tracks index
-                            if (raw_artist.tracks) {
-                                var tracks = helpers.formatTracks(raw_artist.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                artist.tracks_uris = tracks_uris;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                                artists_loaded.push(artist);
                             }
+                        } catch (err) {
+                            _didIteratorError4 = true;
+                            _iteratorError4 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                    _iterator4.return();
+                                }
+                            } finally {
+                                if (_didIteratorError4) {
+                                    throw _iteratorError4;
+                                }
+                            }
+                        }
 
-                            artists_loaded.push(artist);
-                        });
+                        ;
 
                         action.artists = artists_loaded;
 
@@ -52792,13 +52789,13 @@ var CoreMiddleware = function () {
                         var playlists_loaded = [];
                         var tracks_loaded = [];
 
-                        var _iteratorNormalCompletion4 = true;
-                        var _didIteratorError4 = false;
-                        var _iteratorError4 = undefined;
+                        var _iteratorNormalCompletion5 = true;
+                        var _didIteratorError5 = false;
+                        var _iteratorError5 = undefined;
 
                         try {
-                            for (var _iterator4 = action.playlists[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                                var playlist = _step4.value;
+                            for (var _iterator5 = action.playlists[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                var playlist = _step5.value;
 
 
                                 playlist = helpers.formatPlaylist(playlist);
@@ -52833,16 +52830,16 @@ var CoreMiddleware = function () {
                                 playlists_loaded.push(playlist);
                             }
                         } catch (err) {
-                            _didIteratorError4 = true;
-                            _iteratorError4 = err;
+                            _didIteratorError5 = true;
+                            _iteratorError5 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                    _iterator4.return();
+                                if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                    _iterator5.return();
                                 }
                             } finally {
-                                if (_didIteratorError4) {
-                                    throw _iteratorError4;
+                                if (_didIteratorError5) {
+                                    throw _iteratorError5;
                                 }
                             }
                         }
@@ -52860,13 +52857,13 @@ var CoreMiddleware = function () {
                         var users_index = Object.assign({}, core.users);
                         var users_loaded = [];
 
-                        var _iteratorNormalCompletion5 = true;
-                        var _didIteratorError5 = false;
-                        var _iteratorError5 = undefined;
+                        var _iteratorNormalCompletion6 = true;
+                        var _didIteratorError6 = false;
+                        var _iteratorError6 = undefined;
 
                         try {
-                            for (var _iterator5 = action.users[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                                var user = _step5.value;
+                            for (var _iterator6 = action.users[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                var user = _step6.value;
 
 
                                 if (users_index[user.uri]) {
@@ -52876,16 +52873,16 @@ var CoreMiddleware = function () {
                                 users_loaded.push(user);
                             }
                         } catch (err) {
-                            _didIteratorError5 = true;
-                            _iteratorError5 = err;
+                            _didIteratorError6 = true;
+                            _iteratorError6 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                                    _iterator5.return();
+                                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                    _iterator6.return();
                                 }
                             } finally {
-                                if (_didIteratorError5) {
-                                    throw _iteratorError5;
+                                if (_didIteratorError6) {
+                                    throw _iteratorError6;
                                 }
                             }
                         }
@@ -52923,10 +52920,6 @@ var CoreMiddleware = function () {
                             var records = action.records_data.playlists;
                         } else {
                             var records = action.records_data;
-                        }
-
-                        if (action.records_type == 'track') {
-                            records = helpers.formatTracks(records);
                         }
 
                         var records_type_plural = action.records_type + 's';
@@ -59004,7 +58997,7 @@ var SpotifyMiddleware = function () {
     return function (store) {
         return function (next) {
             return function (action) {
-                var state = store.getState();
+                var spotify = store.getState().spotify;
 
                 switch (action.type) {
 
@@ -59074,7 +59067,7 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                        var playlist = Object.assign({}, state.core.playlists[action.key]);
+                        var playlist = Object.assign({}, store.getState().core.playlists[action.key]);
                         store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes));
                         break;
 
@@ -59143,31 +59136,111 @@ var SpotifyMiddleware = function () {
                         });
                         break;
 
+                    /*
+                    
+                                case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+                                    var playlists = []
+                                    for (var i = 0; i < action.data.playlists.items.length; i++){
+                                        var playlist = Object.assign(
+                                            {},
+                                            action.data.playlists.items[i],
+                                            {
+                                                tracks_total: action.data.playlists.items[i].tracks.total
+                                            }
+                                        )
+                    
+                                        // remove our tracklist. It'll overwrite any full records otherwise
+                                        delete playlist.tracks
+                    
+                                        playlists.push(playlist)
+                                    }
+                    
+                                    store.dispatch({
+                                        type: 'PLAYLISTS_LOADED',
+                                        playlists: playlists
+                                    });
+                    
+                                    store.dispatch({
+                                        type: 'CATEGORY_PLAYLISTS_LOADED',
+                                        key: action.key,
+                                        uris: helpers.arrayOf('uri',playlists),
+                                        more: action.data.playlists.next,
+                                        total: action.data.playlists.total
+                                    });
+                                    break
+                                    */
+
                     case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
-                        var playlists = [];
-                        for (var i = 0; i < action.data.playlists.items.length; i++) {
-                            var playlist = Object.assign({}, action.data.playlists.items[i], {
-                                tracks_total: action.data.playlists.items[i].tracks.total
-                            });
+                        store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
 
-                            // remove our tracklist. It'll overwrite any full records otherwise
-                            delete playlist.tracks;
+                        action.uris = helpers.arrayOf('uri', action.playlists.items);
+                        action.more = action.playlists.next;
+                        action.total = action.playlists.total;
+                        delete action.playlists;
 
-                            playlists.push(playlist);
+                        next(action);
+                        break;
+
+                    case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+                        store.dispatch({
+                            type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                            uri: action.uri,
+                            playlists: action.data.playlists
+                        });
+                        break;
+
+                    case 'SPOTIFY_CATEGORY_LOADED':
+                        store.dispatch({
+                            type: 'SPOTIFY_CATEGORIES_LOADED',
+                            categories: [action.category]
+                        });
+                        break;
+
+                    case 'SPOTIFY_CATEGORIES_LOADED':
+                        var categories_index = Object.assign({}, spotify.categories);
+                        var categories_loaded = [];
+
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = action.categories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var raw_category = _step.value;
+
+                                var category = Object.assign({}, raw_category);
+
+                                if (!category.uri) {
+                                    category.uri = "category:" + category.id;
+                                }
+
+                                if (categories_index[category.uri] !== undefined) {
+                                    category = Object.assign({}, categories_index[category.uri], category);
+                                }
+
+                                if (category.icons) {
+                                    category.icons = helpers.formatImages(category.icons);
+                                }
+
+                                categories_loaded.push(category);
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                    _iterator.return();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
                         }
 
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: playlists
-                        });
-
-                        store.dispatch({
-                            type: 'CATEGORY_PLAYLISTS_LOADED',
-                            key: action.key,
-                            uris: helpers.arrayOf('uri', playlists),
-                            more: action.data.playlists.next,
-                            total: action.data.playlists.total
-                        });
+                        action.categories = categories_loaded;
+                        next(action);
                         break;
 
                     case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
@@ -74981,18 +75054,6 @@ var AddSeedField = function (_React$Component) {
 			this.setState({ value: '' });
 			this.props.onSelect(e, item.uri);
 			this.props.spotifyActions.clearAutocompleteResults(this.id);
-
-			// Add our selected item to our global index
-			switch (helpers.uriType(item.uri)) {
-
-				case 'artist':
-					this.props.coreActions.artistsLoaded(item);
-					break;
-
-				case 'track':
-					this.props.coreActions.tracksLoaded(item);
-					break;
-			}
 		}
 	}, {
 		key: 'results',
@@ -75210,7 +75271,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: playlist.images.huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.large : null, blur: true, theme: this.props.theme }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -75417,7 +75478,11 @@ var DiscoverCategories = function (_React$Component) {
 	_createClass(DiscoverCategories, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (!this.props.categories) {
+
+			// Check for an empty category index, or where we've only got one loaded
+			// This would be the case if you've refreshed from within a category and only loaded
+			// the single record.
+			if (!this.props.categories || Object.keys(this.props.categories).length <= 1) {
 				this.props.spotifyActions.getCategories();
 			}
 			this.props.uiActions.setWindowTitle("Genre / Mood");
@@ -75477,7 +75542,7 @@ var DiscoverCategories = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		categories: state.core.categories,
+		categories: state.spotify.categories,
 		load_queue: state.ui.load_queue
 	};
 };
@@ -75660,16 +75725,20 @@ var DiscoverCategory = function (_React$Component) {
 	}, {
 		key: 'loadCategory',
 		value: function loadCategory() {
-			if (!this.props.category || !this.props.category.playlists_uris) {
+			if (!this.props.category) {
 				this.props.spotifyActions.getCategory(this.props.params.id);
+			}
+
+			if (!this.props.category.playlists_uris) {
+				this.props.spotifyActions.getCategoryPlaylists(this.props.params.id);
 			}
 		}
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
 			this.props.spotifyActions.getMore(this.props.category.playlists_more, null, {
-				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-				key: 'category:' + this.props.params.id
+				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
+				uri: 'category:' + this.props.params.id
 			});
 		}
 	}, {
@@ -75699,15 +75768,7 @@ var DiscoverCategory = function (_React$Component) {
 				return null;
 			}
 
-			var playlists = [];
-			if (this.props.category.playlists_uris) {
-				for (var i = 0; i < this.props.category.playlists_uris.length; i++) {
-					var key = this.props.category.playlists_uris[i];
-					if (this.props.playlists.hasOwnProperty(key)) {
-						playlists.push(this.props.playlists[key]);
-					}
-				}
-			}
+			var category = helpers.collate(this.props.category, { playlists: this.props.playlists });
 
 			return _react2.default.createElement(
 				'div',
@@ -75716,7 +75777,7 @@ var DiscoverCategory = function (_React$Component) {
 					_Header2.default,
 					null,
 					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
-					this.props.category.name
+					category.name
 				),
 				_react2.default.createElement(
 					'div',
@@ -75724,11 +75785,11 @@ var DiscoverCategory = function (_React$Component) {
 					_react2.default.createElement(
 						'section',
 						{ className: 'grid-wrapper' },
-						_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists })
+						_react2.default.createElement(_PlaylistGrid2.default, { playlists: category.playlists })
 					),
 					_react2.default.createElement(_LazyLoadListener2.default, {
-						loadKey: this.props.category.playlists_more,
-						showLoader: this.props.category.playlists_more,
+						loadKey: category.playlists_more,
+						showLoader: category.playlists_more,
 						loadMore: function loadMore() {
 							return _this2.loadMore();
 						}
@@ -75751,7 +75812,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
 		playlists: state.core.playlists,
-		category: state.core.categories && state.core.categories['category:' + ownProps.params.id] !== undefined ? state.core.categories['category:' + ownProps.params.id] : false
+		category: state.spotify.categories && state.spotify.categories['category:' + ownProps.params.id] !== undefined ? state.spotify.categories['category:' + ownProps.params.id] : false
 	};
 };
 
@@ -75894,7 +75955,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: album.images.huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true, theme: this.props.theme }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
