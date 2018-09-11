@@ -1748,7 +1748,9 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUMS':
                 request(socket, store, 'library.lookup', { uris: action.uris } )
                     .then(response => {
-                        if (response.length <= 0) return
+                        if (response.length <= 0){
+                        	return;
+                        }
 
                         var albums_loaded = [];
                     	var artists_loaded = [];
@@ -1765,9 +1767,11 @@ const MopidyMiddleware = (function(){
 
                             	var tracks_uris = [];
                             	for (var track in response[uri]){
-                            		tracks_loaded.push(helpers.track);
+                            		tracks_loaded.push(track);
                             		tracks_uris.push(track.uri);
                             	}
+                            		
+                            	console.log(response[uri]);
 
                                 var album = Object.assign(
                                     {},
