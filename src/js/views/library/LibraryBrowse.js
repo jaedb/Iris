@@ -8,6 +8,7 @@ import Header from '../../components/Header'
 import List from '../../components/List'
 import TrackList from '../../components/TrackList'
 import GridItem from '../../components/GridItem'
+import DropdownField from '../../components/Fields/DropdownField'
 import Icon from '../../components/Icon'
 
 import * as helpers from '../../helpers'
@@ -30,12 +31,12 @@ class LibraryBrowse extends React.Component{
 
 		// mopidy goes online
 		if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			this.loadDirectory(nextProps );
+			this.loadDirectory(nextProps);
 		}
 
 		// our uri changes
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadDirectory(nextProps );
+			this.loadDirectory(nextProps);
 		}
 	}
 
@@ -62,31 +63,38 @@ class LibraryBrowse extends React.Component{
 		this.props.uiActions.hideContextMenu();
 	}
 
-	arrangeDirectory(directory = this.props.directory){
-		var folders = []
-		var tracks = []
-
-		for (var i = 0; i < directory.length; i++){
-			if (directory[i].type && directory[i].type == 'track'){
-				tracks.push(directory[i] )
-			} else {
-				folders.push(Object.assign(
-					{},
-					directory[i],
+	renderSubdirectories(subdirectories){
+		if (this.props.view == 'list'){
+			return (
+				<List
+					nocontext
+					columns={[{ name: 'name', width: '100'}]} 
+					rows={subdirectories} 
+					className="library-local-directory-list"
+					link_prefix={global.baseURL+'library/browse/'}
+				/>
+			);
+		} else {
+			return (
+				<div className="grid category-grid">
 					{
-						uri: directory[i].uri
+						subdirectories.map(subdirectory => {
+							return (										
+								<GridItem
+									key={subdirectory.uri}
+									type="category"
+									item={subdirectory}
+									onClick={e => {hashHistory.push(global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri))}}
+								/>
+							);
+						})
 					}
-				))
-			}
-		}
-
-		return {
-			folders: folders,
-			tracks: tracks
+				</div>
+			);
 		}
 	}
 
-	renderDirectory(){
+	renderDirectory(directory){
 		var title = 'Browse';
 		var uri_exploded = this.props.params.uri.split(':');
 		if (uri_exploded.length > 0){
@@ -105,13 +113,32 @@ class LibraryBrowse extends React.Component{
 			)
 		}
 
-		var items = this.arrangeDirectory(this.props.directory);
+		var tracks = (this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null);
+		var subdirectories = (this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null);
+
+		var view_options = [
+			{
+				label: 'Thumbnails',
+				value: 'thumbnails'
+			},
+			{
+				label: 'List',
+				value: 'list'
+			}
+		];
 
 		var options = (
 			<span>
-				<button className="no-hover" onClick={e => this.playAll(e)}>
+				<DropdownField
+					icon="visibility"
+					name="View"
+					value={this.props.view}
+					options={view_options}
+					handleChange={value => {this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu()}}
+				/>
+				{tracks ? <button className="no-hover" onClick={e => this.playAll(e)}>
 					<Icon name="play_circle_filled" />Play all
-				</button>
+				</button> : null }
 				<button className="no-hover" onClick={e => this.goBack(e)}>
 					<Icon name="keyboard_backspace" />Back
 				</button>
@@ -125,18 +152,15 @@ class LibraryBrowse extends React.Component{
 					{title}
 				</Header>
 				<section className="content-wrapper">
-					<List
-						nocontext
-						columns={[{ name: 'name', width: '100'}]} 
-						rows={items.folders} 
-						className="library-local-directory-list"
-						link_prefix={global.baseURL+'library/browse/'}
-					/>
-					<TrackList 
-						tracks={items.tracks}
-						uri={"iris:browse:"+this.props.params.uri}
-						className="library-local-track-list" 
-						noheader />
+
+					{subdirectories ? this.renderSubdirectories(subdirectories) : null}
+
+					{tracks ? <TrackList 
+							tracks={this.props.directory.tracks}
+							uri={"iris:browse:"+this.props.params.uri}
+							className="library-local-track-list"
+						/> : null }
+
 				</section>
 			</div>
 		);
@@ -145,56 +169,55 @@ class LibraryBrowse extends React.Component{
 	renderIndex(){
 		var grid_items = []
 		if (this.props.directory){
-			for (var i = 0; i < this.props.directory.length; i++){
-				var directory = this.props.directory[i]
+			for (var subdirectory of this.props.directory.subdirectories){
 
-				switch (directory.name){
+				switch (subdirectory.name){
 					case 'Dirble':
-						directory.icons = ['assets/backgrounds/browse-dirble.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-dirble.jpg']
 						break
 
 					case 'Files':
-						directory.icons = ['assets/backgrounds/browse-folders.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-folders.jpg']
 						break
 
 					case 'Local media':
-						directory.icons = ['assets/backgrounds/browse-folders.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-folders.jpg']
 						break
 
 					case 'Spotify':
 					case 'Spotify Browse':
-						directory.icons = ['assets/backgrounds/browse-spotify.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-spotify.jpg']
 						break
 
 					case 'Spotify Tunigo':
 					case 'Tunigo':
-						directory.icons = ['assets/backgrounds/browse-tunigo.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-tunigo.jpg']
 						break
 
 					case 'TuneIn':
-						directory.icons = ['assets/backgrounds/browse-tunein.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-tunein.jpg']
 						break
 
 					case 'SoundCloud':
-						directory.icons = ['assets/backgrounds/browse-soundcloud.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-soundcloud.jpg']
 						break
 
 					case 'iTunes Store: Podcasts':
-						directory.icons = ['assets/backgrounds/browse-itunes.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-itunes.jpg']
 						break
 
 					case 'Soma FM':
-						directory.icons = ['assets/backgrounds/browse-somafm.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-somafm.jpg']
 						break
 
 					default:
-						directory.icons = ['assets/backgrounds/browse-default.jpg']
+						subdirectory.icons = ['assets/backgrounds/browse-default.jpg']
 				}
 
 				grid_items.push({
-					name: directory.name,
-					link: global.baseURL+'library/browse/'+encodeURIComponent(directory.uri),
-					icons: directory.icons
+					name: subdirectory.name,
+					link: global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri),
+					icons: helpers.formatImages(subdirectory.icons)
 				})
 			}
 		}
@@ -213,7 +236,8 @@ class LibraryBrowse extends React.Component{
 									return (
 										<GridItem 
 											item={item} 
-											key={index} 
+											key={index}
+											type="category"
 											onClick={e => hashHistory.push(item.link)}
 										/>
 									)
@@ -239,7 +263,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
-		directory: state.mopidy.directory
+		directory: state.mopidy.directory,
+		view: state.ui.library_directory_view
 	}
 }
 

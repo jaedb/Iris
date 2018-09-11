@@ -85,7 +85,7 @@ export default class GridItem extends React.Component{
 		if (!this.props.item) return null
 
 		var item = this.props.item;
-		if (typeof(item.album) !== 'undefined'){
+		if (item.album !== undefined){
 			item.album.added_at = item.added_at;
 			item = item.album;
 		}
