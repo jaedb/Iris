@@ -258,7 +258,7 @@ export function getMe(){
                 response => {
                     dispatch({
                         type: 'SPOTIFY_ME_LOADED',
-                        data: response
+                        me: response
                     });
                 },
                 error => {
@@ -734,9 +734,9 @@ export function following(uri, method = 'GET'){
                 break
             case 'playlist':
                 if (method == 'GET'){
-                    endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers/contains?ids='+ getState().spotify.me.id
+                    endpoint = 'playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers/contains?ids='+ getState().spotify.me.id
                 } else {
-                    endpoint = 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers'        
+                    endpoint = 'playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers'        
                 }
                 break
         }
@@ -1471,7 +1471,7 @@ export function getPlaylist(uri){
     return (dispatch, getState) => {
 
         // get the main playlist object
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
+        sendRequest(dispatch, getState, 'playlists/'+ helpers.getFromUri('playlistid',uri) +'?market='+getState().spotify.country )
         .then(
             response => {
 
@@ -1607,7 +1607,7 @@ export function getPlaylistTracksAndPlay(uri, shuffle){
             'Loading playlist tracks', 
             {
                 uri: uri,
-                next: 'users/'+ helpers.getFromUri('userid',uri) +'/playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country,
+                next: 'playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country,
                 shuffle: shuffle
             }
         ))
@@ -1687,7 +1687,7 @@ export function toggleFollowingPlaylist(uri, method){
     if (method == 'DELETE' ) var new_state = 0
 
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers', method )
+        sendRequest(dispatch, getState, 'playlists/'+ helpers.getFromUri('playlistid',uri) + '/followers', method )
             .then(
                 response => {
                     dispatch({
@@ -1708,7 +1708,7 @@ export function toggleFollowingPlaylist(uri, method){
 
 export function addTracksToPlaylist(uri, tracks_uris){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'POST', { uris: tracks_uris } )
+        sendRequest(dispatch, getState, 'playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'POST', { uris: tracks_uris } )
             .then(
                 response => {
                     dispatch({
@@ -1730,7 +1730,7 @@ export function addTracksToPlaylist(uri, tracks_uris){
 
 export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes } )
+        sendRequest(dispatch, getState, 'playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes } )
             .then(
                 response => {
                     dispatch({
@@ -1752,7 +1752,7 @@ export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes){
 
 export function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id){
     return (dispatch, getState) => {
-        sendRequest(dispatch, getState, 'users/'+ helpers.getFromUri('userid',uri) + '/playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id } )
+        sendRequest(dispatch, getState, 'playlists/'+ helpers.getFromUri('playlistid',uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id } )
             .then(
                 response => {
                     dispatch({

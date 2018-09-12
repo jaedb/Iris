@@ -250,16 +250,16 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                 var playlists = []
-                for(var i = 0; i < action.playlists.length; i++){
-                    var playlist = Object.assign(
-                        {},
-                        action.playlists[i],
+                for (var playlist of action.playlists){
+                    Object.assign(
+                        playlist,
                         {
+                            uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:"),
                             source: 'spotify',
                             in_library: true,    // assumed because we asked for library items
-                            tracks_total: action.playlists[i].tracks.total
+                            tracks_total: playlist.tracks.total
                         }
-                    )
+                    );
 
                     // remove our tracklist. It'll overwrite any full records otherwise
                     delete playlist.tracks
@@ -463,30 +463,21 @@ const SpotifyMiddleware = (function(){
 
 
             case 'SPOTIFY_ME_LOADED':
+                var me = Object.assign({}, helpers.formatUser(action.me));
 
-                // We've loaded 'me' and we are Anonymous currently
-                if (action.data && store.getState().pusher.username == 'Anonymous'){
-                    if (action.data.display_name !== null){
-                        var name = action.data.display_name;
-                    } else {
-                        var name = action.data.id;
-                    }
-
-                    // Use 'me' name as my Pusher username
-                    store.dispatch(pusherActions.setUsername(name));
+                // We are Anonymous currently so use 'me' name as my Pusher username
+                if (store.getState().pusher.username == 'Anonymous'){
+                    store.dispatch(pusherActions.setUsername(me.name));
                 }
 
                 if (store.getState().ui.allow_reporting){
-	                var hashed_username = md5(action.data.id);
+	                var hashed_username = md5(me.id);
 	                ReactGA.set({userId: hashed_username});
 	                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
 	            }
 
-                store.dispatch({
-                    type: 'USERS_LOADED',
-                    users: [action.data]
-                });
-
+                store.dispatch(coreActions.userLoaded(me));
+                action.me = me;
                 next(action);
                 break;
 

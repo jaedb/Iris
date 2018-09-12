@@ -557,7 +557,7 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
  **/
 var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 	var playlist = {};
-	var fields = ['uri', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+	var fields = ['uri', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion4 = true;
@@ -595,6 +595,19 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 		playlist.followers = data.followers.total;
 	}
 
+	if (data.owner) {
+		playlist.owner = {
+			id: data.owner.id,
+			uri: data.owner.uri,
+			name: data.owner.display_name ? data.owner.display_name : null
+		};
+	}
+
+	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+	if (playlist.uri.includes("spotify:user:")) {
+		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
 	return playlist;
 };
 
@@ -606,7 +619,7 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
  **/
 var formatUser = exports.formatUser = function formatUser(data) {
 	var user = {};
-	var fields = ['uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
+	var fields = ['id', 'uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion5 = true;
@@ -636,12 +649,19 @@ var formatUser = exports.formatUser = function formatUser(data) {
 		}
 	}
 
-	if (user.images && !user.images.formatted) {
+	if (!user.images && data.image) {
+		user.images = formatImages(data.image);
+	} else if (!user.images && data.avatar) {
+		user.images = formatImages(data.avatar);
+	} else if (user.images && !user.images.formatted) {
 		user.images = formatImages(user.images);
 	}
 
 	if (data.followers && data.followers.total) {
 		user.followers = data.followers.total;
+	}
+	if (data.realname) {
+		user.name = data.realname;
 	}
 	if (data.display_name && !user.name) {
 		user.name = data.display_name;
@@ -3053,7 +3073,7 @@ function getMe() {
         sendRequest(dispatch, getState, 'me').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ME_LOADED',
-                data: response
+                me: response
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load your profile', error));
@@ -3442,9 +3462,9 @@ function following(uri) {
                 break;
             case 'playlist':
                 if (method == 'GET') {
-                    endpoint = 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
+                    endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
                 } else {
-                    endpoint = 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
+                    endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
                 }
                 break;
         }
@@ -4028,7 +4048,7 @@ function getPlaylist(uri) {
     return function (dispatch, getState) {
 
         // get the main playlist object
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
 
             // convert links in description
             var description = null;
@@ -4132,7 +4152,7 @@ function getPlaylistTracksAndPlay(uri, shuffle) {
     return function (dispatch, getState) {
         dispatch(uiActions.startProcess('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 'Loading playlist tracks', {
             uri: uri,
-            next: 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
+            next: 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
             shuffle: shuffle
         }));
     };
@@ -4197,7 +4217,7 @@ function toggleFollowingPlaylist(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
                 key: uri,
@@ -4211,7 +4231,7 @@ function toggleFollowingPlaylist(uri, method) {
 
 function addTracksToPlaylist(uri, tracks_uris) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_ADDED',
                 key: uri,
@@ -4226,7 +4246,7 @@ function addTracksToPlaylist(uri, tracks_uris) {
 
 function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REMOVED',
                 key: uri,
@@ -4241,7 +4261,7 @@ function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REORDERED',
                 key: uri,
@@ -19083,6 +19103,221 @@ exports.default = Dater;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(2);
+
+var _Icon = __webpack_require__(6);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DropdownField = function (_React$Component) {
+	_inherits(DropdownField, _React$Component);
+
+	function DropdownField(props) {
+		_classCallCheck(this, DropdownField);
+
+		// Create a "unique" id. This is human-controlled to avoid requiring
+		// other libraries for a very simple purpose: clicking outside
+		var _this = _possibleConstructorReturn(this, (DropdownField.__proto__ || Object.getPrototypeOf(DropdownField)).call(this, props));
+
+		_this.uid = _this.props.name.replace(' ', '_').toLowerCase();
+		if (_this.props.uid) {
+			_this.uid += "_" + _this.props.uid;
+		}
+
+		_this.state = {
+			expanded: false
+		};
+
+		_this.handleClick = _this.handleClick.bind(_this);
+		return _this;
+	}
+
+	_createClass(DropdownField, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			window.addEventListener("click", this.handleClick, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("click", this.handleClick, false);
+		}
+	}, {
+		key: 'setExpanded',
+		value: function setExpanded() {
+			var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
+
+			if (expanded) {
+				this.setState({ expanded: expanded });
+				window.addEventListener("click", this.handleClick, false);
+			} else {
+				this.setState({ expanded: expanded });
+				window.removeEventListener("click", this.handleClick, false);
+			}
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e) {
+			// TODO: remove dependency on jQuery and explore the performance of this functionality
+			if ($(e.target).closest('.dropdown-field').attr('data-uid') != this.uid && this.state.expanded) {
+				this.setExpanded(false);
+			}
+		}
+	}, {
+		key: 'handleChange',
+		value: function handleChange(value, is_selected) {
+
+			var current_value = this.props.value;
+			if (this.isMultiSelect()) {
+				if (value == 'select-all') {
+					var new_value = [];
+					for (var i = 0; i < this.props.options.length; i++) {
+						new_value.push(this.props.options[i].value);
+					}
+				} else if (is_selected) {
+					var index = current_value.indexOf(value);
+					current_value.splice(index, 1);
+					var new_value = current_value;
+				} else {
+					current_value.push(value);
+					var new_value = current_value;
+				}
+			} else {
+				var new_value = value;
+
+				// Collapse our menu
+				this.setExpanded(false);
+			}
+
+			return this.props.handleChange(new_value);
+		}
+	}, {
+		key: 'isMultiSelect',
+		value: function isMultiSelect() {
+			return this.props.value instanceof Array;
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			if (!this.props.options) {
+				return null;
+			}
+
+			var className = 'dropdown-field';
+			if (this.state.expanded) {
+				className += ' expanded';
+			}
+			if (this.props.no_status_icon) {
+				className += ' no-status-icon';
+			}
+			if (this.props.no_label) {
+				className += ' no-label';
+			}
+			if (this.props.button) {
+				className += ' buttonify';
+			}
+			if (this.props.className) {
+				className += ' ' + this.props.className;
+			}
+			var current_value = null;
+			if (this.props.value !== undefined) {
+				current_value = this.props.value;
+			} else if (this.props.options.length > 0) {
+				current_value = this.props.options[0].value;
+			}
+
+			var selected_icon = _react2.default.createElement(_Icon2.default, { name: 'check' });
+			if (this.props.selected_icon) {
+				selected_icon = _react2.default.createElement(_Icon2.default, { name: this.props.selected_icon });
+			}
+
+			var options = Object.assign([], this.props.options);
+			if (this.isMultiSelect()) {
+				options.push({
+					value: 'select-all',
+					label: 'Select all',
+					className: 'grey-text'
+				});
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: className, 'data-uid': this.uid },
+				_react2.default.createElement(
+					'div',
+					{ className: "label" + (this.props.button ? " button " + this.props.button : ""), onClick: function onClick(e) {
+							return _this2.setExpanded();
+						} },
+					this.props.icon ? _react2.default.createElement(_Icon2.default, { name: this.props.icon, type: this.props.icon_type ? this.props.icon_type : "material" }) : null,
+					_react2.default.createElement(
+						'span',
+						{ className: 'text' },
+						this.props.name,
+						this.isMultiSelect() ? ' (' + current_value.length + ')' : null
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'options' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'liner' },
+						options.map(function (option) {
+							if (_this2.isMultiSelect()) {
+								var is_selected = current_value.indexOf(option.value) > -1;
+							} else {
+								var is_selected = current_value === option.value;
+							}
+							return _react2.default.createElement(
+								'div',
+								{ className: "option " + (option.className ? option.className : ''), key: option.value, onClick: function onClick(e) {
+										return _this2.handleChange(option.value, is_selected);
+									} },
+								!_this2.props.no_status_icon && is_selected ? selected_icon : null,
+								option.label
+							);
+						})
+					)
+				)
+			);
+		}
+	}]);
+
+	return DropdownField;
+}(_react2.default.Component);
+
+exports.default = DropdownField;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /*
 object-assign
 (c) Sindre Sorhus
@@ -19176,7 +19411,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19218,7 +19453,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19473,221 +19708,6 @@ var Parallax = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Parallax;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(4);
-
-var _redux = __webpack_require__(2);
-
-var _Icon = __webpack_require__(6);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DropdownField = function (_React$Component) {
-	_inherits(DropdownField, _React$Component);
-
-	function DropdownField(props) {
-		_classCallCheck(this, DropdownField);
-
-		// Create a "unique" id. This is human-controlled to avoid requiring
-		// other libraries for a very simple purpose: clicking outside
-		var _this = _possibleConstructorReturn(this, (DropdownField.__proto__ || Object.getPrototypeOf(DropdownField)).call(this, props));
-
-		_this.uid = _this.props.name.replace(' ', '_').toLowerCase();
-		if (_this.props.uid) {
-			_this.uid += "_" + _this.props.uid;
-		}
-
-		_this.state = {
-			expanded: false
-		};
-
-		_this.handleClick = _this.handleClick.bind(_this);
-		return _this;
-	}
-
-	_createClass(DropdownField, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			window.addEventListener("click", this.handleClick, false);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			window.removeEventListener("click", this.handleClick, false);
-		}
-	}, {
-		key: 'setExpanded',
-		value: function setExpanded() {
-			var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
-
-			if (expanded) {
-				this.setState({ expanded: expanded });
-				window.addEventListener("click", this.handleClick, false);
-			} else {
-				this.setState({ expanded: expanded });
-				window.removeEventListener("click", this.handleClick, false);
-			}
-		}
-	}, {
-		key: 'handleClick',
-		value: function handleClick(e) {
-			// TODO: remove dependency on jQuery and explore the performance of this functionality
-			if ($(e.target).closest('.dropdown-field').attr('data-uid') != this.uid && this.state.expanded) {
-				this.setExpanded(false);
-			}
-		}
-	}, {
-		key: 'handleChange',
-		value: function handleChange(value, is_selected) {
-
-			var current_value = this.props.value;
-			if (this.isMultiSelect()) {
-				if (value == 'select-all') {
-					var new_value = [];
-					for (var i = 0; i < this.props.options.length; i++) {
-						new_value.push(this.props.options[i].value);
-					}
-				} else if (is_selected) {
-					var index = current_value.indexOf(value);
-					current_value.splice(index, 1);
-					var new_value = current_value;
-				} else {
-					current_value.push(value);
-					var new_value = current_value;
-				}
-			} else {
-				var new_value = value;
-
-				// Collapse our menu
-				this.setExpanded(false);
-			}
-
-			return this.props.handleChange(new_value);
-		}
-	}, {
-		key: 'isMultiSelect',
-		value: function isMultiSelect() {
-			return this.props.value instanceof Array;
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			if (!this.props.options) {
-				return null;
-			}
-
-			var className = 'dropdown-field';
-			if (this.state.expanded) {
-				className += ' expanded';
-			}
-			if (this.props.no_status_icon) {
-				className += ' no-status-icon';
-			}
-			if (this.props.no_label) {
-				className += ' no-label';
-			}
-			if (this.props.button) {
-				className += ' buttonify';
-			}
-			if (this.props.className) {
-				className += ' ' + this.props.className;
-			}
-			var current_value = null;
-			if (this.props.value !== undefined) {
-				current_value = this.props.value;
-			} else if (this.props.options.length > 0) {
-				current_value = this.props.options[0].value;
-			}
-
-			var selected_icon = _react2.default.createElement(_Icon2.default, { name: 'check' });
-			if (this.props.selected_icon) {
-				selected_icon = _react2.default.createElement(_Icon2.default, { name: this.props.selected_icon });
-			}
-
-			var options = Object.assign([], this.props.options);
-			if (this.isMultiSelect()) {
-				options.push({
-					value: 'select-all',
-					label: 'Select all',
-					className: 'grey-text'
-				});
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: className, 'data-uid': this.uid },
-				_react2.default.createElement(
-					'div',
-					{ className: "label" + (this.props.button ? " button " + this.props.button : ""), onClick: function onClick(e) {
-							return _this2.setExpanded();
-						} },
-					this.props.icon ? _react2.default.createElement(_Icon2.default, { name: this.props.icon, type: this.props.icon_type ? this.props.icon_type : "material" }) : null,
-					_react2.default.createElement(
-						'span',
-						{ className: 'text' },
-						this.props.name,
-						this.isMultiSelect() ? ' (' + current_value.length + ')' : null
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'options' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'liner' },
-						options.map(function (option) {
-							if (_this2.isMultiSelect()) {
-								var is_selected = current_value.indexOf(option.value) > -1;
-							} else {
-								var is_selected = current_value === option.value;
-							}
-							return _react2.default.createElement(
-								'div',
-								{ className: "option " + (option.className ? option.className : ''), key: option.value, onClick: function onClick(e) {
-										return _this2.handleChange(option.value, is_selected);
-									} },
-								!_this2.props.no_status_icon && is_selected ? selected_icon : null,
-								option.label
-							);
-						})
-					)
-				)
-			);
-		}
-	}]);
-
-	return DropdownField;
-}(_react2.default.Component);
-
-exports.default = DropdownField;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
@@ -20307,7 +20327,7 @@ module.exports = emptyObject;
 
 
 
-var emptyFunction = __webpack_require__(33);
+var emptyFunction = __webpack_require__(34);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -26931,7 +26951,7 @@ _reactDom2.default.render(_react2.default.createElement(
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(32),n=__webpack_require__(41),p=__webpack_require__(33),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
+var m=__webpack_require__(33),n=__webpack_require__(41),p=__webpack_require__(34),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
 typeof Symbol&&Symbol.iterator;function B(a){for(var b=arguments.length-1,e="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);b=Error(e+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 var C={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function D(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}D.prototype.isReactComponent={};D.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?B("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};D.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function E(){}
 E.prototype=D.prototype;function F(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}var G=F.prototype=new E;G.constructor=F;m(G,D.prototype);G.isPureReactComponent=!0;var H={current:null},I=Object.prototype.hasOwnProperty,J={key:!0,ref:!0,__self:!0,__source:!0};
@@ -26968,11 +26988,11 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(32);
+var _assign = __webpack_require__(33);
 var emptyObject = __webpack_require__(41);
 var invariant = __webpack_require__(36);
 var warning = __webpack_require__(42);
-var emptyFunction = __webpack_require__(33);
+var emptyFunction = __webpack_require__(34);
 var checkPropTypes = __webpack_require__(54);
 
 // TODO: this is special because it gets imported during build.
@@ -28384,7 +28404,7 @@ module.exports = react;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(0),m=__webpack_require__(70),A=__webpack_require__(32),C=__webpack_require__(33),ea=__webpack_require__(71),fa=__webpack_require__(72),ha=__webpack_require__(73),ja=__webpack_require__(41);
+var ba=__webpack_require__(0),m=__webpack_require__(70),A=__webpack_require__(33),C=__webpack_require__(34),ea=__webpack_require__(71),fa=__webpack_require__(72),ha=__webpack_require__(73),ja=__webpack_require__(41);
 function D(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}ba?void 0:D("227");
 function ka(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ka.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return ma.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -28701,8 +28721,8 @@ var React = __webpack_require__(0);
 var invariant = __webpack_require__(36);
 var warning = __webpack_require__(42);
 var ExecutionEnvironment = __webpack_require__(70);
-var _assign = __webpack_require__(32);
-var emptyFunction = __webpack_require__(33);
+var _assign = __webpack_require__(33);
+var emptyFunction = __webpack_require__(34);
 var checkPropTypes = __webpack_require__(54);
 var getActiveElement = __webpack_require__(71);
 var shallowEqual = __webpack_require__(72);
@@ -45459,10 +45479,10 @@ function createProvider() {
 
 
 
-var emptyFunction = __webpack_require__(33);
+var emptyFunction = __webpack_require__(34);
 var invariant = __webpack_require__(36);
 var warning = __webpack_require__(42);
-var assign = __webpack_require__(32);
+var assign = __webpack_require__(33);
 
 var ReactPropTypesSecret = __webpack_require__(55);
 var checkPropTypes = __webpack_require__(54);
@@ -46009,7 +46029,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 
 
-var emptyFunction = __webpack_require__(33);
+var emptyFunction = __webpack_require__(34);
 var invariant = __webpack_require__(36);
 var ReactPropTypesSecret = __webpack_require__(55);
 
@@ -47612,7 +47632,7 @@ var propTypes = {
 
 
 
-var _assign = __webpack_require__(32);
+var _assign = __webpack_require__(33);
 
 var emptyObject = __webpack_require__(41);
 var _invariant = __webpack_require__(36);
@@ -49597,7 +49617,7 @@ function match(_ref, callback) {
 "use strict";
 
 var strictUriEncode = __webpack_require__(170);
-var objectAssign = __webpack_require__(32);
+var objectAssign = __webpack_require__(33);
 
 function encoderForArrayFormat(opts) {
 	switch (opts.arrayFormat) {
@@ -51731,7 +51751,7 @@ function reducer() {
             });
 
         case 'SPOTIFY_ME_LOADED':
-            return Object.assign({}, spotify, { me: action.data });
+            return Object.assign({}, spotify, { me: action.me });
 
         case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { featured_playlists: action.data });
@@ -52871,6 +52891,7 @@ var CoreMiddleware = function () {
                             for (var _iterator6 = action.users[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
                                 var user = _step6.value;
 
+                                user = helpers.formatUser(user);
 
                                 if (users_index[user.uri]) {
                                     user = Object.assign({}, users_index[user.uri], user);
@@ -59016,10 +59037,13 @@ var LastfmMiddleware = function () {
                 switch (action.type) {
 
                     case 'LASTFM_ME_LOADED':
-                        var user = Object.assign({}, action.me, {
-                            uri: "lastfm:user:" + action.me.name
+                        var me = helpers.formatUser(action.me);
+                        Object.assign(me, {
+                            uri: "lastfm:user:" + me.name
                         });
-                        store.dispatch(coreActions.userLoaded(user));
+                        store.dispatch(coreActions.userLoaded(me));
+                        action.me = me;
+                        next(action);
                         break;
 
                     default:
@@ -59055,18 +59079,26 @@ var GeniusMiddleware = function () {
                 switch (action.type) {
 
                     case 'GENIUS_ME_LOADED':
+                        var me = helpers.formatUser(action.me);
+                        Object.assign(me, {
+                            uri: "genius:user:" + me.id
+                        });
+
                         store.dispatch({
                             type: 'GENIUS_USER_LOADED',
                             user: action.me
                         });
+                        action.me = me;
                         next(action);
                         break;
 
                     case 'GENIUS_USER_LOADED':
-                        var user = Object.assign({}, action.user, {
-                            uri: "genius:user:" + action.user.id
+                        var user = helpers.formatUser(action.user);
+                        Object.assign(user, {
+                            uri: "genius:user:" + user.id
                         });
                         store.dispatch(coreActions.userLoaded(user));
+                        action.user = user;
                         next(action);
                         break;
 
@@ -59368,17 +59400,39 @@ var SpotifyMiddleware = function () {
 
                     case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                         var playlists = [];
-                        for (var i = 0; i < action.playlists.length; i++) {
-                            var playlist = Object.assign({}, action.playlists[i], {
-                                source: 'spotify',
-                                in_library: true, // assumed because we asked for library items
-                                tracks_total: action.playlists[i].tracks.total
-                            });
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
 
-                            // remove our tracklist. It'll overwrite any full records otherwise
-                            delete playlist.tracks;
+                        try {
+                            for (var _iterator2 = action.playlists[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var playlist = _step2.value;
 
-                            playlists.push(playlist);
+                                Object.assign(playlist, {
+                                    uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:"),
+                                    source: 'spotify',
+                                    in_library: true, // assumed because we asked for library items
+                                    tracks_total: playlist.tracks.total
+                                });
+
+                                // remove our tracklist. It'll overwrite any full records otherwise
+                                delete playlist.tracks;
+
+                                playlists.push(playlist);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
                         }
 
                         store.dispatch({
@@ -59559,30 +59613,21 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_ME_LOADED':
+                        var me = Object.assign({}, helpers.formatUser(action.me));
 
-                        // We've loaded 'me' and we are Anonymous currently
-                        if (action.data && store.getState().pusher.username == 'Anonymous') {
-                            if (action.data.display_name !== null) {
-                                var name = action.data.display_name;
-                            } else {
-                                var name = action.data.id;
-                            }
-
-                            // Use 'me' name as my Pusher username
-                            store.dispatch(pusherActions.setUsername(name));
+                        // We are Anonymous currently so use 'me' name as my Pusher username
+                        if (store.getState().pusher.username == 'Anonymous') {
+                            store.dispatch(pusherActions.setUsername(me.name));
                         }
 
                         if (store.getState().ui.allow_reporting) {
-                            var hashed_username = (0, _md2.default)(action.data.id);
+                            var hashed_username = (0, _md2.default)(me.id);
                             _reactGa2.default.set({ userId: hashed_username });
                             _reactGa2.default.event({ category: 'Spotify', action: 'Authorization verified', label: hashed_username });
                         }
 
-                        store.dispatch({
-                            type: 'USERS_LOADED',
-                            users: [action.data]
-                        });
-
+                        store.dispatch(coreActions.userLoaded(me));
+                        action.me = me;
                         next(action);
                         break;
 
@@ -63768,7 +63813,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -64108,7 +64153,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -64128,7 +64173,7 @@ var _ContextMenuTrigger = __webpack_require__(25);
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -65137,7 +65182,7 @@ var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -65996,7 +66041,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -67074,7 +67119,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -70756,7 +70801,7 @@ var Services = function (_React$Component) {
 				);
 			}
 
-			var user_object = this.props.spotify.me;
+			var user_object = this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri] ? this.props.core.users[this.props.spotify.me.uri] : null;
 			if (user_object) {
 				var user = _react2.default.createElement(
 					_URILink2.default,
@@ -70765,7 +70810,7 @@ var Services = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
-						user_object.display_name ? user_object.display_name : user_object.id,
+						user_object.name ? user_object.name : user_object.id,
 						!this.props.spotify.authorization ? _react2.default.createElement(
 							'span',
 							{ className: 'grey-text' },
@@ -70954,11 +70999,11 @@ var Services = function (_React$Component) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.image }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.images }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
-						user_object.realname ? user_object.realname : user_object.name
+						user_object.name
 					)
 				);
 			} else {
@@ -71014,12 +71059,12 @@ var Services = function (_React$Component) {
 	}, {
 		key: 'renderGenius',
 		value: function renderGenius() {
-			var user_object = this.props.genius.me ? this.props.core.users["genius:user:" + this.props.genius.me.id] : null;
+			var user_object = this.props.genius.me ? this.props.core.users[this.props.genius.me.uri] : null;
 			if (user_object) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.avatar }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.images }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
@@ -71143,20 +71188,20 @@ var Services = function (_React$Component) {
 		key: 'renderMenu',
 		value: function renderMenu() {
 
-			if (this.props.spotify.me) {
-				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.spotify.me.images });
+			if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]) {
+				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.spotify.me.uri].images });
 			} else {
 				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small' });
 			}
 
-			if (this.props.lastfm.me && this.props.core.users["lastfm:user:" + this.props.lastfm.me.name]) {
-				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["lastfm:user:" + this.props.lastfm.me.name].image });
+			if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]) {
+				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.lastfm.me.uri].images });
 			} else {
 				var lastfm_icon = _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'lastfm' });
 			}
 
-			if (this.props.genius.me && this.props.core.users["genius:user:" + this.props.genius.me.id]) {
-				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["genius:user:" + this.props.genius.me.id].avatar });
+			if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]) {
+				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.genius.me.uri].images });
 			} else {
 				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'genius', type: 'svg' });
 			}
@@ -71573,7 +71618,7 @@ var _TextField = __webpack_require__(289);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -72232,11 +72277,11 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -75311,7 +75356,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -75979,7 +76024,7 @@ var _AlbumGrid = __webpack_require__(46);
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
 
-var _Parallax = __webpack_require__(34);
+var _Parallax = __webpack_require__(35);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -76283,7 +76328,7 @@ var _List = __webpack_require__(53);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -76682,7 +76727,7 @@ var _ArtistSentence = __webpack_require__(20);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -77292,7 +77337,7 @@ var _List = __webpack_require__(53);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -77701,7 +77746,7 @@ var _GridItem = __webpack_require__(44);
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
 
-var _DropdownField = __webpack_require__(35);
+var _DropdownField = __webpack_require__(32);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
