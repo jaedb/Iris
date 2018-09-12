@@ -456,6 +456,7 @@ export let formatPlaylist = function(data){
 		'followers',
 		'last_modified_date',
 		'can_edit',
+		'owner',
 		'user_uri',
 		'tracks_uris',
 		'tracks_total',
@@ -477,6 +478,19 @@ export let formatPlaylist = function(data){
 		playlist.followers = data.followers.total;
 	}
 
+	if (data.owner){
+		playlist.owner = {
+			id: data.owner.id,
+			uri: data.owner.uri,
+			name: (data.owner.display_name ? data.owner.display_name : null)
+		}
+	}
+
+	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+	if (playlist.uri.includes("spotify:user:")){
+		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
 	return playlist;
 }
 
@@ -490,6 +504,7 @@ export let formatPlaylist = function(data){
 export let formatUser = function(data){
 	var user = {}
 	var fields = [
+		'id',
 		'uri',
 		'provider',
 		'name',
@@ -507,12 +522,19 @@ export let formatUser = function(data){
 		}
 	}
 
-	if (user.images && !user.images.formatted){
+	if (!user.images && data.image){
+		user.images = formatImages(data.image);
+	} else if (!user.images && data.avatar){
+		user.images = formatImages(data.avatar);
+	} else if (user.images && !user.images.formatted){
 		user.images = formatImages(user.images);
 	}
 
 	if (data.followers && data.followers.total){
 		user.followers = data.followers.total;
+	}
+	if (data.realname){
+		user.name = data.realname;
 	}
 	if (data.display_name && !user.name){
 		user.name = data.display_name;

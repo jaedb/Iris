@@ -693,7 +693,8 @@ const CoreMiddleware = (function(){
                 var users_loaded = [];
 
                 for (var user of action.users){
-
+                    user = helpers.formatUser(user);
+                    
                     if (users_index[user.uri]){
                         user = Object.assign({}, users_index[user.uri], user);
                     }

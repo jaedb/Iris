@@ -75,13 +75,13 @@ class Services extends React.Component{
 			);
 		}
 
-		var user_object = this.props.spotify.me;
+		var user_object = (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri] ? this.props.core.users[this.props.spotify.me.uri] : null);
 		if (user_object){
 			var user = (
 				<URILink className="user" type="user" uri={user_object.uri}>
 					<Thumbnail circle={true} size="small" images={user_object.images} />
 					<span className="user-name">
-						{user_object.display_name ? user_object.display_name : user_object.id}
+						{user_object.name ? user_object.name : user_object.id}
 						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
 					</span>
 				</URILink>
@@ -166,9 +166,9 @@ class Services extends React.Component{
 		if (user_object){
 			var user = (
 				<span className="user">
-					<Thumbnail circle={true} size="small" images={user_object.image} />
+					<Thumbnail circle={true} size="small" images={user_object.images} />
 					<span className="user-name">
-						{user_object.realname ? user_object.realname : user_object.name}
+						{user_object.name}
 					</span>
 				</span>
 			)
@@ -205,11 +205,11 @@ class Services extends React.Component{
 	}
 
 	renderGenius(){
-		var user_object = (this.props.genius.me ? this.props.core.users["genius:user:"+this.props.genius.me.id] : null);
+		var user_object = (this.props.genius.me ? this.props.core.users[this.props.genius.me.uri] : null);
 		if (user_object){
 			var user = (
 				<span className="user">
-					<Thumbnail circle={true} size="small" images={user_object.avatar} />
+					<Thumbnail circle={true} size="small" images={user_object.images} />
 					<span className="user-name">
 						{user_object.name}
 					</span>
@@ -283,20 +283,20 @@ class Services extends React.Component{
 
 	renderMenu(){
 
-		if (this.props.spotify.me){
-			var spotify_icon = <Thumbnail circle={true} size="small" images={this.props.spotify.me.images} />
+		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]){
+			var spotify_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.spotify.me.uri].images} />
 		} else {
 			var spotify_icon = <Thumbnail circle={true} size="small" />
 		}
 
-		if (this.props.lastfm.me && this.props.core.users["lastfm:user:"+this.props.lastfm.me.name]){
-			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["lastfm:user:"+this.props.lastfm.me.name].image} />
+		if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]){
+			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.lastfm.me.uri].images} />
 		} else {
 			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
 		}
 
-		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id]){
-			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users["genius:user:"+this.props.genius.me.id].avatar} />
+		if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]){
+			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.genius.me.uri].images} />
 		} else {
 			var genius_icon = <Icon name="genius" type="svg" />
 		}
