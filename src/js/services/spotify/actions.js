@@ -364,7 +364,7 @@ export function getFeaturedPlaylists(){
                         type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                         data: {
                             message: response.message,
-                            playlists: helpers.arrayOf('uri',response.playlists.items)
+                            playlists: helpers.upgradePlaylistsUris(helpers.arrayOf('uri',response.playlists.items))
                         }
                     });
                 },
@@ -738,7 +738,7 @@ export function following(uri, method = 'GET'){
                 } else {
                     endpoint = 'playlists/'+ helpers.getFromUri('playlistid',uri) +'/followers'        
                 }
-                break
+                break;
         }
 
         sendRequest(dispatch, getState, endpoint, method, data)

@@ -159,11 +159,10 @@ class Playlist extends React.Component{
 
 	render(){
 		var scheme = helpers.uriSource(this.props.params.uri);
-		var user_id = helpers.getFromUri('userid',this.props.params.uri);
 		var playlist_id = helpers.getFromUri('playlistid',this.props.params.uri);
 		
 		if (!this.props.playlist){
-			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id+'?'])){
+			if (helpers.isLoading(this.props.load_queue,['spotify_playlists/'+playlist_id+'?'])){
 				return (
 					<div className="body-loader loading">
 						<div className="loader"></div>
@@ -181,7 +180,7 @@ class Playlist extends React.Component{
 			context = 'editable-playlist';
 		}
 
-		if (playlist.tracks && playlist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id, 'spotify_users/'+user_id+'/playlists/'+playlist_id+'/tracks'])){
+		if (playlist.tracks && playlist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_playlists/'+playlist_id, 'spotify_playlists/'+playlist_id+'/tracks'])){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;
@@ -244,7 +243,7 @@ const mapStateToProps = (state, ownProps) => {
 		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
-		spotify_userid: state.spotify.me.id
+		spotify_userid: (state.spotify.me && state.spotify.me.id ? state.spotify.me.id : null)
 	}
 }
 

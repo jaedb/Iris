@@ -494,6 +494,25 @@ export let formatPlaylist = function(data){
 	return playlist;
 }
 
+/**
+ * Upgrade playlist uris to the new, simplified Spotify syntax (September 2018)
+ *
+ * @param uris = String or Array
+ * @return String or Array
+ **/
+export let upgradePlaylistsUris = function(uris){
+	if (Array.isArray(uris)){
+		var upgraded = [];
+		for (var uri of uris){
+			upgraded.push(uri.replace(/spotify:user:([^:]*?):/i, "spotify:"));
+		}
+	} else {
+		var upgraded = uris = uris.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	return upgraded;
+}
+
 
 /**
  * Format a user objects into a universal format
@@ -956,11 +975,11 @@ export let indexFriendlyUri = function (uri){
  * @return Array
  **/
 export let arrayOf = function(property, items){
-	let array = []
-	for (let i = 0; i < items.length; i++){
-		array.push(items[i][property])
+	let array = [];
+	for (var item of items){
+		array.push(item[property]);
 	}
-	return array
+	return array;
 }
 
 

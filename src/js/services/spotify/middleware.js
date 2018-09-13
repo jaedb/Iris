@@ -195,10 +195,14 @@ const SpotifyMiddleware = (function(){
             case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
                 store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
                 
-                action.uris = helpers.arrayOf('uri',action.playlists.items);
+                console.log(action);
+                action.uris = helpers.arrayOf('uri', action.playlists.items);
                 action.more = action.playlists.next;
                 action.total = action.playlists.total;
                 delete action.playlists;
+
+                // Upgrade our URIs
+                action.uris = helpers.upgradePlaylistsUris(action.uris);
 
                 next(action);
                 break;

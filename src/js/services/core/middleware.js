@@ -344,7 +344,10 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getTrack(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -370,7 +373,10 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getAlbum(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -397,7 +403,10 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getArtist(action.uri, true));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -423,7 +432,10 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -448,7 +460,10 @@ const CoreMiddleware = (function(){
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
 						store.dispatch(spotifyActions.getUser(action.uri));
-						store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
