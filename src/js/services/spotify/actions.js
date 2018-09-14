@@ -1491,7 +1491,6 @@ export function getPlaylist(uri){
                     helpers.formatPlaylist(response),
                     {
                         is_completely_loaded: true,
-                        can_edit: (getState().spotify.me && response.owner.id == getState().spotify.me.id),
                         user_uri: response.owner.uri,
                         tracks_uris: helpers.arrayOf('uri', tracks),
                         tracks_more: response.tracks.next,
@@ -1500,7 +1499,7 @@ export function getPlaylist(uri){
                     }
                 )
 
-                //dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+                dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
                 dispatch(coreActions.tracksLoaded(tracks));
                 dispatch(coreActions.playlistLoaded(playlist));
             },

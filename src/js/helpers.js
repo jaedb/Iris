@@ -474,7 +474,7 @@ export let formatPlaylist = function(data){
 		playlist.images = formatImages(playlist.images);
 	}
 
-	if (data.followers && data.followers.total){
+	if (data.followers && data.followers.total !== undefined){
 		playlist.followers = data.followers.total;
 	}
 
@@ -484,6 +484,7 @@ export let formatPlaylist = function(data){
 			uri: data.owner.uri,
 			name: (data.owner.display_name ? data.owner.display_name : null)
 		}
+		playlist.user_uri = data.owner.uri;
 	}
 
 	// Spotify upgraded their playlists URI to remove user component (Sept 2018)

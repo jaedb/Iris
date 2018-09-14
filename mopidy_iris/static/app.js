@@ -591,7 +591,7 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 		playlist.images = formatImages(playlist.images);
 	}
 
-	if (data.followers && data.followers.total) {
+	if (data.followers && data.followers.total !== undefined) {
 		playlist.followers = data.followers.total;
 	}
 
@@ -601,6 +601,7 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 			uri: data.owner.uri,
 			name: data.owner.display_name ? data.owner.display_name : null
 		};
+		playlist.user_uri = data.owner.uri;
 	}
 
 	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
@@ -4125,7 +4126,6 @@ function getPlaylist(uri) {
 
             var playlist = Object.assign({}, helpers.formatPlaylist(response), {
                 is_completely_loaded: true,
-                can_edit: getState().spotify.me && response.owner.id == getState().spotify.me.id,
                 user_uri: response.owner.uri,
                 tracks_uris: helpers.arrayOf('uri', tracks),
                 tracks_more: response.tracks.next,
@@ -4133,7 +4133,7 @@ function getPlaylist(uri) {
                 description: description
             });
 
-            //dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+            dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
             dispatch(coreActions.tracksLoaded(tracks));
             dispatch(coreActions.playlistLoaded(playlist));
         }, function (error) {
@@ -55470,7 +55470,7 @@ var CoreMiddleware = function () {
 
                                     case 'spotify':
                                         if (store.getState().spotify.authorization && store.getState().spotify.me) {
-                                            playlist.can_edit = helpers.getFromUri('playlistowner', playlist.uri) == store.getState().spotify.me.id;
+                                            playlist.can_edit = playlist.owner.id == store.getState().spotify.me.id;
                                         }
                                 }
 
@@ -58910,7 +58910,6 @@ var MopidyMiddleware = function () {
                         var uris_to_load = uris.splice(0, 50);
 
                         if (uris_to_load.length > 0) {
-                            console.log(uris.length);
                             store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading ' + uris.length + ' local albums', {
                                 uris: uris,
                                 remaining: uris.length
@@ -63098,7 +63097,7 @@ var localstorageMiddleware = function () {
 
                     case 'SPOTIFY_ME_LOADED':
                         helpers.setStorage('spotify', {
-                            me: action.data
+                            me: action.me
                         });
                         break;
 
@@ -65708,31 +65707,33 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'goToArtist',
 		value: function goToArtist(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists_uris || this.props.menu.items[0].artists_uris.length <= 0) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'artist/' + this.props.menu.items[0].artists[0].uri);
+
+				// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
+				_reactRouter.hashHistory.push(global.baseURL + 'artist/' + this.props.menu.items[0].artists_uris[0]);
 			}
 		}
 	}, {
 		key: 'goToAlbum',
 		value: function goToAlbum(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album.uri);
+				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album_uri);
 			}
 		}
 	}, {
 		key: 'goToUser',
 		value: function goToUser(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'user/' + this.props.menu.items[0].owner.uri);
+				_reactRouter.hashHistory.push(global.baseURL + 'user/' + this.props.menu.items[0].user_uri);
 			}
 		}
 	}, {
@@ -68420,7 +68421,7 @@ var Playlist = function (_React$Component) {
 								playlist.user ? playlist.user.name : helpers.getFromUri('userid', playlist.user_uri)
 							)
 						) : null,
-						playlist.followers ? _react2.default.createElement(
+						playlist.followers !== undefined ? _react2.default.createElement(
 							'li',
 							null,
 							playlist.followers.toLocaleString(),

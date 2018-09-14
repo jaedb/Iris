@@ -673,7 +673,7 @@ const CoreMiddleware = (function(){
 
                         case 'spotify':
                             if (store.getState().spotify.authorization && store.getState().spotify.me){
-                                playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
+                                playlist.can_edit = (playlist.owner.id == store.getState().spotify.me.id)
                             }
                     }
 

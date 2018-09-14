@@ -1730,7 +1730,6 @@ const MopidyMiddleware = (function(){
                 var uris_to_load = uris.splice(0,50);
 
                 if (uris_to_load.length > 0){
-                    console.log(uris.length);
                     store.dispatch(uiActions.updateProcess(
                         'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
                         'Loading '+uris.length+' local albums',
