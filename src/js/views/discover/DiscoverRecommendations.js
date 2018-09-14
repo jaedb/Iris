@@ -449,8 +449,10 @@ class Discover extends React.Component{
 				<section className="col w70 tracks">
 					<h4>
 						Tracks
-						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
-						<button className="primary pull-right" onClick={e => this.playTracks(e)}>Play all</button>
+						<div className="pull-right">
+							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+							<button className="primary" onClick={e => this.playTracks(e)}>Play all</button>
+						</div>
 					</h4>
 					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
 				</section>

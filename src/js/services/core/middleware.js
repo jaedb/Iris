@@ -589,8 +589,15 @@ const CoreMiddleware = (function(){
                     }*/
 
                     if (raw_album.tracks){
-                        album.tracks_uris = helpers.arrayOf('uri', raw_album.tracks);
-                        tracks_loaded = [...tracks_loaded, ...raw_album.tracks];
+                        album.tracks_uris = [];
+
+                        for (var track of raw_album.tracks){
+                            if (!track.album){
+                                track.album = helpers.formatSimpleObject(album);
+                            }
+                            album.tracks_uris.push(track.uri);
+                            tracks_loaded.push(track);
+                        }
                     }
 
                     if (raw_album.artists){

@@ -41,6 +41,7 @@ export default class LazyLoadListener extends React.Component{
 				this.setState(
 					{listening: false},
 					() => {
+						console.info('Loading more: '+this.props.loadKey);
 						this.props.loadMore();
 					}
 				);

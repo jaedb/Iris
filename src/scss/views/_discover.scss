@@ -193,6 +193,15 @@
 		.grid {
 			padding-bottom: 20px;
 		}
+
+		&.tracks {
+			.pull-right {
+				.button,
+				button {
+					margin-right: 0;
+				}
+			}
+		}
 	}
 
 	@include responsive($bp_medium){

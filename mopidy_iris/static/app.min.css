@@ -6635,6 +6635,10 @@ main .track-view {
 .discover-view section .grid {
   padding-bottom: 20px; }
 
+.discover-view section.tracks .pull-right .button,
+.discover-view section.tracks .pull-right button {
+  margin-right: 0; }
+
 @media (max-width: 800px) {
   .discover-view .intro {
     padding: 40px 20px; }
