@@ -722,7 +722,7 @@ var formatUser = exports.formatUser = function formatUser(data) {
  **/
 var formatTrack = exports.formatTrack = function formatTrack(data) {
 	var track = {};
-	var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
+	var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
 	'album' // Array of simple records
 	];
 
@@ -17428,11 +17428,11 @@ function getTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not get track", {}, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not get LastFM track", {}, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not get track", {}, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not get LastFM track", {}, "Could not find track in index"));
             return;
         }
 
@@ -17563,11 +17563,11 @@ function loveTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not love track", track, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not love LastFM track", track, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not love track", track, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not love LastFM track", track, "Could not find track in index"));
             return;
         }
 
@@ -17590,11 +17590,11 @@ function unloveTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not unlove track", track, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not unlove track", track, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Could not find track in index"));
             return;
         }
 
@@ -17633,7 +17633,7 @@ function scrobble(track) {
         sendSignedRequest(dispatch, getState, params).then(function (response) {
             console.log("Scrobbled", response);
         }, function (error) {
-            dispatch(coreActions.handleException('Could not scrobble track', error, error.description ? error.description : null));
+            dispatch(coreActions.handleException('Could not scrobble LastFM track', error, error.description ? error.description : null));
         });
     };
 }
@@ -19548,24 +19548,27 @@ var Parallax = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, props));
 
-		_this._loading = false;
-		_this._loaded = false;
+		if (!_this.props.disabled) {
 
-		_this.state = {
-			scrollTop: 0,
-			windowWidth: 0,
-			windowHeight: 0,
-			canvas: {
-				width: 0,
-				height: 0
-			},
-			image: {},
-			loading: false,
-			url: false
+			_this._loading = false;
+			_this._loaded = false;
 
-			// we need to manually bind this as eventListener doesn't work with anonymous functions
-		};_this.handleResize = _this.handleResize.bind(_this);
-		_this.handleScroll = _this.handleScroll.bind(_this);
+			_this.state = {
+				scrollTop: 0,
+				windowWidth: 0,
+				windowHeight: 0,
+				canvas: {
+					width: 0,
+					height: 0
+				},
+				image: {},
+				loading: false,
+				url: false
+
+				// we need to manually bind this as eventListener doesn't work with anonymous functions
+			};_this.handleResize = _this.handleResize.bind(_this);
+			_this.handleScroll = _this.handleScroll.bind(_this);
+		}
 		return _this;
 	}
 
@@ -19574,40 +19577,45 @@ var Parallax = function (_React$Component) {
 		value: function componentDidMount() {
 			var _this2 = this;
 
-			this._mounted = true;
-			window.addEventListener("resize", this.handleResize);
-			window.addEventListener("scroll", this.handleScroll);
+			if (!this.props.disabled) {
 
-			if (this.props.image) {
-				this._loading = true;
-				this.setState({ url: this.props.image, image: false, loading: true });
-				this.loadImage(this.props.image).then(function (response) {
-					if (_this2._mounted) {
-						_this2._loading = false;
-						_this2._loaded = true;
-						_this2.setState({ url: _this2.props.image, image: response, loading: false });
-						_this2.updateCanvas(response);
-					}
-				});
-			} else {
-				this._loaded = true;
-				this.state.image = false;
-				this.updateCanvas();
+				this._mounted = true;
+				window.addEventListener("resize", this.handleResize);
+				window.addEventListener("scroll", this.handleScroll);
+
+				if (this.props.image) {
+					this._loading = true;
+					this.setState({ url: this.props.image, image: false, loading: true });
+					this.loadImage(this.props.image).then(function (response) {
+						if (_this2._mounted) {
+							_this2._loading = false;
+							_this2._loaded = true;
+							_this2.setState({ url: _this2.props.image, image: response, loading: false });
+							_this2.updateCanvas(response);
+						}
+					});
+				} else {
+					this._loaded = true;
+					this.state.image = false;
+					this.updateCanvas();
+				}
 			}
 		}
 	}, {
 		key: "componentWillUnmount",
 		value: function componentWillUnmount() {
-			this._mounted = false;
-			window.removeEventListener("resize", this.handleResize);
-			window.removeEventListener("scroll", this.handleScroll);
+			if (!this.props.disabled) {
+				this._mounted = false;
+				window.removeEventListener("resize", this.handleResize);
+				window.removeEventListener("scroll", this.handleScroll);
+			}
 		}
 	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
 			var _this3 = this;
 
-			if ((!this.state.url || nextProps.image != this.state.url) && !this._loading && nextProps.image) {
+			if (!nextProps.disabled && (!this.state.url || nextProps.image != this.state.url) && !this._loading && nextProps.image) {
 				this._loading = true;
 				this.setState({ url: nextProps.image, image: false, loading: true });
 				this.loadImage(nextProps.image).then(function (response) {
@@ -19755,6 +19763,9 @@ var Parallax = function (_React$Component) {
 	}, {
 		key: "render",
 		value: function render() {
+			if (this.props.disabled) {
+				return null;
+			}
 			return _react2.default.createElement(
 				"div",
 				{ className: this.props.blur ? "parallax blur" : "parallax" },
@@ -26022,11 +26033,13 @@ var Track = function (_React$Component) {
 					{ className: 'col duration', key: 'duration' },
 					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col popularity', key: 'popularity' },
-					_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
-				));
+				if (track.popularity !== undefined) {
+					track_columns.push(_react2.default.createElement(
+						'span',
+						{ className: 'col popularity', key: 'popularity' },
+						_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
+					));
+				}
 			}
 
 			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'subtle', key: 'context', onTrigger: function onTrigger(e) {
@@ -51064,6 +51077,7 @@ function reducer() {
          **/
 
         case 'PLAYLIST_TRACKS':
+            console.log(action);
             var playlists = Object.assign({}, core.playlists);
             var playlist = Object.assign({}, playlists[action.key], { tracks_uris: action.tracks_uris });
 
@@ -53460,9 +53474,12 @@ var PusherMiddleware = function () {
                         window.location.reload(true);
                         break;
                     case 'upgrading':
+                    case 'upgrade_started':
+                        store.dispatch(mopidyActions.upgrading());
                         store.dispatch(uiActions.createNotification({ content: 'Upgrading...', type: 'info' }));
                         break;
                     case 'restarting':
+                        store.dispatch(mopidyActions.restarting());
                         store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
                         break;
                 }
@@ -55446,6 +55463,7 @@ var MopidyMiddleware = function () {
                         var uris = helpers.arrayOf('uri', tracks);
 
                         request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
+                            console.log(response);
                             for (var uri in response) {
                                 if (response.hasOwnProperty(uri)) {
 
@@ -64730,7 +64748,7 @@ var Artist = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
@@ -64778,6 +64796,7 @@ var Artist = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	var uri = ownProps.params.uri;
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
@@ -65421,7 +65440,7 @@ var User = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
@@ -65499,6 +65518,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		me: state.spotify.me,
 		theme: state.ui.theme,
+		disable_parallax: state.ui.disable_parallax,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
 		playlists: state.core.playlists,
@@ -66393,7 +66413,7 @@ var Queue = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 					'Now playing'
 				),
-				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image, theme: this.props.theme }),
+				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -66454,6 +66474,7 @@ var Queue = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
@@ -68548,6 +68569,27 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'label' },
 									'Enable shortkeys'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'shortkeys_enabled',
+									checked: this.props.ui.disable_parallax,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ disable_parallax: !_this2.props.ui.disable_parallax });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Disable parallax',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Improves scroll performance on low-powered devices'
+									)
 								)
 							)
 						)
@@ -72988,7 +73030,7 @@ var Discover = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg', theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg', theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
@@ -73049,6 +73091,7 @@ var Discover = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,
@@ -75549,7 +75592,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.large : null, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.large : null, blur: true, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -75589,7 +75632,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, null)
+					_react2.default.createElement(_Parallax2.default, { disabled: this.props.disable_parallax })
 				);
 			}
 		}
@@ -75671,6 +75714,7 @@ var DiscoverFeatured = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,
@@ -76233,7 +76277,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -76277,7 +76321,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, null)
+					_react2.default.createElement(_Parallax2.default, { disabled: this.props.disable_parallax })
 				);
 			}
 		}
@@ -76386,6 +76430,7 @@ var DiscoverNewReleases = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,

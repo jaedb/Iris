@@ -320,6 +320,17 @@ class Settings extends React.Component {
 									Enable shortkeys
 								</span>
 							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="shortkeys_enabled"
+									checked={ this.props.ui.disable_parallax }
+									onChange={ e => this.props.uiActions.set({ disable_parallax: !this.props.ui.disable_parallax })} />
+								<span className="label has-tooltip">
+									Disable parallax
+									<span className="tooltip">Improves scroll performance on low-powered devices</span>
+								</span>
+							</label>
 						</div>
 					</div>
 

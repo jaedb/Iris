@@ -294,7 +294,7 @@ class Artist extends React.Component{
 			<div className="view artist-view">
 				<div className="intro">
 
-					<Parallax image={image} theme={this.props.theme} />
+					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
@@ -324,6 +324,7 @@ class Artist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,

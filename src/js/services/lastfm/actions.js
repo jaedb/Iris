@@ -181,7 +181,7 @@ export function getTrack(uri){
             var track = getState().core.tracks[uri];
             if (!track.artists){
                 dispatch(coreActions.handleException(
-                    "Could not get track",
+                    "Could not get LastFM track",
                     {},
                     "Track has no artists"
                 ));
@@ -189,7 +189,7 @@ export function getTrack(uri){
             }
         } else {
             dispatch(coreActions.handleException(
-                "Could not get track",
+                "Could not get LastFM track",
                 {},
                 "Could not find track in index"
             ));
@@ -347,7 +347,7 @@ export function loveTrack(uri){
             var track = getState().core.tracks[uri];
             if (!track.artists){
                 dispatch(coreActions.handleException(
-                    "Could not love track",
+                    "Could not love LastFM track",
                     track,
                     "Track has no artists"
                 ));
@@ -355,7 +355,7 @@ export function loveTrack(uri){
             }
         } else {
             dispatch(coreActions.handleException(
-                "Could not love track",
+                "Could not love LastFM track",
                 track,
                 "Could not find track in index"
             ));
@@ -389,7 +389,7 @@ export function unloveTrack(uri){
             var track = getState().core.tracks[uri];
             if (!track.artists){
                 dispatch(coreActions.handleException(
-                    "Could not unlove track",
+                    "Could not unlove LastFM track",
                     track,
                     "Track has no artists"
                 ));
@@ -397,7 +397,7 @@ export function unloveTrack(uri){
             }
         } else {
             dispatch(coreActions.handleException(
-                "Could not unlove track",
+                "Could not unlove LastFM track",
                 track,
                 "Could not find track in index"
             ));
@@ -450,7 +450,7 @@ export function scrobble(track){
                 },
                 error => {
                     dispatch(coreActions.handleException(
-                        'Could not scrobble track',
+                        'Could not scrobble LastFM track',
                         error,
                         (error.description ? error.description : null)
                     ));

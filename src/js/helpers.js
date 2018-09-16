@@ -586,6 +586,7 @@ export let formatTrack = function(data){
 		'track_number',
 		'duration',
 		'followers',
+		'popularity',
 		'userloved',
 		'is_explicit',
 		'is_local',

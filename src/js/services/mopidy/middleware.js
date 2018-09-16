@@ -1497,6 +1497,7 @@ const MopidyMiddleware = (function(){
 
                 request(socket, store, 'library.lookup', { uris: uris })
                     .then(response => {
+                        console.log(response)
                         for(var uri in response){
                             if (response.hasOwnProperty(uri)){
 

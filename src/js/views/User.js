@@ -90,7 +90,7 @@ class User extends React.Component{
 		return (
 			<div className="view user-view">
 				<div className="intro">
-					<Parallax image={image} theme={this.props.theme} />
+					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 					<div className="liner">
 						<h1>{user.name}</h1>
 						<h2>
@@ -127,6 +127,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		me: state.spotify.me,
 		theme: state.ui.theme,
+		disable_parallax: state.ui.disable_parallax,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
 		playlists: state.core.playlists,

@@ -114,9 +114,12 @@ const PusherMiddleware = (function(){
                         window.location.reload(true);
                         break;
                     case 'upgrading':
+                    case 'upgrade_started':
+                        store.dispatch(mopidyActions.upgrading());
                         store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
                         break;
                     case 'restarting':
+                        store.dispatch(mopidyActions.restarting());
                         store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
                         break;
                 }
