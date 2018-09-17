@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import ReactGA from 'react-ga'
 
 import TrackList from '../components/TrackList'
@@ -26,6 +26,17 @@ class Playlist extends React.Component{
 
 	constructor(props){
 		super(props);
+	}
+
+	componentWillMount(){
+		var uri = this.props.params.uri;
+
+		// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+		// We accept the old format, and redirect to the new one
+		if (uri.includes("spotify:user:")){
+			uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+			hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(uri));
+		}
 	}
 
 	componentDidMount(){

@@ -512,8 +512,14 @@ const MopidyMiddleware = (function(){
                                     data: {
                                         enabled: true
                                     }
-                                })
-                                store.dispatch(spotifyActions.connect());
+                                });
+                            } else {
+                                store.dispatch({
+                                    type: 'SPOTIFY_SET',
+                                    data: {
+                                        enabled: false
+                                    }
+                                });
                             }
 
                             // If we haven't customised our search schemes, add all to search
@@ -2082,23 +2088,25 @@ const MopidyMiddleware = (function(){
                 var track = helpers.formatTrack(action.tl_track);
 
                 // We don't have the track already in our index, or we do but it's a partial record
-                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
+                if (track.uri){
+	                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
-                    // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
-                        store.dispatch(spotifyActions.getTrack(track.uri));
+	                    // We've got Spotify running, and it's a spotify track - go straight to the source!
+	                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+	                        store.dispatch(spotifyActions.getTrack(track.uri));
 
-                    // Some other source, rely on Mopidy backends to do their work
-                    } else {
-                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
-                    }
-                }
+	                    // Some other source, rely on Mopidy backends to do their work
+	                    } else {
+	                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
+	                    }
+	                }
 
-                store.dispatch({
-                    type: 'CURRENT_TRACK_LOADED',
-                    track: track,
-                    uri: track.uri
-                });
+	                store.dispatch({
+	                    type: 'CURRENT_TRACK_LOADED',
+	                    track: track,
+	                    uri: track.uri
+	                });
+	            }
                 break;
 
             case 'MOPIDY_GET_NEXT_TRACK':
@@ -2111,7 +2119,7 @@ const MopidyMiddleware = (function(){
                                 // We know it will be here, as the tlid refers to an item in this list
                                 var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
 
-                                if (track){
+                                if (track && track.uri){
                                     store.dispatch({
                                         type: 'NEXT_TRACK_LOADED',
                                         uri: track.uri
@@ -2160,33 +2168,34 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_IMAGES':
+            	if (action.uris){
+	                request(socket, store, 'library.getImages', {uris: action.uris})
+	                    .then(response => {
+	                        var records = [];
+	                        for (var uri in response){
+	                            if (response.hasOwnProperty(uri)){
+	                                var images = response[uri];
+	                                images = helpers.digestMopidyImages(store.getState().mopidy, images);
 
-                request(socket, store, 'library.getImages', {uris: action.uris})
-                    .then(response => {
-                        var records = [];
-                        for (var uri in response){
-                            if (response.hasOwnProperty(uri)){
-                                var images = response[uri];
-                                images = helpers.digestMopidyImages(store.getState().mopidy, images);
+	                                if (images && images.length > 0){
+	                                    records.push({
+	                                        uri: uri,
+	                                        images: images
+	                                    });
 
-                                if (images && images.length > 0){
-                                    records.push({
-                                        uri: uri,
-                                        images: images
-                                    });
+	                                } else {
+	                                    store.dispatch(lastfmActions.getImages(action.context, uri));
+	                                }
+	                            }
+	                        }
 
-                                } else {
-                                    store.dispatch(lastfmActions.getImages(action.context, uri));
-                                }
-                            }
-                        }
-
-                        var action_data = {
-                            type: (action.context+'_LOADED').toUpperCase()
-                        }
-                        action_data[action.context] = records;
-                        store.dispatch(action_data);
-                    });
+	                        var action_data = {
+	                            type: (action.context+'_LOADED').toUpperCase()
+	                        }
+	                        action_data[action.context] = records;
+	                        store.dispatch(action_data);
+	                    });
+                }
 
                 next(action);
                 break;

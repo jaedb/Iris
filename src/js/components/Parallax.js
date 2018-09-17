@@ -6,23 +6,23 @@ export default class Parallax extends React.Component{
 	constructor(props){
 		super(props);
 
+		this._loading = false
+		this._loaded = false
+
+		this.state = {
+			scrollTop: 0,
+			windowWidth: 0,
+			windowHeight: 0,
+			canvas: {
+				width: 0,
+				height: 0
+			},
+			image: {},
+			loading: false,
+			url: false
+		}
+
 		if (!this.props.disabled){
-
-			this._loading = false
-			this._loaded = false
-
-			this.state = {
-				scrollTop: 0,
-				windowWidth: 0,
-				windowHeight: 0,
-				canvas: {
-					width: 0,
-					height: 0
-				},
-				image: {},
-				loading: false,
-				url: false
-			}
 
 			// we need to manually bind this as eventListener doesn't work with anonymous functions
 			this.handleResize = this.handleResize.bind(this);
@@ -32,43 +32,44 @@ export default class Parallax extends React.Component{
 
 	componentDidMount(){
 		if (!this.props.disabled){
-
-	        this._mounted = true;
 	        window.addEventListener("resize", this.handleResize);
 	        window.addEventListener("scroll", this.handleScroll);
+		}
 
-	        if (this.props.image){
-				this._loading = true;
-				this.setState({url: this.props.image, image: false, loading: true});
-				this.loadImage(this.props.image)
-					.then(
-						response => {
-							if (this._mounted){
-								this._loading = false;
-								this._loaded = true;
-								this.setState({url: this.props.image, image: response, loading: false});
-								this.updateCanvas(response);
-							}
+        this._mounted = true;
+
+        if (this.props.image){
+			this._loading = true;
+			this.setState({url: this.props.image, image: false, loading: true});
+			this.loadImage(this.props.image)
+				.then(
+					response => {
+						if (this._mounted){
+							this._loading = false;
+							this._loaded = true;
+							this.setState({url: this.props.image, image: response, loading: false});
+							this.updateCanvas(response);
 						}
-					)
-			} else {
-				this._loaded = true;
-				this.state.image = false;
-				this.updateCanvas();
-			}
+					}
+				)
+		} else {
+			this._loaded = true;
+			this.state.image = false;
+			this.updateCanvas();
 		}
 	}
 
     componentWillUnmount(){
+	    this._mounted = false;
+
     	if (!this.props.disabled){
-	        this._mounted = false;
 	        window.removeEventListener("resize", this.handleResize);
 	        window.removeEventListener("scroll", this.handleScroll);
 	    }
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (!nextProps.disabled && (!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
+		if ((!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
 			this._loading = true;
 			this.setState({ url: nextProps.image, image: false, loading: true });
 			this.loadImage(nextProps.image)
@@ -86,9 +87,7 @@ export default class Parallax extends React.Component{
 	}
 
     handleResize(e){
-    	if (this._loaded){
-	    	this.updateCanvas(this.state.image);
-	    }
+    	this.updateCanvas(this.state.image);
     }
 
     handleScroll(e){
@@ -212,11 +211,8 @@ export default class Parallax extends React.Component{
 	}
 
 	render(){
-		if (this.props.disabled){
-			return null;
-		}
 		return (
-			<div className={this.props.blur ? "parallax blur" : "parallax"}>
+			<div className={this.props.blur && !this.props.disabled ? "parallax blur" : "parallax"}>
 
 				<canvas 
 					id="parallax-canvas" 

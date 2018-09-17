@@ -51,6 +51,7 @@ var initialState = {
 	ui: {
 		theme: 'dark',
 		shortkeys_enabled: true,
+		disable_parallax: false,
 		allow_reporting: true,
 		slim_mode: false,
 		selected_tracks: [],
