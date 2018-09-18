@@ -20387,12 +20387,14 @@ var GridItem = function (_React$Component) {
 			switch (helpers.uriType(item.uri)) {
 
 				case 'playlist':
-					return _react2.default.createElement(
-						'span',
-						null,
-						item.tracks_total ? item.tracks_total : 0,
-						' tracks'
-					);
+					if (item.tracks_total) {
+						return _react2.default.createElement(
+							'span',
+							null,
+							item.tracks_total,
+							' tracks'
+						);
+					}
 					break;
 
 				case 'artist':
@@ -20548,15 +20550,8 @@ var FollowButton = function (_React$Component) {
 			}
 
 			var className = '';
-
-			// Inherit passed-down classes
 			if (this.props.className) {
 				className += ' ' + this.props.className;
-			}
-
-			// Loader
-			if (helpers.isLoading(this.props.load_queue, ['/following', '/followers', 'me/albums/contains/?ids=', 'me/albums/?ids='])) {
-				className += ' working';
 			}
 
 			if (!this.props.spotify_authorized) {
@@ -67399,7 +67394,7 @@ var Album = function (_React$Component) {
 
 			var album = helpers.collate(this.props.album, { tracks: this.props.tracks, artists: this.props.artists });
 
-			if (album.tracks && album.tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.params.uri)])) {
+			if (!album.tracks_uris || album.tracks_uris && !album.tracks || album.tracks_uris.length !== album.tracks.length) {
 				var is_loading_tracks = true;
 			} else {
 				var is_loading_tracks = false;
@@ -67902,7 +67897,7 @@ var Artist = function (_React$Component) {
 						label: 'Compilations'
 					}];
 
-					if (artist.tracks && artist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', artist.uri) + '/top-tracks'])) {
+					if (!artist.tracks_uris || artist.tracks_uris && !artist.tracks || artist.tracks_uris.length !== artist.tracks.length) {
 						var is_loading_tracks = true;
 					} else {
 						var is_loading_tracks = false;
@@ -68441,7 +68436,7 @@ var Playlist = function (_React$Component) {
 				context = 'editable-playlist';
 			}
 
-			if (playlist.tracks && playlist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_playlists/' + playlist_id, 'spotify_playlists/' + playlist_id + '/tracks'])) {
+			if (!playlist.tracks_uris || playlist.tracks_uris && !playlist.tracks || playlist.tracks_uris.length !== playlist.tracks.length) {
 				var is_loading_tracks = true;
 			} else {
 				var is_loading_tracks = false;
@@ -74197,6 +74192,9 @@ var Services = function (_React$Component) {
 	_createClass(Services, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined) {
+				this.props.spotifyActions.getMe();
+			}
 			if (this.props.lastfm.session && this.props.core.users["lastfm:user:" + this.props.lastfm.session.name] === undefined) {
 				this.props.lastfmActions.getMe();
 			}
@@ -75233,8 +75231,8 @@ var Snapcast = function (_React$Component) {
 
 			if (!this.props.snapcast_enabled) {
 				return _react2.default.createElement(
-					'div',
-					null,
+					'p',
+					{ className: 'message warning' },
 					'To enable Snapcast, edit your ',
 					_react2.default.createElement(
 						'code',

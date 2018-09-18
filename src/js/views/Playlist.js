@@ -191,7 +191,7 @@ class Playlist extends React.Component{
 			context = 'editable-playlist';
 		}
 
-		if (playlist.tracks && playlist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_playlists/'+playlist_id, 'spotify_playlists/'+playlist_id+'/tracks'])){
+		if (!playlist.tracks_uris || (playlist.tracks_uris && !playlist.tracks) || (playlist.tracks_uris.length !== playlist.tracks.length)){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;

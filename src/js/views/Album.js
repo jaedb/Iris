@@ -121,7 +121,7 @@ class Album extends React.Component{
 
 		var album = helpers.collate(this.props.album, {tracks: this.props.tracks, artists: this.props.artists});
 
-		if (album.tracks && album.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+		if (!album.tracks_uris || (album.tracks_uris && !album.tracks) || (album.tracks_uris.length !== album.tracks.length)){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;

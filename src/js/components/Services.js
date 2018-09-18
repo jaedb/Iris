@@ -32,6 +32,9 @@ class Services extends React.Component{
 	}
 
 	componentDidMount(){
+		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined){
+			this.props.spotifyActions.getMe();
+		}
 		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}

@@ -205,7 +205,7 @@ class Artist extends React.Component{
 					}
 				];
 
-				if (artist.tracks && artist.tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',artist.uri)+'/top-tracks'])){
+				if (!artist.tracks_uris || (artist.tracks_uris && !artist.tracks) || (artist.tracks_uris.length !== artist.tracks.length)){
 					var is_loading_tracks = true;
 				} else {
 					var is_loading_tracks = false;

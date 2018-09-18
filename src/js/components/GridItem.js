@@ -45,11 +45,13 @@ export default class GridItem extends React.Component{
 		switch (helpers.uriType(item.uri)){
 
 			case 'playlist':
-				return (
-					<span>
-						{item.tracks_total ? item.tracks_total : 0} tracks
-					</span>
-				)
+				if (item.tracks_total){
+					return (
+						<span>
+							{item.tracks_total} tracks
+						</span>
+					);
+				}
 				break
 
 			case 'artist':
