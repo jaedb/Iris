@@ -90,7 +90,6 @@ const PusherMiddleware = (function(){
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
                     case 'spotify_authorization_received':
-                        console.log(message);
                         store.dispatch(uiActions.createNotification({
                             type: 'spotify-authorization-received',
                             authorization: message.params.authorization,
@@ -230,10 +229,18 @@ const PusherMiddleware = (function(){
 	            }
 
                 store.dispatch(pusherActions.getConfig());
-                store.dispatch(pusherActions.getVersion());
                 store.dispatch(pusherActions.getRadio());
                 store.dispatch(pusherActions.getQueueMetadata());
-                
+
+                // Give things a few moments to setup before we check for version.
+                // This is because the server makes a GitHub request, which creates a [very] small delay
+                // in subsequent requests.
+                setTimeout(
+                    function(){
+                        store.dispatch(pusherActions.getVersion());
+                    },
+                    2000
+                );
                 next(action);
                 break;
 
@@ -546,10 +553,6 @@ const PusherMiddleware = (function(){
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current });
 	            }
-
-                if (action.version.upgrade_available){
-                    store.dispatch(uiActions.createNotification({content: 'Version '+action.version.latest+' is available. See settings to upgrade.'}));
-                }
                 next(action);
                 break
 

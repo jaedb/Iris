@@ -249,26 +249,7 @@ class Settings extends React.Component {
 					<h4 className="underline">Services</h4>
 					<Services active={this.props.params.sub_view} />
 
-					{helpers.isHosted() ? null : <h4 className="underline">Privacy</h4>}
-
-					{helpers.isHosted() ? null : <div className="field checkbox">
-						<div className="name">Reporting</div>
-						<div className="input">
-							<label>
-								<input 
-									type="checkbox"
-									name="allow_reporting"
-									checked={ this.props.ui.allow_reporting }
-									onChange={ e => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })} />
-								<span className="label">
-									Allow reporting of anonymous usage statistics
-								</span>
-							</label>
-							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
-						</div>
-					</div>}
-
-					<h4 className="underline">Advanced</h4>
+					<h4 className="underline">Interface</h4>
 
 					<div className="field radio">
 						<div className="name">
@@ -297,7 +278,7 @@ class Settings extends React.Component {
 					</div>
 
 					<div className="field checkbox">
-						<div className="name">UI behavior</div>
+						<div className="name">Behavior</div>
 						<div className="input">
 							<label>
 								<input 
@@ -335,9 +316,8 @@ class Settings extends React.Component {
 					</div>
 
 					<div className="field sources-priority">
-						<div className="name has-tooltip">
+						<div className="name">
 							Sources priority
-							<span className="tooltip">Order of searching and search results</span>
 						</div>
 						<div className="input">
 			        		<SourcesPriority
@@ -345,8 +325,30 @@ class Settings extends React.Component {
 								uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
 			        			uiActions={this.props.uiActions}
 			        		/>
+				        	<div className="description">
+				        		Drag-and-drop to prioritize search providers and results
+				        	</div>
 			        	</div>
 			        </div>
+
+					{helpers.isHosted() ? null : <div className="field checkbox">
+						<div className="name">Reporting</div>
+						<div className="input">
+							<label>
+								<input 
+									type="checkbox"
+									name="allow_reporting"
+									checked={ this.props.ui.allow_reporting }
+									onChange={ e => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })} />
+								<span className="label">
+									Allow reporting of anonymous usage statistics
+								</span>
+							</label>
+							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
+						</div>
+					</div>}
+
+					<h4 className="underline">Advanced</h4>
 
 					<div className="field">
 						<div className="name">Artist library URI</div>

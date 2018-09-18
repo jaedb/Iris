@@ -90,7 +90,7 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="settings" type="material" />
 								Settings
-								{this.props.test_mode ? <span className="status has-tooltip right-tooltip"><Icon name="info" className="orange-text" /><span className="tooltip">Test mode active</span></span>: null}
+								{this.props.update_available ? <span className="status has-tooltip right-tooltip"><Icon name="cloud_download" className="green-text" /><span className="tooltip">Update available</span></span>: null}
 								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><Icon name="warning" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
 							</Link>
 						</section>
@@ -122,6 +122,7 @@ const mapStateToProps = (state, ownProps) => {
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
 		spotify_authorized: state.spotify.authorization,
+		update_available: (state.pusher.version && state.pusher.version.update_available ? state.pusher.version.update_available : false),
 		test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
 		dragger: state.ui.dragger
 	}
