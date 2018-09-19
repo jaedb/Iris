@@ -333,6 +333,48 @@ export let formatSimpleObject = function(data){
 	return simple_object;
 }
 
+/**
+ * Format multiple items
+ *
+ * @param tracks Array
+ * @return Array
+ **/
+export let formatTracks = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatTrack(record));
+    }
+    return formatted;
+}
+export let formatAlbums = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatAlbum(record));
+    }
+    return formatted;
+}
+export let formatArtists = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatArtist(record));
+    }
+    return formatted;
+}
+export let formatPlaylists = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatTrack(record));
+    }
+    return formatted;
+}
+export let formatUsers = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatUser(record));
+    }
+    return formatted;
+}
+
 
 /**
  * Format our album objects into a universal format
@@ -657,24 +699,6 @@ export let formatTrack = function(data){
     }
 
 	return track;
-}
-
-/**
- * Format multiple tracks
- *
- * @param tracks Array
- * @return Array
- **/
-export let formatTracks = function(tracks){
-	if (!tracks || tracks === undefined){
-		return null;
-	}
-
-    var formatted = [];
-    for (var i = 0; i < tracks.length; i++){
-	    formatted.push(formatTrack(tracks[i]));
-    }
-    return formatted;
 }
 
 

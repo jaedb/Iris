@@ -759,8 +759,26 @@ const CoreMiddleware = (function(){
                     var records = action.records_data;
                 }
 
+                switch (action.records_type){
+                    case 'track':
+                        records = helpers.formatTracks(records);
+                        break;
+                    case 'artist':
+                        records = helpers.formatArtists(records);
+                        break;
+                    case 'album':
+                        records = helpers.formatAlbums(records);
+                        break;
+                    case 'playlist':
+                        records = helpers.formatPlaylists(records);
+                        break;
+                    case 'user':
+                        records = helpers.formatUsers(records);
+                        break;
+                }
+
                 var records_type_plural = action.records_type+'s';
-                var records_index = Object.assign({});
+                var records_index = {};
                 var records_uris = helpers.arrayOf('uri', records);
 
                 // Append our records_uris array with our new records
@@ -786,6 +804,9 @@ const CoreMiddleware = (function(){
                 };
                 records_action[records_type_plural] = records;
                 store.dispatch(records_action);
+
+                //console.log(parent_action);
+                //console.log(records_action);
 
                 next(action);
                 break;
