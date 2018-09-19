@@ -759,6 +759,9 @@ const CoreMiddleware = (function(){
                     var records = action.records_data;
                 }
 
+                // TODO: To avoid double-looping, we could
+                // run a single loop to extract both the formatted record
+                // and the URI
                 switch (action.records_type){
                     case 'track':
                         records = helpers.formatTracks(records);
