@@ -48,6 +48,10 @@ class Track extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadTrack(nextProps.params.uri);
 
+			if (this.props.tracks.artists){
+				this.props.geniusActions.findTrackLyrics(this.props.track);
+			}
+
 		// if mopidy has just connected AND we're not a Spotify track, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
