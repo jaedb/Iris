@@ -19,16 +19,16 @@ export default class VolumeControl extends React.Component{
 	renderMuteButton(){
 		if (this.props.mute){
 			return (
-				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(false)}>
+				<a className="control mute-control tooltip" onClick={() => this.props.onMuteChange(false)}>
 					<Icon className="red-text" name="volume_off" />
-					<span className="tooltip">Unmute</span>
+					<span className="tooltip__content">Unmute</span>
 				</a>
 			)
 		} else {
 			return (
-				<a className="control mute-control has-tooltip" onClick={() => this.props.onMuteChange(true)}>
+				<a className="control mute-control tooltip" onClick={() => this.props.onMuteChange(true)}>
 					<Icon className="muted" name="volume_mute" />
-					<span className="tooltip">Mute</span>
+					<span className="tooltip__content">Mute</span>
 				</a>
 			)
 		}

@@ -138,7 +138,7 @@ class Album extends React.Component{
 					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
+						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /><span className="tooltip__content">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
 						{!this.props.slim_mode && album.artists && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
 						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
 						<li>

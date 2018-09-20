@@ -236,9 +236,9 @@ class Settings extends React.Component {
 										name="ssl"
 										checked={this.state.mopidy_ssl}
 										onChange={e => this.setState({mopidy_ssl: !this.state.mopidy_ssl})} />
-									<span className="label has-tooltip">
+									<span className="label tooltip">
 										Enable SSL
-										<span className="tooltip">Requires SSL proxy</span>
+										<span className="tooltip__content">Requires SSL proxy</span>
 									</span>
 								</label>
 							</div>
@@ -286,9 +286,9 @@ class Settings extends React.Component {
 									name="log_actions"
 									checked={ this.props.ui.clear_tracklist_on_play }
 									onChange={ e => this.props.uiActions.set({ clear_tracklist_on_play: !this.props.ui.clear_tracklist_on_play })} />
-								<span className="label has-tooltip">
+								<span className="label tooltip">
 									Clear tracklist on play of URI(s)
-									<span className="tooltip">Playing one or more URIs will clear the current play queue first</span>
+									<span className="tooltip__content">Playing one or more URIs will clear the current play queue first</span>
 								</span>
 							</label>
 							<label>
@@ -307,9 +307,9 @@ class Settings extends React.Component {
 									name="shortkeys_enabled"
 									checked={ this.props.ui.disable_parallax }
 									onChange={ e => this.props.uiActions.set({ disable_parallax: !this.props.ui.disable_parallax })} />
-								<span className="label has-tooltip">
+								<span className="label tooltip">
 									Disable parallax
-									<span className="tooltip">Improves scroll performance on low-powered devices</span>
+									<span className="tooltip__content">Improves scroll performance on low-powered devices</span>
 								</span>
 							</label>
 						</div>

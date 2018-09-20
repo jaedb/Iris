@@ -116,9 +116,9 @@ class InitialSetup extends React.Component{
 									name="ssl"
 									checked={this.state.ssl}
 									onChange={e => this.setState({ssl: !this.state.ssl})} />
-								<span className="label has-tooltip">
+								<span className="label tooltip">
 									Enable SSL
-									<span className="tooltip">Requires SSL proxy</span>
+									<span className="tooltip__content">Requires SSL proxy</span>
 								</span>
 							</label>
 						</div>
