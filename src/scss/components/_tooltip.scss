@@ -1,8 +1,10 @@
 
-.has-tooltip {
+$module: 'tooltip';
+
+.#{$module} {
 	position: relative;
 
-	.tooltip {
+	&__content {
 		@include animate();
 		display: inline-block;
 		position: absolute;
@@ -48,15 +50,21 @@
 		}
 	}
 
+	.touch &:not(.touchable) {
+		.#{$module}__content {
+			display: none;
+		}
+	}
+	 
 	&:hover {
-		.tooltip {
+		.#{$module}__content {
 			opacity: 1;
 			bottom: 35px;
 		}
 	}
 
-	&.right-tooltip {
-		.tooltip {
+	&--right {
+		.#{$module}__content {
 			left: auto;
 			right: -5px;
 
@@ -67,8 +75,8 @@
 		}
 	}
 
-	&.large-tooltip {
-		.tooltip {
+	&--large {
+		.#{$module}__content {
 			padding: 8px 12px;
 			font-size: 12px;
 			line-height: 14px;

@@ -22959,26 +22959,26 @@ var VolumeControl = function (_React$Component) {
 			if (this.props.mute) {
 				return _react2.default.createElement(
 					'a',
-					{ className: 'control mute-control has-tooltip', onClick: function onClick() {
+					{ className: 'control mute-control tooltip', onClick: function onClick() {
 							return _this2.props.onMuteChange(false);
 						} },
 					_react2.default.createElement(_Icon2.default, { className: 'red-text', name: 'volume_off' }),
 					_react2.default.createElement(
 						'span',
-						{ className: 'tooltip' },
+						{ className: 'tooltip__content' },
 						'Unmute'
 					)
 				);
 			} else {
 				return _react2.default.createElement(
 					'a',
-					{ className: 'control mute-control has-tooltip', onClick: function onClick() {
+					{ className: 'control mute-control tooltip', onClick: function onClick() {
 							return _this2.props.onMuteChange(true);
 						} },
 					_react2.default.createElement(_Icon2.default, { className: 'muted', name: 'volume_mute' }),
 					_react2.default.createElement(
 						'span',
-						{ className: 'tooltip' },
+						{ className: 'tooltip__content' },
 						'Mute'
 					)
 				);
@@ -64095,21 +64095,21 @@ var Sidebar = function (_React$Component) {
 								'Settings',
 								this.props.update_available ? _react2.default.createElement(
 									'span',
-									{ className: 'status has-tooltip right-tooltip' },
+									{ className: 'status tooltip tooltip--right' },
 									_react2.default.createElement(_Icon2.default, { name: 'cloud_download', className: 'green-text' }),
 									_react2.default.createElement(
 										'span',
-										{ className: 'tooltip' },
+										{ className: 'tooltip__content' },
 										'Update available'
 									)
 								) : null,
 								!this.props.mopidy_connected || !this.props.pusher_connected ? _react2.default.createElement(
 									'span',
-									{ className: 'status has-tooltip right-tooltip' },
+									{ className: 'status tooltip tooltip--right' },
 									_react2.default.createElement(_Icon2.default, { name: 'warning', className: 'red-text' }),
 									_react2.default.createElement(
 										'span',
-										{ className: 'tooltip' },
+										{ className: 'tooltip__content' },
 										!this.props.mopidy_connected ? _react2.default.createElement(
 											'span',
 											null,
@@ -65053,26 +65053,26 @@ var PlaybackControls = function (_React$Component) {
 
 			var button = _react2.default.createElement(
 				'a',
-				{ className: 'control has-tooltip', onClick: function onClick() {
+				{ className: 'control tooltip', onClick: function onClick() {
 						return _this3.props.mopidyActions.setConsume(true);
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'restaurant', type: 'material' }),
 				_react2.default.createElement(
 					'span',
-					{ className: 'tooltip' },
+					{ className: 'tooltip__content' },
 					'Consume'
 				)
 			);
 			if (this.props.consume) {
 				button = _react2.default.createElement(
 					'a',
-					{ className: 'control active has-tooltip', onClick: function onClick() {
+					{ className: 'control active tooltip', onClick: function onClick() {
 							return _this3.props.mopidyActions.setConsume(false);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'restaurant', type: 'material' }),
 					_react2.default.createElement(
 						'span',
-						{ className: 'tooltip' },
+						{ className: 'tooltip__content' },
 						'Consume'
 					)
 				);
@@ -65086,26 +65086,26 @@ var PlaybackControls = function (_React$Component) {
 
 			var button = _react2.default.createElement(
 				'a',
-				{ className: 'control has-tooltip', onClick: function onClick() {
+				{ className: 'control tooltip', onClick: function onClick() {
 						return _this4.props.mopidyActions.setRandom(true);
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'shuffle', type: 'material' }),
 				_react2.default.createElement(
 					'span',
-					{ className: 'tooltip' },
+					{ className: 'tooltip__content' },
 					'Shuffle'
 				)
 			);
 			if (this.props.random) {
 				button = _react2.default.createElement(
 					'a',
-					{ className: 'control active has-tooltip', onClick: function onClick() {
+					{ className: 'control active tooltip', onClick: function onClick() {
 							return _this4.props.mopidyActions.setRandom(false);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'shuffle', type: 'material' }),
 					_react2.default.createElement(
 						'span',
-						{ className: 'tooltip' },
+						{ className: 'tooltip__content' },
 						'Shuffle'
 					)
 				);
@@ -65119,26 +65119,26 @@ var PlaybackControls = function (_React$Component) {
 
 			var button = _react2.default.createElement(
 				'a',
-				{ className: 'control has-tooltip', onClick: function onClick() {
+				{ className: 'control tooltip', onClick: function onClick() {
 						return _this5.props.mopidyActions.setRepeat(true);
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'repeat' }),
 				_react2.default.createElement(
 					'span',
-					{ className: 'tooltip' },
+					{ className: 'tooltip__content' },
 					'Repeat'
 				)
 			);
 			if (this.props.repeat) {
 				button = _react2.default.createElement(
 					'a',
-					{ className: 'control active has-tooltip', onClick: function onClick() {
+					{ className: 'control active tooltip', onClick: function onClick() {
 							return _this5.props.mopidyActions.setRepeat(false);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'repeat' }),
 					_react2.default.createElement(
 						'span',
-						{ className: 'tooltip' },
+						{ className: 'tooltip__content' },
 						'Repeat'
 					)
 				);
@@ -67610,11 +67610,11 @@ var Album = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'has-tooltip' },
+							{ className: 'tooltip' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'tooltip' },
+								{ className: 'tooltip__content' },
 								helpers.uriSource(this.props.params.uri),
 								' ',
 								album.type ? album.type : 'album'
@@ -68653,11 +68653,11 @@ var Playlist = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'has-tooltip' },
+							{ className: 'tooltip' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(playlist.uri) }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'tooltip' },
+								{ className: 'tooltip__content' },
 								helpers.uriSource(playlist.uri),
 								' playlist'
 							)
@@ -69378,11 +69378,11 @@ var Track = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'has-tooltip' },
+							{ className: 'tooltip' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.params.uri) }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'tooltip' },
+								{ className: 'tooltip__content' },
 								helpers.uriSource(this.props.params.uri),
 								' track'
 							)
@@ -71888,11 +71888,11 @@ var Settings = function (_React$Component) {
 										} }),
 									_react2.default.createElement(
 										'span',
-										{ className: 'label has-tooltip' },
+										{ className: 'label tooltip' },
 										'Enable SSL',
 										_react2.default.createElement(
 											'span',
-											{ className: 'tooltip' },
+											{ className: 'tooltip__content' },
 											'Requires SSL proxy'
 										)
 									)
@@ -71982,11 +71982,11 @@ var Settings = function (_React$Component) {
 									} }),
 								_react2.default.createElement(
 									'span',
-									{ className: 'label has-tooltip' },
+									{ className: 'label tooltip' },
 									'Clear tracklist on play of URI(s)',
 									_react2.default.createElement(
 										'span',
-										{ className: 'tooltip' },
+										{ className: 'tooltip__content' },
 										'Playing one or more URIs will clear the current play queue first'
 									)
 								)
@@ -72019,11 +72019,11 @@ var Settings = function (_React$Component) {
 									} }),
 								_react2.default.createElement(
 									'span',
-									{ className: 'label has-tooltip' },
+									{ className: 'label tooltip' },
 									'Disable parallax',
 									_react2.default.createElement(
 										'span',
-										{ className: 'tooltip' },
+										{ className: 'tooltip__content' },
 										'Improves scroll performance on low-powered devices'
 									)
 								)
@@ -83274,11 +83274,11 @@ var InitialSetup = function (_React$Component) {
 									} }),
 								_react2.default.createElement(
 									'span',
-									{ className: 'label has-tooltip' },
+									{ className: 'label tooltip' },
 									'Enable SSL',
 									_react2.default.createElement(
 										'span',
-										{ className: 'tooltip' },
+										{ className: 'tooltip__content' },
 										'Requires SSL proxy'
 									)
 								)

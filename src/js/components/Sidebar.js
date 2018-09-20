@@ -90,8 +90,8 @@ class Sidebar extends React.Component{
 							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
 								<Icon name="settings" type="material" />
 								Settings
-								{this.props.update_available ? <span className="status has-tooltip right-tooltip"><Icon name="cloud_download" className="green-text" /><span className="tooltip">Update available</span></span>: null}
-								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status has-tooltip right-tooltip"><Icon name="warning" className="red-text" /><span className="tooltip">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
+								{this.props.update_available ? <span className="status tooltip tooltip--right"><Icon name="cloud_download" className="green-text" /><span className="tooltip__content">Update available</span></span>: null}
+								{!this.props.mopidy_connected || !this.props.pusher_connected ? <span className="status tooltip tooltip--right"><Icon name="warning" className="red-text" /><span className="tooltip__content">{!this.props.mopidy_connected ? <span>Mopidy not connected<br /></span> : null}{!this.props.pusher_connected ? <span>Pusher not connected<br /></span> : null}</span></span> : null}
 							</Link>
 						</section>
 

@@ -208,7 +208,7 @@ class Playlist extends React.Component{
 					{playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
+						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip__content">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
 						{playlist.user_uri && !this.props.slim_mode ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
 						{playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
 						{playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }

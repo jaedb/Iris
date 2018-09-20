@@ -98,25 +98,25 @@ class PlaybackControls extends React.Component{
 	}
 
 	renderConsumeButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip">Consume</span></a>
+		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
 		if (this.props.consume){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip">Consume</span></a>
+			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
 		}
 		return button;
 	}
 
 	renderRandomButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip">Shuffle</span></a>
+		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
 		if (this.props.random){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip">Shuffle</span></a>
+			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
 		}
 		return button;
 	}
 
 	renderRepeatButton(){
-		var button = <a className="control has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip">Repeat</span></a>
+		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
 		if (this.props.repeat){
-			button = <a className="control active has-tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip">Repeat</span></a>
+			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
 		}
 		return button;
 	}
