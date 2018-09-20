@@ -33,7 +33,16 @@ class Track extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadTrack();
+		this.props.coreActions.loadTrack(this.props.params.uri);
+
+		// We already have the track in our index, so it won't fire componentWillReceiveProps
+		if (this.props.track){
+			this.setWindowTitle(this.props.track);
+
+			if (this.props.track.artists && !this.props.track.lyrics_results){
+				this.props.geniusActions.findTrackLyrics(this.props.track);
+			}
+		}
 	}
 
 	handleContextMenu(e){
@@ -46,19 +55,23 @@ class Track extends React.Component{
 
 		// if our URI has changed, fetch new track
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadTrack(nextProps)
+			this.props.coreActions.loadTrack(nextProps.params.uri);
+
+			if (nextProps.tracks.artists){
+				this.props.geniusActions.findTrackLyrics(nextProps.track);
+			}
 
 		// if mopidy has just connected AND we're not a Spotify track, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
-				this.loadTrack(nextProps);
+				this.props.coreActions.loadTrack(nextProps.params.uri);
 			}
 		}
 
-		// We have just received our full track info (with artists)
-		if (!this.props.track.artists && nextProps.track.artists){
+		// We have just received our full track or our track artists
+		if ((!this.props.track && nextProps.track) || (!this.props.track.artists && nextProps.track.artists)){
 
-			this.props.uiActions.setWindowTitle(nextProps.track);
+			this.setWindowTitle(nextProps.track);
 
 			// Ready to load LastFM
 			if (nextProps.lastfm_authorized){
@@ -99,48 +112,6 @@ class Track extends React.Component{
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data)
-	}
-
-	/**
-	 * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
-	 * we need to accommodate?
-	 **/
-	loadTrack(props = this.props){
-		switch (helpers.uriSource(props.params.uri)){
-
-			case 'spotify':
-				if (props.track){
-					console.info('Loading track from index');
-				} else {
-					this.props.spotifyActions.getTrack(props.params.uri);
-					this.props.spotifyActions.following(props.params.uri);
-				}
-				break;
-
-			default:
-				if (props.mopidy_connected){
-					if (props.track){
-						console.info('Loading track from index');
-					} else {
-						this.props.mopidyActions.getTrack(props.params.uri );
-					}
-				}
-				break;
-		}
-
-		// We have artist info already
-		if (props.track && props.track.artists){
-
-			// Get the LastFM version of this track (provided we have artist info)
-			if (props.lastfm_authorized){
-				this.props.lastfmActions.getTrack(props.track.uri);
-			}
-
-			// Ready for lyrics
-			if (props.track && !props.track.lyrics_results){
-				this.props.geniusActions.findTrackLyrics(props.track);
-			}
-		}
 	}
 
 	play(){
@@ -226,7 +197,7 @@ class Track extends React.Component{
 		if (!this.props.track){
 			return null
 		} else {
-			var track = this.props.track
+			var track = this.props.track;
 		}
 
 		return (
@@ -268,7 +239,7 @@ class Track extends React.Component{
 
 				<div className="actions">
 					<button className="primary" onClick={e => this.play()}>Play</button>
-					<LastfmLoveButton uri={this.props.params.uri} artist={this.props.track.artists[0].name} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
+					<LastfmLoveButton uri={this.props.params.uri} artist={(this.props.track.artists ? this.props.track.artists[0].name : null)} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 

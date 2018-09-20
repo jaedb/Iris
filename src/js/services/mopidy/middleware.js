@@ -512,8 +512,14 @@ const MopidyMiddleware = (function(){
                                     data: {
                                         enabled: true
                                     }
-                                })
-                                store.dispatch(spotifyActions.connect());
+                                });
+                            } else {
+                                store.dispatch({
+                                    type: 'SPOTIFY_SET',
+                                    data: {
+                                        enabled: false
+                                    }
+                                });
                             }
 
                             // If we haven't customised our search schemes, add all to search
@@ -1497,7 +1503,7 @@ const MopidyMiddleware = (function(){
 
                 request(socket, store, 'library.lookup', { uris: uris })
                     .then(response => {
-                        for(var uri in response){
+                        for (var uri in response){
                             if (response.hasOwnProperty(uri)){
 
                                 var track = response[uri][0]
@@ -1726,8 +1732,8 @@ const MopidyMiddleware = (function(){
                     }
                 }
 
-                var uris = Object.assign([], action.data.uris)
-                var uris_to_load = uris.splice(0,50)
+                var uris = Object.assign([], action.data.uris);
+                var uris_to_load = uris.splice(0,50);
 
                 if (uris_to_load.length > 0){
                     store.dispatch(uiActions.updateProcess(
@@ -1737,7 +1743,7 @@ const MopidyMiddleware = (function(){
                             uris: uris,
                             remaining: uris.length
                         }
-                    ))
+                    ));
                     store.dispatch(mopidyActions.getAlbums(uris_to_load, {name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: {uris: uris}}))
                 } else {
                     store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'))
@@ -1748,30 +1754,52 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUMS':
                 request(socket, store, 'library.lookup', { uris: action.uris } )
                     .then(response => {
-                        if (response.length <= 0) return
+                        if (response.length <= 0){
+                        	return;
+                        }
 
-                        var albums = []
+                        var albums_loaded = [];
+                    	var artists_loaded = [];
+                    	var tracks_loaded = [];
 
                         for (var uri in response){
-                            if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0] && response[uri][0].album){
+                            if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].album){
+                                var tracks = response[uri];
+
+                            	var artists_uris = [];
+                                if (tracks[0].artists){
+                                	for (var artist of response[uri][0].artists){
+                                        artists_uris.push(artist.uri);
+                                		artists_loaded.push(artist);
+                                    }
+                            	}
+
+                            	var tracks_uris = [];
+                            	for (var track of tracks){
+                                    tracks_uris.push(track.uri);
+                            		tracks_loaded.push(track);
+                            	}
+
                                 var album = Object.assign(
                                     {},
                                     {
                                         source: 'local',
-                                        artists: response[uri][0].artists,
-                                        tracks: response[uri],
-                                        tracks_total: response[uri].length
+                                        artists_uris: artists_uris,
+                                        tracks_uris: tracks_uris,
+                                        tracks_total: tracks_uris.length
                                     },
-                                    response[uri][0].album
+                                    tracks[0].album
                                 )
 
-                                albums.push(album)
+                                albums_loaded.push(album);
                             }
                         }
 
-                        store.dispatch(coreActions.albumsLoaded(albums));
+                        store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                        store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
-                        // Re-run any consequential processes in 100ms. This allows a small window for other
+                        // Re-run any consequential processes in a few ms. This allows a small window for other
                         // server requests before our next batch. It's a little crude but it means the server isn't
                         // locked until we're completely done.
                         if (action.processor){
@@ -1779,7 +1807,7 @@ const MopidyMiddleware = (function(){
                                 function(){
                                     store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data))
                                 },
-                                100
+                                10
                             )
                         }
                     })
@@ -1788,26 +1816,33 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ALBUM':
                 request(socket, store, 'library.lookup', action.data)
                     .then(response => {
-                        if (response.length <= 0){
+                        if (!response || response.length <= 0){
                             return;
+                        }
+
+                        var artists = [];
+                        if (response[0].artists){
+                            for (var artist of response[0].artists){
+                            	artists.push(artist);
+                            }
                         }
 
                         var album = Object.assign(
                             {},
-                            { images: [] },
+                            { 
+                            	images: []
+                            },
                             response[0].album,
                             {
                                 source: 'local',
-                                artists: response[0].artists,
-                                tracks: response,
+                                artists_uris: helpers.arrayOf('uri', artists),
+                                tracks_uris: helpers.arrayOf('uri', response),
                                 tracks_total: response.length
                             }
-                        )
-
-                        var uris = [];
-                        for(var i = 0; i < album.tracks.length; i++){
-                            uris.push(album.tracks[i].uri );
-                        }
+                        );
+                        
+                        store.dispatch(coreActions.albumLoaded(album));
+                        store.dispatch(coreActions.artistsLoaded(artists));
 
                          // load artwork from LastFM
                         if (album.images.length <= 0){
@@ -1819,29 +1854,17 @@ const MopidyMiddleware = (function(){
                             }
                         }
 
-                        request(socket, store, 'library.lookup', { uris: uris } )
+                        request(socket, store, 'library.lookup', { uris: album.tracks_uris } )
                             .then(response => {
+                            	var tracks_loaded = [];
 
-                                for(var uri in response){
+                                for (var uri in response){
                                     if (response.hasOwnProperty(uri)){
-
-                                        var track = response[uri][0];
-
-                                        // find the track reference, and drop in the full track data
-                                        function getByURI(trackReference){
-                                            return track.uri == trackReference.uri
-                                        }
-                                        var trackReferences = album.tracks.filter(getByURI);
-
-                                        // there could be multiple instances of this track, so accommodate this
-                                        for(var j = 0; j < trackReferences.length; j++){
-                                            var key = album.tracks.indexOf(trackReferences[j] );
-                                            album.tracks[ key ] = track;
-                                        }
+                                        tracks_loaded.push(response[uri][0]);
                                     }
                                 }
 
-                                store.dispatch(coreActions.albumLoaded(album));
+                                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
                             })
                     })
                 break;
@@ -2031,7 +2054,7 @@ const MopidyMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'QUEUE_LOADED',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         }
                     );
@@ -2043,7 +2066,7 @@ const MopidyMiddleware = (function(){
                         response => {
                             store.dispatch({
                                 type: 'MOPIDY_QUEUE_HISTORY',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         }
                     );
@@ -2061,26 +2084,28 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CURRENT_TRACK_LOADED':
-                var track = helpers.formatTracks(action.tl_track);
+                var track = helpers.formatTrack(action.tl_track);
 
-                // We don't have the track already in our index
-                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
+                // We don't have the track already in our index, or we do but it's a partial record
+                if (track.uri){
+	                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
-                    // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
-                        store.dispatch(spotifyActions.getTrack(track.uri));
+	                    // We've got Spotify running, and it's a spotify track - go straight to the source!
+	                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify'){
+	                        store.dispatch(spotifyActions.getTrack(track.uri));
 
-                    // Some other source, rely on Mopidy backends to do their work
-                    } else {
-                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
-                    }
-                }
+	                    // Some other source, rely on Mopidy backends to do their work
+	                    } else {
+	                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
+	                    }
+	                }
 
-                store.dispatch({
-                    type: 'CURRENT_TRACK_LOADED',
-                    track: track,
-                    uri: track.uri
-                });
+	                store.dispatch({
+	                    type: 'CURRENT_TRACK_LOADED',
+	                    track: track,
+	                    uri: track.uri
+	                });
+	            }
                 break;
 
             case 'MOPIDY_GET_NEXT_TRACK':
@@ -2093,7 +2118,7 @@ const MopidyMiddleware = (function(){
                                 // We know it will be here, as the tlid refers to an item in this list
                                 var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
 
-                                if (track){
+                                if (track && track.uri){
                                     store.dispatch({
                                         type: 'NEXT_TRACK_LOADED',
                                         uri: track.uri
@@ -2142,34 +2167,34 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_IMAGES':
+            	if (action.uris){
+	                request(socket, store, 'library.getImages', {uris: action.uris})
+	                    .then(response => {
+	                        var records = [];
+	                        for (var uri in response){
+	                            if (response.hasOwnProperty(uri)){
+	                                var images = response[uri];
+	                                images = helpers.digestMopidyImages(store.getState().mopidy, images);
 
-                request(socket, store, 'library.getImages', {uris: action.uris})
-                    .then(response => {
+	                                if (images && images.length > 0){
+	                                    records.push({
+	                                        uri: uri,
+	                                        images: images
+	                                    });
 
-                        var records = [];
-                        for (var uri in response){
-                            if (response.hasOwnProperty(uri)){
-                                var images = response[uri];
-                                images = helpers.digestMopidyImages(store.getState().mopidy, images);
+	                                } else {
+	                                    store.dispatch(lastfmActions.getImages(action.context, uri));
+	                                }
+	                            }
+	                        }
 
-                                if (images && images.length > 0){
-                                    records.push({
-                                        uri: uri,
-                                        images: images
-                                    });
-
-                                } else {
-                                    store.dispatch(lastfmActions.getImages(action.context, uri));
-                                }
-                            }
-                        }
-
-                        var action_data = {
-                            type: (action.context+'_LOADED').toUpperCase()
-                        }
-                        action_data[action.context] = records;
-                        store.dispatch(action_data);
-                    });
+	                        var action_data = {
+	                            type: (action.context+'_LOADED').toUpperCase()
+	                        }
+	                        action_data[action.context] = records;
+	                        store.dispatch(action_data);
+	                    });
+                }
 
                 next(action);
                 break;
@@ -2181,15 +2206,59 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_DIRECTORY':
-                store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false })
+                store.dispatch({
+                    type: 'MOPIDY_DIRECTORY_FLUSH'
+                });
+
                 request(socket, store, 'library.browse', action.data)
                     .then(response => {
-                        store.dispatch({
-                            type: 'MOPIDY_DIRECTORY_LOADED',
-                            data: response
-                        });
-                    })
-                break
+
+                        var tracks_uris = [];
+                        var subdirectories = [];
+
+                        for (var item of response){
+                            if (item.type === "track"){
+                                tracks_uris.push(item.uri);
+                            } else {
+                                subdirectories.push(item);
+                            }
+                        }
+                        
+                        if (tracks_uris.length > 0){
+                            request(socket, store, 'library.lookup', {uris: tracks_uris})
+                                .then(response => {
+                                    if (response.length <= 0){
+                                        return;
+                                    }
+
+                                    var tracks = [];
+
+                                    for (var uri in response){
+                                        if (response.hasOwnProperty(uri) && response[uri].length > 0){
+                                            tracks.push(helpers.formatTrack(response[uri][0]));
+                                        }
+                                    }
+
+                                    store.dispatch({
+                                        type: 'MOPIDY_DIRECTORY_LOADED',
+                                        directory: {
+                                            tracks: tracks,
+                                            subdirectories: subdirectories
+                                        }
+                                    });
+                                }
+                            );
+                        } else {
+                            store.dispatch({
+                                type: 'MOPIDY_DIRECTORY_LOADED',
+                                directory: {
+                                    tracks: tracks,
+                                    subdirectories: subdirectories
+                                }
+                            });
+                        }
+                    });
+                break;
 
             case 'MOPIDY_DIRECTORY':
                 if (store.getState().ui.allow_reporting && action.data){

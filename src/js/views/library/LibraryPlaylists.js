@@ -155,7 +155,11 @@ class LibraryPlaylists extends React.Component{
 						columns={columns}
 						className="playlist-list"
 						link_prefix={global.baseURL+"playlist/"} />
-					<LazyLoadListener loading={this.state.limit < total_playlists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener 
+						loadKey={this.state.limit}
+						loading={this.state.limit < total_playlists} 
+						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+					/>
 				</section>
 			)
 		} else {
@@ -164,7 +168,11 @@ class LibraryPlaylists extends React.Component{
 					<PlaylistGrid
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						playlists={playlists} />
-					<LazyLoadListener loading={this.state.limit < total_playlists} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener 
+						loadKey={this.state.limit}
+						loading={this.state.limit < total_playlists}
+						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+					/>
 				</section>				
 			)
 		}

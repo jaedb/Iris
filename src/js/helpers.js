@@ -116,106 +116,6 @@ export let setStorage = function(key, value, replace = false){
 }
 
 
-/**
- * Image sizing
- * We digest all our known image source formats into a universal small,medium,large,huge object
- *
- * @param images = array
- * @return obj
- **/
-export let sizedImages = function(images){
-
-	var sizes = {
-		small: false,
-		medium: false,
-		large: false,
-		huge: false
-	}
-
-	// An array of images has been provided
-	if (Array.isArray(images)){
-
-		if (images.length <= 0){
-			return sizes;
-		}
-
-		for (var i = 0; i < images.length; i++){
-			let image = images[i]
-
-			// Mopidy image object
-			if (image.__model__ && image.__model__ == 'Image'){
-
-				if (image.width < 400){
-					sizes.small = image.url;
-				}else if (image.width < 800){
-					sizes.medium = image.url;
-				}else if (image.width < 1000){
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-			// Mopidy image string
-			} else if (typeof(image) == 'string'){
-				sizes.small = image
-			
-			// spotify-styled images
-			} else if (image.width !== undefined){
-
-				if (image.width < 400){
-					sizes.small = image.url;
-				}else if (image.width < 800){
-					sizes.medium = image.url;
-				}else if (image.width < 1000){
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-			// lastfm-styled images
-			} else if (image.size !== undefined){
-				switch(image.size){
-					case 'mega':
-					case 'extralarge':
-					case 'large':
-						sizes.medium = image['#text']
-						break;
-					case 'medium':
-					case 'small':
-						sizes.small = image['#text']
-						break;
-				}
-			}
-		}
-
-	// An object of images has been provided
-	// The Genius avatar object is an example of this 
-	} else {
-		if (images.small) sizes.small = images.small.url;
-		if (images.medium) sizes.medium = images.medium.url;
-		if (images.large) sizes.large = images.large.url;
-		if (images.huge) sizes.huge = images.huge.url;
-	}
-
-	// Inherit images where we haven't been given the appropriate size
-	// Ie small duplicated to tiny, large duplicated to medium, etc
-	if (!sizes.small){
-		if (sizes.medium) sizes.small = sizes.medium
-		else if (sizes.large) sizes.small = sizes.large
-		else if (sizes.huge) sizes.small = sizes.huge
-		else sizes.small = null
-	}
-	if (!sizes.medium){
-		if (sizes.large) sizes.medium = sizes.large
-		else if (sizes.huge) sizes.medium = sizes.huge
-		else sizes.medium = sizes.small
-	}
-	if (!sizes.large) sizes.large = sizes.medium;
-	if (!sizes.huge) sizes.huge = sizes.large;
-	
-	return sizes;
-}
-
 
 /**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
@@ -300,100 +200,616 @@ export let getTrackIcon = function(current_track = false, core = false){
 	if (typeof(core.tracks[current_track.uri]) === 'undefined') return false
 	var track = core.tracks[current_track.uri]
 	if (!track.images) return false
-	return sizedImages(track.images).small
+	return formatImages(track.images).small
+}
+
+/**
+ * Format image URLs into a consistent size-based object
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param $data mixed
+ * @return Object
+ **/
+export let formatImages = function(data){
+
+	var sizes = {
+		formatted: true,
+		small: null,
+		medium: null,
+		large: null,
+		huge: null
+	}
+
+	if (!data){
+		return sizes;
+	}
+
+	// An array of images has been provided
+	if (Array.isArray(data)){
+
+		if (data.length <= 0){
+			return sizes;
+		}
+
+		for (var i = 0; i < data.length; i++){
+			let image = data[i]
+
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image'){
+
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+			// Mopidy image string
+			} else if (typeof(image) == 'string'){
+				sizes.small = image
+			
+			// spotify-styled images
+			} else if (image.width !== undefined){
+
+				if (image.width < 400){
+					sizes.small = image.url;
+				}else if (image.width < 800){
+					sizes.medium = image.url;
+				}else if (image.width < 1000){
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+			// lastfm-styled images
+			} else if (image.size !== undefined){
+				switch(image.size){
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text']
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text']
+						break;
+				}
+			}
+		}
+
+	// An object of images has been provided
+	// The Genius avatar object is an example of this 
+	} else {
+		if (data.small) sizes.small = data.small.url;
+		if (data.medium) sizes.medium = data.medium.url;
+		if (data.large) sizes.large = data.large.url;
+		if (data.huge) sizes.huge = data.huge.url;
+	}
+
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
+	if (!sizes.small){
+		if (sizes.medium) sizes.small = sizes.medium
+		else if (sizes.large) sizes.small = sizes.large
+		else if (sizes.huge) sizes.small = sizes.huge
+		else sizes.small = null
+	}
+	if (!sizes.medium){
+		if (sizes.large) sizes.medium = sizes.large
+		else if (sizes.huge) sizes.medium = sizes.huge
+		else sizes.medium = sizes.small
+	}
+	if (!sizes.large) sizes.large = sizes.medium;
+	if (!sizes.huge) sizes.huge = sizes.large;
+	
+	return sizes;
+}
+
+
+/**
+ * Format a simple object
+ * This is a shell record containing only the bare essentials. Typically
+ * a tracks' artists/album
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatSimpleObject = function(data){
+	var simple_object = {}
+	var fields = [
+		'uri',
+		'name'
+	];
+
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			simple_object[field] = data[field];
+		}
+	}
+
+	return simple_object;
+}
+
+/**
+ * Format multiple items
+ *
+ * @param tracks Array
+ * @return Array
+ **/
+export let formatTracks = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatTrack(record));
+    }
+    return formatted;
+}
+export let formatAlbums = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatAlbum(record));
+    }
+    return formatted;
+}
+export let formatArtists = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatArtist(record));
+    }
+    return formatted;
+}
+export let formatPlaylists = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatTrack(record));
+    }
+    return formatted;
+}
+export let formatUsers = function(records = []){
+    var formatted = [];
+    for (var record of records){
+	    formatted.push(formatUser(record));
+    }
+    return formatted;
 }
 
 
 /**
  * Format our album objects into a universal format
  *
- * @param album obj
- * @return album obj
+ * @param data obj
+ * @return obj
  **/
-export let formatAlbum = function(album){
-	if (album.release_date !== undefined){
-		album.date = album.release_date;
+export let formatAlbum = function(data){
+	var album = {};
+	var fields = [
+		'uri',
+		'provider',
+		'name',
+		'type',
+		'artists_uris',
+		'tracks_uris',
+		'release_date',
+		'popularity',
+		'images'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			album[field] = data[field];
+		}
 	}
+
+	if (album.images && !album.images.formatted){
+		album.images = formatImages(album.images);
+	}
+
+	if (data.date && !album.date){
+		album.release_date = data.date;
+	}
+	if (data.album_type){
+		album.type = data.album_type;
+	}
+
 	return album;
+}
+
+
+/**
+ * Format our artist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatArtist = function(data){
+	var artist = {}
+	var fields = [
+		'uri',
+		'provider',
+		'mbid',
+		'name',
+		'type',
+		'images',
+		'popularity',
+		'followers',
+		'listeners',
+		'biography',
+		'biography_link',
+		'biography_publish_date',
+		'related_artists_uris',
+		'albums_uris',
+		'albums_total',
+		'albums_more',
+		'tracks_uris',
+		'tracks_total',
+		'tracks_more'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			artist[field] = data[field];
+		}
+	}
+
+	if (artist.images && !artist.images.formatted){
+		artist.images = formatImages(artist.images);
+	}
+
+	if (data.followers && data.followers.total){
+		artist.followers = data.followers.total;
+	}
+
+	if (data.bio){
+		if (data.bio.content && !artist.biography){
+			artist.biography = data.bio.content;
+		}
+		if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link){
+			artist.biography_link = data.bio.links.link.href;
+		}
+		if (data.bio.published && !artist.biography_publish_date){
+			artist.biography_publish_date = data.bio.published;
+		}
+	}
+
+	return artist;
+}
+
+
+/**
+ * Format our playlist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatPlaylist = function(data){
+	var playlist = {}
+	var fields = [
+		'uri',
+		'provider',
+		'type',
+		'name',
+		'description',
+		'images',
+		'popularity',
+		'followers',
+		'last_modified_date',
+		'can_edit',
+		'owner',
+		'user_uri',
+		'tracks_uris',
+		'tracks_total',
+		'tracks_more'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			playlist[field] = data[field];
+		}
+	}
+
+	if (playlist.images && !playlist.images.formatted){
+		playlist.images = formatImages(playlist.images);
+	}
+
+	if (data.followers && data.followers.total !== undefined){
+		playlist.followers = data.followers.total;
+	}
+
+	if (data.owner){
+		playlist.owner = {
+			id: data.owner.id,
+			uri: data.owner.uri,
+			name: (data.owner.display_name ? data.owner.display_name : null)
+		}
+		playlist.user_uri = data.owner.uri;
+	}
+
+	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+	if (playlist.uri.includes("spotify:user:")){
+		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	return playlist;
+}
+
+/**
+ * Upgrade playlist uris to the new, simplified Spotify syntax (September 2018)
+ *
+ * @param uris = String or Array
+ * @return String or Array
+ **/
+export let upgradePlaylistsUris = function(uris){
+	if (Array.isArray(uris)){
+		var upgraded = [];
+		for (var uri of uris){
+			upgraded.push(uri.replace(/spotify:user:([^:]*?):/i, "spotify:"));
+		}
+	} else {
+		var upgraded = uris = uris.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	return upgraded;
+}
+
+
+/**
+ * Format a user objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatUser = function(data){
+	var user = {}
+	var fields = [
+		'id',
+		'uri',
+		'provider',
+		'name',
+		'images',
+		'followers',
+		'playlists_uris',
+		'playlists_total',
+		'playlists_more'
+	];
+
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			user[field] = data[field];
+		}
+	}
+
+	if (!user.images && data.image){
+		user.images = formatImages(data.image);
+	} else if (!user.images && data.avatar){
+		user.images = formatImages(data.avatar);
+	} else if (user.images && !user.images.formatted){
+		user.images = formatImages(user.images);
+	}
+
+	if (data.followers && data.followers.total){
+		user.followers = data.followers.total;
+	}
+	if (data.realname){
+		user.name = data.realname;
+	}
+	if (data.display_name && !user.name){
+		user.name = data.display_name;
+	}
+	if (data.id && !user.name){
+		user.name = data.id;
+	}
+
+	return user;
 }
 
 
 /**
  * Format tracks into our universal format
  *
- * @param tracks = object or array of objects
- * @return array
+ * @param data obj
+ * @return obj
  **/
-export let formatTracks = function(tracks){
+export let formatTrack = function(data){
+	var track = {}
+	var fields = [
+		'uri',
+		'tlid',
+		'provider',
+		'name',
+		'images',
+		'release_date',
+		'disc_number',
+		'track_number',
+		'duration',
+		'followers',
+		'popularity',
+		'userloved',
+		'is_explicit',
+		'is_local',
+		'lyrics',
+		'lyrics_path',
+		'lyrics_results',
+		'artists',	// Array of simple records
+		'album'		// Array of simple records
+	];
 
-	if (!tracks || tracks === undefined){
-		return null;
+	// Nested track object (eg in spotify playlist)
+	if (data && data.track && isObject(data.track)){
+
+		// Copy wrapper's details (if applicable)
+		if (data.added_by){
+			data.track.added_by = data.added_by;
+		}
+		if (data.added_at){
+			data.track.added_at = data.added_at;
+		}
+		if (data.tlid){
+			data.track.tlid = data.tlid;
+		}
+
+		// And now flatten
+		data = data.track;
 	}
 
-	// Handle single records
-	var singular = false;
-	if (tracks.constructor !== Array){
-		tracks = [tracks];
-		singular = true;
+	// Loop fields and import from data
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			track[field] = data[field];
+		}
 	}
 
-    var formatted = [];
-    for (var i = 0; i < tracks.length; i++){
+	if (data.followers && data.followers.total){
+		track.followers = data.followers.total;
+	}
 
-    	// Nested track object (eg in spotify playlist)
-    	if (tracks[i].track && isObject(tracks[i].track)){
-    		var track = Object.assign({}, tracks[i].track);
+	if (track.duration === undefined && data.duration_ms !== undefined){
+		track.duration = data.duration_ms;
+	} else if (track.duration === undefined && data.length !== undefined){
+		track.duration = data.length;
+	}
 
-    		// Copy supporting values
-    		if (tracks[i].added_by){
-    			track.added_by = tracks[i].added_by;
-    		}
-    		if (tracks[i].added_at){
-    			track.added_at = tracks[i].added_at;
-    		}
-    		if (tracks[i].tlid){
-    			track.tlid = tracks[i].tlid;
-    		}
-
-    	} else {
-    		var track = Object.assign({}, tracks[i]);
-    	}
-
-    	if (track.duration_ms){
-    		track.duration = track.duration_ms;
-    	} else if (track.length){
-    		track.duration = track.length;
-    	}
-
-        if (track.track_no){
-        	track.track_number = track.track_no;
-        } else if (track.track_number){
-        	track.track_number = track.track_number;
-        }
-
-        if (track.disc_no){
-        	track.disc_number = track.disc_no;
-        }
-
-        if (track.release_date){
-        	track.date = track.release_date;
-        }
-
-	    // Copy images from albums (if applicable)
-	    if (track.album && track.album.images){
-	    	if (!track.images || track.images.length > 0){
-	    		track.images = track.album.images;
-	    	}
-	    }
-
-        formatted.push(track);
+    if (track.track_number === undefined && data.track_no !== undefined){
+    	track.track_number = data.track_no;
     }
 
-    if (singular){
-    	return formatted[0];
-    } else {
-    	return formatted;
+    if (track.disc_number === undefined && data.disc_no !== undefined){
+    	track.disc_number = data.disc_no;
     }
+
+    if (track.release_date === undefined && data.date !== undefined){
+    	track.release_date = data.date;
+    }
+
+    if (track.explicit === undefined && data.explicit !== undefined){
+    	track.is_explicit = data.explicit;
+    }
+
+    // Copy images from albums (if applicable)
+    // TOOD: Identify if we stil need this...
+    if (data.album && data.album.images){
+    	if (track.images === undefined || !track.images.formatted){
+    		track.images = formatImages(data.album.images);
+    	}
+    }
+
+	return track;
+}
+
+
+/**
+ * Collate an object with external references into a fully self-contained object
+ * We merge *_uris references (ie tracks_uris) into the main object
+ *
+ * @param object Obj
+ * @param indexes Obj (the relevant core indexes)
+ * @return object Obj
+ **/
+export let collate = function(obj, indexes = {}){
+
+	// First, let's reset this object
+	// This is important because by changing this object, we inadvertently
+	// change the source object (ie the indexed record), which undoes the
+	// efficiencies of a lean index object
+	obj = Object.assign({}, obj);
+
+	// Setup empty arrays for the appropriate reference objects
+	// This helps create a consistent object structure
+	if (obj.artists_uris !== undefined) 		obj.artists = [];
+	if (obj.albums_uris !== undefined) 			obj.albums = [];
+	if (obj.tracks_uris !== undefined) 			obj.tracks = [];
+	if (obj.users_uris !== undefined) 			obj.users = [];
+	if (obj.playlists_uris !== undefined) 		obj.playlists = [];
+	if (obj.related_artists_uris !== undefined) obj.related_artists = [];
+
+	if (indexes.artists){
+		if (obj.artists_uris){
+			for (var uri of obj.artists_uris){
+				if (indexes.artists[uri]){
+					obj.artists.push(indexes.artists[uri]);
+				}
+			}
+		}
+		if (obj.related_artists_uris){
+			for (var uri of obj.related_artists_uris){
+				if (indexes.artists[uri]){
+					obj.related_artists.push(indexes.artists[uri]);
+				}
+			}
+		}
+		if (obj.artist_uri){
+			if (indexes.artists[obj.artist_uri]){
+				obj.artist = indexes.artists[obj.artist_uri];
+			}
+		}
+	}
+
+	if (indexes.albums){
+		if (obj.albums_uris){
+			for (var uri of obj.albums_uris){
+				if (indexes.albums[uri]){
+					obj.albums.push(indexes.albums[uri]);
+				}
+			}
+		}
+		if (obj.album_uri){
+			if (indexes.albums[obj.album_uri]){
+				obj.album = indexes.albums[obj.album_uri];
+			}
+		}
+	}
+
+	if (indexes.tracks){
+		if (obj.tracks_uris){
+			for (var uri of obj.tracks_uris){
+				if (indexes.tracks[uri]){
+					obj.tracks.push(indexes.tracks[uri]);
+				}
+			}
+		}
+		if (obj.track_uri){
+			if (indexes.tracks[obj.track_uri]){
+				obj.track = indexes.tracks[obj.track_uri];
+			}
+		}
+	}
+
+	if (indexes.users){
+		if (obj.users_uris){
+			for (var uri of obj.users_uris){
+				if (indexes.users[uri]){
+					obj.users.push(indexes.users[uri]);
+				}
+			}
+		}
+		if (obj.user_uri){
+			if (indexes.users[obj.user_uri]){
+				obj.user = indexes.users[obj.user_uri];
+			}
+		}
+	}
+
+	if (indexes.playlists){
+		if (obj.playlists_uris){
+			for (var uri of obj.playlists_uris){
+				if (indexes.playlists[uri]){
+					obj.playlists.push(indexes.playlists[uri]);
+				}
+			}
+		}
+		if (obj.playlist_uri){
+			if (indexes.playlists[obj.playlist_uri]){
+				obj.playlist = indexes.playlists[obj.playlist_uri];
+			}
+		}
+	}
+
+	return obj;
 }
 
 
@@ -523,10 +939,13 @@ export let getFromUri = function(element, uri = ""){
 
 /**
  * Identify what kind of asset a URI is (playlist, album, etc)
+ *
  * @param uri = string
  * @return string
  **/
 export let uriType = function(uri){
+	if (!uri) return null;
+
     var exploded = uri.split(':')
 
     if (exploded[0] == 'm3u'){
@@ -559,8 +978,6 @@ export let uriType = function(uri){
     		return exploded[1]
     		break
     }
-
-    return null;
 }
 
 
@@ -584,11 +1001,11 @@ export let indexFriendlyUri = function (uri){
  * @return Array
  **/
 export let arrayOf = function(property, items){
-	let array = []
-	for (let i = 0; i < items.length; i++){
-		array.push(items[i][property])
+	let array = [];
+	for (var item of items){
+		array.push(item[property]);
 	}
-	return array
+	return array;
 }
 
 

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 118);
+/******/ 	return __webpack_require__(__webpack_require__.s = 119);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(119);
-} else {
   module.exports = __webpack_require__(120);
+} else {
+  module.exports = __webpack_require__(121);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -205,100 +205,6 @@ var setStorage = exports.setStorage = function setStorage(key, value) {
 };
 
 /**
- * Image sizing
- * We digest all our known image source formats into a universal small,medium,large,huge object
- *
- * @param images = array
- * @return obj
- **/
-var sizedImages = exports.sizedImages = function sizedImages(images) {
-
-	var sizes = {
-		small: false,
-		medium: false,
-		large: false,
-		huge: false
-
-		// An array of images has been provided
-	};if (Array.isArray(images)) {
-
-		if (images.length <= 0) {
-			return sizes;
-		}
-
-		for (var i = 0; i < images.length; i++) {
-			var image = images[i];
-
-			// Mopidy image object
-			if (image.__model__ && image.__model__ == 'Image') {
-
-				if (image.width < 400) {
-					sizes.small = image.url;
-				} else if (image.width < 800) {
-					sizes.medium = image.url;
-				} else if (image.width < 1000) {
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-				// Mopidy image string
-			} else if (typeof image == 'string') {
-				sizes.small = image;
-
-				// spotify-styled images
-			} else if (image.width !== undefined) {
-
-				if (image.width < 400) {
-					sizes.small = image.url;
-				} else if (image.width < 800) {
-					sizes.medium = image.url;
-				} else if (image.width < 1000) {
-					sizes.large = image.url;
-				} else {
-					sizes.huge = image.url;
-				}
-
-				// lastfm-styled images
-			} else if (image.size !== undefined) {
-				switch (image.size) {
-					case 'mega':
-					case 'extralarge':
-					case 'large':
-						sizes.medium = image['#text'];
-						break;
-					case 'medium':
-					case 'small':
-						sizes.small = image['#text'];
-						break;
-				}
-			}
-		}
-
-		// An object of images has been provided
-		// The Genius avatar object is an example of this 
-	} else {
-		if (images.small) sizes.small = images.small.url;
-		if (images.medium) sizes.medium = images.medium.url;
-		if (images.large) sizes.large = images.large.url;
-		if (images.huge) sizes.huge = images.huge.url;
-	}
-
-	// Inherit images where we haven't been given the appropriate size
-	// Ie small duplicated to tiny, large duplicated to medium, etc
-	if (!sizes.small) {
-		if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
-	}
-	if (!sizes.medium) {
-		if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
-	}
-	if (!sizes.large) sizes.large = sizes.medium;
-	if (!sizes.huge) sizes.huge = sizes.large;
-
-	return sizes;
-};
-
-/**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
  * image URLs to be absolute to the mopidy server (required for proxy setups).
  *
@@ -385,97 +291,922 @@ var getTrackIcon = exports.getTrackIcon = function getTrackIcon() {
 	if (typeof core.tracks[current_track.uri] === 'undefined') return false;
 	var track = core.tracks[current_track.uri];
 	if (!track.images) return false;
-	return sizedImages(track.images).small;
+	return formatImages(track.images).small;
+};
+
+/**
+ * Format image URLs into a consistent size-based object
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param $data mixed
+ * @return Object
+ **/
+var formatImages = exports.formatImages = function formatImages(data) {
+
+	var sizes = {
+		formatted: true,
+		small: null,
+		medium: null,
+		large: null,
+		huge: null
+	};
+
+	if (!data) {
+		return sizes;
+	}
+
+	// An array of images has been provided
+	if (Array.isArray(data)) {
+
+		if (data.length <= 0) {
+			return sizes;
+		}
+
+		for (var i = 0; i < data.length; i++) {
+			var image = data[i];
+
+			// Mopidy image object
+			if (image.__model__ && image.__model__ == 'Image') {
+
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+				// Mopidy image string
+			} else if (typeof image == 'string') {
+				sizes.small = image;
+
+				// spotify-styled images
+			} else if (image.width !== undefined) {
+
+				if (image.width < 400) {
+					sizes.small = image.url;
+				} else if (image.width < 800) {
+					sizes.medium = image.url;
+				} else if (image.width < 1000) {
+					sizes.large = image.url;
+				} else {
+					sizes.huge = image.url;
+				}
+
+				// lastfm-styled images
+			} else if (image.size !== undefined) {
+				switch (image.size) {
+					case 'mega':
+					case 'extralarge':
+					case 'large':
+						sizes.medium = image['#text'];
+						break;
+					case 'medium':
+					case 'small':
+						sizes.small = image['#text'];
+						break;
+				}
+			}
+		}
+
+		// An object of images has been provided
+		// The Genius avatar object is an example of this 
+	} else {
+		if (data.small) sizes.small = data.small.url;
+		if (data.medium) sizes.medium = data.medium.url;
+		if (data.large) sizes.large = data.large.url;
+		if (data.huge) sizes.huge = data.huge.url;
+	}
+
+	// Inherit images where we haven't been given the appropriate size
+	// Ie small duplicated to tiny, large duplicated to medium, etc
+	if (!sizes.small) {
+		if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
+	}
+	if (!sizes.medium) {
+		if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
+	}
+	if (!sizes.large) sizes.large = sizes.medium;
+	if (!sizes.huge) sizes.huge = sizes.large;
+
+	return sizes;
+};
+
+/**
+ * Format a simple object
+ * This is a shell record containing only the bare essentials. Typically
+ * a tracks' artists/album
+ *
+ * @param data obj
+ * @return obj
+ **/
+var formatSimpleObject = exports.formatSimpleObject = function formatSimpleObject(data) {
+	var simple_object = {};
+	var fields = ['uri', 'name'];
+
+	var _iteratorNormalCompletion = true;
+	var _didIteratorError = false;
+	var _iteratorError = undefined;
+
+	try {
+		for (var _iterator = fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+			var field = _step.value;
+
+			if (data.hasOwnProperty(field)) {
+				simple_object[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError = true;
+		_iteratorError = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion && _iterator.return) {
+				_iterator.return();
+			}
+		} finally {
+			if (_didIteratorError) {
+				throw _iteratorError;
+			}
+		}
+	}
+
+	return simple_object;
+};
+
+/**
+ * Format multiple items
+ *
+ * @param tracks Array
+ * @return Array
+ **/
+var formatTracks = exports.formatTracks = function formatTracks() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion2 = true;
+	var _didIteratorError2 = false;
+	var _iteratorError2 = undefined;
+
+	try {
+		for (var _iterator2 = records[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+			var record = _step2.value;
+
+			formatted.push(formatTrack(record));
+		}
+	} catch (err) {
+		_didIteratorError2 = true;
+		_iteratorError2 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion2 && _iterator2.return) {
+				_iterator2.return();
+			}
+		} finally {
+			if (_didIteratorError2) {
+				throw _iteratorError2;
+			}
+		}
+	}
+
+	return formatted;
+};
+var formatAlbums = exports.formatAlbums = function formatAlbums() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion3 = true;
+	var _didIteratorError3 = false;
+	var _iteratorError3 = undefined;
+
+	try {
+		for (var _iterator3 = records[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+			var record = _step3.value;
+
+			formatted.push(formatAlbum(record));
+		}
+	} catch (err) {
+		_didIteratorError3 = true;
+		_iteratorError3 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion3 && _iterator3.return) {
+				_iterator3.return();
+			}
+		} finally {
+			if (_didIteratorError3) {
+				throw _iteratorError3;
+			}
+		}
+	}
+
+	return formatted;
+};
+var formatArtists = exports.formatArtists = function formatArtists() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion4 = true;
+	var _didIteratorError4 = false;
+	var _iteratorError4 = undefined;
+
+	try {
+		for (var _iterator4 = records[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+			var record = _step4.value;
+
+			formatted.push(formatArtist(record));
+		}
+	} catch (err) {
+		_didIteratorError4 = true;
+		_iteratorError4 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion4 && _iterator4.return) {
+				_iterator4.return();
+			}
+		} finally {
+			if (_didIteratorError4) {
+				throw _iteratorError4;
+			}
+		}
+	}
+
+	return formatted;
+};
+var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion5 = true;
+	var _didIteratorError5 = false;
+	var _iteratorError5 = undefined;
+
+	try {
+		for (var _iterator5 = records[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+			var record = _step5.value;
+
+			formatted.push(formatTrack(record));
+		}
+	} catch (err) {
+		_didIteratorError5 = true;
+		_iteratorError5 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion5 && _iterator5.return) {
+				_iterator5.return();
+			}
+		} finally {
+			if (_didIteratorError5) {
+				throw _iteratorError5;
+			}
+		}
+	}
+
+	return formatted;
+};
+var formatUsers = exports.formatUsers = function formatUsers() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion6 = true;
+	var _didIteratorError6 = false;
+	var _iteratorError6 = undefined;
+
+	try {
+		for (var _iterator6 = records[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+			var record = _step6.value;
+
+			formatted.push(formatUser(record));
+		}
+	} catch (err) {
+		_didIteratorError6 = true;
+		_iteratorError6 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion6 && _iterator6.return) {
+				_iterator6.return();
+			}
+		} finally {
+			if (_didIteratorError6) {
+				throw _iteratorError6;
+			}
+		}
+	}
+
+	return formatted;
 };
 
 /**
  * Format our album objects into a universal format
  *
- * @param album obj
- * @return album obj
+ * @param data obj
+ * @return obj
  **/
-var formatAlbum = exports.formatAlbum = function formatAlbum(album) {
-	if (album.release_date !== undefined) {
-		album.date = album.release_date;
+var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
+	var album = {};
+	var fields = ['uri', 'provider', 'name', 'type', 'artists_uris', 'tracks_uris', 'release_date', 'popularity', 'images'];
+
+	// Loop fields and import from data
+	var _iteratorNormalCompletion7 = true;
+	var _didIteratorError7 = false;
+	var _iteratorError7 = undefined;
+
+	try {
+		for (var _iterator7 = fields[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+			var field = _step7.value;
+
+			if (data.hasOwnProperty(field)) {
+				album[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError7 = true;
+		_iteratorError7 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion7 && _iterator7.return) {
+				_iterator7.return();
+			}
+		} finally {
+			if (_didIteratorError7) {
+				throw _iteratorError7;
+			}
+		}
 	}
+
+	if (album.images && !album.images.formatted) {
+		album.images = formatImages(album.images);
+	}
+
+	if (data.date && !album.date) {
+		album.release_date = data.date;
+	}
+	if (data.album_type) {
+		album.type = data.album_type;
+	}
+
 	return album;
+};
+
+/**
+ * Format our artist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+var formatArtist = exports.formatArtist = function formatArtist(data) {
+	var artist = {};
+	var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'images', 'popularity', 'followers', 'listeners', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
+
+	// Loop fields and import from data
+	var _iteratorNormalCompletion8 = true;
+	var _didIteratorError8 = false;
+	var _iteratorError8 = undefined;
+
+	try {
+		for (var _iterator8 = fields[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+			var field = _step8.value;
+
+			if (data.hasOwnProperty(field)) {
+				artist[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError8 = true;
+		_iteratorError8 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion8 && _iterator8.return) {
+				_iterator8.return();
+			}
+		} finally {
+			if (_didIteratorError8) {
+				throw _iteratorError8;
+			}
+		}
+	}
+
+	if (artist.images && !artist.images.formatted) {
+		artist.images = formatImages(artist.images);
+	}
+
+	if (data.followers && data.followers.total) {
+		artist.followers = data.followers.total;
+	}
+
+	if (data.bio) {
+		if (data.bio.content && !artist.biography) {
+			artist.biography = data.bio.content;
+		}
+		if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link) {
+			artist.biography_link = data.bio.links.link.href;
+		}
+		if (data.bio.published && !artist.biography_publish_date) {
+			artist.biography_publish_date = data.bio.published;
+		}
+	}
+
+	return artist;
+};
+
+/**
+ * Format our playlist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
+	var playlist = {};
+	var fields = ['uri', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+
+	// Loop fields and import from data
+	var _iteratorNormalCompletion9 = true;
+	var _didIteratorError9 = false;
+	var _iteratorError9 = undefined;
+
+	try {
+		for (var _iterator9 = fields[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+			var field = _step9.value;
+
+			if (data.hasOwnProperty(field)) {
+				playlist[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError9 = true;
+		_iteratorError9 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion9 && _iterator9.return) {
+				_iterator9.return();
+			}
+		} finally {
+			if (_didIteratorError9) {
+				throw _iteratorError9;
+			}
+		}
+	}
+
+	if (playlist.images && !playlist.images.formatted) {
+		playlist.images = formatImages(playlist.images);
+	}
+
+	if (data.followers && data.followers.total !== undefined) {
+		playlist.followers = data.followers.total;
+	}
+
+	if (data.owner) {
+		playlist.owner = {
+			id: data.owner.id,
+			uri: data.owner.uri,
+			name: data.owner.display_name ? data.owner.display_name : null
+		};
+		playlist.user_uri = data.owner.uri;
+	}
+
+	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+	if (playlist.uri.includes("spotify:user:")) {
+		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	return playlist;
+};
+
+/**
+ * Upgrade playlist uris to the new, simplified Spotify syntax (September 2018)
+ *
+ * @param uris = String or Array
+ * @return String or Array
+ **/
+var upgradePlaylistsUris = exports.upgradePlaylistsUris = function upgradePlaylistsUris(uris) {
+	if (Array.isArray(uris)) {
+		var upgraded = [];
+		var _iteratorNormalCompletion10 = true;
+		var _didIteratorError10 = false;
+		var _iteratorError10 = undefined;
+
+		try {
+			for (var _iterator10 = uris[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+				var uri = _step10.value;
+
+				upgraded.push(uri.replace(/spotify:user:([^:]*?):/i, "spotify:"));
+			}
+		} catch (err) {
+			_didIteratorError10 = true;
+			_iteratorError10 = err;
+		} finally {
+			try {
+				if (!_iteratorNormalCompletion10 && _iterator10.return) {
+					_iterator10.return();
+				}
+			} finally {
+				if (_didIteratorError10) {
+					throw _iteratorError10;
+				}
+			}
+		}
+	} else {
+		var upgraded = uris = uris.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	return upgraded;
+};
+
+/**
+ * Format a user objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+var formatUser = exports.formatUser = function formatUser(data) {
+	var user = {};
+	var fields = ['id', 'uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
+
+	// Loop fields and import from data
+	var _iteratorNormalCompletion11 = true;
+	var _didIteratorError11 = false;
+	var _iteratorError11 = undefined;
+
+	try {
+		for (var _iterator11 = fields[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+			var field = _step11.value;
+
+			if (data.hasOwnProperty(field)) {
+				user[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError11 = true;
+		_iteratorError11 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion11 && _iterator11.return) {
+				_iterator11.return();
+			}
+		} finally {
+			if (_didIteratorError11) {
+				throw _iteratorError11;
+			}
+		}
+	}
+
+	if (!user.images && data.image) {
+		user.images = formatImages(data.image);
+	} else if (!user.images && data.avatar) {
+		user.images = formatImages(data.avatar);
+	} else if (user.images && !user.images.formatted) {
+		user.images = formatImages(user.images);
+	}
+
+	if (data.followers && data.followers.total) {
+		user.followers = data.followers.total;
+	}
+	if (data.realname) {
+		user.name = data.realname;
+	}
+	if (data.display_name && !user.name) {
+		user.name = data.display_name;
+	}
+	if (data.id && !user.name) {
+		user.name = data.id;
+	}
+
+	return user;
 };
 
 /**
  * Format tracks into our universal format
  *
- * @param tracks = object or array of objects
- * @return array
+ * @param data obj
+ * @return obj
  **/
-var formatTracks = exports.formatTracks = function formatTracks(tracks) {
+var formatTrack = exports.formatTrack = function formatTrack(data) {
+	var track = {};
+	var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
+	'album' // Array of simple records
+	];
 
-	if (!tracks || tracks === undefined) {
-		return null;
+	// Nested track object (eg in spotify playlist)
+	if (data && data.track && isObject(data.track)) {
+
+		// Copy wrapper's details (if applicable)
+		if (data.added_by) {
+			data.track.added_by = data.added_by;
+		}
+		if (data.added_at) {
+			data.track.added_at = data.added_at;
+		}
+		if (data.tlid) {
+			data.track.tlid = data.tlid;
+		}
+
+		// And now flatten
+		data = data.track;
 	}
 
-	// Handle single records
-	var singular = false;
-	if (tracks.constructor !== Array) {
-		tracks = [tracks];
-		singular = true;
+	// Loop fields and import from data
+	var _iteratorNormalCompletion12 = true;
+	var _didIteratorError12 = false;
+	var _iteratorError12 = undefined;
+
+	try {
+		for (var _iterator12 = fields[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+			var field = _step12.value;
+
+			if (data.hasOwnProperty(field)) {
+				track[field] = data[field];
+			}
+		}
+	} catch (err) {
+		_didIteratorError12 = true;
+		_iteratorError12 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion12 && _iterator12.return) {
+				_iterator12.return();
+			}
+		} finally {
+			if (_didIteratorError12) {
+				throw _iteratorError12;
+			}
+		}
 	}
 
-	var formatted = [];
-	for (var i = 0; i < tracks.length; i++) {
-
-		// Nested track object (eg in spotify playlist)
-		if (tracks[i].track && isObject(tracks[i].track)) {
-			var track = Object.assign({}, tracks[i].track);
-
-			// Copy supporting values
-			if (tracks[i].added_by) {
-				track.added_by = tracks[i].added_by;
-			}
-			if (tracks[i].added_at) {
-				track.added_at = tracks[i].added_at;
-			}
-			if (tracks[i].tlid) {
-				track.tlid = tracks[i].tlid;
-			}
-		} else {
-			var track = Object.assign({}, tracks[i]);
-		}
-
-		if (track.duration_ms) {
-			track.duration = track.duration_ms;
-		} else if (track.length) {
-			track.duration = track.length;
-		}
-
-		if (track.track_no) {
-			track.track_number = track.track_no;
-		} else if (track.track_number) {
-			track.track_number = track.track_number;
-		}
-
-		if (track.disc_no) {
-			track.disc_number = track.disc_no;
-		}
-
-		if (track.release_date) {
-			track.date = track.release_date;
-		}
-
-		// Copy images from albums (if applicable)
-		if (track.album && track.album.images) {
-			if (!track.images || track.images.length > 0) {
-				track.images = track.album.images;
-			}
-		}
-
-		formatted.push(track);
+	if (data.followers && data.followers.total) {
+		track.followers = data.followers.total;
 	}
 
-	if (singular) {
-		return formatted[0];
-	} else {
-		return formatted;
+	if (track.duration === undefined && data.duration_ms !== undefined) {
+		track.duration = data.duration_ms;
+	} else if (track.duration === undefined && data.length !== undefined) {
+		track.duration = data.length;
 	}
+
+	if (track.track_number === undefined && data.track_no !== undefined) {
+		track.track_number = data.track_no;
+	}
+
+	if (track.disc_number === undefined && data.disc_no !== undefined) {
+		track.disc_number = data.disc_no;
+	}
+
+	if (track.release_date === undefined && data.date !== undefined) {
+		track.release_date = data.date;
+	}
+
+	if (track.explicit === undefined && data.explicit !== undefined) {
+		track.is_explicit = data.explicit;
+	}
+
+	// Copy images from albums (if applicable)
+	// TOOD: Identify if we stil need this...
+	if (data.album && data.album.images) {
+		if (track.images === undefined || !track.images.formatted) {
+			track.images = formatImages(data.album.images);
+		}
+	}
+
+	return track;
+};
+
+/**
+ * Collate an object with external references into a fully self-contained object
+ * We merge *_uris references (ie tracks_uris) into the main object
+ *
+ * @param object Obj
+ * @param indexes Obj (the relevant core indexes)
+ * @return object Obj
+ **/
+var collate = exports.collate = function collate(obj) {
+	var indexes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+	// First, let's reset this object
+	// This is important because by changing this object, we inadvertently
+	// change the source object (ie the indexed record), which undoes the
+	// efficiencies of a lean index object
+	obj = Object.assign({}, obj);
+
+	// Setup empty arrays for the appropriate reference objects
+	// This helps create a consistent object structure
+	if (obj.artists_uris !== undefined) obj.artists = [];
+	if (obj.albums_uris !== undefined) obj.albums = [];
+	if (obj.tracks_uris !== undefined) obj.tracks = [];
+	if (obj.users_uris !== undefined) obj.users = [];
+	if (obj.playlists_uris !== undefined) obj.playlists = [];
+	if (obj.related_artists_uris !== undefined) obj.related_artists = [];
+
+	if (indexes.artists) {
+		if (obj.artists_uris) {
+			var _iteratorNormalCompletion13 = true;
+			var _didIteratorError13 = false;
+			var _iteratorError13 = undefined;
+
+			try {
+				for (var _iterator13 = obj.artists_uris[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+					var uri = _step13.value;
+
+					if (indexes.artists[uri]) {
+						obj.artists.push(indexes.artists[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError13 = true;
+				_iteratorError13 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion13 && _iterator13.return) {
+						_iterator13.return();
+					}
+				} finally {
+					if (_didIteratorError13) {
+						throw _iteratorError13;
+					}
+				}
+			}
+		}
+		if (obj.related_artists_uris) {
+			var _iteratorNormalCompletion14 = true;
+			var _didIteratorError14 = false;
+			var _iteratorError14 = undefined;
+
+			try {
+				for (var _iterator14 = obj.related_artists_uris[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+					var uri = _step14.value;
+
+					if (indexes.artists[uri]) {
+						obj.related_artists.push(indexes.artists[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError14 = true;
+				_iteratorError14 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion14 && _iterator14.return) {
+						_iterator14.return();
+					}
+				} finally {
+					if (_didIteratorError14) {
+						throw _iteratorError14;
+					}
+				}
+			}
+		}
+		if (obj.artist_uri) {
+			if (indexes.artists[obj.artist_uri]) {
+				obj.artist = indexes.artists[obj.artist_uri];
+			}
+		}
+	}
+
+	if (indexes.albums) {
+		if (obj.albums_uris) {
+			var _iteratorNormalCompletion15 = true;
+			var _didIteratorError15 = false;
+			var _iteratorError15 = undefined;
+
+			try {
+				for (var _iterator15 = obj.albums_uris[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+					var uri = _step15.value;
+
+					if (indexes.albums[uri]) {
+						obj.albums.push(indexes.albums[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError15 = true;
+				_iteratorError15 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion15 && _iterator15.return) {
+						_iterator15.return();
+					}
+				} finally {
+					if (_didIteratorError15) {
+						throw _iteratorError15;
+					}
+				}
+			}
+		}
+		if (obj.album_uri) {
+			if (indexes.albums[obj.album_uri]) {
+				obj.album = indexes.albums[obj.album_uri];
+			}
+		}
+	}
+
+	if (indexes.tracks) {
+		if (obj.tracks_uris) {
+			var _iteratorNormalCompletion16 = true;
+			var _didIteratorError16 = false;
+			var _iteratorError16 = undefined;
+
+			try {
+				for (var _iterator16 = obj.tracks_uris[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+					var uri = _step16.value;
+
+					if (indexes.tracks[uri]) {
+						obj.tracks.push(indexes.tracks[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError16 = true;
+				_iteratorError16 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion16 && _iterator16.return) {
+						_iterator16.return();
+					}
+				} finally {
+					if (_didIteratorError16) {
+						throw _iteratorError16;
+					}
+				}
+			}
+		}
+		if (obj.track_uri) {
+			if (indexes.tracks[obj.track_uri]) {
+				obj.track = indexes.tracks[obj.track_uri];
+			}
+		}
+	}
+
+	if (indexes.users) {
+		if (obj.users_uris) {
+			var _iteratorNormalCompletion17 = true;
+			var _didIteratorError17 = false;
+			var _iteratorError17 = undefined;
+
+			try {
+				for (var _iterator17 = obj.users_uris[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+					var uri = _step17.value;
+
+					if (indexes.users[uri]) {
+						obj.users.push(indexes.users[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError17 = true;
+				_iteratorError17 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion17 && _iterator17.return) {
+						_iterator17.return();
+					}
+				} finally {
+					if (_didIteratorError17) {
+						throw _iteratorError17;
+					}
+				}
+			}
+		}
+		if (obj.user_uri) {
+			if (indexes.users[obj.user_uri]) {
+				obj.user = indexes.users[obj.user_uri];
+			}
+		}
+	}
+
+	if (indexes.playlists) {
+		if (obj.playlists_uris) {
+			var _iteratorNormalCompletion18 = true;
+			var _didIteratorError18 = false;
+			var _iteratorError18 = undefined;
+
+			try {
+				for (var _iterator18 = obj.playlists_uris[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+					var uri = _step18.value;
+
+					if (indexes.playlists[uri]) {
+						obj.playlists.push(indexes.playlists[uri]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError18 = true;
+				_iteratorError18 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion18 && _iterator18.return) {
+						_iterator18.return();
+					}
+				} finally {
+					if (_didIteratorError18) {
+						throw _iteratorError18;
+					}
+				}
+			}
+		}
+		if (obj.playlist_uri) {
+			if (indexes.playlists[obj.playlist_uri]) {
+				obj.playlist = indexes.playlists[obj.playlist_uri];
+			}
+		}
+	}
+
+	return obj;
 };
 
 /**
@@ -604,10 +1335,13 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
 
 /**
  * Identify what kind of asset a URI is (playlist, album, etc)
+ *
  * @param uri = string
  * @return string
  **/
 var uriType = exports.uriType = function uriType(uri) {
+	if (!uri) return null;
+
 	var exploded = uri.split(':');
 
 	if (exploded[0] == 'm3u') {
@@ -640,8 +1374,6 @@ var uriType = exports.uriType = function uriType(uri) {
 			return exploded[1];
 			break;
 	}
-
-	return null;
 };
 
 /**
@@ -664,9 +1396,31 @@ var indexFriendlyUri = exports.indexFriendlyUri = function indexFriendlyUri(uri)
  **/
 var arrayOf = exports.arrayOf = function arrayOf(property, items) {
 	var array = [];
-	for (var i = 0; i < items.length; i++) {
-		array.push(items[i][property]);
+	var _iteratorNormalCompletion19 = true;
+	var _didIteratorError19 = false;
+	var _iteratorError19 = undefined;
+
+	try {
+		for (var _iterator19 = items[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+			var item = _step19.value;
+
+			array.push(item[property]);
+		}
+	} catch (err) {
+		_didIteratorError19 = true;
+		_iteratorError19 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion19 && _iterator19.return) {
+				_iterator19.return();
+			}
+		} finally {
+			if (_didIteratorError19) {
+				throw _iteratorError19;
+			}
+		}
 	}
+
 	return array;
 };
 
@@ -973,9 +1727,9 @@ var titleCase = exports.titleCase = function titleCase(string) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(86);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(155);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(156);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(156);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(90);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(89);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["b"]; });
@@ -1508,9 +2262,9 @@ function processFinished(key) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Provider__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Provider__ = __webpack_require__(136);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__ = __webpack_require__(84);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__connect_connect__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__connect_connect__ = __webpack_require__(141);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Provider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["b"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createProvider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "connectAdvanced", function() { return __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__["a"]; });
@@ -1527,21 +2281,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Router__ = __webpack_require__(171);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Router__ = __webpack_require__(172);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_0__Router__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Link__ = __webpack_require__(97);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_1__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__IndexLink__ = __webpack_require__(183);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__IndexLink__ = __webpack_require__(184);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "IndexLink", function() { return __WEBPACK_IMPORTED_MODULE_2__IndexLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__withRouter__ = __webpack_require__(184);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__withRouter__ = __webpack_require__(185);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__withRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__IndexRedirect__ = __webpack_require__(185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__IndexRedirect__ = __webpack_require__(186);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "IndexRedirect", function() { return __WEBPACK_IMPORTED_MODULE_4__IndexRedirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__IndexRoute__ = __webpack_require__(186);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__IndexRoute__ = __webpack_require__(187);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "IndexRoute", function() { return __WEBPACK_IMPORTED_MODULE_5__IndexRoute__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(98);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(188);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__RouteUtils__ = __webpack_require__(30);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createRoutes", function() { return __WEBPACK_IMPORTED_MODULE_8__RouteUtils__["b"]; });
@@ -1550,17 +2304,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__PropTypes__ = __webpack_require__(61);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "locationShape", function() { return __WEBPACK_IMPORTED_MODULE_10__PropTypes__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "routerShape", function() { return __WEBPACK_IMPORTED_MODULE_10__PropTypes__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__match__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__match__ = __webpack_require__(189);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "match", function() { return __WEBPACK_IMPORTED_MODULE_11__match__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__useRouterHistory__ = __webpack_require__(102);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "useRouterHistory", function() { return __WEBPACK_IMPORTED_MODULE_12__useRouterHistory__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__PatternUtils__ = __webpack_require__(36);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "formatPattern", function() { return __WEBPACK_IMPORTED_MODULE_13__PatternUtils__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__applyRouterMiddleware__ = __webpack_require__(193);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__applyRouterMiddleware__ = __webpack_require__(194);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "applyRouterMiddleware", function() { return __WEBPACK_IMPORTED_MODULE_14__applyRouterMiddleware__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__browserHistory__ = __webpack_require__(194);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__browserHistory__ = __webpack_require__(195);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "browserHistory", function() { return __WEBPACK_IMPORTED_MODULE_15__browserHistory__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__hashHistory__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__hashHistory__ = __webpack_require__(198);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "hashHistory", function() { return __WEBPACK_IMPORTED_MODULE_16__hashHistory__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__createMemoryHistory__ = __webpack_require__(99);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createMemoryHistory", function() { return __WEBPACK_IMPORTED_MODULE_17__createMemoryHistory__["a"]; });
@@ -1627,7 +2381,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactFontawesome = __webpack_require__(244);
+var _reactFontawesome = __webpack_require__(245);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
@@ -1667,7 +2421,7 @@ var Icon = function (_React$Component) {
 
 			switch (this.props.type) {
 				case 'svg':
-					var src = __webpack_require__(246)("./" + this.props.name + '.svg');
+					var src = __webpack_require__(247)("./" + this.props.name + '.svg');
 					return _react2.default.createElement('img', { className: className, src: src, onClick: function onClick(e) {
 							return _this2.handleClick(e);
 						} });
@@ -2253,6 +3007,7 @@ exports.getLibraryTracks = getLibraryTracks;
 exports.getFeaturedPlaylists = getFeaturedPlaylists;
 exports.getCategories = getCategories;
 exports.getCategory = getCategory;
+exports.getCategoryPlaylists = getCategoryPlaylists;
 exports.getNewReleases = getNewReleases;
 exports.getURL = getURL;
 exports.getMore = getMore;
@@ -2525,7 +3280,7 @@ function getMe() {
         sendRequest(dispatch, getState, 'me').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ME_LOADED',
-                data: response
+                me: response
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load your profile', error));
@@ -2541,11 +3296,7 @@ function getMe() {
 function getTrack(uri) {
     return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
-            var track = Object.assign({}, response, {
-                images: response.album.images
-            });
-
-            dispatch(coreActions.trackLoaded(track));
+            dispatch(coreActions.trackLoaded(response));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load track', error));
         });
@@ -2609,7 +3360,7 @@ function getFeaturedPlaylists() {
                 type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                 data: {
                     message: response.message,
-                    playlists: helpers.arrayOf('uri', response.playlists.items)
+                    playlists: helpers.upgradePlaylistsUris(helpers.arrayOf('uri', response.playlists.items))
                 }
             });
         }, function (error) {
@@ -2622,7 +3373,7 @@ function getCategories() {
     return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
-                type: 'CATEGORIES_LOADED',
+                type: 'SPOTIFY_CATEGORIES_LOADED',
                 categories: response.categories.items
             });
         }, function (error) {
@@ -2633,47 +3384,27 @@ function getCategories() {
 
 function getCategory(id) {
     return function (dispatch, getState) {
-
-        dispatch({
-            type: 'CATEGORY_LOADED',
-            key: 'category:' + id,
-            category: {
-                playlists_uris: null
-            }
-        });
-
-        // get the category
         sendRequest(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
-            var category = Object.assign({}, response);
             dispatch({
-                type: 'CATEGORY_LOADED',
-                key: 'category:' + id,
-                category: Object.assign({}, response)
+                type: 'SPOTIFY_CATEGORY_LOADED',
+                category: Object.assign({
+                    uri: 'category:' + response.id,
+                    playlist_uris: []
+                }, response)
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load category', error));
         });
+    };
+}
 
-        // and the category's playlists
+function getCategoryPlaylists(id) {
+    return function (dispatch, getState) {
         sendRequest(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
-            var playlists = [];
-            for (var i = 0; i < response.playlists.items.length; i++) {
-                playlists.push(Object.assign({}, response.playlists.items[i], {
-                    tracks: null,
-                    tracks_more: null,
-                    tracks_total: response.playlists.items[i].tracks.total
-                }));
-            }
-
-            dispatch({
-                type: 'PLAYLISTS_LOADED',
-                playlists: playlists
-            });
-
             dispatch({
                 type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-                key: 'category:' + id,
-                data: response
+                uri: 'category:' + id,
+                playlists: response.playlists
             });
         }, function (error) {
             dispatch(coreActions.handleException('Could not load category playlists', error));
@@ -2793,12 +3524,34 @@ function getSearchResults(type, query) {
 
             if (response.playlists !== undefined) {
                 var playlists = [];
-                for (var i = 0; i < response.playlists.items.length; i++) {
-                    playlists.push(Object.assign({}, response.playlists.items[i], {
-                        can_edit: getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id,
-                        tracks_total: response.playlists.items[i].tracks.total
-                    }));
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = response.playlists.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var playlist = _step.value;
+
+                        playlists.push(Object.assign({}, helpers.formatPlaylist(playlist), {
+                            can_edit: getState().spotify.me && playlist.owner.id == getState().spotify.me.id,
+                            tracks_total: playlist.tracks.total
+                        }));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
                 }
+
                 dispatch({
                     type: 'PLAYLISTS_LOADED',
                     playlists: playlists
@@ -2854,31 +3607,19 @@ function getAutocompleteResults(field_id, query) {
             }
 
             if (response.artists && response.artists.items) {
-                dispatch({
-                    type: 'ARTISTS_LOADED',
-                    artists: response.artists.items
-                });
+                dispatch(coreActions.artistsLoaded(response.artists.items));
             }
 
             if (response.albums && response.albums.items) {
-                dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: response.albums.items
-                });
+                dispatch(coreActions.albumsLoaded(response.albums.items));
             }
 
             if (response.playlists && response.playlists.items) {
-                dispatch({
-                    type: 'PLAYLISTS_LOADED',
-                    playlists: response.playlists.items
-                });
+                dispatch(coreActions.playlistsLoaded(response.playlists.items));
             }
 
             if (response.tracks && response.tracks.items) {
-                dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: response.tracks.items
-                });
+                dispatch(coreActions.tracksLoaded(response.tracks.items));
             }
 
             dispatch({
@@ -2950,9 +3691,9 @@ function following(uri) {
                 break;
             case 'playlist':
                 if (method == 'GET') {
-                    endpoint = 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
+                    endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
                 } else {
-                    endpoint = 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
+                    endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
                 }
                 break;
         }
@@ -3146,17 +3887,11 @@ function getRecommendations() {
             }
 
             if (albums.length > 0) {
-                dispatch({
-                    type: 'ALBUMS_LOADED',
-                    albums: albums
-                });
+                dispatch(coreActions.albumsLoaded(albums));
             }
 
             if (tracks.length > 0) {
-                dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracks
-                });
+                dispatch(coreActions.tracksLoaded(tracks));
             }
 
             dispatch({
@@ -3280,12 +4015,9 @@ function getArtists(uris) {
                         album: artist.albums[i]
                     });
                 }
-                artist.albums = helpers.arrayOf('uri', artist.albums);
+                artist.albums_uris = helpers.arrayOf('uri', artist.albums);
                 artist.albums_more = artist.albums.next;
-                dispatch({
-                    type: 'ARTIST_LOADED',
-                    artist: artist
-                });
+                dispatch(coreActions.artistLoaded(artist));
             }
         }, function (error) {
             dispatch(coreActions.handleException('Could not load artists', error));
@@ -3320,52 +4052,58 @@ function playArtistTopTracks(uri) {
  **/
 
 function getUser(uri) {
-    var and_playlists = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
     return function (dispatch, getState) {
-
-        // get the user
         sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
-            dispatch({
-                type: 'USERS_LOADED',
-                users: [response]
-            });
+            dispatch(coreActions.userLoaded(helpers.formatUser(response)));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load user', error));
         });
-
-        if (and_playlists) {
-            dispatch(getUserPlaylists(uri));
-        }
     };
 }
 
-function getUserPlaylists(user_uri) {
+function getUserPlaylists(uri) {
     return function (dispatch, getState) {
 
         // get the first page of playlists
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', user_uri) + '/playlists?limit=40').then(function (response) {
+        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
             var playlists = [];
-            for (var i = 0; i < response.items.length; i++) {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-                var can_edit = false;
-                if (getState().spotify.me && response.items[i].owner.id == getState().spotify.me.id) {
-                    can_edit = true;
+            try {
+                for (var _iterator2 = response.items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var raw_playlist = _step2.value;
+
+
+                    var can_edit = false;
+                    if (getState().spotify.me && raw_playlist.owner.id == getState().spotify.me.id) {
+                        can_edit = true;
+                    }
+
+                    var playlist = Object.assign({}, helpers.formatPlaylist(raw_playlist), {
+                        can_edit: can_edit,
+                        tracks_total: raw_playlist.tracks.total
+                    });
+
+                    playlists.push(playlist);
                 }
-
-                playlists.push(Object.assign({}, response.items[i], {
-                    can_edit: can_edit,
-                    tracks_total: response.items[i].tracks.total
-                }));
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
             }
 
-            dispatch({
-                type: 'LOADED_MORE',
-                parent_type: 'user',
-                parent_key: user_uri,
-                records_type: 'playlist',
-                records_data: response
-            });
+            dispatch(coreActions.userPlaylistsLoaded(uri, playlists, response.next, response.total));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load user\'s playlists', error));
         });
@@ -3391,22 +4129,25 @@ function getAlbum(uri) {
             // dispatch our loaded artists (simple objects)
             dispatch(coreActions.artistsLoaded(response.artists));
 
-            var album = Object.assign({}, response, {
+            var tracks = Object.assign([], response.tracks.items);
+
+            var album = Object.assign({}, helpers.formatAlbum(response), {
                 artists_uris: helpers.arrayOf('uri', response.artists),
-                tracks: response.tracks.items,
+                tracks_uris: helpers.arrayOf('uri', tracks),
                 tracks_more: response.tracks.next,
                 tracks_total: response.tracks.total
             });
 
             // add our album to all the tracks
-            for (var i = 0; i < album.tracks.length; i++) {
-                album.tracks[i].album = {
+            for (var i = 0; i < tracks.length; i++) {
+                tracks[i].album = {
                     name: album.name,
                     uri: album.uri
                 };
             }
 
             dispatch(coreActions.albumLoaded(album));
+            dispatch(coreActions.tracksLoaded(tracks));
 
             // now get all the artists for this album (full objects)
             // we do this to get the artist artwork
@@ -3536,7 +4277,7 @@ function getPlaylist(uri) {
     return function (dispatch, getState) {
 
         // get the main playlist object
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
 
             // convert links in description
             var description = null;
@@ -3547,15 +4288,19 @@ function getPlaylist(uri) {
                 description = description.split('<a href="spotify:user:').join('<a href="#' + global.baseURL + 'user/spotify:user:');
             }
 
-            var playlist = Object.assign({}, response, {
+            var tracks = helpers.formatTracks(response.tracks.items);
+
+            var playlist = Object.assign({}, helpers.formatPlaylist(response), {
                 is_completely_loaded: true,
-                can_edit: getState().spotify.me && response.owner.id == getState().spotify.me.id,
-                tracks: helpers.formatTracks(response.tracks.items),
+                user_uri: response.owner.uri,
+                tracks_uris: helpers.arrayOf('uri', tracks),
                 tracks_more: response.tracks.next,
                 tracks_total: response.tracks.total,
                 description: description
             });
 
+            dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+            dispatch(coreActions.tracksLoaded(tracks));
             dispatch(coreActions.playlistLoaded(playlist));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load playlist', error));
@@ -3635,7 +4380,7 @@ function getPlaylistTracksAndPlay(uri, shuffle) {
     return function (dispatch, getState) {
         dispatch(uiActions.startProcess('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 'Loading playlist tracks', {
             uri: uri,
-            next: 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
+            next: 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
             shuffle: shuffle
         }));
     };
@@ -3700,7 +4445,7 @@ function toggleFollowingPlaylist(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
                 key: uri,
@@ -3714,7 +4459,7 @@ function toggleFollowingPlaylist(uri, method) {
 
 function addTracksToPlaylist(uri, tracks_uris) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_ADDED',
                 key: uri,
@@ -3729,7 +4474,7 @@ function addTracksToPlaylist(uri, tracks_uris) {
 
 function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REMOVED',
                 key: uri,
@@ -3744,7 +4489,7 @@ function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
+        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REORDERED',
                 key: uri,
@@ -3995,6 +4740,7 @@ exports.loadAlbum = loadAlbum;
 exports.loadArtist = loadArtist;
 exports.loadPlaylist = loadPlaylist;
 exports.loadUser = loadUser;
+exports.loadUserPlaylists = loadUserPlaylists;
 exports.trackLoaded = trackLoaded;
 exports.tracksLoaded = tracksLoaded;
 exports.artistLoaded = artistLoaded;
@@ -4005,6 +4751,7 @@ exports.playlistLoaded = playlistLoaded;
 exports.playlistsLoaded = playlistsLoaded;
 exports.userLoaded = userLoaded;
 exports.usersLoaded = usersLoaded;
+exports.userPlaylistsLoaded = userPlaylistsLoaded;
 exports.loadedMore = loadedMore;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
@@ -4043,7 +4790,7 @@ function getBroadcasts() {
                 xhr: xhr,
                 status: status,
                 error: error
-            }));
+            }, null, false));
         });
     };
 }
@@ -4062,12 +4809,14 @@ function startSearch(search_type, query) {
 function handleException(message) {
     var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var show_notification = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
         description: description,
-        data: data
+        data: data,
+        show_notification: show_notification
     };
 }
 
@@ -4106,37 +4855,62 @@ function cachebustHttpStream() {
  **/
 
 function loadTrack(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'LOAD_TRACK',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     };
 }
 
 function loadAlbum(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'LOAD_ALBUM',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     };
 }
 
 function loadArtist(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'LOAD_ARTIST',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     };
 }
 
 function loadPlaylist(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'LOAD_PLAYLIST',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     };
 }
 
 function loadUser(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return {
         type: 'LOAD_USER',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
+    };
+}
+
+function loadUserPlaylists(uri) {
+    var force_reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    return {
+        type: 'LOAD_USER_PLAYLISTS',
+        uri: uri,
+        force_reload: force_reload
     };
 }
 
@@ -4193,6 +4967,18 @@ function usersLoaded(users) {
     return {
         type: 'USERS_LOADED',
         users: users
+    };
+}
+function userPlaylistsLoaded(uri, playlists) {
+    var more = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var total = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+    return {
+        type: 'USER_PLAYLISTS_LOADED',
+        uri: uri,
+        playlists: playlists,
+        more: more,
+        total: total
     };
 }
 
@@ -4451,7 +5237,6 @@ var Thumbnail = function (_React$Component) {
 
 				// Multiple images
 			} else if (this.props.images) {
-				var images = helpers.sizedImages(this.props.images);
 
 				// Default to medium-sized image, but accept size property as override
 				var size = 'medium';
@@ -4459,7 +5244,7 @@ var Thumbnail = function (_React$Component) {
 					size = this.props.size;
 				}
 
-				return images[size];
+				return this.props.images[size];
 			}
 
 			// No images
@@ -4492,7 +5277,7 @@ var Thumbnail = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: class_name },
-				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + (image ? image : __webpack_require__(285)) + '")' } }),
+				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + (image ? image : __webpack_require__(286)) + '")' } }),
 				zoom_icon
 			);
 		}
@@ -5017,11 +5802,11 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(174)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(175)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(176)();
+  module.exports = __webpack_require__(177)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -5032,7 +5817,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
-		module.exports = factory(__webpack_require__(0), __webpack_require__(210));
+		module.exports = factory(__webpack_require__(0), __webpack_require__(211));
 	else if(typeof define === 'function' && define.amd)
 		define(["react", "prop-types"], factory);
 	else {
@@ -16811,11 +17596,11 @@ function getTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not get track", {}, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not get LastFM track", {}, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not get track", {}, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not get LastFM track", {}, "Could not find track in index"));
             return;
         }
 
@@ -16854,10 +17639,10 @@ function getArtist(uri, artist) {
                     uri: uri,
                     images: response.artist.image,
                     mbid: response.artist.mbid,
-                    bio: response.artist.bio,
-                    listeners: parseInt(response.artist.stats.listeners),
-                    play_count: parseInt(response.artist.stats.playcount),
-                    on_tour: response.artist.stats.ontour
+                    biography: response.artist.bio.content,
+                    biography_publish_date: response.artist.bio.published,
+                    biography_link: response.artist.bio.links.link.href,
+                    listeners: parseInt(response.artist.stats.listeners)
                 };
 
                 dispatch(coreActions.artistLoaded(artist));
@@ -16946,11 +17731,11 @@ function loveTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not love track", track, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not love LastFM track", track, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not love track", track, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not love LastFM track", track, "Could not find track in index"));
             return;
         }
 
@@ -16973,11 +17758,11 @@ function unloveTrack(uri) {
         if (getState().core.tracks[uri] !== undefined) {
             var track = getState().core.tracks[uri];
             if (!track.artists) {
-                dispatch(coreActions.handleException("Could not unlove track", track, "Track has no artists"));
+                dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Track has no artists"));
                 return;
             }
         } else {
-            dispatch(coreActions.handleException("Could not unlove track", track, "Could not find track in index"));
+            dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Could not find track in index"));
             return;
         }
 
@@ -17016,7 +17801,7 @@ function scrobble(track) {
         sendSignedRequest(dispatch, getState, params).then(function (response) {
             console.log("Scrobbled", response);
         }, function (error) {
-            dispatch(coreActions.handleException('Could not scrobble track', error, error.description ? error.description : null));
+            dispatch(coreActions.handleException('Could not scrobble LastFM track', error, error.description ? error.description : null));
         });
     };
 }
@@ -17685,6 +18470,12 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17702,41 +18493,59 @@ var LazyLoadListener = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (LazyLoadListener.__proto__ || Object.getPrototypeOf(LazyLoadListener)).call(this, props));
 
 		_this.state = {
-			loading: false
+			listening: _this.props.loadKey ? true : false,
+			loadKey: _this.props.loadKey
 		};
-		_this.handleScroll = _this.handleScroll.bind(_this);
+
+		_this.handleScroll = helpers.throttle(_this.handleScroll.bind(_this), 50);
 		return _this;
 	}
 
 	_createClass(LazyLoadListener, [{
-		key: "componentWillMount",
+		key: 'componentWillMount',
 		value: function componentWillMount() {
 			window.addEventListener("scroll", this.handleScroll, false);
 		}
 	}, {
-		key: "componentWillUnmount",
+		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			window.removeEventListener("scroll", this.handleScroll, false);
 		}
 	}, {
-		key: "handleScroll",
-		value: function handleScroll(e) {
-			if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
-				if (!this.state.loading && this.props.loading) {
-					this.setState({ loading: true });
-					this.props.loadMore();
-				}
-			} else if (this.state.loading) {
-				this.setState({ loading: false });
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (nextProps.loadKey && nextProps.loadKey !== this.state.loadKey) {
+				this.setState({
+					loadKey: nextProps.loadKey,
+					listening: true
+				});
 			}
 		}
 	}, {
-		key: "render",
+		key: 'handleScroll',
+		value: function handleScroll(e) {
+			var _this2 = this;
+
+			if (this.state.listening) {
+
+				// At, or nearly at the bottom of the page
+				if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+
+					// Immediately stop listening to avoid duplicating pagination requests
+					this.setState({ listening: false }, function () {
+						console.info('Loading more: ' + _this2.props.loadKey);
+						_this2.props.loadMore();
+					});
+				}
+			}
+		}
+	}, {
+		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
-				"div",
-				{ className: "lazy-loader body-loader" + (this.state.loading || this.props.forceLoader ? ' loading' : '') },
-				this.state.loading || this.props.forceLoader ? _react2.default.createElement("div", { className: "loader" }) : null
+				'div',
+				{ className: "lazy-loader body-loader" + (this.props.showLoader ? ' loading' : '') },
+				this.props.showLoader ? _react2.default.createElement('div', { className: 'loader' }) : null
 			);
 		}
 	}]);
@@ -17950,7 +18759,7 @@ exports.default = ContextMenuTrigger;
 
 
 var React = __webpack_require__(0);
-var factory = __webpack_require__(172);
+var factory = __webpack_require__(173);
 
 if (typeof React === 'undefined') {
   throw Error(
@@ -18634,264 +19443,6 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Parallax = function (_React$Component) {
-	_inherits(Parallax, _React$Component);
-
-	function Parallax(props) {
-		_classCallCheck(this, Parallax);
-
-		var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, props));
-
-		_this._loading = false;
-		_this._loaded = false;
-
-		_this.state = {
-			scrollTop: 0,
-			windowWidth: 0,
-			windowHeight: 0,
-			canvas: {
-				width: 0,
-				height: 0
-			},
-			image: {},
-			loading: false,
-			url: false
-
-			// we need to manually bind this as eventListener doesn't work with anonymous functions
-		};_this.handleResize = _this.handleResize.bind(_this);
-		_this.handleScroll = _this.handleScroll.bind(_this);
-		return _this;
-	}
-
-	_createClass(Parallax, [{
-		key: "componentDidMount",
-		value: function componentDidMount() {
-			var _this2 = this;
-
-			this._mounted = true;
-			window.addEventListener("resize", this.handleResize);
-			window.addEventListener("scroll", this.handleScroll);
-
-			if (this.props.image) {
-				this._loading = true;
-				this.setState({ url: this.props.image, image: false, loading: true });
-				this.loadImage(this.props.image).then(function (response) {
-					if (_this2._mounted) {
-						_this2._loading = false;
-						_this2._loaded = true;
-						_this2.setState({ url: _this2.props.image, image: response, loading: false });
-						_this2.updateCanvas(response);
-					}
-				});
-			} else {
-				this._loaded = true;
-				this.state.image = false;
-				this.updateCanvas();
-			}
-		}
-	}, {
-		key: "componentWillUnmount",
-		value: function componentWillUnmount() {
-			this._mounted = false;
-			window.removeEventListener("resize", this.handleResize);
-			window.removeEventListener("scroll", this.handleScroll);
-		}
-	}, {
-		key: "componentWillReceiveProps",
-		value: function componentWillReceiveProps(nextProps) {
-			var _this3 = this;
-
-			if ((!this.state.url || nextProps.image != this.state.url) && !this._loading && nextProps.image) {
-				this._loading = true;
-				this.setState({ url: nextProps.image, image: false, loading: true });
-				this.loadImage(nextProps.image).then(function (response) {
-					if (_this3._mounted) {
-						_this3._loading = false;
-						_this3._loaded = true;
-						_this3.setState({ url: nextProps.image, image: response, loading: false });
-						_this3.updateCanvas(response);
-					}
-				});
-			}
-		}
-	}, {
-		key: "handleResize",
-		value: function handleResize(e) {
-			if (this._loaded) {
-				this.updateCanvas(this.state.image);
-			}
-		}
-	}, {
-		key: "handleScroll",
-		value: function handleScroll(e) {
-			// this DOES work, but is in no way high-performing and only on Firefox
-			if (this._loaded) {
-				this.setState({ scrollTop: window.scrollY }, this.updateCanvas(this.state.image));
-			}
-		}
-	}, {
-		key: "loadImage",
-		value: function loadImage(url) {
-			return new Promise(function (resolve, reject) {
-
-				var imageObject = new Image();
-				imageObject.src = url;
-
-				// This seems to prevent Dirble images from loading.
-				// Other domains don't seem to mind any more, so perhaps we can remove for good.
-				// TODO: Re-test the nature of crossorigin images
-				// imageObject.crossOrigin = 'anonymous';
-
-				imageObject.onload = function () {
-					var image = {
-						width: imageObject.naturalWidth,
-						height: imageObject.naturalHeight,
-						original_width: imageObject.naturalWidth,
-						original_height: imageObject.naturalHeight,
-						object: imageObject
-					};
-					resolve(image);
-				};
-			});
-		}
-	}, {
-		key: "updateCanvas",
-		value: function updateCanvas() {
-			var image = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-			var canvasWidth = $('.parallax').outerWidth();
-			var canvasHeight = $('.parallax').outerHeight();
-			if (this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight) {
-				this.setState({
-					canvas: {
-						width: canvasWidth,
-						height: canvasHeight
-					}
-				});
-			}
-			this.renderCanvas(image);
-		}
-	}, {
-		key: "renderCanvas",
-		value: function renderCanvas() {
-			var image = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-			var self = this;
-			var canvasDOM = document.getElementById('parallax-canvas');
-			var context = canvasDOM.getContext('2d');
-
-			// Fill the background with mid-grey
-			context.beginPath();
-			context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
-
-			switch (this.props.theme) {
-				case 'light':
-					context.fillStyle = "#EDEDED";
-					break;
-
-				case 'dark':
-				default:
-					context.fillStyle = "#121212";
-			}
-			context.fill();
-
-			if (image && !self.state.loading) {
-
-				// zoom image to fill canvas, widthwise
-				if (image.width < this.state.canvas.width || image.width > this.state.canvas.width) {
-					var scale = this.state.canvas.width / image.width;
-					image.width = image.width * scale;
-					image.height = image.height * scale;
-				}
-
-				// now check for fill heightwise, and zoom in if necessary
-				if (image.height < this.state.canvas.height) {
-					var scale = this.state.canvas.height / image.height;
-					image.width = image.width * scale;
-					image.height = image.height * scale;
-				}
-
-				// figure out where we want the image to be, based on scroll position
-				var percent = Math.round(self.state.scrollTop / this.state.canvas.height * 100);
-				var position = Math.round(this.state.canvas.height / 2 * (percent / 100)) - 100;
-
-				image.x = this.state.canvas.width / 2 - image.width / 2;
-				image.y = this.state.canvas.height / 2 - image.height / 2 + percent / 100 * 100;
-
-				// Actually draw the image on the canvas
-				context.drawImage(image.object, image.x, image.y, image.width, image.height);
-
-				// now update our component
-				self.setState({ image: image });
-			}
-
-			// Construct a gradient overlay
-			context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
-			var gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height);
-
-			switch (this.props.theme) {
-				case 'light':
-					gradient.addColorStop(0, 'rgba(255,255,255,0.4)');
-					gradient.addColorStop(0.9, 'rgba(255,255,255,1)');
-					break;
-
-				case 'dark':
-				default:
-					gradient.addColorStop(0, 'rgba(24,24,24,0)');
-					gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
-			}
-
-			context.fillStyle = gradient;
-
-			// And now drop it into place
-			context.fill();
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			return _react2.default.createElement(
-				"div",
-				{ className: this.props.blur ? "parallax blur" : "parallax" },
-				_react2.default.createElement("canvas", {
-					id: "parallax-canvas",
-					className: !this.state.loading ? 'loaded' : null,
-					width: this.state.canvas.width,
-					height: this.state.canvas.height })
-			);
-		}
-	}]);
-
-	return Parallax;
-}(_react2.default.Component);
-
-exports.default = Parallax;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
 var _reactRedux = __webpack_require__(5);
 
 var _redux = __webpack_require__(2);
@@ -19088,6 +19639,272 @@ var DropdownField = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DropdownField;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Parallax = function (_React$Component) {
+	_inherits(Parallax, _React$Component);
+
+	function Parallax(props) {
+		_classCallCheck(this, Parallax);
+
+		var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, props));
+
+		_this._loading = false;
+		_this._loaded = false;
+
+		_this.state = {
+			scrollTop: 0,
+			windowWidth: 0,
+			windowHeight: 0,
+			canvas: {
+				width: 0,
+				height: 0
+			},
+			image: {},
+			loading: false,
+			url: false
+		};
+
+		if (!_this.props.disabled) {
+
+			// we need to manually bind this as eventListener doesn't work with anonymous functions
+			_this.handleResize = _this.handleResize.bind(_this);
+			_this.handleScroll = _this.handleScroll.bind(_this);
+		}
+		return _this;
+	}
+
+	_createClass(Parallax, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var _this2 = this;
+
+			if (!this.props.disabled) {
+				window.addEventListener("resize", this.handleResize);
+				window.addEventListener("scroll", this.handleScroll);
+			}
+
+			this._mounted = true;
+
+			if (this.props.image) {
+				this._loading = true;
+				this.setState({ url: this.props.image, image: false, loading: true });
+				this.loadImage(this.props.image).then(function (response) {
+					if (_this2._mounted) {
+						_this2._loading = false;
+						_this2._loaded = true;
+						_this2.setState({ url: _this2.props.image, image: response, loading: false });
+						_this2.updateCanvas(response);
+					}
+				});
+			} else {
+				this._loaded = true;
+				this.state.image = false;
+				this.updateCanvas();
+			}
+		}
+	}, {
+		key: "componentWillUnmount",
+		value: function componentWillUnmount() {
+			this._mounted = false;
+
+			if (!this.props.disabled) {
+				window.removeEventListener("resize", this.handleResize);
+				window.removeEventListener("scroll", this.handleScroll);
+			}
+		}
+	}, {
+		key: "componentWillReceiveProps",
+		value: function componentWillReceiveProps(nextProps) {
+			var _this3 = this;
+
+			if ((!this.state.url || nextProps.image != this.state.url) && !this._loading && nextProps.image) {
+				this._loading = true;
+				this.setState({ url: nextProps.image, image: false, loading: true });
+				this.loadImage(nextProps.image).then(function (response) {
+					if (_this3._mounted) {
+						_this3._loading = false;
+						_this3._loaded = true;
+						_this3.setState({ url: nextProps.image, image: response, loading: false });
+						_this3.updateCanvas(response);
+					}
+				});
+			}
+		}
+	}, {
+		key: "handleResize",
+		value: function handleResize(e) {
+			this.updateCanvas(this.state.image);
+		}
+	}, {
+		key: "handleScroll",
+		value: function handleScroll(e) {
+			// this DOES work, but is in no way high-performing and only on Firefox
+			if (this._loaded) {
+				this.setState({ scrollTop: window.scrollY }, this.updateCanvas(this.state.image));
+			}
+		}
+	}, {
+		key: "loadImage",
+		value: function loadImage(url) {
+			return new Promise(function (resolve, reject) {
+
+				var imageObject = new Image();
+				imageObject.src = url;
+
+				// This seems to prevent Dirble images from loading.
+				// Other domains don't seem to mind any more, so perhaps we can remove for good.
+				// TODO: Re-test the nature of crossorigin images
+				// imageObject.crossOrigin = 'anonymous';
+
+				imageObject.onload = function () {
+					var image = {
+						width: imageObject.naturalWidth,
+						height: imageObject.naturalHeight,
+						original_width: imageObject.naturalWidth,
+						original_height: imageObject.naturalHeight,
+						object: imageObject
+					};
+					resolve(image);
+				};
+			});
+		}
+	}, {
+		key: "updateCanvas",
+		value: function updateCanvas() {
+			var image = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+			var canvasWidth = $('.parallax').outerWidth();
+			var canvasHeight = $('.parallax').outerHeight();
+			if (this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight) {
+				this.setState({
+					canvas: {
+						width: canvasWidth,
+						height: canvasHeight
+					}
+				});
+			}
+			this.renderCanvas(image);
+		}
+	}, {
+		key: "renderCanvas",
+		value: function renderCanvas() {
+			var image = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+			var self = this;
+			var canvasDOM = document.getElementById('parallax-canvas');
+			var context = canvasDOM.getContext('2d');
+
+			// Fill the background with mid-grey
+			context.beginPath();
+			context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
+
+			switch (this.props.theme) {
+				case 'light':
+					context.fillStyle = "#EDEDED";
+					break;
+
+				case 'dark':
+				default:
+					context.fillStyle = "#121212";
+			}
+			context.fill();
+
+			if (image && !self.state.loading) {
+
+				// zoom image to fill canvas, widthwise
+				if (image.width < this.state.canvas.width || image.width > this.state.canvas.width) {
+					var scale = this.state.canvas.width / image.width;
+					image.width = image.width * scale;
+					image.height = image.height * scale;
+				}
+
+				// now check for fill heightwise, and zoom in if necessary
+				if (image.height < this.state.canvas.height) {
+					var scale = this.state.canvas.height / image.height;
+					image.width = image.width * scale;
+					image.height = image.height * scale;
+				}
+
+				// figure out where we want the image to be, based on scroll position
+				var percent = Math.round(self.state.scrollTop / this.state.canvas.height * 100);
+				var position = Math.round(this.state.canvas.height / 2 * (percent / 100)) - 100;
+
+				image.x = this.state.canvas.width / 2 - image.width / 2;
+				image.y = this.state.canvas.height / 2 - image.height / 2 + percent / 100 * 100;
+
+				// Actually draw the image on the canvas
+				context.drawImage(image.object, image.x, image.y, image.width, image.height);
+
+				// now update our component
+				self.setState({ image: image });
+			}
+
+			// Construct a gradient overlay
+			context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
+			var gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height);
+
+			switch (this.props.theme) {
+				case 'light':
+					gradient.addColorStop(0, 'rgba(255,255,255,0.4)');
+					gradient.addColorStop(0.9, 'rgba(255,255,255,1)');
+					break;
+
+				case 'dark':
+				default:
+					gradient.addColorStop(0, 'rgba(24,24,24,0)');
+					gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
+			}
+
+			context.fillStyle = gradient;
+
+			// And now drop it into place
+			context.fill();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"div",
+				{ className: this.props.blur && !this.props.disabled ? "parallax blur" : "parallax" },
+				_react2.default.createElement("canvas", {
+					id: "parallax-canvas",
+					className: !this.state.loading ? 'loaded' : null,
+					width: this.state.canvas.width,
+					height: this.state.canvas.height })
+			);
+		}
+	}]);
+
+	return Parallax;
+}(_react2.default.Component);
+
+exports.default = Parallax;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
@@ -19569,7 +20386,7 @@ var ArtistGrid = function (_React$Component) {
 						return _react2.default.createElement(_GridItem2.default, {
 							key: artist.uri,
 							type: 'artist',
-							item: artist,
+							item: helpers.collate(artist, { albums: _this2.props.albums }),
 							show_source_icon: _this2.props.show_source_icon,
 							onClick: function onClick(e) {
 								_reactRouter.hashHistory.push(global.baseURL + 'artist/' + encodeURIComponent(artist.uri));
@@ -19593,7 +20410,9 @@ var ArtistGrid = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {};
+	return {
+		albums: state.core.albums
+	};
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
@@ -19731,22 +20550,24 @@ var GridItem = function (_React$Component) {
 		value: function renderSecondary(item) {
 			var output = '';
 
-			switch (item.type) {
+			switch (helpers.uriType(item.uri)) {
 
 				case 'playlist':
-					return _react2.default.createElement(
-						'span',
-						null,
-						item.tracks_total ? item.tracks_total : 0,
-						' tracks'
-					);
+					if (item.tracks_total) {
+						return _react2.default.createElement(
+							'span',
+							null,
+							item.tracks_total,
+							' tracks'
+						);
+					}
 					break;
 
 				case 'artist':
 					return _react2.default.createElement(
 						'span',
 						null,
-						item.followers ? item.followers.total.toLocaleString() + ' followers' : null,
+						item.followers ? item.followers.toLocaleString() + ' followers' : null,
 						item.albums_uris ? item.albums_uris.length + ' albums' : null
 					);
 					break;
@@ -19764,7 +20585,7 @@ var GridItem = function (_React$Component) {
 						'span',
 						null,
 						item.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: item.artists }) : null,
-						item.followers ? item.followers.total.toLocaleString() + ' followers' : null
+						item.followers ? item.followers.toLocaleString() + ' followers' : null
 					);
 			}
 
@@ -19778,7 +20599,7 @@ var GridItem = function (_React$Component) {
 			if (!this.props.item) return null;
 
 			var item = this.props.item;
-			if (typeof item.album !== 'undefined') {
+			if (item.album !== undefined) {
 				item.album.added_at = item.added_at;
 				item = item.album;
 			}
@@ -19895,15 +20716,8 @@ var FollowButton = function (_React$Component) {
 			}
 
 			var className = '';
-
-			// Inherit passed-down classes
 			if (this.props.className) {
 				className += ' ' + this.props.className;
-			}
-
-			// Loader
-			if (helpers.isLoading(this.props.load_queue, ['/following', '/followers', 'me/albums/contains/?ids=', 'me/albums/?ids='])) {
-				className += ' working';
 			}
 
 			if (!this.props.spotify_authorized) {
@@ -20032,7 +20846,8 @@ var AlbumGrid = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: className },
-					this.props.albums.map(function (album) {
+					this.props.albums.map(function (item) {
+						var album = helpers.collate(item, { artists: _this2.props.artists });
 						return _react2.default.createElement(_GridItem2.default, {
 							key: album.uri,
 							type: 'album',
@@ -20056,7 +20871,9 @@ var AlbumGrid = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {};
+	return {
+		artists: state.core.artists
+	};
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
@@ -20220,9 +21037,9 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(124);
+  module.exports = __webpack_require__(125);
 } else {
-  module.exports = __webpack_require__(127);
+  module.exports = __webpack_require__(128);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -20419,7 +21236,10 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
         if (endpoint.startsWith('https://') || endpoint.startsWith('http://')) {
             var url = endpoint;
         } else {
-            var url = 'https://api.genius.com/' + endpoint + '?access_token=' + getState().genius.access_token;
+            var url = 'https://api.genius.com/' + endpoint;
+            if (getState().genius.access_token) {
+                url += '?access_token=' + getState().genius.access_token;
+            }
         }
 
         // create our ajax request config
@@ -21279,7 +22099,7 @@ function mapAsync(array, work, callback) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_react_class___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_create_react_class__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__getRouteParams__ = __webpack_require__(182);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__getRouteParams__ = __webpack_require__(183);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ContextUtils__ = __webpack_require__(60);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RouteUtils__ = __webpack_require__(30);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -21589,7 +22409,7 @@ exports.default = runTransitionHook;
 
 exports.__esModule = true;
 
-var _AsyncUtils = __webpack_require__(192);
+var _AsyncUtils = __webpack_require__(193);
 
 var _PathUtils = __webpack_require__(31);
 
@@ -22033,7 +22853,7 @@ module.exports = ReactPropTypesSecret;
 
 	} else if (!capturedSetTimeout) { // vert.x
 		var vertxRequire = require;
-		var vertx = __webpack_require__(223);
+		var vertx = __webpack_require__(224);
 		setTimer = function (f, ms) { return vertx.setTimer(ms, f); };
 		clearTimer = vertx.cancelTimer;
 		asap = vertx.runOnLoop || vertx.runOnContext;
@@ -22843,7 +23663,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(125);
+var isTextNode = __webpack_require__(126);
 
 /*eslint-disable no-bitwise */
 
@@ -22920,11 +23740,11 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(136)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(137)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(138)();
+  module.exports = __webpack_require__(139)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -22965,7 +23785,7 @@ var storeShape = __WEBPACK_IMPORTED_MODULE_0_prop_types___default.a.shape({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_Subscription__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_Subscription__ = __webpack_require__(140);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_PropTypes__ = __webpack_require__(83);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -23341,7 +24161,7 @@ module.exports = hoistNonReactStatics;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ActionTypes; });
 /* harmony export (immutable) */ __webpack_exports__["b"] = createStore;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(151);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_symbol_observable__);
 
 
@@ -23597,9 +24417,9 @@ var ActionTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(143);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(148);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(150);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(151);
 
 
 
@@ -23669,7 +24489,7 @@ function isPlainObject(value) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(145);
 
 
 /** Built-in value references. */
@@ -23829,7 +24649,7 @@ function wrapMapToPropsFunc(mapToProps, methodName) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = verifyPlainObject;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(158);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(159);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__warning__ = __webpack_require__(54);
 
 
@@ -23845,7 +24665,7 @@ function verifyPlainObject(value, displayName, methodName) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(160);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(161);
 
 
 /** Built-in value references. */
@@ -23861,11 +24681,11 @@ var Symbol = __WEBPACK_IMPORTED_MODULE_0__root_js__["a" /* default */].Symbol;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = createTransitionManager;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__routerWarning__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__computeChangedRoutes__ = __webpack_require__(177);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TransitionUtils__ = __webpack_require__(178);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__isActive__ = __webpack_require__(179);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__getComponents__ = __webpack_require__(180);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matchRoutes__ = __webpack_require__(181);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__computeChangedRoutes__ = __webpack_require__(178);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TransitionUtils__ = __webpack_require__(179);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__isActive__ = __webpack_require__(180);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__getComponents__ = __webpack_require__(181);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matchRoutes__ = __webpack_require__(182);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 
@@ -24421,7 +25241,7 @@ var Redirect = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_useQueries___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_history_lib_useQueries__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_history_lib_useBasename__ = __webpack_require__(101);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_history_lib_useBasename___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_history_lib_useBasename__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_history_lib_createMemoryHistory__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_history_lib_createMemoryHistory__ = __webpack_require__(192);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_history_lib_createMemoryHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_history_lib_createMemoryHistory__);
 
 
@@ -24450,7 +25270,7 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _queryString = __webpack_require__(189);
+var _queryString = __webpack_require__(190);
 
 var _runTransitionHook = __webpack_require__(62);
 
@@ -25021,9 +25841,9 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(){
-  var crypt = __webpack_require__(236),
+  var crypt = __webpack_require__(237),
       utf8 = __webpack_require__(110).utf8,
-      isBuffer = __webpack_require__(237),
+      isBuffer = __webpack_require__(238),
       bin = __webpack_require__(110).bin,
 
   // The core
@@ -25283,7 +26103,7 @@ var ProgressSlider = function (_React$Component) {
 			var _this2 = this;
 
 			var percent = 0;
-			if (this.props.connected && this.props.time_position && this.props.current_track) {
+			if (this.props.connected && this.props.time_position && this.props.current_track && this.props.current_track.duration) {
 				percent = this.props.time_position / this.props.current_track.duration;
 				percent = percent * 100;
 				if (percent > 1000) {
@@ -25381,7 +26201,7 @@ var _Popularity = __webpack_require__(71);
 
 var _Popularity2 = _interopRequireDefault(_Popularity);
 
-var _ErrorBoundary = __webpack_require__(289);
+var _ErrorBoundary = __webpack_require__(113);
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
@@ -25783,11 +26603,13 @@ var Track = function (_React$Component) {
 					{ className: 'col duration', key: 'duration' },
 					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col popularity', key: 'popularity' },
-					_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
-				));
+				if (track.popularity !== undefined) {
+					track_columns.push(_react2.default.createElement(
+						'span',
+						{ className: 'col popularity', key: 'popularity' },
+						_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
+					));
+				}
 			}
 
 			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'subtle', key: 'context', onTrigger: function onTrigger(e) {
@@ -25871,6 +26693,72 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ErrorBoundary = function (_React$Component) {
+	_inherits(ErrorBoundary, _React$Component);
+
+	function ErrorBoundary(props) {
+		_classCallCheck(this, ErrorBoundary);
+
+		var _this = _possibleConstructorReturn(this, (ErrorBoundary.__proto__ || Object.getPrototypeOf(ErrorBoundary)).call(this, props));
+
+		_this.state = { hasError: false };
+		return _this;
+	}
+
+	_createClass(ErrorBoundary, [{
+		key: "componentDidCatch",
+		value: function componentDidCatch(error, info) {
+			// Display fallback UI
+			this.setState({ hasError: true });
+			// You can also log the error to an error reporting service
+			//logErrorToMyService(error, info);
+			console.error(error, info);
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			if (this.state.hasError) {
+				// You can render any custom fallback UI
+				return _react2.default.createElement(
+					"p",
+					{ className: "grey-text" },
+					"Failed to render"
+				);
+			}
+			return this.props.children;
+		}
+	}]);
+
+	return ErrorBoundary;
+}(_react2.default.Component);
+
+exports.default = ErrorBoundary;
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
 var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
@@ -25939,7 +26827,7 @@ var RelatedArtists = function (_React$Component) {
 exports.default = RelatedArtists;
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26063,7 +26951,7 @@ var ConfirmationButton = function (_React$Component) {
 exports.default = ConfirmationButton;
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26251,7 +27139,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SpotifyAuthenticationFrame);
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26438,7 +27326,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LastfmAuthenticationFrame);
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26497,7 +27385,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=label.js.map
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26517,11 +27405,11 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
 
-var _bootstrap = __webpack_require__(200);
+var _bootstrap = __webpack_require__(201);
 
 var _bootstrap2 = _interopRequireDefault(_bootstrap);
 
-var _App = __webpack_require__(242);
+var _App = __webpack_require__(243);
 
 var _App2 = _interopRequireDefault(_App);
 
@@ -26696,7 +27584,7 @@ _reactDom2.default.render(_react2.default.createElement(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26725,7 +27613,7 @@ assign:k}},Y={default:X},Z=Y&&X||Y;module.exports=Z.default?Z.default:Z;
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26749,9 +27637,9 @@ if (process.env.NODE_ENV !== "production") {
 var _assign = __webpack_require__(28);
 var invariant = __webpack_require__(74);
 var emptyObject = __webpack_require__(75);
-var warning = __webpack_require__(121);
+var warning = __webpack_require__(122);
 var emptyFunction = __webpack_require__(51);
-var checkPropTypes = __webpack_require__(122);
+var checkPropTypes = __webpack_require__(123);
 
 // TODO: this is special because it gets imported during build.
 
@@ -28219,7 +29107,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28288,7 +29176,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28304,7 +29192,7 @@ module.exports = warning;
 var printWarning = function() {};
 
 if (process.env.NODE_ENV !== 'production') {
-  var ReactPropTypesSecret = __webpack_require__(123);
+  var ReactPropTypesSecret = __webpack_require__(124);
   var loggedTypeFailures = {};
 
   printWarning = function(text) {
@@ -28387,7 +29275,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28406,7 +29294,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28653,7 +29541,7 @@ var Ai={default:vi},Bi=Ai&&vi||Ai;module.exports=Bi.default?Bi.default:Bi;
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28668,7 +29556,7 @@ var Ai={default:vi},Bi=Ai&&vi||Ai;module.exports=Bi.default?Bi.default:Bi;
  * @typechecks
  */
 
-var isNode = __webpack_require__(126);
+var isNode = __webpack_require__(127);
 
 /**
  * @param {*} object The object to check.
@@ -28681,7 +29569,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28709,7 +29597,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28732,17 +29620,17 @@ if (process.env.NODE_ENV !== "production") {
 
 var invariant = __webpack_require__(76);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(128);
+var warning = __webpack_require__(129);
 var ExecutionEnvironment = __webpack_require__(77);
 var _assign = __webpack_require__(28);
 var emptyFunction = __webpack_require__(52);
-var checkPropTypes = __webpack_require__(129);
+var checkPropTypes = __webpack_require__(130);
 var getActiveElement = __webpack_require__(78);
 var shallowEqual = __webpack_require__(79);
 var containsNode = __webpack_require__(80);
 var emptyObject = __webpack_require__(81);
-var hyphenateStyleName = __webpack_require__(131);
-var camelizeStyleName = __webpack_require__(133);
+var hyphenateStyleName = __webpack_require__(132);
+var camelizeStyleName = __webpack_require__(134);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -46147,7 +47035,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46216,7 +47104,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46232,7 +47120,7 @@ module.exports = warning;
 var printWarning = function() {};
 
 if (process.env.NODE_ENV !== 'production') {
-  var ReactPropTypesSecret = __webpack_require__(130);
+  var ReactPropTypesSecret = __webpack_require__(131);
   var loggedTypeFailures = {};
 
   printWarning = function(text) {
@@ -46315,7 +47203,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46334,7 +47222,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46349,7 +47237,7 @@ module.exports = ReactPropTypesSecret;
 
 
 
-var hyphenate = __webpack_require__(132);
+var hyphenate = __webpack_require__(133);
 
 var msPattern = /^ms-/;
 
@@ -46376,7 +47264,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46412,7 +47300,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46427,7 +47315,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(134);
+var camelize = __webpack_require__(135);
 
 var msPattern = /^-ms-/;
 
@@ -46455,7 +47343,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46490,7 +47378,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46576,7 +47464,7 @@ function createProvider() {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46592,7 +47480,7 @@ function createProvider() {
 var assign = __webpack_require__(28);
 
 var ReactPropTypesSecret = __webpack_require__(53);
-var checkPropTypes = __webpack_require__(137);
+var checkPropTypes = __webpack_require__(138);
 
 var printWarning = function() {};
 
@@ -47139,7 +48027,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47238,7 +48126,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47304,7 +48192,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47403,17 +48291,17 @@ var Subscription = function () {
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export createConnect */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_connectAdvanced__ = __webpack_require__(84);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_shallowEqual__ = __webpack_require__(141);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mapDispatchToProps__ = __webpack_require__(142);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mapStateToProps__ = __webpack_require__(167);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mergeProps__ = __webpack_require__(168);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__selectorFactory__ = __webpack_require__(169);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_shallowEqual__ = __webpack_require__(142);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mapDispatchToProps__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mapStateToProps__ = __webpack_require__(168);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mergeProps__ = __webpack_require__(169);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__selectorFactory__ = __webpack_require__(170);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -47519,7 +48407,7 @@ function createConnect() {
 /* harmony default export */ __webpack_exports__["a"] = (createConnect());
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47556,7 +48444,7 @@ function shallowEqual(objA, objB) {
 }
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47587,13 +48475,13 @@ function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
 /* harmony default export */ __webpack_exports__["a"] = ([whenMapDispatchToPropsIsFunction, whenMapDispatchToPropsIsMissing, whenMapDispatchToPropsIsObject]);
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(146);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(148);
 
 
 
@@ -47625,11 +48513,11 @@ function baseGetTag(value) {
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(146);
 
 
 /** Detect free variable `self`. */
@@ -47642,7 +48530,7 @@ var root = __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__["a" /* default */] || fr
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47654,7 +48542,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(10)))
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47708,7 +48596,7 @@ function getRawTag(value) {
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47737,11 +48625,11 @@ function objectToString(value) {
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(150);
 
 
 /** Built-in value references. */
@@ -47751,7 +48639,7 @@ var getPrototype = Object(__WEBPACK_IMPORTED_MODULE_0__overArg_js__["a" /* defau
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47773,7 +48661,7 @@ function overArg(func, transform) {
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47809,14 +48697,14 @@ function isObjectLike(value) {
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(152);
+module.exports = __webpack_require__(153);
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47826,7 +48714,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(154);
+var _ponyfill = __webpack_require__(155);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -47849,10 +48737,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(153)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(154)(module)))
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -47880,7 +48768,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47909,7 +48797,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48050,7 +48938,7 @@ function combineReducers(reducers) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48104,7 +48992,7 @@ function bindActionCreators(actionCreators, dispatch) {
 }
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48160,13 +49048,13 @@ function applyMiddleware() {
 }
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(159);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(164);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(166);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(160);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(167);
 
 
 
@@ -48232,13 +49120,13 @@ function isPlainObject(value) {
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(93);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(162);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(163);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(163);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(164);
 
 
 
@@ -48270,11 +49158,11 @@ function baseGetTag(value) {
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(162);
 
 
 /** Detect free variable `self`. */
@@ -48287,7 +49175,7 @@ var root = __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__["a" /* default */] || fr
 
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48299,7 +49187,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(10)))
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48353,7 +49241,7 @@ function getRawTag(value) {
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48382,11 +49270,11 @@ function objectToString(value) {
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(166);
 
 
 /** Built-in value references. */
@@ -48396,7 +49284,7 @@ var getPrototype = Object(__WEBPACK_IMPORTED_MODULE_0__overArg_js__["a" /* defau
 
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48418,7 +49306,7 @@ function overArg(func, transform) {
 
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48454,7 +49342,7 @@ function isObjectLike(value) {
 
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48476,7 +49364,7 @@ function whenMapStateToPropsIsMissing(mapStateToProps) {
 /* harmony default export */ __webpack_exports__["a"] = ([whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing]);
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48533,14 +49421,14 @@ function whenMergePropsIsOmitted(mergeProps) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* unused harmony export impureFinalPropsSelectorFactory */
 /* unused harmony export pureFinalPropsSelectorFactory */
 /* harmony export (immutable) */ __webpack_exports__["a"] = finalPropsSelectorFactory;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__verifySubselectors__ = __webpack_require__(170);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__verifySubselectors__ = __webpack_require__(171);
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 
@@ -48646,7 +49534,7 @@ function finalPropsSelectorFactory(dispatch, _ref2) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48671,7 +49559,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
 }
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48841,7 +49729,7 @@ var propTypes = {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48857,7 +49745,7 @@ var propTypes = {
 
 var _assign = __webpack_require__(28);
 
-var emptyObject = __webpack_require__(173);
+var emptyObject = __webpack_require__(174);
 var _invariant = __webpack_require__(45);
 
 if (process.env.NODE_ENV !== 'production') {
@@ -49775,7 +50663,7 @@ module.exports = factory;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49801,7 +50689,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49821,7 +50709,7 @@ var invariant = __webpack_require__(45);
 var warning = __webpack_require__(55);
 
 var ReactPropTypesSecret = __webpack_require__(57);
-var checkPropTypes = __webpack_require__(175);
+var checkPropTypes = __webpack_require__(176);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -50321,7 +51209,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50390,7 +51278,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 176 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50456,7 +51344,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 177 */
+/* 178 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50533,7 +51421,7 @@ function computeChangedRoutes(prevState, nextState) {
 /* harmony default export */ __webpack_exports__["a"] = (computeChangedRoutes);
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50697,7 +51585,7 @@ function getTransitionUtils() {
 }
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50850,7 +51738,7 @@ function isActive(_ref, indexOnly, currentLocation, routes, params) {
 }
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50892,7 +51780,7 @@ function getComponents(nextState, callback) {
 /* harmony default export */ __webpack_exports__["a"] = (getComponents);
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51145,7 +52033,7 @@ function matchRoutes(routes, location, callback, remainingPathname) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51173,7 +52061,7 @@ function getRouteParams(route, params) {
 /* harmony default export */ __webpack_exports__["a"] = (getRouteParams);
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51202,7 +52090,7 @@ var IndexLink = __WEBPACK_IMPORTED_MODULE_1_create_react_class___default()({
 /* harmony default export */ __webpack_exports__["a"] = (IndexLink);
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51278,7 +52166,7 @@ function withRouter(WrappedComponent, options) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51334,7 +52222,7 @@ var IndexRedirect = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51391,7 +52279,7 @@ var IndexRoute = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51445,7 +52333,7 @@ var Route = __WEBPACK_IMPORTED_MODULE_0_create_react_class___default()({
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51515,12 +52403,12 @@ function match(_ref, callback) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strictUriEncode = __webpack_require__(190);
+var strictUriEncode = __webpack_require__(191);
 var objectAssign = __webpack_require__(28);
 
 function encoderForArrayFormat(opts) {
@@ -51727,7 +52615,7 @@ exports.stringify = function (obj, opts) {
 
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51740,7 +52628,7 @@ module.exports = function (str) {
 
 
 /***/ }),
-/* 191 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51887,7 +52775,7 @@ exports.default = createMemoryHistory;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 192 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51949,7 +52837,7 @@ var loopAsync = exports.loopAsync = function loopAsync(turns, work, callback) {
 };
 
 /***/ }),
-/* 193 */
+/* 194 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52001,11 +52889,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
-/* 194 */
+/* 195 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createBrowserHistory__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createBrowserHistory__ = __webpack_require__(196);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createBrowserHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_history_lib_createBrowserHistory__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__createRouterHistory__ = __webpack_require__(104);
 
@@ -52013,7 +52901,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1__createRouterHistory__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_0_history_lib_createBrowserHistory___default.a));
 
 /***/ }),
-/* 195 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52033,7 +52921,7 @@ var _BrowserProtocol = __webpack_require__(65);
 
 var BrowserProtocol = _interopRequireWildcard(_BrowserProtocol);
 
-var _RefreshProtocol = __webpack_require__(196);
+var _RefreshProtocol = __webpack_require__(197);
 
 var RefreshProtocol = _interopRequireWildcard(_RefreshProtocol);
 
@@ -52113,7 +53001,7 @@ exports.default = createBrowserHistory;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 196 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52156,11 +53044,11 @@ var replaceLocation = exports.replaceLocation = function replaceLocation(locatio
 };
 
 /***/ }),
-/* 197 */
+/* 198 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createHashHistory__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createHashHistory__ = __webpack_require__(199);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_history_lib_createHashHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_history_lib_createHashHistory__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__createRouterHistory__ = __webpack_require__(104);
 
@@ -52168,7 +53056,7 @@ var replaceLocation = exports.replaceLocation = function replaceLocation(locatio
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1__createRouterHistory__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_0_history_lib_createHashHistory___default.a));
 
 /***/ }),
-/* 198 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52190,7 +53078,7 @@ var _ExecutionEnvironment = __webpack_require__(64);
 
 var _DOMUtils = __webpack_require__(47);
 
-var _HashProtocol = __webpack_require__(199);
+var _HashProtocol = __webpack_require__(200);
 
 var HashProtocol = _interopRequireWildcard(_HashProtocol);
 
@@ -52322,7 +53210,7 @@ exports.default = createHashHistory;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 199 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52465,7 +53353,7 @@ var replaceLocation = exports.replaceLocation = function replaceLocation(locatio
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 200 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52481,67 +53369,67 @@ var _helpers = __webpack_require__(1);
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _reducer = __webpack_require__(201);
+var _reducer = __webpack_require__(202);
 
 var _reducer2 = _interopRequireDefault(_reducer);
 
-var _reducer3 = __webpack_require__(202);
+var _reducer3 = __webpack_require__(203);
 
 var _reducer4 = _interopRequireDefault(_reducer3);
 
-var _reducer5 = __webpack_require__(203);
+var _reducer5 = __webpack_require__(204);
 
 var _reducer6 = _interopRequireDefault(_reducer5);
 
-var _reducer7 = __webpack_require__(204);
+var _reducer7 = __webpack_require__(205);
 
 var _reducer8 = _interopRequireDefault(_reducer7);
 
-var _reducer9 = __webpack_require__(205);
+var _reducer9 = __webpack_require__(206);
 
 var _reducer10 = _interopRequireDefault(_reducer9);
 
-var _reducer11 = __webpack_require__(206);
+var _reducer11 = __webpack_require__(207);
 
 var _reducer12 = _interopRequireDefault(_reducer11);
 
-var _reducer13 = __webpack_require__(207);
+var _reducer13 = __webpack_require__(208);
 
 var _reducer14 = _interopRequireDefault(_reducer13);
 
-var _reduxThunk = __webpack_require__(208);
+var _reduxThunk = __webpack_require__(209);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _middleware = __webpack_require__(209);
+var _middleware = __webpack_require__(210);
 
 var _middleware2 = _interopRequireDefault(_middleware);
 
-var _middleware3 = __webpack_require__(214);
+var _middleware3 = __webpack_require__(215);
 
 var _middleware4 = _interopRequireDefault(_middleware3);
 
-var _middleware5 = __webpack_require__(215);
+var _middleware5 = __webpack_require__(216);
 
 var _middleware6 = _interopRequireDefault(_middleware5);
 
-var _middleware7 = __webpack_require__(216);
+var _middleware7 = __webpack_require__(217);
 
 var _middleware8 = _interopRequireDefault(_middleware7);
 
-var _middleware9 = __webpack_require__(238);
+var _middleware9 = __webpack_require__(239);
 
 var _middleware10 = _interopRequireDefault(_middleware9);
 
-var _middleware11 = __webpack_require__(239);
+var _middleware11 = __webpack_require__(240);
 
 var _middleware12 = _interopRequireDefault(_middleware11);
 
-var _middleware13 = __webpack_require__(240);
+var _middleware13 = __webpack_require__(241);
 
 var _middleware14 = _interopRequireDefault(_middleware13);
 
-var _middleware15 = __webpack_require__(241);
+var _middleware15 = __webpack_require__(242);
 
 var _middleware16 = _interopRequireDefault(_middleware15);
 
@@ -52579,6 +53467,7 @@ var initialState = {
 	ui: {
 		theme: 'dark',
 		shortkeys_enabled: true,
+		disable_parallax: false,
 		allow_reporting: true,
 		slim_mode: false,
 		selected_tracks: [],
@@ -52638,7 +53527,7 @@ var store = (0, _redux.createStore)(reducers, initialState, (0, _redux.applyMidd
 exports.default = store;
 
 /***/ }),
-/* 201 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52718,50 +53607,6 @@ function reducer() {
             return Object.assign({}, core, { radio: radio });
 
         /**
-         * Categories
-         **/
-
-        case 'CATEGORY_LOADED':
-            var categories = Object.assign([], core.categories);
-
-            if (categories[action.key]) {
-                var category = Object.assign({}, categories[action.key], action.category);
-            } else {
-                var category = Object.assign({}, action.category);
-            }
-
-            categories[action.key] = category;
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORIES_LOADED':
-            var categories = Object.assign([], core.categories);
-
-            for (var i = 0; i < action.categories.length; i++) {
-                var key = 'category:' + action.categories[i].id;
-                if (categories[key]) {
-                    var category = Object.assign({}, categories[key], action.categories[i]);
-                } else {
-                    var category = Object.assign({}, action.categories[i]);
-                }
-                categories[key] = category;
-            }
-
-            return Object.assign({}, core, { categories: categories });
-
-        case 'CATEGORY_PLAYLISTS_LOADED':
-            var categories = Object.assign([], core.categories);
-            var playlists_uris = [];
-            if (categories[action.key].playlists_uris) playlists_uris = categories[action.key].playlists_uris;
-
-            var category = Object.assign({}, categories[action.key], {
-                playlists_uris: [].concat(_toConsumableArray(playlists_uris), _toConsumableArray(action.uris)),
-                playlists_more: action.more,
-                playlists_total: action.total
-            });
-            categories[action.key] = category;
-            return Object.assign({}, core, { categories: categories });
-
-        /**
          * Index updates
          * These actions are only ever called by middleware after we've digested one more many assets
          * and appended to their relevant index.
@@ -52769,56 +53614,148 @@ function reducer() {
 
         case 'TRACKS_LOADED':
             var tracks = Object.assign({}, core.tracks);
-            action.tracks.forEach(function (track) {
-                tracks[track.uri] = track;
-            });
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = action.tracks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var track = _step.value;
+
+                    tracks[track.uri] = track;
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
             return Object.assign({}, core, { tracks: tracks });
 
         case 'ALBUMS_LOADED':
             var albums = Object.assign({}, core.albums);
-            action.albums.forEach(function (album) {
-                albums[album.uri] = album;
-            });
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = action.albums[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var album = _step2.value;
+
+                    albums[album.uri] = album;
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
             return Object.assign({}, core, { albums: albums });
 
         case 'ARTISTS_LOADED':
             var artists = Object.assign({}, core.artists);
-            action.artists.forEach(function (artist) {
-                artists[artist.uri] = artist;
-            });
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = action.artists[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var artist = _step3.value;
+
+                    artists[artist.uri] = artist;
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
             return Object.assign({}, core, { artists: artists });
 
         case 'PLAYLISTS_LOADED':
             var playlists = Object.assign({}, core.playlists);
-            action.playlists.forEach(function (playlist) {
-                playlists[playlist.uri] = playlist;
-            });
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = action.playlists[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var playlist = _step4.value;
+
+                    playlists[playlist.uri] = playlist;
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
             return Object.assign({}, core, { playlists: playlists });
 
         case 'USERS_LOADED':
             var users = Object.assign({}, core.users);
-            action.users.forEach(function (user) {
-                users[user.uri] = user;
-            });
-            return Object.assign({}, core, { users: users });
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
 
-        case 'NEW_RELEASES_LOADED':
-            if (!action.uris) {
-                return Object.assign({}, core, {
-                    new_releases: null,
-                    new_releases_more: null,
-                    new_releases_total: null
-                });
+            try {
+                for (var _iterator5 = action.users[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var user = _step5.value;
+
+                    users[user.uri] = user;
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
             }
 
-            var new_releases = [];
-            if (core.new_releases) new_releases = Object.assign([], core.new_releases);
-
-            return Object.assign({}, core, {
-                new_releases: [].concat(_toConsumableArray(new_releases), _toConsumableArray(action.uris)),
-                new_releases_more: action.more,
-                new_releases_total: action.total
-            });
+            return Object.assign({}, core, { users: users });
 
         case 'ARTIST_ALBUMS_LOADED':
             var artists = Object.assign({}, core.artists);
@@ -52837,15 +53774,19 @@ function reducer() {
 
         case 'USER_PLAYLISTS_LOADED':
             var users = Object.assign({}, core.users);
-            var playlists_uris = [];
-            if (users[action.key] && users[action.key].playlists_uris) playlists_uris = users[action.key].playlists_uris;
+            var existing_playlists_uris = [];
+            if (users[action.uri] && users[action.uri].playlists_uris) {
+                existing_playlists_uris = users[action.uri].playlists_uris;
+            }
 
-            var artist = Object.assign({}, users[action.key], {
-                playlists_uris: [].concat(_toConsumableArray(playlists_uris), _toConsumableArray(action.uris)),
+            var playlists_uris = [].concat(_toConsumableArray(existing_playlists_uris), _toConsumableArray(helpers.arrayOf('uri', action.playlists)));
+
+            var user = Object.assign({}, users[action.uri], {
+                playlists_uris: playlists_uris,
                 playlists_more: action.more,
                 playlists_total: action.total
             });
-            users[action.key] = artist;
+            users[action.uri] = user;
             return Object.assign({}, core, { users: users });
 
         /**
@@ -52959,7 +53900,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 202 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53168,7 +54109,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 203 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53267,7 +54208,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 204 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53372,12 +54313,18 @@ function reducer() {
             });
 
         /**
-         * Asset-oriented actions
+         * Directories
+         * This also facilitates all backend-only music providers (SoundCloud, Dirble, etc)
          **/
+
+        case 'MOPIDY_DIRECTORY_FLUSH':
+            return Object.assign({}, mopidy, {
+                directory: null
+            });
 
         case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
-                directory: action.data
+                directory: action.directory
             });
 
         /**
@@ -53463,7 +54410,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 205 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53513,7 +54460,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53597,22 +54544,21 @@ function reducer() {
             });
 
         case 'SPOTIFY_ME_LOADED':
-            return Object.assign({}, spotify, { me: action.data });
+            return Object.assign({}, spotify, { me: action.me });
 
         case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { featured_playlists: action.data });
 
         case 'SPOTIFY_NEW_RELEASES_LOADED':
-            return Object.assign({}, spotify, { new_releases: action.data });
-
-        case 'SPOTIFY_NEW_RELEASES_LOADED_MORE':
-            console.log([].concat(_toConsumableArray(spotify.new_releases.items), _toConsumableArray(action.data.albums.items)));
-            return Object.assign({}, spotify, { new_releases: {
-                    href: action.data.albums.href,
-                    next: action.data.albums.next,
-                    previous: action.data.albums.previous,
-                    items: [].concat(_toConsumableArray(spotify.new_releases.items), _toConsumableArray(action.data.albums.items))
-                } });
+            var new_releases = [];
+            if (spotify.new_releases) {
+                new_releases = Object.assign([], spotify.new_releases);
+            }
+            return Object.assign({}, spotify, {
+                new_releases: helpers.removeDuplicates([].concat(_toConsumableArray(new_releases), _toConsumableArray(action.uris))),
+                new_releases_more: action.more,
+                new_releases_total: action.total
+            });
 
         case 'SPOTIFY_DISCOVER_LOADED':
             if (!action.data) {
@@ -53670,6 +54616,55 @@ function reducer() {
             return Object.assign({}, spotify, {
                 genres: action.genres
             });
+
+        /**
+         * Categories
+         **/
+
+        case 'SPOTIFY_CATEGORIES_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = action.categories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var category = _step.value;
+
+                    categories[category.uri] = category;
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return Object.assign({}, spotify, { categories: categories });
+
+        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            var playlists_uris = [];
+
+            if (categories[action.uri].playlists_uris) {
+                playlists_uris = categories[action.uri].playlists_uris;
+            }
+
+            var category = Object.assign({}, categories[action.uri], {
+                playlists_uris: [].concat(_toConsumableArray(playlists_uris), _toConsumableArray(action.uris)),
+                playlists_more: action.more,
+                playlists_total: action.total
+            });
+            categories[action.uri] = category;
+            return Object.assign({}, spotify, { categories: categories });
 
         /**
          * Library
@@ -53810,7 +54805,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53857,7 +54852,7 @@ function reducer() {
 }
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53886,7 +54881,7 @@ thunk.withExtraArgument = createThunkMiddleware;
 exports['default'] = thunk;
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53971,18 +54966,6 @@ var CoreMiddleware = function () {
                             state: exported_state
                         });
 
-                        // Log with Raven Sentry
-                        /*
-                        if (store.getState().ui.allow_reporting){
-                         Raven.captureException(
-                             new Error(message),
-                             {
-                                 extra: data
-                             }
-                         );
-                        }
-                        */
-
                         // Log with Analytics
                         if (store.getState().ui.allow_reporting) {
                             _reactGa2.default.event({
@@ -53993,8 +54976,12 @@ var CoreMiddleware = function () {
                             });
                         }
 
-                        store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
+                        if (action.show_notification) {
+                            store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
+                        }
+
                         console.error(message, description, data);
+
                         break;
 
                     case 'PLAY_PLAYLIST':
@@ -54232,32 +55219,26 @@ var CoreMiddleware = function () {
                         break;
 
                     /**
-                     * Queue and playback info
+                     * Asset Load commands
+                     *
+                     * These are called from views and other middleware to load
+                     * assets. This is where we can return already indexed records
+                     * where appropriate
                      **/
 
-                    case 'CURRENT_TRACK_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: [action.track]
-                        });
-
-                        next(action);
-                        break;
-
-                    case 'QUEUE_LOADED':
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: action.tracks
-                        });
-
-                        next(action);
-                        break;
-
                     case 'LOAD_TRACK':
+                        if (!action.force_reload && store.getState().core.tracks[action.uri]) {
+                            console.info('Loading "' + action.uri + '" from index');
+                            break;
+                        }
+
                         switch (helpers.uriSource(action.uri)) {
                             case 'spotify':
                                 store.dispatch(spotifyActions.getTrack(action.uri));
-                                store.dispatch(spotifyActions.following(action.uri));
+
+                                if (store.getState().spotify.me) {
+                                    store.dispatch(spotifyActions.following(action.uri));
+                                }
                                 break;
 
                             default:
@@ -54271,10 +55252,19 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'LOAD_ALBUM':
+
+                        if (!action.force_reload && store.getState().core.albums[action.uri] && store.getState().core.albums[action.uri].tracks_uris) {
+                            console.info('Loading "' + action.uri + '" from index');
+                            break;
+                        }
+
                         switch (helpers.uriSource(action.uri)) {
                             case 'spotify':
                                 store.dispatch(spotifyActions.getAlbum(action.uri));
-                                store.dispatch(spotifyActions.following(action.uri));
+
+                                if (store.getState().spotify.me) {
+                                    store.dispatch(spotifyActions.following(action.uri));
+                                }
                                 break;
 
                             default:
@@ -54288,10 +55278,19 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'LOAD_ARTIST':
+
+                        if (!action.force_reload && store.getState().core.artists[action.uri] && store.getState().core.artists[action.uri].albums_uris && store.getState().core.artists[action.uri].tracks_uris) {
+                            console.info('Loading "' + action.uri + '" from index');
+                            break;
+                        }
+
                         switch (helpers.uriSource(action.uri)) {
                             case 'spotify':
                                 store.dispatch(spotifyActions.getArtist(action.uri, true));
-                                store.dispatch(spotifyActions.following(action.uri));
+
+                                if (store.getState().spotify.me) {
+                                    store.dispatch(spotifyActions.following(action.uri));
+                                }
                                 break;
 
                             default:
@@ -54305,10 +55304,19 @@ var CoreMiddleware = function () {
                         break;
 
                     case 'LOAD_PLAYLIST':
+
+                        if (!action.force_reload && store.getState().core.playlists[action.uri] && store.getState().core.playlists[action.uri].tracks_uris) {
+                            console.info('Loading "' + action.uri + '" from index');
+                            break;
+                        }
+
                         switch (helpers.uriSource(action.uri)) {
                             case 'spotify':
                                 store.dispatch(spotifyActions.getPlaylist(action.uri));
-                                store.dispatch(spotifyActions.following(action.uri));
+
+                                if (store.getState().spotify.me) {
+                                    store.dispatch(spotifyActions.following(action.uri));
+                                }
                                 break;
 
                             default:
@@ -54321,31 +55329,162 @@ var CoreMiddleware = function () {
                         next(action);
                         break;
 
+                    case 'LOAD_USER':
+                        if (!action.force_reload && store.getState().core.users[action.uri] && store.getState().core.users[action.uri].playlists_uris) {
+                            console.info('Loading "' + action.uri + '" from index');
+                            break;
+                        }
+
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getUser(action.uri));
+
+                                if (store.getState().spotify.me) {
+                                    store.dispatch(spotifyActions.following(action.uri));
+                                }
+                                break;
+
+                            default:
+                                // No Mopidy mechanism for users
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
+                    case 'LOAD_USER_PLAYLISTS':
+                        if (!action.force_reload && store.getState().core.users[action.uri] && store.getState().core.users[action.uri].playlists_uris) {
+                            console.info('Loading "' + action.uri + '" playlists from index');
+                            break;
+                        }
+
+                        switch (helpers.uriSource(action.uri)) {
+                            case 'spotify':
+                                store.dispatch(spotifyActions.getUserPlaylists(action.uri));
+                                break;
+
+                            default:
+                                // No Mopidy mechanism for users
+                                break;
+                        }
+
+                        next(action);
+                        break;
+
                     /**
                      * Index actions
                      * These modify our asset indexes, which are used globally
                      **/
 
+                    case 'CURRENT_TRACK_LOADED':
+                        store.dispatch(coreActions.trackLoaded(action.track));
+                        action.track = helpers.formatTrack(action.track);
+                        next(action);
+                        break;
+
+                    case 'QUEUE_LOADED':
+                        store.dispatch(coreActions.tracksLoaded(action.tracks));
+                        action.tracks = helpers.formatTracks(action.tracks);
+                        next(action);
+                        break;
+
                     case 'TRACKS_LOADED':
                         var tracks_index = Object.assign({}, core.tracks);
+                        var artists_index = core.artists;
+                        var albums_index = core.albums;
                         var tracks_loaded = [];
+                        var artists_loaded = [];
+                        var albums_loaded = [];
 
-                        action.tracks.forEach(function (track) {
-                            track = helpers.formatTracks(track);
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
 
-                            if (tracks_index[track.uri] !== undefined) {
-                                track = Object.assign({}, tracks_index[track.uri], track);
+                        try {
+                            for (var _iterator = action.tracks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var raw_track = _step.value;
+
+                                var track = helpers.formatTrack(raw_track);
+
+                                if (tracks_index[track.uri] !== undefined) {
+                                    track = Object.assign({}, tracks_index[track.uri], track);
+                                }
+
+                                if (raw_track.album) {
+                                    track.album = helpers.formatSimpleObject(raw_track.album);
+
+                                    if (!albums_index[raw_track.album.uri]) {
+                                        albums_loaded.push(raw_track.album);
+                                    }
+
+                                    // Copy the images to the track
+                                    /*
+                                    if (raw_track.album.images){
+                                        track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
+                                    }*/
+                                }
+
+                                if (raw_track.artists && raw_track.artists.length > 0) {
+                                    track.artists = [];
+
+                                    var _iteratorNormalCompletion2 = true;
+                                    var _didIteratorError2 = false;
+                                    var _iteratorError2 = undefined;
+
+                                    try {
+                                        for (var _iterator2 = raw_track.artists[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                            var artist = _step2.value;
+
+                                            track.artists.push(helpers.formatSimpleObject(artist));
+
+                                            // Not already in our index, so let's add it
+                                            if (!artists_index[artist.uri]) {
+                                                artists_loaded.push(artist);
+                                            }
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError2 = true;
+                                        _iteratorError2 = err;
+                                    } finally {
+                                        try {
+                                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                                _iterator2.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError2) {
+                                                throw _iteratorError2;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                tracks_loaded.push(track);
                             }
-
-                            if (track.album && track.album.images && track.album.images.length > 0) {
-                                track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
-                                track.images = track.album.images;
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                    _iterator.return();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
                             }
+                        }
 
-                            tracks_loaded.push(track);
-                        });
+                        ;
 
                         action.tracks = tracks_loaded;
+
+                        if (artists_loaded.length > 0) {
+                            store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                        }
+                        if (albums_loaded.length > 0) {
+                            store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                        }
 
                         next(action);
                         break;
@@ -54353,38 +55492,92 @@ var CoreMiddleware = function () {
                     case 'ALBUMS_LOADED':
                         var albums_index = Object.assign({}, core.albums);
                         var albums_loaded = [];
+                        var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.albums.forEach(function (album) {
-                            helpers.formatAlbum(album);
+                        var _iteratorNormalCompletion3 = true;
+                        var _didIteratorError3 = false;
+                        var _iteratorError3 = undefined;
 
-                            if (albums_index[album.uri]) {
-                                album = Object.assign({}, albums_index[album.uri], album);
+                        try {
+                            for (var _iterator3 = action.albums[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                var raw_album = _step3.value;
+
+                                var album = helpers.formatAlbum(raw_album);
+
+                                if (albums_index[album.uri]) {
+                                    album = Object.assign({}, albums_index[album.uri], album);
+                                }
+                                /*
+                                                    if (raw_album.images && raw_album.images.length > 0){
+                                                        album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
+                                                    }*/
+
+                                if (raw_album.tracks) {
+                                    album.tracks_uris = [];
+
+                                    var _iteratorNormalCompletion4 = true;
+                                    var _didIteratorError4 = false;
+                                    var _iteratorError4 = undefined;
+
+                                    try {
+                                        for (var _iterator4 = raw_album.tracks[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                            var track = _step4.value;
+
+                                            if (!track.album) {
+                                                track.album = helpers.formatSimpleObject(album);
+                                            }
+                                            album.tracks_uris.push(track.uri);
+                                            tracks_loaded.push(track);
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError4 = true;
+                                        _iteratorError4 = err;
+                                    } finally {
+                                        try {
+                                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                                _iterator4.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError4) {
+                                                throw _iteratorError4;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (raw_album.artists) {
+                                    album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+                                    artists_loaded = [].concat(_toConsumableArray(artists_loaded), _toConsumableArray(raw_album.artists));
+                                }
+
+                                albums_loaded.push(album);
                             }
-
-                            if (album.images && album.images.length > 0) {
-                                album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
+                        } catch (err) {
+                            _didIteratorError3 = true;
+                            _iteratorError3 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                    _iterator3.return();
+                                }
+                            } finally {
+                                if (_didIteratorError3) {
+                                    throw _iteratorError3;
+                                }
                             }
+                        }
 
-                            // Load our tracks
-                            if (album.tracks) {
-                                var tracks = helpers.formatTracks(album.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                album.tracks_uris = tracks_uris;
-                                delete album.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
-                            }
-
-                            albums_loaded.push(album);
-                        });
+                        ;
 
                         action.albums = albums_loaded;
 
-                        // Trigger the tracks load action
-                        store.dispatch({
-                            type: 'TRACKS_LOADED',
-                            tracks: tracks_loaded
-                        });
+                        if (artists_loaded.length > 0) {
+                            store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                        }
+                        if (tracks_loaded.length > 0) {
+                            store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                        }
 
                         next(action);
                         break;
@@ -54394,34 +55587,61 @@ var CoreMiddleware = function () {
                         var artists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.artists.forEach(function (artist) {
-                            if (artists_index[artist.uri]) {
+                        var _iteratorNormalCompletion5 = true;
+                        var _didIteratorError5 = false;
+                        var _iteratorError5 = undefined;
 
-                                // if we've already got images, remove and add as additional_images
-                                // this is to prevent LastFM overwriting Spotify images
-                                if (artists_index[artist.uri].images) {
-                                    artist.images_additional = artist.images;
-                                    delete artist.images;
+                        try {
+                            for (var _iterator5 = action.artists[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                var raw_artist = _step5.value;
+
+                                var artist = helpers.formatArtist(raw_artist);
+
+                                // Already have an artist in the index
+                                if (artists_index[artist.uri]) {
+
+                                    // Don't replace existing images, instead add them as supplementary
+                                    // this is to prevent LastFM overwriting Spotify images
+                                    if (artists_index[artist.uri].images) {
+                                        artist.images_additional = artist.images;
+                                        delete artist.images;
+                                    }
+
+                                    artist = Object.assign({}, artists_index[artist.uri], artist);
                                 }
 
-                                artist = Object.assign({}, artists_index[artist.uri], artist);
-                            }
+                                // Migrate nested tracks objects into references to our tracks index
+                                if (raw_artist.tracks) {
+                                    var tracks = helpers.formatTracks(raw_artist.tracks);
+                                    var tracks_uris = helpers.arrayOf('uri', tracks);
+                                    artist.tracks_uris = tracks_uris;
+                                    tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                                }
 
-                            // Migrate nested tracks objects into references to our tracks index
-                            if (artist.tracks) {
-                                var tracks = helpers.formatTracks(artist.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                artist.tracks_uris = tracks_uris;
-                                delete artist.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                                artists_loaded.push(artist);
                             }
+                        } catch (err) {
+                            _didIteratorError5 = true;
+                            _iteratorError5 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                    _iterator5.return();
+                                }
+                            } finally {
+                                if (_didIteratorError5) {
+                                    throw _iteratorError5;
+                                }
+                            }
+                        }
 
-                            artists_loaded.push(artist);
-                        });
+                        ;
 
                         action.artists = artists_loaded;
 
-                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                        if (tracks_loaded.length > 0) {
+                            store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                        }
 
                         next(action);
                         break;
@@ -54431,42 +55651,66 @@ var CoreMiddleware = function () {
                         var playlists_loaded = [];
                         var tracks_loaded = [];
 
-                        action.playlists.forEach(function (playlist) {
+                        var _iteratorNormalCompletion6 = true;
+                        var _didIteratorError6 = false;
+                        var _iteratorError6 = undefined;
 
-                            // Detect editability
-                            switch (helpers.uriSource(playlist.uri)) {
+                        try {
+                            for (var _iterator6 = action.playlists[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                var playlist = _step6.value;
 
-                                case 'm3u':
-                                    playlist.can_edit = true;
-                                    break;
 
-                                case 'spotify':
-                                    if (store.getState().spotify.authorization && store.getState().spotify.me) {
-                                        playlist.can_edit = helpers.getFromUri('playlistowner', playlist.uri) == store.getState().spotify.me.id;
-                                    }
+                                playlist = helpers.formatPlaylist(playlist);
+
+                                // Detect editability
+                                switch (helpers.uriSource(playlist.uri)) {
+
+                                    case 'm3u':
+                                        playlist.can_edit = true;
+                                        break;
+
+                                    case 'spotify':
+                                        if (store.getState().spotify.authorization && store.getState().spotify.me) {
+                                            playlist.can_edit = playlist.owner.id == store.getState().spotify.me.id;
+                                        }
+                                }
+
+                                if (playlists_index[playlist.uri]) {
+                                    playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
+                                }
+
+                                // Load our tracks
+                                if (playlist.tracks) {
+                                    var tracks = helpers.formatTracks(playlist.tracks);
+                                    var tracks_uris = helpers.arrayOf('uri', tracks);
+                                    playlist.tracks_uris = tracks_uris;
+                                    delete playlist.tracks;
+                                    tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                                }
+
+                                // Update index
+                                playlists_loaded.push(playlist);
                             }
-
-                            if (playlists_index[playlist.uri]) {
-                                playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
+                        } catch (err) {
+                            _didIteratorError6 = true;
+                            _iteratorError6 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                    _iterator6.return();
+                                }
+                            } finally {
+                                if (_didIteratorError6) {
+                                    throw _iteratorError6;
+                                }
                             }
-
-                            // Load our tracks
-                            if (playlist.tracks) {
-                                var tracks = helpers.formatTracks(playlist.tracks);
-                                var tracks_uris = helpers.arrayOf('uri', tracks);
-                                playlist.tracks_uris = tracks_uris;
-                                delete playlist.tracks;
-                                tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
-                            }
-
-                            // Update index
-                            playlists_loaded.push(playlist);
-                        });
+                        }
 
                         action.playlists = playlists_loaded;
 
-                        // Load our tracks
-                        store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                        if (tracks_loaded.length > 0) {
+                            store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                        }
 
                         next(action);
                         break;
@@ -54475,17 +55719,44 @@ var CoreMiddleware = function () {
                         var users_index = Object.assign({}, core.users);
                         var users_loaded = [];
 
-                        action.users.forEach(function (user) {
+                        var _iteratorNormalCompletion7 = true;
+                        var _didIteratorError7 = false;
+                        var _iteratorError7 = undefined;
 
-                            if (users_index[user.uri]) {
-                                user = Object.assign({}, users_index[user.uri], user);
+                        try {
+                            for (var _iterator7 = action.users[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                                var user = _step7.value;
+
+                                user = helpers.formatUser(user);
+
+                                if (users_index[user.uri]) {
+                                    user = Object.assign({}, users_index[user.uri], user);
+                                }
+
+                                users_loaded.push(user);
                             }
-
-                            users_loaded.push(user);
-                        });
+                        } catch (err) {
+                            _didIteratorError7 = true;
+                            _iteratorError7 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                                    _iterator7.return();
+                                }
+                            } finally {
+                                if (_didIteratorError7) {
+                                    throw _iteratorError7;
+                                }
+                            }
+                        }
 
                         action.users = users_loaded;
 
+                        next(action);
+                        break;
+
+                    case 'USER_PLAYLISTS_LOADED':
+                        store.dispatch(coreActions.playlistsLoaded(action.playlists));
                         next(action);
                         break;
 
@@ -54514,12 +55785,29 @@ var CoreMiddleware = function () {
                             var records = action.records_data;
                         }
 
-                        if (action.records_type == 'track') {
-                            records = helpers.formatTracks(records);
+                        // TODO: To avoid double-looping, we could
+                        // run a single loop to extract both the formatted record
+                        // and the URI
+                        switch (action.records_type) {
+                            case 'track':
+                                records = helpers.formatTracks(records);
+                                break;
+                            case 'artist':
+                                records = helpers.formatArtists(records);
+                                break;
+                            case 'album':
+                                records = helpers.formatAlbums(records);
+                                break;
+                            case 'playlist':
+                                records = helpers.formatPlaylists(records);
+                                break;
+                            case 'user':
+                                records = helpers.formatUsers(records);
+                                break;
                         }
 
                         var records_type_plural = action.records_type + 's';
-                        var records_index = Object.assign({});
+                        var records_index = {};
                         var records_uris = helpers.arrayOf('uri', records);
 
                         // Append our records_uris array with our new records
@@ -54546,6 +55834,9 @@ var CoreMiddleware = function () {
                         records_action[records_type_plural] = records;
                         store.dispatch(records_action);
 
+                        //console.log(parent_action);
+                        //console.log(records_action);
+
                         next(action);
                         break;
 
@@ -54561,7 +55852,7 @@ var CoreMiddleware = function () {
 exports.default = CoreMiddleware;
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -54586,17 +55877,17 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(211)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(212)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(213)();
+  module.exports = __webpack_require__(214)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54615,7 +55906,7 @@ var warning = __webpack_require__(105);
 var assign = __webpack_require__(28);
 
 var ReactPropTypesSecret = __webpack_require__(68);
-var checkPropTypes = __webpack_require__(212);
+var checkPropTypes = __webpack_require__(213);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -55146,7 +56437,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55213,7 +56504,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55278,7 +56569,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55519,7 +56810,7 @@ exports.default = UIMiddleware;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55616,7 +56907,6 @@ var PusherMiddleware = function () {
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
                     case 'spotify_authorization_received':
-                        console.log(message);
                         store.dispatch(uiActions.createNotification({
                             type: 'spotify-authorization-received',
                             authorization: message.params.authorization,
@@ -55640,9 +56930,12 @@ var PusherMiddleware = function () {
                         window.location.reload(true);
                         break;
                     case 'upgrading':
+                    case 'upgrade_started':
+                        store.dispatch(mopidyActions.upgrading());
                         store.dispatch(uiActions.createNotification({ content: 'Upgrading...', type: 'info' }));
                         break;
                     case 'restarting':
+                        store.dispatch(mopidyActions.restarting());
                         store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
                         break;
                 }
@@ -55751,10 +57044,15 @@ var PusherMiddleware = function () {
                         }
 
                         store.dispatch(pusherActions.getConfig());
-                        store.dispatch(pusherActions.getVersion());
                         store.dispatch(pusherActions.getRadio());
                         store.dispatch(pusherActions.getQueueMetadata());
 
+                        // Give things a few moments to setup before we check for version.
+                        // This is because the server makes a GitHub request, which creates a [very] small delay
+                        // in subsequent requests.
+                        setTimeout(function () {
+                            store.dispatch(pusherActions.getVersion());
+                        }, 2000);
                         next(action);
                         break;
 
@@ -55980,10 +57278,6 @@ var PusherMiddleware = function () {
                     case 'PUSHER_VERSION':
                         if (store.getState().ui.allow_reporting) {
                             _reactGa2.default.event({ category: 'Pusher', action: 'Version', label: action.version.current });
-                        }
-
-                        if (action.version.upgrade_available) {
-                            store.dispatch(uiActions.createNotification({ content: 'Version ' + action.version.latest + ' is available. See settings to upgrade.' }));
                         }
                         next(action);
                         break;
@@ -56339,7 +57633,7 @@ var PusherMiddleware = function () {
 exports.default = PusherMiddleware;
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56353,7 +57647,7 @@ var _reactGa = __webpack_require__(17);
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
-var _mopidy = __webpack_require__(217);
+var _mopidy = __webpack_require__(218);
 
 var _mopidy2 = _interopRequireDefault(_mopidy);
 
@@ -56817,7 +58111,13 @@ var MopidyMiddleware = function () {
                                         enabled: true
                                     }
                                 });
-                                store.dispatch(spotifyActions.connect());
+                            } else {
+                                store.dispatch({
+                                    type: 'SPOTIFY_SET',
+                                    data: {
+                                        enabled: false
+                                    }
+                                });
                             }
 
                             // If we haven't customised our search schemes, add all to search
@@ -57857,53 +59157,145 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_GET_ALBUMS':
                         request(socket, store, 'library.lookup', { uris: action.uris }).then(function (response) {
-                            if (response.length <= 0) return;
+                            if (response.length <= 0) {
+                                return;
+                            }
 
-                            var albums = [];
+                            var albums_loaded = [];
+                            var artists_loaded = [];
+                            var tracks_loaded = [];
 
                             for (var uri in response) {
-                                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0] && response[uri][0].album) {
+                                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].album) {
+                                    var tracks = response[uri];
+
+                                    var artists_uris = [];
+                                    if (tracks[0].artists) {
+                                        var _iteratorNormalCompletion = true;
+                                        var _didIteratorError = false;
+                                        var _iteratorError = undefined;
+
+                                        try {
+                                            for (var _iterator = response[uri][0].artists[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                                var artist = _step.value;
+
+                                                artists_uris.push(artist.uri);
+                                                artists_loaded.push(artist);
+                                            }
+                                        } catch (err) {
+                                            _didIteratorError = true;
+                                            _iteratorError = err;
+                                        } finally {
+                                            try {
+                                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                                    _iterator.return();
+                                                }
+                                            } finally {
+                                                if (_didIteratorError) {
+                                                    throw _iteratorError;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    var tracks_uris = [];
+                                    var _iteratorNormalCompletion2 = true;
+                                    var _didIteratorError2 = false;
+                                    var _iteratorError2 = undefined;
+
+                                    try {
+                                        for (var _iterator2 = tracks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                            var track = _step2.value;
+
+                                            tracks_uris.push(track.uri);
+                                            tracks_loaded.push(track);
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError2 = true;
+                                        _iteratorError2 = err;
+                                    } finally {
+                                        try {
+                                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                                _iterator2.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError2) {
+                                                throw _iteratorError2;
+                                            }
+                                        }
+                                    }
+
                                     var album = Object.assign({}, {
                                         source: 'local',
-                                        artists: response[uri][0].artists,
-                                        tracks: response[uri],
-                                        tracks_total: response[uri].length
-                                    }, response[uri][0].album);
+                                        artists_uris: artists_uris,
+                                        tracks_uris: tracks_uris,
+                                        tracks_total: tracks_uris.length
+                                    }, tracks[0].album);
 
-                                    albums.push(album);
+                                    albums_loaded.push(album);
                                 }
                             }
 
-                            store.dispatch(coreActions.albumsLoaded(albums));
+                            store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                            store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                            store.dispatch(coreActions.tracksLoaded(tracks_loaded));
 
-                            // Re-run any consequential processes in 100ms. This allows a small window for other
+                            // Re-run any consequential processes in a few ms. This allows a small window for other
                             // server requests before our next batch. It's a little crude but it means the server isn't
                             // locked until we're completely done.
                             if (action.processor) {
                                 setTimeout(function () {
                                     store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data));
-                                }, 100);
+                                }, 10);
                             }
                         });
                         break;
 
                     case 'MOPIDY_GET_ALBUM':
                         request(socket, store, 'library.lookup', action.data).then(function (response) {
-                            if (response.length <= 0) {
+                            if (!response || response.length <= 0) {
                                 return;
                             }
 
-                            var album = Object.assign({}, { images: [] }, response[0].album, {
+                            var artists = [];
+                            if (response[0].artists) {
+                                var _iteratorNormalCompletion3 = true;
+                                var _didIteratorError3 = false;
+                                var _iteratorError3 = undefined;
+
+                                try {
+                                    for (var _iterator3 = response[0].artists[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                        var artist = _step3.value;
+
+                                        artists.push(artist);
+                                    }
+                                } catch (err) {
+                                    _didIteratorError3 = true;
+                                    _iteratorError3 = err;
+                                } finally {
+                                    try {
+                                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                            _iterator3.return();
+                                        }
+                                    } finally {
+                                        if (_didIteratorError3) {
+                                            throw _iteratorError3;
+                                        }
+                                    }
+                                }
+                            }
+
+                            var album = Object.assign({}, {
+                                images: []
+                            }, response[0].album, {
                                 source: 'local',
-                                artists: response[0].artists,
-                                tracks: response,
+                                artists_uris: helpers.arrayOf('uri', artists),
+                                tracks_uris: helpers.arrayOf('uri', response),
                                 tracks_total: response.length
                             });
 
-                            var uris = [];
-                            for (var i = 0; i < album.tracks.length; i++) {
-                                uris.push(album.tracks[i].uri);
-                            }
+                            store.dispatch(coreActions.albumLoaded(album));
+                            store.dispatch(coreActions.artistsLoaded(artists));
 
                             // load artwork from LastFM
                             if (album.images.length <= 0) {
@@ -57915,28 +59307,16 @@ var MopidyMiddleware = function () {
                                 }
                             }
 
-                            request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
+                            request(socket, store, 'library.lookup', { uris: album.tracks_uris }).then(function (response) {
+                                var tracks_loaded = [];
 
                                 for (var uri in response) {
                                     if (response.hasOwnProperty(uri)) {
-
-                                        // find the track reference, and drop in the full track data
-                                        var getByURI = function getByURI(trackReference) {
-                                            return track.uri == trackReference.uri;
-                                        };
-
-                                        var track = response[uri][0];
-                                        var trackReferences = album.tracks.filter(getByURI);
-
-                                        // there could be multiple instances of this track, so accommodate this
-                                        for (var j = 0; j < trackReferences.length; j++) {
-                                            var key = album.tracks.indexOf(trackReferences[j]);
-                                            album.tracks[key] = track;
-                                        }
+                                        tracks_loaded.push(response[uri][0]);
                                     }
                                 }
 
-                                store.dispatch(coreActions.albumLoaded(album));
+                                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
                             });
                         });
                         break;
@@ -58093,7 +59473,7 @@ var MopidyMiddleware = function () {
                         request(socket, store, 'tracklist.getTlTracks').then(function (response) {
                             store.dispatch({
                                 type: 'QUEUE_LOADED',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         });
                         break;
@@ -58102,7 +59482,7 @@ var MopidyMiddleware = function () {
                         request(socket, store, 'history.getHistory').then(function (response) {
                             store.dispatch({
                                 type: 'MOPIDY_QUEUE_HISTORY',
-                                tracks: helpers.formatTracks(response)
+                                tracks: response
                             });
                         });
                         break;
@@ -58116,26 +59496,28 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_CURRENT_TRACK_LOADED':
-                        var track = helpers.formatTracks(action.tl_track);
+                        var track = helpers.formatTrack(action.tl_track);
 
-                        // We don't have the track already in our index
-                        if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
+                        // We don't have the track already in our index, or we do but it's a partial record
+                        if (track.uri) {
+                            if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
 
-                            // We've got Spotify running, and it's a spotify track - go straight to the source!
-                            if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
-                                store.dispatch(spotifyActions.getTrack(track.uri));
+                                // We've got Spotify running, and it's a spotify track - go straight to the source!
+                                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                                    store.dispatch(spotifyActions.getTrack(track.uri));
 
-                                // Some other source, rely on Mopidy backends to do their work
-                            } else {
-                                store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                                    // Some other source, rely on Mopidy backends to do their work
+                                } else {
+                                    store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+                                }
                             }
-                        }
 
-                        store.dispatch({
-                            type: 'CURRENT_TRACK_LOADED',
-                            track: track,
-                            uri: track.uri
-                        });
+                            store.dispatch({
+                                type: 'CURRENT_TRACK_LOADED',
+                                track: track,
+                                uri: track.uri
+                            });
+                        }
                         break;
 
                     case 'MOPIDY_GET_NEXT_TRACK':
@@ -58146,7 +59528,7 @@ var MopidyMiddleware = function () {
                                 // We know it will be here, as the tlid refers to an item in this list
                                 var track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
 
-                                if (track) {
+                                if (track && track.uri) {
                                     store.dispatch({
                                         type: 'NEXT_TRACK_LOADED',
                                         uri: track.uri
@@ -58186,32 +59568,32 @@ var MopidyMiddleware = function () {
                      **/
 
                     case 'MOPIDY_GET_IMAGES':
+                        if (action.uris) {
+                            request(socket, store, 'library.getImages', { uris: action.uris }).then(function (response) {
+                                var records = [];
+                                for (var uri in response) {
+                                    if (response.hasOwnProperty(uri)) {
+                                        var images = response[uri];
+                                        images = helpers.digestMopidyImages(store.getState().mopidy, images);
 
-                        request(socket, store, 'library.getImages', { uris: action.uris }).then(function (response) {
-
-                            var records = [];
-                            for (var uri in response) {
-                                if (response.hasOwnProperty(uri)) {
-                                    var images = response[uri];
-                                    images = helpers.digestMopidyImages(store.getState().mopidy, images);
-
-                                    if (images && images.length > 0) {
-                                        records.push({
-                                            uri: uri,
-                                            images: images
-                                        });
-                                    } else {
-                                        store.dispatch(lastfmActions.getImages(action.context, uri));
+                                        if (images && images.length > 0) {
+                                            records.push({
+                                                uri: uri,
+                                                images: images
+                                            });
+                                        } else {
+                                            store.dispatch(lastfmActions.getImages(action.context, uri));
+                                        }
                                     }
                                 }
-                            }
 
-                            var action_data = {
-                                type: (action.context + '_LOADED').toUpperCase()
-                            };
-                            action_data[action.context] = records;
-                            store.dispatch(action_data);
-                        });
+                                var action_data = {
+                                    type: (action.context + '_LOADED').toUpperCase()
+                                };
+                                action_data[action.context] = records;
+                                store.dispatch(action_data);
+                            });
+                        }
 
                         next(action);
                         break;
@@ -58222,12 +59604,75 @@ var MopidyMiddleware = function () {
                      **/
 
                     case 'MOPIDY_GET_DIRECTORY':
-                        store.dispatch({ type: 'MOPIDY_DIRECTORY_LOADED', data: false });
+                        store.dispatch({
+                            type: 'MOPIDY_DIRECTORY_FLUSH'
+                        });
+
                         request(socket, store, 'library.browse', action.data).then(function (response) {
-                            store.dispatch({
-                                type: 'MOPIDY_DIRECTORY_LOADED',
-                                data: response
-                            });
+
+                            var tracks_uris = [];
+                            var subdirectories = [];
+
+                            var _iteratorNormalCompletion4 = true;
+                            var _didIteratorError4 = false;
+                            var _iteratorError4 = undefined;
+
+                            try {
+                                for (var _iterator4 = response[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                    var item = _step4.value;
+
+                                    if (item.type === "track") {
+                                        tracks_uris.push(item.uri);
+                                    } else {
+                                        subdirectories.push(item);
+                                    }
+                                }
+                            } catch (err) {
+                                _didIteratorError4 = true;
+                                _iteratorError4 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                        _iterator4.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError4) {
+                                        throw _iteratorError4;
+                                    }
+                                }
+                            }
+
+                            if (tracks_uris.length > 0) {
+                                request(socket, store, 'library.lookup', { uris: tracks_uris }).then(function (response) {
+                                    if (response.length <= 0) {
+                                        return;
+                                    }
+
+                                    var tracks = [];
+
+                                    for (var uri in response) {
+                                        if (response.hasOwnProperty(uri) && response[uri].length > 0) {
+                                            tracks.push(helpers.formatTrack(response[uri][0]));
+                                        }
+                                    }
+
+                                    store.dispatch({
+                                        type: 'MOPIDY_DIRECTORY_LOADED',
+                                        directory: {
+                                            tracks: tracks,
+                                            subdirectories: subdirectories
+                                        }
+                                    });
+                                });
+                            } else {
+                                store.dispatch({
+                                    type: 'MOPIDY_DIRECTORY_LOADED',
+                                    directory: {
+                                        tracks: tracks,
+                                        subdirectories: subdirectories
+                                    }
+                                });
+                            }
                         });
                         break;
 
@@ -58251,14 +59696,14 @@ exports.default = MopidyMiddleware;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*global module:true, require:false*/
 
-var bane = __webpack_require__(218);
-var websocket = __webpack_require__(220);
-var when = __webpack_require__(221);
+var bane = __webpack_require__(219);
+var websocket = __webpack_require__(221);
+var when = __webpack_require__(222);
 
 function Mopidy(settings) {
     if (!(this instanceof Mopidy)) {
@@ -58592,10 +60037,10 @@ module.exports = Mopidy;
 
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;(("function" === "function" && __webpack_require__(219) && function (m) { !(__WEBPACK_AMD_DEFINE_FACTORY__ = (m),
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;(("function" === "function" && __webpack_require__(220) && function (m) { !(__WEBPACK_AMD_DEFINE_FACTORY__ = (m),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
 				__WEBPACK_AMD_DEFINE_FACTORY__),
@@ -58776,7 +60221,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;(("function" =
 
 
 /***/ }),
-/* 219 */
+/* 220 */
 /***/ (function(module, exports) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
@@ -58785,14 +60230,14 @@ module.exports = __webpack_amd_options__;
 /* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports) {
 
 module.exports = { Client: window.WebSocket };
 
 
 /***/ }),
-/* 221 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -58806,22 +60251,22 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 (function(define) { 'use strict';
 !(__WEBPACK_AMD_DEFINE_RESULT__ = (function (require) {
 
-	var timed = __webpack_require__(222);
-	var array = __webpack_require__(224);
-	var flow = __webpack_require__(225);
-	var fold = __webpack_require__(226);
-	var inspect = __webpack_require__(227);
-	var generate = __webpack_require__(228);
-	var progress = __webpack_require__(229);
-	var withThis = __webpack_require__(230);
-	var unhandledRejection = __webpack_require__(231);
+	var timed = __webpack_require__(223);
+	var array = __webpack_require__(225);
+	var flow = __webpack_require__(226);
+	var fold = __webpack_require__(227);
+	var inspect = __webpack_require__(228);
+	var generate = __webpack_require__(229);
+	var progress = __webpack_require__(230);
+	var withThis = __webpack_require__(231);
+	var unhandledRejection = __webpack_require__(232);
 	var TimeoutError = __webpack_require__(106);
 
 	var Promise = [array, flow, fold, generate, progress,
 		inspect, withThis, timed, unhandledRejection]
 		.reduce(function(Promise, feature) {
 			return feature(Promise);
-		}, __webpack_require__(233));
+		}, __webpack_require__(234));
 
 	var apply = __webpack_require__(108)(Promise);
 
@@ -59027,7 +60472,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59112,13 +60557,13 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59424,7 +60869,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59591,7 +61036,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59625,7 +61070,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59652,7 +61097,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59724,7 +61169,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59755,7 +61200,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59800,7 +61245,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59811,7 +61256,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 !(__WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
 	var setTimer = __webpack_require__(69).setTimer;
-	var format = __webpack_require__(232);
+	var format = __webpack_require__(233);
 
 	return function unhandledRejection(Promise) {
 
@@ -59893,7 +61338,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59956,7 +61401,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -59966,8 +61411,8 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 (function(define) { 'use strict';
 !(__WEBPACK_AMD_DEFINE_RESULT__ = (function (require) {
 
-	var makePromise = __webpack_require__(234);
-	var Scheduler = __webpack_require__(235);
+	var makePromise = __webpack_require__(235);
+	var Scheduler = __webpack_require__(236);
 	var async = __webpack_require__(69).asap;
 
 	return makePromise({
@@ -59980,7 +61425,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -60943,7 +62388,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -61030,7 +62475,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports) {
 
 (function() {
@@ -61132,7 +62577,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports) {
 
 /*!
@@ -61159,7 +62604,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61180,10 +62625,13 @@ var LastfmMiddleware = function () {
                 switch (action.type) {
 
                     case 'LASTFM_ME_LOADED':
-                        var user = Object.assign({}, action.me, {
-                            uri: "lastfm:user:" + action.me.name
+                        var me = helpers.formatUser(action.me);
+                        Object.assign(me, {
+                            uri: "lastfm:user:" + me.name
                         });
-                        store.dispatch(coreActions.userLoaded(user));
+                        store.dispatch(coreActions.userLoaded(me));
+                        action.me = me;
+                        next(action);
                         break;
 
                     default:
@@ -61197,7 +62645,7 @@ var LastfmMiddleware = function () {
 exports.default = LastfmMiddleware;
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61219,18 +62667,26 @@ var GeniusMiddleware = function () {
                 switch (action.type) {
 
                     case 'GENIUS_ME_LOADED':
+                        var me = helpers.formatUser(action.me);
+                        Object.assign(me, {
+                            uri: "genius:user:" + me.id
+                        });
+
                         store.dispatch({
                             type: 'GENIUS_USER_LOADED',
                             user: action.me
                         });
+                        action.me = me;
                         next(action);
                         break;
 
                     case 'GENIUS_USER_LOADED':
-                        var user = Object.assign({}, action.user, {
-                            uri: "genius:user:" + action.user.id
+                        var user = helpers.formatUser(action.user);
+                        Object.assign(user, {
+                            uri: "genius:user:" + user.id
                         });
                         store.dispatch(coreActions.userLoaded(user));
+                        action.user = user;
                         next(action);
                         break;
 
@@ -61246,7 +62702,7 @@ var GeniusMiddleware = function () {
 exports.default = GeniusMiddleware;
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61280,7 +62736,7 @@ var SpotifyMiddleware = function () {
     return function (store) {
         return function (next) {
             return function (action) {
-                var state = store.getState();
+                var spotify = store.getState().spotify;
 
                 switch (action.type) {
 
@@ -61350,7 +62806,7 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                        var playlist = Object.assign({}, state.core.playlists[action.key]);
+                        var playlist = Object.assign({}, store.getState().core.playlists[action.key]);
                         store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes));
                         break;
 
@@ -61371,16 +62827,17 @@ var SpotifyMiddleware = function () {
                             type: 'ALBUMS_LOADED',
                             albums: action.data.albums.items
                         });
-                        store.dispatch({
-                            type: 'NEW_RELEASES_LOADED',
-                            uris: helpers.arrayOf('uri', action.data.albums.items),
-                            more: action.data.albums.next,
-                            total: action.data.albums.total
-                        });
+
+                        // Collate result into the three key values we want
+                        action.uris = helpers.arrayOf('uri', action.data.albums.items);
+                        action.more = action.data.albums.next;
+                        action.total = action.data.albums.total;
+
+                        // And pass on to our reducer
+                        next(action);
                         break;
 
                     case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-                        console.log(action);
                         store.dispatch(coreActions.albumsLoaded(action.data.items));
                         store.dispatch({
                             type: 'ARTIST_ALBUMS_LOADED',
@@ -61418,31 +62875,114 @@ var SpotifyMiddleware = function () {
                         });
                         break;
 
+                    /*
+                    
+                                case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+                                    var playlists = []
+                                    for (var i = 0; i < action.data.playlists.items.length; i++){
+                                        var playlist = Object.assign(
+                                            {},
+                                            action.data.playlists.items[i],
+                                            {
+                                                tracks_total: action.data.playlists.items[i].tracks.total
+                                            }
+                                        )
+                    
+                                        // remove our tracklist. It'll overwrite any full records otherwise
+                                        delete playlist.tracks
+                    
+                                        playlists.push(playlist)
+                                    }
+                    
+                                    store.dispatch({
+                                        type: 'PLAYLISTS_LOADED',
+                                        playlists: playlists
+                                    });
+                    
+                                    store.dispatch({
+                                        type: 'CATEGORY_PLAYLISTS_LOADED',
+                                        key: action.key,
+                                        uris: helpers.arrayOf('uri',playlists),
+                                        more: action.data.playlists.next,
+                                        total: action.data.playlists.total
+                                    });
+                                    break
+                                    */
+
                     case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
-                        var playlists = [];
-                        for (var i = 0; i < action.data.playlists.items.length; i++) {
-                            var playlist = Object.assign({}, action.data.playlists.items[i], {
-                                tracks_total: action.data.playlists.items[i].tracks.total
-                            });
+                        store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
 
-                            // remove our tracklist. It'll overwrite any full records otherwise
-                            delete playlist.tracks;
+                        action.uris = helpers.arrayOf('uri', action.playlists.items);
+                        action.more = action.playlists.next;
+                        action.total = action.playlists.total;
+                        delete action.playlists;
 
-                            playlists.push(playlist);
+                        // Upgrade our URIs
+                        action.uris = helpers.upgradePlaylistsUris(action.uris);
+
+                        next(action);
+                        break;
+
+                    case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+                        store.dispatch({
+                            type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                            uri: action.uri,
+                            playlists: action.data.playlists
+                        });
+                        break;
+
+                    case 'SPOTIFY_CATEGORY_LOADED':
+                        store.dispatch({
+                            type: 'SPOTIFY_CATEGORIES_LOADED',
+                            categories: [action.category]
+                        });
+                        break;
+
+                    case 'SPOTIFY_CATEGORIES_LOADED':
+                        var categories_index = Object.assign({}, spotify.categories);
+                        var categories_loaded = [];
+
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = action.categories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var raw_category = _step.value;
+
+                                var category = Object.assign({}, raw_category);
+
+                                if (!category.uri) {
+                                    category.uri = "category:" + category.id;
+                                }
+
+                                if (categories_index[category.uri] !== undefined) {
+                                    category = Object.assign({}, categories_index[category.uri], category);
+                                }
+
+                                if (category.icons) {
+                                    category.icons = helpers.formatImages(category.icons);
+                                }
+
+                                categories_loaded.push(category);
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                    _iterator.return();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
                         }
 
-                        store.dispatch({
-                            type: 'PLAYLISTS_LOADED',
-                            playlists: playlists
-                        });
-
-                        store.dispatch({
-                            type: 'CATEGORY_PLAYLISTS_LOADED',
-                            key: action.key,
-                            uris: helpers.arrayOf('uri', playlists),
-                            more: action.data.playlists.next,
-                            total: action.data.playlists.total
-                        });
+                        action.categories = categories_loaded;
+                        next(action);
                         break;
 
                     case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
@@ -61451,17 +62991,39 @@ var SpotifyMiddleware = function () {
 
                     case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                         var playlists = [];
-                        for (var i = 0; i < action.playlists.length; i++) {
-                            var playlist = Object.assign({}, action.playlists[i], {
-                                source: 'spotify',
-                                in_library: true, // assumed because we asked for library items
-                                tracks_total: action.playlists[i].tracks.total
-                            });
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
 
-                            // remove our tracklist. It'll overwrite any full records otherwise
-                            delete playlist.tracks;
+                        try {
+                            for (var _iterator2 = action.playlists[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var playlist = _step2.value;
 
-                            playlists.push(playlist);
+                                Object.assign(playlist, {
+                                    uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:"),
+                                    source: 'spotify',
+                                    in_library: true, // assumed because we asked for library items
+                                    tracks_total: playlist.tracks.total
+                                });
+
+                                // remove our tracklist. It'll overwrite any full records otherwise
+                                delete playlist.tracks;
+
+                                playlists.push(playlist);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
                         }
 
                         store.dispatch({
@@ -61642,30 +63204,21 @@ var SpotifyMiddleware = function () {
                         break;
 
                     case 'SPOTIFY_ME_LOADED':
+                        var me = Object.assign({}, helpers.formatUser(action.me));
 
-                        // We've loaded 'me' and we are Anonymous currently
-                        if (action.data && store.getState().pusher.username == 'Anonymous') {
-                            if (action.data.display_name !== null) {
-                                var name = action.data.display_name;
-                            } else {
-                                var name = action.data.id;
-                            }
-
-                            // Use 'me' name as my Pusher username
-                            store.dispatch(pusherActions.setUsername(name));
+                        // We are Anonymous currently so use 'me' name as my Pusher username
+                        if (store.getState().pusher.username == 'Anonymous') {
+                            store.dispatch(pusherActions.setUsername(me.name));
                         }
 
                         if (store.getState().ui.allow_reporting) {
-                            var hashed_username = (0, _md2.default)(action.data.id);
+                            var hashed_username = (0, _md2.default)(me.id);
                             _reactGa2.default.set({ userId: hashed_username });
                             _reactGa2.default.event({ category: 'Spotify', action: 'Authorization verified', label: hashed_username });
                         }
 
-                        store.dispatch({
-                            type: 'USERS_LOADED',
-                            users: [action.data]
-                        });
-
+                        store.dispatch(coreActions.userLoaded(me));
+                        action.me = me;
                         next(action);
                         break;
 
@@ -61681,7 +63234,7 @@ var SpotifyMiddleware = function () {
 exports.default = SpotifyMiddleware;
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61780,7 +63333,7 @@ var localstorageMiddleware = function () {
 
                     case 'SPOTIFY_ME_LOADED':
                         helpers.setStorage('spotify', {
-                            me: action.data
+                            me: action.me
                         });
                         break;
 
@@ -61890,7 +63443,7 @@ var localstorageMiddleware = function () {
 exports.default = localstorageMiddleware;
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61920,15 +63473,15 @@ var _reactGa = __webpack_require__(17);
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
-var _Sidebar = __webpack_require__(243);
+var _Sidebar = __webpack_require__(244);
 
 var _Sidebar2 = _interopRequireDefault(_Sidebar);
 
-var _PlaybackControls = __webpack_require__(286);
+var _PlaybackControls = __webpack_require__(287);
 
 var _PlaybackControls2 = _interopRequireDefault(_PlaybackControls);
 
-var _ContextMenu = __webpack_require__(288);
+var _ContextMenu = __webpack_require__(289);
 
 var _ContextMenu2 = _interopRequireDefault(_ContextMenu);
 
@@ -61943,6 +63496,10 @@ var _Notifications2 = _interopRequireDefault(_Notifications);
 var _DebugInfo = __webpack_require__(292);
 
 var _DebugInfo2 = _interopRequireDefault(_DebugInfo);
+
+var _ErrorBoundary = __webpack_require__(113);
+
+var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
 var _helpers = __webpack_require__(1);
 
@@ -62021,12 +63578,6 @@ var App = function (_React$Component) {
 
 			if (this.props.allow_reporting) {
 				_reactGa2.default.initialize('UA-64701652-3');
-
-				/*
-    if (Raven !== undefined){
-    	Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
-    }
-    */
 			}
 
 			// Fire up our services
@@ -62286,26 +63837,30 @@ var App = function (_React$Component) {
 				'div',
 				{ className: className },
 				_react2.default.createElement(
-					'div',
-					{ className: 'body' },
-					_react2.default.createElement(_Sidebar2.default, null),
-					_react2.default.createElement(_PlaybackControls2.default, null),
+					_ErrorBoundary2.default,
+					null,
 					_react2.default.createElement(
-						'main',
-						null,
-						this.props.children
-					)
-				),
-				_react2.default.createElement(_ContextMenu2.default, null),
-				_react2.default.createElement(_Dragger2.default, null),
-				_react2.default.createElement(_Notifications2.default, {
-					uiActions: this.props.uiActions,
-					spotifyActions: this.props.spotifyActions,
-					notifications: this.props.notifications,
-					processes: this.props.processes,
-					broadcasts: this.props.broadcasts
-				}),
-				this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
+						'div',
+						{ className: 'body' },
+						_react2.default.createElement(_Sidebar2.default, null),
+						_react2.default.createElement(_PlaybackControls2.default, null),
+						_react2.default.createElement(
+							'main',
+							null,
+							this.props.children
+						)
+					),
+					_react2.default.createElement(_ContextMenu2.default, null),
+					_react2.default.createElement(_Dragger2.default, null),
+					_react2.default.createElement(_Notifications2.default, {
+						uiActions: this.props.uiActions,
+						spotifyActions: this.props.spotifyActions,
+						notifications: this.props.notifications,
+						processes: this.props.processes,
+						broadcasts: this.props.broadcasts
+					}),
+					this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
+				)
 			);
 		}
 	}]);
@@ -62358,7 +63913,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62384,7 +63939,7 @@ var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Dropzones = __webpack_require__(283);
+var _Dropzones = __webpack_require__(284);
 
 var _Dropzones2 = _interopRequireDefault(_Dropzones);
 
@@ -62538,14 +64093,14 @@ var Sidebar = function (_React$Component) {
 								{ className: this.linkClassName('settings'), to: global.baseURL + "settings" },
 								_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
 								'Settings',
-								this.props.test_mode ? _react2.default.createElement(
+								this.props.update_available ? _react2.default.createElement(
 									'span',
 									{ className: 'status has-tooltip right-tooltip' },
-									_react2.default.createElement(_Icon2.default, { name: 'info', className: 'orange-text' }),
+									_react2.default.createElement(_Icon2.default, { name: 'cloud_download', className: 'green-text' }),
 									_react2.default.createElement(
 										'span',
 										{ className: 'tooltip' },
-										'Test mode active'
+										'Update available'
 									)
 								) : null,
 								!this.props.mopidy_connected || !this.props.pusher_connected ? _react2.default.createElement(
@@ -62600,6 +64155,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		pusher_connected: state.pusher.connected,
 		spotify_enabled: state.spotify.enabled,
 		spotify_authorized: state.spotify.authorization,
+		update_available: state.pusher.version && state.pusher.version.update_available ? state.pusher.version.update_available : false,
 		test_mode: state.ui.test_mode ? state.ui.test_mode : false,
 		dragger: state.ui.dragger
 	};
@@ -62617,7 +64173,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62639,7 +64195,7 @@ var _propTypes = __webpack_require__(16);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _screenReaderStyles = __webpack_require__(245);
+var _screenReaderStyles = __webpack_require__(246);
 
 var _screenReaderStyles2 = _interopRequireDefault(_screenReaderStyles);
 
@@ -62764,7 +64320,7 @@ exports.default = FontAwesome;
 module.exports = exports['default'];
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62786,46 +64342,46 @@ exports.default = {
 module.exports = exports['default'];
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./back.svg": 247,
-	"./broadcast.svg": 248,
-	"./cd.svg": 249,
-	"./chevron-left.svg": 250,
-	"./chevron-right.svg": 251,
-	"./close.svg": 252,
-	"./cog.svg": 253,
-	"./compass.svg": 254,
-	"./connection.svg": 255,
-	"./consume.svg": 256,
-	"./filter.svg": 257,
-	"./folder-open.svg": 258,
-	"./folder.svg": 259,
-	"./genius.svg": 260,
-	"./grid.svg": 261,
-	"./leaf.svg": 262,
-	"./list.svg": 263,
-	"./local.svg": 264,
-	"./mic.svg": 265,
-	"./music.svg": 266,
-	"./pause.svg": 267,
-	"./play-alt.svg": 268,
-	"./play.svg": 269,
-	"./playlist.svg": 270,
-	"./repeat.svg": 271,
-	"./search.svg": 272,
-	"./sections.svg": 273,
-	"./server.svg": 274,
-	"./shuffle.svg": 275,
-	"./skip.svg": 276,
-	"./soundcloud.svg": 277,
-	"./speaker-group.svg": 278,
-	"./speaker.svg": 279,
-	"./spotify.svg": 280,
-	"./star.svg": 281,
-	"./stop.svg": 282
+	"./back.svg": 248,
+	"./broadcast.svg": 249,
+	"./cd.svg": 250,
+	"./chevron-left.svg": 251,
+	"./chevron-right.svg": 252,
+	"./close.svg": 253,
+	"./cog.svg": 254,
+	"./compass.svg": 255,
+	"./connection.svg": 256,
+	"./consume.svg": 257,
+	"./filter.svg": 258,
+	"./folder-open.svg": 259,
+	"./folder.svg": 260,
+	"./genius.svg": 261,
+	"./grid.svg": 262,
+	"./leaf.svg": 263,
+	"./list.svg": 264,
+	"./local.svg": 265,
+	"./mic.svg": 266,
+	"./music.svg": 267,
+	"./pause.svg": 268,
+	"./play-alt.svg": 269,
+	"./play.svg": 270,
+	"./playlist.svg": 271,
+	"./repeat.svg": 272,
+	"./search.svg": 273,
+	"./sections.svg": 274,
+	"./server.svg": 275,
+	"./shuffle.svg": 276,
+	"./skip.svg": 277,
+	"./soundcloud.svg": 278,
+	"./speaker-group.svg": 279,
+	"./speaker.svg": 280,
+	"./spotify.svg": 281,
+	"./star.svg": 282,
+	"./stop.svg": 283
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -62841,226 +64397,226 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 246;
-
-/***/ }),
-/* 247 */
-/***/ (function(module, exports) {
-
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIvPgoJCTxwYXRoIGQ9Ik05LjUsMTJsOC41LDZWNkw5LjUsMTJ6IE0xNiwxNC4xNEwxMi45NywxMkwxNiw5Ljg2VjE0LjE0eiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
+webpackContext.id = 247;
 
 /***/ }),
 /* 248 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDkuM0M3LjMsOS4zLDYuNyw4LjcsNi43LDhTNy4zLDYuNyw4LDYuN1M5LjMsNy4zLDkuMyw4UzguNyw5LjMsOCw5LjN6Ii8+DQo8Zz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNOS42LDExLjNjLTAuMiwwLTAuNS0wLjEtMC42LTAuM2MtMC4yLTAuMy0wLjEtMC44LDAuMi0xYzAuNy0wLjQsMS4xLTEuMiwxLjEtMmMwLTAuOC0wLjQtMS42LTEuMS0yDQoJCUM4LjksNS44LDguOCw1LjQsOSw1YzAuMi0wLjMsMC42LTAuNCwxLTAuMmMxLjEsMC43LDEuOCwxLjksMS44LDMuMmMwLDEuMy0wLjcsMi41LTEuOCwzLjJDOS45LDExLjIsOS43LDExLjMsOS42LDExLjN6Ii8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNi40LDExLjNjLTAuMSwwLTAuMywwLTAuNC0wLjFDNC45LDEwLjUsNC4zLDkuMyw0LjMsOGMwLTEuMywwLjctMi41LDEuOC0zLjJDNi40LDQuNiw2LjgsNC43LDcsNQ0KCQljMC4yLDAuMywwLjEsMC44LTAuMiwxQzYuMSw2LjQsNS43LDcuMiw1LjcsOGMwLDAuOCwwLjQsMS42LDEuMSwyYzAuMywwLjIsMC40LDAuNiwwLjIsMUM2LjksMTEuMSw2LjYsMTEuMyw2LjQsMTEuM3oiLz4NCjwvZz4NCjxnPg0KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMS41LDEyLjljLTAuMiwwLTAuNC0wLjEtMC41LTAuM2MtMC4yLTAuMy0wLjItMC43LDAuMS0xYzEuMS0wLjksMS44LTIuMywxLjgtMy43YzAtMS40LTAuNi0yLjgtMS44LTMuNw0KCQljLTAuMy0wLjItMC4zLTAuNy0wLjEtMWMwLjItMC4zLDAuNy0wLjMsMS0wLjFjMS40LDEuMiwyLjMsMi45LDIuMyw0LjhjMCwxLjktMC44LDMuNi0yLjMsNC44QzExLjgsMTIuOSwxMS43LDEyLjksMTEuNSwxMi45eiIvPg0KPC9nPg0KPGc+DQoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTQuNSwxM2MtMC4yLDAtMC4zLTAuMS0wLjQtMC4yQzIuNiwxMS42LDEuOCw5LjksMS44LDhjMC0xLjksMC44LTMuNiwyLjMtNC44QzQuMywyLjksNC44LDMsNSwzLjMNCgkJYzAuMiwwLjMsMC4yLDAuNy0wLjEsMUMzLjgsNS4yLDMuMiw2LjUsMy4yLDhjMCwxLjUsMC43LDIuOCwxLjgsMy43YzAuMywwLjIsMC4zLDAuNywwLjEsMUM0LjksMTIuOSw0LjcsMTMsNC41LDEzeiIvPg0KPC9nPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIvPgoJCTxwYXRoIGQ9Ik05LjUsMTJsOC41LDZWNkw5LjUsMTJ6IE0xNiwxNC4xNEwxMi45NywxMkwxNiw5Ljg2VjE0LjE0eiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 249 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDAuN0M0LDAuNywwLjcsNCwwLjcsOGMwLDQsMy4zLDcuMyw3LjMsNy4zUzE1LjMsMTIsMTUuMyw4QzE1LjMsNCwxMiwwLjcsOCwwLjd6IE04LDYuNmMwLjgsMCwxLjQsMC42LDEuNCwxLjQNCglTOC44LDkuNCw4LDkuNFM2LjYsOC44LDYuNiw4UzcuMiw2LjYsOCw2LjZ6IE0xMy41LDUuOEwxMC42LDdjLTAuMy0wLjctMC44LTEuMy0xLjUtMS42bDEuMy0yLjhDMTEuOCwzLjIsMTIuOSw0LjQsMTMuNSw1Ljh6DQoJIE0yLjUsMTAuMUw1LjQsOWMwLjMsMC43LDAuOCwxLjMsMS41LDEuNmwtMS4zLDIuOEM0LjIsMTIuNywzLjEsMTEuNiwyLjUsMTAuMXoiLz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDkuM0M3LjMsOS4zLDYuNyw4LjcsNi43LDhTNy4zLDYuNyw4LDYuN1M5LjMsNy4zLDkuMyw4UzguNyw5LjMsOCw5LjN6Ii8+DQo8Zz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNOS42LDExLjNjLTAuMiwwLTAuNS0wLjEtMC42LTAuM2MtMC4yLTAuMy0wLjEtMC44LDAuMi0xYzAuNy0wLjQsMS4xLTEuMiwxLjEtMmMwLTAuOC0wLjQtMS42LTEuMS0yDQoJCUM4LjksNS44LDguOCw1LjQsOSw1YzAuMi0wLjMsMC42LTAuNCwxLTAuMmMxLjEsMC43LDEuOCwxLjksMS44LDMuMmMwLDEuMy0wLjcsMi41LTEuOCwzLjJDOS45LDExLjIsOS43LDExLjMsOS42LDExLjN6Ii8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNi40LDExLjNjLTAuMSwwLTAuMywwLTAuNC0wLjFDNC45LDEwLjUsNC4zLDkuMyw0LjMsOGMwLTEuMywwLjctMi41LDEuOC0zLjJDNi40LDQuNiw2LjgsNC43LDcsNQ0KCQljMC4yLDAuMywwLjEsMC44LTAuMiwxQzYuMSw2LjQsNS43LDcuMiw1LjcsOGMwLDAuOCwwLjQsMS42LDEuMSwyYzAuMywwLjIsMC40LDAuNiwwLjIsMUM2LjksMTEuMSw2LjYsMTEuMyw2LjQsMTEuM3oiLz4NCjwvZz4NCjxnPg0KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMS41LDEyLjljLTAuMiwwLTAuNC0wLjEtMC41LTAuM2MtMC4yLTAuMy0wLjItMC43LDAuMS0xYzEuMS0wLjksMS44LTIuMywxLjgtMy43YzAtMS40LTAuNi0yLjgtMS44LTMuNw0KCQljLTAuMy0wLjItMC4zLTAuNy0wLjEtMWMwLjItMC4zLDAuNy0wLjMsMS0wLjFjMS40LDEuMiwyLjMsMi45LDIuMyw0LjhjMCwxLjktMC44LDMuNi0yLjMsNC44QzExLjgsMTIuOSwxMS43LDEyLjksMTEuNSwxMi45eiIvPg0KPC9nPg0KPGc+DQoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTQuNSwxM2MtMC4yLDAtMC4zLTAuMS0wLjQtMC4yQzIuNiwxMS42LDEuOCw5LjksMS44LDhjMC0xLjksMC44LTMuNiwyLjMtNC44QzQuMywyLjksNC44LDMsNSwzLjMNCgkJYzAuMiwwLjMsMC4yLDAuNy0wLjEsMUMzLjgsNS4yLDMuMiw2LjUsMy4yLDhjMCwxLjUsMC43LDIuOCwxLjgsMy43YzAuMywwLjIsMC4zLDAuNywwLjEsMUM0LjksMTIuOSw0LjcsMTMsNC41LDEzeiIvPg0KPC9nPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 250 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik02LjIsNi45bDUuNy01LjdjMC40LTAuNCwwLjQtMC45LDAtMS4zYy0wLjQtMC40LTEtMC40LTEuMywwTDQuMiw2LjNDNCw2LjUsMy45LDYuNywzLjksNi45DQoJYzAsMC4yLDAuMSwwLjUsMC4zLDAuN2w2LjQsNi40YzAuMiwwLjIsMC40LDAuMywwLjcsMC4zczAuNS0wLjEsMC43LTAuM2MwLjQtMC40LDAuNC0wLjksMC0xLjNMNi4yLDYuOXoiLz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDAuN0M0LDAuNywwLjcsNCwwLjcsOGMwLDQsMy4zLDcuMyw3LjMsNy4zUzE1LjMsMTIsMTUuMyw4QzE1LjMsNCwxMiwwLjcsOCwwLjd6IE04LDYuNmMwLjgsMCwxLjQsMC42LDEuNCwxLjQNCglTOC44LDkuNCw4LDkuNFM2LjYsOC44LDYuNiw4UzcuMiw2LjYsOCw2LjZ6IE0xMy41LDUuOEwxMC42LDdjLTAuMy0wLjctMC44LTEuMy0xLjUtMS42bDEuMy0yLjhDMTEuOCwzLjIsMTIuOSw0LjQsMTMuNSw1Ljh6DQoJIE0yLjUsMTAuMUw1LjQsOWMwLjMsMC43LDAuOCwxLjMsMS41LDEuNmwtMS4zLDIuOEM0LjIsMTIuNywzLjEsMTEuNiwyLjUsMTAuMXoiLz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 251 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMS45LDcuM0w1LjUsMC45Yy0wLjQtMC40LTAuOS0wLjQtMS4zLDBjLTAuNCwwLjQtMC40LDAuOSwwLDEuM2w1LjcsNS43bC01LjcsNS43Yy0wLjQsMC40LTAuNCwwLjksMCwxLjMNCgljMC4yLDAuMiwwLjQsMC4zLDAuNywwLjNzMC41LTAuMSwwLjctMC4zbDYuNC02LjRjMC4yLTAuMiwwLjMtMC40LDAuMy0wLjdTMTIsNy41LDExLjksNy4zeiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik02LjIsNi45bDUuNy01LjdjMC40LTAuNCwwLjQtMC45LDAtMS4zYy0wLjQtMC40LTEtMC40LTEuMywwTDQuMiw2LjNDNCw2LjUsMy45LDYuNywzLjksNi45DQoJYzAsMC4yLDAuMSwwLjUsMC4zLDAuN2w2LjQsNi40YzAuMiwwLjIsMC40LDAuMywwLjcsMC4zczAuNS0wLjEsMC43LTAuM2MwLjQtMC40LDAuNC0wLjksMC0xLjNMNi4yLDYuOXoiLz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 252 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCA1MCA1MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTAgNTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIHBvaW50cz0iNDUsNyA0Myw1IDI1LDIzIDcsNSA1LDcgMjMsMjUgNSw0MyA3LDQ1IDI1LDI3IDQzLDQ1IDQ1LDQzIDI3LDI1ICIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMS45LDcuM0w1LjUsMC45Yy0wLjQtMC40LTAuOS0wLjQtMS4zLDBjLTAuNCwwLjQtMC40LDAuOSwwLDEuM2w1LjcsNS43bC01LjcsNS43Yy0wLjQsMC40LTAuNCwwLjksMCwxLjMNCgljMC4yLDAuMiwwLjQsMC4zLDAuNywwLjNzMC41LTAuMSwwLjctMC4zbDYuNC02LjRjMC4yLTAuMiwwLjMtMC40LDAuMy0wLjdTMTIsNy41LDExLjksNy4zeiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 253 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9IlJvdW5kZWQiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV81Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE5LjQzLDEyLjk4YzAuMDQtMC4zMiwwLjA3LTAuNjQsMC4wNy0wLjk4cy0wLjAzLTAuNjYtMC4wNy0wLjk4bDIuMTEtMS42NQoJCWMwLjE5LTAuMTUsMC4yNC0wLjQyLDAuMTItMC42NGwtMi0zLjQ2Yy0wLjEyLTAuMjItMC4zOS0wLjMtMC42MS0wLjIybC0yLjQ5LDFjLTAuNTItMC40LTEuMDgtMC43My0xLjY5LTAuOThsLTAuMzgtMi42NQoJCUMxNC40NiwyLjE4LDE0LjI1LDIsMTQsMmgtNEM5Ljc1LDIsOS41NCwyLjE4LDkuNTEsMi40Mkw5LjEzLDUuMDdDOC41Miw1LjMyLDcuOTYsNS42Niw3LjQ0LDYuMDVsLTIuNDktMQoJCWMtMC4yMy0wLjA5LTAuNDksMC0wLjYxLDAuMjJsLTIsMy40NkMyLjIxLDguOTUsMi4yNyw5LjIyLDIuNDYsOS4zN2wyLjExLDEuNjVDNC41MywxMS4zNCw0LjUsMTEuNjcsNC41LDEyczAuMDMsMC42NiwwLjA3LDAuOTgKCQlsLTIuMTEsMS42NWMtMC4xOSwwLjE1LTAuMjQsMC40Mi0wLjEyLDAuNjRsMiwzLjQ2YzAuMTIsMC4yMiwwLjM5LDAuMywwLjYxLDAuMjJsMi40OS0xYzAuNTIsMC40LDEuMDgsMC43MywxLjY5LDAuOThsMC4zOCwyLjY1CgkJQzkuNTQsMjEuODIsOS43NSwyMiwxMCwyMmg0YzAuMjUsMCwwLjQ2LTAuMTgsMC40OS0wLjQybDAuMzgtMi42NWMwLjYxLTAuMjUsMS4xNy0wLjU5LDEuNjktMC45OGwyLjQ5LDEKCQljMC4yMywwLjA5LDAuNDksMCwwLjYxLTAuMjJsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTIsMTUuNWMtMS45MywwLTMuNS0xLjU3LTMuNS0zLjUKCQlzMS41Ny0zLjUsMy41LTMuNXMzLjUsMS41NywzLjUsMy41UzEzLjkzLDE1LjUsMTIsMTUuNXoiLz4KPC9nPgo8ZyBpZD0iU2hhcnAiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV80Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE5LjQ0LDEyLjk5bC0wLjAxLDAuMDJjMC4wNC0wLjMzLDAuMDgtMC42NywwLjA4LTEuMDFjMC0wLjM0LTAuMDMtMC42Ni0wLjA3LTAuOTlsMC4wMSwwLjAybDIuNDQtMS45MgoJCWwtMi40My00LjIybC0yLjg3LDEuMTZsMC4wMSwwLjAxYy0wLjUyLTAuNC0xLjA5LTAuNzQtMS43MS0xaDAuMDFMMTQuNDQsMkg5LjU3TDkuMTMsNS4wN2gwLjAxYy0wLjYyLDAuMjYtMS4xOSwwLjYtMS43MSwxCgkJbDAuMDEtMC4wMUw0LjU2LDQuODlMMi4xMiw5LjExbDIuNDQsMS45MmwwLjAxLTAuMDJDNC41MywxMS4zNCw0LjUsMTEuNjYsNC41LDEyYzAsMC4zNCwwLjAzLDAuNjgsMC4wOCwxLjAxbC0wLjAxLTAuMDJsLTIuMSwxLjY1CgkJYy0wLjE5LDAuMTUtMC4zMywwLjI2LTAuMzMsMC4yNmwyLjQzLDQuMmwyLjg4LTEuMTVsLTAuMDItMC4wNGMwLjUzLDAuNDEsMS4xLDAuNzUsMS43MywxLjAxSDkuMTNMOS41OCwyMmg0Ljg1CgkJYzAsMCwwLjAzLTAuMTgsMC4wNi0wLjQybDAuMzgtMi42NWgtMC4wMWMwLjYyLTAuMjYsMS4yLTAuNiwxLjczLTEuMDFsLTAuMDIsMC4wNGwyLjg4LDEuMTVsMi40My00LjJjMCwwLTAuMTQtMC4xMi0wLjMzLTAuMjYKCQlMMTkuNDQsMTIuOTl6IE0xMiwxNS41Yy0xLjkzLDAtMy41LTEuNTctMy41LTMuNXMxLjU3LTMuNSwzLjUtMy41czMuNSwxLjU3LDMuNSwzLjVTMTMuOTMsMTUuNSwxMiwxNS41eiIvPgo8L2c+CjxnIGlkPSJPdXRsaW5lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyIiBkaXNwbGF5PSJub25lIj4KCTwvZz4KCTxnPgoJCTxwYXRoIGQ9Ik0xOS40MywxMi45OGMwLjA0LTAuMzIsMC4wNy0wLjY0LDAuMDctMC45OGMwLTAuMzQtMC4wMy0wLjY2LTAuMDctMC45OGwyLjExLTEuNjVjMC4xOS0wLjE1LDAuMjQtMC40MiwwLjEyLTAuNjRsLTItMy40NgoJCQljLTAuMDktMC4xNi0wLjI2LTAuMjUtMC40NC0wLjI1Yy0wLjA2LDAtMC4xMiwwLjAxLTAuMTcsMC4wM2wtMi40OSwxYy0wLjUyLTAuNC0xLjA4LTAuNzMtMS42OS0wLjk4bC0wLjM4LTIuNjUKCQkJQzE0LjQ2LDIuMTgsMTQuMjUsMiwxNCwyaC00QzkuNzUsMiw5LjU0LDIuMTgsOS41MSwyLjQyTDkuMTMsNS4wN0M4LjUyLDUuMzIsNy45Niw1LjY2LDcuNDQsNi4wNWwtMi40OS0xCgkJCUM0Ljg5LDUuMDMsNC44Myw1LjAyLDQuNzcsNS4wMmMtMC4xNywwLTAuMzQsMC4wOS0wLjQzLDAuMjVsLTIsMy40NkMyLjIxLDguOTUsMi4yNyw5LjIyLDIuNDYsOS4zN2wyLjExLDEuNjUKCQkJQzQuNTMsMTEuMzQsNC41LDExLjY3LDQuNSwxMmMwLDAuMzMsMC4wMywwLjY2LDAuMDcsMC45OGwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDYKCQkJYzAuMDksMC4xNiwwLjI2LDAuMjUsMC40NCwwLjI1YzAuMDYsMCwwLjEyLTAuMDEsMC4xNy0wLjAzbDIuNDktMWMwLjUyLDAuNCwxLjA4LDAuNzMsMS42OSwwLjk4bDAuMzgsMi42NQoJCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCQljMC4wNiwwLjAyLDAuMTIsMC4wMywwLjE4LDAuMDNjMC4xNywwLDAuMzQtMC4wOSwwLjQzLTAuMjVsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTcuNDUsMTEuMjcKCQkJYzAuMDQsMC4zMSwwLjA1LDAuNTIsMC4wNSwwLjczYzAsMC4yMS0wLjAyLDAuNDMtMC4wNSwwLjczbC0wLjE0LDEuMTNsMC44OSwwLjdsMS4wOCwwLjg0bC0wLjcsMS4yMWwtMS4yNy0wLjUxbC0xLjA0LTAuNDIKCQkJbC0wLjksMC42OGMtMC40MywwLjMyLTAuODQsMC41Ni0xLjI1LDAuNzNsLTEuMDYsMC40M2wtMC4xNiwxLjEzTDEyLjcsMjBIMTEuM2wtMC4xOS0xLjM1bC0wLjE2LTEuMTNsLTEuMDYtMC40MwoJCQljLTAuNDMtMC4xOC0wLjgzLTAuNDEtMS4yMy0wLjcxbC0wLjkxLTAuN2wtMS4wNiwwLjQzbC0xLjI3LDAuNTFsLTAuNy0xLjIxbDEuMDgtMC44NGwwLjg5LTAuN2wtMC4xNC0xLjEzCgkJCUM2LjUyLDEyLjQzLDYuNSwxMi4yLDYuNSwxMnMwLjAyLTAuNDMsMC4wNS0wLjczbDAuMTQtMS4xM0w1LjgsOS40NEw0LjcyLDguNmwwLjctMS4yMWwxLjI3LDAuNTFsMS4wNCwwLjQybDAuOS0wLjY4CgkJCWMwLjQzLTAuMzIsMC44NC0wLjU2LDEuMjUtMC43M2wxLjA2LTAuNDNsMC4xNi0xLjEzTDExLjMsNGgxLjM5bDAuMTksMS4zNWwwLjE2LDEuMTNsMS4wNiwwLjQzYzAuNDMsMC4xOCwwLjgzLDAuNDEsMS4yMywwLjcxCgkJCWwwLjkxLDAuN2wxLjA2LTAuNDNsMS4yNy0wLjUxbDAuNywxLjIxTDE4LjIsOS40NGwtMC44OSwwLjdMMTcuNDUsMTEuMjd6Ii8+CgkJPHBhdGggZD0iTTEyLDhjLTIuMjEsMC00LDEuNzktNCw0czEuNzksNCw0LDRzNC0xLjc5LDQtNFMxNC4yMSw4LDEyLDh6IE0xMiwxNGMtMS4xLDAtMi0wLjktMi0yczAuOS0yLDItMnMyLDAuOSwyLDIKCQkJUzEzLjEsMTQsMTIsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9IkR1b3RvbmUiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV8yIj4KCTwvZz4KCTxnIGRpc3BsYXk9ImlubGluZSI+CgkJPHBhdGggb3BhY2l0eT0iMC4zIiBkPSJNMTkuMjgsOC42bC0wLjctMS4yMWwtMS4yNywwLjUxbC0xLjA2LDAuNDNsLTAuOTEtMC43Yy0wLjM5LTAuMy0wLjgtMC41NC0xLjIzLTAuNzFsLTEuMDYtMC40M2wtMC4xNi0xLjEzCgkJCUwxMi43LDRIMTEuM2wtMC4xOSwxLjM1bC0wLjE2LDEuMTNMOS44OSw2LjkyQzkuNDgsNy4wOSw5LjA3LDcuMzMsOC42NCw3LjY1bC0wLjksMC42OEw2LjY5LDcuOTFMNS40Miw3LjM5TDQuNzIsOC42TDUuOCw5LjQ0CgkJCWwwLjg5LDAuN2wtMC4xNCwxLjEzQzYuNTIsMTEuNTcsNi41LDExLjgsNi41LDEyczAuMDIsMC40MywwLjA1LDAuNzNsMC4xNCwxLjEzbC0wLjg5LDAuN0w0LjcyLDE1LjRsMC43LDEuMjFsMS4yNy0wLjUxCgkJCWwxLjA2LTAuNDNsMC45MSwwLjdjMC4zOSwwLjMsMC44LDAuNTQsMS4yMywwLjcxbDEuMDYsMC40M2wwLjE2LDEuMTNMMTEuMywyMGgxLjM5bDAuMTktMS4zNWwwLjE2LTEuMTNsMS4wNi0wLjQzCgkJCWMwLjQxLTAuMTcsMC44Mi0wLjQxLDEuMjUtMC43M2wwLjktMC42OGwxLjA0LDAuNDJsMS4yNywwLjUxbDAuNy0xLjIxbC0xLjA4LTAuODRsLTAuODktMC43bDAuMTQtMS4xMwoJCQljMC4wNC0wLjMxLDAuMDUtMC41MiwwLjA1LTAuNzNjMC0wLjIxLTAuMDItMC40My0wLjA1LTAuNzNsLTAuMTQtMS4xM2wwLjg5LTAuN0wxOS4yOCw4LjZ6IE0xMiwxNmMtMi4yMSwwLTQtMS43OS00LTRzMS43OS00LDQtNAoJCQlzNCwxLjc5LDQsNFMxNC4yMSwxNiwxMiwxNnoiLz4KCQk8cGF0aCBkPSJNMTkuNDMsMTIuOThjMC4wNC0wLjMyLDAuMDctMC42NCwwLjA3LTAuOThjMC0wLjM0LTAuMDMtMC42Ni0wLjA3LTAuOThsMi4xMS0xLjY1YzAuMTktMC4xNSwwLjI0LTAuNDIsMC4xMi0wLjY0bC0yLTMuNDYKCQkJYy0wLjA5LTAuMTYtMC4yNi0wLjI1LTAuNDQtMC4yNWMtMC4wNiwwLTAuMTIsMC4wMS0wLjE3LDAuMDNsLTIuNDksMWMtMC41Mi0wLjQtMS4wOC0wLjczLTEuNjktMC45OGwtMC4zOC0yLjY1CgkJCUMxNC40NiwyLjE4LDE0LjI1LDIsMTQsMmgtNEM5Ljc1LDIsOS41NCwyLjE4LDkuNTEsMi40Mkw5LjEzLDUuMDdDOC41Miw1LjMyLDcuOTYsNS42Niw3LjQ0LDYuMDVsLTIuNDktMQoJCQlDNC44OSw1LjAzLDQuODMsNS4wMiw0Ljc3LDUuMDJjLTAuMTcsMC0wLjM0LDAuMDktMC40MywwLjI1bC0yLDMuNDZDMi4yMSw4Ljk1LDIuMjcsOS4yMiwyLjQ2LDkuMzdsMi4xMSwxLjY1CgkJCUM0LjUzLDExLjM0LDQuNSwxMS42Nyw0LjUsMTJzMC4wMywwLjY2LDAuMDcsMC45OGwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDYKCQkJYzAuMDksMC4xNiwwLjI2LDAuMjUsMC40NCwwLjI1YzAuMDYsMCwwLjEyLTAuMDEsMC4xNy0wLjAzbDIuNDktMWMwLjUyLDAuNCwxLjA4LDAuNzMsMS42OSwwLjk4bDAuMzgsMi42NQoJCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCQljMC4wNiwwLjAyLDAuMTIsMC4wMywwLjE4LDAuMDNjMC4xNywwLDAuMzQtMC4wOSwwLjQzLTAuMjVsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTcuNDUsMTEuMjcKCQkJYzAuMDQsMC4zMSwwLjA1LDAuNTIsMC4wNSwwLjczYzAsMC4yMS0wLjAyLDAuNDMtMC4wNSwwLjczbC0wLjE0LDEuMTNsMC44OSwwLjdsMS4wOCwwLjg0bC0wLjcsMS4yMWwtMS4yNy0wLjUxbC0xLjA0LTAuNDIKCQkJbC0wLjksMC42OGMtMC40MywwLjMyLTAuODQsMC41Ni0xLjI1LDAuNzNsLTEuMDYsMC40M2wtMC4xNiwxLjEzTDEyLjcsMjBIMTEuM2wtMC4xOS0xLjM1bC0wLjE2LTEuMTNsLTEuMDYtMC40MwoJCQljLTAuNDMtMC4xOC0wLjgzLTAuNDEtMS4yMy0wLjcxbC0wLjkxLTAuN2wtMS4wNiwwLjQzbC0xLjI3LDAuNTFsLTAuNy0xLjIxbDEuMDgtMC44NGwwLjg5LTAuN2wtMC4xNC0xLjEzCgkJCUM2LjUyLDEyLjQzLDYuNSwxMi4yLDYuNSwxMnMwLjAyLTAuNDMsMC4wNS0wLjczbDAuMTQtMS4xM0w1LjgsOS40NEw0LjcyLDguNmwwLjctMS4yMWwxLjI3LDAuNTFsMS4wNCwwLjQybDAuOS0wLjY4CgkJCWMwLjQzLTAuMzIsMC44NC0wLjU2LDEuMjUtMC43M2wxLjA2LTAuNDNsMC4xNi0xLjEzTDExLjMsNGgxLjM5bDAuMTksMS4zNWwwLjE2LDEuMTNsMS4wNiwwLjQzYzAuNDMsMC4xOCwwLjgzLDAuNDEsMS4yMywwLjcxCgkJCWwwLjkxLDAuN2wxLjA2LTAuNDNsMS4yNy0wLjUxbDAuNywxLjIxTDE4LjIsOS40NGwtMC44OSwwLjdMMTcuNDUsMTEuMjd6Ii8+CgkJPHBhdGggZD0iTTEyLDhjLTIuMjEsMC00LDEuNzktNCw0czEuNzksNCw0LDRzNC0xLjc5LDQtNFMxNC4yMSw4LDEyLDh6IE0xMiwxNGMtMS4xLDAtMi0wLjktMi0yczAuOS0yLDItMnMyLDAuOSwyLDIKCQkJUzEzLjEsMTQsMTIsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9Ik1hdGVyaWFsIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHkiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTkuNDMsMTIuOThjMC4wNC0wLjMyLDAuMDctMC42NCwwLjA3LTAuOThzLTAuMDMtMC42Ni0wLjA3LTAuOThsMi4xMS0xLjY1CgkJYzAuMTktMC4xNSwwLjI0LTAuNDIsMC4xMi0wLjY0bC0yLTMuNDZjLTAuMTItMC4yMi0wLjM5LTAuMy0wLjYxLTAuMjJsLTIuNDksMWMtMC41Mi0wLjQtMS4wOC0wLjczLTEuNjktMC45OGwtMC4zOC0yLjY1CgkJQzE0LjQ2LDIuMTgsMTQuMjUsMiwxNCwyaC00QzkuNzUsMiw5LjU0LDIuMTgsOS41MSwyLjQyTDkuMTMsNS4wN0M4LjUyLDUuMzIsNy45Niw1LjY2LDcuNDQsNi4wNWwtMi40OS0xCgkJYy0wLjIzLTAuMDktMC40OSwwLTAuNjEsMC4yMmwtMiwzLjQ2QzIuMjEsOC45NSwyLjI3LDkuMjIsMi40Niw5LjM3bDIuMTEsMS42NUM0LjUzLDExLjM0LDQuNSwxMS42Nyw0LjUsMTJzMC4wMywwLjY2LDAuMDcsMC45OAoJCWwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDZjMC4xMiwwLjIyLDAuMzksMC4zLDAuNjEsMC4yMmwyLjQ5LTFjMC41MiwwLjQsMS4wOCwwLjczLDEuNjksMC45OGwwLjM4LDIuNjUKCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCWMwLjIzLDAuMDksMC40OSwwLDAuNjEtMC4yMmwyLTMuNDZjMC4xMi0wLjIyLDAuMDctMC40OS0wLjEyLTAuNjRMMTkuNDMsMTIuOTh6IE0xMiwxNS41Yy0xLjkzLDAtMy41LTEuNTctMy41LTMuNQoJCXMxLjU3LTMuNSwzLjUtMy41czMuNSwxLjU3LDMuNSwzLjVTMTMuOTMsMTUuNSwxMiwxNS41eiIvPgo8L2c+Cjwvc3ZnPgo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCA1MCA1MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTAgNTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIHBvaW50cz0iNDUsNyA0Myw1IDI1LDIzIDcsNSA1LDcgMjMsMjUgNSw0MyA3LDQ1IDI1LDI3IDQzLDQ1IDQ1LDQzIDI3LDI1ICIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 254 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMS4wLjIsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik04LDAuN0M0LDAuNywwLjcsMy45LDAuNyw4YzAsNCwzLjIsNy4zLDcuMyw3LjNjNCwwLDcuMi0zLjIsNy4yLTcuM0MxNS4zLDMuOSwxMiwwLjcsOCwwLjd6IE0xMC4xLDEwbC02LjksMi43TDYsNS45DQoJCWw2LjgtMi44TDEwLjEsMTB6Ii8+DQoJPGNpcmNsZSBjeD0iOCIgY3k9IjcuOSIgcj0iMS4yIi8+DQo8L2c+DQo8L3N2Zz4NCg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9IlJvdW5kZWQiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV81Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE5LjQzLDEyLjk4YzAuMDQtMC4zMiwwLjA3LTAuNjQsMC4wNy0wLjk4cy0wLjAzLTAuNjYtMC4wNy0wLjk4bDIuMTEtMS42NQoJCWMwLjE5LTAuMTUsMC4yNC0wLjQyLDAuMTItMC42NGwtMi0zLjQ2Yy0wLjEyLTAuMjItMC4zOS0wLjMtMC42MS0wLjIybC0yLjQ5LDFjLTAuNTItMC40LTEuMDgtMC43My0xLjY5LTAuOThsLTAuMzgtMi42NQoJCUMxNC40NiwyLjE4LDE0LjI1LDIsMTQsMmgtNEM5Ljc1LDIsOS41NCwyLjE4LDkuNTEsMi40Mkw5LjEzLDUuMDdDOC41Miw1LjMyLDcuOTYsNS42Niw3LjQ0LDYuMDVsLTIuNDktMQoJCWMtMC4yMy0wLjA5LTAuNDksMC0wLjYxLDAuMjJsLTIsMy40NkMyLjIxLDguOTUsMi4yNyw5LjIyLDIuNDYsOS4zN2wyLjExLDEuNjVDNC41MywxMS4zNCw0LjUsMTEuNjcsNC41LDEyczAuMDMsMC42NiwwLjA3LDAuOTgKCQlsLTIuMTEsMS42NWMtMC4xOSwwLjE1LTAuMjQsMC40Mi0wLjEyLDAuNjRsMiwzLjQ2YzAuMTIsMC4yMiwwLjM5LDAuMywwLjYxLDAuMjJsMi40OS0xYzAuNTIsMC40LDEuMDgsMC43MywxLjY5LDAuOThsMC4zOCwyLjY1CgkJQzkuNTQsMjEuODIsOS43NSwyMiwxMCwyMmg0YzAuMjUsMCwwLjQ2LTAuMTgsMC40OS0wLjQybDAuMzgtMi42NWMwLjYxLTAuMjUsMS4xNy0wLjU5LDEuNjktMC45OGwyLjQ5LDEKCQljMC4yMywwLjA5LDAuNDksMCwwLjYxLTAuMjJsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTIsMTUuNWMtMS45MywwLTMuNS0xLjU3LTMuNS0zLjUKCQlzMS41Ny0zLjUsMy41LTMuNXMzLjUsMS41NywzLjUsMy41UzEzLjkzLDE1LjUsMTIsMTUuNXoiLz4KPC9nPgo8ZyBpZD0iU2hhcnAiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV80Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE5LjQ0LDEyLjk5bC0wLjAxLDAuMDJjMC4wNC0wLjMzLDAuMDgtMC42NywwLjA4LTEuMDFjMC0wLjM0LTAuMDMtMC42Ni0wLjA3LTAuOTlsMC4wMSwwLjAybDIuNDQtMS45MgoJCWwtMi40My00LjIybC0yLjg3LDEuMTZsMC4wMSwwLjAxYy0wLjUyLTAuNC0xLjA5LTAuNzQtMS43MS0xaDAuMDFMMTQuNDQsMkg5LjU3TDkuMTMsNS4wN2gwLjAxYy0wLjYyLDAuMjYtMS4xOSwwLjYtMS43MSwxCgkJbDAuMDEtMC4wMUw0LjU2LDQuODlMMi4xMiw5LjExbDIuNDQsMS45MmwwLjAxLTAuMDJDNC41MywxMS4zNCw0LjUsMTEuNjYsNC41LDEyYzAsMC4zNCwwLjAzLDAuNjgsMC4wOCwxLjAxbC0wLjAxLTAuMDJsLTIuMSwxLjY1CgkJYy0wLjE5LDAuMTUtMC4zMywwLjI2LTAuMzMsMC4yNmwyLjQzLDQuMmwyLjg4LTEuMTVsLTAuMDItMC4wNGMwLjUzLDAuNDEsMS4xLDAuNzUsMS43MywxLjAxSDkuMTNMOS41OCwyMmg0Ljg1CgkJYzAsMCwwLjAzLTAuMTgsMC4wNi0wLjQybDAuMzgtMi42NWgtMC4wMWMwLjYyLTAuMjYsMS4yLTAuNiwxLjczLTEuMDFsLTAuMDIsMC4wNGwyLjg4LDEuMTVsMi40My00LjJjMCwwLTAuMTQtMC4xMi0wLjMzLTAuMjYKCQlMMTkuNDQsMTIuOTl6IE0xMiwxNS41Yy0xLjkzLDAtMy41LTEuNTctMy41LTMuNXMxLjU3LTMuNSwzLjUtMy41czMuNSwxLjU3LDMuNSwzLjVTMTMuOTMsMTUuNSwxMiwxNS41eiIvPgo8L2c+CjxnIGlkPSJPdXRsaW5lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyIiBkaXNwbGF5PSJub25lIj4KCTwvZz4KCTxnPgoJCTxwYXRoIGQ9Ik0xOS40MywxMi45OGMwLjA0LTAuMzIsMC4wNy0wLjY0LDAuMDctMC45OGMwLTAuMzQtMC4wMy0wLjY2LTAuMDctMC45OGwyLjExLTEuNjVjMC4xOS0wLjE1LDAuMjQtMC40MiwwLjEyLTAuNjRsLTItMy40NgoJCQljLTAuMDktMC4xNi0wLjI2LTAuMjUtMC40NC0wLjI1Yy0wLjA2LDAtMC4xMiwwLjAxLTAuMTcsMC4wM2wtMi40OSwxYy0wLjUyLTAuNC0xLjA4LTAuNzMtMS42OS0wLjk4bC0wLjM4LTIuNjUKCQkJQzE0LjQ2LDIuMTgsMTQuMjUsMiwxNCwyaC00QzkuNzUsMiw5LjU0LDIuMTgsOS41MSwyLjQyTDkuMTMsNS4wN0M4LjUyLDUuMzIsNy45Niw1LjY2LDcuNDQsNi4wNWwtMi40OS0xCgkJCUM0Ljg5LDUuMDMsNC44Myw1LjAyLDQuNzcsNS4wMmMtMC4xNywwLTAuMzQsMC4wOS0wLjQzLDAuMjVsLTIsMy40NkMyLjIxLDguOTUsMi4yNyw5LjIyLDIuNDYsOS4zN2wyLjExLDEuNjUKCQkJQzQuNTMsMTEuMzQsNC41LDExLjY3LDQuNSwxMmMwLDAuMzMsMC4wMywwLjY2LDAuMDcsMC45OGwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDYKCQkJYzAuMDksMC4xNiwwLjI2LDAuMjUsMC40NCwwLjI1YzAuMDYsMCwwLjEyLTAuMDEsMC4xNy0wLjAzbDIuNDktMWMwLjUyLDAuNCwxLjA4LDAuNzMsMS42OSwwLjk4bDAuMzgsMi42NQoJCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCQljMC4wNiwwLjAyLDAuMTIsMC4wMywwLjE4LDAuMDNjMC4xNywwLDAuMzQtMC4wOSwwLjQzLTAuMjVsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTcuNDUsMTEuMjcKCQkJYzAuMDQsMC4zMSwwLjA1LDAuNTIsMC4wNSwwLjczYzAsMC4yMS0wLjAyLDAuNDMtMC4wNSwwLjczbC0wLjE0LDEuMTNsMC44OSwwLjdsMS4wOCwwLjg0bC0wLjcsMS4yMWwtMS4yNy0wLjUxbC0xLjA0LTAuNDIKCQkJbC0wLjksMC42OGMtMC40MywwLjMyLTAuODQsMC41Ni0xLjI1LDAuNzNsLTEuMDYsMC40M2wtMC4xNiwxLjEzTDEyLjcsMjBIMTEuM2wtMC4xOS0xLjM1bC0wLjE2LTEuMTNsLTEuMDYtMC40MwoJCQljLTAuNDMtMC4xOC0wLjgzLTAuNDEtMS4yMy0wLjcxbC0wLjkxLTAuN2wtMS4wNiwwLjQzbC0xLjI3LDAuNTFsLTAuNy0xLjIxbDEuMDgtMC44NGwwLjg5LTAuN2wtMC4xNC0xLjEzCgkJCUM2LjUyLDEyLjQzLDYuNSwxMi4yLDYuNSwxMnMwLjAyLTAuNDMsMC4wNS0wLjczbDAuMTQtMS4xM0w1LjgsOS40NEw0LjcyLDguNmwwLjctMS4yMWwxLjI3LDAuNTFsMS4wNCwwLjQybDAuOS0wLjY4CgkJCWMwLjQzLTAuMzIsMC44NC0wLjU2LDEuMjUtMC43M2wxLjA2LTAuNDNsMC4xNi0xLjEzTDExLjMsNGgxLjM5bDAuMTksMS4zNWwwLjE2LDEuMTNsMS4wNiwwLjQzYzAuNDMsMC4xOCwwLjgzLDAuNDEsMS4yMywwLjcxCgkJCWwwLjkxLDAuN2wxLjA2LTAuNDNsMS4yNy0wLjUxbDAuNywxLjIxTDE4LjIsOS40NGwtMC44OSwwLjdMMTcuNDUsMTEuMjd6Ii8+CgkJPHBhdGggZD0iTTEyLDhjLTIuMjEsMC00LDEuNzktNCw0czEuNzksNCw0LDRzNC0xLjc5LDQtNFMxNC4yMSw4LDEyLDh6IE0xMiwxNGMtMS4xLDAtMi0wLjktMi0yczAuOS0yLDItMnMyLDAuOSwyLDIKCQkJUzEzLjEsMTQsMTIsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9IkR1b3RvbmUiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV8yIj4KCTwvZz4KCTxnIGRpc3BsYXk9ImlubGluZSI+CgkJPHBhdGggb3BhY2l0eT0iMC4zIiBkPSJNMTkuMjgsOC42bC0wLjctMS4yMWwtMS4yNywwLjUxbC0xLjA2LDAuNDNsLTAuOTEtMC43Yy0wLjM5LTAuMy0wLjgtMC41NC0xLjIzLTAuNzFsLTEuMDYtMC40M2wtMC4xNi0xLjEzCgkJCUwxMi43LDRIMTEuM2wtMC4xOSwxLjM1bC0wLjE2LDEuMTNMOS44OSw2LjkyQzkuNDgsNy4wOSw5LjA3LDcuMzMsOC42NCw3LjY1bC0wLjksMC42OEw2LjY5LDcuOTFMNS40Miw3LjM5TDQuNzIsOC42TDUuOCw5LjQ0CgkJCWwwLjg5LDAuN2wtMC4xNCwxLjEzQzYuNTIsMTEuNTcsNi41LDExLjgsNi41LDEyczAuMDIsMC40MywwLjA1LDAuNzNsMC4xNCwxLjEzbC0wLjg5LDAuN0w0LjcyLDE1LjRsMC43LDEuMjFsMS4yNy0wLjUxCgkJCWwxLjA2LTAuNDNsMC45MSwwLjdjMC4zOSwwLjMsMC44LDAuNTQsMS4yMywwLjcxbDEuMDYsMC40M2wwLjE2LDEuMTNMMTEuMywyMGgxLjM5bDAuMTktMS4zNWwwLjE2LTEuMTNsMS4wNi0wLjQzCgkJCWMwLjQxLTAuMTcsMC44Mi0wLjQxLDEuMjUtMC43M2wwLjktMC42OGwxLjA0LDAuNDJsMS4yNywwLjUxbDAuNy0xLjIxbC0xLjA4LTAuODRsLTAuODktMC43bDAuMTQtMS4xMwoJCQljMC4wNC0wLjMxLDAuMDUtMC41MiwwLjA1LTAuNzNjMC0wLjIxLTAuMDItMC40My0wLjA1LTAuNzNsLTAuMTQtMS4xM2wwLjg5LTAuN0wxOS4yOCw4LjZ6IE0xMiwxNmMtMi4yMSwwLTQtMS43OS00LTRzMS43OS00LDQtNAoJCQlzNCwxLjc5LDQsNFMxNC4yMSwxNiwxMiwxNnoiLz4KCQk8cGF0aCBkPSJNMTkuNDMsMTIuOThjMC4wNC0wLjMyLDAuMDctMC42NCwwLjA3LTAuOThjMC0wLjM0LTAuMDMtMC42Ni0wLjA3LTAuOThsMi4xMS0xLjY1YzAuMTktMC4xNSwwLjI0LTAuNDIsMC4xMi0wLjY0bC0yLTMuNDYKCQkJYy0wLjA5LTAuMTYtMC4yNi0wLjI1LTAuNDQtMC4yNWMtMC4wNiwwLTAuMTIsMC4wMS0wLjE3LDAuMDNsLTIuNDksMWMtMC41Mi0wLjQtMS4wOC0wLjczLTEuNjktMC45OGwtMC4zOC0yLjY1CgkJCUMxNC40NiwyLjE4LDE0LjI1LDIsMTQsMmgtNEM5Ljc1LDIsOS41NCwyLjE4LDkuNTEsMi40Mkw5LjEzLDUuMDdDOC41Miw1LjMyLDcuOTYsNS42Niw3LjQ0LDYuMDVsLTIuNDktMQoJCQlDNC44OSw1LjAzLDQuODMsNS4wMiw0Ljc3LDUuMDJjLTAuMTcsMC0wLjM0LDAuMDktMC40MywwLjI1bC0yLDMuNDZDMi4yMSw4Ljk1LDIuMjcsOS4yMiwyLjQ2LDkuMzdsMi4xMSwxLjY1CgkJCUM0LjUzLDExLjM0LDQuNSwxMS42Nyw0LjUsMTJzMC4wMywwLjY2LDAuMDcsMC45OGwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDYKCQkJYzAuMDksMC4xNiwwLjI2LDAuMjUsMC40NCwwLjI1YzAuMDYsMCwwLjEyLTAuMDEsMC4xNy0wLjAzbDIuNDktMWMwLjUyLDAuNCwxLjA4LDAuNzMsMS42OSwwLjk4bDAuMzgsMi42NQoJCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCQljMC4wNiwwLjAyLDAuMTIsMC4wMywwLjE4LDAuMDNjMC4xNywwLDAuMzQtMC4wOSwwLjQzLTAuMjVsMi0zLjQ2YzAuMTItMC4yMiwwLjA3LTAuNDktMC4xMi0wLjY0TDE5LjQzLDEyLjk4eiBNMTcuNDUsMTEuMjcKCQkJYzAuMDQsMC4zMSwwLjA1LDAuNTIsMC4wNSwwLjczYzAsMC4yMS0wLjAyLDAuNDMtMC4wNSwwLjczbC0wLjE0LDEuMTNsMC44OSwwLjdsMS4wOCwwLjg0bC0wLjcsMS4yMWwtMS4yNy0wLjUxbC0xLjA0LTAuNDIKCQkJbC0wLjksMC42OGMtMC40MywwLjMyLTAuODQsMC41Ni0xLjI1LDAuNzNsLTEuMDYsMC40M2wtMC4xNiwxLjEzTDEyLjcsMjBIMTEuM2wtMC4xOS0xLjM1bC0wLjE2LTEuMTNsLTEuMDYtMC40MwoJCQljLTAuNDMtMC4xOC0wLjgzLTAuNDEtMS4yMy0wLjcxbC0wLjkxLTAuN2wtMS4wNiwwLjQzbC0xLjI3LDAuNTFsLTAuNy0xLjIxbDEuMDgtMC44NGwwLjg5LTAuN2wtMC4xNC0xLjEzCgkJCUM2LjUyLDEyLjQzLDYuNSwxMi4yLDYuNSwxMnMwLjAyLTAuNDMsMC4wNS0wLjczbDAuMTQtMS4xM0w1LjgsOS40NEw0LjcyLDguNmwwLjctMS4yMWwxLjI3LDAuNTFsMS4wNCwwLjQybDAuOS0wLjY4CgkJCWMwLjQzLTAuMzIsMC44NC0wLjU2LDEuMjUtMC43M2wxLjA2LTAuNDNsMC4xNi0xLjEzTDExLjMsNGgxLjM5bDAuMTksMS4zNWwwLjE2LDEuMTNsMS4wNiwwLjQzYzAuNDMsMC4xOCwwLjgzLDAuNDEsMS4yMywwLjcxCgkJCWwwLjkxLDAuN2wxLjA2LTAuNDNsMS4yNy0wLjUxbDAuNywxLjIxTDE4LjIsOS40NGwtMC44OSwwLjdMMTcuNDUsMTEuMjd6Ii8+CgkJPHBhdGggZD0iTTEyLDhjLTIuMjEsMC00LDEuNzktNCw0czEuNzksNCw0LDRzNC0xLjc5LDQtNFMxNC4yMSw4LDEyLDh6IE0xMiwxNGMtMS4xLDAtMi0wLjktMi0yczAuOS0yLDItMnMyLDAuOSwyLDIKCQkJUzEzLjEsMTQsMTIsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9Ik1hdGVyaWFsIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHkiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTkuNDMsMTIuOThjMC4wNC0wLjMyLDAuMDctMC42NCwwLjA3LTAuOThzLTAuMDMtMC42Ni0wLjA3LTAuOThsMi4xMS0xLjY1CgkJYzAuMTktMC4xNSwwLjI0LTAuNDIsMC4xMi0wLjY0bC0yLTMuNDZjLTAuMTItMC4yMi0wLjM5LTAuMy0wLjYxLTAuMjJsLTIuNDksMWMtMC41Mi0wLjQtMS4wOC0wLjczLTEuNjktMC45OGwtMC4zOC0yLjY1CgkJQzE0LjQ2LDIuMTgsMTQuMjUsMiwxNCwyaC00QzkuNzUsMiw5LjU0LDIuMTgsOS41MSwyLjQyTDkuMTMsNS4wN0M4LjUyLDUuMzIsNy45Niw1LjY2LDcuNDQsNi4wNWwtMi40OS0xCgkJYy0wLjIzLTAuMDktMC40OSwwLTAuNjEsMC4yMmwtMiwzLjQ2QzIuMjEsOC45NSwyLjI3LDkuMjIsMi40Niw5LjM3bDIuMTEsMS42NUM0LjUzLDExLjM0LDQuNSwxMS42Nyw0LjUsMTJzMC4wMywwLjY2LDAuMDcsMC45OAoJCWwtMi4xMSwxLjY1Yy0wLjE5LDAuMTUtMC4yNCwwLjQyLTAuMTIsMC42NGwyLDMuNDZjMC4xMiwwLjIyLDAuMzksMC4zLDAuNjEsMC4yMmwyLjQ5LTFjMC41MiwwLjQsMS4wOCwwLjczLDEuNjksMC45OGwwLjM4LDIuNjUKCQlDOS41NCwyMS44Miw5Ljc1LDIyLDEwLDIyaDRjMC4yNSwwLDAuNDYtMC4xOCwwLjQ5LTAuNDJsMC4zOC0yLjY1YzAuNjEtMC4yNSwxLjE3LTAuNTksMS42OS0wLjk4bDIuNDksMQoJCWMwLjIzLDAuMDksMC40OSwwLDAuNjEtMC4yMmwyLTMuNDZjMC4xMi0wLjIyLDAuMDctMC40OS0wLjEyLTAuNjRMMTkuNDMsMTIuOTh6IE0xMiwxNS41Yy0xLjkzLDAtMy41LTEuNTctMy41LTMuNQoJCXMxLjU3LTMuNSwzLjUtMy41czMuNSwxLjU3LDMuNSwzLjVTMTMuOTMsMTUuNSwxMiwxNS41eiIvPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 255 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwb2x5Z29uIHBvaW50cz0iNS4zLDMuMSAyLjcsNi4zIDQuOCw2LjMgNC44LDEzLjIgNS44LDEzLjIgNS44LDYuMyA3LjgsNi4zIAkiLz4NCgk8cG9seWdvbiBwb2ludHM9IjExLjMsMTAgMTEuMywzLjEgMTAuMywzLjEgMTAuMywxMCA4LjIsMTAgMTAuOCwxMy4yIDEzLjMsMTAgCSIvPg0KPC9nPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMS4wLjIsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik04LDAuN0M0LDAuNywwLjcsMy45LDAuNyw4YzAsNCwzLjIsNy4zLDcuMyw3LjNjNCwwLDcuMi0zLjIsNy4yLTcuM0MxNS4zLDMuOSwxMiwwLjcsOCwwLjd6IE0xMC4xLDEwbC02LjksMi43TDYsNS45DQoJCWw2LjgtMi44TDEwLjEsMTB6Ii8+DQoJPGNpcmNsZSBjeD0iOCIgY3k9IjcuOSIgcj0iMS4yIi8+DQo8L2c+DQo8L3N2Zz4NCg=="
 
 /***/ }),
 /* 256 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cGF0aCBkPSJNMTYsNnY4aDN2OGgyVjJDMTguMjQsMiwxNiw0LjI0LDE2LDZ6Ii8+CgkJPHBhdGggZD0iTTExLDlIOVYySDd2N0g1VjJIM3Y3YzAsMi4yMSwxLjc5LDQsNCw0djloMnYtOWMyLjIxLDAsNC0xLjc5LDQtNFYyaC0yVjl6Ii8+Cgk8L2c+CjwvZz4KPC9zdmc+Cg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwb2x5Z29uIHBvaW50cz0iNS4zLDMuMSAyLjcsNi4zIDQuOCw2LjMgNC44LDEzLjIgNS44LDEzLjIgNS44LDYuMyA3LjgsNi4zIAkiLz4NCgk8cG9seWdvbiBwb2ludHM9IjExLjMsMTAgMTEuMywzLjEgMTAuMywzLjEgMTAuMywxMCA4LjIsMTAgMTAuOCwxMy4yIDEzLjMsMTAgCSIvPg0KPC9nPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 257 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZD0iTTEwLDE4aDR2LTJoLTRWMTh6IE0zLDZ2MmgxOFY2SDN6IE02LDEzaDEydi0ySDZWMTN6Ii8+CjwvZz4KPC9zdmc+Cg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cGF0aCBkPSJNMTYsNnY4aDN2OGgyVjJDMTguMjQsMiwxNiw0LjI0LDE2LDZ6Ii8+CgkJPHBhdGggZD0iTTExLDlIOVYySDd2N0g1VjJIM3Y3YzAsMi4yMSwxLjc5LDQsNCw0djloMnYtOWMyLjIxLDAsNC0xLjc5LDQtNFYyaC0yVjl6Ii8+Cgk8L2c+CjwvZz4KPC9zdmc+Cg=="
 
 /***/ }),
 /* 258 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMjAsNmgtOGwtMi0ySDRDMi45LDQsMi4wMSw0LjksMi4wMSw2TDIsMThjMCwxLjEsMC45LDIsMiwyaDE2YzEuMSwwLDItMC45LDItMlY4QzIyLDYuOSwyMS4xLDYsMjAsNnogTTIwLDE4SDRWOGgxNlYxOHoiCgkJLz4KPC9nPgo8L3N2Zz4K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZD0iTTEwLDE4aDR2LTJoLTRWMTh6IE0zLDZ2MmgxOFY2SDN6IE02LDEzaDEydi0ySDZWMTN6Ii8+CjwvZz4KPC9zdmc+Cg=="
 
 /***/ }),
 /* 259 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNiAxNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZD0iTTEzLjQsNC4ySDguM1YyLjhjMC0wLjctMC41LTEuMi0xLjItMS4ySDMuMkMyLjUsMS42LDIsMi4xLDIsMi44djEuNmMtMC40LDAuMi0wLjYsMC42LTAuNiwxdjcuN2MwLDAuNywwLjUsMS4yLDEuMiwxLjINCgloMTAuOGMwLjcsMCwxLjItMC41LDEuMi0xLjJWNS40QzE0LjYsNC43LDE0LjEsNC4yLDEzLjQsNC4yeiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMjAsNmgtOGwtMi0ySDRDMi45LDQsMi4wMSw0LjksMi4wMSw2TDIsMThjMCwxLjEsMC45LDIsMiwyaDE2YzEuMSwwLDItMC45LDItMlY4QzIyLDYuOSwyMS4xLDYsMjAsNnogTTIwLDE4SDRWOGgxNlYxOHoiCgkJLz4KPC9nPgo8L3N2Zz4K"
 
 /***/ }),
 /* 260 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxOTIgMTkyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxOTIgMTkyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTU0LjgsMzguNWMtMTAsMzMuNi01LjEsNjQuMywyMCw4OS40czU1LjksMjkuNyw4OS41LDIwLjJjLTE3LjcsMTcuNi0zOS4yLDI0LjMtNjMuNCwyMS42DQoJYy0zNS00LjEtNTkuNi0zMC4zLTY2LjYtNTkuNUMyNy4yLDgwLjgsMzkuNiw1MC45LDU0LjgsMzguNXoiLz4NCjxwYXRoIGZpbGw9IndoaXRlIiBkPSJNOTEsNDMuOWMyLjMtNC4xLDUuNS03LjYsOS4xLTEwLjdjMTcuMy0xNC43LDQzLjYtMTQuNyw2MS0wLjFjMi45LDIuNCw0LjUsNSw0LjEsOWMtMC40LDQuNi0wLjEsOS4zLTAuMSwxNC41DQoJYy02LjMsMC0xMi4zLDAuMS0xOC4yLTAuMWMtMC44LDAtMS42LTAuOC0yLjMtMS4zYy0xNC45LTEyLjctMzEuNy0xNi41LTUwLjUtMTAuOWMtMC44LDAuMi0xLjcsMC4zLTIuNSwwLjUNCglDOTEuNSw0NC42LDkxLjIsNDQuMiw5MSw0My45eiIvPg0KPHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xNDMsMTE4LjJjLTAuMS0yLjQtMC4yLTQuNi0wLjMtNy4zYy0xLjMtMC4xLTIuNi0wLjItMy44LTAuM2MtMy45LTAuMS03LjgsMC4yLTExLjctMC4xDQoJYy05LjMtMC41LTE2LjktOC4yLTE3LTE3LjFjLTAuMi05LjYsNi45LTE3LjEsMTctMTcuOWMwLjIsMC44LDAuNCwxLjYsMC41LDIuNWMyLDkuMyw5LDE1LDE4LjYsMTUuMWM0LjgsMC4xLDkuNiwwLDE0LjQsMA0KCWMxLjIsMCwyLjYsMC4xLDQuNCwwLjJjMCw0LjcsMC4xLDkuMi0wLjEsMTMuN2MwLDAuOC0wLjcsMS42LTEuMiwyLjNDMTU5LjcsMTEzLjMsMTQ5LjgsMTE3LjYsMTQzLDExOC4yeiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNiAxNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZD0iTTEzLjQsNC4ySDguM1YyLjhjMC0wLjctMC41LTEuMi0xLjItMS4ySDMuMkMyLjUsMS42LDIsMi4xLDIsMi44djEuNmMtMC40LDAuMi0wLjYsMC42LTAuNiwxdjcuN2MwLDAuNywwLjUsMS4yLDEuMiwxLjINCgloMTAuOGMwLjcsMCwxLjItMC41LDEuMi0xLjJWNS40QzE0LjYsNC43LDE0LjEsNC4yLDEzLjQsNC4yeiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 261 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNiAxNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHJlY3QgeD0iMiIgeT0iMS45IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQoJPHJlY3QgeD0iOS4xIiB5PSI5IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQoJPHJlY3QgeD0iMiIgeT0iOSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPg0KCTxyZWN0IHg9IjkuMSIgeT0iMS45IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQo8L2c+DQo8L3N2Zz4NCg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxOTIgMTkyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxOTIgMTkyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTU0LjgsMzguNWMtMTAsMzMuNi01LjEsNjQuMywyMCw4OS40czU1LjksMjkuNyw4OS41LDIwLjJjLTE3LjcsMTcuNi0zOS4yLDI0LjMtNjMuNCwyMS42DQoJYy0zNS00LjEtNTkuNi0zMC4zLTY2LjYtNTkuNUMyNy4yLDgwLjgsMzkuNiw1MC45LDU0LjgsMzguNXoiLz4NCjxwYXRoIGZpbGw9IndoaXRlIiBkPSJNOTEsNDMuOWMyLjMtNC4xLDUuNS03LjYsOS4xLTEwLjdjMTcuMy0xNC43LDQzLjYtMTQuNyw2MS0wLjFjMi45LDIuNCw0LjUsNSw0LjEsOWMtMC40LDQuNi0wLjEsOS4zLTAuMSwxNC41DQoJYy02LjMsMC0xMi4zLDAuMS0xOC4yLTAuMWMtMC44LDAtMS42LTAuOC0yLjMtMS4zYy0xNC45LTEyLjctMzEuNy0xNi41LTUwLjUtMTAuOWMtMC44LDAuMi0xLjcsMC4zLTIuNSwwLjUNCglDOTEuNSw0NC42LDkxLjIsNDQuMiw5MSw0My45eiIvPg0KPHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xNDMsMTE4LjJjLTAuMS0yLjQtMC4yLTQuNi0wLjMtNy4zYy0xLjMtMC4xLTIuNi0wLjItMy44LTAuM2MtMy45LTAuMS03LjgsMC4yLTExLjctMC4xDQoJYy05LjMtMC41LTE2LjktOC4yLTE3LTE3LjFjLTAuMi05LjYsNi45LTE3LjEsMTctMTcuOWMwLjIsMC44LDAuNCwxLjYsMC41LDIuNWMyLDkuMyw5LDE1LDE4LjYsMTUuMWM0LjgsMC4xLDkuNiwwLDE0LjQsMA0KCWMxLjIsMCwyLjYsMC4xLDQuNCwwLjJjMCw0LjcsMC4xLDkuMi0wLjEsMTMuN2MwLDAuOC0wLjcsMS42LTEuMiwyLjNDMTU5LjcsMTEzLjMsMTQ5LjgsMTE3LjYsMTQzLDExOC4yeiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 262 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xLjUsNC4xYzAsMCw0LjMtMy45LDguNC0xLjRjNC4xLDIuNCw1LjQsNS42LDMuNiw3LjlDMTEuNCw3LjQsMTAuMyw1LjgsNiw0LjVjMCwwLDYuOCw0LjMsOCw5LjNjLTAuMiwxLjEtMS4yLDAuMy0xLjIsMC4zDQoJbC0xLjEtMS44YzAsMC0yLjEsMS42LTQuNi0wLjVDMi45LDguMSw2LjIsNCwxLjUsNC4xeiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNiAxNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHJlY3QgeD0iMiIgeT0iMS45IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQoJPHJlY3QgeD0iOS4xIiB5PSI5IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQoJPHJlY3QgeD0iMiIgeT0iOSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPg0KCTxyZWN0IHg9IjkuMSIgeT0iMS45IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+DQo8L2c+DQo8L3N2Zz4NCg=="
 
 /***/ }),
 /* 263 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxyZWN0IHg9IjEuNyIgeT0iMi40IiBjbGFzcz0ic3QwIiB3aWR0aD0iMTIuNiIgaGVpZ2h0PSIxLjkiLz4NCgk8cmVjdCB4PSIxLjciIHk9IjciIGNsYXNzPSJzdDAiIHdpZHRoPSIxMi42IiBoZWlnaHQ9IjEuOSIvPg0KCTxyZWN0IHg9IjEuNyIgeT0iMTEuNiIgY2xhc3M9InN0MCIgd2lkdGg9IjEyLjYiIGhlaWdodD0iMS45Ii8+DQo8L2c+DQo8L3N2Zz4NCg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xLjUsNC4xYzAsMCw0LjMtMy45LDguNC0xLjRjNC4xLDIuNCw1LjQsNS42LDMuNiw3LjlDMTEuNCw3LjQsMTAuMyw1LjgsNiw0LjVjMCwwLDYuOCw0LjMsOCw5LjNjLTAuMiwxLjEtMS4yLDAuMy0xLjIsMC4zDQoJbC0xLjEtMS44YzAsMC0yLjEsMS42LTQuNi0wLjVDMi45LDguMSw2LjIsNCwxLjUsNC4xeiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 264 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgl2aWV3Qm94PSIwIDAgMTYgMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xNC4yNjgsNC4yOTNIOS42NUw4LjExLDIuNzU0SDMuNDk0djEuNTM5SDEuOTU1djkuMjM0aDEwLjc3M3YtMS41MzhoMS41MzlWNC4yOTNMMTQuMjY4LDQuMjkzeiBNMTMuNDk5LDExLjIxOQ0KCWgtMC43NzFWNS44MzJIOC4xMWwtMS41MzgtMS41NEg0LjI2NFYzLjUyM2gzLjUyOWwxLjUzOSwxLjUzOWg0LjE2N1YxMS4yMTl6Ii8+DQo8L3N2Zz4NCg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxyZWN0IHg9IjEuNyIgeT0iMi40IiBjbGFzcz0ic3QwIiB3aWR0aD0iMTIuNiIgaGVpZ2h0PSIxLjkiLz4NCgk8cmVjdCB4PSIxLjciIHk9IjciIGNsYXNzPSJzdDAiIHdpZHRoPSIxMi42IiBoZWlnaHQ9IjEuOSIvPg0KCTxyZWN0IHg9IjEuNyIgeT0iMTEuNiIgY2xhc3M9InN0MCIgd2lkdGg9IjEyLjYiIGhlaWdodD0iMS45Ii8+DQo8L2c+DQo8L3N2Zz4NCg=="
 
 /***/ }),
 /* 265 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik03LjQsNi4yQzcuMiw2LDYuOCw2LDYuNiw2LjJsLTUuMyw2LjJjLTAuMSwwLjEtMC4yLDAuMi0wLjIsMC40YzAsMC4yLDAuMSwwLjMsMC4yLDAuNGwxLjUsMS41YzAuMSwwLjEsMC4yLDAuMiwwLjQsMC4yDQoJCWMwLjEsMCwwLjMtMC4xLDAuNC0wLjFsNi4yLTUuM0M5LjksOS4zLDEwLDkuMiwxMCw5YzAtMC4yLTAuMS0wLjMtMC4yLTAuNEw3LjQsNi4yeiIvPg0KCTxwYXRoIGQ9Ik0xMy44LDIuMUMxMy4xLDEuNCwxMi4yLDEsMTEuMiwxYy0xLDAtMS45LDAuNC0yLjcsMS4xQzcuNywyLjksNy40LDQuMyw3LjQsNC40YzAsMC4yLDAsMC41LDAuMywwLjdsMy4xLDMuMQ0KCQljMC4xLDAuMSwwLjQsMC4zLDAuNywwLjNjMCwwLDAsMCwwLDBjMC4xLDAsMS42LTAuMywyLjItMS4xQzE1LjIsNiwxNS4yLDMuNiwxMy44LDIuMXoiLz4NCjwvZz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgl2aWV3Qm94PSIwIDAgMTYgMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xNC4yNjgsNC4yOTNIOS42NUw4LjExLDIuNzU0SDMuNDk0djEuNTM5SDEuOTU1djkuMjM0aDEwLjc3M3YtMS41MzhoMS41MzlWNC4yOTNMMTQuMjY4LDQuMjkzeiBNMTMuNDk5LDExLjIxOQ0KCWgtMC43NzFWNS44MzJIOC4xMWwtMS41MzgtMS41NEg0LjI2NFYzLjUyM2gzLjUyOWwxLjUzOSwxLjUzOWg0LjE2N1YxMS4yMTl6Ii8+DQo8L3N2Zz4NCg=="
 
 /***/ }),
 /* 266 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xNS4xLDAuNWMtMC4yLTAuMS0wLjQtMC4yLTAuNi0wLjFMNiwyLjRDNS43LDIuNSw1LjUsMi44LDUuNSwzLjF2Ni42QzUsOS40LDQuNCw5LjIsMy44LDkuMmMtMS43LDAtMy4xLDEuNC0zLjEsMy4xDQoJczEuNCwzLjEsMy4xLDMuMWMxLjcsMCwzLjEtMS40LDMuMS0zLjFWMy43TDE0LDJ2NS43Yy0wLjUtMC4zLTEuMS0wLjUtMS43LTAuNWMtMS43LDAtMy4xLDEuNC0zLjEsMy4xczEuNCwzLjEsMy4xLDMuMQ0KCXMzLjEtMS40LDMuMS0zLjFWMS4xQzE1LjQsMC45LDE1LjMsMC43LDE1LjEsMC41eiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik03LjQsNi4yQzcuMiw2LDYuOCw2LDYuNiw2LjJsLTUuMyw2LjJjLTAuMSwwLjEtMC4yLDAuMi0wLjIsMC40YzAsMC4yLDAuMSwwLjMsMC4yLDAuNGwxLjUsMS41YzAuMSwwLjEsMC4yLDAuMiwwLjQsMC4yDQoJCWMwLjEsMCwwLjMtMC4xLDAuNC0wLjFsNi4yLTUuM0M5LjksOS4zLDEwLDkuMiwxMCw5YzAtMC4yLTAuMS0wLjMtMC4yLTAuNEw3LjQsNi4yeiIvPg0KCTxwYXRoIGQ9Ik0xMy44LDIuMUMxMy4xLDEuNCwxMi4yLDEsMTEuMiwxYy0xLDAtMS45LDAuNC0yLjcsMS4xQzcuNywyLjksNy40LDQuMyw3LjQsNC40YzAsMC4yLDAsMC41LDAuMywwLjdsMy4xLDMuMQ0KCQljMC4xLDAuMSwwLjQsMC4zLDAuNywwLjNjMCwwLDAsMCwwLDBjMC4xLDAsMS42LTAuMywyLjItMS4xQzE1LjIsNiwxNS4yLDMuNiwxMy44LDIuMXoiLz4NCjwvZz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 267 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNNiwxOWg0VjVINlYxOXogTTE0LDV2MTRoNFY1SDE0eiIvPgo8L2c+Cjwvc3ZnPgo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xNS4xLDAuNWMtMC4yLTAuMS0wLjQtMC4yLTAuNi0wLjFMNiwyLjRDNS43LDIuNSw1LjUsMi44LDUuNSwzLjF2Ni42QzUsOS40LDQuNCw5LjIsMy44LDkuMmMtMS43LDAtMy4xLDEuNC0zLjEsMy4xDQoJczEuNCwzLjEsMy4xLDMuMWMxLjcsMCwzLjEtMS40LDMuMS0zLjFWMy43TDE0LDJ2NS43Yy0wLjUtMC4zLTEuMS0wLjUtMS43LTAuNWMtMS43LDAtMy4xLDEuNC0zLjEsMy4xczEuNCwzLjEsMy4xLDMuMQ0KCXMzLjEtMS40LDMuMS0zLjFWMS4xQzE1LjQsMC45LDE1LjMsMC43LDE1LjEsMC41eiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 268 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDMwNSAzMDUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwNSAzMDU7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJYTUxJRF80NjJfIj4NCgk8cGF0aCBpZD0iWE1MSURfNDYzXyIgZD0iTTEwOS41ODgsMjMwYzEuMDU5LDAsMi4xMzUtMC4wNjYsMy4yMDEtMC4xOThjMTQuMDQ5LTEuNzU0LDI0LjYwNy0xNC41NTgsMjMuNTcxLTI4LjU2MQ0KCQljLTAuMDAxLTAuMDI0LTAuMDAyLTAuMDQ3LTAuMDAzLTAuMDcxYzAuMDI1LTAuMTQ0LDAuMDM5LTAuMjkyLDAuMDM5LTAuNDQzdi03Ni4xOTRsNTQuOTkzLTEwLjIzN3Y1Ni4yMTkNCgkJYy0yLjk0Mi0wLjcyMi02LjA2Ny0wLjg5Ny05LjE2Ny0wLjUwOGMtMTQuMDg0LDEuNzQxLTI0LjY2NiwxNC41ODUtMjMuNTksMjguNjI4YzAuOTc2LDEyLjk0NywxMS41LDIyLjcxLDI0LjQ4MSwyMi43MQ0KCQljMS4wNjcsMCwyLjE1Mi0wLjA2OCwzLjIyNC0wLjIwMmMxNC4wNjItMS43NTMsMjQuNjQzLTE0LjU5NiwyMy41ODctMjguNjIzYy0wLjAwMi0wLjAyNC0wLjAwNC0wLjA0OC0wLjAwNi0wLjA3Mg0KCQljMC4wMi0wLjEyNCwwLjAyOS0wLjI1MSwwLjAyOS0wLjM4MVY3Ny45OTRsMC4wMjMtMC4yODhjMC4wNzUtMC45MDUtMC4zNjMtMS43NzEtMS4xMTktMi4yNzYNCgkJYy0wLjU3MS0wLjM4Mi0xLjI3NC0wLjUwMS0xLjkzNC0wLjM1N2MtMC4wMTIsMC4wMDItMC4wMjQsMC4wMDUtMC4wMzYsMC4wMDdsLTg2Ljk4MywxNC44NDljLTEuMjAxLDAuMjA1LTIuMDc5LDEuMjQ2LTIuMDc5LDIuNDY0DQoJCXY4Ni43OTNjLTIuOTUtMC43MjktNi4wNzQtMC45MDgtOS4xNjQtMC41MjFjLTE0LjA5LDEuNzM4LTI0LjY2NSwxNC41ODMtMjMuNTc0LDI4LjYzMUM4Ni4wNzIsMjIwLjI0LDk2LjYwNywyMzAuMDAxLDEwOS41ODgsMjMweg0KCQkiLz4NCgk8cGF0aCBpZD0iWE1MSURfNDY0XyIgZD0iTTE1Mi41LDMwNWM4NC4wODksMCwxNTIuNS02OC40MTEsMTUyLjUtMTUyLjVTMjM2LjU4OSwwLDE1Mi41LDBTMCw2OC40MTEsMCwxNTIuNVM2OC40MTEsMzA1LDE1Mi41LDMwNXoNCgkJIE0xNTIuNSwzNC45OTdjNjQuNzkxLDAsMTE3LjUwMyw1Mi43MTEsMTE3LjUwMywxMTcuNTAzYzAsNjQuNzkyLTUyLjcxMiwxMTcuNTA0LTExNy41MDMsMTE3LjUwNFMzNC45OTcsMjE3LjI5MiwzNC45OTcsMTUyLjUNCgkJQzM0Ljk5Nyw4Ny43MDksODcuNzA5LDM0Ljk5NywxNTIuNSwzNC45OTd6Ii8+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNNiwxOWg0VjVINlYxOXogTTE0LDV2MTRoNFY1SDE0eiIvPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 269 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTAsOC42NEwxNS4yNywxMkwxMCwxNS4zNlY4LjY0IE04LDV2MTRsMTEtN0w4LDVMOCw1eiIvPgo8L2c+Cjwvc3ZnPgo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDMwNSAzMDUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwNSAzMDU7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJYTUxJRF80NjJfIj4NCgk8cGF0aCBpZD0iWE1MSURfNDYzXyIgZD0iTTEwOS41ODgsMjMwYzEuMDU5LDAsMi4xMzUtMC4wNjYsMy4yMDEtMC4xOThjMTQuMDQ5LTEuNzU0LDI0LjYwNy0xNC41NTgsMjMuNTcxLTI4LjU2MQ0KCQljLTAuMDAxLTAuMDI0LTAuMDAyLTAuMDQ3LTAuMDAzLTAuMDcxYzAuMDI1LTAuMTQ0LDAuMDM5LTAuMjkyLDAuMDM5LTAuNDQzdi03Ni4xOTRsNTQuOTkzLTEwLjIzN3Y1Ni4yMTkNCgkJYy0yLjk0Mi0wLjcyMi02LjA2Ny0wLjg5Ny05LjE2Ny0wLjUwOGMtMTQuMDg0LDEuNzQxLTI0LjY2NiwxNC41ODUtMjMuNTksMjguNjI4YzAuOTc2LDEyLjk0NywxMS41LDIyLjcxLDI0LjQ4MSwyMi43MQ0KCQljMS4wNjcsMCwyLjE1Mi0wLjA2OCwzLjIyNC0wLjIwMmMxNC4wNjItMS43NTMsMjQuNjQzLTE0LjU5NiwyMy41ODctMjguNjIzYy0wLjAwMi0wLjAyNC0wLjAwNC0wLjA0OC0wLjAwNi0wLjA3Mg0KCQljMC4wMi0wLjEyNCwwLjAyOS0wLjI1MSwwLjAyOS0wLjM4MVY3Ny45OTRsMC4wMjMtMC4yODhjMC4wNzUtMC45MDUtMC4zNjMtMS43NzEtMS4xMTktMi4yNzYNCgkJYy0wLjU3MS0wLjM4Mi0xLjI3NC0wLjUwMS0xLjkzNC0wLjM1N2MtMC4wMTIsMC4wMDItMC4wMjQsMC4wMDUtMC4wMzYsMC4wMDdsLTg2Ljk4MywxNC44NDljLTEuMjAxLDAuMjA1LTIuMDc5LDEuMjQ2LTIuMDc5LDIuNDY0DQoJCXY4Ni43OTNjLTIuOTUtMC43MjktNi4wNzQtMC45MDgtOS4xNjQtMC41MjFjLTE0LjA5LDEuNzM4LTI0LjY2NSwxNC41ODMtMjMuNTc0LDI4LjYzMUM4Ni4wNzIsMjIwLjI0LDk2LjYwNywyMzAuMDAxLDEwOS41ODgsMjMweg0KCQkiLz4NCgk8cGF0aCBpZD0iWE1MSURfNDY0XyIgZD0iTTE1Mi41LDMwNWM4NC4wODksMCwxNTIuNS02OC40MTEsMTUyLjUtMTUyLjVTMjM2LjU4OSwwLDE1Mi41LDBTMCw2OC40MTEsMCwxNTIuNVM2OC40MTEsMzA1LDE1Mi41LDMwNXoNCgkJIE0xNTIuNSwzNC45OTdjNjQuNzkxLDAsMTE3LjUwMyw1Mi43MTEsMTE3LjUwMywxMTcuNTAzYzAsNjQuNzkyLTUyLjcxMiwxMTcuNTA0LTExNy41MDMsMTE3LjUwNFMzNC45OTcsMjE3LjI5MiwzNC45OTcsMTUyLjUNCgkJQzM0Ljk5Nyw4Ny43MDksODcuNzA5LDM0Ljk5NywxNTIuNSwzNC45OTd6Ii8+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg=="
 
 /***/ }),
 /* 270 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik0xMSwxLjFjLTAuMi0wLjItMC41LTAuMy0wLjgtMC4yQzEwLDEuMSw5LjgsMS4zLDkuOCwxLjZ2Ny42QzkuMyw4LjksOC43LDguNyw4LjEsOC43QzYuNCw4LjcsNSwxMC4xLDUsMTEuOA0KCQlzMS40LDMuMSwzLjEsMy4xYzEuNywwLDMuMS0xLjQsMy4xLTMuMVYzLjNMMTQsNi4ybDEtMUwxMSwxLjF6Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSIxLjIiIHdpZHRoPSI2LjEiIGhlaWdodD0iMS40Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSIzLjYiIHdpZHRoPSI2LjEiIGhlaWdodD0iMS40Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSI2IiB3aWR0aD0iNi4xIiBoZWlnaHQ9IjEuNCIvPg0KPC9nPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTAsOC42NEwxNS4yNywxMkwxMCwxNS4zNlY4LjY0IE04LDV2MTRsMTEtN0w4LDVMOCw1eiIvPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 271 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNNyw3aDEwdjNsNC00bC00LTR2M0g1djZoMlY3eiBNMTcsMTdIN3YtM2wtNCw0bDQsNHYtM2gxMnYtNmgtMlYxN3oiLz4KPC9nPgo8L3N2Zz4K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDE2IDE2IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGQ9Ik0xMSwxLjFjLTAuMi0wLjItMC41LTAuMy0wLjgtMC4yQzEwLDEuMSw5LjgsMS4zLDkuOCwxLjZ2Ny42QzkuMyw4LjksOC43LDguNyw4LjEsOC43QzYuNCw4LjcsNSwxMC4xLDUsMTEuOA0KCQlzMS40LDMuMSwzLjEsMy4xYzEuNywwLDMuMS0xLjQsMy4xLTMuMVYzLjNMMTQsNi4ybDEtMUwxMSwxLjF6Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSIxLjIiIHdpZHRoPSI2LjEiIGhlaWdodD0iMS40Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSIzLjYiIHdpZHRoPSI2LjEiIGhlaWdodD0iMS40Ii8+DQoJPHJlY3QgeD0iMS42IiB5PSI2IiB3aWR0aD0iNi4xIiBoZWlnaHQ9IjEuNCIvPg0KPC9nPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 272 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9IlJvdW5kZWQiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV81Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE1LjUsMTRoLTAuNzlsLTAuMjgtMC4yN2MxLjItMS40LDEuODItMy4zMSwxLjQ4LTUuMzRjLTAuNDctMi43OC0yLjc5LTUtNS41OS01LjM0CgkJYy00LjIzLTAuNTItNy43OSwzLjA0LTcuMjcsNy4yN2MwLjM0LDIuOCwyLjU2LDUuMTIsNS4zNCw1LjU5YzIuMDMsMC4zNCwzLjk0LTAuMjgsNS4zNC0xLjQ4TDE0LDE0LjcxdjAuNzlsNC4yNSw0LjI1CgkJYzAuNDEsMC40MSwxLjA4LDAuNDEsMS40OSwwbDAsMGMwLjQxLTAuNDEsMC40MS0xLjA4LDAtMS40OUwxNS41LDE0eiBNOS41LDE0QzcuMDEsMTQsNSwxMS45OSw1LDkuNVM3LjAxLDUsOS41LDVTMTQsNy4wMSwxNCw5LjUKCQlTMTEuOTksMTQsOS41LDE0eiIvPgo8L2c+CjxnIGlkPSJTaGFycCIgZGlzcGxheT0ibm9uZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzQiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTUuNSwxNGgtMC43OWwtMC4yOC0wLjI3QzE1LjQxLDEyLjU5LDE2LDExLjExLDE2LDkuNUMxNiw1LjkxLDEzLjA5LDMsOS41LDNTMyw1LjkxLDMsOS41CgkJUzUuOTEsMTYsOS41LDE2YzEuNjEsMCwzLjA5LTAuNTksNC4yMy0xLjU3TDE0LDE0LjcxdjAuNzlsNSw0Ljk5TDIwLjQ5LDE5TDE1LjUsMTR6IE05LjUsMTRDNy4wMSwxNCw1LDExLjk5LDUsOS41UzcuMDEsNSw5LjUsNQoJCVMxNCw3LjAxLDE0LDkuNVMxMS45OSwxNCw5LjUsMTR6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZD0iTTE1LjUsMTRoLTAuNzlsLTAuMjgtMC4yN0MxNS40MSwxMi41OSwxNiwxMS4xMSwxNiw5LjVDMTYsNS45MSwxMy4wOSwzLDkuNSwzUzMsNS45MSwzLDkuNVM1LjkxLDE2LDkuNSwxNgoJCWMxLjYxLDAsMy4wOS0wLjU5LDQuMjMtMS41N0wxNCwxNC43MXYwLjc5bDUsNC45OUwyMC40OSwxOUwxNS41LDE0eiBNOS41LDE0QzcuMDEsMTQsNSwxMS45OSw1LDkuNVM3LjAxLDUsOS41LDVTMTQsNy4wMSwxNCw5LjUKCQlTMTEuOTksMTQsOS41LDE0eiIvPgo8L2c+CjxnIGlkPSJEdW90b25lIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHlfMiI+Cgk8L2c+Cgk8ZyBkaXNwbGF5PSJpbmxpbmUiPgoJCTxwYXRoIGQ9Ik0xNS41LDE0aC0wLjc5bC0wLjI4LTAuMjdDMTUuNDEsMTIuNTksMTYsMTEuMTEsMTYsOS41QzE2LDUuOTEsMTMuMDksMyw5LjUsM1MzLDUuOTEsMyw5LjVDMywxMy4wOSw1LjkxLDE2LDkuNSwxNgoJCQljMS42MSwwLDMuMDktMC41OSw0LjIzLTEuNTdMMTQsMTQuNzF2MC43OWw1LDQuOTlMMjAuNDksMTlMMTUuNSwxNHogTTkuNSwxNEM3LjAxLDE0LDUsMTEuOTksNSw5LjVTNy4wMSw1LDkuNSw1UzE0LDcuMDEsMTQsOS41CgkJCVMxMS45OSwxNCw5LjUsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9Ik1hdGVyaWFsIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHkiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTUuNSwxNGgtMC43OWwtMC4yOC0wLjI3QzE1LjQxLDEyLjU5LDE2LDExLjExLDE2LDkuNUMxNiw1LjkxLDEzLjA5LDMsOS41LDNTMyw1LjkxLDMsOS41CgkJUzUuOTEsMTYsOS41LDE2YzEuNjEsMCwzLjA5LTAuNTksNC4yMy0xLjU3TDE0LDE0LjcxdjAuNzlsNSw0Ljk5TDIwLjQ5LDE5TDE1LjUsMTR6IE05LjUsMTRDNy4wMSwxNCw1LDExLjk5LDUsOS41UzcuMDEsNSw5LjUsNQoJCVMxNCw3LjAxLDE0LDkuNVMxMS45OSwxNCw5LjUsMTR6Ii8+CjwvZz4KPC9zdmc+Cg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNNyw3aDEwdjNsNC00bC00LTR2M0g1djZoMlY3eiBNMTcsMTdIN3YtM2wtNCw0bDQsNHYtM2gxMnYtNmgtMlYxN3oiLz4KPC9nPgo8L3N2Zz4K"
 
 /***/ }),
 /* 273 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHJlY3QgeD0iMi4wMTgiIHk9IjIuMTI4IiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNC4yODkiIGhlaWdodD0iNC4yODkiLz4NCjxnPg0KCTxyZWN0IHg9IjcuMzA1IiB5PSIyLjEyOCIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjYuNjc4IiBoZWlnaHQ9IjAuODUxIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iNC4xMjgiIGZpbGw9IiMwMTAxMDEiIHdpZHRoPSI2LjY3OCIgaGVpZ2h0PSIwLjg1MSIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNy4zMDUiIHk9IjYuMTI4IiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNi42NzgiIGhlaWdodD0iMC44NTEiLz4NCjwvZz4NCjxyZWN0IHg9IjIuMDE4IiB5PSI5LjIxMSIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjQuMjg5IiBoZWlnaHQ9IjQuMjg5Ii8+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iOS4yMTEiIGZpbGw9IiMwMTAxMDEiIHdpZHRoPSI2LjY3OCIgaGVpZ2h0PSIwLjg1MSIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNy4zMDUiIHk9IjExLjIxMSIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjYuNjc4IiBoZWlnaHQ9IjAuODUxIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iMTMuMjExIiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNi42NzgiIGhlaWdodD0iMC44NTEiLz4NCjwvZz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9IlJvdW5kZWQiIGRpc3BsYXk9Im5vbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXJfY29weV81Ij4KCTwvZz4KCTxwYXRoIGRpc3BsYXk9ImlubGluZSIgZD0iTTE1LjUsMTRoLTAuNzlsLTAuMjgtMC4yN2MxLjItMS40LDEuODItMy4zMSwxLjQ4LTUuMzRjLTAuNDctMi43OC0yLjc5LTUtNS41OS01LjM0CgkJYy00LjIzLTAuNTItNy43OSwzLjA0LTcuMjcsNy4yN2MwLjM0LDIuOCwyLjU2LDUuMTIsNS4zNCw1LjU5YzIuMDMsMC4zNCwzLjk0LTAuMjgsNS4zNC0xLjQ4TDE0LDE0LjcxdjAuNzlsNC4yNSw0LjI1CgkJYzAuNDEsMC40MSwxLjA4LDAuNDEsMS40OSwwbDAsMGMwLjQxLTAuNDEsMC40MS0xLjA4LDAtMS40OUwxNS41LDE0eiBNOS41LDE0QzcuMDEsMTQsNSwxMS45OSw1LDkuNVM3LjAxLDUsOS41LDVTMTQsNy4wMSwxNCw5LjUKCQlTMTEuOTksMTQsOS41LDE0eiIvPgo8L2c+CjxnIGlkPSJTaGFycCIgZGlzcGxheT0ibm9uZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzQiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTUuNSwxNGgtMC43OWwtMC4yOC0wLjI3QzE1LjQxLDEyLjU5LDE2LDExLjExLDE2LDkuNUMxNiw1LjkxLDEzLjA5LDMsOS41LDNTMyw1LjkxLDMsOS41CgkJUzUuOTEsMTYsOS41LDE2YzEuNjEsMCwzLjA5LTAuNTksNC4yMy0xLjU3TDE0LDE0LjcxdjAuNzlsNSw0Ljk5TDIwLjQ5LDE5TDE1LjUsMTR6IE05LjUsMTRDNy4wMSwxNCw1LDExLjk5LDUsOS41UzcuMDEsNSw5LjUsNQoJCVMxNCw3LjAxLDE0LDkuNVMxMS45OSwxNCw5LjUsMTR6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiIGRpc3BsYXk9Im5vbmUiPgoJPC9nPgoJPHBhdGggZD0iTTE1LjUsMTRoLTAuNzlsLTAuMjgtMC4yN0MxNS40MSwxMi41OSwxNiwxMS4xMSwxNiw5LjVDMTYsNS45MSwxMy4wOSwzLDkuNSwzUzMsNS45MSwzLDkuNVM1LjkxLDE2LDkuNSwxNgoJCWMxLjYxLDAsMy4wOS0wLjU5LDQuMjMtMS41N0wxNCwxNC43MXYwLjc5bDUsNC45OUwyMC40OSwxOUwxNS41LDE0eiBNOS41LDE0QzcuMDEsMTQsNSwxMS45OSw1LDkuNVM3LjAxLDUsOS41LDVTMTQsNy4wMSwxNCw5LjUKCQlTMTEuOTksMTQsOS41LDE0eiIvPgo8L2c+CjxnIGlkPSJEdW90b25lIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHlfMiI+Cgk8L2c+Cgk8ZyBkaXNwbGF5PSJpbmxpbmUiPgoJCTxwYXRoIGQ9Ik0xNS41LDE0aC0wLjc5bC0wLjI4LTAuMjdDMTUuNDEsMTIuNTksMTYsMTEuMTEsMTYsOS41QzE2LDUuOTEsMTMuMDksMyw5LjUsM1MzLDUuOTEsMyw5LjVDMywxMy4wOSw1LjkxLDE2LDkuNSwxNgoJCQljMS42MSwwLDMuMDktMC41OSw0LjIzLTEuNTdMMTQsMTQuNzF2MC43OWw1LDQuOTlMMjAuNDksMTlMMTUuNSwxNHogTTkuNSwxNEM3LjAxLDE0LDUsMTEuOTksNSw5LjVTNy4wMSw1LDkuNSw1UzE0LDcuMDEsMTQsOS41CgkJCVMxMS45OSwxNCw5LjUsMTR6Ii8+Cgk8L2c+CjwvZz4KPGcgaWQ9Ik1hdGVyaWFsIiBkaXNwbGF5PSJub25lIj4KCTxnIGlkPSJ1aV94NUZfc3BlY194NUZfaGVhZGVyX2NvcHkiPgoJPC9nPgoJPHBhdGggZGlzcGxheT0iaW5saW5lIiBkPSJNMTUuNSwxNGgtMC43OWwtMC4yOC0wLjI3QzE1LjQxLDEyLjU5LDE2LDExLjExLDE2LDkuNUMxNiw1LjkxLDEzLjA5LDMsOS41LDNTMyw1LjkxLDMsOS41CgkJUzUuOTEsMTYsOS41LDE2YzEuNjEsMCwzLjA5LTAuNTksNC4yMy0xLjU3TDE0LDE0LjcxdjAuNzlsNSw0Ljk5TDIwLjQ5LDE5TDE1LjUsMTR6IE05LjUsMTRDNy4wMSwxNCw1LDExLjk5LDUsOS41UzcuMDEsNSw5LjUsNQoJCVMxNCw3LjAxLDE0LDkuNVMxMS45OSwxNCw5LjUsMTR6Ii8+CjwvZz4KPC9zdmc+Cg=="
 
 /***/ }),
 /* 274 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMi45LDQuM2MwLTEuNC0zLjEtMS44LTQuOS0xLjhTMy4xLDIuOSwzLjEsNC4zYzAsMCwwLDAsMCwwdjUuMmgwYzAsMCwwLDAsMCwwdjIuNmMwLDEuNCwzLjEsMS44LDQuOSwxLjhzNC45LTAuNCw0LjktMS44DQoJTDEyLjksNC4zTDEyLjksNC4zeiBNMTEuOSw5LjVjLTAuMSwwLjItMS40LDAuOC0zLjksMC44Yy0yLjUsMC0zLjgtMC42LTMuOS0wLjhWOC4xQzUuMSw4LjUsNi44LDguNyw4LDguN2MxLjIsMCwyLjktMC4yLDMuOS0wLjYNCglMMTEuOSw5LjV6IE04LDMuNWMyLjUsMCwzLjgsMC42LDMuOSwwLjhDMTEuOCw0LjUsMTAuNSw1LjEsOCw1LjFjLTIuNSwwLTMuOC0wLjYtMy45LTAuN3YwQzQuMiw0LjEsNS41LDMuNSw4LDMuNXogTTQuMSw1LjUNCglDNS4xLDUuOSw2LjgsNi4xLDgsNi4xYzEuMiwwLDIuOS0wLjIsMy45LTAuNmwwLDEuNEMxMS44LDcuMSwxMC41LDcuNyw4LDcuN2MtMi41LDAtMy44LTAuNi0zLjktMC44VjUuNXogTTgsMTIuOQ0KCWMtMi41LDAtMy44LTAuNi0zLjktMC44di0xLjVjMS4xLDAuNSwyLjgsMC42LDMuOSwwLjZjMS4yLDAsMi45LTAuMiwzLjktMC42bDAsMS40QzExLjgsMTIuMywxMC41LDEyLjksOCwxMi45eiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHJlY3QgeD0iMi4wMTgiIHk9IjIuMTI4IiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNC4yODkiIGhlaWdodD0iNC4yODkiLz4NCjxnPg0KCTxyZWN0IHg9IjcuMzA1IiB5PSIyLjEyOCIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjYuNjc4IiBoZWlnaHQ9IjAuODUxIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iNC4xMjgiIGZpbGw9IiMwMTAxMDEiIHdpZHRoPSI2LjY3OCIgaGVpZ2h0PSIwLjg1MSIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNy4zMDUiIHk9IjYuMTI4IiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNi42NzgiIGhlaWdodD0iMC44NTEiLz4NCjwvZz4NCjxyZWN0IHg9IjIuMDE4IiB5PSI5LjIxMSIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjQuMjg5IiBoZWlnaHQ9IjQuMjg5Ii8+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iOS4yMTEiIGZpbGw9IiMwMTAxMDEiIHdpZHRoPSI2LjY3OCIgaGVpZ2h0PSIwLjg1MSIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNy4zMDUiIHk9IjExLjIxMSIgZmlsbD0iIzAxMDEwMSIgd2lkdGg9IjYuNjc4IiBoZWlnaHQ9IjAuODUxIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI3LjMwNSIgeT0iMTMuMjExIiBmaWxsPSIjMDEwMTAxIiB3aWR0aD0iNi42NzgiIGhlaWdodD0iMC44NTEiLz4NCjwvZz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 275 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTAuNTksOS4xN0w1LjQxLDRMNCw1LjQxbDUuMTcsNS4xN0wxMC41OSw5LjE3eiBNMTQuNSw0bDIuMDQsMi4wNEw0LDE4LjU5TDUuNDEsMjBMMTcuOTYsNy40NkwyMCw5LjVWNEgxNC41egoJCSBNMTQuODMsMTMuNDFsLTEuNDEsMS40MWwzLjEzLDMuMTNMMTQuNSwyMEgyMHYtNS41bC0yLjA0LDIuMDRMMTQuODMsMTMuNDF6Ii8+CjwvZz4KPC9zdmc+Cg=="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMi4wLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMi45LDQuM2MwLTEuNC0zLjEtMS44LTQuOS0xLjhTMy4xLDIuOSwzLjEsNC4zYzAsMCwwLDAsMCwwdjUuMmgwYzAsMCwwLDAsMCwwdjIuNmMwLDEuNCwzLjEsMS44LDQuOSwxLjhzNC45LTAuNCw0LjktMS44DQoJTDEyLjksNC4zTDEyLjksNC4zeiBNMTEuOSw5LjVjLTAuMSwwLjItMS40LDAuOC0zLjksMC44Yy0yLjUsMC0zLjgtMC42LTMuOS0wLjhWOC4xQzUuMSw4LjUsNi44LDguNyw4LDguN2MxLjIsMCwyLjktMC4yLDMuOS0wLjYNCglMMTEuOSw5LjV6IE04LDMuNWMyLjUsMCwzLjgsMC42LDMuOSwwLjhDMTEuOCw0LjUsMTAuNSw1LjEsOCw1LjFjLTIuNSwwLTMuOC0wLjYtMy45LTAuN3YwQzQuMiw0LjEsNS41LDMuNSw4LDMuNXogTTQuMSw1LjUNCglDNS4xLDUuOSw2LjgsNi4xLDgsNi4xYzEuMiwwLDIuOS0wLjIsMy45LTAuNmwwLDEuNEMxMS44LDcuMSwxMC41LDcuNyw4LDcuN2MtMi41LDAtMy44LTAuNi0zLjktMC44VjUuNXogTTgsMTIuOQ0KCWMtMi41LDAtMy44LTAuNi0zLjktMC44di0xLjVjMS4xLDAuNSwyLjgsMC42LDMuOSwwLjZjMS4yLDAsMi45LTAuMiwzLjktMC42bDAsMS40QzExLjgsMTIuMywxMC41LDEyLjksOCwxMi45eiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 276 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cGF0aCBkPSJNNiwxOGw4LjUtNkw2LDZWMTh6IE04LDkuODZMMTEuMDMsMTJMOCwxNC4xNFY5Ljg2eiIvPgoJCTxyZWN0IHg9IjE2IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTAuNTksOS4xN0w1LjQxLDRMNCw1LjQxbDUuMTcsNS4xN0wxMC41OSw5LjE3eiBNMTQuNSw0bDIuMDQsMi4wNEw0LDE4LjU5TDUuNDEsMjBMMTcuOTYsNy40NkwyMCw5LjVWNEgxNC41egoJCSBNMTQuODMsMTMuNDFsLTEuNDEsMS40MWwzLjEzLDMuMTNMMTQuNSwyMEgyMHYtNS41bC0yLjA0LDIuMDRMMTQuODMsMTMuNDF6Ii8+CjwvZz4KPC9zdmc+Cg=="
 
 /***/ }),
 /* 277 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggaWQ9InNvdW5kY2xvdWQiIGQ9Ik0wLjAyNywxMC45NDVjMCwwLjE5NywwLjA3MiwwLjM0NywwLjIxNSwwLjQ0N2MwLjE0NSwwLjEwNCwwLjI5OCwwLjEzOSwwLjQ2MiwwLjEwOA0KCWMwLjE1My0wLjAyOCwwLjI2MS0wLjA4NCwwLjMyMy0wLjE2NGMwLjA2My0wLjA3OSwwLjA5My0wLjIxMSwwLjA5My0wLjM5NFY4Ljc4OWMwLTAuMTU0LTAuMDUzLTAuMjgzLTAuMTU5LTAuMzkxDQoJYy0wLjEwNy0wLjEwNy0wLjIzNy0wLjE2LTAuMzkxLTAuMTZjLTAuMTQ3LDAtMC4yNzUsMC4wNTMtMC4zODIsMC4xNkMwLjA4MSw4LjUwNiwwLjAyNyw4LjYzNSwwLjAyNyw4Ljc4OVYxMC45NDVMMC4wMjcsMTAuOTQ1eg0KCSBNMS43MzYsMTEuODY1YzAsMC4xNDUsMC4wNTMsMC4yNTIsMC4xNTQsMC4zMjJjMC4xMDEsMC4wNzEsMC4yMywwLjEwOCwwLjM4OSwwLjEwOGMwLjE2NSwwLDAuMjk3LTAuMDM3LDAuMzk3LTAuMTA4DQoJYzAuMTAzLTAuMDcsMC4xNTMtMC4xNzksMC4xNTMtMC4zMjJWNi44NDJjMC0wLjE0OC0wLjA1NS0wLjI3Ni0wLjE1OS0wLjM4M0MyLjU2Myw2LjM1MiwyLjQzNCw2LjI5OCwyLjI3OSw2LjI5OA0KCWMtMC4xNDgsMC0wLjI3NSwwLjA1NC0wLjM4MywwLjE2MWMtMC4xMDUsMC4xMDYtMC4xNiwwLjIzNC0wLjE2LDAuMzgzVjExLjg2NXogTTMuNDM4LDEyLjEwNGMwLDAuMTQ1LDAuMDU0LDAuMjUyLDAuMTU2LDAuMzI0DQoJYzAuMTA1LDAuMDcxLDAuMjM4LDAuMTA3LDAuNDAyLDAuMTA3YzAuMTU3LDAsMC4yODgtMC4wMzYsMC4zOTEtMC4xMDdjMC4xMDEtMC4wNzIsMC4xNTEtMC4xODEsMC4xNTEtMC4zMjRWNy41MTgNCgljMC0wLjE1My0wLjA1NC0wLjI4NS0wLjE2LTAuMzk0QzQuMjcxLDcuMDE2LDQuMTQ1LDYuOTYsMy45OTcsNi45NmMtMC4xNTQsMC0wLjI4NSwwLjA1Ni0wLjM5NSwwLjE2NA0KCWMtMC4xMDgsMC4xMDgtMC4xNjQsMC4yNC0wLjE2NCwwLjM5NFYxMi4xMDR6IE01LjE0OCwxMi4xMjVjMCwwLjI3MywwLjE4NSwwLjQxLDAuNTUxLDAuNDFjMC4zNjcsMCwwLjU1LTAuMTM3LDAuNTUtMC40MVY0LjY5NA0KCWMwLTAuNDE4LTAuMTI4LTAuNjUzLTAuMzgtMC43MDdDNS43MDcsMy45NDgsNS41NDUsMy45OTQsNS4zODcsNC4xMjlDNS4yMjgsNC4yNjIsNS4xNDgsNC40NSw1LjE0OCw0LjY5NFYxMi4xMjV6IE02Ljg4OCwxMi4zNDINCglWNC4yNTZjMC0wLjI1OSwwLjA3Ny0wLjQxMiwwLjIzLTAuNDYxYzAuMzMzLTAuMDgsMC42NjMtMC4xMiwwLjk4OS0wLjEyYzAuNzU4LDAsMS40NjMsMC4xNzksMi4xMTgsMC41MzUNCgljMC42NTQsMC4zNTcsMS4xODUsMC44NDUsMS41ODgsMS40NjJjMC40MDEsMC42MTUsMC42MzgsMS4yOTUsMC43MDEsMi4wMzljMC4zMDMtMC4xMjksMC42MjUtMC4xOTMsMC45NjktMC4xOTMNCgljMC42OSwwLDEuMjg1LDAuMjQ2LDEuNzc3LDAuNzM1QzE1Ljc1NCw4Ljc0NCwxNiw5LjMzNCwxNiwxMC4wMjFjMCwwLjY5My0wLjI0NiwxLjI4Ny0wLjczOSwxLjc3Ng0KCWMtMC40OTMsMC40OS0xLjA4NSwwLjczNi0xLjc3MSwwLjczNmwtNi40NjgtMC4wMDljLTAuMDQzLTAuMDE2LTAuMDc3LTAuMDQxLTAuMTAyLTAuMDgyQzYuODk4LDEyLjQwNiw2Ljg4OCwxMi4zNzEsNi44ODgsMTIuMzQyDQoJTDYuODg4LDEyLjM0MnoiLz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8Zz4KCQk8cGF0aCBkPSJNNiwxOGw4LjUtNkw2LDZWMTh6IE04LDkuODZMMTEuMDMsMTJMOCwxNC4xNFY5Ljg2eiIvPgoJCTxyZWN0IHg9IjE2IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 278 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiPgoJPC9nPgoJPGc+CgkJPHBhdGggZD0iTTE4LjIsMUg5LjhDOC44MSwxLDgsMS44MSw4LDIuOHYxNC40YzAsMC45OSwwLjgxLDEuNzksMS44LDEuNzlMMTguMiwxOWMwLjk5LDAsMS44LTAuODEsMS44LTEuOFYyLjgKCQkJQzIwLDEuODEsMTkuMTksMSwxOC4yLDF6IE0xOCwxN2wtOC0wLjAxVjNoOFYxN3oiLz4KCQk8cGF0aCBkPSJNMTQsOGMxLjEsMCwyLTAuODksMi0ycy0wLjktMi0yLTJzLTIsMC44OS0yLDJTMTIuOSw4LDE0LDh6Ii8+CgkJPHBhdGggZD0iTTE0LDE2YzEuOTMsMCwzLjUtMS41NywzLjUtMy41YzAtMS45My0xLjU3LTMuNS0zLjUtMy41Yy0xLjkzLDAtMy41LDEuNTctMy41LDMuNUMxMC41LDE0LjQzLDEyLjA3LDE2LDE0LDE2eiBNMTQsMTEKCQkJYzAuODMsMCwxLjUsMC42NywxLjUsMS41UzE0LjgzLDE0LDE0LDE0cy0xLjUtMC42Ny0xLjUtMS41UzEzLjE3LDExLDE0LDExeiIvPgoJCTxwYXRoIGQ9Ik02LDVINHYxNmMwLDEuMSwwLjg5LDIsMiwyaDEwdi0ySDZWNXoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggaWQ9InNvdW5kY2xvdWQiIGQ9Ik0wLjAyNywxMC45NDVjMCwwLjE5NywwLjA3MiwwLjM0NywwLjIxNSwwLjQ0N2MwLjE0NSwwLjEwNCwwLjI5OCwwLjEzOSwwLjQ2MiwwLjEwOA0KCWMwLjE1My0wLjAyOCwwLjI2MS0wLjA4NCwwLjMyMy0wLjE2NGMwLjA2My0wLjA3OSwwLjA5My0wLjIxMSwwLjA5My0wLjM5NFY4Ljc4OWMwLTAuMTU0LTAuMDUzLTAuMjgzLTAuMTU5LTAuMzkxDQoJYy0wLjEwNy0wLjEwNy0wLjIzNy0wLjE2LTAuMzkxLTAuMTZjLTAuMTQ3LDAtMC4yNzUsMC4wNTMtMC4zODIsMC4xNkMwLjA4MSw4LjUwNiwwLjAyNyw4LjYzNSwwLjAyNyw4Ljc4OVYxMC45NDVMMC4wMjcsMTAuOTQ1eg0KCSBNMS43MzYsMTEuODY1YzAsMC4xNDUsMC4wNTMsMC4yNTIsMC4xNTQsMC4zMjJjMC4xMDEsMC4wNzEsMC4yMywwLjEwOCwwLjM4OSwwLjEwOGMwLjE2NSwwLDAuMjk3LTAuMDM3LDAuMzk3LTAuMTA4DQoJYzAuMTAzLTAuMDcsMC4xNTMtMC4xNzksMC4xNTMtMC4zMjJWNi44NDJjMC0wLjE0OC0wLjA1NS0wLjI3Ni0wLjE1OS0wLjM4M0MyLjU2Myw2LjM1MiwyLjQzNCw2LjI5OCwyLjI3OSw2LjI5OA0KCWMtMC4xNDgsMC0wLjI3NSwwLjA1NC0wLjM4MywwLjE2MWMtMC4xMDUsMC4xMDYtMC4xNiwwLjIzNC0wLjE2LDAuMzgzVjExLjg2NXogTTMuNDM4LDEyLjEwNGMwLDAuMTQ1LDAuMDU0LDAuMjUyLDAuMTU2LDAuMzI0DQoJYzAuMTA1LDAuMDcxLDAuMjM4LDAuMTA3LDAuNDAyLDAuMTA3YzAuMTU3LDAsMC4yODgtMC4wMzYsMC4zOTEtMC4xMDdjMC4xMDEtMC4wNzIsMC4xNTEtMC4xODEsMC4xNTEtMC4zMjRWNy41MTgNCgljMC0wLjE1My0wLjA1NC0wLjI4NS0wLjE2LTAuMzk0QzQuMjcxLDcuMDE2LDQuMTQ1LDYuOTYsMy45OTcsNi45NmMtMC4xNTQsMC0wLjI4NSwwLjA1Ni0wLjM5NSwwLjE2NA0KCWMtMC4xMDgsMC4xMDgtMC4xNjQsMC4yNC0wLjE2NCwwLjM5NFYxMi4xMDR6IE01LjE0OCwxMi4xMjVjMCwwLjI3MywwLjE4NSwwLjQxLDAuNTUxLDAuNDFjMC4zNjcsMCwwLjU1LTAuMTM3LDAuNTUtMC40MVY0LjY5NA0KCWMwLTAuNDE4LTAuMTI4LTAuNjUzLTAuMzgtMC43MDdDNS43MDcsMy45NDgsNS41NDUsMy45OTQsNS4zODcsNC4xMjlDNS4yMjgsNC4yNjIsNS4xNDgsNC40NSw1LjE0OCw0LjY5NFYxMi4xMjV6IE02Ljg4OCwxMi4zNDINCglWNC4yNTZjMC0wLjI1OSwwLjA3Ny0wLjQxMiwwLjIzLTAuNDYxYzAuMzMzLTAuMDgsMC42NjMtMC4xMiwwLjk4OS0wLjEyYzAuNzU4LDAsMS40NjMsMC4xNzksMi4xMTgsMC41MzUNCgljMC42NTQsMC4zNTcsMS4xODUsMC44NDUsMS41ODgsMS40NjJjMC40MDEsMC42MTUsMC42MzgsMS4yOTUsMC43MDEsMi4wMzljMC4zMDMtMC4xMjksMC42MjUtMC4xOTMsMC45NjktMC4xOTMNCgljMC42OSwwLDEuMjg1LDAuMjQ2LDEuNzc3LDAuNzM1QzE1Ljc1NCw4Ljc0NCwxNiw5LjMzNCwxNiwxMC4wMjFjMCwwLjY5My0wLjI0NiwxLjI4Ny0wLjczOSwxLjc3Ng0KCWMtMC40OTMsMC40OS0xLjA4NSwwLjczNi0xLjc3MSwwLjczNmwtNi40NjgtMC4wMDljLTAuMDQzLTAuMDE2LTAuMDc3LTAuMDQxLTAuMTAyLTAuMDgyQzYuODk4LDEyLjQwNiw2Ljg4OCwxMi4zNzEsNi44ODgsMTIuMzQyDQoJTDYuODg4LDEyLjM0MnoiLz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 279 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiPgoJPC9nPgoJPGc+CgkJPHBhdGggZD0iTTE3LDJIN0M1LjksMiw1LDIuOSw1LDR2MTZjMCwxLjEsMC45LDEuOTksMiwxLjk5TDE3LDIyYzEuMSwwLDItMC45LDItMlY0QzE5LDIuOSwxOC4xLDIsMTcsMnogTTcsMjBWNGgxMGwwLDE2SDd6Ii8+CgkJPHBhdGggZD0iTTEyLDljMS4xLDAsMi0wLjksMi0yYzAtMS4xLTAuOS0yLTItMmMtMS4xMSwwLTIsMC45LTIsMkMxMCw4LjEsMTAuODksOSwxMiw5eiIvPgoJCTxwYXRoIGQ9Ik0xMiwxMWMtMi4yMSwwLTQsMS43OS00LDRzMS43OSw0LDQsNHM0LTEuNzksNC00UzE0LjIxLDExLDEyLDExeiBNMTIsMTdjLTEuMSwwLTItMC45LTItMnMwLjktMiwyLTJzMiwwLjksMiwyCgkJCVMxMy4xLDE3LDEyLDE3eiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiPgoJPC9nPgoJPGc+CgkJPHBhdGggZD0iTTE4LjIsMUg5LjhDOC44MSwxLDgsMS44MSw4LDIuOHYxNC40YzAsMC45OSwwLjgxLDEuNzksMS44LDEuNzlMMTguMiwxOWMwLjk5LDAsMS44LTAuODEsMS44LTEuOFYyLjgKCQkJQzIwLDEuODEsMTkuMTksMSwxOC4yLDF6IE0xOCwxN2wtOC0wLjAxVjNoOFYxN3oiLz4KCQk8cGF0aCBkPSJNMTQsOGMxLjEsMCwyLTAuODksMi0ycy0wLjktMi0yLTJzLTIsMC44OS0yLDJTMTIuOSw4LDE0LDh6Ii8+CgkJPHBhdGggZD0iTTE0LDE2YzEuOTMsMCwzLjUtMS41NywzLjUtMy41YzAtMS45My0xLjU3LTMuNS0zLjUtMy41Yy0xLjkzLDAtMy41LDEuNTctMy41LDMuNUMxMC41LDE0LjQzLDEyLjA3LDE2LDE0LDE2eiBNMTQsMTEKCQkJYzAuODMsMCwxLjUsMC42NywxLjUsMS41UzE0LjgzLDE0LDE0LDE0cy0xLjUtMC42Ny0xLjUtMS41UzEzLjE3LDExLDE0LDExeiIvPgoJCTxwYXRoIGQ9Ik02LDVINHYxNmMwLDEuMSwwLjg5LDIsMiwyaDEwdi0ySDZWNXoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K"
 
 /***/ }),
 /* 280 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggaWQ9InNwb3RpZnkiIGQ9Ik03Ljk0LDEuODg3Yy0zLjM4OSwwLTYuMTYsMi43NzItNi4xNiw2LjE2MmMwLDMuMzkxLDIuNzcxLDYuMTYxLDYuMTYsNi4xNjFjMy4zODgsMCw2LjE2LTIuNzcxLDYuMTYtNi4xNjENCglDMTQuMSw0LjY1OSwxMS4zNTcsMS44ODcsNy45NCwxLjg4N3ogTTEwLjc3MywxMC43ODljLTAuMTIzLDAuMTg2LTAuMzQsMC4yNDYtMC41MjIsMC4xMjNjLTEuNDQ5LTAuODkzLTMuMjY3LTEuMDc4LTUuNDIyLTAuNTg0DQoJYy0wLjIxNSwwLjA2MS0wLjM5OS0wLjA5NC0wLjQ2MS0wLjI3OUM0LjMwNiw5LjgzNCw0LjQ1OCw5LjY1LDQuNjQ1LDkuNTg4YzIuMzQtMC41MjMsNC4zNzUtMC4zMDksNS45NzUsMC42NzgNCglDMTAuODM2LDEwLjM1OSwxMC44NjYsMTAuNjA1LDEwLjc3MywxMC43ODl6IE0xMS41MTQsOS4wOTRjLTAuMTU0LDAuMjE5LTAuNDMzLDAuMzA5LTAuNjQ2LDAuMTU2DQoJYy0xLjY2NC0xLjAxOC00LjE5LTEuMzI3LTYuMTMtMC43MDlDNC40OSw4LjYwNCw0LjIxMyw4LjQ4LDQuMTUxLDguMjMyQzQuMDg5LDcuOTg2LDQuMjEzLDcuNzA4LDQuNDU4LDcuNjQ4DQoJYzIuMjUtMC42NzgsNS4wMjEtMC4zNCw2LjkzMywwLjgzMkMxMS41NzQsOC41NzIsMTEuNjY3LDguODc4LDExLjUxNCw5LjA5NHogTTExLjU3NCw3LjM3MUM5LjYwNCw2LjE5OCw2LjMwOCw2LjA3NSw0LjQzLDYuNjYxDQoJQzQuMTIxLDYuNzU0LDMuODEyLDYuNTY5LDMuNzIsNi4yOTJDMy42MjgsNS45ODMsMy44MTIsNS42NzYsNC4wODksNS41ODNDNi4yNzYsNC45MzcsOS44OCw1LjA2LDEyLjE2LDYuNDE1DQoJYzAuMjc3LDAuMTU0LDAuMzY5LDAuNTIzLDAuMjE1LDAuODAxQzEyLjIyMyw3LjQzMSwxMS44NTIsNy41MjMsMTEuNTc0LDcuMzcxeiIvPg0KPC9zdmc+DQo="
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlcl9jb3B5XzMiPgoJPC9nPgoJPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+CjwvZz4KPGcgaWQ9Ik91dGxpbmUiPgoJPGcgaWQ9InVpX3g1Rl9zcGVjX3g1Rl9oZWFkZXIiPgoJPC9nPgoJPGc+CgkJPHBhdGggZD0iTTE3LDJIN0M1LjksMiw1LDIuOSw1LDR2MTZjMCwxLjEsMC45LDEuOTksMiwxLjk5TDE3LDIyYzEuMSwwLDItMC45LDItMlY0QzE5LDIuOSwxOC4xLDIsMTcsMnogTTcsMjBWNGgxMGwwLDE2SDd6Ii8+CgkJPHBhdGggZD0iTTEyLDljMS4xLDAsMi0wLjksMi0yYzAtMS4xLTAuOS0yLTItMmMtMS4xMSwwLTIsMC45LTIsMkMxMCw4LjEsMTAuODksOSwxMiw5eiIvPgoJCTxwYXRoIGQ9Ik0xMiwxMWMtMi4yMSwwLTQsMS43OS00LDRzMS43OSw0LDQsNHM0LTEuNzksNC00UzE0LjIxLDExLDEyLDExeiBNMTIsMTdjLTEuMSwwLTItMC45LTItMnMwLjktMiwyLTJzMiwwLjksMiwyCgkJCVMxMy4xLDE3LDEyLDE3eiIvPgoJPC9nPgo8L2c+Cjwvc3ZnPgo="
 
 /***/ }),
 /* 281 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMS4wLjIsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDAuOGMtMC4yLDAtMC4zLDAuMS0wLjQsMC40bC0yLDRMMS4yLDUuOEMwLjgsNS45LDAuNyw2LDAuNyw2LjJjMCwwLjEsMC4xLDAuMywwLjIsMC40bDMuMiwzLjFsLTAuOCw0LjQNCgljMCwwLjEsMCwwLjEsMCwwLjJjMCwwLjEsMCwwLjIsMC4xLDAuM3MwLjIsMC4xLDAuMywwLjFzMC4yLDAsMC40LTAuMWw0LTIuMWw0LDIuMWMwLjEsMC4xLDAuMiwwLjEsMC40LDAuMWMwLjEsMCwwLjIsMCwwLjMtMC4xDQoJczAuMS0wLjIsMC4xLTAuM3MwLTAuMSwwLTAuMmwtMC44LTQuNGwzLjItMy4xYzAuMi0wLjIsMC4yLTAuMywwLjItMC40YzAtMC4yLTAuMi0wLjQtMC41LTAuNGwtNC40LTAuNmwtMi00QzguMywwLjksOC4yLDAuOCw4LDAuOA0KCUw4LDAuOHoiLz4NCjwvc3ZnPg0K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggaWQ9InNwb3RpZnkiIGQ9Ik03Ljk0LDEuODg3Yy0zLjM4OSwwLTYuMTYsMi43NzItNi4xNiw2LjE2MmMwLDMuMzkxLDIuNzcxLDYuMTYxLDYuMTYsNi4xNjFjMy4zODgsMCw2LjE2LTIuNzcxLDYuMTYtNi4xNjENCglDMTQuMSw0LjY1OSwxMS4zNTcsMS44ODcsNy45NCwxLjg4N3ogTTEwLjc3MywxMC43ODljLTAuMTIzLDAuMTg2LTAuMzQsMC4yNDYtMC41MjIsMC4xMjNjLTEuNDQ5LTAuODkzLTMuMjY3LTEuMDc4LTUuNDIyLTAuNTg0DQoJYy0wLjIxNSwwLjA2MS0wLjM5OS0wLjA5NC0wLjQ2MS0wLjI3OUM0LjMwNiw5LjgzNCw0LjQ1OCw5LjY1LDQuNjQ1LDkuNTg4YzIuMzQtMC41MjMsNC4zNzUtMC4zMDksNS45NzUsMC42NzgNCglDMTAuODM2LDEwLjM1OSwxMC44NjYsMTAuNjA1LDEwLjc3MywxMC43ODl6IE0xMS41MTQsOS4wOTRjLTAuMTU0LDAuMjE5LTAuNDMzLDAuMzA5LTAuNjQ2LDAuMTU2DQoJYy0xLjY2NC0xLjAxOC00LjE5LTEuMzI3LTYuMTMtMC43MDlDNC40OSw4LjYwNCw0LjIxMyw4LjQ4LDQuMTUxLDguMjMyQzQuMDg5LDcuOTg2LDQuMjEzLDcuNzA4LDQuNDU4LDcuNjQ4DQoJYzIuMjUtMC42NzgsNS4wMjEtMC4zNCw2LjkzMywwLjgzMkMxMS41NzQsOC41NzIsMTEuNjY3LDguODc4LDExLjUxNCw5LjA5NHogTTExLjU3NCw3LjM3MUM5LjYwNCw2LjE5OCw2LjMwOCw2LjA3NSw0LjQzLDYuNjYxDQoJQzQuMTIxLDYuNzU0LDMuODEyLDYuNTY5LDMuNzIsNi4yOTJDMy42MjgsNS45ODMsMy44MTIsNS42NzYsNC4wODksNS41ODNDNi4yNzYsNC45MzcsOS44OCw1LjA2LDEyLjE2LDYuNDE1DQoJYzAuMjc3LDAuMTU0LDAuMzY5LDAuNTIzLDAuMjE1LDAuODAxQzEyLjIyMyw3LjQzMSwxMS44NTIsNy41MjMsMTEuNTc0LDcuMzcxeiIvPg0KPC9zdmc+DQo="
 
 /***/ }),
 /* 282 */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTYsOHY4SDhWOEgxNiBNMTgsNkg2djEyaDEyVjZMMTgsNnoiLz4KPC9nPgo8L3N2Zz4K"
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMS4wLjIsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik04LDAuOGMtMC4yLDAtMC4zLDAuMS0wLjQsMC40bC0yLDRMMS4yLDUuOEMwLjgsNS45LDAuNyw2LDAuNyw2LjJjMCwwLjEsMC4xLDAuMywwLjIsMC40bDMuMiwzLjFsLTAuOCw0LjQNCgljMCwwLjEsMCwwLjEsMCwwLjJjMCwwLjEsMCwwLjIsMC4xLDAuM3MwLjIsMC4xLDAuMywwLjFzMC4yLDAsMC40LTAuMWw0LTIuMWw0LDIuMWMwLjEsMC4xLDAuMiwwLjEsMC40LDAuMWMwLjEsMCwwLjIsMCwwLjMtMC4xDQoJczAuMS0wLjIsMC4xLTAuM3MwLTAuMSwwLTAuMmwtMC44LTQuNGwzLjItMy4xYzAuMi0wLjIsMC4yLTAuMywwLjItMC40YzAtMC4yLTAuMi0wLjQtMC41LTAuNGwtNC40LTAuNmwtMi00QzguMywwLjksOC4yLDAuOCw4LDAuOA0KCUw4LDAuOHoiLz4NCjwvc3ZnPg0K"
 
 /***/ }),
 /* 283 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IgoJIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNCAyNCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJCb3VuZGluZ19Cb3hlcyI+Cgk8cGF0aCBmaWxsPSJub25lIiBkPSJNMCwwaDI0djI0SDBWMHoiLz4KPC9nPgo8ZyBpZD0iT3V0bGluZSI+Cgk8ZyBpZD0idWlfeDVGX3NwZWNfeDVGX2hlYWRlciI+Cgk8L2c+Cgk8cGF0aCBkPSJNMTYsOHY4SDhWOEgxNiBNMTgsNkg2djEyaDEyVjZMMTgsNnoiLz4KPC9nPgo8L3N2Zz4K"
+
+/***/ }),
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63082,7 +64638,7 @@ var _reactRouter = __webpack_require__(6);
 
 var _redux = __webpack_require__(2);
 
-var _Dropzone = __webpack_require__(284);
+var _Dropzone = __webpack_require__(285);
 
 var _Dropzone2 = _interopRequireDefault(_Dropzone);
 
@@ -63204,7 +64760,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 284 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63303,13 +64859,13 @@ var Dropzone = function (_React$Component) {
 exports.default = Dropzone;
 
 /***/ }),
-/* 285 */
+/* 286 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMzJweCIgaGVpZ2h0PSIzMnB4IiB2aWV3Qm94PSIwIDAgMzIgMzIiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDMyIDMyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzc3Nzc3NyIgc3Ryb2tlLXdpZHRoPSIwLjE0MTciIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjQuMTY3IiB5MT0iNC4xNjciIHgyPSIyNy44MzMiIHkyPSIyNy44MzMiIG9wYWNpdHk9IjAuMyIgLz4NCjxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzc3Nzc3NyIgc3Ryb2tlLXdpZHRoPSIwLjE0MTciIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjQuMTY3IiB5MT0iMjcuODMzIiB4Mj0iMjcuODMzIiB5Mj0iNC4xNjciIG9wYWNpdHk9IjAuMyIgLz4NCjwvc3ZnPg0K"
 
 /***/ }),
-/* 286 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63339,7 +64895,7 @@ var _VolumeControl = __webpack_require__(70);
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
 
-var _OutputControl = __webpack_require__(287);
+var _OutputControl = __webpack_require__(288);
 
 var _OutputControl2 = _interopRequireDefault(_OutputControl);
 
@@ -63672,7 +65228,7 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'total' },
-						this.props.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.props.current_track.length }) : '-'
+						this.props.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.props.current_track.duration }) : '-'
 					)
 				),
 				_react2.default.createElement(
@@ -63755,7 +65311,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 287 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64022,7 +65578,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19)))
 
 /***/ }),
-/* 288 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64388,31 +65944,33 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'goToArtist',
 		value: function goToArtist(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists_uris || this.props.menu.items[0].artists_uris.length <= 0) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'artist/' + this.props.menu.items[0].artists[0].uri);
+
+				// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
+				_reactRouter.hashHistory.push(global.baseURL + 'artist/' + this.props.menu.items[0].artists_uris[0]);
 			}
 		}
 	}, {
 		key: 'goToAlbum',
 		value: function goToAlbum(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album.uri);
+				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album_uri);
 			}
 		}
 	}, {
 		key: 'goToUser',
 		value: function goToUser(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0) {
+			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'user/' + this.props.menu.items[0].owner.uri);
+				_reactRouter.hashHistory.push(global.baseURL + 'user/' + this.props.menu.items[0].user_uri);
 			}
 		}
 	}, {
@@ -64544,11 +66102,6 @@ var ContextMenu = function (_React$Component) {
 				case 'album':
 				case 'playlist':
 					var style = null;
-					if (context.item && context.item.images) {
-						style = {
-							backgroundImage: 'url(' + helpers.sizedImages(context.item.images).medium + ')'
-						};
-					}
 
 					return _react2.default.createElement(
 						_reactRouter.Link,
@@ -65157,72 +66710,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ContextMenu);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(19), __webpack_require__(10)))
-
-/***/ }),
-/* 289 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ErrorBoundary = function (_React$Component) {
-	_inherits(ErrorBoundary, _React$Component);
-
-	function ErrorBoundary(props) {
-		_classCallCheck(this, ErrorBoundary);
-
-		var _this = _possibleConstructorReturn(this, (ErrorBoundary.__proto__ || Object.getPrototypeOf(ErrorBoundary)).call(this, props));
-
-		_this.state = { hasError: false };
-		return _this;
-	}
-
-	_createClass(ErrorBoundary, [{
-		key: "componentDidCatch",
-		value: function componentDidCatch(error, info) {
-			// Display fallback UI
-			this.setState({ hasError: true });
-			// You can also log the error to an error reporting service
-			//logErrorToMyService(error, info);
-			console.error(error, info);
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			if (this.state.hasError) {
-				// You can render any custom fallback UI
-				return _react2.default.createElement(
-					"p",
-					{ className: "grey-text" },
-					"Failed to render"
-				);
-			}
-			return this.props.children;
-		}
-	}]);
-
-	return ErrorBoundary;
-}(_react2.default.Component);
-
-exports.default = ErrorBoundary;
 
 /***/ }),
 /* 290 */
@@ -65920,7 +67407,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -66030,11 +67517,16 @@ var Album = function (_React$Component) {
 
 			if (album) {
 				var artists = "";
-				for (var i = 0; i < album.artists.length; i++) {
-					if (artists != "") {
-						artists += ", ";
+				if (album.artists_uris && this.props.artists) {
+					for (var i = 0; i < album.artists_uris.length; i++) {
+						var uri = album.artists_uris[i];
+						if (this.props.artists.hasOwnProperty(uri)) {
+							if (artists != "") {
+								artists += ", ";
+							}
+							artists += this.props.artists[uri].name;
+						}
 					}
-					artists += album.artists[i].name;
 				}
 				this.props.uiActions.setWindowTitle(album.name + " by " + artists + " (album)");
 			} else {
@@ -66089,27 +67581,9 @@ var Album = function (_React$Component) {
 				}
 			}
 
-			var artists = [];
-			if (this.props.album.artists_uris && this.props.artists) {
-				for (var i = 0; i < this.props.album.artists_uris.length; i++) {
-					var uri = this.props.album.artists_uris[i];
-					if (this.props.artists.hasOwnProperty(uri)) {
-						artists.push(this.props.artists[uri]);
-					}
-				}
-			}
+			var album = helpers.collate(this.props.album, { tracks: this.props.tracks, artists: this.props.artists });
 
-			var tracks = [];
-			if (this.props.album.tracks_uris && this.props.tracks) {
-				for (var i = 0; i < this.props.album.tracks_uris.length; i++) {
-					var uri = this.props.album.tracks_uris[i];
-					if (this.props.tracks.hasOwnProperty(uri)) {
-						tracks.push(this.props.tracks[uri]);
-					}
-				}
-			}
-
-			if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.params.uri)])) {
+			if (!album.tracks_uris || album.tracks_uris && !album.tracks || album.tracks_uris.length !== album.tracks.length) {
 				var is_loading_tracks = true;
 			} else {
 				var is_loading_tracks = false;
@@ -66121,7 +67595,7 @@ var Album = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
-					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: this.props.album.images })
+					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: album.images })
 				),
 				_react2.default.createElement(
 					'div',
@@ -66129,7 +67603,7 @@ var Album = function (_React$Component) {
 					_react2.default.createElement(
 						'h1',
 						null,
-						this.props.album.name
+						album.name
 					),
 					_react2.default.createElement(
 						'ul',
@@ -66137,34 +67611,34 @@ var Album = function (_React$Component) {
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
 							{ className: 'has-tooltip' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.params.uri) }),
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) }),
 							_react2.default.createElement(
 								'span',
 								{ className: 'tooltip' },
 								helpers.uriSource(this.props.params.uri),
 								' ',
-								this.props.album.album_type ? this.props.album.album_type : 'album'
+								album.type ? album.type : 'album'
 							)
 						) : null,
-						!this.props.slim_mode && artists.length > 0 ? _react2.default.createElement(
+						!this.props.slim_mode && album.artists && album.artists.length > 0 ? _react2.default.createElement(
 							'li',
 							null,
-							_react2.default.createElement(_ArtistSentence2.default, { artists: artists })
+							_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
 						) : null,
-						this.props.album.date ? _react2.default.createElement(
+						album.release_date ? _react2.default.createElement(
 							'li',
 							null,
-							_react2.default.createElement(_Dater2.default, { type: 'date', data: this.props.album.date })
+							_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
 						) : null,
 						_react2.default.createElement(
 							'li',
 							null,
-							tracks ? _react2.default.createElement(
+							album.tracks ? _react2.default.createElement(
 								'span',
 								null,
-								tracks.length,
+								album.tracks.length,
 								' tracks, ',
-								_react2.default.createElement(_Dater2.default, { type: 'total-time', data: tracks })
+								_react2.default.createElement(_Dater2.default, { type: 'total-time', data: album.tracks })
 							) : '0 tracks, 0 mins'
 						)
 					)
@@ -66187,10 +67661,14 @@ var Album = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'list-wrapper' },
-					_react2.default.createElement(_TrackList2.default, { className: 'album-track-list', tracks: tracks, uri: this.props.params.uri }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.album.tracks_more, forceLoader: is_loading_tracks, loadMore: function loadMore() {
+					_react2.default.createElement(_TrackList2.default, { className: 'album-track-list', tracks: album.tracks, uri: album.uri }),
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: album.tracks_more,
+						showLoader: is_loading_tracks,
+						loadMore: function loadMore() {
 							return _this2.loadMore();
-						} })
+						}
+					})
 				)
 			);
 		}
@@ -66269,7 +67747,7 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -66277,7 +67755,7 @@ var _ArtistGrid = __webpack_require__(38);
 
 var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
 
-var _RelatedArtists = __webpack_require__(113);
+var _RelatedArtists = __webpack_require__(114);
 
 var _RelatedArtists2 = _interopRequireDefault(_RelatedArtists);
 
@@ -66289,7 +67767,7 @@ var _ContextMenuTrigger = __webpack_require__(25);
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -66348,16 +67826,16 @@ var Artist = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.setWindowTitle();
-			this.loadArtist();
+			this.props.coreActions.loadArtist(this.props.params.uri);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadArtist(nextProps);
+				this.props.coreActions.loadArtist(nextProps.params.uri);
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 				if (helpers.uriSource(this.props.params.uri) != 'spotify') {
-					this.loadArtist(nextProps);
+					this.props.coreActions.loadArtist(nextProps.params.uri);
 				}
 			}
 
@@ -66390,33 +67868,6 @@ var Artist = function (_React$Component) {
 				uris: [this.props.params.uri]
 			};
 			this.props.uiActions.showContextMenu(data);
-		}
-	}, {
-		key: 'loadArtist',
-		value: function loadArtist() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-			switch (helpers.uriSource(props.params.uri)) {
-
-				case 'spotify':
-					if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris) {
-						console.info('Loading spotify artist from index');
-					} else {
-						this.props.spotifyActions.getArtist(props.params.uri, true);
-					}
-					this.props.spotifyActions.following(props.params.uri);
-					break;
-
-				default:
-					if (props.mopidy_connected) {
-						if (props.artist && props.artist.images && props.artist.albums_uris) {
-							console.info('Loading local artist from index');
-						} else {
-							this.props.mopidyActions.getArtist(props.params.uri);
-						}
-					}
-					break;
-			}
 		}
 	}, {
 		key: 'loadMore',
@@ -66491,34 +67942,18 @@ var Artist = function (_React$Component) {
 			var _this2 = this;
 
 			var scheme = helpers.uriSource(this.props.params.uri);
+			var artist = helpers.collate(this.props.artist, {
+				artists: this.props.artists,
+				albums: this.props.albums,
+				tracks: this.props.tracks
+			});
 
-			var related_artists = [];
-			if (this.props.artist.related_artists_uris) {
-				for (var i = 0; i < this.props.artist.related_artists_uris.length; i++) {
-					var uri = this.props.artist.related_artists_uris[i];
-					if (this.props.artists.hasOwnProperty(uri)) {
-						related_artists.push(this.props.artists[uri]);
-					}
-				}
+			if (this.props.sort && artist.albums) {
+				artist.albums = helpers.sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
 			}
 
-			var albums = [];
-			if (this.props.artist.albums_uris) {
-				var albums_uris = helpers.removeDuplicates(this.props.artist.albums_uris);
-				for (var i = 0; i < albums_uris.length; i++) {
-					var uri = albums_uris[i];
-					if (this.props.albums.hasOwnProperty(uri)) {
-						albums.push(this.props.albums[uri]);
-					}
-				}
-
-				if (this.props.sort) {
-					albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
-				}
-
-				if (this.props.filter) {
-					albums = helpers.applyFilter('album_type', this.props.filter, albums);
-				}
+			if (this.props.filter && artist.albums) {
+				artist.albums = helpers.applyFilter('type', this.props.filter, artist.albums);
 			}
 
 			switch (this.props.params.sub_view) {
@@ -66530,7 +67965,7 @@ var Artist = function (_React$Component) {
 						_react2.default.createElement(
 							'section',
 							{ className: 'grid-wrapper no-top-padding' },
-							_react2.default.createElement(_ArtistGrid2.default, { artists: related_artists })
+							_react2.default.createElement(_ArtistGrid2.default, { artists: artist.related_artists })
 						)
 					);
 
@@ -66541,46 +67976,46 @@ var Artist = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'col w40 tiles artist-stats' },
-							this.props.artist.images ? _react2.default.createElement(
+							artist.images ? _react2.default.createElement(
 								'div',
 								{ className: 'tile thumbnail-wrapper' },
-								_react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, images: this.props.artist.images })
+								_react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, images: artist.images })
 							) : null,
-							this.props.artist.images_additional ? _react2.default.createElement(
+							artist.images_additional ? _react2.default.createElement(
 								'div',
 								{ className: 'tile thumbnail-wrapper' },
-								_react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, images: this.props.artist.images_additional })
+								_react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, images: artist.images_additional })
 							) : null,
-							this.props.artist.followers ? _react2.default.createElement(
+							artist.followers ? _react2.default.createElement(
 								'div',
 								{ className: 'tile' },
 								_react2.default.createElement(
 									'span',
 									{ className: 'content' },
 									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'users' }),
-									this.props.artist.followers.total.toLocaleString(),
+									artist.followers.toLocaleString(),
 									' followers'
 								)
 							) : null,
-							this.props.artist.popularity ? _react2.default.createElement(
+							artist.popularity ? _react2.default.createElement(
 								'div',
 								{ className: 'tile' },
 								_react2.default.createElement(
 									'span',
 									{ className: 'content' },
 									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'fire' }),
-									this.props.artist.popularity,
+									artist.popularity,
 									'% popularity'
 								)
 							) : null,
-							this.props.artist.listeners ? _react2.default.createElement(
+							artist.listeners ? _react2.default.createElement(
 								'div',
 								{ className: 'tile' },
 								_react2.default.createElement(
 									'span',
 									{ className: 'content' },
 									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'headphones' }),
-									this.props.artist.listeners.toLocaleString(),
+									artist.listeners.toLocaleString(),
 									' listeners'
 								)
 							) : null
@@ -66591,20 +68026,20 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'section',
 								null,
-								this.props.artist.bio ? _react2.default.createElement(
+								artist.biography ? _react2.default.createElement(
 									'div',
 									{ className: 'biography-text' },
 									_react2.default.createElement(
 										'p',
 										null,
-										this.props.artist.bio.content
+										artist.biography
 									),
 									_react2.default.createElement('br', null),
 									_react2.default.createElement(
 										'div',
 										{ className: 'grey-text' },
 										'Published: ',
-										this.props.artist.bio.published
+										artist.biography_publish_date
 									),
 									_react2.default.createElement(
 										'div',
@@ -66612,8 +68047,8 @@ var Artist = function (_React$Component) {
 										'Origin: ',
 										_react2.default.createElement(
 											'a',
-											{ href: this.props.artist.bio.links.link.href, target: '_blank' },
-											this.props.artist.bio.links.link.href
+											{ href: artist.biography_link, target: '_blank' },
+											artist.biography_link
 										)
 									)
 								) : null
@@ -66651,17 +68086,7 @@ var Artist = function (_React$Component) {
 						label: 'Compilations'
 					}];
 
-					var tracks = [];
-					if (this.props.artist.tracks_uris && this.props.tracks) {
-						for (var i = 0; i < this.props.artist.tracks_uris.length; i++) {
-							var uri = this.props.artist.tracks_uris[i];
-							if (this.props.tracks.hasOwnProperty(uri)) {
-								tracks.push(this.props.tracks[uri]);
-							}
-						}
-					}
-
-					if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', this.props.params.uri) + '/top-tracks'])) {
+					if (!artist.tracks_uris || artist.tracks_uris && !artist.tracks || artist.tracks_uris.length !== artist.tracks.length) {
 						var is_loading_tracks = true;
 					} else {
 						var is_loading_tracks = false;
@@ -66672,7 +68097,7 @@ var Artist = function (_React$Component) {
 						{ className: 'body overview' },
 						_react2.default.createElement(
 							'div',
-							{ className: "top-tracks col w" + (related_artists.length > 0 ? "70" : "100") },
+							{ className: "top-tracks col w" + (artist.related_artists && artist.related_artists.length > 0 ? "70" : "100") },
 							_react2.default.createElement(
 								'h4',
 								null,
@@ -66681,12 +68106,12 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'list-wrapper' },
-								_react2.default.createElement(_TrackList2.default, { className: 'artist-track-list', uri: this.props.params.uri, tracks: tracks }),
+								_react2.default.createElement(_TrackList2.default, { className: 'artist-track-list', uri: artist.uri, tracks: artist.tracks }),
 								_react2.default.createElement(_LazyLoadListener2.default, { forceLoader: is_loading_tracks })
 							)
 						),
 						_react2.default.createElement('div', { className: 'col w5' }),
-						related_artists.length > 0 ? _react2.default.createElement(
+						artist.related_artists ? _react2.default.createElement(
 							'div',
 							{ className: 'col w25 related-artists' },
 							_react2.default.createElement(
@@ -66697,11 +68122,11 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'list-wrapper' },
-								_react2.default.createElement(_RelatedArtists2.default, { artists: related_artists.slice(0, 6) })
+								_react2.default.createElement(_RelatedArtists2.default, { artists: artist.related_artists.slice(0, 6) })
 							),
 							_react2.default.createElement(
 								_reactRouter.Link,
-								{ to: global.baseURL + 'artist/' + this.props.params.uri + '/related-artists', className: 'button grey' },
+								{ to: global.baseURL + 'artist/' + artist.uri + '/related-artists', className: 'button grey' },
 								'All related artists'
 							)
 						) : null,
@@ -66736,10 +68161,14 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'section',
 								{ className: 'grid-wrapper no-top-padding' },
-								_react2.default.createElement(_AlbumGrid2.default, { albums: albums }),
-								_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.artist.albums_more, loadMore: function loadMore() {
+								_react2.default.createElement(_AlbumGrid2.default, { albums: artist.albums }),
+								_react2.default.createElement(_LazyLoadListener2.default, {
+									loadKey: artist.albums_more,
+									showLoader: artist.albums_more,
+									loadMore: function loadMore() {
 										return _this2.loadMore();
-									} })
+									}
+								})
 							)
 						)
 					);
@@ -66765,7 +68194,7 @@ var Artist = function (_React$Component) {
 			}
 
 			if (this.props.artist && this.props.artist.images) {
-				var image = helpers.sizedImages(this.props.artist.images).huge;
+				var image = this.props.artist.images.huge;
 			} else {
 				var image = null;
 			}
@@ -66784,7 +68213,7 @@ var Artist = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
@@ -66832,6 +68261,7 @@ var Artist = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	var uri = ownProps.params.uri;
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
@@ -66902,7 +68332,7 @@ var _Dater = __webpack_require__(32);
 
 var _Dater2 = _interopRequireDefault(_Dater);
 
-var _ConfirmationButton = __webpack_require__(114);
+var _ConfirmationButton = __webpack_require__(115);
 
 var _ConfirmationButton2 = _interopRequireDefault(_ConfirmationButton);
 
@@ -66970,19 +68400,31 @@ var Playlist = function (_React$Component) {
 	}
 
 	_createClass(Playlist, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			var uri = this.props.params.uri;
+
+			// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+			// We accept the old format, and redirect to the new one
+			if (uri.includes("spotify:user:")) {
+				uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+				_reactRouter.hashHistory.push(global.baseURL + 'playlist/' + encodeURIComponent(uri));
+			}
+		}
+	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.loadPlaylist();
 			this.setWindowTitle();
+			this.props.coreActions.loadPlaylist(this.props.params.uri);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadPlaylist(nextProps);
+				this.props.coreActions.loadPlaylist(nextProps.params.uri);
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 				if (helpers.uriSource(this.props.params.uri) != 'spotify') {
-					this.loadPlaylist(nextProps);
+					this.props.coreActions.loadPlaylist(nextProps.params.uri);
 				}
 			}
 
@@ -67003,30 +68445,6 @@ var Playlist = function (_React$Component) {
 				this.props.uiActions.setWindowTitle(playlist.name + " (playlist)");
 			} else {
 				this.props.uiActions.setWindowTitle("Playlist");
-			}
-		}
-	}, {
-		key: 'loadPlaylist',
-		value: function loadPlaylist() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-
-			if (props.playlist && props.playlist.is_completely_loaded) {
-				console.info('Loading playlist from index');
-			} else {
-				switch (helpers.uriSource(props.params.uri)) {
-
-					case 'spotify':
-						this.props.spotifyActions.getPlaylist(props.params.uri);
-						this.props.spotifyActions.following(props.params.uri);
-						break;
-
-					default:
-						if (props.mopidy_connected) {
-							this.props.mopidyActions.getPlaylist(props.params.uri);
-						}
-						break;
-				}
 			}
 		}
 	}, {
@@ -67186,11 +68604,10 @@ var Playlist = function (_React$Component) {
 			var _this3 = this;
 
 			var scheme = helpers.uriSource(this.props.params.uri);
-			var user_id = helpers.getFromUri('userid', this.props.params.uri);
 			var playlist_id = helpers.getFromUri('playlistid', this.props.params.uri);
 
 			if (!this.props.playlist) {
-				if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id + '/playlists/' + playlist_id + '?'])) {
+				if (helpers.isLoading(this.props.load_queue, ['spotify_playlists/' + playlist_id + '?'])) {
 					return _react2.default.createElement(
 						'div',
 						{ className: 'body-loader loading' },
@@ -67201,22 +68618,14 @@ var Playlist = function (_React$Component) {
 				}
 			}
 
+			var playlist = helpers.collate(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
+
 			var context = 'playlist';
-			if (this.props.playlist.can_edit) {
+			if (playlist.can_edit) {
 				context = 'editable-playlist';
 			}
 
-			var tracks = [];
-			if (this.props.playlist.tracks_uris && this.props.tracks) {
-				for (var i = 0; i < this.props.playlist.tracks_uris.length; i++) {
-					var uri = this.props.playlist.tracks_uris[i];
-					if (this.props.tracks.hasOwnProperty(uri)) {
-						tracks.push(this.props.tracks[uri]);
-					}
-				}
-			}
-
-			if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id + '/playlists/' + playlist_id, 'spotify_users/' + user_id + '/playlists/' + playlist_id + '/tracks'])) {
+			if (!playlist.tracks_uris || playlist.tracks_uris && !playlist.tracks || playlist.tracks_uris.length !== playlist.tracks.length) {
 				var is_loading_tracks = true;
 			} else {
 				var is_loading_tracks = false;
@@ -67228,7 +68637,7 @@ var Playlist = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
-					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: this.props.playlist.images })
+					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: playlist.images })
 				),
 				_react2.default.createElement(
 					'div',
@@ -67236,50 +68645,50 @@ var Playlist = function (_React$Component) {
 					_react2.default.createElement(
 						'h1',
 						null,
-						this.props.playlist.name
+						playlist.name
 					),
-					this.props.playlist.description ? _react2.default.createElement('h2', { className: 'description grey-text', dangerouslySetInnerHTML: { __html: this.props.playlist.description } }) : null,
+					playlist.description ? _react2.default.createElement('h2', { className: 'description grey-text', dangerouslySetInnerHTML: { __html: playlist.description } }) : null,
 					_react2.default.createElement(
 						'ul',
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
 							{ className: 'has-tooltip' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.params.uri) }),
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(playlist.uri) }),
 							_react2.default.createElement(
 								'span',
 								{ className: 'tooltip' },
-								helpers.uriSource(this.props.params.uri),
+								helpers.uriSource(playlist.uri),
 								' playlist'
 							)
 						) : null,
-						this.props.playlist.owner && !this.props.slim_mode ? _react2.default.createElement(
+						playlist.user_uri && !this.props.slim_mode ? _react2.default.createElement(
 							'li',
 							null,
 							_react2.default.createElement(
 								_URILink2.default,
-								{ type: 'user', uri: this.props.playlist.owner.uri },
-								this.props.playlist.owner.id
+								{ type: 'user', uri: playlist.user_uri },
+								playlist.user ? playlist.user.name : helpers.getFromUri('userid', playlist.user_uri)
 							)
 						) : null,
-						this.props.playlist.followers ? _react2.default.createElement(
+						playlist.followers !== undefined ? _react2.default.createElement(
 							'li',
 							null,
-							this.props.playlist.followers.total.toLocaleString(),
+							playlist.followers.toLocaleString(),
 							' followers'
 						) : null,
-						this.props.playlist.last_modified ? _react2.default.createElement(
+						playlist.last_modified_date ? _react2.default.createElement(
 							'li',
 							null,
 							'Edited ',
-							_react2.default.createElement(_Dater2.default, { type: 'ago', data: this.props.playlist.last_modified })
+							_react2.default.createElement(_Dater2.default, { type: 'ago', data: playlist.last_modified_date })
 						) : null,
 						_react2.default.createElement(
 							'li',
 							null,
-							this.props.playlist.tracks_total ? this.props.playlist.tracks_total : tracks.length,
+							playlist.tracks_total ? playlist.tracks_total : playlist.tracks ? playlist.tracks.length : '0',
 							' tracks,\xA0',
-							_react2.default.createElement(_Dater2.default, { type: 'total-time', data: tracks })
+							_react2.default.createElement(_Dater2.default, { type: 'total-time', data: playlist.tracks })
 						)
 					)
 				),
@@ -67287,14 +68696,18 @@ var Playlist = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'list-wrapper' },
-					_react2.default.createElement(_TrackList2.default, { uri: this.props.params.uri, className: 'playlist-track-list', context: context, tracks: tracks, removeTracks: function removeTracks(tracks_indexes) {
+					_react2.default.createElement(_TrackList2.default, { uri: playlist.uri, className: 'playlist-track-list', context: context, tracks: playlist.tracks, removeTracks: function removeTracks(tracks_indexes) {
 							return _this3.removeTracks(tracks_indexes);
 						}, reorderTracks: function reorderTracks(indexes, index) {
 							return _this3.reorderTracks(indexes, index);
 						} }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.playlist.tracks_more, forceLoader: is_loading_tracks, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: playlist.tracks_more,
+						showLoader: is_loading_tracks || playlist.tracks_more,
+						loadMore: function loadMore() {
 							return _this3.loadMore();
-						} })
+						}
+					})
 				)
 			);
 		}
@@ -67315,13 +68728,14 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
+		users: state.core.users,
 		tracks: state.core.tracks,
 		playlist: state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false,
 		spotify_library_playlists: state.spotify.library_playlists,
 		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
-		spotify_userid: state.spotify.me.id
+		spotify_userid: state.spotify.me && state.spotify.me.id ? state.spotify.me.id : null
 	};
 };
 
@@ -67374,7 +68788,7 @@ var _LazyLoadListener = __webpack_require__(23);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -67429,13 +68843,15 @@ var User = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.setWindowTitle();
-			this.loadUser();
+			this.props.coreActions.loadUser(this.props.params.uri);
+			this.props.coreActions.loadUserPlaylists(this.props.params.uri);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadUser(nextProps);
+				this.props.coreActions.loadUser(nextProps.params.uri);
+				this.props.coreActions.loadUserPlaylists(this.props.params.uri);
 			}
 
 			if (!this.props.user && nextProps.user) {
@@ -67451,16 +68867,6 @@ var User = function (_React$Component) {
 				this.props.uiActions.setWindowTitle(user.name + " (user)");
 			} else {
 				this.props.uiActions.setWindowTitle("User");
-			}
-		}
-	}, {
-		key: 'loadUser',
-		value: function loadUser() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-			if (!props.user || props.user.playlists_uris === undefined) {
-				this.props.spotifyActions.getUser(props.params.uri, true);
-				this.props.spotifyActions.following(props.params.uri);
 			}
 		}
 	}, {
@@ -67497,18 +68903,10 @@ var User = function (_React$Component) {
 				}
 			}
 
-			var playlists = [];
-			if (this.props.user.playlists_uris) {
-				for (var i = 0; i < this.props.user.playlists_uris.length; i++) {
-					var uri = this.props.user.playlists_uris[i];
-					if (this.props.playlists.hasOwnProperty(uri)) {
-						playlists.push(this.props.playlists[uri]);
-					}
-				}
-			}
+			var user = helpers.collate(this.props.user, { playlists: this.props.playlists });
 
-			if (this.props.user && this.props.user.images) {
-				var image = helpers.sizedImages(this.props.user.images).huge;
+			if (user && user.images) {
+				var image = user.images.huge;
 			} else {
 				var image = null;
 			}
@@ -67519,14 +68917,14 @@ var User = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: image }),
+					_react2.default.createElement(_Parallax2.default, { image: image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
 						_react2.default.createElement(
 							'h1',
 							null,
-							this.props.user.display_name ? this.props.user.display_name : this.props.user.id
+							user.name
 						),
 						_react2.default.createElement(
 							'h2',
@@ -67534,16 +68932,16 @@ var User = function (_React$Component) {
 							_react2.default.createElement(
 								'ul',
 								{ className: 'details' },
-								this.props.user.playlists_total ? _react2.default.createElement(
+								user.playlists_total ? _react2.default.createElement(
 									'li',
 									null,
-									this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0,
+									user.playlists_total ? user.playlists_total.toLocaleString() : 0,
 									' playlists'
 								) : null,
-								this.props.user.followers ? _react2.default.createElement(
+								user.followers ? _react2.default.createElement(
 									'li',
 									null,
-									this.props.user.followers.total.toLocaleString(),
+									user.followers.toLocaleString(),
 									' followers'
 								) : null,
 								this.isMe() ? _react2.default.createElement(
@@ -67560,7 +68958,7 @@ var User = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'actions' },
-							_react2.default.createElement(_FollowButton2.default, { className: 'primary', uri: this.props.params.uri, addText: 'Follow', removeText: 'Unfollow' })
+							_react2.default.createElement(_FollowButton2.default, { className: 'primary', uri: user.uri, addText: 'Follow', removeText: 'Unfollow' })
 						)
 					)
 				),
@@ -67575,10 +68973,14 @@ var User = function (_React$Component) {
 							null,
 							'Playlists'
 						),
-						_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists }),
-						_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.user.playlists_more, loadMore: function loadMore() {
+						_react2.default.createElement(_PlaylistGrid2.default, { playlists: user.playlists }),
+						_react2.default.createElement(_LazyLoadListener2.default, {
+							loadKey: user.playlists_more,
+							showLoader: user.playlists_more,
+							loadMore: function loadMore() {
 								return _this2.loadMore();
-							} })
+							}
+						})
 					)
 				)
 			);
@@ -67591,9 +68993,11 @@ var User = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	var uri = ownProps.params.uri;
 	return {
+		me: state.spotify.me,
+		theme: state.ui.theme,
+		disable_parallax: state.ui.disable_parallax,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
-		me: state.spotify.me,
 		playlists: state.core.playlists,
 		user: state.core.users[uri] !== undefined ? state.core.users[uri] : false
 	};
@@ -67734,7 +69138,16 @@ var Track = function (_React$Component) {
 	_createClass(Track, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.loadTrack();
+			this.props.coreActions.loadTrack(this.props.params.uri);
+
+			// We already have the track in our index, so it won't fire componentWillReceiveProps
+			if (this.props.track) {
+				this.setWindowTitle(this.props.track);
+
+				if (this.props.track.artists && !this.props.track.lyrics_results) {
+					this.props.geniusActions.findTrackLyrics(this.props.track);
+				}
+			}
 		}
 	}, {
 		key: 'handleContextMenu',
@@ -67749,19 +69162,23 @@ var Track = function (_React$Component) {
 
 			// if our URI has changed, fetch new track
 			if (nextProps.params.uri != this.props.params.uri) {
-				this.loadTrack(nextProps);
+				this.props.coreActions.loadTrack(nextProps.params.uri);
+
+				if (nextProps.tracks.artists) {
+					this.props.geniusActions.findTrackLyrics(nextProps.track);
+				}
 
 				// if mopidy has just connected AND we're not a Spotify track, go get
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
 				if (helpers.uriSource(this.props.params.uri) != 'spotify') {
-					this.loadTrack(nextProps);
+					this.props.coreActions.loadTrack(nextProps.params.uri);
 				}
 			}
 
-			// We have just received our full track info (with artists)
-			if (!this.props.track.artists && nextProps.track.artists) {
+			// We have just received our full track or our track artists
+			if (!this.props.track && nextProps.track || !this.props.track.artists && nextProps.track.artists) {
 
-				this.props.uiActions.setWindowTitle(nextProps.track);
+				this.setWindowTitle(nextProps.track);
 
 				// Ready to load LastFM
 				if (nextProps.lastfm_authorized) {
@@ -67806,53 +69223,6 @@ var Track = function (_React$Component) {
 				uris: [this.props.params.uri]
 			};
 			this.props.uiActions.showContextMenu(data);
-		}
-
-		/**
-   * TODO: Identify why images being loaded breaks the thumbnail. Is there a new image array format
-   * we need to accommodate?
-   **/
-
-	}, {
-		key: 'loadTrack',
-		value: function loadTrack() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-			switch (helpers.uriSource(props.params.uri)) {
-
-				case 'spotify':
-					if (props.track) {
-						console.info('Loading track from index');
-					} else {
-						this.props.spotifyActions.getTrack(props.params.uri);
-						this.props.spotifyActions.following(props.params.uri);
-					}
-					break;
-
-				default:
-					if (props.mopidy_connected) {
-						if (props.track) {
-							console.info('Loading track from index');
-						} else {
-							this.props.mopidyActions.getTrack(props.params.uri);
-						}
-					}
-					break;
-			}
-
-			// We have artist info already
-			if (props.track && props.track.artists) {
-
-				// Get the LastFM version of this track (provided we have artist info)
-				if (props.lastfm_authorized) {
-					this.props.lastfmActions.getTrack(props.track.uri);
-				}
-
-				// Ready for lyrics
-				if (props.track && !props.track.lyrics_results) {
-					this.props.geniusActions.findTrackLyrics(props.track);
-				}
-			}
 		}
 	}, {
 		key: 'play',
@@ -68074,7 +69444,7 @@ var Track = function (_React$Component) {
 							} },
 						'Play'
 					),
-					_react2.default.createElement(_LastfmLoveButton2.default, { uri: this.props.params.uri, artist: this.props.track.artists[0].name, track: this.props.track.name, addText: 'Love', removeText: 'Unlove', is_loved: this.props.track.userloved }),
+					_react2.default.createElement(_LastfmLoveButton2.default, { uri: this.props.params.uri, artist: this.props.track.artists ? this.props.track.artists[0].name : null, track: this.props.track.name, addText: 'Love', removeText: 'Unlove', is_loved: this.props.track.userloved }),
 					_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
 							return _this3.handleContextMenu(e);
 						} })
@@ -68291,7 +69661,7 @@ var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -68484,7 +69854,7 @@ var Queue = function (_React$Component) {
 			var current_track_image = null;
 			if (current_track && this.props.current_track_uri) {
 				if (current_track.images !== undefined && current_track.images) {
-					current_track_image = helpers.sizedImages(current_track.images).large;
+					current_track_image = current_track.images.large;
 				}
 			}
 
@@ -68533,7 +69903,7 @@ var Queue = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 					'Now playing'
 				),
-				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image, theme: this.props.theme }),
+				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image, theme: this.props.theme, disabled: this.props.disable_parallax }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -68575,7 +69945,8 @@ var Queue = function (_React$Component) {
 							},
 							reorderTracks: function reorderTracks(indexes, index) {
 								return _this2.reorderTracks(indexes, index);
-							} })
+							}
+						})
 					)
 				)
 			);
@@ -68593,11 +69964,14 @@ var Queue = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: state.core.radio && state.core.radio.enabled ? true : false,
 		tracks: state.core.tracks,
+		artists: state.core.artists,
+		albums: state.core.albums,
 		queue: state.core.queue,
 		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,
@@ -69366,7 +70740,7 @@ var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -70023,16 +71397,6 @@ var SearchForm = function (_React$Component) {
 	}
 
 	_createClass(SearchForm, [{
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {
-
-			// Term has been changed on us! This will be where the URL parameters have been
-			// digested and updated in the parent view
-			if (nextProps.term != '' && nextProps.term != this.state.term) {
-				this.setState({ term: nextProps.term });
-			}
-		}
-	}, {
 		key: 'handleSubmit',
 		value: function handleSubmit(e) {
 			e.preventDefault();
@@ -70078,14 +71442,15 @@ var SearchForm = function (_React$Component) {
 					null,
 					_react2.default.createElement('input', {
 						type: 'text',
-						placeholder: 'Search...',
+						placeholder: this.props.term ? this.props.term : "Search...",
 						onChange: function onChange(e) {
 							return _this2.setState({ term: e.target.value });
 						},
 						onBlur: function onBlur(e) {
 							return _this2.props.onBlur(_this2.state.term);
 						},
-						value: this.state.term })
+						value: this.state.term
+					})
 				)
 			);
 		}
@@ -70126,7 +71491,7 @@ var _reactRouter = __webpack_require__(6);
 
 var _redux = __webpack_require__(2);
 
-var _ConfirmationButton = __webpack_require__(114);
+var _ConfirmationButton = __webpack_require__(115);
 
 var _ConfirmationButton2 = _interopRequireDefault(_ConfirmationButton);
 
@@ -70542,55 +71907,10 @@ var Settings = function (_React$Component) {
 						'Services'
 					),
 					_react2.default.createElement(_Services2.default, { active: this.props.params.sub_view }),
-					helpers.isHosted() ? null : _react2.default.createElement(
-						'h4',
-						{ className: 'underline' },
-						'Privacy'
-					),
-					helpers.isHosted() ? null : _react2.default.createElement(
-						'div',
-						{ className: 'field checkbox' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'name' },
-							'Reporting'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'input' },
-							_react2.default.createElement(
-								'label',
-								null,
-								_react2.default.createElement('input', {
-									type: 'checkbox',
-									name: 'allow_reporting',
-									checked: this.props.ui.allow_reporting,
-									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
-									} }),
-								_react2.default.createElement(
-									'span',
-									{ className: 'label' },
-									'Allow reporting of anonymous usage statistics'
-								)
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'description' },
-								'Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the ',
-								_react2.default.createElement(
-									'a',
-									{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
-									'privacy policy'
-								),
-								'.'
-							)
-						)
-					),
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Advanced'
+						'Interface'
 					),
 					_react2.default.createElement(
 						'div',
@@ -70645,7 +71965,7 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'name' },
-							'UI behavior'
+							'Behavior'
 						),
 						_react2.default.createElement(
 							'div',
@@ -70686,6 +72006,27 @@ var Settings = function (_React$Component) {
 									{ className: 'label' },
 									'Enable shortkeys'
 								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'shortkeys_enabled',
+									checked: this.props.ui.disable_parallax,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ disable_parallax: !_this2.props.ui.disable_parallax });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label has-tooltip' },
+									'Disable parallax',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip' },
+										'Improves scroll performance on low-powered devices'
+									)
+								)
 							)
 						)
 					),
@@ -70694,13 +72035,8 @@ var Settings = function (_React$Component) {
 						{ className: 'field sources-priority' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'name has-tooltip' },
-							'Sources priority',
-							_react2.default.createElement(
-								'span',
-								{ className: 'tooltip' },
-								'Order of searching and search results'
-							)
+							{ className: 'name' },
+							'Sources priority'
 						),
 						_react2.default.createElement(
 							'div',
@@ -70709,8 +72045,58 @@ var Settings = function (_React$Component) {
 								uri_schemes: this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : [],
 								uri_schemes_priority: this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : [],
 								uiActions: this.props.uiActions
-							})
+							}),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'Drag-and-drop to prioritize search providers and results'
+							)
 						)
+					),
+					helpers.isHosted() ? null : _react2.default.createElement(
+						'div',
+						{ className: 'field checkbox' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Reporting'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'allow_reporting',
+									checked: this.props.ui.allow_reporting,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Allow reporting of anonymous usage statistics'
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the ',
+								_react2.default.createElement(
+									'a',
+									{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
+									'privacy policy'
+								),
+								'.'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'h4',
+						{ className: 'underline' },
+						'Advanced'
 					),
 					_react2.default.createElement(
 						'div',
@@ -72926,11 +74312,11 @@ var _URILink = __webpack_require__(24);
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
-var _SpotifyAuthenticationFrame = __webpack_require__(115);
+var _SpotifyAuthenticationFrame = __webpack_require__(116);
 
 var _SpotifyAuthenticationFrame2 = _interopRequireDefault(_SpotifyAuthenticationFrame);
 
-var _LastfmAuthenticationFrame = __webpack_require__(116);
+var _LastfmAuthenticationFrame = __webpack_require__(117);
 
 var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
 
@@ -72999,6 +74385,9 @@ var Services = function (_React$Component) {
 	_createClass(Services, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined) {
+				this.props.spotifyActions.getMe();
+			}
 			if (this.props.lastfm.session && this.props.core.users["lastfm:user:" + this.props.lastfm.session.name] === undefined) {
 				this.props.lastfmActions.getMe();
 			}
@@ -73048,7 +74437,7 @@ var Services = function (_React$Component) {
 				);
 			}
 
-			var user_object = this.props.spotify.me;
+			var user_object = this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri] ? this.props.core.users[this.props.spotify.me.uri] : null;
 			if (user_object) {
 				var user = _react2.default.createElement(
 					_URILink2.default,
@@ -73057,7 +74446,7 @@ var Services = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
-						user_object.display_name ? user_object.display_name : user_object.id,
+						user_object.name ? user_object.name : user_object.id,
 						!this.props.spotify.authorization ? _react2.default.createElement(
 							'span',
 							{ className: 'grey-text' },
@@ -73246,11 +74635,11 @@ var Services = function (_React$Component) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.image }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.images }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
-						user_object.realname ? user_object.realname : user_object.name
+						user_object.name
 					)
 				);
 			} else {
@@ -73306,12 +74695,12 @@ var Services = function (_React$Component) {
 	}, {
 		key: 'renderGenius',
 		value: function renderGenius() {
-			var user_object = this.props.genius.me ? this.props.core.users["genius:user:" + this.props.genius.me.id] : null;
+			var user_object = this.props.genius.me ? this.props.core.users[this.props.genius.me.uri] : null;
 			if (user_object) {
 				var user = _react2.default.createElement(
 					'span',
 					{ className: 'user' },
-					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.avatar }),
+					_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: user_object.images }),
 					_react2.default.createElement(
 						'span',
 						{ className: 'user-name' },
@@ -73435,20 +74824,20 @@ var Services = function (_React$Component) {
 		key: 'renderMenu',
 		value: function renderMenu() {
 
-			if (this.props.spotify.me) {
-				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.spotify.me.images });
+			if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]) {
+				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.spotify.me.uri].images });
 			} else {
 				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small' });
 			}
 
-			if (this.props.lastfm.me && this.props.core.users["lastfm:user:" + this.props.lastfm.me.name]) {
-				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["lastfm:user:" + this.props.lastfm.me.name].image });
+			if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]) {
+				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.lastfm.me.uri].images });
 			} else {
 				var lastfm_icon = _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'lastfm' });
 			}
 
-			if (this.props.genius.me && this.props.core.users["genius:user:" + this.props.genius.me.id]) {
-				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users["genius:user:" + this.props.genius.me.id].avatar });
+			if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]) {
+				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.genius.me.uri].images });
 			} else {
 				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'genius', type: 'svg' });
 			}
@@ -73865,7 +75254,7 @@ var _TextField = __webpack_require__(314);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -74035,8 +75424,8 @@ var Snapcast = function (_React$Component) {
 
 			if (!this.props.snapcast_enabled) {
 				return _react2.default.createElement(
-					'div',
-					null,
+					'p',
+					{ className: 'message warning' },
 					'To enable Snapcast, edit your ',
 					_react2.default.createElement(
 						'code',
@@ -74524,11 +75913,11 @@ var _Thumbnail = __webpack_require__(12);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -74544,7 +75933,7 @@ var _ContextMenuTrigger = __webpack_require__(25);
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
-var _RelatedArtists = __webpack_require__(113);
+var _RelatedArtists = __webpack_require__(114);
 
 var _RelatedArtists2 = _interopRequireDefault(_RelatedArtists);
 
@@ -75050,15 +76439,19 @@ var Discover = function (_React$Component) {
 						'h4',
 						null,
 						'Tracks',
-						_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-								return _this4.handleContextMenu(e);
-							} }),
 						_react2.default.createElement(
-							'button',
-							{ className: 'primary pull-right', onClick: function onClick(e) {
-									return _this4.playTracks(e);
-								} },
-							'Play all'
+							'div',
+							{ className: 'pull-right' },
+							_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
+									return _this4.handleContextMenu(e);
+								} }),
+							_react2.default.createElement(
+								'button',
+								{ className: 'primary', onClick: function onClick(e) {
+										return _this4.playTracks(e);
+									} },
+								'Play all'
+							)
 						)
 					),
 					_react2.default.createElement(_TrackList2.default, { className: 'discover-track-list', uri: uri, tracks: tracks })
@@ -75121,7 +76514,7 @@ var Discover = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg', theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg', theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
@@ -75182,6 +76575,7 @@ var Discover = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,
@@ -75304,7 +76698,7 @@ var _defaultClassNames = __webpack_require__(326);
 
 var _defaultClassNames2 = _interopRequireDefault(_defaultClassNames);
 
-var _label = __webpack_require__(117);
+var _label = __webpack_require__(118);
 
 var _label2 = _interopRequireDefault(_label);
 
@@ -76651,7 +78045,7 @@ var _autobindDecorator = __webpack_require__(72);
 
 var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
 
-var _label = __webpack_require__(117);
+var _label = __webpack_require__(118);
 
 var _label2 = _interopRequireDefault(_label);
 
@@ -77465,18 +78859,6 @@ var AddSeedField = function (_React$Component) {
 			this.setState({ value: '' });
 			this.props.onSelect(e, item.uri);
 			this.props.spotifyActions.clearAutocompleteResults(this.id);
-
-			// Add our selected item to our global index
-			switch (helpers.uriType(item.uri)) {
-
-				case 'artist':
-					this.props.coreActions.artistsLoaded(item);
-					break;
-
-				case 'track':
-					this.props.coreActions.tracksLoaded(item);
-					break;
-			}
 		}
 	}, {
 		key: 'results',
@@ -77615,7 +78997,7 @@ var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -77694,7 +79076,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: helpers.sizedImages(playlist.images).huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.large : null, blur: true, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -77734,7 +79116,7 @@ var DiscoverFeatured = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, null)
+					_react2.default.createElement(_Parallax2.default, { disabled: this.props.disable_parallax })
 				);
 			}
 		}
@@ -77816,6 +79198,7 @@ var DiscoverFeatured = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,
@@ -77901,7 +79284,11 @@ var DiscoverCategories = function (_React$Component) {
 	_createClass(DiscoverCategories, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (!this.props.categories) {
+
+			// Check for an empty category index, or where we've only got one loaded
+			// This would be the case if you've refreshed from within a category and only loaded
+			// the single record.
+			if (!this.props.categories || Object.keys(this.props.categories).length <= 1) {
 				this.props.spotifyActions.getCategories();
 			}
 			this.props.uiActions.setWindowTitle("Genre / Mood");
@@ -77961,7 +79348,7 @@ var DiscoverCategories = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		categories: state.core.categories,
+		categories: state.spotify.categories,
 		load_queue: state.ui.load_queue
 	};
 };
@@ -78144,16 +79531,20 @@ var DiscoverCategory = function (_React$Component) {
 	}, {
 		key: 'loadCategory',
 		value: function loadCategory() {
-			if (!this.props.category || !this.props.category.playlists_uris) {
+			if (!this.props.category) {
 				this.props.spotifyActions.getCategory(this.props.params.id);
+			}
+
+			if (!this.props.category.playlists_uris) {
+				this.props.spotifyActions.getCategoryPlaylists(this.props.params.id);
 			}
 		}
 	}, {
 		key: 'loadMore',
 		value: function loadMore() {
 			this.props.spotifyActions.getMore(this.props.category.playlists_more, null, {
-				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-				key: 'category:' + this.props.params.id
+				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
+				uri: 'category:' + this.props.params.id
 			});
 		}
 	}, {
@@ -78183,15 +79574,7 @@ var DiscoverCategory = function (_React$Component) {
 				return null;
 			}
 
-			var playlists = [];
-			if (this.props.category.playlists_uris) {
-				for (var i = 0; i < this.props.category.playlists_uris.length; i++) {
-					var key = this.props.category.playlists_uris[i];
-					if (this.props.playlists.hasOwnProperty(key)) {
-						playlists.push(this.props.playlists[key]);
-					}
-				}
-			}
+			var category = helpers.collate(this.props.category, { playlists: this.props.playlists });
 
 			return _react2.default.createElement(
 				'div',
@@ -78200,7 +79583,7 @@ var DiscoverCategory = function (_React$Component) {
 					_Header2.default,
 					null,
 					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
-					this.props.category.name
+					category.name
 				),
 				_react2.default.createElement(
 					'div',
@@ -78208,11 +79591,15 @@ var DiscoverCategory = function (_React$Component) {
 					_react2.default.createElement(
 						'section',
 						{ className: 'grid-wrapper' },
-						_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists })
+						_react2.default.createElement(_PlaylistGrid2.default, { playlists: category.playlists })
 					),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.category.playlists_more, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: category.playlists_more,
+						showLoader: category.playlists_more,
+						loadMore: function loadMore() {
 							return _this2.loadMore();
-						} })
+						}
+					})
 				)
 			);
 		}
@@ -78231,7 +79618,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
 		playlists: state.core.playlists,
-		category: state.core.categories && state.core.categories['category:' + ownProps.params.id] !== undefined ? state.core.categories['category:' + ownProps.params.id] : false
+		category: state.spotify.categories && state.spotify.categories['category:' + ownProps.params.id] !== undefined ? state.spotify.categories['category:' + ownProps.params.id] : false
 	};
 };
 
@@ -78279,7 +79666,7 @@ var _AlbumGrid = __webpack_require__(42);
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
 
-var _Parallax = __webpack_require__(33);
+var _Parallax = __webpack_require__(34);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -78343,8 +79730,7 @@ var DiscoverNewReleases = function (_React$Component) {
 		key: 'loadMore',
 		value: function loadMore() {
 			this.props.spotifyActions.getMore(this.props.new_releases_more, null, {
-				type: 'SPOTIFY_NEW_RELEASES_LOADED',
-				key: null
+				type: 'SPOTIFY_NEW_RELEASES_LOADED'
 			});
 		}
 	}, {
@@ -78375,7 +79761,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: helpers.sizedImages(album.images).huge, blur: true, theme: this.props.theme }),
+					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true, theme: this.props.theme, disabled: this.props.disable_parallax }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -78419,7 +79805,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, null)
+					_react2.default.createElement(_Parallax2.default, { disabled: this.props.disable_parallax })
 				);
 			}
 		}
@@ -78448,10 +79834,30 @@ var DiscoverNewReleases = function (_React$Component) {
 
 			var albums = [];
 			if (this.props.new_releases) {
-				for (var i = 0; i < this.props.new_releases.length; i++) {
-					var uri = this.props.new_releases[i];
-					if (this.props.albums.hasOwnProperty(uri)) {
-						albums.push(this.props.albums[uri]);
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
+
+				try {
+					for (var _iterator = this.props.new_releases[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var uri = _step.value;
+
+						if (this.props.albums.hasOwnProperty(uri)) {
+							albums.push(this.props.albums[uri]);
+						}
+					}
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator.return) {
+							_iterator.return();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
 					}
 				}
 			}
@@ -78459,7 +79865,7 @@ var DiscoverNewReleases = function (_React$Component) {
 			// Pull the first playlist out and we'll use this as a banner
 			var first_album = albums.splice(0, 1);
 			if (first_album) {
-				first_album = first_album[0];
+				first_album = helpers.collate(first_album[0], { artists: this.props.artists });
 			}
 
 			var options = _react2.default.createElement(
@@ -78486,9 +79892,13 @@ var DiscoverNewReleases = function (_React$Component) {
 					{ className: 'content-wrapper grid-wrapper' },
 					_react2.default.createElement(_AlbumGrid2.default, { albums: albums })
 				),
-				_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.new_releases_more, loadMore: function loadMore() {
+				_react2.default.createElement(_LazyLoadListener2.default, {
+					loadKey: this.props.new_releases_more,
+					showLoader: this.props.new_releases_more,
+					loadMore: function loadMore() {
 						return _this3.loadMore();
-					} })
+					}
+				})
 			);
 		}
 	}]);
@@ -78504,12 +79914,14 @@ var DiscoverNewReleases = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
+		artists: state.core.artists,
 		albums: state.core.albums,
-		new_releases: state.core.new_releases,
-		new_releases_more: state.core.new_releases_more,
-		new_releases_total: state.core.new_releases_total
+		new_releases: state.spotify.new_releases,
+		new_releases_more: state.spotify.new_releases_more,
+		new_releases_total: state.spotify.new_releases_total
 	};
 };
 
@@ -78559,7 +79971,7 @@ var _List = __webpack_require__(50);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -78755,9 +80167,13 @@ var LibraryArtists = function (_React$Component) {
 						columns: columns,
 						className: 'artist-list',
 						link_prefix: global.baseURL + "artist/" }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_artists, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						showLoader: this.state.limit < total_artists,
+						loadMore: function loadMore() {
 							return _this2.loadMore();
-						} })
+						}
+					})
 				);
 			} else {
 				return _react2.default.createElement(
@@ -78768,9 +80184,13 @@ var LibraryArtists = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						artists: artists }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_artists, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						showLoader: this.state.limit < total_artists,
+						loadMore: function loadMore() {
 							return _this2.loadMore();
-						} })
+						}
+					})
 				);
 			}
 		}
@@ -78950,7 +80370,7 @@ var _ArtistSentence = __webpack_require__(20);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -79168,9 +80588,13 @@ var LibraryAlbums = function (_React$Component) {
 						columns: columns,
 						className: 'album-list',
 						link_prefix: global.baseURL + "album/" }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_albums, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						showLoader: this.state.limit < total_albums,
+						loadMore: function loadMore() {
 							return _this2.setState({ limit: _this2.state.limit + _this2.state.per_page });
-						} })
+						}
+					})
 				);
 			} else {
 				return _react2.default.createElement(
@@ -79181,9 +80605,13 @@ var LibraryAlbums = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						albums: albums }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_albums, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						showLoader: this.state.limit < total_albums,
+						loadMore: function loadMore() {
 							return _this2.setState({ limit: _this2.state.limit + _this2.state.per_page });
-						} })
+						}
+					})
 				);
 			}
 		}
@@ -79406,11 +80834,9 @@ var LibraryTracks = function (_React$Component) {
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Tracks");
 
-			if (!this.props.spotify_enabled) {
+			if (!this.props.spotify_me) {
 				this.props.uiActions.createNotification({ type: 'warning', content: 'Enable Spotify to browse tracks' });
-			}
-
-			if (this.props.spotify_enabled && this.props.library_tracks === undefined) {
+			} else if (this.props.library_tracks === undefined) {
 				this.props.spotifyActions.getLibraryTracks();
 			}
 		}
@@ -79480,9 +80906,13 @@ var LibraryTracks = function (_React$Component) {
 					'section',
 					{ className: 'content-wrapper' },
 					_react2.default.createElement(_TrackList2.default, { tracks: tracks }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.library_tracks_more, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.props.library_tracks_more,
+						showLoader: this.props.library_tracks_more,
+						loadMore: function loadMore() {
 							return _this2.loadMore();
-						} })
+						}
+					})
 				)
 			);
 		}
@@ -79501,7 +80931,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
-		spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
+		spotify_me: state.spotify.me,
 		library_tracks: state.spotify.library_tracks,
 		library_tracks_more: state.spotify.library_tracks_more
 	};
@@ -79548,7 +80978,7 @@ var _List = __webpack_require__(50);
 
 var _List2 = _interopRequireDefault(_List);
 
-var _DropdownField = __webpack_require__(34);
+var _DropdownField = __webpack_require__(33);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
@@ -79744,9 +81174,13 @@ var LibraryPlaylists = function (_React$Component) {
 						columns: columns,
 						className: 'playlist-list',
 						link_prefix: global.baseURL + "playlist/" }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_playlists, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						loading: this.state.limit < total_playlists,
+						loadMore: function loadMore() {
 							return _this2.setState({ limit: _this2.state.limit + _this2.state.per_page });
-						} })
+						}
+					})
 				);
 			} else {
 				return _react2.default.createElement(
@@ -79757,9 +81191,13 @@ var LibraryPlaylists = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						playlists: playlists }),
-					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.state.limit < total_playlists, loadMore: function loadMore() {
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: this.state.limit,
+						loading: this.state.limit < total_playlists,
+						loadMore: function loadMore() {
 							return _this2.setState({ limit: _this2.state.limit + _this2.state.per_page });
-						} })
+						}
+					})
 				);
 			}
 		}
@@ -79949,6 +81387,10 @@ var _GridItem = __webpack_require__(40);
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
 
+var _DropdownField = __webpack_require__(33);
+
+var _DropdownField2 = _interopRequireDefault(_DropdownField);
+
 var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -80037,31 +81479,36 @@ var LibraryBrowse = function (_React$Component) {
 			this.props.uiActions.hideContextMenu();
 		}
 	}, {
-		key: 'arrangeDirectory',
-		value: function arrangeDirectory() {
-			var directory = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.directory;
-
-			var folders = [];
-			var tracks = [];
-
-			for (var i = 0; i < directory.length; i++) {
-				if (directory[i].type && directory[i].type == 'track') {
-					tracks.push(directory[i]);
-				} else {
-					folders.push(Object.assign({}, directory[i], {
-						uri: directory[i].uri
-					}));
-				}
+		key: 'renderSubdirectories',
+		value: function renderSubdirectories(subdirectories) {
+			if (this.props.view == 'list') {
+				return _react2.default.createElement(_List2.default, {
+					nocontext: true,
+					columns: [{ name: 'name', width: '100' }],
+					rows: subdirectories,
+					className: 'library-local-directory-list',
+					link_prefix: global.baseURL + 'library/browse/'
+				});
+			} else {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'grid category-grid' },
+					subdirectories.map(function (subdirectory) {
+						return _react2.default.createElement(_GridItem2.default, {
+							key: subdirectory.uri,
+							type: 'category',
+							item: subdirectory,
+							onClick: function onClick(e) {
+								_reactRouter.hashHistory.push(global.baseURL + 'library/browse/' + encodeURIComponent(subdirectory.uri));
+							}
+						});
+					})
+				);
 			}
-
-			return {
-				folders: folders,
-				tracks: tracks
-			};
 		}
 	}, {
 		key: 'renderDirectory',
-		value: function renderDirectory() {
+		value: function renderDirectory(directory) {
 			var _this2 = this;
 
 			var title = 'Browse';
@@ -80084,19 +81531,37 @@ var LibraryBrowse = function (_React$Component) {
 				);
 			}
 
-			var items = this.arrangeDirectory(this.props.directory);
+			var tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
+			var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
+
+			var view_options = [{
+				label: 'Thumbnails',
+				value: 'thumbnails'
+			}, {
+				label: 'List',
+				value: 'list'
+			}];
 
 			var options = _react2.default.createElement(
 				'span',
 				null,
-				_react2.default.createElement(
+				_react2.default.createElement(_DropdownField2.default, {
+					icon: 'visibility',
+					name: 'View',
+					value: this.props.view,
+					options: view_options,
+					handleChange: function handleChange(value) {
+						_this2.props.uiActions.set({ library_directory_view: value });_this2.props.uiActions.hideContextMenu();
+					}
+				}),
+				tracks ? _react2.default.createElement(
 					'button',
 					{ className: 'no-hover', onClick: function onClick(e) {
 							return _this2.playAll(e);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
 					'Play all'
-				),
+				) : null,
 				_react2.default.createElement(
 					'button',
 					{ className: 'no-hover', onClick: function onClick(e) {
@@ -80119,18 +81584,12 @@ var LibraryBrowse = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
-					_react2.default.createElement(_List2.default, {
-						nocontext: true,
-						columns: [{ name: 'name', width: '100' }],
-						rows: items.folders,
-						className: 'library-local-directory-list',
-						link_prefix: global.baseURL + 'library/browse/'
-					}),
-					_react2.default.createElement(_TrackList2.default, {
-						tracks: items.tracks,
+					subdirectories ? this.renderSubdirectories(subdirectories) : null,
+					tracks ? _react2.default.createElement(_TrackList2.default, {
+						tracks: this.props.directory.tracks,
 						uri: "iris:browse:" + this.props.params.uri,
-						className: 'library-local-track-list',
-						noheader: true })
+						className: 'library-local-track-list'
+					}) : null
 				)
 			);
 		}
@@ -80139,57 +81598,77 @@ var LibraryBrowse = function (_React$Component) {
 		value: function renderIndex() {
 			var grid_items = [];
 			if (this.props.directory) {
-				for (var i = 0; i < this.props.directory.length; i++) {
-					var directory = this.props.directory[i];
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
 
-					switch (directory.name) {
-						case 'Dirble':
-							directory.icons = ['assets/backgrounds/browse-dirble.jpg'];
-							break;
+				try {
+					for (var _iterator = this.props.directory.subdirectories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var subdirectory = _step.value;
 
-						case 'Files':
-							directory.icons = ['assets/backgrounds/browse-folders.jpg'];
-							break;
 
-						case 'Local media':
-							directory.icons = ['assets/backgrounds/browse-folders.jpg'];
-							break;
+						switch (subdirectory.name) {
+							case 'Dirble':
+								subdirectory.icons = ['assets/backgrounds/browse-dirble.jpg'];
+								break;
 
-						case 'Spotify':
-						case 'Spotify Browse':
-							directory.icons = ['assets/backgrounds/browse-spotify.jpg'];
-							break;
+							case 'Files':
+								subdirectory.icons = ['assets/backgrounds/browse-folders.jpg'];
+								break;
 
-						case 'Spotify Tunigo':
-						case 'Tunigo':
-							directory.icons = ['assets/backgrounds/browse-tunigo.jpg'];
-							break;
+							case 'Local media':
+								subdirectory.icons = ['assets/backgrounds/browse-folders.jpg'];
+								break;
 
-						case 'TuneIn':
-							directory.icons = ['assets/backgrounds/browse-tunein.jpg'];
-							break;
+							case 'Spotify':
+							case 'Spotify Browse':
+								subdirectory.icons = ['assets/backgrounds/browse-spotify.jpg'];
+								break;
 
-						case 'SoundCloud':
-							directory.icons = ['assets/backgrounds/browse-soundcloud.jpg'];
-							break;
+							case 'Spotify Tunigo':
+							case 'Tunigo':
+								subdirectory.icons = ['assets/backgrounds/browse-tunigo.jpg'];
+								break;
 
-						case 'iTunes Store: Podcasts':
-							directory.icons = ['assets/backgrounds/browse-itunes.jpg'];
-							break;
+							case 'TuneIn':
+								subdirectory.icons = ['assets/backgrounds/browse-tunein.jpg'];
+								break;
 
-						case 'Soma FM':
-							directory.icons = ['assets/backgrounds/browse-somafm.jpg'];
-							break;
+							case 'SoundCloud':
+								subdirectory.icons = ['assets/backgrounds/browse-soundcloud.jpg'];
+								break;
 
-						default:
-							directory.icons = ['assets/backgrounds/browse-default.jpg'];
+							case 'iTunes Store: Podcasts':
+								subdirectory.icons = ['assets/backgrounds/browse-itunes.jpg'];
+								break;
+
+							case 'Soma FM':
+								subdirectory.icons = ['assets/backgrounds/browse-somafm.jpg'];
+								break;
+
+							default:
+								subdirectory.icons = ['assets/backgrounds/browse-default.jpg'];
+						}
+
+						grid_items.push({
+							name: subdirectory.name,
+							link: global.baseURL + 'library/browse/' + encodeURIComponent(subdirectory.uri),
+							icons: helpers.formatImages(subdirectory.icons)
+						});
 					}
-
-					grid_items.push({
-						name: directory.name,
-						link: global.baseURL + 'library/browse/' + encodeURIComponent(directory.uri),
-						icons: directory.icons
-					});
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator.return) {
+							_iterator.return();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
+					}
 				}
 			}
 
@@ -80212,6 +81691,7 @@ var LibraryBrowse = function (_React$Component) {
 							return _react2.default.createElement(_GridItem2.default, {
 								item: item,
 								key: index,
+								type: 'category',
 								onClick: function onClick(e) {
 									return _reactRouter.hashHistory.push(item.link);
 								}
@@ -80239,7 +81719,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		load_queue: state.ui.load_queue,
 		mopidy_connected: state.mopidy.connected,
-		directory: state.mopidy.directory
+		directory: state.mopidy.directory,
+		view: state.ui.library_directory_view
 	};
 };
 
@@ -81597,11 +83078,11 @@ var _Icon = __webpack_require__(7);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _SpotifyAuthenticationFrame = __webpack_require__(115);
+var _SpotifyAuthenticationFrame = __webpack_require__(116);
 
 var _SpotifyAuthenticationFrame2 = _interopRequireDefault(_SpotifyAuthenticationFrame);
 
-var _LastfmAuthenticationFrame = __webpack_require__(116);
+var _LastfmAuthenticationFrame = __webpack_require__(117);
 
 var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
 

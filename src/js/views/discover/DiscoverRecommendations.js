@@ -449,8 +449,10 @@ class Discover extends React.Component{
 				<section className="col w70 tracks">
 					<h4>
 						Tracks
-						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
-						<button className="primary pull-right" onClick={e => this.playTracks(e)}>Play all</button>
+						<div className="pull-right">
+							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
+							<button className="primary" onClick={e => this.playTracks(e)}>Play all</button>
+						</div>
 					</h4>
 					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
 				</section>
@@ -501,7 +503,7 @@ class Discover extends React.Component{
 			<div className="view discover-view">
 				<div className="intro">
 
-					<Parallax image="assets/backgrounds/discover.jpg" theme={this.props.theme} />
+					<Parallax image="assets/backgrounds/discover.jpg" theme={this.props.theme} disabled={this.props.disable_parallax} />
 
 					<div className="liner">
 						<h1>Explore new music</h1>
@@ -545,6 +547,7 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,

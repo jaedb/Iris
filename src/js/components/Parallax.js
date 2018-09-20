@@ -22,15 +22,21 @@ export default class Parallax extends React.Component{
 			url: false
 		}
 
-		// we need to manually bind this as eventListener doesn't work with anonymous functions
-		this.handleResize = this.handleResize.bind(this);
-		this.handleScroll = this.handleScroll.bind(this);
+		if (!this.props.disabled){
+
+			// we need to manually bind this as eventListener doesn't work with anonymous functions
+			this.handleResize = this.handleResize.bind(this);
+			this.handleScroll = this.handleScroll.bind(this);
+		}
 	}
 
 	componentDidMount(){
+		if (!this.props.disabled){
+	        window.addEventListener("resize", this.handleResize);
+	        window.addEventListener("scroll", this.handleScroll);
+		}
+
         this._mounted = true;
-        window.addEventListener("resize", this.handleResize);
-        window.addEventListener("scroll", this.handleScroll);
 
         if (this.props.image){
 			this._loading = true;
@@ -54,10 +60,13 @@ export default class Parallax extends React.Component{
 	}
 
     componentWillUnmount(){
-        this._mounted = false;
-        window.removeEventListener("resize", this.handleResize);
-        window.removeEventListener("scroll", this.handleScroll);
-    }
+	    this._mounted = false;
+
+    	if (!this.props.disabled){
+	        window.removeEventListener("resize", this.handleResize);
+	        window.removeEventListener("scroll", this.handleScroll);
+	    }
+	}
 
 	componentWillReceiveProps(nextProps){
 		if ((!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
@@ -78,9 +87,7 @@ export default class Parallax extends React.Component{
 	}
 
     handleResize(e){
-    	if (this._loaded){
-	    	this.updateCanvas(this.state.image);
-	    }
+    	this.updateCanvas(this.state.image);
     }
 
     handleScroll(e){
@@ -205,7 +212,7 @@ export default class Parallax extends React.Component{
 
 	render(){
 		return (
-			<div className={this.props.blur ? "parallax blur" : "parallax"}>
+			<div className={this.props.blur && !this.props.disabled ? "parallax blur" : "parallax"}>
 
 				<canvas 
 					id="parallax-canvas" 

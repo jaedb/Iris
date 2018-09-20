@@ -50,7 +50,6 @@ class Thumbnail extends React.Component{
 
 		// Multiple images
 		} else if (this.props.images){
-			var images = helpers.sizedImages(this.props.images);
 
 			// Default to medium-sized image, but accept size property as override
 			var size = 'medium';
@@ -58,7 +57,7 @@ class Thumbnail extends React.Component{
 				size = this.props.size;
 			}
 
-			return images[size];
+			return this.props.images[size];
 		}
 
 		// No images

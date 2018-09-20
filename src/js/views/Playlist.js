@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import ReactGA from 'react-ga'
 
 import TrackList from '../components/TrackList'
@@ -28,17 +28,28 @@ class Playlist extends React.Component{
 		super(props);
 	}
 
+	componentWillMount(){
+		var uri = this.props.params.uri;
+
+		// Spotify upgraded their playlists URI to remove user component (Sept 2018)
+		// We accept the old format, and redirect to the new one
+		if (uri.includes("spotify:user:")){
+			uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+			hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(uri));
+		}
+	}
+
 	componentDidMount(){
-		this.loadPlaylist();
 		this.setWindowTitle();
+		this.props.coreActions.loadPlaylist(this.props.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadPlaylist(nextProps);
+			this.props.coreActions.loadPlaylist(nextProps.params.uri);
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
-				this.loadPlaylist(nextProps);
+				this.props.coreActions.loadPlaylist(nextProps.params.uri);
 			}
 		}
 
@@ -56,28 +67,6 @@ class Playlist extends React.Component{
 			this.props.uiActions.setWindowTitle(playlist.name+" (playlist)");
 		} else{
 			this.props.uiActions.setWindowTitle("Playlist");
-		}
-	}
-
-	loadPlaylist(props = this.props){
-		
-		if (props.playlist && props.playlist.is_completely_loaded){
-			console.info('Loading playlist from index')
-
-		} else {
-			switch (helpers.uriSource(props.params.uri)){
-
-				case 'spotify':
-					this.props.spotifyActions.getPlaylist(props.params.uri);
-					this.props.spotifyActions.following(props.params.uri);
-					break
-
-				default:
-					if (props.mopidy_connected){
-						this.props.mopidyActions.getPlaylist(props.params.uri);
-					}
-					break
-			}
 		}
 	}
 
@@ -140,7 +129,7 @@ class Playlist extends React.Component{
 	}
 
 	renderActions(){
-		switch(helpers.uriSource(this.props.playlist.uri )){
+		switch(helpers.uriSource(this.props.playlist.uri)){
 
 			case 'm3u':
 				return (
@@ -181,11 +170,10 @@ class Playlist extends React.Component{
 
 	render(){
 		var scheme = helpers.uriSource(this.props.params.uri);
-		var user_id = helpers.getFromUri('userid',this.props.params.uri);
 		var playlist_id = helpers.getFromUri('playlistid',this.props.params.uri);
 		
 		if (!this.props.playlist){
-			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id+'?'])){
+			if (helpers.isLoading(this.props.load_queue,['spotify_playlists/'+playlist_id+'?'])){
 				return (
 					<div className="body-loader loading">
 						<div className="loader"></div>
@@ -196,22 +184,14 @@ class Playlist extends React.Component{
 			}
 		}
 
+		var playlist = helpers.collate(this.props.playlist, {tracks: this.props.tracks, users: this.props.users});
+
 		var context = 'playlist';
-		if (this.props.playlist.can_edit){
+		if (playlist.can_edit){
 			context = 'editable-playlist';
 		}
 
-		var tracks = [];
-		if (this.props.playlist.tracks_uris && this.props.tracks){
-			for (var i = 0; i < this.props.playlist.tracks_uris.length; i++){
-				var uri = this.props.playlist.tracks_uris[i]
-				if (this.props.tracks.hasOwnProperty(uri)){
-					tracks.push(this.props.tracks[uri])
-				}
-			}
-		}
-
-		if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id+'/playlists/'+playlist_id, 'spotify_users/'+user_id+'/playlists/'+playlist_id+'/tracks'])){
+		if (!playlist.tracks_uris || (playlist.tracks_uris && !playlist.tracks) || (playlist.tracks_uris.length !== playlist.tracks.length)){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;
@@ -220,30 +200,34 @@ class Playlist extends React.Component{
 		return (
 			<div className="view playlist-view content-wrapper">
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={ this.props.playlist.images } />
+					<Thumbnail size="large" canZoom images={playlist.images} />
 				</div>
 
 				<div className="title">
-					<h1>{ this.props.playlist.name }</h1>
-					{ this.props.playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: this.props.playlist.description}}></h2> : null }
+					<h1>{playlist.name}</h1>
+					{playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{ !this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri )} /><span className="tooltip">{helpers.uriSource(this.props.params.uri)} playlist</span></li> : null }
-						{ this.props.playlist.owner && !this.props.slim_mode ? <li><URILink type="user" uri={this.props.playlist.owner.uri}>{this.props.playlist.owner.id}</URILink></li> : null }
-						{ this.props.playlist.followers ? <li>{this.props.playlist.followers.total.toLocaleString()} followers</li> : null }
-						{ this.props.playlist.last_modified ? <li>Edited <Dater type="ago" data={this.props.playlist.last_modified} /></li> : null }
+						{!this.props.slim_mode ? <li className="has-tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
+						{playlist.user_uri && !this.props.slim_mode ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
+						{playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
+						{playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
 						<li>
-							{ this.props.playlist.tracks_total ? this.props.playlist.tracks_total : tracks.length} tracks,&nbsp;
-							<Dater type="total-time" data={tracks} />
+							{playlist.tracks_total ? playlist.tracks_total : (playlist.tracks ? playlist.tracks.length : '0')} tracks,&nbsp;
+							<Dater type="total-time" data={playlist.tracks} />
 						</li>
 					</ul>
 				</div>
 
-				{ this.renderActions() }
+				{this.renderActions()}
 
 				<section className="list-wrapper">
-					<TrackList uri={this.props.params.uri} className="playlist-track-list" context={context} tracks={tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
-					<LazyLoadListener loading={this.props.playlist.tracks_more} forceLoader={is_loading_tracks} loadMore={() => this.loadMore()}/>
+					<TrackList uri={playlist.uri} className="playlist-track-list" context={context} tracks={playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
+					<LazyLoadListener
+						loadKey={playlist.tracks_more}
+						showLoader={is_loading_tracks || playlist.tracks_more}
+						loadMore={() => this.loadMore()}
+					/>
 				</section>
 			</div>
 		)
@@ -263,13 +247,14 @@ const mapStateToProps = (state, ownProps) => {
 		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
+		users: state.core.users,
 		tracks: state.core.tracks,
 		playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false ),
 		spotify_library_playlists: state.spotify.library_playlists,
 		local_library_playlists: state.mopidy.library_playlists,
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
-		spotify_userid: state.spotify.me.id
+		spotify_userid: (state.spotify.me && state.spotify.me.id ? state.spotify.me.id : null)
 	}
 }
 

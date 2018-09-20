@@ -8,14 +8,16 @@ const LastfmMiddleware = (function(){
         switch(action.type){
 
             case 'LASTFM_ME_LOADED':
-                var user = Object.assign(
-                    {},
-                    action.me,
+                var me = helpers.formatUser(action.me);
+                Object.assign(
+                    me,
                     {
-                        uri: "lastfm:user:"+action.me.name
+                        uri: "lastfm:user:"+me.name
                     }
                 );
-                store.dispatch(coreActions.userLoaded(user));
+                store.dispatch(coreActions.userLoaded(me));
+                action.me = me;
+                next(action);
                 break;
 
             default:

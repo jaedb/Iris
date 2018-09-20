@@ -14,7 +14,7 @@ const SpotifyMiddleware = (function(){
      * The actual middleware inteceptor
      **/
     return store => next => action => {
-        var state = store.getState();
+        var spotify = store.getState().spotify;
 
         switch(action.type){
 
@@ -84,7 +84,7 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-                var playlist = Object.assign({},state.core.playlists[action.key]);
+                var playlist = Object.assign({}, store.getState().core.playlists[action.key]);
                 store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes ))
                 break;
 
@@ -106,16 +106,17 @@ const SpotifyMiddleware = (function(){
                     type: 'ALBUMS_LOADED',
                     albums: action.data.albums.items
                 });
-                store.dispatch({
-                    type: 'NEW_RELEASES_LOADED',
-                    uris: helpers.arrayOf('uri',action.data.albums.items),
-                    more: action.data.albums.next,
-                    total: action.data.albums.total
-                });
+
+                // Collate result into the three key values we want
+                action.uris = helpers.arrayOf('uri', action.data.albums.items);
+                action.more = action.data.albums.next;
+                action.total = action.data.albums.total;
+
+                // And pass on to our reducer
+                next(action);
                 break
 
             case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-                console.log(action)
                 store.dispatch(coreActions.albumsLoaded(action.data.items));
                 store.dispatch({
                     type: 'ARTIST_ALBUMS_LOADED',
@@ -157,9 +158,11 @@ const SpotifyMiddleware = (function(){
                 });
                 break
 
+/*
+
             case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
                 var playlists = []
-                for(var i = 0; i < action.data.playlists.items.length; i++){
+                for (var i = 0; i < action.data.playlists.items.length; i++){
                     var playlist = Object.assign(
                         {},
                         action.data.playlists.items[i],
@@ -187,6 +190,62 @@ const SpotifyMiddleware = (function(){
                     total: action.data.playlists.total
                 });
                 break
+                */
+
+            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+                store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
+                
+                action.uris = helpers.arrayOf('uri', action.playlists.items);
+                action.more = action.playlists.next;
+                action.total = action.playlists.total;
+                delete action.playlists;
+
+                // Upgrade our URIs
+                action.uris = helpers.upgradePlaylistsUris(action.uris);
+
+                next(action);
+                break;
+
+            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
+                store.dispatch({
+                    type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
+                    uri: action.uri,
+                    playlists: action.data.playlists
+                });
+                break;
+
+            case 'SPOTIFY_CATEGORY_LOADED':
+                store.dispatch({
+                    type: 'SPOTIFY_CATEGORIES_LOADED',
+                    categories: [action.category]
+                });
+                break;
+
+            case 'SPOTIFY_CATEGORIES_LOADED':
+                var categories_index = Object.assign({}, spotify.categories);
+                var categories_loaded = [];
+
+                for (var raw_category of action.categories){
+                    var category = Object.assign({}, raw_category);
+
+                    if (!category.uri){
+                        category.uri = "category:"+category.id;
+                    }
+
+                    if (categories_index[category.uri] !== undefined){
+                        category = Object.assign({}, categories_index[category.uri], category);
+                    }
+
+                    if (category.icons){
+                        category.icons = helpers.formatImages(category.icons);
+                    }
+
+                    categories_loaded.push(category);
+                }
+
+                action.categories = categories_loaded;
+                next(action);
+                break;
 
             case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
                 store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data))
@@ -194,16 +253,16 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
                 var playlists = []
-                for(var i = 0; i < action.playlists.length; i++){
-                    var playlist = Object.assign(
-                        {},
-                        action.playlists[i],
+                for (var playlist of action.playlists){
+                    Object.assign(
+                        playlist,
                         {
+                            uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:"),
                             source: 'spotify',
                             in_library: true,    // assumed because we asked for library items
-                            tracks_total: action.playlists[i].tracks.total
+                            tracks_total: playlist.tracks.total
                         }
-                    )
+                    );
 
                     // remove our tracklist. It'll overwrite any full records otherwise
                     delete playlist.tracks
@@ -407,30 +466,21 @@ const SpotifyMiddleware = (function(){
 
 
             case 'SPOTIFY_ME_LOADED':
+                var me = Object.assign({}, helpers.formatUser(action.me));
 
-                // We've loaded 'me' and we are Anonymous currently
-                if (action.data && store.getState().pusher.username == 'Anonymous'){
-                    if (action.data.display_name !== null){
-                        var name = action.data.display_name;
-                    } else {
-                        var name = action.data.id;
-                    }
-
-                    // Use 'me' name as my Pusher username
-                    store.dispatch(pusherActions.setUsername(name));
+                // We are Anonymous currently so use 'me' name as my Pusher username
+                if (store.getState().pusher.username == 'Anonymous'){
+                    store.dispatch(pusherActions.setUsername(me.name));
                 }
 
                 if (store.getState().ui.allow_reporting){
-	                var hashed_username = md5(action.data.id);
+	                var hashed_username = md5(me.id);
 	                ReactGA.set({userId: hashed_username});
 	                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
 	            }
 
-                store.dispatch({
-                    type: 'USERS_LOADED',
-                    users: [action.data]
-                });
-
+                store.dispatch(coreActions.userLoaded(me));
+                action.me = me;
                 next(action);
                 break;
 

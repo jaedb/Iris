@@ -36,8 +36,7 @@ class DiscoverNewReleases extends React.Component{
 			this.props.new_releases_more,
 			null,
 			{
-				type: 'SPOTIFY_NEW_RELEASES_LOADED',
-				key: null
+				type: 'SPOTIFY_NEW_RELEASES_LOADED'
 			}
 		);
 	}
@@ -61,7 +60,7 @@ class DiscoverNewReleases extends React.Component{
 		if (album){
 			return (
 				<div className="intro">
-					<Parallax image={helpers.sizedImages(album.images).huge} blur theme={this.props.theme} />
+					<Parallax image={album.images ? album.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'album/'+album.uri}
@@ -85,7 +84,7 @@ class DiscoverNewReleases extends React.Component{
 		} else {
 			return (
 				<div className="intro">
-					<Parallax />
+					<Parallax disabled={this.props.disable_parallax} />
 				</div>
 			)
 		}
@@ -106,12 +105,11 @@ class DiscoverNewReleases extends React.Component{
 			)
 		}
 
-		var albums = []
+		var albums = [];
 		if (this.props.new_releases){
-			for (var i = 0; i < this.props.new_releases.length; i++){
-				var uri = this.props.new_releases[i]
+			for (var uri of this.props.new_releases){
 				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri])
+					albums.push(this.props.albums[uri]);
 				}
 			}
 		}
@@ -119,7 +117,7 @@ class DiscoverNewReleases extends React.Component{
 		// Pull the first playlist out and we'll use this as a banner
 		var first_album = albums.splice(0,1)
 		if (first_album){
-			first_album = first_album[0]
+			first_album = helpers.collate(first_album[0], {artists: this.props.artists});
 		}
 
 		var options = (
@@ -138,7 +136,11 @@ class DiscoverNewReleases extends React.Component{
 				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
-				<LazyLoadListener loading={this.props.new_releases_more} loadMore={ () => this.loadMore() }/>
+				<LazyLoadListener
+					loadKey={this.props.new_releases_more}
+					showLoader={this.props.new_releases_more}
+					loadMore={() => this.loadMore()}
+				/>
 			</div>
 		);
 	}
@@ -153,12 +155,14 @@ class DiscoverNewReleases extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
+		artists: state.core.artists,
 		albums: state.core.albums,
-		new_releases: state.core.new_releases,
-		new_releases_more: state.core.new_releases_more,
-		new_releases_total: state.core.new_releases_total
+		new_releases: state.spotify.new_releases,
+		new_releases_more: state.spotify.new_releases_more,
+		new_releases_total: state.spotify.new_releases_total
 	}
 }
 

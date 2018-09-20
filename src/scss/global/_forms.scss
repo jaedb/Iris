@@ -356,6 +356,11 @@ input[type="submit"] {
 		padding-top: 10px;
 		width: 20%;
 		float: left;
+
+		.icon {
+			font-size: 0.9em;
+			margin-bottom: 0.3em;
+		}
 	}
 
 	& > .input {

@@ -128,9 +128,7 @@ class Snapcast extends React.Component{
 	render(){
 		if (!this.props.snapcast_enabled){
 			return (
-				<div>
-					To enable Snapcast, edit your <code>mopidy.conf</code> file
-				</div>
+				<p className="message warning">To enable Snapcast, edit your <code>mopidy.conf</code> file</p>
 			)
 		}
 

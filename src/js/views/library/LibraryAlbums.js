@@ -183,7 +183,11 @@ class LibraryAlbums extends React.Component{
 						columns={columns} 
 						className="album-list"
 						link_prefix={global.baseURL+"album/"} />
-					<LazyLoadListener loading={this.state.limit < total_albums} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener
+						loadKey={this.state.limit}
+						showLoader={this.state.limit < total_albums}
+						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+					/>
 				</section>
 			)
 		} else {
@@ -192,7 +196,11 @@ class LibraryAlbums extends React.Component{
 					<AlbumGrid 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						albums={albums} />
-					<LazyLoadListener loading={this.state.limit < total_albums} loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})} />
+					<LazyLoadListener
+						loadKey={this.state.limit}
+						showLoader={this.state.limit < total_albums}
+						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+					/>
 				</section>
 			)
 		}

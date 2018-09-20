@@ -28,15 +28,8 @@ class FollowButton extends React.Component{
 		}
 
 		var className = '';
-
-		// Inherit passed-down classes
 		if (this.props.className){
 			className += ' '+this.props.className;
-		}
-
-		// Loader
-		if (helpers.isLoading(this.props.load_queue,['/following','/followers','me/albums/contains/?ids=','me/albums/?ids='])){
-			className += ' working';
 		}
 
 		if (!this.props.spotify_authorized){

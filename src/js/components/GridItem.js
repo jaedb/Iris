@@ -42,20 +42,22 @@ export default class GridItem extends React.Component{
 	renderSecondary(item){
 		var output = ''
 
-		switch (item.type){
+		switch (helpers.uriType(item.uri)){
 
 			case 'playlist':
-				return (
-					<span>
-						{item.tracks_total ? item.tracks_total : 0} tracks
-					</span>
-				)
+				if (item.tracks_total){
+					return (
+						<span>
+							{item.tracks_total} tracks
+						</span>
+					);
+				}
 				break
 
 			case 'artist':
 				return (
 					<span>
-						{item.followers ? item.followers.total.toLocaleString()+' followers' : null}
+						{item.followers ? item.followers.toLocaleString()+' followers' : null}
 						{item.albums_uris ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
@@ -73,7 +75,7 @@ export default class GridItem extends React.Component{
 				return (
 					<span>
 						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-						{ item.followers ? item.followers.total.toLocaleString()+' followers' : null }
+						{ item.followers ? item.followers.toLocaleString()+' followers' : null }
 					</span>
 				)
 		}
@@ -85,7 +87,7 @@ export default class GridItem extends React.Component{
 		if (!this.props.item) return null
 
 		var item = this.props.item;
-		if (typeof(item.album) !== 'undefined'){
+		if (item.album !== undefined){
 			item.album.added_at = item.added_at;
 			item = item.album;
 		}

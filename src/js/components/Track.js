@@ -313,11 +313,13 @@ export default class Track extends React.Component{
 					{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 				</span>
 			)
-			track_columns.push(
-				<span className="col popularity" key="popularity">
-					<Popularity popularity={track.popularity} />
-				</span>
-			)
+			if (track.popularity !== undefined){
+				track_columns.push(
+					<span className="col popularity" key="popularity">
+						<Popularity popularity={track.popularity} />
+					</span>
+				)
+			}
 		}
 
 		track_actions.push(

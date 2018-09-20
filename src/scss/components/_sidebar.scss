@@ -86,6 +86,12 @@ aside{
 				background: $turquoise;
 				color: $white;
 
+				.status {
+					.icon {
+						color: $white !important;
+					}
+				}
+
 				&:before {
 					opacity: 0.15;
 				}

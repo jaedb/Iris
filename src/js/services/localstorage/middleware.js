@@ -112,7 +112,7 @@ const localstorageMiddleware = (function(){
                 helpers.setStorage(
                     'spotify',
                     {
-                        me: action.data
+                        me: action.me
                     }
                 );
                 break;

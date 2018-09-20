@@ -11,10 +11,14 @@
 			height: 0.5em;
 			margin: 0.25em 1px;
 			background: $light_grey;
-			opacity: 0.25;
+			opacity: 0.2;
 
 			&.filled {
 				opacity: 1;
+			}
+
+			.light-theme & {
+				background: $darkest_grey;
 			}
 		}
 	}

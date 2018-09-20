@@ -271,29 +271,31 @@ class ContextMenu extends React.Component{
 	}
 
 	goToArtist(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists || this.props.menu.items[0].artists.length <= 0){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists_uris || this.props.menu.items[0].artists_uris.length <= 0){
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists[0].uri);
+			
+			// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
+			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists_uris[0]);
 		}
 	}
 
 	goToAlbum(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri){
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album.uri);
+			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album_uri);
 		}
 	}
 
 	goToUser(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0){
+		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri){
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].owner.uri);
+			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].user_uri);
 		}
 	}
 
@@ -388,12 +390,7 @@ class ContextMenu extends React.Component{
 			case 'artist':
 			case 'album':
 			case 'playlist':
-				var style = null
-				if (context.item && context.item.images){
-					style = {
-						backgroundImage: 'url('+helpers.sizedImages(context.item.images).medium+')'
-					}
-				}
+				var style = null;
 
 				return (
 					<Link className="title" to={global.baseURL+context.type+'/'+context.item.uri}>

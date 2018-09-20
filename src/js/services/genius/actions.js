@@ -26,7 +26,10 @@ var sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false) =
         if (endpoint.startsWith('https://') || endpoint.startsWith('http://')){
             var url = endpoint;
         } else {
-            var url = 'https://api.genius.com/'+endpoint+'?access_token='+getState().genius.access_token;
+            var url = 'https://api.genius.com/'+endpoint;
+            if (getState().genius.access_token){
+                url += '?access_token='+getState().genius.access_token;
+            }
         }
 
         // create our ajax request config
@@ -166,10 +169,10 @@ export function getTrackLyrics(uri, path){
 	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
 	                        dispatch(coreActions.trackLoaded({
-	                                uri: uri,
-	                                lyrics: lyrics_html,
-	                                lyrics_path: path
-	                            }));
+                                uri: uri,
+                                lyrics: lyrics_html,
+                                lyrics_path: path
+                            }));
 	                    }
                     } else {
 	                    dispatch(coreActions.handleException(
@@ -213,9 +216,9 @@ export function findTrackLyrics(track){
                             });
                         }
                         dispatch(coreActions.trackLoaded({
-                                uri: track.uri,
-                                lyrics_results: lyrics_results
-                            }));
+                            uri: track.uri,
+                            lyrics_results: lyrics_results
+                        }));
 
                         // Immediately go and get the first result's lyrics
                         var lyrics_result = lyrics_results[0];

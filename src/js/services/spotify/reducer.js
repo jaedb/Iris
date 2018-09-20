@@ -63,22 +63,22 @@ export default function reducer(spotify = {}, action){
             });
 
         case 'SPOTIFY_ME_LOADED':
-            return Object.assign({}, spotify, { me: action.data })
+            return Object.assign({}, spotify, { me: action.me })
 
         case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
             return Object.assign({}, spotify, { featured_playlists: action.data })
 
-        case 'SPOTIFY_NEW_RELEASES_LOADED':
-            return Object.assign({}, spotify, { new_releases: action.data });
 
-        case 'SPOTIFY_NEW_RELEASES_LOADED_MORE':
-        	console.log([ ...spotify.new_releases.items, ...action.data.albums.items]);
-            return Object.assign({}, spotify, { new_releases: {
-                href: action.data.albums.href,
-                next: action.data.albums.next,
-                previous: action.data.albums.previous,
-                items: [ ...spotify.new_releases.items, ...action.data.albums.items]
-            }});
+        case 'SPOTIFY_NEW_RELEASES_LOADED':
+            var new_releases = [];
+            if (spotify.new_releases){
+            	new_releases = Object.assign([], spotify.new_releases);
+            }
+            return Object.assign({}, spotify, { 
+                new_releases: helpers.removeDuplicates([...new_releases, ...action.uris]),
+                new_releases_more: action.more,
+                new_releases_total: action.total
+            });
 
         case 'SPOTIFY_DISCOVER_LOADED':
             if (!action.data ){
@@ -162,6 +162,39 @@ export default function reducer(spotify = {}, action){
                 {
                     genres: action.genres
                 })
+
+
+        /**
+         * Categories
+         **/
+
+        case 'SPOTIFY_CATEGORIES_LOADED':
+            var categories = Object.assign({}, spotify.categories);
+            for (var category of action.categories){
+                categories[category.uri] = category
+            }
+            return Object.assign({}, spotify, { categories: categories });
+
+        case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
+            var categories = Object.assign({}, spotify.categories)
+            var playlists_uris = [];
+
+            if (categories[action.uri].playlists_uris){
+                playlists_uris = categories[action.uri].playlists_uris;
+            }
+
+            var category = Object.assign(
+                {}, 
+                categories[action.uri],
+                {
+                    playlists_uris: [...playlists_uris, ...action.uris],
+                    playlists_more: action.more,
+                    playlists_total: action.total
+                }
+            )
+            categories[action.uri] = category
+            return Object.assign({}, spotify, { categories: categories });
+
 
 
         /**

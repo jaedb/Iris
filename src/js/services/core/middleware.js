@@ -71,18 +71,6 @@ const CoreMiddleware = (function(){
                     }
                 );
 
-                // Log with Raven Sentry
-                /*
-                if (store.getState().ui.allow_reporting){
-	                Raven.captureException(
-	                    new Error(message),
-	                    {
-	                        extra: data
-	                    }
-	                );
-	            }
-                */
-
                 // Log with Analytics
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({
@@ -93,8 +81,12 @@ const CoreMiddleware = (function(){
 	                });
 	            }
 
-                store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
+	            if (action.show_notification){
+	                store.dispatch(uiActions.createNotification({content: message, type: 'bad', description: description}));
+	            }
+
                 console.error(message, description, data);
+                
                 break;
 
             case 'PLAY_PLAYLIST':
@@ -334,33 +326,28 @@ const CoreMiddleware = (function(){
 
 
             /**
-             * Queue and playback info
+             * Asset Load commands
+             *
+             * These are called from views and other middleware to load
+             * assets. This is where we can return already indexed records
+             * where appropriate
              **/
 
-            case 'CURRENT_TRACK_LOADED':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: [action.track]
-                });
-
-                next(action);
-                break;
-
-            case 'QUEUE_LOADED':
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: action.tracks
-                });
-
-                next(action);
-                break;
-
-
             case 'LOAD_TRACK':
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.tracks[action.uri]){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+            	
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getTrack(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -374,10 +361,22 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ALBUM':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.albums[action.uri] && 
+            		store.getState().core.albums[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+            	
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getAlbum(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -391,10 +390,23 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ARTIST':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.artists[action.uri] && 
+            		store.getState().core.artists[action.uri].albums_uris && 
+            		store.getState().core.artists[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getArtist(action.uri, true));
-                        store.dispatch(spotifyActions.following(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -408,10 +420,22 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_PLAYLIST':
+
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.playlists[action.uri] && 
+            		store.getState().core.playlists[action.uri].tracks_uris){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
                 switch (helpers.uriSource(action.uri)){
                     case 'spotify':
                         store.dispatch(spotifyActions.getPlaylist(action.uri));
-                        store.dispatch(spotifyActions.following(action.uri));
+
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
                         break;
 
                     default:
@@ -424,32 +448,125 @@ const CoreMiddleware = (function(){
                 next(action);
                 break;
 
+            case 'LOAD_USER':
+            	if (
+            		!action.force_reload &&
+            		store.getState().core.users[action.uri] &&
+            		store.getState().core.users[action.uri].playlists_uris ){
+	            		console.info('Loading "'+action.uri+'" from index');
+	            		break;
+            	}
+
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+						store.dispatch(spotifyActions.getUser(action.uri));
+                        
+                        if (store.getState().spotify.me){
+	                        store.dispatch(spotifyActions.following(action.uri));
+	                    }
+                        break;
+
+                    default:
+                        // No Mopidy mechanism for users
+                        break;
+                }
+
+                next(action);
+                break;
+
+            case 'LOAD_USER_PLAYLISTS':
+                if (
+                    !action.force_reload &&
+                    store.getState().core.users[action.uri] &&
+                    store.getState().core.users[action.uri].playlists_uris ){
+                        console.info('Loading "'+action.uri+'" playlists from index');
+                        break;
+                }
+
+                switch (helpers.uriSource(action.uri)){
+                    case 'spotify':
+						store.dispatch(spotifyActions.getUserPlaylists(action.uri));
+                        break;
+
+                    default:
+                        // No Mopidy mechanism for users
+                        break;
+                }
+
+                next(action);
+                break;
+
 
             /**
              * Index actions
              * These modify our asset indexes, which are used globally
              **/
 
+            case 'CURRENT_TRACK_LOADED':
+                store.dispatch(coreActions.trackLoaded(action.track));
+                action.track = helpers.formatTrack(action.track);
+                next(action);
+                break;
+
+            case 'QUEUE_LOADED':
+                store.dispatch(coreActions.tracksLoaded(action.tracks));
+                action.tracks = helpers.formatTracks(action.tracks);
+                next(action);
+                break;
+
             case 'TRACKS_LOADED':
                 var tracks_index = Object.assign({}, core.tracks);
+                var artists_index = core.artists;
+                var albums_index = core.albums;
                 var tracks_loaded = [];
+                var artists_loaded = [];
+                var albums_loaded = [];
 
-                action.tracks.forEach(track => {
-                    track = helpers.formatTracks(track);
+                for (var raw_track of action.tracks){
+                    var track = helpers.formatTrack(raw_track);
 
                     if (tracks_index[track.uri] !== undefined){
                         track = Object.assign({}, tracks_index[track.uri], track);
                     }
+                    
+                    if (raw_track.album){
+                        track.album = helpers.formatSimpleObject(raw_track.album);
 
-                    if (track.album && track.album.images && track.album.images.length > 0){
-                        track.album.images = helpers.digestMopidyImages(store.getState().mopidy, track.album.images);
-                        track.images = track.album.images;
+                        if (!albums_index[raw_track.album.uri]){
+                            albums_loaded.push(raw_track.album);
+                        }
+
+                        // Copy the images to the track
+                        /*
+                        if (raw_track.album.images){
+                            track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
+                        }*/
+                    }
+
+                    if (raw_track.artists && raw_track.artists.length > 0){
+                        track.artists = [];
+
+                        for (var artist of raw_track.artists){
+                            track.artists.push(helpers.formatSimpleObject(artist));
+
+                            // Not already in our index, so let's add it
+                            if (!artists_index[artist.uri]){
+                                artists_loaded.push(artist);
+                            }
+                        }
                     }
 
                     tracks_loaded.push(track);
-                });
+                };
 
                 action.tracks = tracks_loaded;
+
+                if (artists_loaded.length > 0){
+                    store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                }
+                if (albums_loaded.length > 0){
+                    store.dispatch(coreActions.albumsLoaded(albums_loaded));
+                }
 
                 next(action);
                 break;
@@ -457,38 +574,48 @@ const CoreMiddleware = (function(){
             case 'ALBUMS_LOADED':
                 var albums_index = Object.assign({}, core.albums);
                 var albums_loaded = [];
+                var artists_loaded = [];
                 var tracks_loaded = [];
 
-                action.albums.forEach(album => {
-                    helpers.formatAlbum(album)
+                for (var raw_album of action.albums){
+                    var album = helpers.formatAlbum(raw_album);
 
                     if (albums_index[album.uri]){
                         album = Object.assign({}, albums_index[album.uri], album);
                     }
+/*
+                    if (raw_album.images && raw_album.images.length > 0){
+                        album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
+                    }*/
 
-                    if (album.images && album.images.length > 0){
-                        album.images = helpers.digestMopidyImages(store.getState().mopidy, album.images);
+                    if (raw_album.tracks){
+                        album.tracks_uris = [];
+
+                        for (var track of raw_album.tracks){
+                            if (!track.album){
+                                track.album = helpers.formatSimpleObject(album);
+                            }
+                            album.tracks_uris.push(track.uri);
+                            tracks_loaded.push(track);
+                        }
                     }
 
-                    // Load our tracks
-                    if (album.tracks){
-                        var tracks = helpers.formatTracks(album.tracks);
-                        var tracks_uris = helpers.arrayOf('uri', tracks);
-                        album.tracks_uris = tracks_uris;
-                        delete album.tracks;
-                        tracks_loaded = [...tracks_loaded, ...tracks];
+                    if (raw_album.artists){
+                        album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+                        artists_loaded = [...artists_loaded, ...raw_album.artists];
                     }
 
                     albums_loaded.push(album);
-                });
+                };
 
                 action.albums = albums_loaded;
 
-                // Trigger the tracks load action
-                store.dispatch({
-                    type: 'TRACKS_LOADED',
-                    tracks: tracks_loaded
-                });
+                if (artists_loaded.length > 0){
+                    store.dispatch(coreActions.artistsLoaded(artists_loaded));
+                }
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break
@@ -497,35 +624,40 @@ const CoreMiddleware = (function(){
                 var artists_index = Object.assign({}, core.artists);
                 var artists_loaded = [];
                 var tracks_loaded = [];
+                
+                for (var raw_artist of action.artists){
+                	var artist = helpers.formatArtist(raw_artist);
 
-                action.artists.forEach(artist => {
+                	// Already have an artist in the index
                     if (artists_index[artist.uri]){
 
-                        // if we've already got images, remove and add as additional_images
+                        // Don't replace existing images, instead add them as supplementary
                         // this is to prevent LastFM overwriting Spotify images
                         if (artists_index[artist.uri].images){
-                            artist.images_additional = artist.images
-                            delete artist.images
+                            artist.images_additional = artist.images;
+                            delete artist.images;
                         }
 
                         artist = Object.assign({}, artists_index[artist.uri], artist);
                     }
 
                     // Migrate nested tracks objects into references to our tracks index
-                    if (artist.tracks){
-                        var tracks = helpers.formatTracks(artist.tracks);
+                    if (raw_artist.tracks){
+                        var tracks = helpers.formatTracks(raw_artist.tracks);
                         var tracks_uris = helpers.arrayOf('uri', tracks);
                         artist.tracks_uris = tracks_uris;
-                        delete artist.tracks;
                         tracks_loaded = [...tracks_loaded, ...tracks];
                     }
 
                     artists_loaded.push(artist);
-                });
+                };
+
 
                 action.artists = artists_loaded;
 
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break;
@@ -535,7 +667,9 @@ const CoreMiddleware = (function(){
                 var playlists_loaded = [];
                 var tracks_loaded = [];
 
-                action.playlists.forEach(playlist => {
+                for (var playlist of action.playlists){
+
+                	playlist = helpers.formatPlaylist(playlist);
 
                     // Detect editability
                     switch (helpers.uriSource(playlist.uri)){
@@ -546,7 +680,7 @@ const CoreMiddleware = (function(){
 
                         case 'spotify':
                             if (store.getState().spotify.authorization && store.getState().spotify.me){
-                                playlist.can_edit = (helpers.getFromUri('playlistowner',playlist.uri) == store.getState().spotify.me.id)
+                                playlist.can_edit = (playlist.owner.id == store.getState().spotify.me.id)
                             }
                     }
 
@@ -565,12 +699,13 @@ const CoreMiddleware = (function(){
 
                     // Update index
                     playlists_loaded.push(playlist);
-                });
+                }
 
                 action.playlists = playlists_loaded;
 
-                // Load our tracks
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                if (tracks_loaded.length > 0){
+                    store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+                }
 
                 next(action);
                 break;
@@ -579,17 +714,23 @@ const CoreMiddleware = (function(){
                 var users_index = Object.assign({}, core.users);
                 var users_loaded = [];
 
-                action.users.forEach(user => {
-
+                for (var user of action.users){
+                    user = helpers.formatUser(user);
+                    
                     if (users_index[user.uri]){
                         user = Object.assign({}, users_index[user.uri], user);
                     }
 
                     users_loaded.push(user);
-                });
+                }
 
                 action.users = users_loaded;
 
+                next(action);
+                break;
+
+            case 'USER_PLAYLISTS_LOADED':
+            	store.dispatch(coreActions.playlistsLoaded(action.playlists));
                 next(action);
                 break;
 
@@ -618,12 +759,29 @@ const CoreMiddleware = (function(){
                     var records = action.records_data;
                 }
 
-                if (action.records_type == 'track'){
-                    records = helpers.formatTracks(records);
+                // TODO: To avoid double-looping, we could
+                // run a single loop to extract both the formatted record
+                // and the URI
+                switch (action.records_type){
+                    case 'track':
+                        records = helpers.formatTracks(records);
+                        break;
+                    case 'artist':
+                        records = helpers.formatArtists(records);
+                        break;
+                    case 'album':
+                        records = helpers.formatAlbums(records);
+                        break;
+                    case 'playlist':
+                        records = helpers.formatPlaylists(records);
+                        break;
+                    case 'user':
+                        records = helpers.formatUsers(records);
+                        break;
                 }
 
                 var records_type_plural = action.records_type+'s';
-                var records_index = Object.assign({});
+                var records_index = {};
                 var records_uris = helpers.arrayOf('uri', records);
 
                 // Append our records_uris array with our new records
@@ -649,6 +807,9 @@ const CoreMiddleware = (function(){
                 };
                 records_action[records_type_plural] = records;
                 store.dispatch(records_action);
+
+                //console.log(parent_action);
+                //console.log(records_action);
 
                 next(action);
                 break;

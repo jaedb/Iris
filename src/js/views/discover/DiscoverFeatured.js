@@ -47,7 +47,7 @@ class DiscoverFeatured extends React.Component{
 		if (playlist){
 			return (
 				<div className="intro">
-					<Parallax image={helpers.sizedImages(playlist.images).huge} blur theme={this.props.theme} />
+					<Parallax image={playlist.images ? playlist.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'playlist/'+playlist.uri}
@@ -67,7 +67,7 @@ class DiscoverFeatured extends React.Component{
 		} else {
 			return (
 				<div className="intro">
-					<Parallax />
+					<Parallax disabled={this.props.disable_parallax} />
 				</div>
 			)
 		}
@@ -134,6 +134,7 @@ class DiscoverFeatured extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,

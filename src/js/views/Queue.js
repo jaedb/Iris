@@ -137,7 +137,7 @@ class Queue extends React.Component{
 		var current_track_image = null;
 		if (current_track && this.props.current_track_uri){
 			if (current_track.images !== undefined && current_track.images){
-				current_track_image = helpers.sizedImages(current_track.images).large;
+				current_track_image = current_track.images.large;
 			}
 		}
 
@@ -165,7 +165,7 @@ class Queue extends React.Component{
 					<Icon name="play_arrow" type="material" />
 					Now playing
 				</Header>
-				<Parallax blur image={current_track_image} theme={this.props.theme} />
+				<Parallax blur image={current_track_image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 				<div className="content-wrapper">
 				
 					<div className="current-track">
@@ -185,7 +185,8 @@ class Queue extends React.Component{
 							removeTracks={track_indexes => this.removeTracks(track_indexes)}
 							playTracks={tracks => this.playTracks(tracks)}
 							playTrack={track => this.playTrack(track)}
-							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)} />
+							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}
+						/>
 					</section>
 				
 				</div>
@@ -203,11 +204,14 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
 		tracks: state.core.tracks,
+		artists: state.core.artists,
+		albums: state.core.albums,
 		queue: state.core.queue,
 		queue_tlids: state.core.queue_tlids,
 		queue_metadata: state.core.queue_metadata,

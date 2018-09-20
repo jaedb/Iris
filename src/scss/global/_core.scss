@@ -462,6 +462,12 @@ footer {
 		color: $white;
 	}
 
+	&.good,
+	&.success {
+		background: $green;
+		color: $white;
+	}
+
 	&.warning {
 		background: $orange;
 		color: $white;

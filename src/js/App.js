@@ -12,6 +12,7 @@ import ContextMenu from './components/ContextMenu';
 import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
 import DebugInfo from './components/DebugInfo';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import * as helpers from './helpers';
 import * as coreActions from './services/core/actions';
@@ -52,12 +53,6 @@ class App extends React.Component{
 
 		if (this.props.allow_reporting){
 			ReactGA.initialize('UA-64701652-3');
-
-			/*
-			if (Raven !== undefined){
-				Raven.config('https://ca99fb6662fe40ae8ec4c18a466e4b4b@sentry.io/219026').install();
-			}
-			*/
 		}
 		
 		// Fire up our services
@@ -301,27 +296,29 @@ class App extends React.Component{
 
 		return (
 			<div className={className}>
+				<ErrorBoundary>
 			
-				<div className="body">
-			        <Sidebar />		        
-			        <PlaybackControls />
-			        <main>
-			      		{this.props.children}
-			        </main>
-		        </div>
+					<div className="body">
+				        <Sidebar />		        
+				        <PlaybackControls />
+				        <main>
+				      		{this.props.children}
+				        </main>
+			        </div>
 
-		        <ContextMenu />
-		        <Dragger />
-		        <Notifications 
-		        	uiActions={this.props.uiActions} 
-		        	spotifyActions={this.props.spotifyActions} 
-		        	notifications={this.props.notifications} 
-		        	processes={this.props.processes}
-		        	broadcasts={this.props.broadcasts}
-		        />
+			        <ContextMenu />
+			        <Dragger />
+			        <Notifications 
+			        	uiActions={this.props.uiActions} 
+			        	spotifyActions={this.props.spotifyActions} 
+			        	notifications={this.props.notifications} 
+			        	processes={this.props.processes}
+			        	broadcasts={this.props.broadcasts}
+			        />
 
-		        {this.props.debug_info ? <DebugInfo /> : null}
-		        
+			        {this.props.debug_info ? <DebugInfo /> : null}
+
+		        </ErrorBoundary>
 	        </div>
 		);
 	}

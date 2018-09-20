@@ -90,12 +90,18 @@ export default function reducer(mopidy = {}, action){
 
 
         /**
-         * Asset-oriented actions
+         * Directories
+         * This also facilitates all backend-only music providers (SoundCloud, Dirble, etc)
          **/
+
+        case 'MOPIDY_DIRECTORY_FLUSH':
+            return Object.assign({}, mopidy, {
+                directory: null  
+            });
 
         case 'MOPIDY_DIRECTORY_LOADED':
             return Object.assign({}, mopidy, {
-                directory: action.data   
+                directory: action.directory   
             });
 
 

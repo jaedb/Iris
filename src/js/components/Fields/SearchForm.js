@@ -17,15 +17,6 @@ class SearchForm extends React.Component{
 		}
 	}
 
-	componentWillReceiveProps(nextProps){
-
-		// Term has been changed on us! This will be where the URL parameters have been
-		// digested and updated in the parent view
-		if (nextProps.term != '' && nextProps.term != this.state.term){
-			this.setState({term: nextProps.term});
-		}
-	}
-
 	handleSubmit(e){
 		e.preventDefault()
 
@@ -62,10 +53,11 @@ class SearchForm extends React.Component{
 				<label>
 					<input					
 						type="text"
-						placeholder="Search..."
+						placeholder={this.props.term ? this.props.term : "Search..."}
 						onChange={e => this.setState({term: e.target.value})}
 						onBlur={e => this.props.onBlur(this.state.term)}
-						value={ this.state.term } />
+						value={ this.state.term }
+					/>
 					</label>
 			</form>
 		)

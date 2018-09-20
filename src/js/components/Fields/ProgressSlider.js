@@ -20,7 +20,7 @@ class ProgressSlider extends React.Component{
 
 	render(){
 		var percent = 0;
-		if (this.props.connected && this.props.time_position && this.props.current_track){
+		if (this.props.connected && this.props.time_position && this.props.current_track && this.props.current_track.duration){
 			percent = this.props.time_position / this.props.current_track.duration;
 			percent = percent * 100;
 			if (percent > 1000){

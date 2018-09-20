@@ -25,12 +25,14 @@ class User extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.loadUser();
+		this.props.coreActions.loadUser(this.props.params.uri);
+		this.props.coreActions.loadUserPlaylists(this.props.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadUser(nextProps);
+			this.props.coreActions.loadUser(nextProps.params.uri);
+			this.props.coreActions.loadUserPlaylists(this.props.params.uri);
 		}
 
 		if (!this.props.user && nextProps.user){
@@ -43,13 +45,6 @@ class User extends React.Component{
 			this.props.uiActions.setWindowTitle(user.name+" (user)");
 		} else{
 			this.props.uiActions.setWindowTitle("User");
-		}
-	}
-
-	loadUser(props = this.props){
-		if (!props.user || props.user.playlists_uris === undefined){
-			this.props.spotifyActions.getUser(props.params.uri, true);
-			this.props.spotifyActions.following(props.params.uri);
 		}
 	}
 
@@ -84,37 +79,29 @@ class User extends React.Component{
 			}
 		}
 
-		var playlists = [];
-		if (this.props.user.playlists_uris){
-			for (var i = 0; i < this.props.user.playlists_uris.length; i++){
-				var uri = this.props.user.playlists_uris[i]
-				if (this.props.playlists.hasOwnProperty(uri)){
-					playlists.push(this.props.playlists[uri])
-				}
-			}
-		}
+		var user = helpers.collate(this.props.user, {playlists: this.props.playlists});
 
-		if (this.props.user && this.props.user.images){
-			var image = helpers.sizedImages(this.props.user.images).huge
+		if (user && user.images){
+			var image = user.images.huge;
 		} else {
-			var image = null
+			var image = null;
 		}
 
 		return (
 			<div className="view user-view">
 				<div className="intro">
-					<Parallax image={image} />
+					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 					<div className="liner">
-						<h1>{ this.props.user.display_name ? this.props.user.display_name : this.props.user.id }</h1>
+						<h1>{user.name}</h1>
 						<h2>
 							<ul className="details">
-								{this.props.user.playlists_total ? <li>{this.props.user.playlists_total ? this.props.user.playlists_total.toLocaleString() : 0} playlists</li> : null}
-								{this.props.user.followers ? <li>{this.props.user.followers.total.toLocaleString()} followers</li> : null}
+								{user.playlists_total ? <li>{user.playlists_total ? user.playlists_total.toLocaleString() : 0} playlists</li> : null}
+								{user.followers ? <li>{user.followers.toLocaleString()} followers</li> : null}
 								{this.isMe() ? <li><span className="blue-text">You</span></li> : null}
 							</ul>
 						</h2>
 						<div className="actions">
-							<FollowButton className="primary" uri={this.props.params.uri} addText="Follow" removeText="Unfollow" />
+							<FollowButton className="primary" uri={user.uri} addText="Follow" removeText="Unfollow" />
 						</div>
 					</div>
 				</div>
@@ -122,8 +109,12 @@ class User extends React.Component{
 				<div className="content-wrapper">
 					<section className="grid-wrapper">
 						<h4>Playlists</h4>
-						<PlaylistGrid playlists={playlists} />
-						<LazyLoadListener loading={this.props.user.playlists_more} loadMore={() => this.loadMore()} />
+						<PlaylistGrid playlists={user.playlists} />
+						<LazyLoadListener
+							loadKey={user.playlists_more}
+							showLoader={user.playlists_more}
+							loadMore={() => this.loadMore()}
+						/>
 					</section>
 				</div>
 			</div>
@@ -134,9 +125,11 @@ class User extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
+		me: state.spotify.me,
+		theme: state.ui.theme,
+		disable_parallax: state.ui.disable_parallax,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
-		me: state.spotify.me,
 		playlists: state.core.playlists,
 		user: (state.core.users[uri] !== undefined ? state.core.users[uri] : false)
 	};

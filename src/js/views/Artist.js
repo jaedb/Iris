@@ -33,15 +33,15 @@ class Artist extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.loadArtist();
+		this.props.coreActions.loadArtist(this.props.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
 		if (nextProps.params.uri != this.props.params.uri){
-			this.loadArtist(nextProps);
+			this.props.coreActions.loadArtist(nextProps.params.uri);
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.loadArtist(nextProps);
+				this.props.coreActions.loadArtist(nextProps.params.uri);
 			}
 		}
 
@@ -70,30 +70,6 @@ class Artist extends React.Component{
 			uris: [this.props.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data);
-	}
-
-	loadArtist(props = this.props){
-		switch(helpers.uriSource(props.params.uri )){
-
-			case 'spotify':
-				if (props.artist && props.artist.albums_uris && props.artist.related_artists_uris){
-					console.info('Loading spotify artist from index');
-				} else {
-					this.props.spotifyActions.getArtist(props.params.uri, true);
-				}
-				this.props.spotifyActions.following(props.params.uri);
-				break
-
-			default:
-				if (props.mopidy_connected){
-					if (props.artist && props.artist.images && props.artist.albums_uris){
-						console.info('Loading local artist from index');
-					} else {
-						this.props.mopidyActions.getArtist(props.params.uri);
-					}
-				}
-				break
-		}
 	}
 
 	loadMore(){
@@ -139,34 +115,21 @@ class Artist extends React.Component{
 
 	renderBody(){
 		var scheme = helpers.uriSource(this.props.params.uri);
-
-		var related_artists = []
-		if (this.props.artist.related_artists_uris){
-			for (var i = 0; i < this.props.artist.related_artists_uris.length; i++){
-				var uri = this.props.artist.related_artists_uris[i]
-				if (this.props.artists.hasOwnProperty(uri)){
-					related_artists.push(this.props.artists[uri])
-				}
+		var artist = helpers.collate(
+			this.props.artist, 
+			{
+				artists: this.props.artists,
+				albums: this.props.albums,
+				tracks: this.props.tracks
 			}
+		);
+
+		if (this.props.sort && artist.albums){
+			artist.albums = helpers.sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
 		}
 
-		var albums = [];
-		if (this.props.artist.albums_uris){
-			var albums_uris = helpers.removeDuplicates(this.props.artist.albums_uris);
-			for (var i = 0; i < albums_uris.length; i++){
-				var uri = albums_uris[i];
-				if (this.props.albums.hasOwnProperty(uri)){
-					albums.push(this.props.albums[uri]);
-				}
-			}
-
-			if (this.props.sort){
-				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
-			}
-
-			if (this.props.filter){
-				albums = helpers.applyFilter('album_type', this.props.filter, albums);
-			}
+		if (this.props.filter && artist.albums){
+			artist.albums = helpers.applyFilter('type', this.props.filter, artist.albums);
 		}
 
 		switch (this.props.params.sub_view){
@@ -175,7 +138,7 @@ class Artist extends React.Component{
 				return (
 					<div className="body related-artists">
 						<section className="grid-wrapper no-top-padding">
-							<ArtistGrid artists={related_artists} />
+							<ArtistGrid artists={artist.related_artists} />
 						</section>
 					</div>
 				)
@@ -185,18 +148,18 @@ class Artist extends React.Component{
 					<div className="body about">
 
 						<div className="col w40 tiles artist-stats">
-							{this.props.artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images} /></div> : null}
-							{this.props.artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={this.props.artist.images_additional} /></div> : null}
-							{this.props.artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{this.props.artist.followers.total.toLocaleString() } followers</span></div> : null}
-							{this.props.artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{this.props.artist.popularity }% popularity</span></div> : null}
-							{this.props.artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ this.props.artist.listeners.toLocaleString() } listeners</span></div> : null }
+							{artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images} /></div> : null}
+							{artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images_additional} /></div> : null}
+							{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
+							{artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{artist.popularity }% popularity</span></div> : null}
+							{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
 						</div>
 
 						<div className="col w60 biography">
 							<section>
-								{ this.props.artist.bio ? <div className="biography-text"><p>{this.props.artist.bio.content}</p><br />
-								<div className="grey-text">Published: { this.props.artist.bio.published }</div>
-								<div className="grey-text">Origin: <a href={ this.props.artist.bio.links.link.href } target="_blank">{ this.props.artist.bio.links.link.href }</a></div></div> : null }
+								{ artist.biography ? <div className="biography-text"><p>{artist.biography}</p><br />
+								<div className="grey-text">Published: { artist.biography_publish_date }</div>
+								<div className="grey-text">Origin: <a href={ artist.biography_link } target="_blank">{ artist.biography_link }</a></div></div> : null }
 							</section>
 						</div>
 					</div>
@@ -242,17 +205,7 @@ class Artist extends React.Component{
 					}
 				];
 
-				var tracks = [];
-				if (this.props.artist.tracks_uris && this.props.tracks){
-					for (var i = 0; i < this.props.artist.tracks_uris.length; i++){
-						var uri = this.props.artist.tracks_uris[i]
-						if (this.props.tracks.hasOwnProperty(uri)){
-							tracks.push(this.props.tracks[uri])
-						}
-					}
-				}
-
-				if (tracks.length <= 0 && helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri)+'/top-tracks'])){
+				if (!artist.tracks_uris || (artist.tracks_uris && !artist.tracks) || (artist.tracks_uris.length !== artist.tracks.length)){
 					var is_loading_tracks = true;
 				} else {
 					var is_loading_tracks = false;
@@ -260,17 +213,17 @@ class Artist extends React.Component{
 
 				return (
 					<div className="body overview">
-						<div className={"top-tracks col w"+(related_artists.length > 0 ? "70" : "100")}>
+						<div className={"top-tracks col w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
 							<h4>Top tracks</h4>
 							<div className="list-wrapper">
-								<TrackList className="artist-track-list" uri={this.props.params.uri} tracks={tracks} />
+								<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
 								<LazyLoadListener forceLoader={is_loading_tracks} />
 							</div>
 						</div>
 
 						<div className="col w5"></div>
 
-						{related_artists.length > 0 ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
+						{artist.related_artists ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 
@@ -295,8 +248,12 @@ class Artist extends React.Component{
 							</h4>
 
 							<section className="grid-wrapper no-top-padding">
-								<AlbumGrid albums={albums} />
-								<LazyLoadListener loading={this.props.artist.albums_more} loadMore={() => this.loadMore()} />
+								<AlbumGrid albums={artist.albums} />
+								<LazyLoadListener
+									loadKey={artist.albums_more} 
+									showLoader={artist.albums_more} 
+									loadMore={() => this.loadMore()} 
+								/>
 							</section>
 						</div>
 					</div>
@@ -320,7 +277,7 @@ class Artist extends React.Component{
 		}
 
 		if (this.props.artist && this.props.artist.images){
-			var image = helpers.sizedImages(this.props.artist.images).huge;
+			var image = this.props.artist.images.huge;
 		} else {
 			var image = null;
 		}
@@ -337,7 +294,7 @@ class Artist extends React.Component{
 			<div className="view artist-view">
 				<div className="intro">
 
-					<Parallax image={image} theme={this.props.theme} />
+					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
@@ -367,6 +324,7 @@ class Artist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
+		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,

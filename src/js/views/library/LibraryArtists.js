@@ -159,7 +159,11 @@ class LibraryArtists extends React.Component{
 						columns={columns} 
 						className="artist-list"
 						link_prefix={global.baseURL+"artist/"} />
-					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.loadMore()} />
+					<LazyLoadListener 
+						loadKey={this.state.limit}
+						showLoader={this.state.limit < total_artists}
+						loadMore={() => this.loadMore()}
+					/>
 				</section>
 			)
 		} else {
@@ -168,7 +172,11 @@ class LibraryArtists extends React.Component{
 					<ArtistGrid 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />
-					<LazyLoadListener loading={this.state.limit < total_artists} loadMore={() => this.loadMore()} />
+					<LazyLoadListener 
+						loadKey={this.state.limit}
+						showLoader={this.state.limit < total_artists} 
+						loadMore={() => this.loadMore()}
+					/>
 				</section>				
 			)
 		}

@@ -26,7 +26,9 @@ export function getBroadcasts(){
                                 xhr: xhr,
                                 status: status,
                                 error: error
-                            }
+                            },
+                            null,
+                            false
                         )
                     );
                 }
@@ -43,12 +45,13 @@ export function startSearch(search_type, query, only_mopidy = false){
 	}
 }
 
-export function handleException(message, data = {}, description = null){
+export function handleException(message, data = {}, description = null, show_notification = true){
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
         description: description,
-        data: data
+        data: data,
+        show_notification: show_notification
     }
 }
 
@@ -86,38 +89,51 @@ export function cachebustHttpStream(){
  * relevant service to load the record - all from one neat package.
  **/
 
-export function loadTrack(uri){
+export function loadTrack(uri, force_reload = false){
     return {
         type: 'LOAD_TRACK',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     }
 }
 
-export function loadAlbum(uri){
+export function loadAlbum(uri, force_reload = false){
     return {
         type: 'LOAD_ALBUM',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     }
 }
 
-export function loadArtist(uri){
+export function loadArtist(uri, force_reload = false){
     return {
         type: 'LOAD_ARTIST',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     }
 }
 
-export function loadPlaylist(uri){
+export function loadPlaylist(uri, force_reload = false){
     return {
         type: 'LOAD_PLAYLIST',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
     }
 }
 
-export function loadUser(uri){
+export function loadUser(uri, force_reload = false){
     return {
         type: 'LOAD_USER',
-        uri: uri
+        uri: uri,
+        force_reload: force_reload
+    }
+}
+
+export function loadUserPlaylists(uri, force_reload = false){
+    return {
+        type: 'LOAD_USER_PLAYLISTS',
+        uri: uri,
+        force_reload: force_reload
     }
 }
 
@@ -175,6 +191,15 @@ export function usersLoaded(users){
     return {
         type: 'USERS_LOADED',
         users: users
+    }
+}
+export function userPlaylistsLoaded(uri, playlists, more = null, total = null){
+    return {
+        type: 'USER_PLAYLISTS_LOADED',
+        uri: uri,
+        playlists: playlists,
+        more: more,
+        total: total
     }
 }
 
