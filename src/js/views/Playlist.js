@@ -219,13 +219,13 @@ class Playlist extends React.Component{
 					</ul>
 				</div>
 
-				{ this.renderActions() }
+				{this.renderActions()}
 
 				<section className="list-wrapper">
 					<TrackList uri={playlist.uri} className="playlist-track-list" context={context} tracks={playlist.tracks} removeTracks={ tracks_indexes => this.removeTracks(tracks_indexes) } reorderTracks={ (indexes, index) => this.reorderTracks(indexes, index) } />
 					<LazyLoadListener
 						loadKey={playlist.tracks_more}
-						showLoader={is_loading_tracks}
+						showLoader={is_loading_tracks || playlist.tracks_more}
 						loadMore={() => this.loadMore()}
 					/>
 				</section>

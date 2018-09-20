@@ -34,6 +34,15 @@ class Track extends React.Component{
 
 	componentDidMount(){
 		this.props.coreActions.loadTrack(this.props.params.uri);
+
+		// We already have the track in our index, so it won't fire componentWillReceiveProps
+		if (this.props.track){
+			this.setWindowTitle(this.props.track);
+
+			if (this.props.track.artists && !this.props.track.lyrics_results){
+				this.props.geniusActions.findTrackLyrics(this.props.track);
+			}
+		}
 	}
 
 	handleContextMenu(e){
@@ -48,8 +57,8 @@ class Track extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadTrack(nextProps.params.uri);
 
-			if (this.props.tracks.artists){
-				this.props.geniusActions.findTrackLyrics(this.props.track);
+			if (nextProps.tracks.artists){
+				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 
 		// if mopidy has just connected AND we're not a Spotify track, go get
@@ -59,10 +68,10 @@ class Track extends React.Component{
 			}
 		}
 
-		// We have just received our full track info (with artists)
-		if (!this.props.track.artists && nextProps.track.artists){
+		// We have just received our full track or our track artists
+		if ((!this.props.track && nextProps.track) || (!this.props.track.artists && nextProps.track.artists)){
 
-			this.props.uiActions.setWindowTitle(nextProps.track);
+			this.setWindowTitle(nextProps.track);
 
 			// Ready to load LastFM
 			if (nextProps.lastfm_authorized){

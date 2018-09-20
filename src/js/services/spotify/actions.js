@@ -578,14 +578,14 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                     }
 
                     if (response.playlists !== undefined){
-                        var playlists = []
-                        for (var i = 0; i < response.playlists.items.length; i++){
+                        var playlists = [];
+                        for (var playlist of response.playlists.items){
                             playlists.push(Object.assign(
                                 {},
-                                response.playlists.items[i],
+                                helpers.formatPlaylist(playlist),
                                 {
-                                    can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
-                                    tracks_total: response.playlists.items[i].tracks.total
+                                    can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
+                                    tracks_total: playlist.tracks.total
                                 }
                             ))
                         }
