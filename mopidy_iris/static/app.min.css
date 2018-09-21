@@ -5889,9 +5889,9 @@ main header {
     .debug-info-section:first-child {
       padding-top: 0; }
 
-.has-tooltip {
+.tooltip {
   position: relative; }
-  .has-tooltip .tooltip {
+  .tooltip__content {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
@@ -5911,9 +5911,9 @@ main header {
     z-index: 97;
     white-space: nowrap;
     text-align: left; }
-    .has-tooltip .tooltip:first-letter {
+    .tooltip__content:first-letter {
       text-transform: uppercase; }
-    .has-tooltip .tooltip:after {
+    .tooltip__content:after {
       content: '';
       display: block;
       width: 6px;
@@ -5925,21 +5925,23 @@ main header {
       position: absolute;
       bottom: -3px;
       left: 9px; }
-    .light-theme .has-tooltip .tooltip {
+    .light-theme .tooltip__content {
       background: #383734;
       color: #FFFFFF; }
-      .light-theme .has-tooltip .tooltip:after {
+      .light-theme .tooltip__content:after {
         background: #383734; }
-  .has-tooltip:hover .tooltip {
+  .touch .tooltip:not(.touchable) .tooltip__content {
+    display: none; }
+  .tooltip:hover .tooltip__content {
     opacity: 1;
     bottom: 35px; }
-  .has-tooltip.right-tooltip .tooltip {
+  .tooltip--right .tooltip__content {
     left: auto;
     right: -5px; }
-    .has-tooltip.right-tooltip .tooltip:after {
+    .tooltip--right .tooltip__content:after {
       right: 9px;
       left: auto; }
-  .has-tooltip.large-tooltip .tooltip {
+  .tooltip--large .tooltip__content {
     padding: 8px 12px;
     font-size: 12px;
     line-height: 14px;
