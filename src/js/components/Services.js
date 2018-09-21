@@ -287,68 +287,70 @@ class Services extends React.Component{
 	renderMenu(){
 
 		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]){
-			var spotify_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.spotify.me.uri].images} />
+			var spotify_icon = <Thumbnail className="menu-item__thumbnail" circle={true} size="small" images={this.props.core.users[this.props.spotify.me.uri].images} />
 		} else {
-			var spotify_icon = <Thumbnail circle={true} size="small" />
+			var spotify_icon = <Thumbnail className="menu-item__thumbnail" circle={true} size="small" />
 		}
 
 		if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]){
-			var lastfm_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.lastfm.me.uri].images} />
+			var lastfm_icon = <Thumbnail className="menu-item__thumbnail" circle={true} size="small" images={this.props.core.users[this.props.lastfm.me.uri].images} />
 		} else {
-			var lastfm_icon = <Icon type="fontawesome" name="lastfm" />
+			var lastfm_icon = <Icon type="fontawesome" name="lastfm" className="menu-item__icon" />
 		}
 
 		if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]){
-			var genius_icon = <Thumbnail circle={true} size="small" images={this.props.core.users[this.props.genius.me.uri].images} />
+			var genius_icon = <Thumbnail className="menu-item__thumbnail" circle={true} size="small" images={this.props.core.users[this.props.genius.me.uri].images} />
 		} else {
-			var genius_icon = <Icon name="genius" type="svg" />
+			var genius_icon = <Icon name="genius" type="svg" className="menu-item__icon" />
 		}
 
 		return (
 			<div className="menu">
-				<div className="menu-item-wrapper">
-					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'}>
-						{spotify_icon}
-						<div className="title">
-							Spotify
+				<div className="menu__inner">
+					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' menu-item--active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'}>
+						<div className="menu-item__inner">
+							{spotify_icon}
+							<div className="menu-item__title">
+								Spotify
+							</div>
+							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
 						</div>
-						{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
 					</Link>
-				</div>
-				<div className="menu-item-wrapper">
-					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'}>
-						{lastfm_icon}
-						<div className="title">
-							LastFM
+					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' menu-item--active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'}>
+						<div className="menu-item__inner">
+							{lastfm_icon}
+							<div className="menu-item__title">
+								LastFM
+							</div>
+							{this.props.lastfm.session ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
 						</div>
-						{this.props.lastfm.session ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
 					</Link>
-				</div>
-				<div className="menu-item-wrapper">
-					<Link className={"menu-item"+(this.props.active == 'genius' ? ' active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
-						{genius_icon}
-						<div className="title">
-							Genius
+					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
+						<div className="menu-item__inner">
+							{genius_icon}
+							<div className="menu-item__title">
+								Genius
+							</div>
+							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
 						</div>
-						{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
 					</Link>
-				</div>
-				<div className="menu-item-wrapper">
-					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
-						<Icon name="devices" />
-						<div className="title">
-							Snapcast
+					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
+						<div className="menu-item__inner">
+							<Icon className="menu-item__icon" name="devices" />
+							<div className="title">
+								Snapcast
+							</div>
+							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
 						</div>
-						{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
 					</Link>
-				</div>
-				<div className="menu-item-wrapper">
-					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
-						<Icon name="wifi_tethering" />
-						<div className="title">
-							Icecast
+					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' menu-item--active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
+						<div className="menu-item__inner">
+							<Icon className="menu-item__icon" name="wifi_tethering" />
+							<div className="menu-item__title">
+								Icecast
+							</div>
+							{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
 						</div>
-						{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
 					</Link>
 				</div>
 			</div>

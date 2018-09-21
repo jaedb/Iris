@@ -74825,21 +74825,21 @@ var Services = function (_React$Component) {
 		value: function renderMenu() {
 
 			if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]) {
-				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.spotify.me.uri].images });
+				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { className: 'menu-item__thumbnail', circle: true, size: 'small', images: this.props.core.users[this.props.spotify.me.uri].images });
 			} else {
-				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small' });
+				var spotify_icon = _react2.default.createElement(_Thumbnail2.default, { className: 'menu-item__thumbnail', circle: true, size: 'small' });
 			}
 
 			if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]) {
-				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.lastfm.me.uri].images });
+				var lastfm_icon = _react2.default.createElement(_Thumbnail2.default, { className: 'menu-item__thumbnail', circle: true, size: 'small', images: this.props.core.users[this.props.lastfm.me.uri].images });
 			} else {
-				var lastfm_icon = _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'lastfm' });
+				var lastfm_icon = _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'lastfm', className: 'menu-item__icon' });
 			}
 
 			if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]) {
-				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: this.props.core.users[this.props.genius.me.uri].images });
+				var genius_icon = _react2.default.createElement(_Thumbnail2.default, { className: 'menu-item__thumbnail', circle: true, size: 'small', images: this.props.core.users[this.props.genius.me.uri].images });
 			} else {
-				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'genius', type: 'svg' });
+				var genius_icon = _react2.default.createElement(_Icon2.default, { name: 'genius', type: 'svg', className: 'menu-item__icon' });
 			}
 
 			return _react2.default.createElement(
@@ -74847,116 +74847,120 @@ var Services = function (_React$Component) {
 				{ className: 'menu' },
 				_react2.default.createElement(
 					'div',
-					{ className: 'menu-item-wrapper' },
+					{ className: 'menu__inner' },
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ className: "menu-item" + (this.props.active == 'spotify' ? ' active' : ''), to: this.props.active == 'spotify' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/spotify' },
-						spotify_icon,
+						{ className: "menu-item" + (this.props.active == 'spotify' ? ' menu-item--active' : ''), to: this.props.active == 'spotify' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/spotify' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'Spotify'
-						),
-						this.props.spotify.authorization ? _react2.default.createElement(
-							'span',
-							{ className: 'status green-text' },
-							'Authorized'
-						) : _react2.default.createElement(
-							'span',
-							{ className: 'status grey-text' },
-							'Read-only'
+							{ className: 'menu-item__inner' },
+							spotify_icon,
+							_react2.default.createElement(
+								'div',
+								{ className: 'menu-item__title' },
+								'Spotify'
+							),
+							this.props.spotify.authorization ? _react2.default.createElement(
+								'span',
+								{ className: 'status green-text' },
+								'Authorized'
+							) : _react2.default.createElement(
+								'span',
+								{ className: 'status grey-text' },
+								'Read-only'
+							)
 						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'menu-item-wrapper' },
+					),
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ className: "menu-item" + (this.props.active == 'lastfm' ? ' active' : ''), to: this.props.active == 'lastfm' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/lastfm' },
-						lastfm_icon,
+						{ className: "menu-item" + (this.props.active == 'lastfm' ? ' menu-item--active' : ''), to: this.props.active == 'lastfm' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/lastfm' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'LastFM'
-						),
-						this.props.lastfm.session ? _react2.default.createElement(
-							'span',
-							{ className: 'status green-text' },
-							'Authorized'
-						) : _react2.default.createElement(
-							'span',
-							{ className: 'status grey-text' },
-							'Read-only'
+							{ className: 'menu-item__inner' },
+							lastfm_icon,
+							_react2.default.createElement(
+								'div',
+								{ className: 'menu-item__title' },
+								'LastFM'
+							),
+							this.props.lastfm.session ? _react2.default.createElement(
+								'span',
+								{ className: 'status green-text' },
+								'Authorized'
+							) : _react2.default.createElement(
+								'span',
+								{ className: 'status grey-text' },
+								'Read-only'
+							)
 						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'menu-item-wrapper' },
+					),
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ className: "menu-item" + (this.props.active == 'genius' ? ' active' : ''), to: this.props.active == 'genius' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/genius' },
-						genius_icon,
+						{ className: "menu-item" + (this.props.active == 'genius' ? ' menu-item--active' : ''), to: this.props.active == 'genius' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/genius' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'Genius'
-						),
-						this.props.genius.authorization ? _react2.default.createElement(
-							'span',
-							{ className: 'status green-text' },
-							'Authorized'
-						) : _react2.default.createElement(
-							'span',
-							{ className: 'status grey-text' },
-							'Unauthorized'
+							{ className: 'menu-item__inner' },
+							genius_icon,
+							_react2.default.createElement(
+								'div',
+								{ className: 'menu-item__title' },
+								'Genius'
+							),
+							this.props.genius.authorization ? _react2.default.createElement(
+								'span',
+								{ className: 'status green-text' },
+								'Authorized'
+							) : _react2.default.createElement(
+								'span',
+								{ className: 'status grey-text' },
+								'Unauthorized'
+							)
 						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'menu-item-wrapper' },
+					),
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ className: "menu-item" + (this.props.active == 'snapcast' ? ' active' : ''), to: this.props.active == 'snapcast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/snapcast' },
-						_react2.default.createElement(_Icon2.default, { name: 'devices' }),
+						{ className: "menu-item" + (this.props.active == 'snapcast' ? ' menu-item--active' : ''), to: this.props.active == 'snapcast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/snapcast' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'Snapcast'
-						),
-						this.props.pusher.config.snapcast_enabled ? _react2.default.createElement(
-							'span',
-							{ className: 'status green-text' },
-							'Enabled'
-						) : _react2.default.createElement(
-							'span',
-							{ className: 'status grey-text' },
-							'Disabled'
+							{ className: 'menu-item__inner' },
+							_react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: 'devices' }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'title' },
+								'Snapcast'
+							),
+							this.props.pusher.config.snapcast_enabled ? _react2.default.createElement(
+								'span',
+								{ className: 'status green-text' },
+								'Enabled'
+							) : _react2.default.createElement(
+								'span',
+								{ className: 'status grey-text' },
+								'Disabled'
+							)
 						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'menu-item-wrapper' },
+					),
 					_react2.default.createElement(
 						_reactRouter.Link,
-						{ className: "menu-item" + (this.props.active == 'icecast' ? ' active' : ''), to: this.props.active == 'icecast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/icecast' },
-						_react2.default.createElement(_Icon2.default, { name: 'wifi_tethering' }),
+						{ className: "menu-item" + (this.props.active == 'icecast' ? ' menu-item--active' : ''), to: this.props.active == 'icecast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/icecast' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							'Icecast'
-						),
-						this.props.core.http_streaming_enabled ? _react2.default.createElement(
-							'span',
-							{ className: 'status green-text' },
-							'Enabled'
-						) : _react2.default.createElement(
-							'span',
-							{ className: 'status grey-text' },
-							'Disabled'
+							{ className: 'menu-item__inner' },
+							_react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: 'wifi_tethering' }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'menu-item__title' },
+								'Icecast'
+							),
+							this.props.core.http_streaming_enabled ? _react2.default.createElement(
+								'span',
+								{ className: 'status green-text' },
+								'Enabled'
+							) : _react2.default.createElement(
+								'span',
+								{ className: 'status grey-text' },
+								'Disabled'
+							)
 						)
 					)
 				)
