@@ -241,6 +241,28 @@ const MopidyMiddleware = (function(){
                     })
                 break;
 
+            case 'MOPIDY_REQUEST':
+                request(socket, store, action.method, action.params)
+                    .then(
+                        response => {
+	                        if (action.response_callback){
+	                            store.dispatch(action.response_callback.call(this, response));
+	                        }
+                        },
+                        error => {
+	                        if (action.error_callback){
+	                            store.dispatch(action.error_callback.call(this, error));
+	                        } else {
+	                            store.dispatch(coreActions.handleException(
+	                                'Mopidy request failed',
+	                                error,
+	                                action.method,
+	                                action
+	                            ));
+	                        }
+                        }
+                    );
+                break
 
             /**
              * General playback

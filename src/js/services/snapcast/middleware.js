@@ -12,7 +12,7 @@ const SnapcastMiddleware = (function(){
 	// A snapcast request is an alias of the Pusher request
     const request = (store, params = null, response_callback = null, error_callback = null) => {
         store.dispatch(
-        	pusherActions.instruct(
+        	pusherActions.request(
         		'snapcast_instruct',
         		params,
         		response_callback,

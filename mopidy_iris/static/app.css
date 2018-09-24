@@ -4445,111 +4445,118 @@ $icon-websocket: \e920;
 .snapcast button {
   margin-bottom: 0px; }
 
-.snapcast .volume-control .mute-control {
-  display: inline-block;
-  float: left;
-  padding: 0 5px;
-  border: 0; }
-
-.snapcast .volume-control .slider-wrapper {
-  margin-left: 30px; }
-
-.snapcast .volume-control.group-volume-control {
+.snapcast__group__volume-control {
   padding: 10px 0 5px;
   display: block;
   width: 100%;
   box-sizing: border-box; }
+  .snapcast__group__volume-control .mute-control {
+    display: inline-block;
+    float: left;
+    padding: 0 5px;
+    border: 0; }
+  .snapcast__group__volume-control .slider-wrapper {
+    margin-left: 30px; }
 
-.snapcast .volume-control.client-volume-control {
-  padding-top: 11px;
-  padding-right: 10px;
-  display: block;
-  vertical-align: middle;
-  box-sizing: border-box; }
-
-.snapcast .groups {
+.snapcast__groups {
   padding-top: 10px; }
-  .snapcast .groups .group {
-    padding-top: 10px;
-    border-top: 1px solid #383734; }
-    .snapcast .groups .group:not(:last-child) {
-      padding-bottom: 20px; }
-    .snapcast .groups .group .clients {
-      padding: 0 10px; }
-      .snapcast .groups .group .clients .client {
-        border: 0;
-        padding: 0;
-        clear: both; }
-        .snapcast .groups .group .clients .client::after {
+
+.snapcast__group {
+  padding-top: 10px;
+  border-top: 1px solid #383734; }
+  .snapcast__group:not(:last-child) {
+    padding-bottom: 20px; }
+
+.snapcast__clients {
+  padding: 0 10px; }
+
+.snapcast__client {
+  border: 0;
+  padding: 0;
+  clear: both; }
+  .snapcast__client::after {
+    content: '';
+    clear: both;
+    display: block; }
+  .snapcast__client:not(:first-child) {
+    padding-top: 8px; }
+  .snapcast__client__volume-control {
+    padding-top: 11px;
+    padding-right: 10px;
+    display: block;
+    vertical-align: middle;
+    box-sizing: border-box; }
+    .snapcast__client__volume-control .mute-control {
+      display: inline-block;
+      float: left;
+      padding: 0 5px;
+      border: 0; }
+    .snapcast__client__volume-control .slider-wrapper {
+      margin-left: 30px; }
+  .snapcast__client__name {
+    width: 40%;
+    padding-bottom: 4px;
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    border: 0; }
+    .snapcast__client__name input {
+      width: 100%;
+      padding-right: 30px; }
+  .snapcast__client__group-dropdown-field {
+    float: right;
+    margin-bottom: -3.2rem; }
+    .snapcast__client__group-dropdown-field .icon {
+      padding-right: 0; }
+  .snapcast__client__volume {
+    width: 28%;
+    padding-left: 2%; }
+  .snapcast__client__latency {
+    width: 28%;
+    padding-left: 2%; }
+    .snapcast__client__latency input[type="number"] {
+      width: 20%; }
+    .snapcast__client__latency .latency-control {
+      display: inline-block;
+      vertical-align: middle;
+      padding-top: 4px;
+      width: 80%;
+      padding-right: 10px;
+      box-sizing: border-box; }
+      .snapcast__client__latency .latency-control .zero {
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        bottom: 0;
+        width: 1px;
+        background: #383734;
+        z-index: 0; }
+      .snapcast__client__latency .latency-control .progress.positive {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0; }
+      .snapcast__client__latency .latency-control .progress.negative {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0; }
+        .snapcast__client__latency .latency-control .progress.negative:after {
+          right: auto;
+          left: -1px; }
+  @media (max-width: 800px) {
+    .snapcast__client {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-top: 0 !important; }
+      .snapcast__client .col {
+        clear: both;
+        display: block !important;
+        float: none !important;
+        width: auto !important;
+        padding: 0; }
+        .snapcast__client .col::after {
           content: '';
           clear: both;
           display: block; }
-        .snapcast .groups .group .clients .client:not(:first-child) {
-          padding-top: 8px; }
-        .snapcast .groups .group .clients .client > .name {
-          width: 40%;
-          padding-bottom: 4px;
-          position: relative;
-          display: block;
-          box-sizing: border-box;
-          border: 0; }
-          .snapcast .groups .group .clients .client > .name input {
-            width: 100%;
-            padding-right: 30px; }
-          .snapcast .groups .group .clients .client > .name .group-dropdown-field {
-            float: right;
-            margin-bottom: -3.2rem; }
-            .snapcast .groups .group .clients .client > .name .group-dropdown-field .icon {
-              padding-right: 0; }
-        .snapcast .groups .group .clients .client > .volume {
-          width: 28%;
-          padding-left: 2%; }
-        .snapcast .groups .group .clients .client > .latency {
-          width: 28%;
-          padding-left: 2%; }
-          .snapcast .groups .group .clients .client > .latency input[type="number"] {
-            width: 20%; }
-        .snapcast .groups .group .clients .client .latency-control {
-          display: inline-block;
-          vertical-align: middle;
-          padding-top: 4px;
-          width: 80%;
-          padding-right: 10px;
-          box-sizing: border-box; }
-          .snapcast .groups .group .clients .client .latency-control .zero {
-            position: absolute;
-            top: -4px;
-            left: 50%;
-            bottom: 0;
-            width: 1px;
-            background: #383734;
-            z-index: 0; }
-          .snapcast .groups .group .clients .client .latency-control .progress.positive {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0; }
-          .snapcast .groups .group .clients .client .latency-control .progress.negative {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0; }
-            .snapcast .groups .group .clients .client .latency-control .progress.negative:after {
-              right: auto;
-              left: -1px; }
-        @media (max-width: 800px) {
-          .snapcast .groups .group .clients .client {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            padding-top: 0 !important; }
-            .snapcast .groups .group .clients .client .col {
-              clear: both;
-              display: block !important;
-              float: none !important;
-              width: auto !important;
-              padding: 0; }
-              .snapcast .groups .group .clients .client .col::after {
-                content: '';
-                clear: both;
-                display: block; }
-              .snapcast .groups .group .clients .client .col.volume, .snapcast .groups .group .clients .client .col.latency {
-                padding-top: 5px; } }
+        .snapcast__client .col.volume, .snapcast__client .col.latency {
+          padding-top: 5px; } }
 
 .output-control {
   position: relative; }

@@ -53,7 +53,7 @@ class Snapcast extends React.Component{
 		}
 
 		return (
-			<div className="list clients">
+			<div className="list snapcast__clients">
 				{
 					group.clients.map(client => {
 						var name = client.config.name ? client.config.name : client.host.name;
@@ -78,10 +78,10 @@ class Snapcast extends React.Component{
 						});
 
 						return (
-							<div className="list-item client" key={client.id}>
-								<div className="col name">
+							<div className={"list-item snapcast__client "+(client.connected ? "snapcast__client--connected" : "snapcast__client--disconnected")} key={client.id}>
+								<div className="col name snapcast__client__name">
 									<DropdownField 
-										className="group-dropdown-field" 
+										className="snapcast__client__group-dropdown-field" 
 										icon="settings" 
 										name="Group" 
 										no_label
@@ -96,16 +96,16 @@ class Snapcast extends React.Component{
 										value={name}
 									/>
 								</div>
-								<div className="col volume">
+								<div className="col snapcast__client__volume">
 									<VolumeControl 
-										className="client-volume-control"
+										className="snapcast__client__volume-control"
 										volume={client.config.volume.percent}
 										mute={client.config.volume.muted}
 										onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
 										onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
 									/>
 								</div>
-								<div className="col latency">
+								<div className="col snapcast__client__latency">
 									<LatencyControl 
 										max="100"
 										value={client.config.latency}
@@ -201,7 +201,7 @@ class Snapcast extends React.Component{
 					</div>
 				</div>
 
-				<div className="groups">
+				<div className="snapcast__groups">
 					{
 						groups.map(group => {
 
@@ -214,7 +214,7 @@ class Snapcast extends React.Component{
 							group_volume = group_volume / group.clients.length;
 
 							return (
-								<div className="group" key={group.id}>
+								<div className="snapcast__group" key={group.id}>
 									<div className="field">
 										<div className="name">
 											Name
@@ -250,7 +250,7 @@ class Snapcast extends React.Component{
 										</div>
 										<div className="input">	
 											<VolumeControl 
-												className="group-volume-control"
+												className="snapcast__group__volume-control"
 												volume={group_volume}
 												mute={group.muted}
 												onVolumeChange={(percent, old_percent) => this.props.snapcastActions.setGroupVolume(group.id, percent, old_percent)}

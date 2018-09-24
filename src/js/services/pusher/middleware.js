@@ -244,7 +244,7 @@ const PusherMiddleware = (function(){
                 next(action);
                 break;
 
-            case 'PUSHER_INSTRUCT':
+            case 'PUSHER_REQUEST':
                 request(store, action.method, action.params)
                     .then(
                         response => {
@@ -257,8 +257,10 @@ const PusherMiddleware = (function(){
 	                            store.dispatch(action.error_callback.call(this, error));
 	                        } else {
 	                            store.dispatch(coreActions.handleException(
-	                                'Instruct failed',
-	                                error
+	                                'Pusher request failed',
+	                                error,
+	                                action.method,
+	                                action
 	                            ));
 	                        }
                         }

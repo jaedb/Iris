@@ -8,6 +8,16 @@ export function set(data){
     }
 }
 
+export function request(method, params = null, response_callback = null, error_callback = null){
+	return {
+		type: 'MOPIDY_REQUEST',
+		method: method,
+		params: params,
+		response_callback: response_callback,
+		error_callback: error_callback
+	}
+}
+
 export function connect(){
 	return {
 		type: 'MOPIDY_CONNECT'

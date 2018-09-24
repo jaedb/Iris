@@ -75,9 +75,9 @@ export function connectionRemoved(connection){
 	}
 }
 
-export function instruct(method, params = null, response_callback = null, error_callback = null){
+export function request(method, params = null, response_callback = null, error_callback = null){
 	return {
-		type: 'PUSHER_INSTRUCT',
+		type: 'PUSHER_REQUEST',
 		method: method,
 		params: params,
 		response_callback: response_callback,
