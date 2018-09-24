@@ -1,15 +1,24 @@
 
 import ReactGA from 'react-ga'
 
-var helpers = require('../../helpers')
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var pusherActions = require('../pusher/actions')
+var helpers = require('../../helpers');
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var pusherActions = require('../pusher/actions');
+var snapcastActions = require('./actions');
 
 const SnapcastMiddleware = (function(){ 
 
-    const request = (store, params = null) => {
-        store.dispatch(pusherActions.instruct('snapcast_instruct', params));
+	// A snapcast request is an alias of the Pusher request
+    const request = (store, params = null, response_callback = null, error_callback = null) => {
+        store.dispatch(
+        	pusherActions.instruct(
+        		'snapcast_instruct',
+        		params,
+        		response_callback,
+        		error_callback
+        	)
+        );
         return;
     }
 
@@ -17,19 +26,21 @@ const SnapcastMiddleware = (function(){
         switch(action.type){
 
             case 'SNAPCAST_GET_SERVER':
-                console.log( request(store, {method: 'Server.GetStatus'}) )/*
-                    .then(
-                        response => {
-                            store.dispatch(snapcastActions.serverLoaded(response.server));
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not get Snapcast server',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );*/
+                request(
+	                store, 
+	                {
+	                	method: 'Server.GetStatus'
+	                },
+	                response => {
+                    	store.dispatch(snapcastActions.serverLoaded(response.server));
+	                },
+	                error => {
+                        store.dispatch(coreActions.handleException(
+                            'Could not get server',
+                            error
+                        ));
+	                }
+	            );
                 break
 
             case 'SNAPCAST_SERVER_LOADED':
@@ -80,27 +91,21 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_CLIENT_UPDATED', 
-                                key: action.id,
-                                client: {
-                                    config: {
-                                        name: response.name
-                                    }
+                request(
+                	store, 
+                	data, 
+                	response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_CLIENT_UPDATED', 
+                            key: action.id,
+                            client: {
+                                config: {
+                                    name: response.name
                                 }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                            }
+                        });
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_CLIENT_MUTE':
@@ -116,27 +121,28 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_CLIENT_UPDATED', 
-                                key: action.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
+                request(
+                	store, 
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_CLIENT_UPDATED', 
+                            key: action.id,
+                            client: {
+                                config: {
+                                    volume: response.volume
                                 }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                            }
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Error',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_CLIENT_VOLUME':
@@ -152,27 +158,28 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_CLIENT_UPDATED', 
-                                key: action.id,
-                                client: {
-                                    config: {
-                                        volume: response.volume
-                                    }
+                request(
+                	store, 
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_CLIENT_UPDATED', 
+                            key: action.id,
+                            client: {
+                                config: {
+                                    volume: response.volume
                                 }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                            }
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Error',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_CLIENT_LATENCY':
@@ -185,27 +192,28 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_CLIENT_UPDATED', 
-                                key: action.id,
-                                client: {
-                                    config: {
-                                        latency: response.latency
-                                    }
+                request(
+                	store,
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_CLIENT_UPDATED', 
+                            key: action.id,
+                            client: {
+                                config: {
+                                    latency: response.latency
                                 }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                            }
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Error',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_CLIENT_GROUP':
@@ -231,19 +239,20 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch(snapcastActions.serverLoaded(response.server));
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                request(
+                	store, 
+                	data,
+                    response => {
+                        store.dispatch(snapcastActions.serverLoaded(response.server));
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Error',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_DELETE_CLIENT':
@@ -254,22 +263,23 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_CLIENT_REMOVED', 
-                                key: action.data.params.id
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Error',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                request(
+                	store,
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_CLIENT_REMOVED', 
+                            key: action.data.params.id
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Error',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_GROUP_STREAM':
@@ -282,25 +292,26 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_GROUP_UPDATED', 
-                                key: action.id,
-                                group: {
-                                    stream_id: action.stream_id
-                                }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not change stream',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                request(
+                	store,
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_GROUP_UPDATED', 
+                            key: action.id,
+                            group: {
+                                stream_id: action.stream_id
+                            }
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Could not change stream',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_GROUP_MUTE':
@@ -313,25 +324,26 @@ const SnapcastMiddleware = (function(){
                     }
                 }
 
-                request(store, data)
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'SNAPCAST_GROUP_UPDATED', 
-                                key: action.id,
-                                group: {
-                                    muted: response.mute
-                                }
-                            })
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not toggle mute',
-                                error,
-                                error.message
-                            ));
-                        }
-                    );
+                request(
+                	store, 
+                	data,
+                    response => {
+                        store.dispatch({
+                            type: 'SNAPCAST_GROUP_UPDATED', 
+                            key: action.id,
+                            group: {
+                                muted: response.mute
+                            }
+                        })
+                    },
+                    error => {                            
+                        store.dispatch(coreActions.handleException(
+                            'Could not toggle mute',
+                            error,
+                            error.message
+                        ));
+                    }
+                );
                 break
 
             case 'SNAPCAST_SET_GROUP_VOLUME':

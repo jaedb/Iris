@@ -245,16 +245,22 @@ const PusherMiddleware = (function(){
                 break;
 
             case 'PUSHER_INSTRUCT':
-                request(action)
+                request(store, action.method, action.params)
                     .then(
                         response => {
-                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+	                        if (action.response_callback){
+	                            store.dispatch(action.response_callback.call(this, response));
+	                        }
                         },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Instruct failed',
-                                error
-                            ));
+                        error => {
+	                        if (action.error_callback){
+	                            store.dispatch(action.error_callback.call(this, error));
+	                        } else {
+	                            store.dispatch(coreActions.handleException(
+	                                'Instruct failed',
+	                                error
+	                            ));
+	                        }
                         }
                     );
                 break
