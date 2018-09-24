@@ -49,7 +49,7 @@ class List extends React.Component{
 		if (!this.props.columns || this.props.noheader) return null
 
 		return (
-			<div className="list-item header cf">
+			<div className="list__item header cf">
 				<div className="liner">
 					{
 						this.props.columns.map((col, col_index) => {
@@ -99,7 +99,7 @@ class List extends React.Component{
 				{
 					this.props.rows.map((row, row_index) => {
 
-						var class_name = 'list-item'
+						var class_name = 'list__item'
 						if (row.type ) class_name += ' '+row.type
 
 						return (

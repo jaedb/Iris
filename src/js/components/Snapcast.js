@@ -1,25 +1,29 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Link, hashHistory } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Link, hashHistory } from 'react-router';
 
-import ArtistSentence from './ArtistSentence'
-import VolumeControl from './Fields/VolumeControl'
-import LatencyControl from './Fields/LatencyControl'
-import TextField from './Fields/TextField'
-import DropdownField from './Fields/DropdownField'
+import VolumeControl from './Fields/VolumeControl';
+import LatencyControl from './Fields/LatencyControl';
+import TextField from './Fields/TextField';
+import DropdownField from './Fields/DropdownField';
+import Icon from './Icon';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as pusherActions from '../services/pusher/actions'
-import * as snapcastActions from '../services/snapcast/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as pusherActions from '../services/pusher/actions';
+import * as snapcastActions from '../services/snapcast/actions';
 
 class Snapcast extends React.Component{
 
 	constructor(props){
 		super(props);
+
+		this.state = {
+			clients_expanded: []
+		}
 	}
 
 	componentDidMount(){
@@ -40,6 +44,19 @@ class Snapcast extends React.Component{
 		} else if (!this.props.snapcast_enabled && newProps.snapcast_enabled && newProps.pusher_connected){
 			this.props.snapcastActions.getServer();
 		}
+	}
+
+	toggleClientExpanded(client_id){
+		var clients_expanded = this.state.clients_expanded;
+		var index = clients_expanded.indexOf(client_id);
+
+		if (index >= 0){
+			clients_expanded.splice(index, 1);
+		} else {
+			clients_expanded.push(client_id);
+		}
+
+		this.setState({clients_expanded: clients_expanded});
 	}
 
 	renderClientsList(group, groups){
@@ -77,49 +94,72 @@ class Snapcast extends React.Component{
 							className: 'grey-text'
 						});
 
-						return (
-							<div className={"list-item snapcast__client "+(client.connected ? "snapcast__client--connected" : "snapcast__client--disconnected")} key={client.id}>
-								<div className="col name snapcast__client__name">
-									<DropdownField 
-										className="snapcast__client__group-dropdown-field" 
-										icon="settings" 
-										name="Group" 
-										no_label
-										no_status_icon
-										value={group.id} 
-										options={groups_dropdown} 
-										uid={group.id+"_"+client.id}
-										handleChange={value => {this.props.snapcastActions.setClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
-									/>
-									<TextField
-										onChange={value => this.props.snapcastActions.setClientName(client.id, value)}
-										value={name}
-									/>
+						var class_name = "list__item snapcast__client";
+						if (client.connected){
+							class_name += " snapcast__client--connected";
+						} else {
+							class_name += " snapcast__client--disconnected";
+						}
+
+						if (this.state.clients_expanded.includes(client.id)){
+							return (
+								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
+									<div className="snapcast__client__expander" onClick={e => this.toggleClientExpanded(client.id)}>
+										<Icon name="check" />
+									</div>
+									<div className="snapcast__client__name">
+										<TextField
+											onChange={value => this.props.snapcastActions.setClientName(client.id, value)}
+											value={name}
+										/>
+										<DropdownField 
+											className="snapcast__client__group-field" 
+											icon="folder" 
+											name="Group" 
+											no_label
+											no_status_icon
+											value={group.id} 
+											options={groups_dropdown} 
+											uid={group.id+"_"+client.id}
+											handleChange={value => {this.props.snapcastActions.setClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
+										/>
+									</div>
+									<div className="snapcast__client__volume">
+										<VolumeControl 
+											className="snapcast__client__volume-control"
+											volume={client.config.volume.percent}
+											mute={client.config.volume.muted}
+											onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
+											onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+										/>
+									</div>
+									<div className="snapcast__client__latency">
+										<LatencyControl 
+											max="100"
+											value={client.config.latency}
+											onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+										/>
+										<TextField
+											className="tiny"
+											type="number"
+											onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+											value={String(client.config.latency)}
+										/>
+									</div>
 								</div>
-								<div className="col snapcast__client__volume">
-									<VolumeControl 
-										className="snapcast__client__volume-control"
-										volume={client.config.volume.percent}
-										mute={client.config.volume.muted}
-										onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-										onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
-									/>
+							);
+						} else {
+							return (
+								<div className={class_name} key={client.id}>
+									<div className="snapcast__client__expander" onClick={e => this.toggleClientExpanded(client.id)}>
+										<Icon name="edit" />
+									</div>
+									<div className="snapcast__client__name">
+										{name}
+									</div>
 								</div>
-								<div className="col snapcast__client__latency">
-									<LatencyControl 
-										max="100"
-										value={client.config.latency}
-										onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
-									/>
-									<TextField
-										className="tiny"
-										type="number"
-										onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
-										value={String(client.config.latency)}
-									/>
-								</div>
-							</div>
-						);
+							);
+						}
 					})
 				}
 			</div>

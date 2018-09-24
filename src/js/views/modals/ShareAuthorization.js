@@ -51,7 +51,7 @@ class ShareAuthorization_Send extends React.Component {
 					{
 						connections.map((connection, index) => {
 							return (
-								<div className='list-item connection' key={connection.connection_id} onClick={ e => this.handleClick(e, connection.connection_id) }>
+								<div className='list__item connection' key={connection.connection_id} onClick={ e => this.handleClick(e, connection.connection_id) }>
 									{ connection.username }
 									&nbsp;
 									<span className="grey-text">({ connection.ip })</span>

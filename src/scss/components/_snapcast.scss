@@ -44,12 +44,58 @@
 
 	&__client {
 		@include clearfix();
-		border: 0;
-		padding: 0;
-		clear: both;
+		position: relative;
+		padding: 14px 10px;
 
-		&:not(:first-child){
-			padding-top: 8px;
+		&--disconnected {
+			opacity: 0.5;
+		}
+
+		&--expanded {
+			.snapcast__client__name {
+				margin-top: -10px;
+				margin-right: 30px;
+				margin-left: -14px;
+				margin-bottom: 20px;
+			}
+		}
+
+		&__name {
+			margin-right: 40px;
+			padding-right: 50px;
+			position: relative;
+			display: block;
+			box-sizing: border-box;
+			border: 0;
+
+			input {
+				width: 100%;
+				padding-right: 30px;
+			}
+		}
+
+		&__expander {
+			position: absolute;
+			top: 0;
+			right: 0;
+			padding: 14px;
+			cursor: pointer;
+			z-index: 2;
+		}
+
+		&__group-field {
+			position: absolute;
+			top: -2px;
+			right: -2px;
+
+			.icon {
+				padding-right: 0;
+			}
+		}
+
+		&__volume {
+			width: 49%;
+			float: left;
 		}
 
 		&__volume-control {
@@ -71,37 +117,11 @@
 			}
 		}
 
-		&__name {
-			width: 40%;
-			padding-bottom: 4px;
-			position: relative;
-			display: block;
-			box-sizing: border-box;
-			border: 0;
-
-			input {
-				width: 100%;
-				padding-right: 30px;
-			}
-		}
-
-		&__group-dropdown-field {
-			float: right;
-			margin-bottom: -3.2rem;
-
-			.icon {
-				padding-right: 0;
-			}
-		}
-
-		&__volume {
-			width: 28%;
-			padding-left: 2%;
-		}
-
 		&__latency {
-			width: 28%;
+			@include clearfix();
+			width: 49%;
 			padding-left: 2%;
+			float: left;
 
 			input[type="number"] {
 				width: 20%;

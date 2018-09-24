@@ -179,7 +179,7 @@ export default class Track extends React.Component{
 		}
 
 		var track = this.props.track;
-		var className = 'list-item track mouse-draggable mouse-selectable mouse-contextable';
+		var className = 'list__item track mouse-draggable mouse-selectable mouse-contextable';
 		if (this.props.selected) className += ' selected';
 		if (this.props.can_sort) className += ' can-sort';
 		if (track.type !== undefined) className += ' '+track.type;

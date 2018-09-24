@@ -1,6 +1,6 @@
 
 .list {
-	.list-item {
+	&__item {
 		@include clearfix;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -102,7 +102,7 @@
 	}
 
 	&.track-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 
 			.col {
@@ -159,7 +159,7 @@
 	}
 
 	&.playlist-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 
 			.col {
@@ -180,7 +180,7 @@
 	}
 
 	&.album-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 
 			.col {
@@ -200,7 +200,7 @@
 	}
 
 	&.library-local-album-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 
 			.col {
@@ -216,7 +216,7 @@
 	}
 
 	&.artist-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 
 			.col {
@@ -236,7 +236,7 @@
 	&.queue-track-list {
 		cursor: pointer;
 
-		.list-item {
+		.list__item {
 			padding-right: 60px;
 			.col {
 				&.name,
@@ -270,7 +270,7 @@
 	}
 
 	&.queue-history-track-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 			
 			.col {
@@ -321,14 +321,14 @@
 
 	&.library-local-view,
 	&.library-local-directory-list {
-		.list-item {
+		.list__item {
 			cursor: pointer;
 		}
 	}
 
 	@include responsive($bp_medium){
 
-		.list-item {
+		.list__item {
 			padding: 12px !important;
 
 			.source {
@@ -395,7 +395,7 @@
 		}
 
 		&.queue-track-list {
-			.list-item {
+			.list__item {
 				.artists {
 					padding-left: 0 !important;
 
@@ -435,7 +435,7 @@
 		}
 
 		&.queue-history-track-list {
-			.list-item {
+			.list__item {
 				.source {
 					display: none !important;
 				}
@@ -443,7 +443,7 @@
 		}
 
 		&.track-list {
-			.list-item {
+			.list__item {
 				&.can-sort {
 					padding-left: 40px !important;
 				}
@@ -451,7 +451,7 @@
 		}
 
 		&.album-list {
-			.list-item {
+			.list__item {
 				.col {
 					&.added_at,
 					&.source {
@@ -466,7 +466,7 @@
 		}
 
 		&.playlist-list {
-			.list-item {
+			.list__item {
 				.col {
 					&.can_edit,
 					&.source {

@@ -7,16 +7,15 @@
 @import 'global/forms';
 
 @import 'components/context-menu';
+@import 'components/lists';
 @import 'components/loader';
 @import 'components/dragger';
 @import 'components/images';
 @import 'components/icon';
 @import 'components/slider';
 @import 'components/playback-controls';
-@import 'components/snapcast';
 @import 'components/output-control';
 @import 'components/sidebar';
-@import 'components/lists';
 @import 'components/grid';
 @import 'components/grid-slider';
 @import 'components/header';
@@ -29,6 +28,7 @@
 @import 'components/debug';
 @import 'components/tooltip';
 @import 'components/services';
+@import 'components/snapcast';
 @import 'components/popularity';
 
 @import 'views/artist';
