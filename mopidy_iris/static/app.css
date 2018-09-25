@@ -5968,45 +5968,44 @@ main header {
   padding: 0 10px; }
 
 .snapcast__client {
-  position: relative;
-  padding: 14px 10px; }
+  padding: 0; }
   .snapcast__client::after {
     content: '';
     clear: both;
     display: block; }
-  .snapcast__client--disconnected {
+  .snapcast__client--disconnected .snapcast__client__header {
     opacity: 0.5; }
-  .snapcast__client--expanded .snapcast__client__name {
-    margin-top: -10px;
-    margin-right: 30px;
-    margin-left: -14px;
-    margin-bottom: 20px; }
-  .snapcast__client__name {
-    margin-right: 40px;
-    padding-right: 50px;
-    position: relative;
-    display: block;
-    box-sizing: border-box;
-    border: 0; }
-    .snapcast__client__name input {
-      width: 100%;
-      padding-right: 30px; }
-  .snapcast__client__expander {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 14px;
+  .snapcast__client--expanded {
+    background: rgba(255, 255, 255, 0.1); }
+    .light-theme .snapcast__client--expanded {
+      background: rgba(0, 0, 0, 0.1); }
+  .snapcast__client--collapsed .snapcast__client__header:hover {
+    background: rgba(255, 255, 255, 0.03); }
+    .light-theme .snapcast__client--collapsed .snapcast__client__header:hover {
+      background: rgba(0, 0, 0, 0.03); }
+  .snapcast__client__header {
+    font-weight: 500;
     cursor: pointer;
-    z-index: 2; }
+    position: relative;
+    padding: 14px 10px; }
+    .snapcast__client__header__icons {
+      position: absolute;
+      top: 0;
+      right: 0;
+      cursor: pointer;
+      z-index: 2;
+      padding: 14px 10px; }
+      .snapcast__client__header__icons .icon {
+        padding-left: 6px; }
+  .snapcast__client__details {
+    position: relative;
+    padding: 0 14px 14px 14px; }
   .snapcast__client__group-field {
     position: absolute;
     top: -2px;
     right: -2px; }
     .snapcast__client__group-field .icon {
       padding-right: 0; }
-  .snapcast__client__volume {
-    width: 49%;
-    float: left; }
   .snapcast__client__volume-control {
     padding-top: 11px;
     padding-right: 10px;
@@ -6020,40 +6019,32 @@ main header {
       border: 0; }
     .snapcast__client__volume-control .slider-wrapper {
       margin-left: 30px; }
-  .snapcast__client__latency {
-    width: 49%;
-    padding-left: 2%;
-    float: left; }
-    .snapcast__client__latency::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .snapcast__client__latency input[type="number"] {
-      width: 20%; }
-    .snapcast__client__latency .latency-control {
-      display: inline-block;
-      vertical-align: middle;
-      padding-top: 4px;
-      width: 80%;
-      padding-right: 10px;
-      box-sizing: border-box; }
-      .snapcast__client__latency .latency-control .zero {
-        position: absolute;
-        top: -4px;
-        left: 50%;
-        bottom: 0;
-        width: 1px;
-        background: #383734;
-        z-index: 0; }
-      .snapcast__client__latency .latency-control .progress.positive {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0; }
-      .snapcast__client__latency .latency-control .progress.negative {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0; }
-        .snapcast__client__latency .latency-control .progress.negative:after {
-          right: auto;
-          left: -1px; }
+  .snapcast__client__latency input[type="number"] {
+    width: 20%; }
+  .snapcast__client__latency .latency-control {
+    display: inline-block;
+    vertical-align: middle;
+    padding-top: 4px;
+    width: 80%;
+    padding-right: 10px;
+    box-sizing: border-box; }
+    .snapcast__client__latency .latency-control .zero {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      bottom: 0;
+      width: 1px;
+      background: #383734;
+      z-index: 0; }
+    .snapcast__client__latency .latency-control .progress.positive {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0; }
+    .snapcast__client__latency .latency-control .progress.negative {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0; }
+      .snapcast__client__latency .latency-control .progress.negative:after {
+        right: auto;
+        left: -1px; }
   @media (max-width: 800px) {
     .snapcast__client {
       padding-left: 0 !important;

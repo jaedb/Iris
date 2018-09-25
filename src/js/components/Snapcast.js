@@ -74,25 +74,6 @@ class Snapcast extends React.Component{
 				{
 					group.clients.map(client => {
 						var name = client.config.name ? client.config.name : client.host.name;
-						var groups_dropdown = [];
-						for (var i = 0; i < groups.length; i++){
-
-							// Don't add our existing group
-							if (groups[i].id !== group.id){
-								groups_dropdown.push({
-									label: (groups[i].name ? groups[i].name : 'Group '+groups[i].id.substring(0,3)),
-									value: groups[i].id
-								});
-							}
-						}
-
-						// And append with 'New group' (which is actually
-						// the existing group and middleware handles the behavior shift)
-						groups_dropdown.push({
-							label: 'New group',
-							value: group.id,
-							className: 'grey-text'
-						});
 
 						var class_name = "list__item snapcast__client";
 						if (client.connected){
@@ -104,58 +85,118 @@ class Snapcast extends React.Component{
 						if (this.state.clients_expanded.includes(client.id)){
 							return (
 								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
-									<div className="snapcast__client__expander" onClick={e => this.toggleClientExpanded(client.id)}>
-										<Icon name="check" />
+									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
+										{name}
+										<div className="snapcast__client__header__icons">
+											{!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
+											<Icon name="expand_less" />
+										</div>
 									</div>
-									<div className="snapcast__client__name">
-										<TextField
-											onChange={value => this.props.snapcastActions.setClientName(client.id, value)}
-											value={name}
-										/>
-										<DropdownField 
-											className="snapcast__client__group-field" 
-											icon="folder" 
-											name="Group" 
-											no_label
-											no_status_icon
-											value={group.id} 
-											options={groups_dropdown} 
-											uid={group.id+"_"+client.id}
-											handleChange={value => {this.props.snapcastActions.setClientGroup(client.id, value); this.props.uiActions.hideContextMenu()}} 
-										/>
-									</div>
-									<div className="snapcast__client__volume">
-										<VolumeControl 
-											className="snapcast__client__volume-control"
-											volume={client.config.volume.percent}
-											mute={client.config.volume.muted}
-											onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-											onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
-										/>
-									</div>
-									<div className="snapcast__client__latency">
-										<LatencyControl 
-											max="100"
-											value={client.config.latency}
-											onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
-										/>
-										<TextField
-											className="tiny"
-											type="number"
-											onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
-											value={String(client.config.latency)}
-										/>
+									<div className="snapcast__client__details">
+										<div className="field">
+											<div className="name">
+												Name
+											</div>
+											<div className="input">
+												<TextField
+													onChange={value => this.props.snapcastActions.setClientName(client.id, value)}
+													value={name}
+												/>
+											</div>
+										</div>
+										<div className="field dropdown">
+											<div className="name">
+												Group
+											</div>
+											<div className="input">										
+												<select onChange={e => this.props.snapcastActions.setClientGroup(client.id, e.target.value)} value={group.id}>
+													{
+														groups.map(group => {
+															return (
+																<option value={group.id} key={group.id}>
+																	{group.name ? group.name : 'Group '+group.id.substring(0,3)}
+																</option>
+															);
+														})
+													}
+													<option value={group.id}>
+														New group
+													</option>
+												</select>
+											</div>
+										</div>
+										<div className="snapcast__client__volume field">
+											<div className="name">
+												Volume
+											</div>
+											<div className="input">
+												<VolumeControl 
+													className="snapcast__client__volume-control"
+													volume={client.config.volume.percent}
+													mute={client.config.volume.muted}
+													onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
+													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+												/>
+											</div>
+										</div>
+										<div className="snapcast__client__latency field">
+											<div className="name">
+												Latency
+											</div>
+											<div className="input">
+												<LatencyControl 
+													max="100"
+													value={client.config.latency}
+													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+												/>
+												<TextField
+													className="tiny"
+													type="number"
+													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+													value={String(client.config.latency)}
+												/>
+											</div>
+										</div>
+										<div className="field">
+											<div className="name tooltip">
+												Power on command
+												<span className="tooltip__content">
+													Fire this HTTP request to turn power on
+												</span>
+											</div>
+											<div className="input">
+												<TextField
+													onChange={value => console.log(value)}
+													value="http://localhost:8080/sendCommand/power_on"
+												/>
+											</div>
+										</div>
+										<div className="field">
+											<div className="name tooltip">
+												Power off command
+												<span className="tooltip__content">
+													Fire this HTTP request to turn power off
+												</span>
+											</div>
+											<div className="input">
+												<TextField
+													onChange={value => console.log(value)}
+													value="http://localhost:8080/sendCommand/power_off"
+												/>
+											</div>
+										</div>
 									</div>
 								</div>
 							);
 						} else {
 							return (
-								<div className={class_name} key={client.id}>
-									<div className="snapcast__client__expander" onClick={e => this.toggleClientExpanded(client.id)}>
-										<Icon name="edit" />
-									</div>
-									<div className="snapcast__client__name">
+								<div className={class_name+" snapcast__client--collapsed"} key={client.id}>
+									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
 										{name}
+										<div className="snapcast__client__header__icons">
+											{!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
+											<Icon name="expand_more" />
+										</div>
 									</div>
 								</div>
 							);

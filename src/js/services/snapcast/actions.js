@@ -50,13 +50,6 @@ export function getServer(){
 	}
 }
 
-export function serverLoaded(server){
-	return {
-		type: 'SNAPCAST_SERVER_LOADED',
-		server: server
-	}
-}
-
 export function setClientName(id, name){
 	return {
 		type: 'SNAPCAST_SET_CLIENT_NAME',
@@ -129,3 +122,51 @@ export function setGroupVolume(id, percent, old_percent = 0){
 	}
 }
 
+
+
+
+/**
+ * Record loaders
+ *
+ * We've got a loaded record, now we just need to plug it in to our state and stores.
+ **/
+
+export function serverLoaded(server){
+    return serversLoaded([server]);
+}
+export function serversLoaded(servers){
+    return {
+        type: 'SNAPCAST_SERVERS_LOADED',
+        servers: servers
+    }
+}
+
+export function clientLoaded(client){
+    return clientsLoaded([client]);
+}
+export function clientsLoaded(clients){
+    return {
+        type: 'SNAPCAST_CLIENTS_LOADED',
+        clients: clients
+    }
+}
+
+export function groupLoaded(group){
+    return groupsLoaded([group]);
+}
+export function groupsLoaded(groups){
+    return {
+        type: 'SNAPCAST_SERVERS_LOADED',
+        servers: group
+    }
+}
+
+export function streamLoaded(stream){
+    return streamsLoaded([stream]);
+}
+export function streamsLoaded(streams){
+    return {
+        type: 'SNAPCAST_STREAMS_LOADED',
+        streams: streams
+    }
+}

@@ -44,43 +44,55 @@
 
 	&__client {
 		@include clearfix();
-		position: relative;
-		padding: 14px 10px;
+		padding: 0;
 
 		&--disconnected {
-			opacity: 0.5;
+			.snapcast__client__header {
+				opacity: 0.5;
+			}
 		}
 
 		&--expanded {
-			.snapcast__client__name {
-				margin-top: -10px;
-				margin-right: 30px;
-				margin-left: -14px;
-				margin-bottom: 20px;
+			background: rgba(255,255,255,0.1);
+
+			.light-theme & {
+				background: rgba(0,0,0,0.1);
 			}
 		}
 
-		&__name {
-			margin-right: 40px;
-			padding-right: 50px;
-			position: relative;
-			display: block;
-			box-sizing: border-box;
-			border: 0;
+		&--collapsed {
+			.snapcast__client__header:hover {
+				background: rgba(255,255,255,0.03);
 
-			input {
-				width: 100%;
-				padding-right: 30px;
+				.light-theme & {
+					background: rgba(0,0,0,0.03);
+				}
 			}
 		}
 
-		&__expander {
-			position: absolute;
-			top: 0;
-			right: 0;
-			padding: 14px;
+		&__header {
+			font-weight: 500;
 			cursor: pointer;
-			z-index: 2;
+			position: relative;
+			padding: 14px 10px;
+
+			&__icons {
+				position: absolute;
+				top: 0;
+				right: 0;
+				cursor: pointer;
+				z-index: 2;
+				padding: 14px 10px;
+
+				.icon {
+					padding-left: 6px;
+				}
+			}
+		}
+
+		&__details {			
+			position: relative;
+			padding: 0 14px 14px 14px;
 		}
 
 		&__group-field {
@@ -91,11 +103,6 @@
 			.icon {
 				padding-right: 0;
 			}
-		}
-
-		&__volume {
-			width: 49%;
-			float: left;
 		}
 
 		&__volume-control {
@@ -118,11 +125,6 @@
 		}
 
 		&__latency {
-			@include clearfix();
-			width: 49%;
-			padding-left: 2%;
-			float: left;
-
 			input[type="number"] {
 				width: 20%;
 			}
