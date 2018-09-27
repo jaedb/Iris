@@ -46,17 +46,11 @@
 		@include clearfix();
 		padding: 0;
 
-		&--disconnected {
-			.snapcast__client__header {
-				opacity: 0.5;
-			}
-		}
-
 		&--expanded {
-			background: rgba(255,255,255,0.1);
+			background: rgba(255,255,255,0.05);
 
 			.light-theme & {
-				background: rgba(0,0,0,0.1);
+				background: rgba(0,0,0,0.05);
 			}
 		}
 
@@ -86,6 +80,10 @@
 
 				.icon {
 					padding-left: 6px;
+
+					&.disconnected {
+						color: $red;
+					}
 				}
 			}
 		}

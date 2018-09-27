@@ -85,7 +85,10 @@ var initialState = {
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
 	},
 	snapcast: {
-
+		streams: {},
+		groups: {},
+		clients: {},
+		server: null
 	}
 };
 

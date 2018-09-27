@@ -4,11 +4,13 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import VolumeControl from './VolumeControl'
+import SnapcastPowerButton from './SnapcastPowerButton'
 import Icon from '../Icon'
 
-import * as helpers from '../../helpers'
-import * as coreActions from '../../services/core/actions'
-import * as pusherActions from '../../services/pusher/actions'
+import * as helpers from '../../helpers';
+import * as coreActions from '../../services/core/actions';
+import * as pusherActions from '../../services/pusher/actions';
+import * as snapcastActions from '../../services/snapcast/actions';
 
 class OutputControl extends React.Component{
 
@@ -51,9 +53,9 @@ class OutputControl extends React.Component{
 		for (var key in this.props.snapcast_clients){
 			if (this.props.snapcast_clients.hasOwnProperty(key)){
 				var client = this.props.snapcast_clients[key];
-				if (client.connected){
+				//if (client.connected){
 					clients.push(client);
-				}
+				//}
 			}
 		}
 
@@ -63,20 +65,24 @@ class OutputControl extends React.Component{
 				<div>	
 					{
 						clients.map(client => {
-							var name = client.config.name ? client.config.name : client.host.name;
-
 							return (
-								<div className="output snapcast-output" key={client.id}>
-									<div className="name">
-										{name}
+								<div className="output-control__item outputs__item--snapcast" key={client.id}>
+									<div className="output-control__item__name">
+										{client.name}
 									</div>
-									<VolumeControl 
-										className="client-volume-control"
-										volume={client.config.volume.percent}
-										mute={client.config.volume.muted}
-										onVolumeChange={percent => this.props.pusherActions.setSnapcastClientVolume(client.id, percent)}
-										onMuteChange={mute => this.props.pusherActions.setSnapcastClientMute(client.id, mute)}
-									/>
+									<div className="output-control__item__details">
+										{client.commands && client.commands.power_on ? <SnapcastPowerButton
+											className="output-control__item__power output-control__item__power--on" 
+											client={client}
+										/> : null}
+										<VolumeControl 
+											className="output-control__item__volume"
+											volume={client.volume}
+											mute={client.mute}
+											onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
+											onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+										/>
+									</div>
 								</div>
 							);
 						})
@@ -88,35 +94,37 @@ class OutputControl extends React.Component{
 		var local_streaming = null;
 		if (this.props.http_streaming_enabled){
 			local_streaming = (
-				<div className="output icecast-output">
-					<div className="actions">
-						<span className="action" onClick={e => this.props.coreActions.cachebustHttpStream()}>
+				<div className="output-control__item outputs__item--icecast">
+					<div className="output-control__item__actions">
+						<span className="output-control__item__action" onClick={e => this.props.coreActions.cachebustHttpStream()}>
 							<Icon name="refresh" />
 						</span>
 					</div>
-					<div className="name">
+					<div className="output-control__item__name">
 						Local browser
 					</div>
-					<VolumeControl 
-						className="client-volume-control"
-						volume={this.props.http_streaming_volume}
-						mute={this.props.http_streaming_mute}
-						onVolumeChange={percent => this.props.coreActions.set({http_streaming_volume: percent})}
-						onMuteChange={mute => this.props.coreActions.set({http_streaming_mute: mute})}
-					/>
+					<div className="output-control__item__details">
+						<VolumeControl 
+							className="output-control__item__volume"
+							volume={this.props.http_streaming_volume}
+							mute={this.props.http_streaming_mute}
+							onVolumeChange={percent => this.props.coreActions.set({http_streaming_volume: percent})}
+							onMuteChange={mute => this.props.coreActions.set({http_streaming_mute: mute})}
+						/>
+					</div>
 				</div>
 			);
 		}
 
 		if (!local_streaming && !snapcast_clients){
 			return (
-				<div className="outputs">
+				<div className="output-control__items">
 					<p className="no-results">No outputs</p>
 				</div>
 			);
 		} else {
 			return (
-				<div className="outputs">
+				<div className="output-control__items">
 					{local_streaming}
 					{snapcast_clients}
 				</div>
@@ -159,13 +167,14 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_mute: state.core.http_streaming_mute,
 		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
 		pusher_connected: state.pusher.connected,
-		snapcast_clients: state.pusher.snapcast_clients
+		snapcast_clients: state.snapcast.clients
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		coreActions: bindActionCreators(coreActions, dispatch),
+		snapcastActions: bindActionCreators(snapcastActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch)
 	}
 }

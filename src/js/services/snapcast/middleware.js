@@ -23,6 +23,8 @@ const SnapcastMiddleware = (function(){
     }
 
     return store => next => action => {
+        var snapcast = store.getState().snapcast;
+
         switch(action.type){
 
             case 'SNAPCAST_GET_SERVER':
@@ -32,7 +34,8 @@ const SnapcastMiddleware = (function(){
 	                	method: 'Server.GetStatus'
 	                },
 	                response => {
-                    	store.dispatch(snapcastActions.serverLoaded(response.server));
+                        console.log(response);
+                        store.dispatch(snapcastActions.serverLoaded(response.server));
 	                },
 	                error => {
                         store.dispatch(coreActions.handleException(
@@ -44,45 +47,66 @@ const SnapcastMiddleware = (function(){
                 break
 
             case 'SNAPCAST_SERVER_LOADED':
-                var groups = {};
-                var clients = {};
-                var streams = {};
+                store.dispatch(snapcastActions.groupsLoaded(action.server.groups));
+                store.dispatch(snapcastActions.streamsLoaded(action.server.streams));
 
-                // Loop all the groups
-                for (var i = 0; i < action.server.groups.length; i++){
-                    var group = action.server.groups[i];
-                    var clients_ids = [];
+                // Snapcast double-nests the server object
+                action.server = action.server.server;
 
-                    // And now this groups' clients
-                    for (var j = 0; j < group.clients.length; j++){
-                        var client = group.clients[j];
-                        clients[client.id] = client;
-                        clients_ids.push(client.id);
-                    }
-
-                    groups[group.id] = {
-                        id: group.id,
-                        muted: group.muted,
-                        name: group.name,
-                        stream_id: group.stream_id,
-                        clients_ids: clients_ids
-                    }
-                }
-
-                // Loop all the streams
-                for (var i = 0; i < action.server.streams.length; i++){
-                    var stream = action.server.streams[i];
-                    streams[stream.id] = stream;
-                }
-
-                action.clients = clients;
-                action.groups = groups;
-                action.streams = streams;
                 next(action);
                 break
 
+
+            case 'SNAPCAST_GROUPS_LOADED':
+                var groups_index = Object.assign({}, snapcast.groups);
+                var groups_loaded = [];
+                var clients_loaded = [];
+
+                for (var raw_group of action.groups){
+                    var group = helpers.formatGroup(raw_group);
+
+                    if (groups_index[group.id]){
+                        group = Object.assign({}, groups_index[group.id], group);
+                    }
+
+                    if (raw_group.clients){
+                        group.clients_ids = helpers.arrayOf('id', raw_group.clients);
+                        clients_loaded = [...clients_loaded, ...raw_group.clients];
+                    }
+
+                    groups_loaded.push(group);
+                };
+
+                action.groups = groups_loaded;
+
+                if (clients_loaded.length > 0){
+                    store.dispatch(snapcastActions.clientsLoaded(clients_loaded));
+                }
+
+                next(action);
+                break
+
+            case 'SNAPCAST_CLIENTS_LOADED':
+                var clients_index = Object.assign({}, snapcast.clients);
+                var clients_loaded = [];
+
+                for (var raw_client of action.clients){
+                    var client = helpers.formatClient(raw_client);
+
+                    if (clients_index[client.id]){
+                        client = Object.assign({}, clients_index[client.id], client);
+                    }
+
+                    clients_loaded.push(client);
+                }
+
+                action.clients = clients_loaded;
+
+                next(action);
+                break;
+
             case 'SNAPCAST_SET_CLIENT_NAME':
-                var client = store.getState().snapcast.clients[action.id];
+                var client = snapcast.clients[action.id];
                 var data = {
                     method: 'Client.SetName',
                     params: {
@@ -95,15 +119,12 @@ const SnapcastMiddleware = (function(){
                 	store, 
                 	data, 
                 	response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_CLIENT_UPDATED', 
-                            key: action.id,
-                            client: {
-                                config: {
-                                    name: response.name
-                                }
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.id,
+                                name: response.name
                             }
-                        });
+                        ));
                     }
                 );
                 break
@@ -116,7 +137,7 @@ const SnapcastMiddleware = (function(){
                         id: action.id,
                         volume: {
                             muted: action.mute,
-                            percent: client.config.volume.percent,
+                            percent: client.volume,
                         }
                     }
                 }
@@ -125,15 +146,13 @@ const SnapcastMiddleware = (function(){
                 	store, 
                 	data,
                     response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_CLIENT_UPDATED', 
-                            key: action.id,
-                            client: {
-                                config: {
-                                    volume: response.volume
-                                }
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.id,
+                                volume: response.volume.percent,
+                                mute: response.volume.muted
                             }
-                        })
+                        ));
                     },
                     error => {                            
                         store.dispatch(coreActions.handleException(
@@ -146,14 +165,15 @@ const SnapcastMiddleware = (function(){
                 break
 
             case 'SNAPCAST_SET_CLIENT_VOLUME':
-                var client = store.getState().snapcast.clients[action.id];
+                var client = snapcast.clients[action.id];
+
                 var data = {
                     method: 'Client.SetVolume',
                     params: {
                         id: action.id,
                         volume: {
-                            muted: client.config.volume.muted,
-                            percent: action.percent
+                            muted: client.mute,
+                            percent: action.volume
                         }
                     }
                 }
@@ -162,15 +182,12 @@ const SnapcastMiddleware = (function(){
                 	store, 
                 	data,
                     response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_CLIENT_UPDATED', 
-                            key: action.id,
-                            client: {
-                                config: {
-                                    volume: response.volume
-                                }
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.id,
+                                volume: response.volume.percent
                             }
-                        })
+                        ));
                     },
                     error => {                            
                         store.dispatch(coreActions.handleException(
@@ -193,18 +210,15 @@ const SnapcastMiddleware = (function(){
                 }
 
                 request(
-                	store,
-                	data,
+                    store,
+                    data,
                     response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_CLIENT_UPDATED', 
-                            key: action.id,
-                            client: {
-                                config: {
-                                    latency: response.latency
-                                }
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.id,
+                                latency: response.latency
                             }
-                        })
+                        ));
                     },
                     error => {                            
                         store.dispatch(coreActions.handleException(
@@ -216,9 +230,18 @@ const SnapcastMiddleware = (function(){
                 );
                 break
 
+            case 'SNAPCAST_SET_CLIENT_COMMAND':
+                var client = snapcast.clients[action.id];
+                if (!client.commands){
+                    client.commands = {};
+                }
+                client.commands[action.name] = action.command;
+                store.dispatch(snapcastActions.clientLoaded(client));
+                break
+
             case 'SNAPCAST_SET_CLIENT_GROUP':
 
-                var group = store.getState().snapcast.groups[action.group_id];
+                var group = snapcast.groups[action.group_id];
                 var clients_ids = group.clients_ids;
                 var clients_ids_index = clients_ids.indexOf(action.id);
 
@@ -296,13 +319,12 @@ const SnapcastMiddleware = (function(){
                 	store,
                 	data,
                     response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_GROUP_UPDATED', 
-                            key: action.id,
-                            group: {
+                        store.dispatch(snapcastActions.groupLoaded(
+                            {
+                                id: action.id,
                                 stream_id: action.stream_id
                             }
-                        })
+                        ));
                     },
                     error => {                            
                         store.dispatch(coreActions.handleException(
@@ -328,13 +350,12 @@ const SnapcastMiddleware = (function(){
                 	store, 
                 	data,
                     response => {
-                        store.dispatch({
-                            type: 'SNAPCAST_GROUP_UPDATED', 
-                            key: action.id,
-                            group: {
+                        store.dispatch(snapcastActions.groupLoaded(
+                            {
+                                id: action.id,
                                 muted: response.mute
                             }
-                        })
+                        ));
                     },
                     error => {                            
                         store.dispatch(coreActions.handleException(
@@ -348,38 +369,37 @@ const SnapcastMiddleware = (function(){
 
             case 'SNAPCAST_SET_GROUP_VOLUME':
                 var clients_to_update = [];
-                var group = store.getState().snapcast.groups[action.id];
+                var group = snapcast.groups[action.id];
                 var change = action.percent - action.old_percent;
 
-                for (var i = 0; i < group.clients_ids.length; i++){
+                for (var client_id of group.clients_ids){
 
                     // Apply the change proportionately to each client
-                    var client = store.getState().snapcast.clients[group.clients_ids[i]];
-                    var current_percent = client.config.volume.percent;
-                    var new_percent = current_percent + change;
+                    var client = snapcast.clients[client_id];
+                    var current_volume = client.volume;
+                    var new_volume = current_volume + change;
 
                     // Only change if the client is within min/max limits
-                    if ((change > 0 && current_percent < 100) || (change < 0 && current_percent > 0)){
+                    if ((change > 0 && current_volume < 100) || (change < 0 && current_volume > 0)){
                         clients_to_update.push({
                             id: client.id,
-                            percent: new_percent
+                            volume: new_volume
                         });
                     }
                 }
 
                 // Loop our required changes, and post each to Snapcast
-                for (var i = 0; i < clients_to_update.length; i++){
-                    var update = clients_to_update[i];
-                    var percent = update.percent + ((group.clients_ids.length - clients_to_update.length) * change);
+                for (var client_to_update of clients_to_update){
+                    var volume = client_to_update.volume + ((group.clients_ids.length - clients_to_update.length) * change);
 
                     // Make sure we're not creating an impossible percent
-                    if (percent < 0){
-                        percent = 0;
-                    } else if (percent > 100){
-                        percent = 100;
+                    if (volume < 0){
+                        volume = 0;
+                    } else if (volume > 100){
+                        volume = 100;
                     }
 
-                    store.dispatch(snapcastActions.setClientVolume(update.id, percent));
+                    store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
                 }
 
             // This action is irrelevant to us, pass it on to the next middleware

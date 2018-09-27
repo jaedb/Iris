@@ -61,7 +61,13 @@ class Snapcast extends React.Component{
 
 	renderClientsList(group, groups){
 
-		if (!group.clients || group.clients.length <= 0){
+		if (!this.props.show_disconnected_clients && group.clients){
+			var clients = helpers.applyFilter('connected', true, group.clients);
+		} else {
+			var clients = group.clients;
+		}
+
+		if (!clients || clients.length <= 0){
 			return (
 				<div className="text grey-text">
 					No clients
@@ -72,9 +78,7 @@ class Snapcast extends React.Component{
 		return (
 			<div className="list snapcast__clients">
 				{
-					group.clients.map(client => {
-						var name = client.config.name ? client.config.name : client.host.name;
-
+					clients.map(client => {
 						var class_name = "list__item snapcast__client";
 						if (client.connected){
 							class_name += " snapcast__client--connected";
@@ -86,7 +90,7 @@ class Snapcast extends React.Component{
 							return (
 								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
 									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
-										{name}
+										{client.name}
 										<div className="snapcast__client__header__icons">
 											{!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
 											<Icon name="expand_less" />
@@ -100,7 +104,7 @@ class Snapcast extends React.Component{
 											<div className="input">
 												<TextField
 													onChange={value => this.props.snapcastActions.setClientName(client.id, value)}
-													value={name}
+													value={client.name}
 												/>
 											</div>
 										</div>
@@ -132,8 +136,8 @@ class Snapcast extends React.Component{
 											<div className="input">
 												<VolumeControl 
 													className="snapcast__client__volume-control"
-													volume={client.config.volume.percent}
-													mute={client.config.volume.muted}
+													volume={client.volume}
+													mute={client.mute}
 													onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
 													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
 												/>
@@ -146,42 +150,44 @@ class Snapcast extends React.Component{
 											<div className="input">
 												<LatencyControl 
 													max="100"
-													value={client.config.latency}
+													value={client.latency}
 													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
 												/>
 												<TextField
 													className="tiny"
 													type="number"
 													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
-													value={String(client.config.latency)}
+													value={String(client.latency)}
 												/>
 											</div>
 										</div>
 										<div className="field">
 											<div className="name tooltip">
-												Power on command
+												Power on request
 												<span className="tooltip__content">
 													Fire this HTTP request to turn power on
 												</span>
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => console.log(value)}
-													value="http://localhost:8080/sendCommand/power_on"
+													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_on", value)}
+													value={client.power_on_command ? client.power_on_command : ""}
+													placeholder="Leave empty to disable"
 												/>
 											</div>
 										</div>
 										<div className="field">
 											<div className="name tooltip">
-												Power off command
+												Power off request
 												<span className="tooltip__content">
 													Fire this HTTP request to turn power off
 												</span>
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => console.log(value)}
-													value="http://localhost:8080/sendCommand/power_off"
+													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_off", value)}
+													value={client.power_off_command ? client.power_off_command : ""}
+													placeholder="Leave empty to disable"
 												/>
 											</div>
 										</div>
@@ -192,7 +198,7 @@ class Snapcast extends React.Component{
 							return (
 								<div className={class_name+" snapcast__client--collapsed"} key={client.id}>
 									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
-										{name}
+										{client.name}
 										<div className="snapcast__client__header__icons">
 											{!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
 											<Icon name="expand_more" />
@@ -214,45 +220,17 @@ class Snapcast extends React.Component{
 			)
 		}
 
-		if (!this.props.clients || !this.props.groups){
-			return (
-				<div className="lazy-loader body-loader loading">
-					<div className="loader"></div>
-				</div>
-			)
-		}
-
 		var streams = [];
-		for (var key in this.props.streams){
-			if (this.props.streams.hasOwnProperty(key)){
-				streams.push(this.props.streams[key]);
+		for (var id in this.props.streams){
+			if (this.props.streams.hasOwnProperty(id)){
+				streams.push(this.props.streams[id]);
 			}
 		}
 
-		// Construct a simple array of our groups index
 		var groups = [];
-		for (var group_id in this.props.groups){
-			if (this.props.groups.hasOwnProperty(group_id)){
-				var group = this.props.groups[group_id];
-
-				// Merge the group's clients into this group (also as a simple array)
-				var clients = [];
-				for (var i = 0; i < group.clients_ids.length; i++){
-					if (this.props.clients.hasOwnProperty(group.clients_ids[i])){
-						var client = this.props.clients[group.clients_ids[i]];
-						if (client.connected || this.props.show_disconnected_clients){
-							clients.push(client);
-						}
-					}
-				}
-
-				groups.push(Object.assign(
-					{},
-					group,
-					{
-						clients: clients
-					}
-				));
+		for (var id in this.props.groups){
+			if (this.props.groups.hasOwnProperty(id)){
+				groups.push(this.props.groups[id]);
 			}
 		}
 
@@ -286,11 +264,13 @@ class Snapcast extends React.Component{
 					{
 						groups.map(group => {
 
+							group = helpers.collate(group, {clients: this.props.clients});
+
 							// Average our clients' volume for an overall group volume
 							var group_volume = 0;
 							for (var i = 0; i < group.clients.length; i++){
 								var client = group.clients[i];
-								group_volume += client.config.volume.percent;
+								group_volume += client.volume;
 							}
 							group_volume = group_volume / group.clients.length;
 
@@ -302,7 +282,7 @@ class Snapcast extends React.Component{
 										</div>
 										<div className="input">	
 											<div className="text">
-												{group.name ? group.name : 'Group '+group.id.substring(0,3)} &nbsp;
+												{group.name} &nbsp;
 												<span className="grey-text">({group.id})</span>
 											</div>
 										</div>

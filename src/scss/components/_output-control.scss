@@ -9,7 +9,7 @@
 		}
 	}
 
-	.outputs {
+	&__items {
 		position: absolute;
 		bottom: 40px;
 		right: -150px;
@@ -43,45 +43,72 @@
 			opacity: 0.5;
 			font-weight: normal;
 		}
+	}
 
-		.output {
-			padding: 16px 20px 12px;
+	&__item {
+		padding: 16px 20px 12px;
+		position: relative;
+
+		&:not(:first-child) {
+			border-top: 1px solid rgba(0,0,0,0.05);
+		}
+
+		&__name {
+			padding-bottom: 5px;
+		}
+
+		&__actions {
+			float: right;
+			
+			.action {
+				@include animate();
+				cursor: pointer;
+				color: $mid_grey;
+
+				&:hover {
+					color: $dark_grey;
+				}
+			}
+		}
+
+		&__details {
+			display: block;
 			position: relative;
+			padding-left: 50px;
+		}
 
-			&:not(:first-child) {
-				border-top: 1px solid rgba(0,0,0,0.05);
+		&__power {
+			@include click_feedback(rgba(0,0,0,0.5));
+			position: absolute !important;
+			top: -2px;
+			left: -2px;
+			width: 18px;
+			height: 10px;
+			border-radius: 50%;
+			padding: 2px 0 6px 0;
+			font-size: 10px;
+			text-align: center;
+			color: $white;
+			background: $faint_grey;
+			cursor: pointer;
+
+			&--on {
+				color: $red;
 			}
 
-			.name {
-				padding-bottom: 5px;
+			&--off {
+				color: $green;
 			}
+		}
 
-			.actions {
-				float: right;
-				
-				.action {
-					@include animate();
-					cursor: pointer;
-					color: $mid_grey;
-
-					&:hover {
-						color: $dark_grey;
-					}
-				}
-			}
-
-			.volume-control {
-				display: block;
-				position: relative;
-				padding-left: 22px;
-
-				.mute-control {
-					position: absolute;
-					top: -2px;
-					left: -2px;
-					padding: 2px;
-					color: $black;
-				}
+		&__volume {
+			.mute-control {
+				@include click_feedback(rgba(0,0,0,0.5));
+				position: absolute !important;
+				top: -2px;
+				left: 24px;
+				padding: 2px;
+				color: $black;
 			}
 		}
 	}

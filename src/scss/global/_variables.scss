@@ -140,7 +140,7 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
-@mixin click_feedback($duration: 0.2s, $easing: ease-out){
+@mixin click_feedback($colour: rgba(255,255,255,0.5), $duration: 0.2s, $easing: ease-out){
 	position: relative;
 
 	@keyframes click_feedback {
@@ -164,7 +164,7 @@ $bp_shallow: 650px;
 		content: '';
 		display: block;
 		position: absolute;
-		background: rgba(255,255,255,0.5);
+		background: $colour;
 		z-index: 1;
 		opacity: 0;
 		border-radius: 50%;

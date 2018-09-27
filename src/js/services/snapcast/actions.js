@@ -1,49 +1,4 @@
 
-export function connect(){
-	return {
-		type: 'SNAPCAST_CONNECT'
-	}
-}
-
-export function disconnect(){
-	return {
-		type: 'SNAPCAST_DISCONNECT'
-	}
-}
-
-export function reload(){
-	return {
-		type: 'SNAPCAST_RELOAD'
-	}
-}
-
-export function getConnections(){
-	return {
-		type: 'SNAPCAST_GET_CONNECTIONS'
-	}
-}
-
-export function connectionAdded(connection){
-	return {
-		type: 'SNAPCAST_CONNECTION_ADDED',
-		connection: connection
-	}
-}
-
-export function connectionChanged(connection){
-	return {
-		type: 'SNAPCAST_CONNECTION_CHANGED',
-		connection: connection
-	}
-}
-
-export function connectionRemoved(connection){
-	return {
-		type: 'SNAPCAST_CONNECTION_REMOVED',
-		connection: connection
-	}
-}
-
 export function getServer(){
 	return {
 		type: 'SNAPCAST_GET_SERVER'
@@ -66,11 +21,11 @@ export function setClientMute(id, mute){
 	}
 }
 
-export function setClientVolume(id, percent){
+export function setClientVolume(id, volume){
 	return {
 		type: 'SNAPCAST_SET_CLIENT_VOLUME',
 		id: id,
-		percent: percent
+		volume: volume
 	}
 }
 
@@ -79,6 +34,15 @@ export function setClientLatency(id, latency){
 		type: 'SNAPCAST_SET_CLIENT_LATENCY',
 		id: id,
 		latency: latency
+	}
+}
+
+export function setClientCommand(id, name, command){
+	return {
+		type: 'SNAPCAST_SET_CLIENT_COMMAND',
+		id: id,
+		name: name,
+		command: command
 	}
 }
 
@@ -132,12 +96,9 @@ export function setGroupVolume(id, percent, old_percent = 0){
  **/
 
 export function serverLoaded(server){
-    return serversLoaded([server]);
-}
-export function serversLoaded(servers){
     return {
-        type: 'SNAPCAST_SERVERS_LOADED',
-        servers: servers
+        type: 'SNAPCAST_SERVER_LOADED',
+        server: server
     }
 }
 
@@ -156,8 +117,8 @@ export function groupLoaded(group){
 }
 export function groupsLoaded(groups){
     return {
-        type: 'SNAPCAST_SERVERS_LOADED',
-        servers: group
+        type: 'SNAPCAST_GROUPS_LOADED',
+        groups: groups
     }
 }
 

@@ -181,6 +181,41 @@ class IrisCore(object):
             return
 
 
+    ##
+    # Send a command to the broadlink API
+    # Credentials for this API are defined in Mopidy config file.
+    #
+    # @return String
+    ##
+    def send_broadlink_command(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+        data = kwargs.get('data', {})
+
+        # Use client_id and client_secret from config
+        # This was introduced in Mopidy-Spotify 3.1.0
+        url = 'http://'+self.config['iris']['broadlink_host']+':'+str(self.config['iris']['broadlink_port'])+"/"
+        url+= data['command']
+
+        try:
+            http_client = tornado.httpclient.HTTPClient()
+            request = tornado.httpclient.HTTPRequest(url)
+            response = http_client.fetch(request)
+            response = json.loads(response.body)
+
+            if (callback):
+                callback(response)
+            else:
+                return response
+
+        except urllib2.HTTPError as e:
+            error = json.loads(e.read())
+            error = {'message': 'Could not send Broadlink command: '+error['error_description']}
+
+            if (callback):
+                callback(False, error)
+            else:
+                return error
+
 
 
     ##

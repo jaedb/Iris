@@ -701,6 +701,91 @@ export let formatTrack = function(data){
 	return track;
 }
 
+/**
+ * Format a snapcast client object into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatClient = function(data){
+	var client = {}
+	var fields = [
+		'id',
+		'connected',
+		'name',
+		'host_name',
+		'volume',
+		'mute',
+		'latency',
+		'power_on_command',
+		'power_off_command'
+	];
+
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			client[field] = data[field];
+		}
+	}
+
+	if (data.config){
+		if (client.latency === undefined && data.config.latency !== undefined){
+			client.latency = data.config.latency;
+		}
+
+		if (!client.name && data.config.name){
+			client.name = data.config.name;
+		}
+
+		if (data.config.volume){
+			if (data.config.volume.percent){
+				client.volume = data.config.volume.percent;
+			}
+			if (data.config.volume.muted){
+				client.mute = data.config.volume.muted;
+			}
+		}
+	}
+
+	if (client.name === undefined && data.host && data.host.name){
+		client.name = data.host.name;
+	}
+
+	return client;
+}
+
+/**
+ * Format a snapcast client object into a universal format
+ *
+ * @param data obj
+ * @return obj
+ **/
+export let formatGroup = function(data){
+	var group = {}
+	var fields = [
+		'id',
+		'name',
+		'mute',
+		'stream_id',
+		'clients_ids'
+	];
+
+	for (var field of fields){
+		if (data.hasOwnProperty(field)){
+			group[field] = data[field];
+		}
+	}
+
+	if (!group.name && data.name){
+		group.name = 'Group '+data.id.substring(0,3);
+	}
+
+	if (group.mute === undefined && data.mute !== undefined){
+		group.mute = data.mute;
+	}
+
+	return group;
+}
+
 
 /**
  * Collate an object with external references into a fully self-contained object
@@ -726,6 +811,7 @@ export let collate = function(obj, indexes = {}){
 	if (obj.users_uris !== undefined) 			obj.users = [];
 	if (obj.playlists_uris !== undefined) 		obj.playlists = [];
 	if (obj.related_artists_uris !== undefined) obj.related_artists = [];
+	if (obj.clients_ids !== undefined) 			obj.clients = [];
 
 	if (indexes.artists){
 		if (obj.artists_uris){
@@ -805,6 +891,16 @@ export let collate = function(obj, indexes = {}){
 		if (obj.playlist_uri){
 			if (indexes.playlists[obj.playlist_uri]){
 				obj.playlist = indexes.playlists[obj.playlist_uri];
+			}
+		}
+	}
+
+	if (indexes.clients){
+		if (obj.clients_ids){
+			for (var id of obj.clients_ids){
+				if (indexes.clients[id]){
+					obj.clients.push(indexes.clients[id]);
+				}
 			}
 		}
 	}

@@ -40,6 +40,9 @@ class Extension( ext.Extension ):
         schema['snapcast_enabled'] = config.Boolean()
         schema['snapcast_host'] = config.String()
         schema['snapcast_port'] = config.Integer()
+        schema['broadlink_enabled'] = config.Boolean()
+        schema['broadlink_host'] = config.String()
+        schema['broadlink_port'] = config.Integer()
         return schema
 
     def setup(self, registry):

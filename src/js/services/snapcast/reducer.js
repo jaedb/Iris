@@ -2,26 +2,30 @@
 export default function reducer(snapcast = {}, action){
     switch (action.type){
 
+        case 'SNAPCAST_SERVER_LOADED':
+            var server = Object.assign({}, action.server);
+            return Object.assign({}, snapcast, { server: server });
+
         case 'SNAPCAST_CLIENTS_LOADED':
             var clients = Object.assign({}, snapcast.clients);
             for (var client of action.clients){
-                clients[client.uri] = client;
+                clients[client.id] = client;
             }
             return Object.assign({}, snapcast, { clients: clients });
-
-        case 'SNAPCAST_SOURCES_LOADED':
-            var sources = Object.assign({}, snapcast.sources);
-            for (var source of action.sources){
-                sources[source.uri] = source;
-            }
-            return Object.assign({}, snapcast, { sources: sources });
 
         case 'SNAPCAST_GROUPS_LOADED':
             var groups = Object.assign({}, snapcast.groups);
             for (var group of action.groups){
-                groups[group.uri] = group;
+                groups[group.id] = group;
             }
             return Object.assign({}, snapcast, { groups: groups });
+
+        case 'SNAPCAST_STREAMS_LOADED':
+            var streams = Object.assign({}, snapcast.streams);
+            for (var stream of action.streams){
+                streams[stream.id] = stream;
+            }
+            return Object.assign({}, snapcast, { streams: streams });
 
         default:
             return snapcast
