@@ -184,6 +184,7 @@ class IrisCore(object):
     ##
     # Send a command to the broadlink API
     # Credentials for this API are defined in Mopidy config file.
+    # Uses https://github.com/radinsky/broadlink-http-rest
     #
     # @return String
     ##

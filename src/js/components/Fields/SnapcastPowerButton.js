@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import Icon from '../Icon'
 
 import * as helpers from '../../helpers';
+import * as snapcastActions from '../../services/snapcast/actions';
 
 class SnapcastPowerButton extends React.Component{
 
@@ -16,8 +17,9 @@ class SnapcastPowerButton extends React.Component{
 	}
 
 	handleClick(e){
-		var command = JSON.parse(this.props.client.commands.power_on);
-		$.ajax(command);
+
+		// Dynamic-ify the command itself
+		this.props.snapcastActions.sendClientCommand(this.props.client.id, 'power_on');
 	}
 
 	render(){
@@ -38,7 +40,9 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-	return {}
+	return {
+		snapcastActions: bindActionCreators(snapcastActions, dispatch)
+	}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SnapcastPowerButton)

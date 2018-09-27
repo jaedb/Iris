@@ -163,30 +163,30 @@ class Snapcast extends React.Component{
 										</div>
 										<div className="field">
 											<div className="name tooltip">
-												Power on request
+												Power off command
 												<span className="tooltip__content">
-													Fire this HTTP request to turn power on
+													Broadlink command to send
 												</span>
 											</div>
 											<div className="input">
 												<TextField
 													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_on", value)}
-													value={client.power_on_command ? client.power_on_command : ""}
+													value={client.commands && client.commands.power_on ? client.commands.power_on : ""}
 													placeholder="Leave empty to disable"
 												/>
 											</div>
 										</div>
 										<div className="field">
 											<div className="name tooltip">
-												Power off request
+												Power off command
 												<span className="tooltip__content">
-													Fire this HTTP request to turn power off
+													Broadlink command to send
 												</span>
 											</div>
 											<div className="input">
 												<TextField
 													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_off", value)}
-													value={client.power_off_command ? client.power_off_command : ""}
+													value={client.commands && client.commands.power_off ? client.commands.power_off : ""}
 													placeholder="Leave empty to disable"
 												/>
 											</div>

@@ -117,9 +117,11 @@
 	}
 
 	@include responsive($bp_medium){
+		margin-left: -20px;
+		margin-right: -20px;
+		
 		.menu {
 			overflow-x: auto;
-			margin: 0 -20px;
 
 			&::-webkit-scrollbar{
 				width: 0px;

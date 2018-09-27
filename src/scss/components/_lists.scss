@@ -328,7 +328,7 @@
 
 	@include responsive($bp_medium){
 
-		.list__item {
+		&__item {
 			padding: 12px !important;
 
 			.source {

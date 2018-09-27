@@ -44,7 +44,7 @@
 
 	&__client {
 		@include clearfix();
-		padding: 0;
+		padding: 0 !important;
 
 		&--expanded {
 			background: rgba(255,255,255,0.05);
@@ -166,20 +166,6 @@
 			padding-left: 0 !important;
 			padding-right: 0 !important;
 			padding-top: 0 !important;
-
-			.col {
-				@include clearfix();
-				clear: both;
-				display: block !important;
-				float: none !important;
-				width: auto !important;
-				padding: 0;
-
-				&.volume,
-				&.latency {
-					padding-top: 5px;
-				}
-			}
 		}
 	}
 }

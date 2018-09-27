@@ -3910,46 +3910,46 @@ input[type="submit"] {
   cursor: pointer; }
 
 @media (max-width: 800px) {
-  .list .list__item {
+  .list__item {
     padding: 12px !important; }
-    .list .list__item .source {
+    .list__item .source {
       position: static;
       float: none; }
-    .list .list__item .context-zone {
+    .list__item .context-zone {
       top: 14px; }
-    .list .list__item .col.name {
+    .list__item .col.name {
       width: auto !important;
       padding-right: 10%;
       display: block;
       float: none; }
-    .list .list__item .col.duration {
+    .list__item .col.duration {
       width: auto !important;
       position: absolute;
       right: 10px;
       text-align: right;
       z-index: 1; }
-    .list .list__item .col:not(.name):not(.duration):not(.album):not(.added) {
+    .list__item .col:not(.name):not(.duration):not(.album):not(.added) {
       color: #a3a19f;
       display: inline;
       width: auto !important;
       float: none !important;
       word-wrap: break-word; }
-    .list .list__item .col.followers_total:after {
+    .list__item .col.followers_total:after {
       content: ' followers'; }
-    .list .list__item .col.tracks_total:after {
+    .list__item .col.tracks_total:after {
       content: ' tracks'; }
-    .list .list__item .col.popularity {
+    .list__item .col.popularity {
       padding-left: 14px; }
-      .list .list__item .col.popularity:before {
+      .list__item .col.popularity:before {
         content: '\2022' !important;
         display: inline-block;
         margin-left: -8px;
         padding-right: 6px; }
-      .list .list__item .col.popularity .popularity-bars {
+      .list__item .col.popularity .popularity-bars {
         margin: 0.1em 0 0 0; }
-    .list .list__item .col.album, .list .list__item .col.can_edit, .list .list__item .col.release_date {
+    .list__item .col.album, .list__item .col.can_edit, .list__item .col.release_date {
       display: none; }
-    .list .list__item.header {
+    .list__item.header {
       display: none; }
   .list.queue-track-list .list__item .artists {
     padding-left: 0 !important; }
@@ -5997,24 +5997,26 @@ main header {
     background: #ebe8e4; }
 
 @media (max-width: 800px) {
-  .services .menu {
-    overflow-x: auto;
-    margin: 0 -20px; }
-    .services .menu::-webkit-scrollbar {
-      width: 0px;
-      height: 0px; }
-    .services .menu__inner {
-      width: 700px;
-      padding: 0 20px; }
-    .services .menu .menu-item {
-      width: 140px; }
-      .services .menu .menu-item__inner {
-        padding-top: 10px;
-        padding-bottom: 10px; }
-      .services .menu .menu-item--active .menu-item__inner {
-        padding-bottom: 20px; }
-  .services .service {
-    margin-top: 0; } }
+  .services {
+    margin-left: -20px;
+    margin-right: -20px; }
+    .services .menu {
+      overflow-x: auto; }
+      .services .menu::-webkit-scrollbar {
+        width: 0px;
+        height: 0px; }
+      .services .menu__inner {
+        width: 700px;
+        padding: 0 20px; }
+      .services .menu .menu-item {
+        width: 140px; }
+        .services .menu .menu-item__inner {
+          padding-top: 10px;
+          padding-bottom: 10px; }
+        .services .menu .menu-item--active .menu-item__inner {
+          padding-bottom: 20px; }
+    .services .service {
+      margin-top: 0; } }
 
 .snapcast button {
   margin-bottom: 0px; }
@@ -6045,7 +6047,7 @@ main header {
   padding: 0 10px; }
 
 .snapcast__client {
-  padding: 0; }
+  padding: 0 !important; }
   .snapcast__client::after {
     content: '';
     clear: both;
@@ -6126,19 +6128,7 @@ main header {
     .snapcast__client {
       padding-left: 0 !important;
       padding-right: 0 !important;
-      padding-top: 0 !important; }
-      .snapcast__client .col {
-        clear: both;
-        display: block !important;
-        float: none !important;
-        width: auto !important;
-        padding: 0; }
-        .snapcast__client .col::after {
-          content: '';
-          clear: both;
-          display: block; }
-        .snapcast__client .col.volume, .snapcast__client .col.latency {
-          padding-top: 5px; } }
+      padding-top: 0 !important; } }
 
 .popularity-bars {
   display: inline-block;
