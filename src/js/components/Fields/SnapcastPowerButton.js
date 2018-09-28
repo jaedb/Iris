@@ -8,7 +8,7 @@ import Icon from '../Icon'
 import * as helpers from '../../helpers';
 import * as snapcastActions from '../../services/snapcast/actions';
 
-class SnapcastPowerButton extends React.Component{
+export default class SnapcastPowerButton extends React.Component{
 
 	constructor(props){
 		super(props);
@@ -17,9 +17,7 @@ class SnapcastPowerButton extends React.Component{
 	}
 
 	handleClick(e){
-
-		// Dynamic-ify the command itself
-		this.props.snapcastActions.sendClientCommand(this.props.client.id, 'power_on');
+		this.props.onClick(e);
 	}
 
 	render(){
@@ -34,15 +32,3 @@ class SnapcastPowerButton extends React.Component{
 		);
 	}
 }
-
-const mapStateToProps = (state, ownProps) => {
-	return {}
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		snapcastActions: bindActionCreators(snapcastActions, dispatch)
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SnapcastPowerButton)

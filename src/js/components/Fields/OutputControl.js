@@ -65,15 +65,22 @@ class OutputControl extends React.Component{
 				<div>	
 					{
 						clients.map(client => {
+
+							var commands = {};
+							if (this.props.snapcast_client_commands[client.id]){
+								commands = this.props.snapcast_client_commands[client.id];
+							}
+
 							return (
 								<div className="output-control__item outputs__item--snapcast" key={client.id}>
 									<div className="output-control__item__name">
 										{client.name}
 									</div>
 									<div className="output-control__item__details">
-										{client.commands && client.commands.power_on ? <SnapcastPowerButton
+										{commands && commands.power_on ? <SnapcastPowerButton
 											className="output-control__item__power output-control__item__power--on" 
 											client={client}
+											onClick={e => this.props.snapcastActions.sendClientCommand(client.id, commands.power_on)}
 										/> : null}
 										<VolumeControl 
 											className="output-control__item__volume"
@@ -165,9 +172,10 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_enabled: state.core.http_streaming_enabled,
 		http_streaming_volume: state.core.http_streaming_volume,
 		http_streaming_mute: state.core.http_streaming_mute,
-		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
 		pusher_connected: state.pusher.connected,
-		snapcast_clients: state.snapcast.clients
+		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
+		snapcast_clients: state.snapcast.clients,
+		snapcast_client_commands: (state.snapcast.client_commands ? state.snapcast.client_commands : {})
 	}
 }
 

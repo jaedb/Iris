@@ -231,12 +231,37 @@ const SnapcastMiddleware = (function(){
                 break
 
             case 'SNAPCAST_SET_CLIENT_COMMAND':
-                var client = snapcast.clients[action.id];
-                if (!client.commands){
-                    client.commands = {};
-                }
-                client.commands[action.name] = action.command;
-                store.dispatch(snapcastActions.clientLoaded(client));
+	            var client_commands_index = Object.assign({}, snapcast.client_commands);
+
+	            if (client_commands_index[action.id]){
+	            	var client_command = Object.assign({}, client_commands_index[action.id], action.command);
+	            } else {
+	            	var client_command = action.command;
+	            }
+	            client_commands_index[action.id] = client_command;
+
+	            store.dispatch(snapcastActions.clientCommandsUpdated(client_commands_index));
+                break
+
+            case 'SNAPCAST_SEND_CLIENT_COMMAND':
+		        store.dispatch(
+		        	pusherActions.request(
+		        		'send_broadlink_command',
+		        		{
+		        			command: action.command
+		        		},
+	                    response => {
+	                        console.log(response);
+	                    },
+	                    error => {                            
+	                        store.dispatch(coreActions.handleException(
+	                            'Could not send command',
+	                            error,
+	                            error.message
+	                        ));
+	                    }
+		        	)
+		        );
                 break
 
             case 'SNAPCAST_SET_CLIENT_GROUP':

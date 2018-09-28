@@ -192,6 +192,14 @@ class IrisCore(object):
         callback = kwargs.get('callback', None)
         data = kwargs.get('data', {})
 
+        if (not self.config['iris']['broadlink_enabled']):
+            error = {'message': 'Broadlink API not enabled'}
+            if (callback):
+                callback(False, error)
+            else:
+                return error
+
+
         # Use client_id and client_secret from config
         # This was introduced in Mopidy-Spotify 3.1.0
         url = 'http://'+self.config['iris']['broadlink_host']+':'+str(self.config['iris']['broadlink_port'])+"/"

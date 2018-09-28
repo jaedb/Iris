@@ -48,6 +48,18 @@ select {
 			background: darken($faint_grey, 3%);
 		}
 	}
+
+	&::placeholder {
+		color: rgba(128, 128, 128, 0.6);
+	}
+
+	&:-ms-input-placeholder {
+		color: rgba(128, 128, 128, 0.6);
+	}
+
+	&::-ms-input-placeholder {
+		color: rgba(128, 128, 128, 0.6);
+	}
 }
 
 input[type="number"]{

@@ -42,6 +42,7 @@ export default class TextField extends React.Component{
 				onFocus={e => this.handleFocus(e)}
 				onBlur={e => this.handleBlur(e)}
 				value={this.state.value}
+				placeholder={this.props.placeholder ? this.props.placeholder : null}
 			/>
 		);
 	}

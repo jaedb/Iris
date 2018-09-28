@@ -87,6 +87,12 @@ class Snapcast extends React.Component{
 						}
 
 						if (this.state.clients_expanded.includes(client.id)){
+
+							var commands = {};
+							if (this.props.client_commands[client.id]){
+								commands = this.props.client_commands[client.id];
+							}
+
 							return (
 								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
 									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
@@ -170,9 +176,9 @@ class Snapcast extends React.Component{
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_on", value)}
-													value={client.commands && client.commands.power_on ? client.commands.power_on : ""}
-													placeholder="Leave empty to disable"
+													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power_on: value})}
+													value={commands.power_on ? commands.power_on : ""}
+													placeholder="sendCommand/power_on"
 												/>
 											</div>
 										</div>
@@ -185,9 +191,9 @@ class Snapcast extends React.Component{
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, "power_off", value)}
-													value={client.commands && client.commands.power_off ? client.commands.power_off : ""}
-													placeholder="Leave empty to disable"
+													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power_off: value})}
+													value={commands.power_off ? commands.power_off : ""}
+													placeholder="sendCommand/power_off"
 												/>
 											</div>
 										</div>
@@ -344,7 +350,8 @@ const mapStateToProps = (state, ownProps) => {
 		show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
 		streams: (state.snapcast.streams ? state.snapcast.streams : null),
 		groups: (state.snapcast.groups ? state.snapcast.groups : null),
-		clients: (state.snapcast.clients ? state.snapcast.clients : null)
+		clients: (state.snapcast.clients ? state.snapcast.clients : null),
+		client_commands: (state.snapcast.client_commands ? state.snapcast.client_commands : {})
 	}
 }
 

@@ -3009,6 +3009,33 @@ select {
     select:focus, .light-theme
     select:active {
       background: #eeeae7; }
+  textarea::placeholder,
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="number"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="date"]::placeholder,
+  input[type="file"]::placeholder,
+  select::placeholder {
+    color: rgba(128, 128, 128, 0.6); }
+  textarea:-ms-input-placeholder,
+  input[type="text"]:-ms-input-placeholder,
+  input[type="email"]:-ms-input-placeholder,
+  input[type="number"]:-ms-input-placeholder,
+  input[type="email"]:-ms-input-placeholder,
+  input[type="date"]:-ms-input-placeholder,
+  input[type="file"]:-ms-input-placeholder,
+  select:-ms-input-placeholder {
+    color: rgba(128, 128, 128, 0.6); }
+  textarea::-ms-input-placeholder,
+  input[type="text"]::-ms-input-placeholder,
+  input[type="email"]::-ms-input-placeholder,
+  input[type="number"]::-ms-input-placeholder,
+  input[type="email"]::-ms-input-placeholder,
+  input[type="date"]::-ms-input-placeholder,
+  input[type="file"]::-ms-input-placeholder,
+  select::-ms-input-placeholder {
+    color: rgba(128, 128, 128, 0.6); }
 
 input[type="number"] {
   -moz-appearance: textfield; }
