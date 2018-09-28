@@ -47,8 +47,8 @@ const SnapcastMiddleware = (function(){
                 break
 
             case 'SNAPCAST_SERVER_LOADED':
-                store.dispatch(snapcastActions.groupsLoaded(action.server.groups));
-                store.dispatch(snapcastActions.streamsLoaded(action.server.streams));
+                store.dispatch(snapcastActions.groupsLoaded(action.server.groups, true));
+                store.dispatch(snapcastActions.streamsLoaded(action.server.streams, true));
 
                 // Snapcast double-nests the server object
                 action.server = action.server.server;
@@ -244,24 +244,21 @@ const SnapcastMiddleware = (function(){
                 break
 
             case 'SNAPCAST_SEND_CLIENT_COMMAND':
-		        store.dispatch(
-		        	pusherActions.request(
-		        		'send_broadlink_command',
-		        		{
-		        			command: action.command
-		        		},
-	                    response => {
-	                        console.log(response);
-	                    },
-	                    error => {                            
-	                        store.dispatch(coreActions.handleException(
-	                            'Could not send command',
-	                            error,
-	                            error.message
-	                        ));
-	                    }
-		        	)
-		        );
+
+                // Prepare our command
+                // We try and make it cross-origin compatible
+                var command = JSON.parse(action.command);
+                command.crossDomain = true;
+
+                $.ajax(command)
+                    .then(
+                        response => {
+                            console.log(response);
+                        },
+                        (xhr, status, error) => {
+                            console.error(error);
+                        }
+                    );
                 break
 
             case 'SNAPCAST_SET_CLIENT_GROUP':

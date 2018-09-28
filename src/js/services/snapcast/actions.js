@@ -119,29 +119,32 @@ export function serverLoaded(server){
 export function clientLoaded(client){
     return clientsLoaded([client]);
 }
-export function clientsLoaded(clients){
+export function clientsLoaded(clients, flush = false){
     return {
         type: 'SNAPCAST_CLIENTS_LOADED',
-        clients: clients
+        clients: clients,
+        flush: flush
     }
 }
 
 export function groupLoaded(group){
     return groupsLoaded([group]);
 }
-export function groupsLoaded(groups){
+export function groupsLoaded(groups, flush = false){
     return {
         type: 'SNAPCAST_GROUPS_LOADED',
-        groups: groups
+        groups: groups,
+        flush: flush
     }
 }
 
 export function streamLoaded(stream){
     return streamsLoaded([stream]);
 }
-export function streamsLoaded(streams){
+export function streamsLoaded(streams, flush = false){
     return {
         type: 'SNAPCAST_STREAMS_LOADED',
-        streams: streams
+        streams: streams,
+        flush: flush
     }
 }

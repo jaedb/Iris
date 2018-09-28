@@ -775,7 +775,7 @@ export let formatGroup = function(data){
 		}
 	}
 
-	if (!group.name && data.name){
+	if (group.name === undefined || group.name === ""){
 		group.name = 'Group '+data.id.substring(0,3);
 	}
 

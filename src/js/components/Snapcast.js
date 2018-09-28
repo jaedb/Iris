@@ -169,31 +169,16 @@ class Snapcast extends React.Component{
 										</div>
 										<div className="field">
 											<div className="name tooltip">
-												Power off command
+												Power command
 												<span className="tooltip__content">
-													Broadlink command to send
+													Ajax request to trigger power
 												</span>
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power_on: value})}
-													value={commands.power_on ? commands.power_on : ""}
-													placeholder="sendCommand/power_on"
-												/>
-											</div>
-										</div>
-										<div className="field">
-											<div className="name tooltip">
-												Power off command
-												<span className="tooltip__content">
-													Broadlink command to send
-												</span>
-											</div>
-											<div className="input">
-												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power_off: value})}
-													value={commands.power_off ? commands.power_off : ""}
-													placeholder="sendCommand/power_off"
+													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power: value})}
+													value={commands.power ? commands.power : ""}
+													placeholder='{"url":"https://myserver.local:8080/sendCommand/power"}'
 												/>
 											</div>
 										</div>

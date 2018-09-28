@@ -4790,12 +4790,12 @@ $icon-websocket: \e920;
       opacity: 0.5;
       font-weight: normal; }
   .output-control__item {
-    padding: 16px 20px 12px;
+    padding: 12px 18px 8px;
     position: relative; }
     .output-control__item:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.05); }
-    .output-control__item__name {
-      padding-bottom: 5px; }
+    .output-control__item--has-power-button {
+      padding-left: 56px; }
     .output-control__item__actions {
       float: right; }
       .output-control__item__actions .action {
@@ -4807,23 +4807,15 @@ $icon-websocket: \e920;
         color: #a3a19f; }
         .output-control__item__actions .action:hover {
           color: #181818; }
-    .output-control__item__details {
-      display: block;
-      position: relative;
-      padding-left: 50px; }
     .output-control__item__power {
       position: relative;
       position: absolute !important;
-      top: -2px;
-      left: -2px;
-      width: 18px;
-      height: 10px;
-      border-radius: 50%;
-      padding: 2px 0 6px 0;
-      font-size: 10px;
+      top: 12px;
+      left: 12px;
+      width: 30px;
+      height: 30px;
       text-align: center;
       color: #FFFFFF;
-      background: #f4f2f0;
       cursor: pointer; }
 
 @keyframes click_feedback {
@@ -4854,17 +4846,32 @@ $icon-websocket: \e920;
         animation-duration: 0.2s;
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
-      .output-control__item__power--on {
-        color: #cf2d2d; }
-      .output-control__item__power--off {
-        color: #47af2a; }
-    .output-control__item__volume .mute-control {
+      .output-control__item__power .icon {
+        padding-top: 10px;
+        font-size: 16px; }
+      .output-control__item__power:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 3px;
+        left: 0;
+        width: 100%;
+        padding-bottom: 100%;
+        background: #cf2d2d;
+        z-index: -1;
+        border-radius: 50%;
+        opacity: 1; }
+    .output-control__item__volume {
       position: relative;
-      position: absolute !important;
-      top: -2px;
-      left: 24px;
-      padding: 2px;
-      color: #000000; }
+      padding-left: 22px;
+      display: block; }
+      .output-control__item__volume .mute-control {
+        position: relative;
+        position: absolute !important;
+        top: -2px;
+        left: -2px;
+        padding: 2px;
+        color: #000000; }
 
 @keyframes click_feedback {
   0% {
@@ -4879,21 +4886,21 @@ $icon-websocket: \e920;
     width: 150%;
     padding-bottom: 150%;
     opacity: 0; } }
-      .output-control__item__volume .mute-control:after {
-        content: '';
-        display: block;
-        position: absolute;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1;
-        opacity: 0;
-        border-radius: 50%;
-        margin-top: -50%;
-        pointer-events: none; }
-      .output-control__item__volume .mute-control:focus:after, .output-control__item__volume .mute-control:active:after {
-        animation-name: click_feedback;
-        animation-duration: 0.2s;
-        animation-timing-function: ease-out;
-        animation-iteration-count: 1; }
+        .output-control__item__volume .mute-control:after {
+          content: '';
+          display: block;
+          position: absolute;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 1;
+          opacity: 0;
+          border-radius: 50%;
+          margin-top: -50%;
+          pointer-events: none; }
+        .output-control__item__volume .mute-control:focus:after, .output-control__item__volume .mute-control:active:after {
+          animation-name: click_feedback;
+          animation-duration: 0.2s;
+          animation-timing-function: ease-out;
+          animation-iteration-count: 1; }
   @media (max-width: 800px) {
     .output-control .outputs {
       width: 86vw;

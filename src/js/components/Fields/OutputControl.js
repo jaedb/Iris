@@ -72,24 +72,22 @@ class OutputControl extends React.Component{
 							}
 
 							return (
-								<div className="output-control__item outputs__item--snapcast" key={client.id}>
+								<div className={"output-control__item outputs__item--snapcast"+(commands && commands.power ? " output-control__item--has-power-button": '')} key={client.id}>
+									{commands && commands.power ? <SnapcastPowerButton
+										className="output-control__item__power" 
+										client={client}
+										onClick={e => this.props.snapcastActions.sendClientCommand(client.id, commands.power)}
+									/> : null}
 									<div className="output-control__item__name">
 										{client.name}
 									</div>
-									<div className="output-control__item__details">
-										{commands && commands.power_on ? <SnapcastPowerButton
-											className="output-control__item__power output-control__item__power--on" 
-											client={client}
-											onClick={e => this.props.snapcastActions.sendClientCommand(client.id, commands.power_on)}
-										/> : null}
-										<VolumeControl 
-											className="output-control__item__volume"
-											volume={client.volume}
-											mute={client.mute}
-											onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-											onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
-										/>
-									</div>
+									<VolumeControl 
+										className="output-control__item__volume"
+										volume={client.volume}
+										mute={client.mute}
+										onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
+										onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+									/>
 								</div>
 							);
 						})
