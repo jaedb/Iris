@@ -4902,10 +4902,10 @@ $icon-websocket: \e920;
           animation-timing-function: ease-out;
           animation-iteration-count: 1; }
   @media (max-width: 800px) {
-    .output-control .outputs {
+    .output-control__items {
       width: 86vw;
       right: 0; }
-      .output-control .outputs:after {
+      .output-control__items:after {
         right: 9px; } }
 
 aside {
@@ -5499,6 +5499,8 @@ main header {
       .notifications .notification p a:not(.button) {
         color: inherit;
         border-bottom: 1px dotted #000000; }
+    .notifications .notification ul {
+      padding: 4px 0 4px 20px; }
     .notifications .notification p.description {
       font-size: 14px;
       opacity: 0.5;
@@ -7127,10 +7129,6 @@ main .track-view {
         padding-top: 50px;
         width: 60vw;
         max-width: 60vh; }
-  .modal--share-authorization .list {
-    padding-top: 40px; }
-    .modal--share-authorization .list .list__item {
-      cursor: pointer; }
   @media (max-width: 800px) {
     .modal .controls {
       top: 0;

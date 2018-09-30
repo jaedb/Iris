@@ -88,7 +88,8 @@ var initialState = {
 		streams: {},
 		groups: {},
 		clients: {},
-		server: null
+		server: null,
+		client_commands: {}
 	}
 };
 

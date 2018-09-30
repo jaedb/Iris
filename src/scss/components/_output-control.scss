@@ -119,7 +119,7 @@
 	}
 
 	@include responsive($bp_medium){
-		.outputs {
+		&__items {
 			width: 86vw;
 			right: 0;
 

@@ -152,6 +152,13 @@ export function revokeAuthorization(){
     }
 }
 
+export function importAuthorization(authorization){
+    return {
+        type: 'LASTFM_IMPORT_AUTHORIZATION',
+        authorization: authorization
+    }
+}
+
 
 
 /**

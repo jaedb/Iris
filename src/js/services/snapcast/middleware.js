@@ -34,7 +34,6 @@ const SnapcastMiddleware = (function(){
 	                	method: 'Server.GetStatus'
 	                },
 	                response => {
-                        console.log(response);
                         store.dispatch(snapcastActions.serverLoaded(response.server));
 	                },
 	                error => {
@@ -55,7 +54,6 @@ const SnapcastMiddleware = (function(){
 
                 next(action);
                 break
-
 
             case 'SNAPCAST_GROUPS_LOADED':
                 var groups_index = Object.assign({}, snapcast.groups);
@@ -80,7 +78,7 @@ const SnapcastMiddleware = (function(){
                 action.groups = groups_loaded;
 
                 if (clients_loaded.length > 0){
-                    store.dispatch(snapcastActions.clientsLoaded(clients_loaded));
+                    store.dispatch(snapcastActions.clientsLoaded(clients_loaded, action.flush));
                 }
 
                 next(action);
@@ -101,7 +99,7 @@ const SnapcastMiddleware = (function(){
                 }
 
                 action.clients = clients_loaded;
-
+                
                 next(action);
                 break;
 
@@ -241,6 +239,8 @@ const SnapcastMiddleware = (function(){
 	            client_commands_index[action.id] = client_command;
 
 	            store.dispatch(snapcastActions.clientCommandsUpdated(client_commands_index));
+                
+                next(action);
                 break
 
             case 'SNAPCAST_SEND_CLIENT_COMMAND':
@@ -249,6 +249,7 @@ const SnapcastMiddleware = (function(){
                 // We try and make it cross-origin compatible
                 var command = JSON.parse(action.command);
                 command.crossDomain = true;
+                command.dataType = "jsonp";
 
                 $.ajax(command)
                     .then(
@@ -387,7 +388,7 @@ const SnapcastMiddleware = (function(){
                         ));
                     }
                 );
-                break
+                break;
 
             case 'SNAPCAST_SET_GROUP_VOLUME':
                 var clients_to_update = [];
@@ -423,6 +424,7 @@ const SnapcastMiddleware = (function(){
 
                     store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
                 }
+                break;
 
             // This action is irrelevant to us, pass it on to the next middleware
             default:

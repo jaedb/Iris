@@ -89,11 +89,11 @@ const PusherMiddleware = (function(){
                     case 'spotify_token_changed':
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
-                    case 'spotify_authorization_received':
+                    case 'share_configuration_received':
+                        console.log(message);
                         store.dispatch(uiActions.createNotification({
-                            type: 'spotify-authorization-received',
-                            authorization: message.params.authorization,
-                            user: message.params.user,
+                            type: 'share-configuration-received',
+                            configuration: message.params,
                             sticky: true
                         }));
                         break;
@@ -271,7 +271,7 @@ const PusherMiddleware = (function(){
                 request(store, 'send_message', action.data)
                     .then(
                         response => {
-                            store.dispatch(uiActions.createNotification({content: 'Message delivered'}));
+                            store.dispatch(uiActions.createNotification({type: 'info', content: 'Message delivered'}));
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(

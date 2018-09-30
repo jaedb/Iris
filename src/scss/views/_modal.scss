@@ -296,16 +296,6 @@
 		}
 	}
 
-	&--share-authorization {
-		.list {
-			padding-top: 40px;
-
-			.list__item {
-				cursor: pointer;
-			}
-		}
-	}
-
 	@include responsive($bp_medium){
 
 		.controls {

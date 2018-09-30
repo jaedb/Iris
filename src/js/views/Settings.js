@@ -399,7 +399,7 @@ class Settings extends React.Component {
 			        </div>
 					
 					<div className="field">
-				        <button onClick={e => this.props.ui.install_prompt.prompt()} disabled={this.props.ui.install_prompt ? false : true}>Install as App</button>
+				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
 						{upgrade_button}
 				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />

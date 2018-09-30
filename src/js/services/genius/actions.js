@@ -99,6 +99,13 @@ export function revokeAuthorization(){
     }
 }
 
+export function importAuthorization(authorization){
+    return {
+        type: 'GENIUS_IMPORT_AUTHORIZATION',
+        authorization: authorization
+    }
+}
+
 
 /**
  * Get current user

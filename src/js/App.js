@@ -20,6 +20,8 @@ import * as uiActions from './services/ui/actions';
 import * as pusherActions from './services/pusher/actions';
 import * as mopidyActions from './services/mopidy/actions';
 import * as spotifyActions from './services/spotify/actions';
+import * as lastfmActions from './services/lastfm/actions';
+import * as geniusActions from './services/genius/actions';
 
 
 /**
@@ -311,6 +313,8 @@ class App extends React.Component{
 			        <Notifications 
 			        	uiActions={this.props.uiActions} 
 			        	spotifyActions={this.props.spotifyActions} 
+			        	geniusActions={this.props.geniusActions} 
+			        	lastfmActions={this.props.lastfmActions} 
 			        	notifications={this.props.notifications} 
 			        	processes={this.props.processes}
 			        	broadcasts={this.props.broadcasts}
@@ -361,7 +365,9 @@ const mapDispatchToProps = (dispatch) => {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
+		geniusActions: bindActionCreators(geniusActions, dispatch)
 	}
 }
 
