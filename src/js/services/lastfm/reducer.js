@@ -27,7 +27,14 @@ export default function reducer(lastfm = {}, action){
             return Object.assign({}, lastfm, { 
                 authorizing: false,
                 session: false,
-                me: false
+                me: null
+            });
+
+        case 'LASTFM_IMPORT_AUTHORIZATION':
+            return Object.assign({}, lastfm, {
+                authorizing: false, 
+                session: action.authorization,
+                me: null
             });
 
         default:

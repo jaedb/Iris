@@ -5,151 +5,167 @@
 		margin-bottom: 0px;
 	}
 					
-	.volume-control {
-
-		.mute-control {
-			display: inline-block;
-			float: left;
-			padding: 0 5px;
-			border: 0;
-		}
-
-		.slider-wrapper {
-			margin-left: 30px;
-		}
-		
-		&.group-volume-control {
+	&__group {
+		&__volume-control {
 			padding: 10px 0 5px;
 			display: block;
 			width: 100%;
 			box-sizing: border-box;
+
+			.mute-control {
+				display: inline-block;
+				float: left;
+				padding: 0 5px;
+				border: 0;
+			}
+
+			.slider-wrapper {
+				margin-left: 30px;
+			}
+		}
+	}
+
+	&__groups {
+		padding-top: 10px;
+	}
+		
+	&__group {
+		padding-top: 10px;
+		border-top: 1px solid $grey;
+
+		&:not(:last-child){
+			padding-bottom: 20px;
+		}
+	}
+
+	&__clients {
+		padding: 0 10px;
+	}
+
+	&__client {
+		@include clearfix();
+		padding: 0 !important;
+
+		&--expanded {
+			background: rgba(255,255,255,0.05);
+
+			.light-theme & {
+				background: rgba(0,0,0,0.05);
+			}
 		}
 
-		&.client-volume-control {
+		&--collapsed {
+			.snapcast__client__header:hover {
+				background: rgba(255,255,255,0.03);
+
+				.light-theme & {
+					background: rgba(0,0,0,0.03);
+				}
+			}
+		}
+
+		&__header {
+			font-weight: 500;
+			cursor: pointer;
+			position: relative;
+			padding: 14px 10px;
+
+			&__icons {
+				position: absolute;
+				top: 0;
+				right: 0;
+				cursor: pointer;
+				z-index: 2;
+				padding: 14px 10px;
+
+				.icon {
+					padding-left: 6px;
+
+					&.disconnected {
+						color: $red;
+					}
+				}
+			}
+		}
+
+		&__details {			
+			position: relative;
+			padding: 0 14px 14px 14px;
+		}
+
+		&__group-field {
+			position: absolute;
+			top: -2px;
+			right: -2px;
+
+			.icon {
+				padding-right: 0;
+			}
+		}
+
+		&__volume-control {
 			padding-top: 11px;
 			padding-right: 10px;
 			display: block;
 			vertical-align: middle;
 			box-sizing: border-box;
-		}
-	}
 
-	.groups {
-		padding-top: 10px;
-		
-		.group {
-			padding-top: 10px;
-			border-top: 1px solid $grey;
-
-			&:not(:last-child){
-				padding-bottom: 20px;
+			.mute-control {
+				display: inline-block;
+				float: left;
+				padding: 0 5px;
+				border: 0;
 			}
 
-			.clients {
-				padding: 0 10px;
+			.slider-wrapper {
+				margin-left: 30px;
+			}
+		}
 
-				.client {
-					@include clearfix();
-					border: 0;
-					padding: 0;
-					clear: both;
+		&__latency {
+			input[type="number"] {
+				width: 20%;
+			}
 
-					&:not(:first-child){
-						padding-top: 8px;
-					}
+			.latency-control {
+				display: inline-block;
+				vertical-align: middle;
+				padding-top: 4px;
+				width: 80%;
+				padding-right: 10px;
+				box-sizing: border-box;
 
-					& > .name {
-						width: 40%;
-						padding-bottom: 4px;
-						position: relative;
-						display: block;
-						box-sizing: border-box;
-						border: 0;
+				.zero {
+					position: absolute;
+					top: -4px;
+					left: 50%;
+					bottom: 0;
+					width: 1px;
+					background: $grey;
+					z-index: 0;
+				}
 
-						input {
-							width: 100%;
-							padding-right: 30px;
-						}
+				.progress.positive {
+					border-top-left-radius: 0;
+					border-bottom-left-radius: 0;
+				}
 
-						.group-dropdown-field {
-							float: right;
-							margin-bottom: -3.2rem;
+				.progress.negative {
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
 
-							.icon {
-								padding-right: 0;
-							}
-						}
-					}
-
-					& > .volume {
-						width: 28%;
-						padding-left: 2%;
-					}
-
-					& > .latency {
-						width: 28%;
-						padding-left: 2%;
-
-						input[type="number"] {
-							width: 20%;
-						}
-					}
-
-					.latency-control {
-						display: inline-block;
-						vertical-align: middle;
-						padding-top: 4px;
-						width: 80%;
-						padding-right: 10px;
-						box-sizing: border-box;
-
-						.zero {
-							position: absolute;
-							top: -4px;
-							left: 50%;
-							bottom: 0;
-							width: 1px;
-							background: $grey;
-							z-index: 0;
-						}
-
-						.progress.positive {
-							border-top-left-radius: 0;
-							border-bottom-left-radius: 0;
-						}
-
-						.progress.negative {
-							border-top-right-radius: 0;
-							border-bottom-right-radius: 0;
-
-							&:after {
-								right: auto;
-								left: -1px;
-							}
-						}
-					}
-
-					@include responsive($bp_medium){
-						padding-left: 0 !important;
-						padding-right: 0 !important;
-						padding-top: 0 !important;
-
-						.col {
-							@include clearfix();
-							clear: both;
-							display: block !important;
-							float: none !important;
-							width: auto !important;
-							padding: 0;
-
-							&.volume,
-							&.latency {
-								padding-top: 5px;
-							}
-						}
+					&:after {
+						right: auto;
+						left: -1px;
 					}
 				}
 			}
+		}
+
+		@include responsive($bp_medium){
+			padding-left: 0 !important;
+			padding-right: 0 !important;
+			padding-top: 0 !important;
 		}
 	}
 }

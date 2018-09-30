@@ -239,10 +239,9 @@ export function tokenChanged(spotify_token){
     }
 }
 
-export function importAuthorization(user, authorization){
+export function importAuthorization(authorization){
     return {
         type: 'SPOTIFY_IMPORT_AUTHORIZATION',
-        user: user,
         authorization: authorization
     }
 }

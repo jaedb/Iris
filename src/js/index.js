@@ -41,7 +41,7 @@ import EditRadio from './views/modals/EditRadio';
 import AddToQueue from './views/modals/AddToQueue';
 import InitialSetup from './views/modals/InitialSetup';
 import KioskMode from './views/modals/KioskMode';
-import ShareAuthorization from './views/modals/ShareAuthorization';
+import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
 
@@ -58,6 +58,7 @@ ReactDOM.render(
 				<Route path="kiosk-mode" component={KioskMode} />
 				<Route path="add-to-playlist/:uris" component={AddToPlaylist} />
 				<Route path="image-zoom" component={ImageZoom} />
+				<Route path="share-configuration" component={ShareConfiguration} />
 
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />
@@ -65,7 +66,6 @@ ReactDOM.render(
 				<Route path="queue/add-uri" component={AddToQueue} />
 				<Route path="settings/debug" component={Debug} />
 				<Route path="settings(/service/:sub_view)" component={Settings} />
-				<Route path="settings/share-authorization" component={ShareAuthorization} />
 				
 				<Route path="search(/:type/:term)" component={Search} />
 				<Route path="album/:uri" component={Album} />

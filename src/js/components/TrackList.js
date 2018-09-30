@@ -390,7 +390,7 @@ class TrackList extends React.Component{
 
 			case 'history':
 				return (
-					<div className="list-item header track">
+					<div className="list__item header track">
 						<div className="liner">
 							<span className="col name">Name</span>
 							<span className="col artists">Artists</span>
@@ -403,7 +403,7 @@ class TrackList extends React.Component{
 
 			case 'queue':
 				return (
-					<div className="list-item header track">
+					<div className="list__item header track">
 						<div className="liner">
 							<span className="col name">Name</span>
 							<span className="col artists">Artists</span>
@@ -417,7 +417,7 @@ class TrackList extends React.Component{
 
 			default:
 				return (
-					<div className="list-item header track">
+					<div className="list__item header track">
 						<div className="liner">
 							<span className="col name">Name</span>
 							<span className="col artists">Artists</span>

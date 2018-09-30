@@ -204,6 +204,15 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
+            case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
+                helpers.setStorage(
+                    'snapcast',
+                    {
+                    	client_commands: action.client_commands
+                    }
+                );
+                break;
+
             case 'SUPPRESS_BROADCAST':
                 var ui = helpers.getStorage('ui');
                 if (ui.suppressed_broadcasts !== undefined){

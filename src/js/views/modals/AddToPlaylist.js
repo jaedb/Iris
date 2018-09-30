@@ -60,7 +60,7 @@ class AddToPlaylist extends React.Component{
 					{
 						playlists.map(playlist => {
 							return (
-								<div className="list-item" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
+								<div className="list__item" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
 									<Thumbnail images={playlist.images} size="small" />
 									<h3 className="name">{ playlist.name }</h3>
 									<ul className="details">

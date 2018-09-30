@@ -9,7 +9,7 @@
 		}
 	}
 
-	.outputs {
+	&__items {
 		position: absolute;
 		bottom: 40px;
 		right: -150px;
@@ -43,51 +43,83 @@
 			opacity: 0.5;
 			font-weight: normal;
 		}
+	}
 
-		.output {
-			padding: 16px 20px 12px;
-			position: relative;
+	&__item {
+		padding: 12px 18px 8px;
+		position: relative;
 
-			&:not(:first-child) {
-				border-top: 1px solid rgba(0,0,0,0.05);
-			}
+		&:not(:first-child) {
+			border-top: 1px solid rgba(0,0,0,0.05);
+		}
 
-			.name {
-				padding-bottom: 5px;
-			}
+		&--has-power-button {
+			padding-left: 56px;
+		}
 
-			.actions {
-				float: right;
-				
-				.action {
-					@include animate();
-					cursor: pointer;
-					color: $mid_grey;
+		&__actions {
+			float: right;
+			
+			.action {
+				@include animate();
+				cursor: pointer;
+				color: $mid_grey;
 
-					&:hover {
-						color: $dark_grey;
-					}
+				&:hover {
+					color: $dark_grey;
 				}
 			}
+		}
 
-			.volume-control {
+		&__power {
+			@include click_feedback(rgba(0,0,0,0.5));
+			position: absolute !important;
+			top: 12px;
+			left: 12px;
+			width: 30px;
+			height: 30px;
+			text-align: center;
+			color: $white;
+			cursor: pointer;
+
+			.icon {
+				padding-top: 10px;
+				font-size: 16px;
+			}
+
+			&:before {
+				content: '';
 				display: block;
-				position: relative;
-				padding-left: 22px;
+				position: absolute;
+				top: 3px;
+				left: 0;
+				width: 100%;
+				padding-bottom: 100%;
+				background: $red;
+				z-index: -1;
+				border-radius: 50%;
+				opacity: 1;
+			}
+		}
 
-				.mute-control {
-					position: absolute;
-					top: -2px;
-					left: -2px;
-					padding: 2px;
-					color: $black;
-				}
+		&__volume {
+			position: relative;
+			padding-left: 22px;
+			display: block;
+
+			.mute-control {
+				@include click_feedback(rgba(0,0,0,0.5));
+				position: absolute !important;
+				top: -2px;
+				left: -2px;
+				padding: 2px;
+				color: $black;
 			}
 		}
 	}
 
 	@include responsive($bp_medium){
-		.outputs {
+		&__items {
 			width: 86vw;
 			right: 0;
 

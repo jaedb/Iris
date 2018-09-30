@@ -89,11 +89,11 @@ const PusherMiddleware = (function(){
                     case 'spotify_token_changed':
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
-                    case 'spotify_authorization_received':
+                    case 'share_configuration_received':
+                        console.log(message);
                         store.dispatch(uiActions.createNotification({
-                            type: 'spotify-authorization-received',
-                            authorization: message.params.authorization,
-                            user: message.params.user,
+                            type: 'share-configuration-received',
+                            configuration: message.params,
                             sticky: true
                         }));
                         break;
@@ -244,17 +244,25 @@ const PusherMiddleware = (function(){
                 next(action);
                 break;
 
-            case 'PUSHER_INSTRUCT':
-                request(action)
+            case 'PUSHER_REQUEST':
+                request(store, action.method, action.params)
                     .then(
                         response => {
-                            store.dispatch({ type: 'PUSHER_INSTRUCT', data: response.data })
+	                        if (action.response_callback){
+	                            store.dispatch(action.response_callback.call(this, response));
+	                        }
                         },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Instruct failed',
-                                error
-                            ));
+                        error => {
+	                        if (action.error_callback){
+	                            store.dispatch(action.error_callback.call(this, error));
+	                        } else {
+	                            store.dispatch(coreActions.handleException(
+	                                'Pusher request failed',
+	                                error,
+	                                action.method,
+	                                action
+	                            ));
+	                        }
                         }
                     );
                 break
@@ -263,7 +271,7 @@ const PusherMiddleware = (function(){
                 request(store, 'send_message', action.data)
                     .then(
                         response => {
-                            store.dispatch(uiActions.createNotification({content: 'Message delivered'}));
+                            store.dispatch(uiActions.createNotification({type: 'info', content: 'Message delivered'}));
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(

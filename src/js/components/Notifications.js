@@ -9,10 +9,27 @@ export default class Notifications extends React.Component{
 		super(props)
 	}
 
-	importSpotifyAuthorization(notification_key, user, authorization){
-		this.props.spotifyActions.importAuthorization(user, authorization);
+	importConfiguration(notification_key, configuration){
+		var configurations = "";
+
+		if (configuration.interface){
+			this.props.uiActions.set(configuration.interface);
+		}
+
+		if (configuration.spotify_authorization){
+			this.props.spotifyActions.importAuthorization(configuration.spotify_authorization);
+		}
+
+		if (configuration.lastfm_authorization){
+			this.props.lastfmActions.importAuthorization(configuration.lastfm_authorization);
+		}
+
+		if (configuration.genius_authorization){
+			this.props.geniusActions.importAuthorization(configuration.genius_authorization);
+		}
+
 		this.props.uiActions.removeNotification(notification_key, true);
-		this.props.uiActions.createNotification({content: 'Spotify authorization imported'});
+		this.props.uiActions.createNotification({type: 'info', content: 'Import successful'});
 	}
 
 	renderNotifications(){
@@ -37,17 +54,24 @@ export default class Notifications extends React.Component{
 									</div>
 								)
 
-							case 'spotify-authorization-received':
+							case 'share-configuration-received':
 								return (
 									<div className={"notification notification--info"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										
-										<h4>Authorization shared</h4>
-										<p className="content">
-											<em><Link to={global.baseURL+'user/'+notification.user.uri}>{notification.user.display_name ? notification.user.display_name : notification.user.id}</Link></em> has shared their Spotify authorization with you. Do you want to import this?
-										</p>
+										<h4>Configuration shared</h4>
+										<div className="content">
+											<p>Another user has shared their configuration with you. This includes:</p>
+											<ul>
+												{notification.configuration.interface ? <li>Interface</li> : null}
+												{notification.configuration.spotify_authorization ? <li>Spotify authorization</li> : null}
+												{notification.configuration.lastfm_authorization ? <li>LastFM authorization</li> : null}
+												{notification.configuration.genius_authorization ? <li>Genius authorization</li> : null}
+											</ul>
+											<p>Do you want to import this?</p>
+										</div>
 										<br />
-										<a className="button" onClick={e => this.importSpotifyAuthorization(notification.key, notification.user, notification.authorization)}>Import</a>
+										<a className="button" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
 									</div>
 								)
 
