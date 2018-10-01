@@ -98,7 +98,7 @@ class LastfmAuthenticationFrame extends React.Component{
 					Authorizing...
 				</button>
 			)
-		} else if (this.props.authorized){
+		} else if (this.props.authorization){
 			return (
 				<button className="destructive" onClick={() => this.props.lastfmActions.revokeAuthorization()}>Log out</button>
 			)
@@ -113,7 +113,7 @@ class LastfmAuthenticationFrame extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		authorization_url: state.lastfm.authorization_url,
-		authorized: state.lastfm.session,
+		authorization: state.lastfm.authorization,
 		authorizing: state.lastfm.authorizing
 	}
 }

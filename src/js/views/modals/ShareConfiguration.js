@@ -18,11 +18,11 @@ class ShareConfiguration extends React.Component {
 
 		this.state = {
 			recipients: [],
-			spotify_authorization: false,
-			lastfm_authorization: false,
-			genius_authorization: false,
+			spotify: false,
+			lastfm: false,
+			genius: false,
 			snapcast_client_commands: false,
-			interface: true
+			ui: false
 		};
 	}
 
@@ -45,19 +45,28 @@ class ShareConfiguration extends React.Component {
 		e.preventDefault();
 
 		var configuration = {};
-		if (this.state.spotify_authorization){
-			configuration.spotify_authorization = this.props.spotify_authorization;
+		if (this.state.spotify){
+			configuration.spotify = {
+				authorization: this.props.spotify_authorization,
+				me: this.props.spotify_me
+			}
 		}
-		if (this.state.genius_authorization){
-			configuration.genius_authorization = this.props.genius_authorization;
+		if (this.state.genius){
+			configuration.genius = {
+				authorization: this.props.genius_authorization,
+				me: this.props.genius_me
+			}
 		}
-		if (this.state.lastfm_authorization){
-			configuration.lastfm_authorization = this.props.lastfm_authorization;
+		if (this.state.lastfm){
+			configuration.lastfm = {
+				authorization: this.props.lastfm_authorization,
+				me: this.props.lastfm_me
+			}
 		}
-		if (this.state.interface){
-			configuration.interface = this.props.interface;
+		if (this.state.ui){
+			configuration.ui = this.props.ui;
 		}
-		if (this.state.interface){
+		if (this.state.snapcast_client_commands){
 			configuration.snapcast_client_commands = this.props.snapcast_client_commands;
 		}
 
@@ -69,7 +78,7 @@ class ShareConfiguration extends React.Component {
 			);
 		}
 
-		window.history.back();
+		//window.history.back();
 		return;
 	}
 
@@ -133,8 +142,8 @@ class ShareConfiguration extends React.Component {
 								<input 
 									type="checkbox"
 									name="interface"
-									checked={ this.state.interface }
-									onChange={ e => this.setState({ interface: !this.state.interface })} />
+									checked={ this.state.ui }
+									onChange={ e => this.setState({ ui: !this.state.ui })} />
 								<span className="label">
 									UI customisation (theme, sorting, filters)
 								</span>
@@ -154,9 +163,9 @@ class ShareConfiguration extends React.Component {
 							{this.props.spotify_me && this.props.spotify_authorization ? <label>
 								<input 
 									type="checkbox"
-									name="spotify_authorization"
-									checked={this.state.spotify_authorization}
-									onChange={ e => this.setState({ spotify_authorization: !this.state.spotify_authorization })} />
+									name="spotify"
+									checked={this.state.spotify}
+									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
 								<span className="label">
 									Spotify authorization <span className="grey-text">&nbsp;Logged in as {this.props.spotify_me.name}</span>
 								</span>
@@ -166,8 +175,8 @@ class ShareConfiguration extends React.Component {
 								<input 
 									type="checkbox"
 									name="lastfm_authorization"
-									checked={this.state.lastfm_authorization}
-									onChange={ e => this.setState({ lastfm_authorization: !this.state.lastfm_authorization })} />
+									checked={this.state.lastfm}
+									onChange={ e => this.setState({ lastfm: !this.state.lastfm })} />
 								<span className="label">
 									LastFM authorization <span className="grey-text">&nbsp;Logged in as {this.props.lastfm_me.name}</span>
 								</span>
@@ -177,8 +186,8 @@ class ShareConfiguration extends React.Component {
 								<input 
 									type="checkbox"
 									name="genius_authorization"
-									checked={this.state.genius_authorization}
-									onChange={ e => this.setState({ genius_authorization: !this.state.genius_authorization })} />
+									checked={this.state.genius}
+									onChange={ e => this.setState({ genius: !this.state.genius })} />
 								<span className="label">
 									Genius authorization <span className="grey-text">&nbsp;Logged in as {this.props.genius_me.name}</span>
 								</span>
@@ -204,7 +213,7 @@ const mapStateToProps = (state, ownProps) => {
 		lastfm_authorization: state.lastfm.authorization,
 		lastfm_me: state.lastfm.me,
 		snapcast_client_commands: state.snapcast.client_commands,
-		interface: state.ui,
+		ui: state.ui,
 		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
 	}

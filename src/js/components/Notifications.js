@@ -10,22 +10,23 @@ export default class Notifications extends React.Component{
 	}
 
 	importConfiguration(notification_key, configuration){
+		console.log("Importing configuration", configuration);
 		var configurations = "";
 
 		if (configuration.interface){
 			this.props.uiActions.set(configuration.interface);
 		}
 
-		if (configuration.spotify_authorization){
-			this.props.spotifyActions.importAuthorization(configuration.spotify_authorization);
+		if (configuration.spotify){
+			this.props.spotifyActions.importAuthorization(configuration.spotify.authorization, configuration.spotify.me);
 		}
 
-		if (configuration.lastfm_authorization){
-			this.props.lastfmActions.importAuthorization(configuration.lastfm_authorization);
+		if (configuration.lastfm){
+			this.props.lastfmActions.importAuthorization(configuration.lastfm.authorization, configuration.lastfm.me);
 		}
 
-		if (configuration.genius_authorization){
-			this.props.geniusActions.importAuthorization(configuration.genius_authorization);
+		if (configuration.genius){
+			this.props.geniusActions.importAuthorization(configuration.genius.authorization, configuration.genius.me);
 		}
 
 		if (configuration.snapcast_client_commands){
@@ -67,10 +68,11 @@ export default class Notifications extends React.Component{
 										<div className="content">
 											<p>Another user has shared their configuration with you. This includes:</p>
 											<ul>
-												{notification.configuration.interface ? <li>Interface</li> : null}
-												{notification.configuration.spotify_authorization ? <li>Spotify authorization</li> : null}
-												{notification.configuration.lastfm_authorization ? <li>LastFM authorization</li> : null}
-												{notification.configuration.genius_authorization ? <li>Genius authorization</li> : null}
+												{notification.configuration.ui ? <li>User interface</li> : null}
+												{notification.configuration.spotify ? <li>Spotify</li> : null}
+												{notification.configuration.lastfm ? <li>LastFM</li> : null}
+												{notification.configuration.genius ? <li>Genius</li> : null}
+												{notification.configuration.snapcast_client_commands ? <li>Snapcast</li> : null}
 											</ul>
 											<p>Do you want to import this?</p>
 										</div>

@@ -54,12 +54,11 @@ const SpotifyMiddleware = (function(){
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
 
-                // Pass to reducer
+                // Wait a few moments before we fetch, allowing the import to complete first
+                // TODO: Use callbacks for better code accuracy
+                setTimeout(() => {store.dispatch(spotifyActions.getMe())}, 100);
+
                 next(action);
-
-                // Then get the new user
-                store.dispatch(spotifyActions.getMe());
-
                 break;
 
             case 'SPOTIFY_RECOMMENDATIONS_LOADED':

@@ -270,7 +270,7 @@ const mapStateToProps = (state, ownProps) => {
 		albums: state.core.albums,
 		spotify_library_albums: state.spotify.library_albums,
 		local_library_albums: state.mopidy.library_albums,
-		lastfm_authorized: state.lastfm.session,
+		lastfm_authorized: state.lastfm.authorization,
 		spotify_authorized: state.spotify.authorization,
 		genius_authorized: state.genius.authorization,
 		mopidy_connected: state.mopidy.connected

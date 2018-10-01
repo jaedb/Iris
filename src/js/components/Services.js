@@ -35,7 +35,7 @@ class Services extends React.Component{
 		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined){
 			this.props.spotifyActions.getMe();
 		}
-		if (this.props.lastfm.session && this.props.core.users["lastfm:user:"+this.props.lastfm.session.name] === undefined){
+		if (this.props.lastfm.authorization && this.props.core.users["lastfm:user:"+this.props.lastfm.authorization.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}
 		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined){
@@ -178,7 +178,7 @@ class Services extends React.Component{
 
 		return (
 			<div>
-				{this.props.lastfm.session ? <div className="field current-user">
+				{this.props.lastfm.authorization ? <div className="field current-user">
 					<div className="name">Current user</div>
 					<div className="input">
 						<div className="text">
@@ -312,7 +312,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								LastFM
 							</div>
-							{this.props.lastfm.session ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
 						</div>
 					</Link>
 					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
@@ -327,7 +327,7 @@ class Services extends React.Component{
 					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="devices" />
-							<div className="title">
+							<div className="menu-item__title">
 								Snapcast
 							</div>
 							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
