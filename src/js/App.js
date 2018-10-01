@@ -22,6 +22,7 @@ import * as mopidyActions from './services/mopidy/actions';
 import * as spotifyActions from './services/spotify/actions';
 import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
+import * as snapcastActions from './services/snapcast/actions';
 
 
 /**
@@ -315,6 +316,7 @@ class App extends React.Component{
 			        	spotifyActions={this.props.spotifyActions} 
 			        	geniusActions={this.props.geniusActions} 
 			        	lastfmActions={this.props.lastfmActions} 
+			        	snapcastActions={this.props.snapcastActions} 
 			        	notifications={this.props.notifications} 
 			        	processes={this.props.processes}
 			        	broadcasts={this.props.broadcasts}
@@ -367,7 +369,8 @@ const mapDispatchToProps = (dispatch) => {
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),
 		lastfmActions: bindActionCreators(lastfmActions, dispatch),
-		geniusActions: bindActionCreators(geniusActions, dispatch)
+		geniusActions: bindActionCreators(geniusActions, dispatch),
+		snapcastActions: bindActionCreators(snapcastActions, dispatch)
 	}
 }
 

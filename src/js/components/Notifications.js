@@ -28,6 +28,10 @@ export default class Notifications extends React.Component{
 			this.props.geniusActions.importAuthorization(configuration.genius_authorization);
 		}
 
+		if (configuration.snapcast_client_commands){
+			this.props.snapcastActions.clientCommandsUpdated(configuration.snapcast_client_commands);
+		}
+
 		this.props.uiActions.removeNotification(notification_key, true);
 		this.props.uiActions.createNotification({type: 'info', content: 'Import successful'});
 	}

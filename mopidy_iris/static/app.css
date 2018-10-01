@@ -3435,6 +3435,10 @@ input[type="submit"] {
     padding: 5px 5px 5px 28px;
     position: relative;
     cursor: pointer; }
+  .field.radio--block .label,
+  .field.radio--block label, .field.checkbox--block .label,
+  .field.checkbox--block label {
+    display: block; }
   .field.range {
     position: relative; }
     .field.range .input-range {

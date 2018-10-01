@@ -250,16 +250,13 @@ const SnapcastMiddleware = (function(){
                 var command = JSON.parse(action.command);
                 command.crossDomain = true;
                 command.dataType = "jsonp";
+                command.success = function(response){
+                	store.dispatch(uiActions.createNotification({type: 'info', content: 'Command sent', description: command.url}));
+                }
 
-                $.ajax(command)
-                    .then(
-                        response => {
-                            console.log(response);
-                        },
-                        (xhr, status, error) => {
-                            console.error(error);
-                        }
-                    );
+                // Actually send the request
+                $.ajax(command);
+
                 break
 
             case 'SNAPCAST_SET_CLIENT_GROUP':

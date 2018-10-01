@@ -442,6 +442,13 @@ input[type="submit"] {
 			position: relative;
 			cursor: pointer;
 		}
+
+		&--block {
+			.label,
+			label {
+				display: block;
+			}
+		}
 	}
 
 	&.range {

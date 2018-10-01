@@ -90,7 +90,6 @@ const PusherMiddleware = (function(){
                         store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
                         break;
                     case 'share_configuration_received':
-                        console.log(message);
                         store.dispatch(uiActions.createNotification({
                             type: 'share-configuration-received',
                             configuration: message.params,

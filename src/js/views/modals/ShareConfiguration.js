@@ -18,9 +18,10 @@ class ShareConfiguration extends React.Component {
 
 		this.state = {
 			recipients: [],
-			spotify_authorization: true,
-			lastfm_authorization: true,
-			genius_authorization: true,
+			spotify_authorization: false,
+			lastfm_authorization: false,
+			genius_authorization: false,
+			snapcast_client_commands: false,
 			interface: true
 		};
 	}
@@ -55,6 +56,9 @@ class ShareConfiguration extends React.Component {
 		}
 		if (this.state.interface){
 			configuration.interface = this.props.interface;
+		}
+		if (this.state.interface){
+			configuration.snapcast_client_commands = this.props.snapcast_client_commands;
 		}
 
 		for (var recipient of this.state.recipients){
@@ -122,8 +126,8 @@ class ShareConfiguration extends React.Component {
 						{recipients}
 					</div>
 
-					<div className="field checkbox">
-						<div className="name">Interface</div>
+					<div className="field checkbox checkbox--block">
+						<div className="name">Configurations</div>
 						<div className="input">
 							<label>
 								<input 
@@ -135,61 +139,55 @@ class ShareConfiguration extends React.Component {
 									UI customisation (theme, sorting, filters)
 								</span>
 							</label>
-						</div>
-					</div>
 
-					<div className="field checkbox">
-						<div className="name">Spotify</div>
-						<div className="input">
-							<label>
+							{this.props.snapcast_client_commands ? <label>
+								<input 
+									type="checkbox"
+									name="snapcast_client_commands"
+									checked={this.state.snapcast_client_commands}
+									onChange={ e => this.setState({ snapcast_client_commands: !this.state.snapcast_client_commands })} />
+								<span className="label">
+									Snapcast client commands
+								</span>
+							</label> : null}
+
+							{this.props.spotify_me && this.props.spotify_authorization ? <label>
 								<input 
 									type="checkbox"
 									name="spotify_authorization"
-									checked={ this.state.spotify_authorization }
+									checked={this.state.spotify_authorization}
 									onChange={ e => this.setState({ spotify_authorization: !this.state.spotify_authorization })} />
 								<span className="label">
-									Authorization {this.props.spotify_me ? '('+this.props.spotify_me.name+')' : null}
+									Spotify authorization <span className="grey-text">&nbsp;Logged in as {this.props.spotify_me.name}</span>
 								</span>
-							</label>
-						</div>
-					</div>
+							</label> : null}
 
-					<div className="field checkbox">
-						<div className="name">LastFM</div>
-						<div className="input">
-							<label>
+							{this.props.lastfm_me && this.props.lastfm_authorization ? <label>
 								<input 
 									type="checkbox"
 									name="lastfm_authorization"
-									checked={ this.state.lastfm_authorization }
+									checked={this.state.lastfm_authorization}
 									onChange={ e => this.setState({ lastfm_authorization: !this.state.lastfm_authorization })} />
 								<span className="label">
-									Authorization {this.props.lastfm_me ? '('+this.props.lastfm_me.name+')' : null}
+									LastFM authorization <span className="grey-text">&nbsp;Logged in as {this.props.lastfm_me.name}</span>
 								</span>
-							</label>
-						</div>
-					</div>
+							</label> : null}
 
-					<div className="field checkbox">
-						<div className="name">Genius</div>
-						<div className="input">
-							<label>
+							{this.props.genius_me && this.props.genius_authorization ? <label>
 								<input 
 									type="checkbox"
 									name="genius_authorization"
-									checked={ this.state.genius_authorization }
+									checked={this.state.genius_authorization}
 									onChange={ e => this.setState({ genius_authorization: !this.state.genius_authorization })} />
 								<span className="label">
-									Authorization {this.props.genius_me ? '('+this.props.genius_me.name+')' : null}
+									Genius authorization <span className="grey-text">&nbsp;Logged in as {this.props.genius_me.name}</span>
 								</span>
-							</label>
+							</label> : null}
 						</div>
 					</div>
 
 					<div className="actions centered-text">
-						<button className="primary large" onClick={e => this.handleSubmit(e)}>
-							Send
-						</button>
+						{this.state.recipients.length > 0 ? <button className="primary large" onClick={e => this.handleSubmit(e)}>Send</button> : <button className="primary large" disabled="disabled" onClick={e => this.handleSubmit(e)}>Send</button>}
 					</div>
 				</form>
 			</Modal>
@@ -205,6 +203,7 @@ const mapStateToProps = (state, ownProps) => {
 		genius_me: state.genius.me,
 		lastfm_authorization: state.lastfm.authorization,
 		lastfm_me: state.lastfm.me,
+		snapcast_client_commands: state.snapcast.client_commands,
 		interface: state.ui,
 		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
