@@ -48,18 +48,19 @@ export default class LatencyControl extends React.Component{
 
 		return (
 			<span className="latency-control">
-				<div className="slider-wrapper">
-					<div className="slider horizontal">
+				<div className="slider__wrapper">
+					<div className="slider slider--latency">
 						<input 
 							type="range" 
 							min="-100" 
 							max="100" 
+							className="slider__input"
 							value={this.props.value}
 							onChange={e => this.handleChange(parseInt(e.target.value))}
 						/>
 						<div className="zero"></div>
-						<div className="track">
-							<div className={"progress "+(negative ? 'negative' : 'positive')} style={{ width: width+'%', left: left+'%' }}></div>
+						<div className="slider__track">
+							<div className={"slider__track__progress slider__track__progress--"+(negative ? 'negative' : 'positive')} style={{ width: width+'%', left: left+'%' }}></div>
 						</div>
 					</div>
 				</div>

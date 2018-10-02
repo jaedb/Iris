@@ -53,10 +53,6 @@
 			border-top: 1px solid rgba(0,0,0,0.05);
 		}
 
-		&--has-power-button {
-			padding-left: 56px;
-		}
-
 		&__actions {
 			float: right;
 			
@@ -71,27 +67,46 @@
 			}
 		}
 
+		&--has-power-button {
+			.output-control__item__volume {
+				padding-left: 50px;
+			}
+		}
+
+		&__volume {
+			padding-top: 2px;
+			padding-left: 25px;
+		}
+
+		&__mute.control {
+			@include click_feedback(rgba(0,0,0,0.5));
+			padding: 2px;
+			color: $black;
+			float: left;
+			font-size: 16px;
+		}
+
 		&__power {
 			@include click_feedback(rgba(0,0,0,0.5));
-			position: absolute !important;
-			top: 12px;
-			left: 12px;
-			width: 30px;
-			height: 30px;
+			width: 18px;
+			height: 18px;
 			text-align: center;
 			color: $white;
 			cursor: pointer;
+			float: left;
+			margin-top: -2px;
+			margin-right: 6px;
 
 			.icon {
-				padding-top: 10px;
-				font-size: 16px;
+				padding-top: 5px;
+				font-size: 12px;
 			}
 
 			&:before {
 				content: '';
 				display: block;
 				position: absolute;
-				top: 3px;
+				top: 2px;
 				left: 0;
 				width: 100%;
 				padding-bottom: 100%;
@@ -99,21 +114,6 @@
 				z-index: -1;
 				border-radius: 50%;
 				opacity: 1;
-			}
-		}
-
-		&__volume {
-			position: relative;
-			padding-left: 22px;
-			display: block;
-
-			.mute-control {
-				@include click_feedback(rgba(0,0,0,0.5));
-				position: absolute !important;
-				top: -2px;
-				left: -2px;
-				padding: 2px;
-				color: $black;
 			}
 		}
 	}

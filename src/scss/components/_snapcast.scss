@@ -145,18 +145,22 @@
 					z-index: 0;
 				}
 
-				.progress.positive {
-					border-top-left-radius: 0;
-					border-bottom-left-radius: 0;
-				}
+				.slider__track {
+					&__progress {
+						&--positive {
+							border-top-left-radius: 0;
+							border-bottom-left-radius: 0;
+						}
 
-				.progress.negative {
-					border-top-right-radius: 0;
-					border-bottom-right-radius: 0;
+						&--negative {
+							border-top-right-radius: 0;
+							border-bottom-right-radius: 0;
 
-					&:after {
-						right: auto;
-						left: -1px;
+							&:after {
+								right: auto;
+								left: -1px;
+							}
+						}
 					}
 				}
 			}

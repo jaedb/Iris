@@ -29,16 +29,17 @@ class ProgressSlider extends React.Component{
 		}
 
 		return (
-			<div className={"progress slider horizontal "+this.props.play_state}>
-				<div className="track">
+			<div className={"slider slider--playback-progress slider--"+this.props.play_state}>
+				<div className="slider__track">
 					<input 
 						type="range" 
 						min="0" 
 						max="100"
 						value={percent}
+						className="slider__input"
 						onChange={e => this.handleChange(parseInt(e.target.value))}
 					/>
-					<div className="progress" style={{ width: (percent)+'%' }}></div>
+					<div className="slider__track__progress" style={{ width: (percent)+'%' }}></div>
 				</div>
 			</div>
 		);

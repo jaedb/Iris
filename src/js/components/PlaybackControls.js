@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 
 import ProgressSlider from './Fields/ProgressSlider'
 import VolumeControl from './Fields/VolumeControl'
+import MuteControl from './Fields/MuteControl'
 import OutputControl from './Fields/OutputControl'
 import Dater from './Dater'
 import ArtistSentence from './ArtistSentence'
@@ -161,7 +162,7 @@ class PlaybackControls extends React.Component{
 					{this.renderConsumeButton()}
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
-					<OutputControl />
+					<OutputControl force_expanded={this.state.expanded} />
 				</section>
 
 				<section className="progress">
@@ -171,12 +172,15 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="volume">
+					<MuteControl 
+						mute={this.props.mute}
+						onMuteChange={mute => this.props.mopidyActions.setMute(mute)}
+					/>
 					<VolumeControl 
 						scrollWheel
 						volume={this.props.volume}
 						mute={this.props.mute}
 						onVolumeChange={percent => this.props.mopidyActions.setVolume(percent)}
-						onMuteChange={mute => this.props.mopidyActions.setMute(mute)}
 					/>
 				</section>
 

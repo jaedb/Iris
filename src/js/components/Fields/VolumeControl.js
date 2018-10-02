@@ -16,51 +16,23 @@ export default class VolumeControl extends React.Component{
 		this.props.onVolumeChange(value, this.props.volume);
 	}
 
-	renderMuteButton(){
-		if (this.props.mute){
-			return (
-				<a className="control mute-control tooltip" onClick={() => this.props.onMuteChange(false)}>
-					<Icon className="red-text" name="volume_off" />
-					<span className="tooltip__content">Unmute</span>
-				</a>
-			)
-		} else {
-			return (
-				<a className="control mute-control tooltip" onClick={() => this.props.onMuteChange(true)}>
-					<Icon className="muted" name="volume_mute" />
-					<span className="tooltip__content">Mute</span>
-				</a>
-			)
-		}
-	}
-
 	render(){
-		var className = "volume-control";
-		if (this.props.mute){
-			className += " muted";
-		}
-		if (this.props.className){
-			className += " "+this.props.className;
-		}
-
 		return (
-			<span className={className}>
-				{this.props.NoMuteButton ? null : this.renderMuteButton()}
-				<div className="slider-wrapper">
-					<div className={"slider horizontal"+(this.props.mute ? " disabled" : "")}>
-						<input 
-							type="range" 
-							min="0" 
-							max="25" 
-							value={this.props.volume/4}
-							onChange={e => this.handleChange(parseInt(e.target.value)*4)}
-						/>
-						<div className="track">
-							<div className="progress" style={{ width: this.props.volume+'%' }}></div>
-						</div>
+			<div className={"slider__wrapper "+(this.props.className ? this.props.className : "")}>
+				<div className={"slider slider--volume "+(this.props.mute ? "slider--muted" : "")}>
+					<input 
+						className="slider__input"
+						type="range" 
+						min="0" 
+						max="25" 
+						value={this.props.volume/4}
+						onChange={e => this.handleChange(parseInt(e.target.value)*4)}
+					/>
+					<div className="slider__track">
+						<div className="slider__track__progress" style={{ width: this.props.volume+'%' }}></div>
 					</div>
 				</div>
-			</span>
+			</div>
 		);
 	}
 }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import VolumeControl from './VolumeControl'
+import MuteControl from './MuteControl'
 import SnapcastPowerButton from './SnapcastPowerButton'
 import Icon from '../Icon'
 
@@ -73,21 +74,28 @@ class OutputControl extends React.Component{
 
 							return (
 								<div className={"output-control__item outputs__item--snapcast"+(commands && commands.power ? " output-control__item--has-power-button": '')} key={client.id}>
-									{commands && commands.power ? <SnapcastPowerButton
-										className="output-control__item__power" 
-										client={client}
-										onClick={e => this.props.snapcastActions.sendClientCommand(client.id, commands.power)}
-									/> : null}
 									<div className="output-control__item__name">
 										{client.name}
 									</div>
-									<VolumeControl 
-										className="output-control__item__volume"
-										volume={client.volume}
-										mute={client.mute}
-										onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-										onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
-									/>
+									<div className="output-control__item__controls">
+										{commands && commands.power ? <SnapcastPowerButton
+											className="output-control__item__power" 
+											client={client}
+											onClick={e => this.props.snapcastActions.sendClientCommand(client.id, commands.power)}
+										/> : null}
+										<MuteControl
+											className="output-control__item__mute"
+											noTooltip={true}
+											mute={client.mute}
+											onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+										/>
+										<VolumeControl 
+											className="output-control__item__volume"
+											volume={client.volume}
+											mute={client.mute}
+											onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
+										/>
+									</div>
 								</div>
 							);
 						})
@@ -138,7 +146,7 @@ class OutputControl extends React.Component{
 	}
 
 	render(){
-		if (this.state.expanded){
+		if (this.state.expanded || this.props.force_expanded){
 			return (
 				<span className="output-control">
 					<a className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
