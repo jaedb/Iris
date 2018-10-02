@@ -26,12 +26,20 @@ class OutputControl extends React.Component{
 	}
 
 	handleClick(e){
-		if ($(e.target).closest('.output-control').length <= 0){
+		if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0){
 			this.setExpanded(false);
 		}
 	}
 
-	setExpanded(expanded = !this.state.expanded){
+	componentWillReceiveProps(nextProps){
+
+		// When force expanded triggered
+		if (!this.props.force_expanded && nextProps.force_expanded){
+			this.setExpanded(true, nextProps);
+		}
+	}
+
+	setExpanded(expanded = !this.state.expanded, props = this.props){
 		if (expanded){
 			this.setState({expanded: expanded});
 			window.addEventListener("click", this.handleClick, false);
@@ -39,8 +47,8 @@ class OutputControl extends React.Component{
 			// Re-check our snapcast clients
 			// TODO: Once we have push events, remove this as it'll (marginally)
 			// slow down the reveal/render
-			if (this.props.pusher_connected && this.props.snapcast_enabled){
-				this.props.pusherActions.getSnapcast();
+			if (props.pusher_connected && props.snapcast_enabled){
+				this.props.snapcastActions.getServer();
 			}
 		} else {
 			this.setState({expanded: expanded});
@@ -131,7 +139,7 @@ class OutputControl extends React.Component{
 
 		if (!local_streaming && !snapcast_clients){
 			return (
-				<div className="output-control__items">
+				<div className="output-control__items output-control__items--no-results">
 					<p className="no-results">No outputs</p>
 				</div>
 			);
@@ -146,7 +154,7 @@ class OutputControl extends React.Component{
 	}
 
 	render(){
-		if (this.state.expanded || this.props.force_expanded){
+		if (this.state.expanded){
 			return (
 				<span className="output-control">
 					<a className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>

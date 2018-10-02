@@ -119,12 +119,62 @@
 	}
 
 	@include responsive($bp_medium){
+		position: absolute;
+		top: -10px;
+		right: 0px;
+		bottom: auto;
+		width: 100vw;
+
+		& > .control {
+			display: none;
+		}
+
 		&__items {
-			width: 86vw;
+			top: auto;
 			right: 0;
+			bottom: 0;
+			left: 0;
+			width: auto;
+			padding: 4px 0 0;
+			background: lighten($dark_grey, 17.5%);
+			border-radius: 0;
+			box-shadow: none;
+			max-height: 50vh;
+			overflow-y: auto;
 
 			&:after {
-				right: 9px;
+				display: none;
+			}
+
+			&--no-results {
+				display: none;
+			}
+		}
+
+		&__item {
+			@include clearfix();
+			padding: 10px 18px 6px;
+
+			&:not(:first-child){
+				border-color: rgba(255,255,255,0.05);
+			}
+
+			&__name {
+				color: $white;
+				font-weight: 400;
+				width: 30%;
+				float: left;
+				font-size: 12px;
+				padding-top: 2px;
+			}
+
+			&__controls {
+				width: 70%;
+				float: right;
+			}
+
+			&__mute.control {
+				color: $white;
 			}
 		}
 	}

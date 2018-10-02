@@ -2531,7 +2531,8 @@ footer {
 
 main {
   position: relative;
-  min-height: 100vh; }
+  min-height: 100vh;
+  z-index: 1; }
   main .content-wrapper {
     padding: 40px 40px 80px; }
   main a {
@@ -4445,7 +4446,7 @@ $icon-websocket: \e920;
   position: relative;
   cursor: pointer;
   height: 20px; }
-  .slider input[type="range"] {
+  .slider__input {
     position: absolute;
     top: 0;
     left: 0;
@@ -4454,16 +4455,16 @@ $icon-websocket: \e920;
     opacity: 0;
     z-index: 2;
     cursor: pointer; }
-    .slider input[type="range"]::-webkit-slider-thumb {
+    .slider__input::-webkit-slider-thumb {
       width: 1px;
       border: 0; }
-    .slider input[type="range"]::-moz-range-thumb {
+    .slider__input::-moz-range-thumb {
       width: 1px;
       border: 0; }
-    .slider input[type="range"]::-ms-thumb {
+    .slider__input::-ms-thumb {
       width: 1px;
       border: 0; }
-  .slider .track {
+  .slider__track {
     position: absolute;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 2px;
@@ -4472,7 +4473,7 @@ $icon-websocket: \e920;
     right: 0;
     left: 0;
     margin-top: -3px; }
-    .slider .track .progress {
+    .slider__track__progress {
       position: absolute;
       background: #08d58f;
       pointer-events: none;
@@ -4482,7 +4483,7 @@ $icon-websocket: \e920;
       height: 100%;
       max-width: 100%;
       border-radius: 4px; }
-      .slider .track .progress:after {
+      .slider__track__progress:after {
         -webkit-transition: all 0.1s ease-in-out;
         -moz-transition: all 0.1s ease-in-out;
         -o-transition: all 0.1s ease-in-out;
@@ -4496,11 +4497,11 @@ $icon-websocket: \e920;
         width: 4px;
         height: 4px;
         border-radius: 50%; }
-  .slider.disabled .progress {
+  .slider--disabled .slider__track__progress, .slider--muted .slider__track__progress {
     background: #a3a19f; }
-    .slider.disabled .progress:after {
+    .slider--disabled .slider__track__progress:after, .slider--muted .slider__track__progress:after {
       background: #a3a19f !important; }
-  .slider:hover .track .progress:after {
+  .slider:hover .slider__track__progress:after {
     width: 12px;
     height: 12px;
     top: -4px;
@@ -4684,15 +4685,11 @@ $icon-websocket: \e920;
       right: 20px;
       width: 150px;
       font-size: 18px; }
-      .playback-controls section.volume .modal-trigger {
-        display: none; }
-      .playback-controls section.volume .slider-wrapper {
+      .playback-controls section.volume .slider__wrapper {
         position: absolute;
         bottom: 6px;
         right: 0;
         left: 30px; }
-      .playback-controls section.volume .muted .slider .progress {
-        background: #a3a19f; }
     .playback-controls section.triggers {
       display: none; }
   @media (max-width: 800px) {
@@ -4700,8 +4697,8 @@ $icon-websocket: \e920;
       width: auto;
       bottom: auto;
       bottom: 8px;
-      left: 70px;
-      right: 70px;
+      left: 80px;
+      right: 80px;
       text-align: center;
       font-size: 12px;
       color: #FFFFFF !important; }
@@ -4740,23 +4737,25 @@ $icon-websocket: \e920;
           right: 0;
           z-index: 99; }
     .playback-controls.expanded {
-      height: 150px; }
+      height: 135px; }
       .playback-controls.expanded section.settings {
         display: block;
-        right: 20px;
-        bottom: 60px;
-        text-align: right; }
+        right: 0;
+        bottom: 90px;
+        padding-right: 10px;
+        text-align: right;
+        width: 100px; }
       .playback-controls.expanded section.volume {
         width: auto;
         display: block;
-        right: 130px;
-        left: 22px;
-        bottom: 60px; }
+        right: 100px;
+        left: 10px;
+        bottom: 88px; }
       .playback-controls.expanded section.progress {
         display: block;
-        bottom: 110px;
-        left: 0;
-        right: 0; } }
+        bottom: 55px;
+        left: -15px;
+        right: -15px; } }
 
 .output-control {
   position: relative; }
@@ -4798,8 +4797,6 @@ $icon-websocket: \e920;
     position: relative; }
     .output-control__item:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.05); }
-    .output-control__item--has-power-button {
-      padding-left: 56px; }
     .output-control__item__actions {
       float: right; }
       .output-control__item__actions .action {
@@ -4811,16 +4808,56 @@ $icon-websocket: \e920;
         color: #a3a19f; }
         .output-control__item__actions .action:hover {
           color: #181818; }
+    .output-control__item--has-power-button .output-control__item__volume {
+      padding-left: 50px; }
+    .output-control__item__volume {
+      padding-top: 2px;
+      padding-left: 25px; }
+    .output-control__item__mute.control {
+      position: relative;
+      padding: 2px;
+      color: #000000;
+      float: left;
+      font-size: 16px; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+      .output-control__item__mute.control:after {
+        content: '';
+        display: block;
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        opacity: 0;
+        border-radius: 50%;
+        margin-top: -50%;
+        pointer-events: none; }
+      .output-control__item__mute.control:focus:after, .output-control__item__mute.control:active:after {
+        animation-name: click_feedback;
+        animation-duration: 0.2s;
+        animation-timing-function: ease-out;
+        animation-iteration-count: 1; }
     .output-control__item__power {
       position: relative;
-      position: absolute !important;
-      top: 12px;
-      left: 12px;
-      width: 30px;
-      height: 30px;
+      width: 18px;
+      height: 18px;
       text-align: center;
       color: #FFFFFF;
-      cursor: pointer; }
+      cursor: pointer;
+      float: left;
+      margin-top: -2px;
+      margin-right: 6px; }
 
 @keyframes click_feedback {
   0% {
@@ -4851,13 +4888,13 @@ $icon-websocket: \e920;
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
       .output-control__item__power .icon {
-        padding-top: 10px;
-        font-size: 16px; }
+        padding-top: 5px;
+        font-size: 12px; }
       .output-control__item__power:before {
         content: '';
         display: block;
         position: absolute;
-        top: 3px;
+        top: 2px;
         left: 0;
         width: 100%;
         padding-bottom: 100%;
@@ -4865,52 +4902,51 @@ $icon-websocket: \e920;
         z-index: -1;
         border-radius: 50%;
         opacity: 1; }
-    .output-control__item__volume {
-      position: relative;
-      padding-left: 22px;
-      display: block; }
-      .output-control__item__volume .mute-control {
-        position: relative;
-        position: absolute !important;
-        top: -2px;
-        left: -2px;
-        padding: 2px;
-        color: #000000; }
-
-@keyframes click_feedback {
-  0% {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    padding-bottom: 100%;
-    opacity: 1; }
-  100% {
-    top: 25%;
-    left: -25%;
-    width: 150%;
-    padding-bottom: 150%;
-    opacity: 0; } }
-        .output-control__item__volume .mute-control:after {
-          content: '';
-          display: block;
-          position: absolute;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 1;
-          opacity: 0;
-          border-radius: 50%;
-          margin-top: -50%;
-          pointer-events: none; }
-        .output-control__item__volume .mute-control:focus:after, .output-control__item__volume .mute-control:active:after {
-          animation-name: click_feedback;
-          animation-duration: 0.2s;
-          animation-timing-function: ease-out;
-          animation-iteration-count: 1; }
   @media (max-width: 800px) {
-    .output-control__items {
-      width: 86vw;
-      right: 0; }
-      .output-control__items:after {
-        right: 9px; } }
+    .output-control {
+      position: absolute;
+      top: -10px;
+      right: 0px;
+      bottom: auto;
+      width: 100vw; }
+      .output-control > .control {
+        display: none; }
+      .output-control__items {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: auto;
+        padding: 4px 0 0;
+        background: #454545;
+        border-radius: 0;
+        box-shadow: none;
+        max-height: 50vh;
+        overflow-y: auto; }
+        .output-control__items:after {
+          display: none; }
+        .output-control__items--no-results {
+          display: none; }
+      .output-control__item {
+        padding: 10px 18px 6px; }
+        .output-control__item::after {
+          content: '';
+          clear: both;
+          display: block; }
+        .output-control__item:not(:first-child) {
+          border-color: rgba(255, 255, 255, 0.05); }
+        .output-control__item__name {
+          color: #FFFFFF;
+          font-weight: 400;
+          width: 30%;
+          float: left;
+          font-size: 12px;
+          padding-top: 2px; }
+        .output-control__item__controls {
+          width: 70%;
+          float: right; }
+        .output-control__item__mute.control {
+          color: #FFFFFF; } }
 
 aside {
   position: fixed;
@@ -6155,13 +6191,13 @@ main header {
       width: 1px;
       background: #383734;
       z-index: 0; }
-    .snapcast__client__latency .latency-control .progress.positive {
+    .snapcast__client__latency .latency-control .slider__track__progress--positive {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0; }
-    .snapcast__client__latency .latency-control .progress.negative {
+    .snapcast__client__latency .latency-control .slider__track__progress--negative {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0; }
-      .snapcast__client__latency .latency-control .progress.negative:after {
+      .snapcast__client__latency .latency-control .slider__track__progress--negative:after {
         right: auto;
         left: -1px; }
   @media (max-width: 800px) {
