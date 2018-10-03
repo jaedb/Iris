@@ -1,6 +1,7 @@
 
 var helpers = require('./../../helpers');
 var coreActions = require('../core/actions');
+var lastfmActions = require('./actions');
 
 const LastfmMiddleware = (function(){
 
@@ -17,6 +18,15 @@ const LastfmMiddleware = (function(){
                 );
                 store.dispatch(coreActions.userLoaded(me));
                 action.me = me;
+                next(action);
+                break;
+
+            case 'LASTFM_IMPORT_AUTHORIZATION':
+
+                // Wait a few moments before we fetch, allowing the import to complete first
+                // TODO: Use callbacks for better code accuracy
+                setTimeout(() => {store.dispatch(lastfmActions.getMe())}, 100);
+
                 next(action);
                 break;
 

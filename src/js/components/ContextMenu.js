@@ -792,7 +792,7 @@ const mapStateToProps = (state, ownProps) => {
 		playlists: state.core.playlists,
 		tracks: state.core.tracks,
 		spotify_authorized: state.spotify.authorization,
-		lastfm_authorized: state.lastfm.session
+		lastfm_authorized: state.lastfm.authorization
 	}
 }
 

@@ -1,38 +1,29 @@
 
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 
-import * as helpers from './helpers'
+import * as helpers from './helpers';
 
-import core from './services/core/reducer'
-import ui from './services/ui/reducer'
-import pusher from './services/pusher/reducer'
-import mopidy from './services/mopidy/reducer'
-import lastfm from './services/lastfm/reducer'
-import spotify from './services/spotify/reducer'
-import genius from './services/genius/reducer'
+import core from './services/core/reducer';
+import ui from './services/ui/reducer';
+import pusher from './services/pusher/reducer';
+import mopidy from './services/mopidy/reducer';
+import lastfm from './services/lastfm/reducer';
+import spotify from './services/spotify/reducer';
+import snapcast from './services/snapcast/reducer';
+import genius from './services/genius/reducer';
 
-import thunk from 'redux-thunk'
-import coreMiddleware from './services/core/middleware'
-import uiMiddleware from './services/ui/middleware'
-import pusherMiddleware from './services/pusher/middleware'
-import mopidyMiddleware from './services/mopidy/middleware'
-import lastfmMiddleware from './services/lastfm/middleware'
-import geniusMiddleware from './services/genius/middleware'
-import spotifyMiddleware from './services/spotify/middleware'
-import localstorageMiddleware from './services/localstorage/middleware'
-
-let reducers = combineReducers({
-    core,
-    ui,
-    pusher,
-    mopidy,
-    lastfm,
-    genius,
-    spotify
-});
+import thunk from 'redux-thunk';
+import coreMiddleware from './services/core/middleware';
+import uiMiddleware from './services/ui/middleware';
+import pusherMiddleware from './services/pusher/middleware';
+import mopidyMiddleware from './services/mopidy/middleware';
+import lastfmMiddleware from './services/lastfm/middleware';
+import geniusMiddleware from './services/genius/middleware';
+import spotifyMiddleware from './services/spotify/middleware';
+import snapcastMiddleware from './services/snapcast/middleware';
+import localstorageMiddleware from './services/localstorage/middleware';
 
 // set application defaults
-// TODO: Look at using propTypes in the component for these falsy initial states
 var initialState = {
 	core: {
 		outputs: [],
@@ -92,6 +83,13 @@ var initialState = {
 		me: null,
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
+	},
+	snapcast: {
+		streams: {},
+		groups: {},
+		clients: {},
+		server: null,
+		client_commands: {}
 	}
 };
 
@@ -103,13 +101,34 @@ initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage(
 initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
 initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
 initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage('genius'));
+initialState.snapcast = Object.assign({}, initialState.snapcast, helpers.getStorage('snapcast'));
 
-console.log('Bootstrapping', initialState)
+console.log('Bootstrapping', initialState);
 
-let store = createStore(
+var reducers = combineReducers({
+    core,
+    ui,
+    pusher,
+    mopidy,
+    lastfm,
+    genius,
+    spotify,
+    snapcast
+});
+
+export default createStore(
 	reducers, 
 	initialState, 
-	applyMiddleware(thunk, localstorageMiddleware, coreMiddleware, uiMiddleware, mopidyMiddleware, pusherMiddleware, spotifyMiddleware, lastfmMiddleware, geniusMiddleware)
+	applyMiddleware(
+		thunk, 
+		localstorageMiddleware, 
+		coreMiddleware, 
+		uiMiddleware, 
+		mopidyMiddleware, 
+		pusherMiddleware, 
+		spotifyMiddleware, 
+		lastfmMiddleware, 
+		geniusMiddleware, 
+		snapcastMiddleware
+	)
 );
-
-export default store;

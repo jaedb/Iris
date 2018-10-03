@@ -181,8 +181,6 @@ class IrisCore(object):
             return
 
 
-
-
     ##
     # Generate a random string
     #

@@ -137,7 +137,7 @@
 		.list {
 			@include clearfix();
 
-			.list-item {
+			&__item {
 				@include animate();
 				box-sizing: border-box;
 				display: block;
@@ -163,7 +163,7 @@
 			&.playlists {
 				padding-top: 40px;
 
-				.list-item {
+				.list__item {
 					margin: 0 0 20px 0;
 					padding: 5px;
 
@@ -180,7 +180,7 @@
 				}
 			}
 
-			&.small .list-item {
+			&.small .list__item {
 				width: 49%;
 				float: left;
 				font-size: inherit;
@@ -296,16 +296,6 @@
 		}
 	}
 
-	&--share-authorization {
-		.list {
-			padding-top: 40px;
-
-			.list-item {
-				cursor: pointer;
-			}
-		}
-	}
-
 	@include responsive($bp_medium){
 
 		.controls {
@@ -336,7 +326,7 @@
 			}
 
 			.list {
-				.list-item {
+				.list__item {
 					float: none !important;
 					width: auto;
 					margin-left: 0 !important;

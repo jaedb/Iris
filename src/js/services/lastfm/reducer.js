@@ -20,14 +20,21 @@ export default function reducer(lastfm = {}, action){
         case 'LASTFM_AUTHORIZATION_GRANTED':
             return Object.assign({}, lastfm, {
                 authorizing: false, 
-                session: action.data.session
+                authorization: action.data.session
             })
 
         case 'LASTFM_AUTHORIZATION_REVOKED':
             return Object.assign({}, lastfm, { 
                 authorizing: false,
-                session: false,
-                me: false
+                authorization: false,
+                me: null
+            });
+
+        case 'LASTFM_IMPORT_AUTHORIZATION':
+            return Object.assign({}, lastfm, {
+                authorizing: false, 
+                authorization: action.authorization,
+                me: null
             });
 
         default:

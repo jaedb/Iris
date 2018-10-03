@@ -188,7 +188,7 @@ class EditRadio extends React.Component{
 						{
 							seeds.map((seed,index) => {
 								return (
-									<div className="list-item" key={seed.uri}>
+									<div className="list__item" key={seed.uri}>
 										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
 										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
 										<span className="button discrete remove-uri no-hover" onClick={e => this.removeSeed(seed.uri)}>

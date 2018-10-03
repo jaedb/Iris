@@ -98,6 +98,7 @@ footer {
 main {
 	position: relative;
 	min-height: 100vh;
+	z-index: 1;
 
 	.content-wrapper {
 		padding: 40px 40px 80px;

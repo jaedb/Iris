@@ -1,6 +1,7 @@
 
-var helpers = require('./../../helpers')
-var coreActions = require('../core/actions')
+var helpers = require('./../../helpers');
+var coreActions = require('../core/actions');
+var geniusActions = require('./actions');
 
 const GeniusMiddleware = (function(){
     return store => next => action => {
@@ -35,6 +36,15 @@ const GeniusMiddleware = (function(){
                 );
                 store.dispatch(coreActions.userLoaded(user));
                 action.user = user;
+                next(action);
+                break;
+
+            case 'GENIUS_IMPORT_AUTHORIZATION':
+
+                // Wait a few moments before we fetch, allowing the import to complete first
+                // TODO: Use callbacks for better code accuracy
+                setTimeout(() => {store.dispatch(geniusActions.getMe())}, 100);
+
                 next(action);
                 break;
 

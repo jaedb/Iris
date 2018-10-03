@@ -67,7 +67,6 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
-            case 'SPOTIFY_IMPORT_AUTHORIZATION':
             case 'SPOTIFY_AUTHORIZATION_GRANTED':
                 if (action.authorization !== undefined){
                     var authorization = action.authorization;
@@ -85,14 +84,28 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
+            case 'SPOTIFY_IMPORT_AUTHORIZATION':
+                helpers.setStorage(
+                    'spotify',
+                    {
+                        authorization: action.authorization,
+                        access_token: action.authorization.access_token,
+                        refresh_token: action.authorization.refresh_token,
+                        token_expiry: action.authorization.token_expiry,
+                        me: null
+                    }
+                );
+                break;
+
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
                 helpers.setStorage(
                     'spotify',
                     {
-                        authorization: false,
-                        access_token: false,
-                        refresh_token: false,
-                        token_expiry: false
+                        authorization: null,
+                        access_token: null,
+                        refresh_token: null,
+                        token_expiry: null,
+                        me: null
                     }
                 );
                 break;
@@ -130,7 +143,7 @@ const localstorageMiddleware = (function(){
                 helpers.setStorage(
                     'lastfm',
                     {
-                        session: action.data.session
+                        authorization: action.data.session
                     }
                 );
                 break;
@@ -139,7 +152,18 @@ const localstorageMiddleware = (function(){
                 helpers.setStorage(
                     'lastfm',
                     {
-                        session: null
+                        authorization: null,
+                        me: null
+                    }
+                );
+                break;
+
+            case 'LASTFM_IMPORT_AUTHORIZATION':
+                helpers.setStorage(
+                    'lastfm',
+                    {
+                        authorization: action.authorization,
+                        me: null
                     }
                 );
                 break;
@@ -176,6 +200,18 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
+            case 'GENIUS_IMPORT_AUTHORIZATION':
+                helpers.setStorage(
+                    'genius',
+                    {
+                        authorization: action.authorization,
+                        authorization_code: action.authorization.authorization_code,
+                        access_token: action.authorization.access_token,
+                        me: null
+                    }
+                );
+                break;
+
             case 'CORE_SET':
                 helpers.setStorage(
                     'core',
@@ -201,6 +237,15 @@ const localstorageMiddleware = (function(){
                 helpers.setStorage(
                     'spotify',
                     action.data
+                );
+                break;
+
+            case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
+                helpers.setStorage(
+                    'snapcast',
+                    {
+                    	client_commands: action.client_commands
+                    }
                 );
                 break;
 

@@ -50,17 +50,13 @@ const SpotifyMiddleware = (function(){
                 break;
 
             case 'SPOTIFY_IMPORT_AUTHORIZATION':
-                if (store.getState().ui.allow_reporting){
-	                var hashed_username = null
-	                if (store.getState().spotify.me){
-	                    hashed_username = md5(store.getState().spotify.me);
-		                ReactGA.set({userId: hashed_username});
-	                }
-	                ReactGA.event({category: 'Spotify', action: 'Authorization imported', label: hashed_username});
-	            }
 
                 // Flush out the previous user's library
                 store.dispatch(spotifyActions.flushLibrary());
+
+                // Wait a few moments before we fetch, allowing the import to complete first
+                // TODO: Use callbacks for better code accuracy
+                setTimeout(() => {store.dispatch(spotifyActions.getMe())}, 100);
 
                 next(action);
                 break;

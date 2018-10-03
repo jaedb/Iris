@@ -9,7 +9,7 @@
 		}
 	}
 
-	.outputs {
+	&__items {
 		position: absolute;
 		bottom: 40px;
 		right: -150px;
@@ -43,56 +43,138 @@
 			opacity: 0.5;
 			font-weight: normal;
 		}
+	}
 
-		.output {
-			padding: 16px 20px 12px;
-			position: relative;
+	&__item {
+		padding: 12px 18px 8px;
+		position: relative;
 
-			&:not(:first-child) {
-				border-top: 1px solid rgba(0,0,0,0.05);
-			}
+		&:not(:first-child) {
+			border-top: 1px solid rgba(0,0,0,0.05);
+		}
 
-			.name {
-				padding-bottom: 5px;
-			}
+		&__actions {
+			float: right;
+			
+			.action {
+				@include animate();
+				cursor: pointer;
+				color: $mid_grey;
 
-			.actions {
-				float: right;
-				
-				.action {
-					@include animate();
-					cursor: pointer;
-					color: $mid_grey;
-
-					&:hover {
-						color: $dark_grey;
-					}
+				&:hover {
+					color: $dark_grey;
 				}
 			}
+		}
 
-			.volume-control {
+		&--has-power-button {
+			.output-control__item__volume {
+				padding-left: 50px;
+			}
+		}
+
+		&__volume {
+			padding-top: 2px;
+			padding-left: 25px;
+		}
+
+		&__mute.control {
+			@include click_feedback(rgba(0,0,0,0.5));
+			padding: 2px;
+			color: $black;
+			float: left;
+			font-size: 16px;
+		}
+
+		&__power {
+			@include click_feedback(rgba(0,0,0,0.5));
+			width: 18px;
+			height: 18px;
+			text-align: center;
+			color: $white;
+			cursor: pointer;
+			float: left;
+			margin-top: -2px;
+			margin-right: 6px;
+
+			.icon {
+				padding-top: 5px;
+				font-size: 12px;
+			}
+
+			&:before {
+				content: '';
 				display: block;
-				position: relative;
-				padding-left: 22px;
-
-				.mute-control {
-					position: absolute;
-					top: -2px;
-					left: -2px;
-					padding: 2px;
-					color: $black;
-				}
+				position: absolute;
+				top: 2px;
+				left: 0;
+				width: 100%;
+				padding-bottom: 100%;
+				background: $red;
+				z-index: -1;
+				border-radius: 50%;
+				opacity: 1;
 			}
 		}
 	}
 
 	@include responsive($bp_medium){
-		.outputs {
-			width: 86vw;
+		position: absolute;
+		top: -10px;
+		right: 0px;
+		bottom: auto;
+		width: 100vw;
+
+		& > .control {
+			display: none;
+		}
+
+		&__items {
+			top: auto;
 			right: 0;
+			bottom: 0;
+			left: 0;
+			width: auto;
+			padding: 4px 0 0;
+			background: lighten($dark_grey, 17.5%);
+			border-radius: 0;
+			box-shadow: none;
+			max-height: 50vh;
+			overflow-y: auto;
 
 			&:after {
-				right: 9px;
+				display: none;
+			}
+
+			&--no-results {
+				display: none;
+			}
+		}
+
+		&__item {
+			@include clearfix();
+			padding: 10px 18px 6px;
+
+			&:not(:first-child){
+				border-color: rgba(255,255,255,0.05);
+			}
+
+			&__name {
+				color: $white;
+				font-weight: 400;
+				width: 30%;
+				float: left;
+				font-size: 12px;
+				padding-top: 2px;
+			}
+
+			&__controls {
+				width: 70%;
+				float: right;
+			}
+
+			&__mute.control {
+				color: $white;
 			}
 		}
 	}

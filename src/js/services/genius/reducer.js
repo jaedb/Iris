@@ -27,6 +27,15 @@ export default function reducer(genius = {}, action){
                 me: null
             });
 
+        case 'GENIUS_IMPORT_AUTHORIZATION':
+            return Object.assign({}, genius, {
+                authorizing: false,
+                authorization: action.authorization,
+                authorization_code: action.authorization.authorization_code,
+                access_token: action.authorization.access_token,
+                me: null
+            })
+
         default:
             return genius
     }

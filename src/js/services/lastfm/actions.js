@@ -87,10 +87,10 @@ const sendSignedRequest = (dispatch, getState, params) => {
     return new Promise((resolve, reject) => {
 
         // Not authorized
-        if (!getState().lastfm.session){
+        if (!getState().lastfm.authorization){
             reject({
                 params: params,
-                error: "No active LastFM session"
+                error: "No active LastFM authorization (session)"
             });
         }
 
@@ -100,7 +100,7 @@ const sendSignedRequest = (dispatch, getState, params) => {
 
         dispatch(uiActions.startLoading(loader_key, 'lastfm_'+method));
 
-        params += "&sk="+getState().lastfm.session.key;
+        params += "&sk="+getState().lastfm.authorization.key;
 
         var config = {
             method: 'GET',
@@ -152,6 +152,13 @@ export function revokeAuthorization(){
     }
 }
 
+export function importAuthorization(authorization){
+    return {
+        type: 'LASTFM_IMPORT_AUTHORIZATION',
+        authorization: authorization
+    }
+}
+
 
 
 /**
@@ -160,7 +167,7 @@ export function revokeAuthorization(){
 
 export function getMe(){
     return (dispatch, getState) => {
-        var params = 'method=user.getInfo&user='+getState().lastfm.session.name
+        var params = 'method=user.getInfo&user='+getState().lastfm.authorization.name
         sendRequest(dispatch, getState, params)
             .then(
                 response => {
@@ -199,8 +206,8 @@ export function getTrack(uri){
         var track_name = track.name;
         var artist_name = encodeURIComponent(track.artists[0].name);
         var params = 'method=track.getInfo&track='+track_name+'&artist='+artist_name;
-        if (getState().lastfm.session){
-            params += '&username='+getState().lastfm.session.name;
+        if (getState().lastfm.authorization){
+            params += '&username='+getState().lastfm.authorization.name;
         }
         sendRequest(dispatch, getState, params)
             .then(
