@@ -62,9 +62,9 @@ class OutputControl extends React.Component{
 		for (var key in this.props.snapcast_clients){
 			if (this.props.snapcast_clients.hasOwnProperty(key)){
 				var client = this.props.snapcast_clients[key];
-				//if (client.connected){
+				if (client.connected){
 					clients.push(client);
-				//}
+				}
 			}
 		}
 
