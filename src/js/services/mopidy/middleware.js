@@ -207,13 +207,15 @@ const MopidyMiddleware = (function(){
         switch(action.type){
 
             case 'MOPIDY_CONNECT':
+                if (socket != null){
+                	socket.close();
+                }
 
-                if (socket != null) socket.close();
                 store.dispatch({ type: 'MOPIDY_CONNECTING'});
                 var state = store.getState();
 
                 socket = new Mopidy({
-                    webSocketUrl: 'ws'+(state.mopidy.ssl ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
+                    webSocketUrl: 'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
                     callingConvention: 'by-position-or-by-name'
                 });
 

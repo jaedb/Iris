@@ -24,8 +24,7 @@ class InitialSetup extends React.Component{
 			username: this.props.username,
 			allow_reporting: this.props.allow_reporting,
 			host: this.props.host,
-			port: this.props.port,
-			ssl: this.props.ssl
+			port: this.props.port
 		}
 	}
 
@@ -46,8 +45,7 @@ class InitialSetup extends React.Component{
 		});
 		this.props.mopidyActions.set({
 			host: this.state.host,
-			port: this.state.port,
-			ssl: this.state.ssl
+			port: this.state.port
 		});
 
 		this.setState({saving: true});
@@ -56,7 +54,7 @@ class InitialSetup extends React.Component{
 		setTimeout(function(){
 
 			// We've changed a connection setting, so need to reload
-			if (self.state.host !== self.props.host || self.state.port !== self.props.port || self.state.ssl !== self.props.ssl){
+			if (self.state.host !== self.props.host || self.state.port !== self.props.port){
 
 				window.location = global.baseURL;
 
@@ -108,21 +106,6 @@ class InitialSetup extends React.Component{
 								value={ this.state.port } />
 						</div>
 					</div>
-					<div className="field checkbox">
-						<div className="input">
-							<label>
-								<input 
-									type="checkbox"
-									name="ssl"
-									checked={this.state.ssl}
-									onChange={e => this.setState({ssl: !this.state.ssl})} />
-								<span className="label tooltip">
-									Enable SSL
-									<span className="tooltip__content">Requires SSL proxy</span>
-								</span>
-							</label>
-						</div>
-					</div>
 					
 					{helpers.isHosted() ? null : <div className="field checkbox">
 						<div className="input">
@@ -157,8 +140,7 @@ const mapStateToProps = (state, ownProps) => {
 		allow_reporting: state.ui.allow_reporting,
 		username: (state.pusher && state.pusher.username ? state.pusher.username : 'Anonymous'),
 		host: state.mopidy.host,
-		port: state.mopidy.port,
-		ssl: state.mopidy.ssl
+		port: state.mopidy.port
 	}
 }
 

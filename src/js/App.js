@@ -89,12 +89,29 @@ class App extends React.Component{
 
 		// Check for url-parsed configuration values
 		var url_vars = this.props.location.query;
-		if (url_vars !== undefined && url_vars.host !== undefined && url_vars.port !== undefined){
-			this.props.mopidyActions.set({
-				host: url_vars.host,
-				port: url_vars.port
-			});
-			hashHistory.push(global.baseURL);
+		if (url_vars){
+			var has_values = false;
+			var values = {};
+			if (url_vars.host !== undefined){
+				has_values = true;
+				values.host = url_vars.host;
+			}
+			if (url_vars.port !== undefined){
+				has_values = true;
+				values.port = url_vars.port;
+			}
+
+			if (has_values){
+				this.props.mopidyActions.set(values);
+
+				// Allow 100ms for the action above to complete before we re-route
+				setTimeout(
+					() => {
+						hashHistory.push(global.baseURL);
+					},
+					100
+				);
+			}
 		}
 
 		// show initial setup if required

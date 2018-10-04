@@ -171,8 +171,6 @@ const PusherMiddleware = (function(){
         switch(action.type){
 
             case 'PUSHER_CONNECT':
-
-                // Stagnant socket, close it first
                 if (socket != null){
                     socket.close();
                 }
