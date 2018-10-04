@@ -79317,7 +79317,6 @@ var LibraryBrowse = function (_React$Component) {
 			}
 
 			if (parent_uri.startsWith('file://')) {
-
 				var uri = parent_uri.replace('file:///', '');
 				var uri_elements = uri.split('/');
 
