@@ -137,37 +137,40 @@ export default class Track extends React.Component{
 			y: e.changedTouches[0].clientY
 		}
 
-		// Clicked a nested link (ie Artist name), so no dragging required
-		if (!target.is('a')){
-			e.preventDefault();
-		}
-
-		// Context trigger
-		if (target.hasClass('touch-contextable')){
-
-			// Update our selection. By not passing touch = true selection will work like a regular click
-			//this.props.handleSelection(e);
-			this.props.handleContextMenu(e);
-			return false;
-		}
-
-		// We received a touchend within 300ms ago, so handle as double-tap
-		if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
-			this.props.handleDoubleTap(e);
-			e.preventDefault();
-			return false;
-		}
-
 		// Too long between touchstart and touchend
 		if (this.start_time + tap_time_threshold < timestamp){
 			return false;
 		}
 
+		// Make sure there's enough distance between start and end before we handle
+		// this event as a 'tap'
 		if (this.start_position.x + tap_distance_threshold > end_position.x &&
 			this.start_position.x - tap_distance_threshold < end_position.x &&
 			this.start_position.y + tap_distance_threshold > end_position.y &&
 			this.start_position.y - tap_distance_threshold < end_position.y){
-				this.props.handleTap(e);
+
+			// Clicked a nested link (ie Artist name), so no dragging required
+			if (!target.is('a')){
+				e.preventDefault();
+			}
+
+			// Context trigger
+			if (target.hasClass('touch-contextable')){
+
+				// Update our selection. By not passing touch = true selection will work like a regular click
+				//this.props.handleSelection(e);
+				this.props.handleContextMenu(e);
+				return false;
+			}
+
+			// We received a touchend within 300ms ago, so handle as double-tap
+			if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
+				this.props.handleDoubleTap(e);
+				e.preventDefault();
+				return false;
+			}
+
+			this.props.handleTap(e);
 		}
 
 		this.end_time = timestamp;
