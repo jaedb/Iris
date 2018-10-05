@@ -78,7 +78,7 @@ class ShareConfiguration extends React.Component {
 			);
 		}
 
-		//window.history.back();
+		window.history.back();
 		return;
 	}
 

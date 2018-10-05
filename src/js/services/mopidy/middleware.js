@@ -207,13 +207,15 @@ const MopidyMiddleware = (function(){
         switch(action.type){
 
             case 'MOPIDY_CONNECT':
+                if (socket != null){
+                	socket.close();
+                }
 
-                if (socket != null) socket.close();
                 store.dispatch({ type: 'MOPIDY_CONNECTING'});
                 var state = store.getState();
 
                 socket = new Mopidy({
-                    webSocketUrl: 'ws'+(state.mopidy.ssl ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
+                    webSocketUrl: 'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/mopidy/ws/',
                     callingConvention: 'by-position-or-by-name'
                 });
 
@@ -569,9 +571,8 @@ const MopidyMiddleware = (function(){
                 // playlist already in index
                 if (store.getState().core.playlists.hasOwnProperty(action.uri)){
 
-                    // make sure we didn't get this playlist from Mopidy-Spotify
-                    // if we did, we'd have a cached version on server so no need to fetch
-                    if (!store.getState().core.playlists[action.uri].is_mopidy){
+                    // Spotify-provied playlists need to be handled by the Spotify service
+                    if (store.getState().core.playlists[action.uri].provider == 'spotify'){
                         store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
                         break
                     }
@@ -1500,7 +1501,7 @@ const MopidyMiddleware = (function(){
                                 uri: response.uri,
                                 type: 'playlist',
                                 is_completely_loaded: true,
-                                is_mopidy: true,
+                                provider: 'mopidy',
                                 tracks: (response.tracks ? response.tracks : []),
                                 tracks_total: (response.tracks ? response.tracks.length : [])
                             }

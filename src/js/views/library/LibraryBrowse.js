@@ -10,6 +10,8 @@ import TrackList from '../../components/TrackList'
 import GridItem from '../../components/GridItem'
 import DropdownField from '../../components/Fields/DropdownField'
 import Icon from '../../components/Icon'
+import URILink from '../../components/URILink'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -50,10 +52,8 @@ class LibraryBrowse extends React.Component{
 		}
 	}
 
-	playAll(e){
-		var tracks = this.arrangeDirectory().tracks;
+	playAll(e, tracks){
 		var tracks_uris = helpers.arrayOf('uri',tracks);
-
 		this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:"+this.props.params.uri);
 		this.props.uiActions.hideContextMenu();
 	}
@@ -61,6 +61,44 @@ class LibraryBrowse extends React.Component{
 	goBack(e){
 		window.history.back();
 		this.props.uiActions.hideContextMenu();
+	}
+
+	renderBreadcrumbs(){
+
+		if (this.props.params.uri){
+			var parent_uri = this.props.params.uri;
+		} else {
+			return null;
+		}
+
+		if (parent_uri.startsWith('file://')){
+			var uri = parent_uri.replace('file:///','');
+			var uri_elements = uri.split('/');
+
+			return (
+				<h4>
+					{uri_elements.map((uri_element, index) => {
+
+						// Reconstruct a URL to this element
+						var uri = "file://";
+						for (var i = 0; i <= index; i++){
+							uri += "/"+uri_elements[i];
+						}
+
+						return (
+							<span key={uri}>
+								{index > 0 ? <span>&nbsp; <Icon type="fontawesome" name="angle-right" /> &nbsp;&nbsp;</span> : null}
+								<URILink type="browse" uri={uri}>
+									{uri_element}
+								</URILink>
+							</span>
+						);
+					})}
+				</h4>
+			);
+		}
+
+		return null;
 	}
 
 	renderSubdirectories(subdirectories){
@@ -136,7 +174,7 @@ class LibraryBrowse extends React.Component{
 					options={view_options}
 					handleChange={value => {this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu()}}
 				/>
-				{tracks ? <button className="no-hover" onClick={e => this.playAll(e)}>
+				{tracks ? <button className="no-hover" onClick={e => this.playAll(e, tracks)}>
 					<Icon name="play_circle_filled" />Play all
 				</button> : null }
 				<button className="no-hover" onClick={e => this.goBack(e)}>
@@ -152,15 +190,19 @@ class LibraryBrowse extends React.Component{
 					{title}
 				</Header>
 				<section className="content-wrapper">
+					<ErrorBoundary>
 
-					{subdirectories ? this.renderSubdirectories(subdirectories) : null}
+						{this.renderBreadcrumbs()}
 
-					{tracks ? <TrackList 
-							tracks={this.props.directory.tracks}
-							uri={"iris:browse:"+this.props.params.uri}
-							className="library-local-track-list"
-						/> : null }
+						{subdirectories ? this.renderSubdirectories(subdirectories) : null}
 
+						{tracks ? <TrackList 
+								tracks={this.props.directory.tracks}
+								uri={"iris:browse:"+this.props.params.uri}
+								className="library-local-track-list"
+							/> : null }
+
+					</ErrorBoundary>
 				</section>
 			</div>
 		);
@@ -229,21 +271,23 @@ class LibraryBrowse extends React.Component{
 					Browse
 				</Header>
 				<section className="content-wrapper">
-					<div className="grid category-grid">				
-						{
-							grid_items.map(
-								(item, index) => {
-									return (
-										<GridItem 
-											item={item} 
-											key={index}
-											type="category"
-											onClick={e => hashHistory.push(item.link)}
-										/>
-									)
-								}
-							)
-						}
+					<div className="grid category-grid">
+						<ErrorBoundary>
+							{
+								grid_items.map(
+									(item, index) => {
+										return (
+											<GridItem 
+												item={item} 
+												key={index}
+												type="category"
+												onClick={e => hashHistory.push(item.link)}
+											/>
+										)
+									}
+								)
+							}
+						</ErrorBoundary>
 					</div>
 				</section>
 			</div>

@@ -412,6 +412,9 @@ export let formatAlbum = function(data){
 	}
 	if (data.album_type){
 		album.type = data.album_type;
+	}    
+	if (album.provider === undefined && album.uri !== undefined){
+		album.provider = uriSource(album.uri);
 	}
 
 	return album;
@@ -474,6 +477,10 @@ export let formatArtist = function(data){
 			artist.biography_publish_date = data.bio.published;
 		}
 	}
+    
+	if (artist.provider === undefined && artist.uri !== undefined){
+		artist.provider = uriSource(artist.uri);
+	}
 
 	return artist;
 }
@@ -532,6 +539,10 @@ export let formatPlaylist = function(data){
 	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
 	if (playlist.uri.includes("spotify:user:")){
 		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+	}
+
+	if (playlist.provider === undefined && playlist.uri !== undefined){
+		playlist.provider = uriSource(playlist.uri);
 	}
 
 	return playlist;
@@ -603,6 +614,9 @@ export let formatUser = function(data){
 	}
 	if (data.id && !user.name){
 		user.name = data.id;
+	}
+	if (user.provider === undefined && user.uri !== undefined){
+		user.provider = uriSource(user.uri);
 	}
 
 	return user;
@@ -697,6 +711,10 @@ export let formatTrack = function(data){
     		track.images = formatImages(data.album.images);
     	}
     }
+
+	if (track.provider === undefined && track.uri !== undefined){
+		track.provider = uriSource(track.uri);
+	}
 
 	return track;
 }

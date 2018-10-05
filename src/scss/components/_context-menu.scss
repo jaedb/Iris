@@ -319,8 +319,16 @@
 		}
 	}
 
+	.icon {
+		pointer-events: none;
+	}
+
 	h4 &,
 	h4 &:active {
 		margin: -8px 0 0 10px;
+	}
+
+	@include responsive($bp_medium){
+		padding: 12px;
 	}
 }

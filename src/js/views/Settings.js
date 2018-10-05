@@ -28,7 +28,6 @@ class Settings extends React.Component {
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
-			mopidy_ssl: this.props.mopidy.ssl,
 			mopidy_library_artists_uri: this.props.mopidy.library_artists_uri,
 			mopidy_library_albums_uri: this.props.mopidy.library_albums_uri,
 			pusher_username: this.props.pusher.username,
@@ -67,8 +66,7 @@ class Settings extends React.Component {
 		
 		this.props.mopidyActions.set({
 			host: this.state.mopidy_host,
-			port: this.state.mopidy_port,
-			ssl: this.state.mopidy_ssl
+			port: this.state.mopidy_port
 		});
 
 		window.location.reload(true);
@@ -103,8 +101,7 @@ class Settings extends React.Component {
 
 	renderApplyButton(){
 		if (this.props.mopidy.host == this.state.mopidy_host && 
-			this.props.mopidy.port == this.state.mopidy_port && 
-			this.props.mopidy.ssl == this.state.mopidy_ssl){
+			this.props.mopidy.port == this.state.mopidy_port){
 				return null;
 		}
 
@@ -225,22 +222,6 @@ class Settings extends React.Component {
 									onFocus={e => this.setState({input_in_focus: 'mopidy_port'})} 
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_port } />
-							</div>
-						</div>
-						<div className="field checkbox">
-							<div className="name">Encryption</div>
-							<div className="input">
-								<label>
-									<input 
-										type="checkbox"
-										name="ssl"
-										checked={this.state.mopidy_ssl}
-										onChange={e => this.setState({mopidy_ssl: !this.state.mopidy_ssl})} />
-									<span className="label tooltip">
-										Enable SSL
-										<span className="tooltip__content">Requires SSL proxy</span>
-									</span>
-								</label>
 							</div>
 						</div>
 						{this.renderApplyButton()}
