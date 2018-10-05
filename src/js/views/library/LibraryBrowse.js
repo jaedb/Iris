@@ -52,10 +52,8 @@ class LibraryBrowse extends React.Component{
 		}
 	}
 
-	playAll(e){
-		var tracks = this.arrangeDirectory().tracks;
+	playAll(e, tracks){
 		var tracks_uris = helpers.arrayOf('uri',tracks);
-
 		this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:"+this.props.params.uri);
 		this.props.uiActions.hideContextMenu();
 	}
@@ -176,7 +174,7 @@ class LibraryBrowse extends React.Component{
 					options={view_options}
 					handleChange={value => {this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu()}}
 				/>
-				{tracks ? <button className="no-hover" onClick={e => this.playAll(e)}>
+				{tracks ? <button className="no-hover" onClick={e => this.playAll(e, tracks)}>
 					<Icon name="play_circle_filled" />Play all
 				</button> : null }
 				<button className="no-hover" onClick={e => this.goBack(e)}>
