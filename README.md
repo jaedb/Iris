@@ -1,6 +1,8 @@
-<img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="256" />
+<img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="128" />
 
-Iris (formerly known as Spotmop) is a Mopidy HTTP client that utilizes Spotify to create an interactive, user-friendly and collaborative music interface. Built and maintained by James Barnsley.
+Iris (formerly known as Spotmop) is an extension for the Mopidy music server. With support for Spotify, LastFM, Snapcast, Icecast and many other extensions, Iris is the software that brings all your music into one user-friendly and unified interface.
+
+Built and maintained by James Barnsley.
 
 [![npm](https://img.shields.io/npm/v/mopidy-iris.svg?style=flat-square)]()
 ![badge](https://img.shields.io/pypi/v/mopidy-iris.svg?style=flat-square)
@@ -11,12 +13,16 @@ Features
 --------
 
 * Full web-based interface controls for Mopidy
-* Integrated with Spotify and LastFM APIs for high-quality artwork and extra info
-* Support for any Mopidy backend
-* Improved support for local libraries using SQLite extension
-* Browse and manage your playlists, along with top tracks, new releases and genre browser
-* Discover new and related music, powered by Spotify
+* Improved support for local libraries (powered by Mopidy-Local-Sqlite)
+* Browse and manage your playlists and tracks
+* Discover new, popular and related music (powered by Spotify)
 * Freely hosted, auto-updated interface available ([beta](https://jaedb.github.io/Iris/#/))
+* Integration with:
+  * [Spotify](https://developer.spotify.com/web-api/)
+  * [LastFM](https://www.last.fm/api)
+  * [Genius](https://docs.genius.com/)
+  * [Snapcast](https://github.com/badaix/snapcast/)
+  * [Icecast](http://icecast.org/)
 
 ![Overview](https://raw.githubusercontent.com/jaedb/iris/master/screenshot.jpg)
 
