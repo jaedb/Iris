@@ -2531,8 +2531,7 @@ footer {
 
 main {
   position: relative;
-  min-height: 100vh;
-  z-index: 1; }
+  min-height: 100vh; }
   main .content-wrapper {
     padding: 40px 40px 80px; }
   main a {
@@ -3742,9 +3741,14 @@ input[type="submit"] {
     .actions .context-menu-trigger:hover {
       cursor: pointer;
       color: #32b5f2 !important; }
+  .context-menu-trigger .icon {
+    pointer-events: none; }
   h4 .context-menu-trigger,
   h4 .context-menu-trigger:active {
     margin: -8px 0 0 10px; }
+  @media (max-width: 800px) {
+    .context-menu-trigger {
+      padding: 12px; } }
 
 .list__item {
   -webkit-touch-callout: none;
