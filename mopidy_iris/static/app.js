@@ -79293,10 +79293,8 @@ var LibraryBrowse = function (_React$Component) {
 		}
 	}, {
 		key: 'playAll',
-		value: function playAll(e) {
-			var tracks = this.arrangeDirectory().tracks;
+		value: function playAll(e, tracks) {
 			var tracks_uris = helpers.arrayOf('uri', tracks);
-
 			this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:" + this.props.params.uri);
 			this.props.uiActions.hideContextMenu();
 		}
@@ -79432,7 +79430,7 @@ var LibraryBrowse = function (_React$Component) {
 				tracks ? _react2.default.createElement(
 					'button',
 					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this2.playAll(e);
+							return _this2.playAll(e, tracks);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
 					'Play all'
