@@ -571,9 +571,8 @@ const MopidyMiddleware = (function(){
                 // playlist already in index
                 if (store.getState().core.playlists.hasOwnProperty(action.uri)){
 
-                    // make sure we didn't get this playlist from Mopidy-Spotify
-                    // if we did, we'd have a cached version on server so no need to fetch
-                    if (!store.getState().core.playlists[action.uri].is_mopidy){
+                    // Spotify-provied playlists need to be handled by the Spotify service
+                    if (store.getState().core.playlists[action.uri].provider == 'spotify'){
                         store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
                         break
                     }
@@ -1502,7 +1501,7 @@ const MopidyMiddleware = (function(){
                                 uri: response.uri,
                                 type: 'playlist',
                                 is_completely_loaded: true,
-                                is_mopidy: true,
+                                provider: 'mopidy',
                                 tracks: (response.tracks ? response.tracks : []),
                                 tracks_total: (response.tracks ? response.tracks.length : [])
                             }
