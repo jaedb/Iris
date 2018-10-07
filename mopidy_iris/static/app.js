@@ -3240,7 +3240,7 @@ var helpers = __webpack_require__(1);
  * @param data mixed = request payload
  * @return Promise
  **/
-var sendRequest = function sendRequest(dispatch, getState, endpoint) {
+var request = function request(dispatch, getState, endpoint) {
     var method = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'GET';
     var data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
@@ -3334,6 +3334,11 @@ function getToken(dispatch, getState) {
 function refreshToken(dispatch, getState) {
     return new Promise(function (resolve, reject) {
 
+        // add reference to loader queue
+        var loader_key = helpers.generateGuid();
+        dispatch(uiActions.startLoading(loader_key, 'spotify_refresh_token'));
+
+        // Fully-authorized, so we can use the local Spotify credentials
         if (getState().spotify.authorization) {
 
             var config = {
@@ -3344,6 +3349,8 @@ function refreshToken(dispatch, getState) {
             };
 
             $.ajax(config).then(function (response) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 response.token_expiry = new Date().getTime() + response.expires_in * 1000;
                 response.source = 'spotify';
                 dispatch({
@@ -3352,6 +3359,8 @@ function refreshToken(dispatch, getState) {
                 });
                 resolve(response);
             }, function (xhr, status, error) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 reject({
                     config: config,
                     xhr: xhr,
@@ -3359,6 +3368,9 @@ function refreshToken(dispatch, getState) {
                     error: error
                 });
             });
+
+            // Server-side authorized (with limited scope) so we need to refresh
+            // using the Mopidy-Spotify credentials
         } else {
 
             var config = {
@@ -3369,6 +3381,8 @@ function refreshToken(dispatch, getState) {
             };
 
             $.ajax(config).then(function (response, status, xhr) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 if (response.error) {
                     reject({
                         config: config,
@@ -3388,6 +3402,8 @@ function refreshToken(dispatch, getState) {
                     resolve(token);
                 }
             }, function (xhr, status, error) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 reject({
                     config: config,
                     xhr: xhr,
@@ -3452,7 +3468,7 @@ function importAuthorization(authorization) {
  **/
 function getMe() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me').then(function (response) {
+        request(dispatch, getState, 'me').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ME_LOADED',
                 me: response
@@ -3470,7 +3486,7 @@ function getMe() {
  **/
 function getTrack(uri) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
+        request(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
             dispatch(coreActions.trackLoaded(response));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load track', error));
@@ -3480,7 +3496,7 @@ function getTrack(uri) {
 
 function getLibraryTracks() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me/tracks?limit=50').then(function (response) {
+        request(dispatch, getState, 'me/tracks?limit=50').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
                 data: response
@@ -3512,7 +3528,7 @@ function getFeaturedPlaylists() {
 
         var timestamp = year + '-' + month + '-' + day + 'T' + hour + ':' + min + ':' + sec;
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale + 'timestamp=' + timestamp).then(function (response) {
+        request(dispatch, getState, 'browse/featured-playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale + 'timestamp=' + timestamp).then(function (response) {
             var playlists = [];
             for (var i = 0; i < response.playlists.items.length; i++) {
                 playlists.push(Object.assign({}, response.playlists.items[i], {
@@ -3546,7 +3562,7 @@ function getFeaturedPlaylists() {
 
 function getCategories() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORIES_LOADED',
                 categories: response.categories.items
@@ -3559,7 +3575,7 @@ function getCategories() {
 
 function getCategory(id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORY_LOADED',
                 category: Object.assign({
@@ -3575,7 +3591,7 @@ function getCategory(id) {
 
 function getCategoryPlaylists(id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
                 uri: 'category:' + id,
@@ -3589,7 +3605,7 @@ function getCategoryPlaylists(id) {
 
 function getNewReleases() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/new-releases?country=' + getState().spotify.country + '&limit=50').then(function (response) {
+        request(dispatch, getState, 'browse/new-releases?country=' + getState().spotify.country + '&limit=50').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_NEW_RELEASES_LOADED',
                 data: response
@@ -3604,7 +3620,7 @@ function getURL(url, action_name) {
     var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             dispatch({
                 type: action_name,
                 key: key,
@@ -3621,7 +3637,7 @@ function getMore(url) {
     var custom_action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             if (core_action) {
                 dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response));
             } else if (custom_action) {
@@ -3661,7 +3677,7 @@ function getSearchResults(type, query) {
         url += '&limit=' + limit;
         url += '&offset=' + offset;
 
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             if (response.tracks !== undefined) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
@@ -3764,7 +3780,7 @@ function getAutocompleteResults(field_id, query) {
         endpoint += '&type=' + types.join(',');
         endpoint += '&country=' + getState().spotify.country;
 
-        sendRequest(dispatch, getState, endpoint).then(function (response) {
+        request(dispatch, getState, endpoint).then(function (response) {
             var genres = [];
             if (genre_included) {
                 var available_genres = getState().spotify.genres;
@@ -3873,7 +3889,7 @@ function following(uri) {
                 break;
         }
 
-        sendRequest(dispatch, getState, endpoint, method, data).then(function (response) {
+        request(dispatch, getState, endpoint, method, data).then(function (response) {
             if (response) is_following = response;
             if ((typeof is_following === 'undefined' ? 'undefined' : _typeof(is_following)) === 'object') is_following = is_following[0];
 
@@ -3903,7 +3919,7 @@ function resolveRadioSeeds(radio) {
                 artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i]);
             }
 
-            sendRequest(dispatch, getState, 'artists?ids=' + artist_ids).then(function (response) {
+            request(dispatch, getState, 'artists?ids=' + artist_ids).then(function (response) {
                 if (response && response.artists) {
                     dispatch({
                         type: 'ARTISTS_LOADED',
@@ -3924,7 +3940,7 @@ function resolveRadioSeeds(radio) {
                 track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i]);
             }
 
-            sendRequest(dispatch, getState, 'tracks?ids=' + track_ids).then(function (response) {
+            request(dispatch, getState, 'tracks?ids=' + track_ids).then(function (response) {
                 dispatch({
                     type: 'TRACKS_LOADED',
                     tracks: response.tracks
@@ -3954,7 +3970,7 @@ function getFavorites() {
 
         dispatch({ type: 'SPOTIFY_FAVORITES_LOADED', artists: [], tracks: [] });
 
-        $.when(sendRequest(dispatch, getState, 'me/top/artists?limit=' + limit + '&time_range=' + term), sendRequest(dispatch, getState, 'me/top/tracks?limit=' + limit + '&time_range=' + term)).then(function (artists_response, tracks_response) {
+        $.when(request(dispatch, getState, 'me/top/artists?limit=' + limit + '&time_range=' + term), request(dispatch, getState, 'me/top/tracks?limit=' + limit + '&time_range=' + term)).then(function (artists_response, tracks_response) {
             dispatch({
                 type: 'SPOTIFY_FAVORITES_LOADED',
                 artists: artists_response.items,
@@ -4024,7 +4040,7 @@ function getRecommendations() {
             }
         }
 
-        sendRequest(dispatch, getState, endpoint).then(function (response) {
+        request(dispatch, getState, endpoint).then(function (response) {
             var tracks = Object.assign([], response.tracks);
 
             // We only get simple artist objects, so we need to
@@ -4089,7 +4105,7 @@ function getRecommendations() {
  **/
 function getGenres() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'recommendations/available-genre-seeds').then(function (response) {
+        request(dispatch, getState, 'recommendations/available-genre-seeds').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_GENRES_LOADED',
                 genres: response.genres
@@ -4121,7 +4137,7 @@ function getArtist(uri) {
         var artist = {};
 
         // We need our artist, obviously
-        var requests = [sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
+        var requests = [request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
             Object.assign(artist, response);
         }, function (error) {
             dispatch(coreActions.handleException('Could not load artist', error));
@@ -4130,13 +4146,13 @@ function getArtist(uri) {
         // Do we want a full artist, with all supporting material?
         if (full) {
 
-            requests.push(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+            requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
                 Object.assign(artist, response);
             }, function (error) {
                 dispatch(coreActions.handleException('Could not load artist\'s top tracks', error));
             }));
 
-            requests.push(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
+            requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
                 dispatch(coreActions.artistsLoaded(response.artists));
                 Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri', response.artists) });
             }, function (error) {
@@ -4157,7 +4173,7 @@ function getArtist(uri) {
 
             // Now go get our artist albums
             if (full) {
-                sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
+                request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
                         artist_uri: uri,
@@ -4181,7 +4197,7 @@ function getArtists(uris) {
             ids += helpers.getFromUri('artistid', uris[i]);
         }
 
-        sendRequest(dispatch, getState, 'artists/?ids=' + ids).then(function (response) {
+        request(dispatch, getState, 'artists/?ids=' + ids).then(function (response) {
             for (var i = i; i < response.length; i++) {
                 var artist = response;
                 for (var i = 0; i < artist.albums.length; i++) {
@@ -4211,7 +4227,7 @@ function playArtistTopTracks(uri) {
 
             // We need to load the artist's top tracks first
         } else {
-            sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+            request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
                 var uris = helpers.arrayOf('uri', response.tracks);
                 dispatch(mopidyActions.playURIs(uris, uri));
             }, function (error) {
@@ -4228,7 +4244,7 @@ function playArtistTopTracks(uri) {
 
 function getUser(uri) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
+        request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
             dispatch(coreActions.userLoaded(helpers.formatUser(response)));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load user', error));
@@ -4240,7 +4256,7 @@ function getUserPlaylists(uri) {
     return function (dispatch, getState) {
 
         // get the first page of playlists
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
+        request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
             var playlists = [];
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
@@ -4299,7 +4315,7 @@ function getAlbum(uri) {
     return function (dispatch, getState) {
 
         // get the album
-        sendRequest(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
+        request(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
 
             // dispatch our loaded artists (simple objects)
             dispatch(coreActions.artistsLoaded(response.artists));
@@ -4332,7 +4348,7 @@ function getAlbum(uri) {
             }
 
             // get all album artists as full objects
-            sendRequest(dispatch, getState, 'artists/?ids=' + artist_ids).then(function (response) {
+            request(dispatch, getState, 'artists/?ids=' + artist_ids).then(function (response) {
                 dispatch(coreActions.artistsLoaded(response.artists));
             }, function (error) {
                 dispatch(coreActions.handleException('Could not load album\'s artists', error));
@@ -4348,7 +4364,7 @@ function toggleAlbumInLibrary(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
+        request(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ALBUM_FOLLOWING',
                 key: uri,
@@ -4375,7 +4391,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
             collaborative: is_collaborative
         };
 
-        sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/', 'POST', data).then(function (response) {
+        request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/', 'POST', data).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_LOADED',
                 key: response.uri,
@@ -4409,12 +4425,12 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
             collaborative: is_collaborative
 
             // Update the playlist fields
-        };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
+        };request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
             dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
 
             // Save the image
             if (image) {
-                sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
+                request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
                     dispatch({
                         type: 'PLAYLIST_UPDATED',
                         key: uri,
@@ -4452,7 +4468,7 @@ function getPlaylist(uri) {
     return function (dispatch, getState) {
 
         // get the main playlist object
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
 
             // convert links in description
             var description = null;
@@ -4500,7 +4516,7 @@ function getLibraryTracksAndPlay(uri) {
 
 function getLibraryTracksAndPlayProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
 
             // Check to see if we've been cancelled
             if (getState().ui.processes['SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'] !== undefined) {
@@ -4563,7 +4579,7 @@ function getPlaylistTracksAndPlay(uri, shuffle) {
 
 function getPlaylistTracksAndPlayProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
 
             // Check to see if we've been cancelled
             if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'] !== undefined) {
@@ -4620,7 +4636,7 @@ function toggleFollowingPlaylist(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
                 key: uri,
@@ -4634,7 +4650,7 @@ function toggleFollowingPlaylist(uri, method) {
 
 function addTracksToPlaylist(uri, tracks_uris) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_ADDED',
                 key: uri,
@@ -4649,7 +4665,7 @@ function addTracksToPlaylist(uri, tracks_uris) {
 
 function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REMOVED',
                 key: uri,
@@ -4664,7 +4680,7 @@ function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REORDERED',
                 key: uri,
@@ -4712,7 +4728,7 @@ function getLibraryPlaylists() {
 
 function getLibraryPlaylistsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
                 playlists: response.items
@@ -4771,7 +4787,7 @@ function getLibraryArtists() {
 
 function getLibraryArtistsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
                 artists: response.artists.items
@@ -4829,7 +4845,7 @@ function getLibraryAlbums() {
 
 function getLibraryAlbumsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
                 albums: response.items
