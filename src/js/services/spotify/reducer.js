@@ -307,6 +307,16 @@ export default function reducer(spotify = {}, action){
             }
             return Object.assign({}, spotify, { library_playlists: items });
 
+        case 'SPOTIFY_LIBRARY_TRACK_CHECK':
+            var items = Object.assign([], spotify.library_tracks)
+            var index = items.indexOf(action.key)
+            if (index > -1 && !action.in_library) {
+                items.splice(index, 1)
+            } else if (index < 0 && action.in_library){
+                items.push(action.key)
+            }
+            return Object.assign({}, spotify, { library_tracks: items });
+
 
         /**
          * Searching

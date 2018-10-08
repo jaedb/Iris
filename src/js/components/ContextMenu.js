@@ -54,6 +54,11 @@ class ContextMenu extends React.Component{
 					case 'artist':
 					case 'album':
 					case 'playlist':
+					case 'editable-playlist':
+					case 'track':
+					case 'playlist-track':
+					case 'editable-playlist-track':
+					case 'queue-track':
 						this.props.spotifyActions.following(nextProps.menu.items[0].uri)
 						break
 				}
@@ -151,6 +156,9 @@ class ContextMenu extends React.Component{
 				break;
 			case 'playlist':
 				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1);
+				break;
+			case 'track':
+				return (this.props.spotify_library_tracks && this.props.spotify_library_tracks.indexOf(item.uri) > -1);
 				break;
 		}
 		return false;
@@ -688,6 +696,7 @@ class ContextMenu extends React.Component{
 						<div className="divider" />
 						{add_to_playlist}
 						{toggle_loved}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
@@ -708,6 +717,7 @@ class ContextMenu extends React.Component{
 						<div className="divider" />
 						{add_to_playlist}
 						{toggle_loved}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
@@ -728,6 +738,7 @@ class ContextMenu extends React.Component{
 						<div className="divider" />
 						{add_to_playlist}
 						{toggle_loved}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_album : null}
@@ -789,6 +800,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_library_artists: state.mopidy.library_artists,
 		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
+		spotify_library_tracks: state.spotify.library_tracks,
 		playlists: state.core.playlists,
 		tracks: state.core.tracks,
 		spotify_authorized: state.spotify.authorization,
