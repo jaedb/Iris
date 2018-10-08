@@ -105,15 +105,40 @@ function getToken(dispatch, getState){
         }
 
         // token is expiring/expired, so go get a new one and resolve that
-        refreshToken(dispatch, getState)
-            .then(
-                response => {
-                    resolve(response.access_token)
-                },
-                error => {
-                    reject(error)
-                }
-            );
+        // TODO: Detect whether we already have a pending refresh, in which case we
+        // need to wait until it's done, and then return that
+
+        // We've already got a refresh in progress
+        if (getState().ui.load_queue.spotify_refresh_token !== undefined){
+
+        	console.log("Already loading!",getState().ui.load_queue.spotify_refresh_token)
+
+        	// Re-check the queue periodically to see if it's finished yet
+        	// TODO: Look at properly hooking up with the ajax finish event
+        	setTimeout(
+        		() => {
+
+        			console.log("Running again")
+
+        			// Return myself for a re-check
+        			return getToken(dispatch, getState);
+        		},
+        		500
+        	);
+        } else {
+
+        	console.log("Not already refreshing token")
+
+	        refreshToken(dispatch, getState)
+	            .then(
+	                response => {
+	                    resolve(response.access_token)
+	                },
+	                error => {
+	                    reject(error)
+	                }
+	            );
+	    }
     });
 }
 
