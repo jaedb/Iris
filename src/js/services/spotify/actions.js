@@ -18,7 +18,7 @@ var helpers = require('../../helpers')
 const request = (dispatch, getState, endpoint, method = 'GET', data = false) => {
 
     return new Promise((resolve, reject) => {         
-        getToken(dispatch, getState )
+        getToken(dispatch, getState)
             .then(
                 response => {
 
@@ -111,24 +111,18 @@ function getToken(dispatch, getState){
         // We've already got a refresh in progress
         if (getState().ui.load_queue.spotify_refresh_token !== undefined){
 
-        	console.log("Already loading!",getState().ui.load_queue.spotify_refresh_token)
+        	console.log("Already refreshing token, we'll wait 1000ms and try again");
 
         	// Re-check the queue periodically to see if it's finished yet
         	// TODO: Look at properly hooking up with the ajax finish event
         	setTimeout(
         		() => {
-
-        			console.log("Running again")
-
         			// Return myself for a re-check
         			return getToken(dispatch, getState);
         		},
-        		500
+        		1000
         	);
         } else {
-
-        	console.log("Not already refreshing token")
-
 	        refreshToken(dispatch, getState)
 	            .then(
 	                response => {
