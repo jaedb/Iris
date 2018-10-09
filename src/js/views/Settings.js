@@ -166,6 +166,15 @@ class Settings extends React.Component {
 			var upgrade_button = null;
 		}
 
+		var commands = [];
+		if (this.props.pusher.commands){
+			for (var id in this.props.pusher.commands){
+				if (this.props.pusher.commands.hasOwnProperty(id)){
+					commands.push(this.props.pusher.commands[id]);
+				}
+			}
+		}
+
 		return (
 			<div className="view settings-view">
 				<Header options={options} uiActions={this.props.uiActions}>
@@ -325,9 +334,27 @@ class Settings extends React.Component {
 									Allow reporting of anonymous usage statistics
 								</span>
 							</label>
-							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
+							<div className="description">This helps identify errors and potential features that make Iris better for everyone. See <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
 						</div>
 					</div>}
+
+					<div className="field commands-setup">
+						<div className="name">
+							Commands
+						</div>
+						<div className="input">
+			        		{
+			        			commands.map(command => {
+			        				return (
+			        					<Link className="command__item commands-setup__item" key={command.id} to={global.baseURL+'edit-command/'+command.id}>
+			        						<Icon name={command.icon} />
+			        					</Link>
+			        				);
+			        			})
+			        		}
+			        		<Link to={global.baseURL+'edit-command'} className="button">Add new</Link>
+			        	</div>
+			        </div>
 
 					<h4 className="underline">Advanced</h4>
 

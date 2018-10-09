@@ -7026,8 +7026,8 @@ main .track-view {
           width: 18%;
           padding-right: 2%;
           float: left;
-          opacity: 0.5;
-          padding-top: 8px; }
+          padding-top: 8px;
+          color: #a3a19f; }
         .modal .content form .field .description {
           padding-left: 0;
           padding-right: 0; }

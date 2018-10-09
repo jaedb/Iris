@@ -44,6 +44,7 @@ import KioskMode from './views/modals/KioskMode';
 import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
+import EditCommand from './views/modals/EditCommand';
 
 global.baseURL = '/';
 
@@ -59,6 +60,7 @@ ReactDOM.render(
 				<Route path="add-to-playlist/:uris" component={AddToPlaylist} />
 				<Route path="image-zoom" component={ImageZoom} />
 				<Route path="share-configuration" component={ShareConfiguration} />
+				<Route path="edit-command(/:id)" component={EditCommand} />
 
 				<Route path="queue" component={Queue} />
 				<Route path="queue/history" component={QueueHistory} />

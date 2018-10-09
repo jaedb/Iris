@@ -37,29 +37,6 @@ export function setClientLatency(id, latency){
 	}
 }
 
-export function setClientCommand(id, command){
-	return {
-		type: 'SNAPCAST_SET_CLIENT_COMMAND',
-		id: id,
-		command: command
-	}
-}
-
-export function sendClientCommand(id, command){
-	return {
-		type: 'SNAPCAST_SEND_CLIENT_COMMAND',
-		id: id,
-		command: command
-	}
-}
-
-export function clientCommandsUpdated(client_commands){
-	return {
-		type: 'SNAPCAST_CLIENT_COMMANDS_UPDATED',
-		client_commands: client_commands
-	}
-}
-
 export function setClientGroup(id, group_id){
 	return {
 		type: 'SNAPCAST_SET_CLIENT_GROUP',

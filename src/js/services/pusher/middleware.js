@@ -387,6 +387,51 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+
+            /**
+             * Commands
+             **/
+
+            case 'PUSHER_SET_COMMAND':
+                var commands_index = Object.assign({}, store.getState().pusher.commands);
+
+                if (commands_index[action.command.id]){
+                    var command = Object.assign({}, commands_index[action.command.id], action.command);
+                } else {
+                    var command = action.command;
+                }
+                commands_index[action.command.id] = command;
+
+                store.dispatch(pusherActions.commandsUpdated(commands_index));
+                
+                next(action);
+                break
+
+            case 'PUSHER_SEND_COMMAND':
+                var commands_index = Object.assign({}, pusher.commands);
+
+                // Prepare our command
+                // We try and make it cross-origin compatible
+                var command = JSON.parse(commands_index[action.id]);
+                command.crossDomain = true;
+                command.dataType = "jsonp";
+                command.success = function(response){
+                    store.dispatch(uiActions.createNotification({type: 'info', content: 'Command sent', description: command.url}));
+                }
+                command.fail = function(xhr, status, error){
+                    store.dispatch(uiActions.createNotification({type: 'bad', content: 'Command failed', description: error}));
+                }
+
+                // Actually send the request
+                $.ajax(command);
+
+                break
+
+
+            /**
+             * Radio
+             **/
+
             case 'PUSHER_GET_RADIO':
                 request(store, 'get_radio')
                     .then(

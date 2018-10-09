@@ -89,8 +89,8 @@ class Snapcast extends React.Component{
 						if (this.state.clients_expanded.includes(client.id)){
 
 							var commands = {};
-							if (this.props.client_commands[client.id]){
-								commands = this.props.client_commands[client.id];
+							if (this.props.commands[client.id]){
+								commands = this.props.commands[client.id];
 							}
 
 							return (
@@ -176,7 +176,7 @@ class Snapcast extends React.Component{
 											</div>
 											<div className="input">
 												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power: value})}
+													onChange={value => this.props.snapcastActions.setCommand(client.id, {power: value})}
 													value={commands.power ? commands.power : ""}
 													placeholder='{"url":"https://myserver.local:8080/sendCommand/power"}'
 												/>
@@ -335,8 +335,7 @@ const mapStateToProps = (state, ownProps) => {
 		show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
 		streams: (state.snapcast.streams ? state.snapcast.streams : null),
 		groups: (state.snapcast.groups ? state.snapcast.groups : null),
-		clients: (state.snapcast.clients ? state.snapcast.clients : null),
-		client_commands: (state.snapcast.client_commands ? state.snapcast.client_commands : {})
+		clients: (state.snapcast.clients ? state.snapcast.clients : null)
 	}
 }
 

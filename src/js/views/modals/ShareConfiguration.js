@@ -21,7 +21,6 @@ class ShareConfiguration extends React.Component {
 			spotify: false,
 			lastfm: false,
 			genius: false,
-			snapcast_client_commands: false,
 			ui: false
 		};
 	}
@@ -65,9 +64,6 @@ class ShareConfiguration extends React.Component {
 		}
 		if (this.state.ui){
 			configuration.ui = this.props.ui;
-		}
-		if (this.state.snapcast_client_commands){
-			configuration.snapcast_client_commands = this.props.snapcast_client_commands;
 		}
 
 		for (var recipient of this.state.recipients){
@@ -149,17 +145,6 @@ class ShareConfiguration extends React.Component {
 								</span>
 							</label>
 
-							{this.props.snapcast_client_commands ? <label>
-								<input 
-									type="checkbox"
-									name="snapcast_client_commands"
-									checked={this.state.snapcast_client_commands}
-									onChange={ e => this.setState({ snapcast_client_commands: !this.state.snapcast_client_commands })} />
-								<span className="label">
-									Snapcast client commands
-								</span>
-							</label> : null}
-
 							{this.props.spotify_me && this.props.spotify_authorization ? <label>
 								<input 
 									type="checkbox"
@@ -212,7 +197,6 @@ const mapStateToProps = (state, ownProps) => {
 		genius_me: state.genius.me,
 		lastfm_authorization: state.lastfm.authorization,
 		lastfm_me: state.lastfm.me,
-		snapcast_client_commands: state.snapcast.client_commands,
 		ui: state.ui,
 		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
