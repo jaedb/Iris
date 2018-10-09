@@ -407,6 +407,14 @@ const PusherMiddleware = (function(){
                 next(action);
                 break
 
+            case 'PUSHER_REMOVE_COMMAND':
+                var commands_index = Object.assign({}, store.getState().pusher.commands);
+                delete commands_index[action.id];
+                store.dispatch(pusherActions.commandsUpdated(commands_index));
+                
+                next(action);
+                break
+
             case 'PUSHER_SEND_COMMAND':
                 var commands_index = Object.assign({}, pusher.commands);
 

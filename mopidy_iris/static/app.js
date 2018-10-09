@@ -5579,6 +5579,7 @@ exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.setCommand = setCommand;
+exports.removeCommand = removeCommand;
 exports.sendCommand = sendCommand;
 exports.commandsUpdated = commandsUpdated;
 
@@ -5794,6 +5795,13 @@ function setCommand(command) {
 	return {
 		type: 'PUSHER_SET_COMMAND',
 		command: command
+	};
+}
+
+function removeCommand(id) {
+	return {
+		type: 'PUSHER_REMOVE_COMMAND',
+		id: id
 	};
 }
 
@@ -54385,6 +54393,14 @@ var PusherMiddleware = function () {
                         next(action);
                         break;
 
+                    case 'PUSHER_REMOVE_COMMAND':
+                        var commands_index = Object.assign({}, store.getState().pusher.commands);
+                        delete commands_index[action.id];
+                        store.dispatch(pusherActions.commandsUpdated(commands_index));
+
+                        next(action);
+                        break;
+
                     case 'PUSHER_SEND_COMMAND':
                         var commands_index = Object.assign({}, pusher.commands);
 
@@ -82154,6 +82170,12 @@ var EditCommand = function (_React$Component) {
 			return false;
 		}
 	}, {
+		key: 'handleDelete',
+		value: function handleDelete(e) {
+			this.props.pusherActions.removeCommand(this.state.id);
+			window.history.back();
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -82229,6 +82251,13 @@ var EditCommand = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'actions centered-text' },
+						this.props.command ? _react2.default.createElement(
+							'button',
+							{ type: 'button', className: 'destructive large', onClick: function onClick(e) {
+									return _this2.handleDelete(e);
+								} },
+							'Delete'
+						) : null,
 						_react2.default.createElement(
 							'button',
 							{ type: 'submit', className: 'primary large' },

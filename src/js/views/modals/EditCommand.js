@@ -45,6 +45,11 @@ class EditCommand extends React.Component{
 		return false;
 	}
 
+	handleDelete(e){
+		this.props.pusherActions.removeCommand(this.state.id);
+		window.history.back();
+	}
+
 	render(){
 		return (
 			<Modal className="modal--create-command">
@@ -85,6 +90,7 @@ class EditCommand extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
+						{this.props.command ? <button type="button" className="destructive large" onClick={e => this.handleDelete(e)}>Delete</button> : null}
 						<button type="submit" className="primary large">Save</button>
 					</div>
 
