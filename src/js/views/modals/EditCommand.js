@@ -68,17 +68,14 @@ class EditCommand extends React.Component{
 								onChange={ e => this.setState({ icon: e.target.value })}
 							/>
 							<div className="description">
-								Material icon, see <a href="https://material.io/tools/icons/?style=baseline" target="_blank" noopener="true">docs</a>
+								See <a href="https://material.io/tools/icons/?style=baseline" target="_blank" noopener="true">Material Icons</a> for available options
 							</div>
 						</div>
 					</div>
 
 					<div className="field textarea white">
-						<div className="name tooltip">
+						<div className="name">
 							Command
-							<div className="tooltip__content">
-								Ajax configuration (JSON string)
-							</div>
 						</div>
 						<div className="input">
 							<textarea 
@@ -86,6 +83,9 @@ class EditCommand extends React.Component{
 								value={this.state.command}
 								onChange={ e => this.setState({ command: e.target.value })}>
 							</textarea>
+							<div className="description">
+								Ajax request settings. See <a href="http://api.jquery.com/jquery.ajax/" target="_blank" noopener="true"><code>jquery.ajax</code> documentation</a>.
+							</div>
 						</div>
 					</div>
 

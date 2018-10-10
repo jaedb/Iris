@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Link, hashHistory } from 'react-router';
 
 import VolumeControl from './Fields/VolumeControl';
+import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
 import DropdownField from './Fields/DropdownField';
@@ -87,12 +88,6 @@ class Snapcast extends React.Component{
 						}
 
 						if (this.state.clients_expanded.includes(client.id)){
-
-							var commands = {};
-							if (this.props.commands[client.id]){
-								commands = this.props.commands[client.id];
-							}
-
 							return (
 								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
 									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
@@ -140,12 +135,15 @@ class Snapcast extends React.Component{
 												Volume
 											</div>
 											<div className="input">
+												<MuteControl 
+													className="snapcast__client__mute-control"
+													mute={client.mute}
+													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+												/>
 												<VolumeControl 
 													className="snapcast__client__volume-control"
 													volume={client.volume}
-													mute={client.mute}
 													onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
 												/>
 											</div>
 										</div>
@@ -164,21 +162,6 @@ class Snapcast extends React.Component{
 													type="number"
 													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
 													value={String(client.latency)}
-												/>
-											</div>
-										</div>
-										<div className="field">
-											<div className="name tooltip">
-												Power command
-												<span className="tooltip__content">
-													Ajax request to trigger power
-												</span>
-											</div>
-											<div className="input">
-												<TextField
-													onChange={value => this.props.snapcastActions.setCommand(client.id, {power: value})}
-													value={commands.power ? commands.power : ""}
-													placeholder='{"url":"https://myserver.local:8080/sendCommand/power"}'
 												/>
 											</div>
 										</div>
@@ -301,12 +284,15 @@ class Snapcast extends React.Component{
 											Volume
 										</div>
 										<div className="input">	
+											<MuteControl 
+												className="snapcast__group__mute-control"
+												mute={group.muted}
+												onMuteChange={mute => this.props.snapcastActions.setGroupMute(group.id, mute)}
+											/>
 											<VolumeControl 
 												className="snapcast__group__volume-control"
 												volume={group_volume}
-												mute={group.muted}
 												onVolumeChange={(percent, old_percent) => this.props.snapcastActions.setGroupVolume(group.id, percent, old_percent)}
-												onMuteChange={mute => this.props.snapcastActions.setGroupMute(group.id, mute)}
 											/>
 										</div>
 									</div>

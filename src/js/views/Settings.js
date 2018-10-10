@@ -140,6 +140,47 @@ class Settings extends React.Component {
 		);
 	}
 
+	renderCommands(){
+		var commands = [];
+		if (this.props.pusher.commands){
+			for (var id in this.props.pusher.commands){
+				if (this.props.pusher.commands.hasOwnProperty(id)){
+					var command = Object.assign({}, this.props.pusher.commands[id]);
+					try {
+						command.command = JSON.parse(command.command);
+					} catch(error){
+						command.command = null;
+					}
+					commands.push(command);
+				}
+			}
+		}
+
+		if (commands.length <= 0){
+			return null;
+		}
+
+		return (
+			<div className="list">
+				{
+	    			commands.map(command => {
+	    				return (
+	    					<Link className="list__item command__item commands-setup__item" key={command.id} to={global.baseURL+'edit-command/'+command.id}>
+	    						<span className="col col--w30">
+	    							<Icon name={command.icon} />
+	    							{command.icon}
+	    						</span>
+	    						<span className="col col--w70">
+	    							{command.command && command.command.url ? command.command.url : "-"}
+	    						</span>
+	    					</Link>
+	    				);
+	    			})
+	    		}
+			</div>
+		);
+	}
+
 	render(){
 
 		var options = (
@@ -164,15 +205,6 @@ class Settings extends React.Component {
 			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
 		} else {
 			var upgrade_button = null;
-		}
-
-		var commands = [];
-		if (this.props.pusher.commands){
-			for (var id in this.props.pusher.commands){
-				if (this.props.pusher.commands.hasOwnProperty(id)){
-					commands.push(this.props.pusher.commands[id]);
-				}
-			}
 		}
 
 		return (
@@ -343,15 +375,7 @@ class Settings extends React.Component {
 							Commands
 						</div>
 						<div className="input">
-			        		{
-			        			commands.map(command => {
-			        				return (
-			        					<Link className="command__item commands-setup__item" key={command.id} to={global.baseURL+'edit-command/'+command.id}>
-			        						<Icon name={command.icon} />
-			        					</Link>
-			        				);
-			        			})
-			        		}
+			        		{this.renderCommands()}
 			        		<Link to={global.baseURL+'edit-command'} className="button">Add new</Link>
 			        	</div>
 			        </div>
