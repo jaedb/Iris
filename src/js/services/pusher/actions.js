@@ -197,6 +197,12 @@ export function addQueueMetadata(tlids = [], from_uri = null){
  * Commands (buttons)
  **/
 
+export function getCommands(){
+    return {
+        type: 'PUSHER_GET_COMMANDS'
+    }
+}
+
 export function setCommand(command){
     return {
         type: 'PUSHER_SET_COMMAND',
@@ -211,10 +217,11 @@ export function removeCommand(id){
     }
 }
 
-export function sendCommand(id){
+export function sendCommand(id, notify = false){
     return {
         type: 'PUSHER_SEND_COMMAND',
-        id: id
+        id: id,
+        notify: notify
     }
 }
 

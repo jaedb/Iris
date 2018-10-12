@@ -2538,9 +2538,9 @@ main {
     color: inherit;
     text-decoration: none;
     cursor: pointer; }
-    main a:not(.control) {
+    main a:not(.control):not(.action) {
       border-bottom: 1px solid transparent; }
-      main a:not(.control):hover {
+      main a:not(.control):not(.action):hover {
         border-color: #a3a19f; }
   main p {
     font-size: 18px;
@@ -6919,6 +6919,17 @@ main .track-view {
   .settings-view .field.current-user .text .user[href]:hover .thumbnail {
     cursor: pointer;
     border-color: #08d58f; }
+
+.settings-view .commands {
+  padding-bottom: 20px; }
+  .settings-view .commands__item {
+    position: relative; }
+    .settings-view .commands__item__actions {
+      position: absolute;
+      top: 12px;
+      right: 0; }
+      .settings-view .commands__item__actions .action {
+        padding: 12px 8px; }
 
 .settings-view .field.pusher-connections .connection.me {
   color: #08d58f; }

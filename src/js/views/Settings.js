@@ -161,19 +161,25 @@ class Settings extends React.Component {
 		}
 
 		return (
-			<div className="list">
+			<div className="list commands">
 				{
 	    			commands.map(command => {
 	    				return (
-	    					<Link className="list__item command__item commands-setup__item" key={command.id} to={global.baseURL+'edit-command/'+command.id}>
-	    						<span className="col col--w30">
+	    					<div className="list__item commands__item commands-setup__item" key={command.id}>
+	    						<span className="col col--w90">
 	    							<Icon name={command.icon} />
-	    							{command.icon}
-	    						</span>
-	    						<span className="col col--w70">
+	    							&nbsp;&nbsp;
 	    							{command.command && command.command.url ? command.command.url : "-"}
 	    						</span>
-	    					</Link>
+	    						<div className="commands__item__actions">
+	    							<a className="commands__item__trigger-button action" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
+	    								<Icon name="send" />
+	    							</a>
+	    							<Link className="commands__item__edit-button action" to={global.baseURL+'edit-command/'+command.id}>
+	    								<Icon name="edit" />
+	    							</Link>
+		    					</div>
+	    					</div>
 	    				);
 	    			})
 	    		}

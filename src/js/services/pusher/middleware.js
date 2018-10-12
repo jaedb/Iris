@@ -108,6 +108,9 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
+                    case 'commands_changed':
+                        store.dispatch(pusherActions.commandsUpdated(message.params.commands));
+                        break;
                     case 'reload':
                         window.location.reload(true);
                         break;
@@ -168,6 +171,8 @@ const PusherMiddleware = (function(){
     }
 
     return store => next => action => {
+    	var pusher = store.getState().pusher;
+    	
         switch(action.type){
 
             case 'PUSHER_CONNECT':
@@ -227,6 +232,7 @@ const PusherMiddleware = (function(){
 
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getRadio());
+                store.dispatch(pusherActions.getCommands());
                 store.dispatch(pusherActions.getQueueMetadata());
 
                 // Give things a few moments to setup before we check for version.
@@ -303,7 +309,7 @@ const PusherMiddleware = (function(){
                 request(store, 'add_queue_metadata', {
                     tlids: action.tlids, 
                     added_from: action.from_uri,
-                    added_by: store.getState().pusher.username
+                    added_by: pusher.username
                 })
                 break;
 
@@ -392,8 +398,24 @@ const PusherMiddleware = (function(){
              * Commands
              **/
 
+            case 'PUSHER_GET_COMMANDS':
+                request(store, 'get_commands')
+                    .then(
+                        response => {
+                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not get commands',
+                                error
+                            ));
+                        }
+                    );                
+                next(action);
+                break
+
             case 'PUSHER_SET_COMMAND':
-                var commands_index = Object.assign({}, store.getState().pusher.commands);
+                var commands_index = Object.assign({}, pusher.commands);
 
                 if (commands_index[action.command.id]){
                     var command = Object.assign({}, commands_index[action.command.id], action.command);
@@ -402,36 +424,77 @@ const PusherMiddleware = (function(){
                 }
                 commands_index[action.command.id] = command;
 
-                store.dispatch(pusherActions.commandsUpdated(commands_index));
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                			// No action required, the change will be broadcast
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not remove command',
+                                error
+                            ));
+                        }
+                    );
                 
                 next(action);
                 break
 
             case 'PUSHER_REMOVE_COMMAND':
-                var commands_index = Object.assign({}, store.getState().pusher.commands);
+                var commands_index = Object.assign({}, pusher.commands);
                 delete commands_index[action.id];
-                store.dispatch(pusherActions.commandsUpdated(commands_index));
+
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not remove command',
+                                error
+                            ));
+                        }
+                    );
                 
                 next(action);
                 break
 
             case 'PUSHER_SEND_COMMAND':
-                var commands_index = Object.assign({}, pusher.commands);
-
-                // Prepare our command
-                // We try and make it cross-origin compatible
-                var command = JSON.parse(commands_index[action.id]);
-                command.crossDomain = true;
-                command.dataType = "jsonp";
-                command.success = function(response){
-                    store.dispatch(uiActions.createNotification({type: 'info', content: 'Command sent', description: command.url}));
+                var command = Object.assign({}, pusher.commands[action.id]);
+                var notification_key = 'command_'+action.id;
+            	
+            	if (action.notify){
+                    store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
                 }
-                command.fail = function(xhr, status, error){
-                    store.dispatch(uiActions.createNotification({type: 'bad', content: 'Command failed', description: error}));
+
+				try {
+					var ajax_settings = JSON.parse(command.command);
+				} catch(error){
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
+                    break;
+				}
+
+                // We try and make it cross-origin compatible
+                ajax_settings.crossDomain = true;
+                ajax_settings.dataType = "jsonp";
+
+                // Handle success and failure
+                ajax_settings.success = function(response){
+                	console.log("Command sent, response was:",response);
+
+                	if (action.notify){
+	                	store.dispatch(uiActions.processFinished(notification_key));
+                    	store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
+	                }
+                }
+                ajax_settings.fail = function(xhr, status, error){
+	                store.dispatch(uiActions.processFinished(notification_key));
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
                 }
 
                 // Actually send the request
-                $.ajax(command);
+                $.ajax(ajax_settings);
 
                 break
 
@@ -498,7 +561,7 @@ const PusherMiddleware = (function(){
                         {
                             notification: {
                                 type: 'info',
-                                content: store.getState().pusher.username + ' is starting radio mode'
+                                content: pusher.username + ' is starting radio mode'
                             }
                         }
                     ));
@@ -535,7 +598,7 @@ const PusherMiddleware = (function(){
                     {
                         notification: {
                             type: 'info',
-                            content: store.getState().pusher.username + ' stopped radio mode'
+                            content: pusher.username + ' stopped radio mode'
                         }
                     }
                 ));

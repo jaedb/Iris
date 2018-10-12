@@ -18,7 +18,7 @@ class EditCommand extends React.Component{
 		this.state = {
 			id: helpers.generateGuid(),
 			icon: 'power_settings_new',
-			command: '{"url":"https://myserver.local:8080/sendCommand/power"}'
+			command: '{"url":"https://'+window.location.hostname+'/sendCommand/power"}'
 		}
 	}
 

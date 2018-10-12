@@ -32,6 +32,24 @@
 		}
 	}
 
+	.commands {
+		padding-bottom: 20px;
+		
+		&__item {
+			position: relative;
+
+			&__actions {
+				position: absolute;
+				top: 12px;
+				right: 0;
+
+				.action {
+					padding: 12px 8px;
+				}
+			} 
+		}
+	}
+
 	.field.pusher-connections {
 		.connection.me {
 			color: $turquoise;

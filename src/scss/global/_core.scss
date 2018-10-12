@@ -108,7 +108,7 @@ main {
 		text-decoration: none;
 		cursor: pointer;
 
-		&:not(.control) {
+		&:not(.control):not(.action) {
 			border-bottom: 1px solid transparent;
 
 			&:hover {
