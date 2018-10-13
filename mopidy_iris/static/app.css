@@ -6529,9 +6529,9 @@ main header {
   .artist-view .body.overview .albums h4 {
     padding: 0;
     margin: 0 0 -30px; }
-  .artist-view .body.overview .col.w70 {
+  .artist-view .body.overview .col--w70 {
     width: 100%; }
-  .artist-view .body.overview .col.w5,
+  .artist-view .body.overview .col--w5,
   .artist-view .body.overview .related-artists {
     display: none; }
   .artist-view .body.overview .grid-wrapper {
