@@ -70,7 +70,7 @@ class Snapcast extends React.Component{
 
 		if (!clients || clients.length <= 0){
 			return (
-				<div className="text grey-text">
+				<div className="text mid_grey-text">
 					No clients
 				</div>
 			);
@@ -257,7 +257,7 @@ class Snapcast extends React.Component{
 										<div className="input">	
 											<div className="text">
 												{group.name} &nbsp;
-												<span className="grey-text">({group.id})</span>
+												<span className="mid_grey-text">({group.id})</span>
 											</div>
 										</div>
 									</div>

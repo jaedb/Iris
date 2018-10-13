@@ -147,7 +147,7 @@ class Artist extends React.Component{
 				return (
 					<div className="body about">
 
-						<div className="col w40 tiles artist-stats">
+						<div className="col col--w40 tiles artist-stats">
 							{artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images} /></div> : null}
 							{artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images_additional} /></div> : null}
 							{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
@@ -155,11 +155,11 @@ class Artist extends React.Component{
 							{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
 						</div>
 
-						<div className="col w60 biography">
+						<div className="col col--w60 biography">
 							<section>
 								{ artist.biography ? <div className="biography-text"><p>{artist.biography}</p><br />
-								<div className="grey-text">Published: { artist.biography_publish_date }</div>
-								<div className="grey-text">Origin: <a href={ artist.biography_link } target="_blank">{ artist.biography_link }</a></div></div> : null }
+								<div className="mid_grey-text">Published: { artist.biography_publish_date }</div>
+								<div className="mid_grey-text">Origin: <a href={ artist.biography_link } target="_blank">{ artist.biography_link }</a></div></div> : null }
 							</section>
 						</div>
 					</div>
@@ -213,7 +213,7 @@ class Artist extends React.Component{
 
 				return (
 					<div className="body overview">
-						<div className={"top-tracks col w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
+						<div className={"top-tracks col col--w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
 							<h4>Top tracks</h4>
 							<div className="list-wrapper">
 								<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
@@ -221,9 +221,9 @@ class Artist extends React.Component{
 							</div>
 						</div>
 
-						<div className="col w5"></div>
+						<div className="col col--w5"></div>
 
-						{artist.related_artists ? <div className="col w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
+						{artist.related_artists ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 

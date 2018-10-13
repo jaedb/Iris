@@ -32,15 +32,19 @@
 		}
 	}
 
-	.commands {
+	.commands-setup {
 		padding-bottom: 20px;
 		
 		&__item {
 			position: relative;
 
+			.commands__item {
+				margin-bottom: -5px;
+			}
+
 			&__actions {
 				position: absolute;
-				top: 12px;
+				top: 16px;
 				right: 0;
 
 				.action {

@@ -26,7 +26,7 @@ class PusherConnectionList extends React.Component{
 
 	render(){
 		if (!this.props.connected){
-			return <div className="pusher-connection-list grey-text">Not connected</div>;
+			return <div className="pusher-connection-list mid_grey-text">Not connected</div>;
 		}
 
 		var connections = [];
@@ -37,7 +37,7 @@ class PusherConnectionList extends React.Component{
 		}
 
 		if (connections.length <= 0){
-			return <div className="pusher-connection-list grey-text">No connections</div>;
+			return <div className="pusher-connection-list mid_grey-text">No connections</div>;
 		}
 
 		return (
@@ -51,10 +51,10 @@ class PusherConnectionList extends React.Component{
 
 						return (
 							<div className={is_me ? 'connection cf me':'connection cf'} key={connection.connection_id}>
-								<div className="col w30">{ connection.username } {is_me ? <span>(you)</span> : null }</div>
-								<div className="col w70">
+								<div className="col col--w30">{ connection.username } {is_me ? <span>(you)</span> : null }</div>
+								<div className="col col--w70">
 									{connection.ip}
-									<span className="grey-text"> ({connection.connection_id})</span>
+									<span className="mid_grey-text"> ({connection.connection_id})</span>
 								</div>
 							</div>
 						);

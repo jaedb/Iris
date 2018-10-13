@@ -446,7 +446,7 @@ class Discover extends React.Component{
 		return (
 			<div className="content-wrapper recommendations-results cf">
 
-				<section className="col w70 tracks">
+				<section className="col col--w70 tracks">
 					<h4>
 						Tracks
 						<div className="pull-right">
@@ -457,9 +457,9 @@ class Discover extends React.Component{
 					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
 				</section>
 
-				<div className="col w5"></div>
+				<div className="col col--w5"></div>
 
-				<div className="col w25 others">
+				<div className="col col--w25 others">
 					<section>
 						<h4>Artists</h4>
 						<RelatedArtists artists={artists} />
@@ -507,7 +507,7 @@ class Discover extends React.Component{
 
 					<div className="liner">
 						<h1>Explore new music</h1>
-						<h2 className="grey-text">
+						<h2 className="mid_grey-text">
 							Add seeds and musical properties below to build your sound
 						</h2>
 						<div className="parameters">

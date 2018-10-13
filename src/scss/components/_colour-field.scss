@@ -1,0 +1,25 @@
+
+.colour-field {
+	&__option {
+		display: inline-block;
+		border-radius: 3px;
+		background: colour(grey);
+		width: 26px;
+		height: 26px;
+		margin: 2px 8px 2px 0;
+		position: relative;
+		cursor: pointer;
+		border: 2px solid colour(grey);
+
+		&--selected {
+			border-color: colour(turquoise);
+		}
+
+		&__icon {
+			position: absolute;
+			top: 3px;
+			left: 3px;
+			font-size: 20px;
+		}
+	}
+}

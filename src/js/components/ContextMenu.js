@@ -343,7 +343,7 @@ class ContextMenu extends React.Component{
 			)
 		}
 
-		var list = <span className="menu-item-wrapper"><span className="menu-item grey-text">No writable playlists</span></span>
+		var list = <span className="menu-item-wrapper"><span className="menu-item mid_grey-text">No writable playlists</span></span>
 		if (playlists.length > 0){
 			list = playlists.map(playlist => {
 				return (
@@ -522,7 +522,7 @@ class ContextMenu extends React.Component{
 			var toggle_loved = (
 				<span className="menu-item-wrapper">
 					<a className="menu-item">
-						<span className="label grey-text">
+						<span className="label mid_grey-text">
 							Love track
 						</span>
 					</a>

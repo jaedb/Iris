@@ -54,7 +54,7 @@ class AddToPlaylist extends React.Component{
 		return (
 			<Modal className="modal--add-to-playlist">
 				<h1>Add to playlist</h1>
-				<h2 className="grey-text">Select playlist to add {this.props.uris.length} track{this.props.uris.length>1?'s':null} to</h2>
+				<h2 className="mid_grey-text">Select playlist to add {this.props.uris.length} track{this.props.uris.length>1?'s':null} to</h2>
 				{playlists.length <= 0 ? <div className="no-results">No playlists available</div> : null}
 				<div className="list small playlists">
 					{
@@ -65,7 +65,7 @@ class AddToPlaylist extends React.Component{
 									<h3 className="name">{ playlist.name }</h3>
 									<ul className="details">
 										<li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
-										<li>{ playlist.tracks_total ? <span className="grey-text">&nbsp;{ playlist.tracks_total } tracks</span> : null }</li>
+										<li>{ playlist.tracks_total ? <span className="mid_grey-text">&nbsp;{ playlist.tracks_total } tracks</span> : null }</li>
 									</ul>
 								</div>
 							)

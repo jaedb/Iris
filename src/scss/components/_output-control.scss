@@ -52,36 +52,6 @@
 		&--commands {
 			@include clearfix();
 			background: rgba(0,0,0,0.1);
-			
-			.commands__item {
-				@include click_feedback(rgba(0,0,0,0.5));
-				width: 26px;
-				height: 26px;
-				margin-bottom: 4px;
-				text-align: center;
-				color: colour(white);
-				cursor: pointer;
-				margin-right: 6px;
-				float: left;
-
-				&__icon {
-					padding-top: 7px;
-					font-size: 12px;
-				}
-
-				&__background {
-					display: block;
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					padding-bottom: 100%;
-					background: colour(light_grey);
-					z-index: -1;
-					border-radius: 50%;
-					opacity: 1;
-				}
-			}
 		}
 
 		&:not(:first-child) {

@@ -60,7 +60,7 @@ class Queue extends React.Component{
 		var total_time = 0
 
 		return (
-			<div className="queue-stats grey-text">
+			<div className="queue-stats mid_grey-text">
 				<span>{this.props.current_tracklist.length} tracks</span>
 				&nbsp;&nbsp;|&nbsp;&nbsp;
 				{this.props.current_tracklist.length > 0 ? <Dater type="total-time" data={this.props.current_tracklist} /> : <span>0 mins</span>}

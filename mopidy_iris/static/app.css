@@ -4950,59 +4950,6 @@ $icon-websocket: \e920;
         content: '';
         clear: both;
         display: block; }
-      .output-control__item--commands .commands__item {
-        position: relative;
-        width: 26px;
-        height: 26px;
-        margin-bottom: 4px;
-        text-align: center;
-        color: #FFFFFF;
-        cursor: pointer;
-        margin-right: 6px;
-        float: left; }
-
-@keyframes click_feedback {
-  0% {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    padding-bottom: 100%;
-    opacity: 1; }
-  100% {
-    top: 25%;
-    left: -25%;
-    width: 150%;
-    padding-bottom: 150%;
-    opacity: 0; } }
-        .output-control__item--commands .commands__item:after {
-          content: '';
-          display: block;
-          position: absolute;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 1;
-          opacity: 0;
-          border-radius: 50%;
-          margin-top: -50%;
-          pointer-events: none; }
-        .output-control__item--commands .commands__item:focus:after, .output-control__item--commands .commands__item:active:after {
-          animation-name: click_feedback;
-          animation-duration: 0.2s;
-          animation-timing-function: ease-out;
-          animation-iteration-count: 1; }
-        .output-control__item--commands .commands__item__icon {
-          padding-top: 7px;
-          font-size: 12px; }
-        .output-control__item--commands .commands__item__background {
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          padding-bottom: 100%;
-          background: #cecac4;
-          z-index: -1;
-          border-radius: 50%;
-          opacity: 1; }
     .output-control__item:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.05); }
     .output-control__item__actions {
@@ -6365,6 +6312,88 @@ main header {
 .popularity-value {
   display: none; }
 
+.colour-field__option {
+  display: inline-block;
+  border-radius: 3px;
+  background: #383734;
+  width: 26px;
+  height: 26px;
+  margin: 2px 8px 2px 0;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid #383734; }
+  .colour-field__option--selected {
+    border-color: #08d58f; }
+  .colour-field__option__icon {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 20px; }
+
+.commands__item {
+  text-align: center;
+  color: #FFFFFF;
+  display: inline-block;
+  position: relative;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 4px;
+  margin-right: 6px;
+  z-index: 1; }
+  .commands__item__icon {
+    padding-top: 6px;
+    padding-right: 0 !important;
+    font-size: 12px; }
+  .commands__item__background {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    background: #383734;
+    z-index: -1;
+    border-radius: 50%;
+    opacity: 1; }
+  .commands__item--large {
+    width: 32px;
+    height: 32px; }
+    .commands__item--large .commands__item__icon {
+      padding-top: 7px;
+      font-size: 16px; }
+  .commands__item--interactive {
+    position: relative;
+    cursor: pointer; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+    .commands__item--interactive:after {
+      content: '';
+      display: block;
+      position: absolute;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      opacity: 0;
+      border-radius: 50%;
+      margin-top: -50%;
+      pointer-events: none; }
+    .commands__item--interactive:focus:after, .commands__item--interactive:active:after {
+      animation-name: click_feedback;
+      animation-duration: 0.2s;
+      animation-timing-function: ease-out;
+      animation-iteration-count: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -7069,15 +7098,17 @@ main .track-view {
     cursor: pointer;
     border-color: #08d58f; }
 
-.settings-view .commands {
+.settings-view .commands-setup {
   padding-bottom: 20px; }
-  .settings-view .commands__item {
+  .settings-view .commands-setup__item {
     position: relative; }
-    .settings-view .commands__item__actions {
+    .settings-view .commands-setup__item .commands__item {
+      margin-bottom: -5px; }
+    .settings-view .commands-setup__item__actions {
       position: absolute;
-      top: 12px;
+      top: 16px;
       right: 0; }
-      .settings-view .commands__item__actions .action {
+      .settings-view .commands-setup__item__actions .action {
         padding: 12px 8px; }
 
 .settings-view .field.pusher-connections .connection.me {

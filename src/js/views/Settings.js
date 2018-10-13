@@ -161,21 +161,21 @@ class Settings extends React.Component {
 		}
 
 		return (
-			<div className="list commands">
+			<div className="list commands-setup">
 				{
 	    			commands.map(command => {
 	    				return (
-	    					<div className="list__item commands__item commands-setup__item" key={command.id}>
+	    					<div className="list__item commands-setup__item" key={command.id}>
 	    						<span className="col col--w90">
-	    							<Icon name={command.icon} />
+	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
+										<Icon className="commands__item__icon" name={command.icon} />
+										<span className={command.colour+'-background commands__item__background'}></span>
+	    							</div>
 	    							&nbsp;&nbsp;
 	    							{command.command && command.command.url ? command.command.url : "-"}
 	    						</span>
-	    						<div className="commands__item__actions">
-	    							<a className="commands__item__trigger-button action" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
-	    								<Icon name="send" />
-	    							</a>
-	    							<Link className="commands__item__edit-button action" to={global.baseURL+'edit-command/'+command.id}>
+	    						<div className="commands-setup__item__actions">
+	    							<Link className="commands-setup__item__edit-button action" to={global.baseURL+'edit-command/'+command.id}>
 	    								<Icon name="edit" />
 	    							</Link>
 		    					</div>

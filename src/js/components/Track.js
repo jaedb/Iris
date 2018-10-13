@@ -205,7 +205,7 @@ export default class Track extends React.Component{
 
 			track_columns.push(
 				<span className="col name" key="name">
-					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 				</span>
 			)
@@ -247,7 +247,7 @@ export default class Track extends React.Component{
 						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
 
-				var added = <span><span className="by">{track.added_by}</span><span className="grey-text from"><span className="label">from </span>{link}</span></span>
+				var added = <span><span className="by">{track.added_by}</span><span className="mid_grey-text from"><span className="label">from </span>{link}</span></span>
 
 			} else if (track.added_by){
 				var added = <span className="by">{track.added_by}</span>
@@ -258,7 +258,7 @@ export default class Track extends React.Component{
 
 			track_columns.push(
 				<span className="col name" key="name">
-					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 				</span>
 			)
@@ -292,7 +292,7 @@ export default class Track extends React.Component{
 
 			track_columns.push(
 				<span className="col name" key="name">
-					{track.name ? track.name : <span className="grey-text">{track.uri}</span>}
+					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 				</span>
 			)

@@ -84,13 +84,13 @@ class AddSeedField extends React.Component{
 
 		return (
 			<div className="type">
-				<h4 className="grey-text">{type}</h4>
+				<h4 className="mid_grey-text">{type}</h4>
 				{
 					items.map(item => {
 						return (
 							<div className="result" key={item.uri} onClick={e => this.handleSelect(e,item)}>
 								{item.name}
-								{type == 'tracks' ? <span className="grey-text"> <ArtistSentence artists={item.artists} nolinks /></span> : null}
+								{type == 'tracks' ? <span className="mid_grey-text"> <ArtistSentence artists={item.artists} nolinks /></span> : null}
 							</div>
 						)
 					})

@@ -102,7 +102,7 @@ class ShareConfiguration extends React.Component {
 									<span className="label">
 										{ connection.username }
 										&nbsp;
-										<span className="grey-text">
+										<span className="mid_grey-text">
 											({ connection.ip })
 										</span>
 									</span>
@@ -115,7 +115,7 @@ class ShareConfiguration extends React.Component {
 		} else {
 			var recipients = (
 				<div className="input text">
-					<span className="grey-text">
+					<span className="mid_grey-text">
 						No peer connections
 					</span>
 				</div>
@@ -152,7 +152,7 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.spotify}
 									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
 								<span className="label">
-									Spotify authorization <span className="grey-text">&nbsp;Logged in as {this.props.spotify_me.name}</span>
+									Spotify authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.spotify_me.name}</span>
 								</span>
 							</label> : null}
 
@@ -163,7 +163,7 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.lastfm}
 									onChange={ e => this.setState({ lastfm: !this.state.lastfm })} />
 								<span className="label">
-									LastFM authorization <span className="grey-text">&nbsp;Logged in as {this.props.lastfm_me.name}</span>
+									LastFM authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.lastfm_me.name}</span>
 								</span>
 							</label> : null}
 
@@ -174,7 +174,7 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.genius}
 									onChange={ e => this.setState({ genius: !this.state.genius })} />
 								<span className="label">
-									Genius authorization <span className="grey-text">&nbsp;Logged in as {this.props.genius_me.name}</span>
+									Genius authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.genius_me.name}</span>
 								</span>
 							</label> : null}
 						</div>
