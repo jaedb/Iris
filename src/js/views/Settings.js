@@ -222,7 +222,7 @@ class Settings extends React.Component {
 
 				<section className="content-wrapper">
 
-					<h4 className="underline">Server</h4>
+					<h4 className="underline">Server<a name="server"></a></h4>
 
 					<div className="field">
 						<div className="name">Status</div>
@@ -274,10 +274,10 @@ class Settings extends React.Component {
 						{this.renderApplyButton()}
 					</form>
 
-					<h4 className="underline">Services</h4>
+					<h4 className="underline">Services<a name="services"></a></h4>
 					<Services active={this.props.params.sub_view} />
 
-					<h4 className="underline">Interface</h4>
+					<h4 className="underline">Interface<a name="interface"></a></h4>
 
 					<div className="field radio">
 						<div className="name">
@@ -386,7 +386,7 @@ class Settings extends React.Component {
 			        	</div>
 			        </div>
 
-					<h4 className="underline">Advanced</h4>
+					<h4 className="underline">Advanced<a name="advanced"></a></h4>
 
 					<div className="field">
 						<div className="name">Artist library URI</div>
@@ -443,7 +443,7 @@ class Settings extends React.Component {
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
-					<h4 className="underline">About</h4>
+					<h4 className="underline">About<a name="about"></a></h4>
 
 					<div className="field">
 						<div>

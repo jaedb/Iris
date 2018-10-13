@@ -28,7 +28,7 @@
 		
 	&__group {
 		padding-top: 10px;
-		border-top: 1px solid $grey;
+		border-top: 1px solid colour(grey);
 
 		&:not(:last-child){
 			padding-bottom: 20px;
@@ -79,7 +79,7 @@
 					padding-left: 6px;
 
 					&.disconnected {
-						color: $red;
+						color: colour(red);
 					}
 				}
 			}
@@ -119,7 +119,7 @@
 					left: 50%;
 					bottom: 0;
 					width: 1px;
-					background: $grey;
+					background: colour(grey);
 					z-index: 0;
 				}
 

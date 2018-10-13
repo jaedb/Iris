@@ -24,7 +24,7 @@
 		.secondary {
 			@include one_line_text;
 			padding-top: 2px;
-			color: $secondary_grey;
+			color: colour(secondary_grey);
 
 			.source {
 				padding-right: 6px;
@@ -193,7 +193,7 @@
 	padding-bottom: 60px;
 
 	.tile {
-		color: $white;
+		color: colour(white);
 		text-align: center;
 		position: relative;
 		z-index: 1;
@@ -202,7 +202,7 @@
 		border-radius: 3px;
 
 		.light-theme & {
-			color: $darkest_grey;
+			color: colour(darkest_grey);
 		}
 
 		.content {
@@ -226,11 +226,11 @@
 			display: block;
 			width: 100%;
 			padding-bottom: 100%;
-			background: lighten($dark_grey, 2%);
+			background: lighten(colour(dark_grey), 2%);
 			z-index: -2;
 
 			.light-theme & {
-				background: $faint_grey;
+				background: colour(faint_grey);
 			}
 		}
 

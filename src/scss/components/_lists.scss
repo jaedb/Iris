@@ -31,8 +31,8 @@
 
 			.select-zone {
 				&::after {
-					background: $blue;
-					border-color: $blue !important;
+					background: colour(blue);
+					border-color: colour(blue) !important;
 				}
 			}
 		}
@@ -41,12 +41,12 @@
 			border-color: rgba(0,0,0,0.05);
 
 			&.selected {
-				background: $faint_grey !important;
+				background: colour(faint_grey) !important;
 			}
 		}
 
 		&.playing {
-			color: $turquoise;
+			color: colour(turquoise);
 		}
 
 		.select-zone,
@@ -71,7 +71,7 @@
 		}
 
 		.icon.source {
-			color: $mid_grey;
+			color: colour(mid_grey);
 			position: absolute;
 			top: 16px;
 			right: 40px;
@@ -79,7 +79,7 @@
 
 		&.header {
 			font-size: 10px;
-			color: $grey;
+			color: colour(grey);
 			text-transform: uppercase;
 			border-top: 0;
 			padding-bottom: 2px;
@@ -110,8 +110,8 @@
 					width: 36%;
 
 					.light-theme & .flag {
-						background: $light_grey;
-						color: $white;
+						background: colour(light_grey);
+						color: colour(white);
 					}
 				}
 				&.artists,
@@ -128,7 +128,7 @@
 
 			:root .dragging &.hover,
 			&.touch-drag-hover {
-				border-top: 3px solid $blue;
+				border-top: 3px solid colour(blue);
 				margin-top: -3px;
 				background: transparent;
 			}
@@ -144,7 +144,7 @@
 					width: 34px;
 					font-size: 14px;
 					display: block;
-					color: $mid_grey;
+					color: colour(mid_grey);
 					
 					.icon {
 						position: absolute;
@@ -313,7 +313,7 @@
 
 		a.artist:hover {
 			.thumbnail {
-				border-color: $turquoise;
+				border-color: colour(turquoise);
 				opacity: 1;
 			}
 		}
@@ -357,7 +357,7 @@
 				}
 
 				&:not(.name):not(.duration):not(.album):not(.added){
-					color: $mid_grey;
+					color: colour(mid_grey);
 					display: inline;
 					width: auto !important;
 					float: none !important;

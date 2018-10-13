@@ -18,6 +18,7 @@ class EditCommand extends React.Component{
 		this.state = {
 			id: helpers.generateGuid(),
 			icon: 'power_settings_new',
+			colour: 'green',
 			command: '{"url":"https://'+window.location.hostname+'/sendCommand/power"}'
 		}
 	}
@@ -37,6 +38,7 @@ class EditCommand extends React.Component{
 		this.props.pusherActions.setCommand({
 			id: this.state.id,
 			icon: this.state.icon,
+			colour: this.state.colour,
 			command: this.state.command
 		});
 
@@ -51,6 +53,20 @@ class EditCommand extends React.Component{
 	}
 
 	render(){
+		var colours = [
+			'turquoise',
+			'mid_grey',
+			'grey',
+			'dark_grey',
+			'black',
+			'red',
+			'green',
+			'blue',
+			'light_blue',
+			'yellow',
+			'orange',
+		];
+
 		return (
 			<Modal className="modal--create-command">
 				<h1>Create command</h1>
@@ -70,6 +86,29 @@ class EditCommand extends React.Component{
 							<div className="description">
 								See <a href="https://material.io/tools/icons/?style=baseline" target="_blank" noopener="true">Material Icons</a> for available options
 							</div>
+						</div>
+					</div>
+
+					<div className="field radio white">
+						<div className="name">
+							Colour
+						</div>
+						<div className="input">
+							{
+								colours.map(colour => {
+									return (
+										<label key={colour}>
+											<input 
+												type="radio"
+												name="colour"
+												value={colour}
+												checked={this.state.colour == colour}
+												onChange={ e => this.setState({colour: colour})} />
+											<span className="label">{helpers.titleCase(colour)}</span>
+										</label>
+									);
+								})
+							}
 						</div>
 					</div>
 

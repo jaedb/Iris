@@ -57,6 +57,7 @@ class OutputControl extends React.Component{
 	}
 
 	renderOutputs(){
+		var has_outputs = false;
 
 		var clients = [];
 		for (var key in this.props.snapcast_clients){
@@ -70,16 +71,11 @@ class OutputControl extends React.Component{
 
 		var snapcast_clients = null;
 		if (clients.length > 0){
+			has_outputs = true;
 			snapcast_clients = (
 				<div>	
 					{
 						clients.map(client => {
-
-							var commands = {};
-							if (this.props.snapcast_commands[client.id]){
-								commands = this.props.snapcast_commands[client.id];
-							}
-
 							return (
 								<div className="output-control__item outputs__item--snapcast" key={client.id}>
 									<div className="output-control__item__name">
@@ -109,6 +105,7 @@ class OutputControl extends React.Component{
 
 		var local_streaming = null;
 		if (this.props.http_streaming_enabled){
+			has_outputs = true;
 			local_streaming = (
 				<div className="output-control__item outputs__item--icecast">
 					<div className="output-control__item__actions">
@@ -132,7 +129,39 @@ class OutputControl extends React.Component{
 			);
 		}
 
-		if (!local_streaming && !snapcast_clients){
+		var commands = null;
+		if (this.props.pusher_commands){
+
+			var commands_items = [];
+			for (var key in this.props.pusher_commands){
+				if (this.props.pusher_commands.hasOwnProperty(key)){
+					commands_items.push(this.props.pusher_commands[key]);
+				}
+			}
+
+			if (commands_items.length > 0){
+				has_outputs = true;
+				commands = (
+					<div className="output-control__item output-control__item--commands commands">
+						{
+							commands_items.map(command => {
+								return (
+									<div 
+										key={command.id}
+										className="commands__item"
+										onClick={e => this.props.pusherActions.sendCommand(command.id)}>
+											<Icon className="commands__item__icon" name={command.icon} />
+											<span className={command.colour+'-background commands__item__background'}></span>
+									</div>
+								);
+							})
+						}
+					</div>
+				);
+			}
+		}
+
+		if (!has_outputs){
 			return (
 				<div className="output-control__items output-control__items--no-results">
 					<p className="no-results">No outputs</p>
@@ -141,6 +170,7 @@ class OutputControl extends React.Component{
 		} else {
 			return (
 				<div className="output-control__items">
+					{commands}
 					{local_streaming}
 					{snapcast_clients}
 				</div>
@@ -184,7 +214,7 @@ const mapStateToProps = (state, ownProps) => {
 		pusher_connected: state.pusher.connected,
 		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
 		snapcast_clients: state.snapcast.clients,
-		snapcast_commands: (state.snapcast.commands ? state.snapcast.commands : {})
+		pusher_commands: (state.pusher.commands ? state.pusher.commands : {})
 	}
 }
 

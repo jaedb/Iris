@@ -242,7 +242,7 @@ const PusherMiddleware = (function(){
                     function(){
                         store.dispatch(pusherActions.getVersion());
                     },
-                    2000
+                    500
                 );
                 next(action);
                 break;
@@ -405,10 +405,9 @@ const PusherMiddleware = (function(){
                 			store.dispatch(pusherActions.commandsUpdated(response.commands));
                         },
                         error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not get commands',
-                                error
-                            ));
+                            // We're not too worried about capturing errors here
+                            // It's also likely to fail where UI has been updated but
+                            // server hasn't been restarted yet.
                         }
                     );                
                 next(action);
@@ -431,7 +430,7 @@ const PusherMiddleware = (function(){
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
-                                'Could not remove command',
+                                'Could not set commands',
                                 error
                             ));
                         }
@@ -447,7 +446,7 @@ const PusherMiddleware = (function(){
                 request(store, 'set_commands', {commands: commands_index})
                     .then(
                         response => {
-                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+                            // No action required, the change will be broadcast
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(
@@ -475,10 +474,6 @@ const PusherMiddleware = (function(){
                     break;
 				}
 
-                // We try and make it cross-origin compatible
-                ajax_settings.crossDomain = true;
-                ajax_settings.dataType = "jsonp";
-
                 // Handle success and failure
                 ajax_settings.success = function(response){
                 	console.log("Command sent, response was:",response);
@@ -488,9 +483,10 @@ const PusherMiddleware = (function(){
                     	store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
 	                }
                 }
-                ajax_settings.fail = function(xhr, status, error){
+                ajax_settings.error = function(xhr, status, error){
+                    console.error("Command failed, response was:",xhr,error);
 	                store.dispatch(uiActions.processFinished(notification_key));
-                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status+": "+error}));
                 }
 
                 // Actually send the request

@@ -6,7 +6,7 @@ main .track-view {
 	.title {
 		h2 {
 			a:hover {
-				color: darken($mid_grey, 20%);
+				color: darken(colour(mid_grey), 20%);
 			}
 		}
 

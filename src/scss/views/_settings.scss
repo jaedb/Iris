@@ -25,7 +25,7 @@
 				&[href]:hover {
 					.thumbnail {
 						cursor: pointer;
-						border-color: $turquoise;
+						border-color: colour(turquoise);
 					}
 				}
 			}
@@ -52,7 +52,7 @@
 
 	.field.pusher-connections {
 		.connection.me {
-			color: $turquoise;
+			color: colour(turquoise);
 		}
 	}
 

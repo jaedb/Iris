@@ -17,7 +17,7 @@ input[type="file"],
 select {
 	padding: 10px 14px;
 	background: rgba(255,255,255,0.1);
-	color: $white;
+	color: colour(white);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	border-radius: 3px;
@@ -40,12 +40,12 @@ select {
 	}
 
 	.light-theme & {
-		background: $faint_grey;
-		color: $darkest_grey;
+		background: colour(faint_grey);
+		color: colour(darkest_grey);
 
 		&:focus,
 		&:active {
-			background: darken($faint_grey, 3%);
+			background: darken(colour(faint_grey), 3%);
 		}
 	}
 
@@ -95,7 +95,7 @@ input[type="radio"]{
 		position: absolute;
 		top: 11px;
 		left: 7px;
-		background: $white;
+		background: colour(white);
 	}
 
 	&:focus + .label:before,
@@ -106,16 +106,16 @@ input[type="radio"]{
 	.light-theme & {
 
 		& + .label:before {
-			background: $faint_grey;
+			background: colour(faint_grey);
 		}
 
 		&:checked + .label:after {
-			background: $darkest_grey;
+			background: colour(darkest_grey);
 		}
 
 		&:focus + .label:before,
 		&:active + .label:before {
-			background: $grey;
+			background: colour(grey);
 		}
 	}
 }
@@ -125,7 +125,7 @@ input[type="checkbox"]{
 		font-family: "Material Icons";
 		font-size: 14px;
 		content: '';
-		color: $white;
+		color: colour(white);
 		background: rgba(255,255,255,0.1);
 		display: inline-block;
 		padding: 0.2em;
@@ -149,13 +149,13 @@ input[type="checkbox"]{
 
 	.light-theme & {
 		& + .label:before {
-			background: $faint_grey;
-			color: $darkest_grey;
+			background: colour(faint_grey);
+			color: colour(darkest_grey);
 		}
 
 		&:focus + .label:before,
 		&:active + .label:before {
-			background: $grey;
+			background: colour(grey);
 		}
 	}
 }
@@ -164,8 +164,8 @@ select {
 	max-width: 100%;
 
 	option {
-		background: $white;
-		color: $darkest_grey;
+		background: colour(white);
+		color: colour(darkest_grey);
 		max-width: 100%;
 		box-sizing: border-box;
 	}
@@ -184,7 +184,7 @@ select {
 	cursor: pointer;
 
 	&.destructive {		
-		color: $red;
+		color: colour(red);
 	}
 }
 
@@ -196,11 +196,11 @@ input[type="submit"] {
 	@include feature_font();
 	@include noselect();
 	font-size: 14px;
-	color: $black;
+	color: colour(black);
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	background: $white;
+	background: colour(white);
 	box-sizing: border-box;
 	border-radius: 3px;
 	vertical-align: middle;
@@ -228,17 +228,17 @@ input[type="submit"] {
 
 	&:active {
 		@include noanimate();
-		background: darken($white, 5%);
+		background: darken(colour(white), 5%);
 		transform: translate(1px,1px);
 		opacity: 0.8;
 	}
 
 	.light-theme & {
-		background: $dark_grey;
-		color: $white;
+		background: colour(dark_grey);
+		color: colour(white);
 
 		&:active {
-			background: $black;
+			background: colour(black);
 		}
 	}
 
@@ -256,34 +256,34 @@ input[type="submit"] {
 	}
 
 	&.primary {
-		background: $turquoise;
-		color: $white;
+		background: colour(turquoise);
+		color: colour(white);
 	}
 
 	&.white {
-		color: $black;
-		background: $white;
+		color: colour(black);
+		background: colour(white);
 	}
 
 	&.grey {
-		color: $white;
-		background: $grey;
+		color: colour(white);
+		background: colour(grey);
 	}
 
 	&.black {
-		color: $white;
-		background: $darkest_grey;
+		color: colour(white);
+		background: colour(darkest_grey);
 	}
 
 	&.confirming,
 	&.destructive {
-		background: $red;
-		color: $white;
+		background: colour(red);
+		color: colour(white);
 	}
 
 	&.alternative {
-		background: $blue;
-		color: $white;
+		background: colour(blue);
+		color: colour(white);
 	}
 
 	&.timing-out {
@@ -297,7 +297,7 @@ input[type="submit"] {
 			left: 0;
 			bottom: 0;
 			width: 0;
-			background: $black;
+			background: colour(black);
 			opacity: 0.25;
 		}
 	}
@@ -307,15 +307,15 @@ input[type="submit"] {
 
 		&[disabled],
 		&[disabled="disabled"] {
-			border-color: $light_grey !important;
+			border-color: colour(light_grey) !important;
 		}
 	}
 
 	&.working {
 		position: relative;
 		cursor: wait !important;
-		background: $grey;
-		color: $mid_grey;
+		background: colour(grey);
+		color: colour(mid_grey);
 
 		&:after {
 			pointer-events: none;
@@ -337,8 +337,8 @@ input[type="submit"] {
 	&[disabled="disabled"]{
 		opacity: 0.5;
 		cursor: not-allowed !important;
-		color: $mid_grey;
-		border-color: $mid_grey;
+		color: colour(mid_grey);
+		border-color: colour(mid_grey);
 		background: transparent;
 
 		&:before {
@@ -412,7 +412,7 @@ input[type="submit"] {
 		color: rgba(255,255,255,0.6);
 
 		&.error {
-			color: $red;
+			color: colour(red);
 			display: inline-block;
 			opacity: 1;
 		}
@@ -476,13 +476,13 @@ input[type="submit"] {
 		}
 
 		.input-range__track--active {
-			background: $blue;
+			background: colour(blue);
 		}
 
 		.input-range__slider-container {			
 			.input-range__slider {
 				cursor: col-resize;
-				background: $blue;
+				background: colour(blue);
 				border: none;
 				top: 0;
 				height: 6px;
