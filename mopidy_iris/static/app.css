@@ -6313,6 +6313,10 @@ main header {
   display: none; }
 
 .colour-field__option {
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
   display: inline-block;
   border-radius: 3px;
   background: #383734;
@@ -6321,14 +6325,61 @@ main header {
   margin: 2px 8px 2px 0;
   position: relative;
   cursor: pointer;
-  border: 2px solid #383734; }
-  .colour-field__option--selected {
-    border-color: #08d58f; }
+  overflow: hidden; }
+  .colour-field__option:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2; }
   .colour-field__option__icon {
     position: absolute;
     top: 3px;
     left: 3px;
-    font-size: 20px; }
+    font-size: 20px;
+    z-index: 3; }
+  .colour-field__option:hover:after {
+    background: rgba(255, 255, 255, 0.15); }
+  .colour-field__option:active:after, .colour-field__option:focus:after {
+    background: rgba(0, 0, 0, 0.15); }
+
+.icon-field__option {
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+  display: inline-block;
+  border-radius: 3px;
+  width: 30px;
+  height: 30px;
+  margin: 0 4px 4px 0;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden; }
+  .icon-field__option--selected:after {
+    background: #383734 !important; }
+  .icon-field__option__icon {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 18px;
+    z-index: 3; }
+  .icon-field__option:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2; }
+  .icon-field__option:hover:after {
+    background: rgba(255, 255, 255, 0.15); }
+  .icon-field__option:active:after, .icon-field__option:focus:after {
+    background: rgba(255, 255, 255, 0.3); }
 
 .commands__item {
   text-align: center;
