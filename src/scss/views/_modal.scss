@@ -7,11 +7,11 @@
 	bottom: 0;
 	right: 0;
 	z-index: 999;
-	background: darken($darkest_grey, 2%);
+	background: darken(colour(darkest_grey), 2%);
 	overflow-y: auto;
 
 	.light-theme & {
-		color: $white;
+		color: colour(white);
 	}
 
 	.controls {
@@ -52,14 +52,14 @@
 		padding: 80px 25%;
 		margin: 0 auto;
 		width: 50%;
-		color: $white;
+		color: colour(white);
 
 		h1 {
 			padding-bottom: 20px;
 			padding-right: 60px;
 
 			.light-theme & {
-				color: $white;
+				color: colour(white);
 			}
 		}
 
@@ -79,8 +79,8 @@
 					width: 18%;
 					padding-right: 2%;
 					float: left;
-					opacity: 0.5;
 					padding-top: 8px;
+					color: colour(mid_grey);
 				}
 
 				.description {
@@ -92,10 +92,6 @@
 				&.checkbox {
 					padding-top: 8px;
 				}
-			}
-
-			button[type="submit"]{
-				margin-top: 50px;
 			}
 		}
 
@@ -120,10 +116,10 @@
 			}
 
 			&:hover {
-				color: $turquoise;
+				color: colour(turquoise);
 
 				&.remove-uri {
-					color: $red;
+					color: colour(red);
 				}
 			}
 		}
@@ -219,7 +215,7 @@
 	}
 
 	&--kiosk-mode {
-		background: $black;
+		background: colour(black);
 		overflow: hidden;
 
 		.content {
@@ -262,7 +258,7 @@
 					@include animate();
 					display: inline-block;
 					position: absolute;
-					color: $darkest_grey;
+					color: colour(darkest_grey);
 					font-size: 20rem;
 					top: 25%;
 					left: 0;

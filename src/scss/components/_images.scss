@@ -11,13 +11,13 @@
 		padding-bottom: 100%;
 		position: relative;
 		background-repeat: no-repeat;
-		background-color: lighten($dark_grey, 2%);
+		background-color: lighten(colour(dark_grey), 2%);
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
 
 		.light-theme & {
-			background-color: $faint_grey;
+			background-color: colour(faint_grey);
 		}
 	}
 
@@ -37,7 +37,7 @@
 		border: 0;
 
 		&:hover {
-			background: $black;
+			background: colour(black);
 		}
 	}
 
@@ -67,7 +67,7 @@
 	height: 50vh;
 	width: 100%;
 	overflow: hidden;
-	background: $dark_grey;
+	background: colour(dark_grey);
 	position: relative;
 
 	canvas {
@@ -90,6 +90,6 @@
 	}
 
 	.light-theme & {
-		background: $white;
+		background: colour(white);
 	}
 }

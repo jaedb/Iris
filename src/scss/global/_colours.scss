@@ -1,0 +1,90 @@
+
+/**
+ * Our colour map
+ **/
+$colours: (
+	turquoise: #08d58f,
+	off_white: #F5F5F5,
+	faint_grey: #f4f2f0,
+	light_grey: #cecac4,
+	mid_grey: #a3a19f,
+	grey: #383734,
+	dark_grey: #181818,
+	darkest_grey: #121212,
+	secondary_grey: #888888,
+	white: #FFFFFF,
+	black: #000000,
+	red: #cf2d2d,
+	green: #47af2a,
+	blue: #32b5f2,
+	light_blue: #96cfea,
+	yellow: #FFF39C,
+	orange: #f16f19,
+	overlay_dark: rgba(0, 0, 0, 0.88),
+	overlay_light: rgba(255, 255, 255, 0.70)
+);
+
+
+
+/**
+ * Create the variation classes
+ * This includes -text, -border and -background 
+ **/
+@each $class, $colour in $colours {
+	
+	&.#{$class}-text {
+		color: $colour !important;
+	}
+
+	&.#{$class}-border {
+		border-color: $colour !important;
+	}
+
+	&.#{$class}-background {
+		background-color: $colour !important;
+	}
+}
+
+
+/**
+ * Retrieve colour from $colours map
+ * @param  {string} $key [name of colour, as defined in $colours map]
+ * @return hex colour
+ */
+@function colour($key) {
+	@if map-has-key($colours, $key) {
+		@return map-get($colours, $key);
+	}
+
+	@warn "Unknown `#{$key}` in $colours.";
+	@return null;
+}
+
+@mixin invert(){
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+
+@mixin gradient_overlay($radius: 0, $opacity: 0){
+	position: relative;
+	border-radius: $radius;
+	
+	&:before {
+		@include animate();
+		border-radius: $radius;
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: $opacity;
+		z-index: 9;
+		pointer-events: none;
+		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: -o-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+		background: linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
+	}
+}

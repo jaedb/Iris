@@ -15,8 +15,8 @@ $module: 'tooltip';
 		padding: 8px 10px 6px;
 		border-radius: 3px;
 		pointer-events: none;
-		background: $white;
-		color: $black;
+		background: colour(white);
+		color: colour(black);
 		font-size: 11px;
 		z-index: 97;
 		white-space: nowrap;
@@ -31,7 +31,7 @@ $module: 'tooltip';
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: $white;
+			background: colour(white);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -41,11 +41,11 @@ $module: 'tooltip';
 		}
 
 		.light-theme & {
-			background: $grey;
-			color: $white;
+			background: colour(grey);
+			color: colour(white);
 
 			&:after {
-				background: $grey;
+				background: colour(grey);
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 .sub-views {
 	.option {
 		@include feature_font();
-		color: $white;
+		color: colour(white);
 		display: inline-block;
 		margin-right: 25px;
 		font-size: 15px;
@@ -11,7 +11,7 @@
 		cursor: pointer;
 
 		.light-theme & {
-			color: $darkest_grey;
+			color: colour(darkest_grey);
 		}
 
 		h4 {
@@ -19,10 +19,10 @@
 		}
 
 		&.active {
-			border-color: $white;
+			border-color: colour(white);
 
 			.light-theme & {
-				border-color: $darkest_grey
+				border-color: colour(darkest_grey)
 			}
 		}
 

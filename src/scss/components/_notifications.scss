@@ -12,10 +12,10 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		background: $grey;
+		background: colour(grey);
 		padding: 16px 40px 16px 22px;
 		margin: 10px 0 0 0;
-		color: $white;
+		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;
 		
@@ -28,7 +28,7 @@
 			
 			&:not(.button) {
 				color: inherit;
-				border-bottom: 1px dotted $black;
+				border-bottom: 1px dotted colour(black);
 			}
 		}
 
@@ -58,24 +58,24 @@
 		}
 
 		&--good {
-			background: $green;
+			background: colour(green);
 		}
 
 		&--broadcast {
-			background: $yellow;
-			color: $black;
+			background: colour(yellow);
+			color: colour(black);
 		}
 
 		&--info {
-			background: $blue;
+			background: colour(blue);
 		}
 
 		&--warning {
-			background: $orange;
+			background: colour(orange);
 		}
 
 		&--bad {
-			background: $red;
+			background: colour(red);
 		}
 
 		&--shortcut {
@@ -85,8 +85,8 @@
 			height: 400px;
 			width: 400px;
 			margin: -200px 0 0 -200px;
-			background: $overlay_dark;
-			color: $white;
+			background: colour(overlay_dark);
+			color: colour(white);
 			border-radius: 10px;
 			text-align: center;
 
@@ -100,7 +100,7 @@
 			position: relative;
 			padding-right: 18px;
 			padding-left: 50px;
-			background: $blue;
+			background: colour(blue);
 
 			&.cancelling {
 				color: rgba(255,255,255,0.5);
@@ -120,7 +120,7 @@
 				}
 
 				&:after {
-					border-right-color: $white;
+					border-right-color: colour(white);
 				}
 
 				.progress {
@@ -133,7 +133,7 @@
 					overflow: hidden;
 
 					.fill {
-						background: $white;
+						background: colour(white);
 						position: absolute;
 						top: 0;
 						left: 0;
@@ -158,18 +158,18 @@
 		width: 5px;
 		height: 5px;
 		border-radius: 50%;
-		background: $mid_grey;
+		background: colour(mid_grey);
 
 		&.high {
-			background: $red;
+			background: colour(red);
 		}
 
 		&.medium {
-			background: $orange;
+			background: colour(orange);
 		}
 
 		&.low {
-			background: $green;
+			background: colour(green);
 		}
 	}
 

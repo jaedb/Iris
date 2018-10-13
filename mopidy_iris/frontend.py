@@ -18,6 +18,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def on_start(self):        
         logger.info('Starting Iris '+mem.iris.version)
+        mem.iris.start()
 
         # Create our listening socket for Snapcast event notifications (only if enabled)
         #if mem.iris.config['iris'].get('snapcast_enabled'):

@@ -19,7 +19,7 @@ export default class ErrorBoundary extends React.Component {
 	render() {
 		if (this.state.hasError){
 			// You can render any custom fallback UI
-			return <p className="grey-text">Failed to render</p>;
+			return <p className="mid_grey-text">Failed to render</p>;
 		}
 		return this.props.children;
 	}

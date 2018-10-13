@@ -76,7 +76,7 @@ class Services extends React.Component{
 					<Thumbnail circle={true} size="small" images={user_object.images} />
 					<span className="user-name">
 						{user_object.name ? user_object.name : user_object.id}
-						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
+						{!this.props.spotify.authorization ? <span className="mid_grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
 					</span>
 				</URILink>
 			)
@@ -303,7 +303,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								Spotify
 							</div>
-							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
 					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' menu-item--active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'}>
@@ -312,7 +312,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								LastFM
 							</div>
-							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
 					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
@@ -321,7 +321,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								Genius
 							</div>
-							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
+							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
 						</div>
 					</Link>
 					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
@@ -330,7 +330,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								Snapcast
 							</div>
-							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
+							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
 					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' menu-item--active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
@@ -339,7 +339,7 @@ class Services extends React.Component{
 							<div className="menu-item__title">
 								Icecast
 							</div>
-							{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
+							{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
 				</div>

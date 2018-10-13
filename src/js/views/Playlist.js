@@ -205,7 +205,7 @@ class Playlist extends React.Component{
 
 				<div className="title">
 					<h1>{playlist.name}</h1>
-					{playlist.description ? <h2 className="description grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
+					{playlist.description ? <h2 className="description mid_grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
 						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip__content">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }

@@ -228,37 +228,6 @@ const SnapcastMiddleware = (function(){
                 );
                 break
 
-            case 'SNAPCAST_SET_CLIENT_COMMAND':
-	            var client_commands_index = Object.assign({}, snapcast.client_commands);
-
-	            if (client_commands_index[action.id]){
-	            	var client_command = Object.assign({}, client_commands_index[action.id], action.command);
-	            } else {
-	            	var client_command = action.command;
-	            }
-	            client_commands_index[action.id] = client_command;
-
-	            store.dispatch(snapcastActions.clientCommandsUpdated(client_commands_index));
-                
-                next(action);
-                break
-
-            case 'SNAPCAST_SEND_CLIENT_COMMAND':
-
-                // Prepare our command
-                // We try and make it cross-origin compatible
-                var command = JSON.parse(action.command);
-                command.crossDomain = true;
-                command.dataType = "jsonp";
-                command.success = function(response){
-                	store.dispatch(uiActions.createNotification({type: 'info', content: 'Command sent', description: command.url}));
-                }
-
-                // Actually send the request
-                $.ajax(command);
-
-                break
-
             case 'SNAPCAST_SET_CLIENT_GROUP':
 
                 var group = snapcast.groups[action.group_id];

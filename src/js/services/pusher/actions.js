@@ -192,97 +192,42 @@ export function addQueueMetadata(tlids = [], from_uri = null){
 	}
 }
 
+
 /**
- * Snapcast actions
- * TODO: Figure out how to cleanly split this out to it's own service
- * but still share the pusher middleware connection
+ * Commands (buttons)
  **/
 
-export function getSnapcast(){
-	return {
-		type: 'PUSHER_GET_SNAPCAST',
-		data: {
-			method: 'Server.GetStatus'
-		}
-	}
+export function getCommands(){
+    return {
+        type: 'PUSHER_GET_COMMANDS'
+    }
 }
 
-export function snapcastServerLoaded(server){
-	return {
-		type: 'PUSHER_SNAPCAST_SERVER_LOADED',
-		server: server
-	}
+export function setCommand(command){
+    return {
+        type: 'PUSHER_SET_COMMAND',
+        command: command
+    }
 }
 
-export function setSnapcastClientName(id, name){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
-		id: id,
-		name: name
-	}
+export function removeCommand(id){
+    return {
+        type: 'PUSHER_REMOVE_COMMAND',
+        id: id
+    }
 }
 
-export function setSnapcastClientMute(id, mute){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_MUTE',
-		id: id,
-		mute: mute
-	}
+export function sendCommand(id, notify = false){
+    return {
+        type: 'PUSHER_SEND_COMMAND',
+        id: id,
+        notify: notify
+    }
 }
 
-export function setSnapcastClientVolume(id, percent){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
-		id: id,
-		percent: percent
-	}
+export function commandsUpdated(commands){
+    return {
+        type: 'PUSHER_COMMANDS_UPDATED',
+        commands: commands
+    }
 }
-
-export function setSnapcastClientLatency(id, latency){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY',
-		id: id,
-		latency: latency
-	}
-}
-
-export function setSnapcastClientGroup(id, group_id){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
-		id: id,
-		group_id: group_id
-	}
-}
-
-export function deleteSnapcastClient(id){
-	return {
-		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
-		id: id
-	}
-}
-
-export function setSnapcastGroupStream(id, stream_id){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
-		id: id,
-		stream_id: stream_id
-	}
-}
-
-export function setSnapcastGroupMute(id, mute){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
-		id: id,
-		mute: mute
-	}
-}
-
-export function setSnapcastGroupVolume(id, percent, old_percent = 0){
-	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
-		id: id,
-		percent: percent,
-		old_percent: old_percent
-	}
-}
-

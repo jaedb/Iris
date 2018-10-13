@@ -34,10 +34,10 @@
 				padding-bottom: 25px;
 
 				.context-menu-trigger {
-					color: $white;
+					color: colour(white);
 
 					.light-theme & {
-						color: $darkest_grey;
+						color: colour(darkest_grey);
 					}
 				}
 			}

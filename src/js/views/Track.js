@@ -175,7 +175,7 @@ class Track extends React.Component{
 			return (
 				<div className="lyrics">
 					<div className="content" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
-					<div className="origin grey-text">
+					<div className="origin mid_grey-text">
 						Origin: <a href={"https://genius.com"+this.props.track.lyrics_path} target="_blank">{"https://genius.com"+this.props.track.lyrics_path}</a>
 					</div>
 				</div>
@@ -216,7 +216,7 @@ class Track extends React.Component{
 				<div className="title">
 
 					<h1>{track.name}</h1>
-					<h2 className="grey-text">
+					<h2 className="mid_grey-text">
 						{track.album && track.album.uri ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : null}
 						{track.album && !track.album.uri ? track.album.name : null}
 						{!track.album ? "Unknown album" : null}

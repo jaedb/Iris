@@ -18,14 +18,14 @@
 			cursor: pointer;
 
 			.notouch &:hover {
-				color: $blue;
+				color: colour(blue);
 			}
 		}
 	}
 
 	&.expanded {
 		.label:not(.button) {
-			color: $blue;
+			color: colour(blue);
 		}
 		.options {
 			display: block;
@@ -59,7 +59,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: $white;
+			background: colour(white);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -68,20 +68,20 @@
 			right: 9px;
 
 			.light-theme & {
-				background: $faint_grey;
+				background: colour(faint_grey);
 			}
 		}
 
 		& > .liner {
-			color: $black;
-			background: $white;
+			color: colour(black);
+			background: colour(white);
 			min-width: 120px;
 			max-height: 70vh;
 			overflow-y: auto;
 			border-radius: 3px;
 
 			.light-theme & {
-				background: $faint_grey;
+				background: colour(faint_grey);
 			}
 
 			.option {
@@ -89,7 +89,7 @@
 				position: relative;
 				padding: 9px 12px 8px 24px;
 				cursor: pointer;
-				color: $black;
+				color: colour(black);
 				
 				&:before {
 					@include animate();
@@ -116,7 +116,7 @@
 				}
 
 				.notouch &:hover {
-					color: $black;
+					color: colour(black);
 
 					&:before {
 						opacity: 0.15;

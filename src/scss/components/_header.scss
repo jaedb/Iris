@@ -38,10 +38,10 @@ main {
 				padding: 13px 10px;
 				margin: 0;
 				min-width: 0;
-				color: $light_grey;
+				color: colour(light_grey);
 
 				&:hover {
-					color: $blue;
+					color: colour(blue);
 					box-shadow: none;
 
 					&:before {
@@ -50,10 +50,10 @@ main {
 				}
 
 				.light-theme & {
-					color: $darkest_grey;
+					color: colour(darkest_grey);
 
 					&:hover {
-						color: $blue;
+						color: colour(blue);
 					}
 
 					&:active {

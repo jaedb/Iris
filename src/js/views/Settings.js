@@ -140,6 +140,53 @@ class Settings extends React.Component {
 		);
 	}
 
+	renderCommands(){
+		var commands = [];
+		if (this.props.pusher.commands){
+			for (var id in this.props.pusher.commands){
+				if (this.props.pusher.commands.hasOwnProperty(id)){
+					var command = Object.assign({}, this.props.pusher.commands[id]);
+					try {
+						command.command = JSON.parse(command.command);
+					} catch(error){
+						command.command = null;
+					}
+					commands.push(command);
+				}
+			}
+		}
+
+		if (commands.length <= 0){
+			return null;
+		}
+
+		return (
+			<div className="list commands-setup">
+				{
+	    			commands.map(command => {
+	    				return (
+	    					<div className="list__item commands-setup__item" key={command.id}>
+	    						<span className="col col--w90">
+	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
+										<Icon className="commands__item__icon" name={command.icon} />
+										<span className={command.colour+'-background commands__item__background'}></span>
+	    							</div>
+	    							&nbsp;&nbsp;
+	    							{command.command && command.command.url ? command.command.url : "-"}
+	    						</span>
+	    						<div className="commands-setup__item__actions">
+	    							<Link className="commands-setup__item__edit-button action" to={global.baseURL+'edit-command/'+command.id}>
+	    								<Icon name="edit" />
+	    							</Link>
+		    					</div>
+	    					</div>
+	    				);
+	    			})
+	    		}
+			</div>
+		);
+	}
+
 	render(){
 
 		var options = (
@@ -175,7 +222,7 @@ class Settings extends React.Component {
 
 				<section className="content-wrapper">
 
-					<h4 className="underline">Server</h4>
+					<h4 className="underline">Server<a name="server"></a></h4>
 
 					<div className="field">
 						<div className="name">Status</div>
@@ -227,10 +274,10 @@ class Settings extends React.Component {
 						{this.renderApplyButton()}
 					</form>
 
-					<h4 className="underline">Services</h4>
+					<h4 className="underline">Services<a name="services"></a></h4>
 					<Services active={this.props.params.sub_view} />
 
-					<h4 className="underline">Interface</h4>
+					<h4 className="underline">Interface<a name="interface"></a></h4>
 
 					<div className="field radio">
 						<div className="name">
@@ -325,11 +372,21 @@ class Settings extends React.Component {
 									Allow reporting of anonymous usage statistics
 								</span>
 							</label>
-							<div className="description">Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
+							<div className="description">This helps identify errors and potential features that make Iris better for everyone. See <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>.</div>
 						</div>
 					</div>}
 
-					<h4 className="underline">Advanced</h4>
+					<div className="field commands-setup">
+						<div className="name">
+							Commands
+						</div>
+						<div className="input">
+			        		{this.renderCommands()}
+			        		<Link to={global.baseURL+'edit-command'} className="button">Add new</Link>
+			        	</div>
+			        </div>
+
+					<h4 className="underline">Advanced<a name="advanced"></a></h4>
 
 					<div className="field">
 						<div className="name">Artist library URI</div>
@@ -386,7 +443,7 @@ class Settings extends React.Component {
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
-					<h4 className="underline">About</h4>
+					<h4 className="underline">About<a name="about"></a></h4>
 
 					<div className="field">
 						<div>

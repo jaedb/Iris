@@ -118,7 +118,7 @@ export default class DropdownField extends React.Component{
 			options.push({
 				value: 'select-all',
 				label: 'Select all',
-				className: 'grey-text'
+				className: 'mid_grey-text'
 			});
 		}
 

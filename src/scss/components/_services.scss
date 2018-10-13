@@ -25,7 +25,7 @@
 				padding: 30px 10px;
 				margin-bottom: 10px;
 				border-radius: 3px;
-				background: $darkest_grey;
+				background: colour(darkest_grey);
 				display: block;
 				text-align: center;
 				box-sizing: border-box;
@@ -60,7 +60,7 @@
 
 			&:hover {
 				.menu-item__inner {
-					background: lighten($dark_grey, 4%);
+					background: lighten(colour(dark_grey), 4%);
 				}
 			}
 
@@ -72,7 +72,7 @@
 
 			&--active {				
 				.menu-item__inner {
-					background: lighten($dark_grey, 4%);
+					background: lighten(colour(dark_grey), 4%);
 					border-bottom-left-radius: 0;
 					border-bottom-right-radius: 0;
 					padding-bottom: 40px;
@@ -82,20 +82,20 @@
 
 			.light-theme & {
 				.menu-item__inner {
-					background: $faint_grey;
+					background: colour(faint_grey);
 
 					&:hover{
-						background: darken($faint_grey, 4%);
+						background: darken(colour(faint_grey), 4%);
 					}
 
 					&:after {
-						background: darken($faint_grey, 4%);
+						background: darken(colour(faint_grey), 4%);
 					}
 				}
 
 				&--active {
 					.menu-item__inner {
-						background: darken($faint_grey, 4%);
+						background: darken(colour(faint_grey), 4%);
 					}
 				}
 			}
@@ -105,14 +105,14 @@
 	.service {
 		padding: 20px;
 		border-radius: 0 0 3px 3px;
-		background: lighten($dark_grey, 4%);
+		background: lighten(colour(dark_grey), 4%);
 
 		.field:last-child {
 			padding-bottom: 0;
 		}
 
 		.light-theme & {
-			background: darken($faint_grey, 4%);
+			background: darken(colour(faint_grey), 4%);
 		}
 	}
 

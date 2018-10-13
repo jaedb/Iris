@@ -14,8 +14,8 @@
 		bottom: 40px;
 		right: -150px;
 		width: 300px;
-		background: $white;
-		color: $black;
+		background: colour(white);
+		color: colour(black);
 		font-size: 14px;
 		font-weight: 600;
 		text-align: left;
@@ -28,7 +28,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: $white;
+			background: colour(white);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -49,6 +49,11 @@
 		padding: 12px 18px 8px;
 		position: relative;
 
+		&--commands {
+			@include clearfix();
+			background: rgba(0,0,0,0.1);
+		}
+
 		&:not(:first-child) {
 			border-top: 1px solid rgba(0,0,0,0.05);
 		}
@@ -59,10 +64,10 @@
 			.action {
 				@include animate();
 				cursor: pointer;
-				color: $mid_grey;
+				color: colour(mid_grey);
 
 				&:hover {
-					color: $dark_grey;
+					color: colour(dark_grey);
 				}
 			}
 		}
@@ -81,40 +86,9 @@
 		&__mute.control {
 			@include click_feedback(rgba(0,0,0,0.5));
 			padding: 2px;
-			color: $black;
+			color: colour(black);
 			float: left;
 			font-size: 16px;
-		}
-
-		&__power {
-			@include click_feedback(rgba(0,0,0,0.5));
-			width: 18px;
-			height: 18px;
-			text-align: center;
-			color: $white;
-			cursor: pointer;
-			float: left;
-			margin-top: -2px;
-			margin-right: 6px;
-
-			.icon {
-				padding-top: 5px;
-				font-size: 12px;
-			}
-
-			&:before {
-				content: '';
-				display: block;
-				position: absolute;
-				top: 2px;
-				left: 0;
-				width: 100%;
-				padding-bottom: 100%;
-				background: $red;
-				z-index: -1;
-				border-radius: 50%;
-				opacity: 1;
-			}
 		}
 	}
 
@@ -135,8 +109,8 @@
 			bottom: 0;
 			left: 0;
 			width: auto;
-			padding: 4px 0 0;
-			background: lighten($dark_grey, 17.5%);
+			padding: 0;
+			background: lighten(colour(dark_grey), 17.5%);
 			border-radius: 0;
 			box-shadow: none;
 			max-height: 50vh;
@@ -160,7 +134,7 @@
 			}
 
 			&__name {
-				color: $white;
+				color: colour(white);
 				font-weight: 400;
 				width: 30%;
 				float: left;
@@ -174,7 +148,7 @@
 			}
 
 			&__mute.control {
-				color: $white;
+				color: colour(white);
 			}
 		}
 	}

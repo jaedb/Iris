@@ -5,23 +5,20 @@
 		margin-bottom: 0px;
 	}
 					
-	&__group {
+	&__group,
+	&__client {
+		&__mute-control {
+			display: inline-block;
+			float: left;
+			padding: 8px 5px 0;
+			border: 0;
+		}
+
 		&__volume-control {
-			padding: 10px 0 5px;
+			padding: 10px 0 5px 35px;
 			display: block;
 			width: 100%;
 			box-sizing: border-box;
-
-			.mute-control {
-				display: inline-block;
-				float: left;
-				padding: 0 5px;
-				border: 0;
-			}
-
-			.slider-wrapper {
-				margin-left: 30px;
-			}
 		}
 	}
 
@@ -31,7 +28,7 @@
 		
 	&__group {
 		padding-top: 10px;
-		border-top: 1px solid $grey;
+		border-top: 1px solid colour(grey);
 
 		&:not(:last-child){
 			padding-bottom: 20px;
@@ -82,7 +79,7 @@
 					padding-left: 6px;
 
 					&.disconnected {
-						color: $red;
+						color: colour(red);
 					}
 				}
 			}
@@ -100,25 +97,6 @@
 
 			.icon {
 				padding-right: 0;
-			}
-		}
-
-		&__volume-control {
-			padding-top: 11px;
-			padding-right: 10px;
-			display: block;
-			vertical-align: middle;
-			box-sizing: border-box;
-
-			.mute-control {
-				display: inline-block;
-				float: left;
-				padding: 0 5px;
-				border: 0;
-			}
-
-			.slider-wrapper {
-				margin-left: 30px;
 			}
 		}
 
@@ -141,7 +119,7 @@
 					left: 50%;
 					bottom: 0;
 					width: 1px;
-					background: $grey;
+					background: colour(grey);
 					z-index: 0;
 				}
 

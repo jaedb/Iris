@@ -89,7 +89,7 @@ var initialState = {
 		groups: {},
 		clients: {},
 		server: null,
-		client_commands: {}
+		commands: {}
 	}
 };
 

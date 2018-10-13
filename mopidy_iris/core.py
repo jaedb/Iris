@@ -8,6 +8,7 @@ import tornado.ioloop
 import tornado.httpclient
 import requests
 import time
+import pickle
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
@@ -26,6 +27,7 @@ class IrisCore(object):
     spotify_token = False
     queue_metadata = {}
     connections = {}
+    commands = {}
     initial_consume = False
     radio = {
         "enabled": 0,
@@ -35,6 +37,57 @@ class IrisCore(object):
         "results": []
     }
     snapcast_listener = False
+
+
+    ##
+    # Kick off
+    ##
+    def start(self):
+
+    	# Load our commands from file
+    	self.commands = self.load_from_file('commands')
+
+
+	##
+	# Save dict object to disk
+	#
+	# @param dict Dict
+	# @param name String
+	# @return void
+	##
+    def save_to_file(self, dict, name):
+
+    	# Build path to our special Iris folder
+    	path = self.config['core'].get('cache_dir')+'/iris/'
+
+    	# Create the folder if it doesn't yet exist
+    	if not os.path.exists(path):
+    		os.makedirs(path)
+
+        # And now open the file, and drop in our dict
+        try:
+            with open(path + name + '.pkl', 'wb') as f:
+                pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
+        except Exception:
+            return False
+
+
+    ##
+    # Load a dict from disk
+    #
+    # @param name String
+    # @return Dict
+    ##
+    def load_from_file(self, name):
+
+        # Build path to our special Iris folder
+        path = self.config['core'].get('cache_dir')+'/iris/'
+
+        try:
+            with open(path + name + '.pkl', 'rb') as f:
+                return pickle.load(f)
+        except Exception:
+            return {}
 
 
     ##
@@ -862,6 +915,50 @@ class IrisCore(object):
         self.queue_metadata = cleaned_queue_metadata
 
 
+
+    ##
+    # Commands
+    #
+    # These are stored locally for all users to access
+    ##
+
+    def get_commands(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        response = {
+            'commands': self.commands
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def set_commands(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+        data = kwargs.get('data', {})
+
+        # Update our temporary variable
+        self.commands = data['commands']
+
+        # Save the new commands to file storage
+        self.save_to_file(self.commands, 'commands')
+
+        self.broadcast(data={
+            'method': 'commands_changed',
+            'params': {
+                'commands': self.commands
+            }
+        })
+
+        response = {
+            'message': 'Commands saved'
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+
     ##
     # Spotify authentication
     #
@@ -1021,25 +1118,13 @@ class IrisCore(object):
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
+        data = kwargs.get('data', None)
 
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
-
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
+        self.save_to_file(data,"test")
 
         response = {
-            'message': "Permission granted"
+            'message': "Saved",
+            'request': data
         }
 
         if (callback):

@@ -172,7 +172,7 @@ export function getTrackLyrics(uri, path){
 	                        });
 
 	                        var lyrics_html = lyrics.html();
-	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
+	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
 	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
 	                        dispatch(coreActions.trackLoaded({

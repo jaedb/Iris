@@ -25,16 +25,38 @@
 				&[href]:hover {
 					.thumbnail {
 						cursor: pointer;
-						border-color: $turquoise;
+						border-color: colour(turquoise);
 					}
 				}
 			}
 		}
 	}
 
+	.commands-setup {
+		padding-bottom: 20px;
+		
+		&__item {
+			position: relative;
+
+			.commands__item {
+				margin-bottom: -5px;
+			}
+
+			&__actions {
+				position: absolute;
+				top: 16px;
+				right: 0;
+
+				.action {
+					padding: 12px 8px;
+				}
+			} 
+		}
+	}
+
 	.field.pusher-connections {
 		.connection.me {
-			color: $turquoise;
+			color: colour(turquoise);
 		}
 	}
 

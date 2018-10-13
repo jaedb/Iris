@@ -29,10 +29,6 @@ export default class Notifications extends React.Component{
 			this.props.geniusActions.importAuthorization(configuration.genius.authorization, configuration.genius.me);
 		}
 
-		if (configuration.snapcast_client_commands){
-			this.props.snapcastActions.clientCommandsUpdated(configuration.snapcast_client_commands);
-		}
-
 		this.props.uiActions.removeNotification(notification_key, true);
 		this.props.uiActions.createNotification({type: 'info', content: 'Import successful'});
 	}
@@ -72,7 +68,6 @@ export default class Notifications extends React.Component{
 												{notification.configuration.spotify ? <li>Spotify</li> : null}
 												{notification.configuration.lastfm ? <li>LastFM</li> : null}
 												{notification.configuration.genius ? <li>Genius</li> : null}
-												{notification.configuration.snapcast_client_commands ? <li>Snapcast</li> : null}
 											</ul>
 											<p>Do you want to import this?</p>
 										</div>

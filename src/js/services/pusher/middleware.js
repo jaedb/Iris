@@ -108,6 +108,9 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
+                    case 'commands_changed':
+                        store.dispatch(pusherActions.commandsUpdated(message.params.commands));
+                        break;
                     case 'reload':
                         window.location.reload(true);
                         break;
@@ -168,6 +171,8 @@ const PusherMiddleware = (function(){
     }
 
     return store => next => action => {
+    	var pusher = store.getState().pusher;
+    	
         switch(action.type){
 
             case 'PUSHER_CONNECT':
@@ -227,6 +232,7 @@ const PusherMiddleware = (function(){
 
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getRadio());
+                store.dispatch(pusherActions.getCommands());
                 store.dispatch(pusherActions.getQueueMetadata());
 
                 // Give things a few moments to setup before we check for version.
@@ -236,7 +242,7 @@ const PusherMiddleware = (function(){
                     function(){
                         store.dispatch(pusherActions.getVersion());
                     },
-                    2000
+                    500
                 );
                 next(action);
                 break;
@@ -303,7 +309,7 @@ const PusherMiddleware = (function(){
                 request(store, 'add_queue_metadata', {
                     tlids: action.tlids, 
                     added_from: action.from_uri,
-                    added_by: store.getState().pusher.username
+                    added_by: pusher.username
                 })
                 break;
 
@@ -387,6 +393,112 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+
+            /**
+             * Commands
+             **/
+
+            case 'PUSHER_GET_COMMANDS':
+                request(store, 'get_commands')
+                    .then(
+                        response => {
+                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+                        },
+                        error => {                            
+                            // We're not too worried about capturing errors here
+                            // It's also likely to fail where UI has been updated but
+                            // server hasn't been restarted yet.
+                        }
+                    );                
+                next(action);
+                break
+
+            case 'PUSHER_SET_COMMAND':
+                var commands_index = Object.assign({}, pusher.commands);
+
+                if (commands_index[action.command.id]){
+                    var command = Object.assign({}, commands_index[action.command.id], action.command);
+                } else {
+                    var command = action.command;
+                }
+                commands_index[action.command.id] = command;
+
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                			// No action required, the change will be broadcast
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not set commands',
+                                error
+                            ));
+                        }
+                    );
+                
+                next(action);
+                break
+
+            case 'PUSHER_REMOVE_COMMAND':
+                var commands_index = Object.assign({}, pusher.commands);
+                delete commands_index[action.id];
+
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                            // No action required, the change will be broadcast
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not remove command',
+                                error
+                            ));
+                        }
+                    );
+                
+                next(action);
+                break
+
+            case 'PUSHER_SEND_COMMAND':
+                var command = Object.assign({}, pusher.commands[action.id]);
+                var notification_key = 'command_'+action.id;
+            	
+            	if (action.notify){
+                    store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                }
+
+				try {
+					var ajax_settings = JSON.parse(command.command);
+				} catch(error){
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
+                    break;
+				}
+
+                // Handle success and failure
+                ajax_settings.success = function(response){
+                	console.log("Command sent, response was:",response);
+
+                	if (action.notify){
+	                	store.dispatch(uiActions.processFinished(notification_key));
+                    	store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
+	                }
+                }
+                ajax_settings.error = function(xhr, status, error){
+                    console.error("Command failed, response was:",xhr,error);
+	                store.dispatch(uiActions.processFinished(notification_key));
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status+": "+error}));
+                }
+
+                // Actually send the request
+                $.ajax(ajax_settings);
+
+                break
+
+
+            /**
+             * Radio
+             **/
+
             case 'PUSHER_GET_RADIO':
                 request(store, 'get_radio')
                     .then(
@@ -445,7 +557,7 @@ const PusherMiddleware = (function(){
                         {
                             notification: {
                                 type: 'info',
-                                content: store.getState().pusher.username + ' is starting radio mode'
+                                content: pusher.username + ' is starting radio mode'
                             }
                         }
                     ));
@@ -482,7 +594,7 @@ const PusherMiddleware = (function(){
                     {
                         notification: {
                             type: 'info',
-                            content: store.getState().pusher.username + ' stopped radio mode'
+                            content: pusher.username + ' stopped radio mode'
                         }
                     }
                 ));

@@ -1,0 +1,47 @@
+
+.colour-field {
+	&__option {
+		@include animate(0.1s);
+		display: inline-block;
+		border-radius: 3px;
+		background: colour(grey);
+		width: 26px;
+		height: 26px;
+		margin: 2px 8px 2px 0;
+		position: relative;
+		cursor: pointer;
+		overflow: hidden;
+
+		&:after {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 2;
+		}
+
+		&__icon {
+			position: absolute;
+			top: 3px;
+			left: 3px;
+			font-size: 20px;
+			z-index: 3;
+		}
+
+		&:hover {
+			&:after {
+				background: rgba(255,255,255,0.15);
+			}
+		}
+
+		&:active,
+		&:focus {
+			&:after {
+				background: rgba(0,0,0,0.15);
+			}
+		}
+	}
+}

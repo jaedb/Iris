@@ -3240,7 +3240,7 @@ var helpers = __webpack_require__(1);
  * @param data mixed = request payload
  * @return Promise
  **/
-var sendRequest = function sendRequest(dispatch, getState, endpoint) {
+var request = function request(dispatch, getState, endpoint) {
     var method = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'GET';
     var data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
@@ -3323,17 +3323,38 @@ function getToken(dispatch, getState) {
         }
 
         // token is expiring/expired, so go get a new one and resolve that
-        refreshToken(dispatch, getState).then(function (response) {
-            resolve(response.access_token);
-        }, function (error) {
-            reject(error);
-        });
+        // TODO: Detect whether we already have a pending refresh, in which case we
+        // need to wait until it's done, and then return that
+
+        // We've already got a refresh in progress
+        if (getState().ui.load_queue.spotify_refresh_token !== undefined) {
+
+            console.log("Already refreshing token, we'll wait 1000ms and try again");
+
+            // Re-check the queue periodically to see if it's finished yet
+            // TODO: Look at properly hooking up with the ajax finish event
+            setTimeout(function () {
+                // Return myself for a re-check
+                return getToken(dispatch, getState);
+            }, 1000);
+        } else {
+            refreshToken(dispatch, getState).then(function (response) {
+                resolve(response.access_token);
+            }, function (error) {
+                reject(error);
+            });
+        }
     });
 }
 
 function refreshToken(dispatch, getState) {
     return new Promise(function (resolve, reject) {
 
+        // add reference to loader queue
+        var loader_key = helpers.generateGuid();
+        dispatch(uiActions.startLoading(loader_key, 'spotify_refresh_token'));
+
+        // Fully-authorized, so we can use the local Spotify credentials
         if (getState().spotify.authorization) {
 
             var config = {
@@ -3344,6 +3365,8 @@ function refreshToken(dispatch, getState) {
             };
 
             $.ajax(config).then(function (response) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 response.token_expiry = new Date().getTime() + response.expires_in * 1000;
                 response.source = 'spotify';
                 dispatch({
@@ -3352,6 +3375,8 @@ function refreshToken(dispatch, getState) {
                 });
                 resolve(response);
             }, function (xhr, status, error) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 reject({
                     config: config,
                     xhr: xhr,
@@ -3359,6 +3384,9 @@ function refreshToken(dispatch, getState) {
                     error: error
                 });
             });
+
+            // Server-side authorized (with limited scope) so we need to refresh
+            // using the Mopidy-Spotify credentials
         } else {
 
             var config = {
@@ -3369,6 +3397,8 @@ function refreshToken(dispatch, getState) {
             };
 
             $.ajax(config).then(function (response, status, xhr) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 if (response.error) {
                     reject({
                         config: config,
@@ -3388,6 +3418,8 @@ function refreshToken(dispatch, getState) {
                     resolve(token);
                 }
             }, function (xhr, status, error) {
+                dispatch(uiActions.stopLoading(loader_key));
+
                 reject({
                     config: config,
                     xhr: xhr,
@@ -3452,7 +3484,7 @@ function importAuthorization(authorization) {
  **/
 function getMe() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me').then(function (response) {
+        request(dispatch, getState, 'me').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ME_LOADED',
                 me: response
@@ -3470,7 +3502,7 @@ function getMe() {
  **/
 function getTrack(uri) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
+        request(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
             dispatch(coreActions.trackLoaded(response));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load track', error));
@@ -3480,7 +3512,7 @@ function getTrack(uri) {
 
 function getLibraryTracks() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me/tracks?limit=50').then(function (response) {
+        request(dispatch, getState, 'me/tracks?limit=50').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
                 data: response
@@ -3512,7 +3544,7 @@ function getFeaturedPlaylists() {
 
         var timestamp = year + '-' + month + '-' + day + 'T' + hour + ':' + min + ':' + sec;
 
-        sendRequest(dispatch, getState, 'browse/featured-playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale + 'timestamp=' + timestamp).then(function (response) {
+        request(dispatch, getState, 'browse/featured-playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale + 'timestamp=' + timestamp).then(function (response) {
             var playlists = [];
             for (var i = 0; i < response.playlists.items.length; i++) {
                 playlists.push(Object.assign({}, response.playlists.items[i], {
@@ -3546,7 +3578,7 @@ function getFeaturedPlaylists() {
 
 function getCategories() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORIES_LOADED',
                 categories: response.categories.items
@@ -3559,7 +3591,7 @@ function getCategories() {
 
 function getCategory(id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories/' + id + '?country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORY_LOADED',
                 category: Object.assign({
@@ -3575,7 +3607,7 @@ function getCategory(id) {
 
 function getCategoryPlaylists(id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
+        request(dispatch, getState, 'browse/categories/' + id + '/playlists?limit=50&country=' + getState().spotify.country + '&locale=' + getState().spotify.locale).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
                 uri: 'category:' + id,
@@ -3589,7 +3621,7 @@ function getCategoryPlaylists(id) {
 
 function getNewReleases() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'browse/new-releases?country=' + getState().spotify.country + '&limit=50').then(function (response) {
+        request(dispatch, getState, 'browse/new-releases?country=' + getState().spotify.country + '&limit=50').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_NEW_RELEASES_LOADED',
                 data: response
@@ -3604,7 +3636,7 @@ function getURL(url, action_name) {
     var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             dispatch({
                 type: action_name,
                 key: key,
@@ -3621,7 +3653,7 @@ function getMore(url) {
     var custom_action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             if (core_action) {
                 dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response));
             } else if (custom_action) {
@@ -3661,7 +3693,7 @@ function getSearchResults(type, query) {
         url += '&limit=' + limit;
         url += '&offset=' + offset;
 
-        sendRequest(dispatch, getState, url).then(function (response) {
+        request(dispatch, getState, url).then(function (response) {
             if (response.tracks !== undefined) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
@@ -3764,7 +3796,7 @@ function getAutocompleteResults(field_id, query) {
         endpoint += '&type=' + types.join(',');
         endpoint += '&country=' + getState().spotify.country;
 
-        sendRequest(dispatch, getState, endpoint).then(function (response) {
+        request(dispatch, getState, endpoint).then(function (response) {
             var genres = [];
             if (genre_included) {
                 var available_genres = getState().spotify.genres;
@@ -3873,7 +3905,7 @@ function following(uri) {
                 break;
         }
 
-        sendRequest(dispatch, getState, endpoint, method, data).then(function (response) {
+        request(dispatch, getState, endpoint, method, data).then(function (response) {
             if (response) is_following = response;
             if ((typeof is_following === 'undefined' ? 'undefined' : _typeof(is_following)) === 'object') is_following = is_following[0];
 
@@ -3903,7 +3935,7 @@ function resolveRadioSeeds(radio) {
                 artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i]);
             }
 
-            sendRequest(dispatch, getState, 'artists?ids=' + artist_ids).then(function (response) {
+            request(dispatch, getState, 'artists?ids=' + artist_ids).then(function (response) {
                 if (response && response.artists) {
                     dispatch({
                         type: 'ARTISTS_LOADED',
@@ -3924,7 +3956,7 @@ function resolveRadioSeeds(radio) {
                 track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i]);
             }
 
-            sendRequest(dispatch, getState, 'tracks?ids=' + track_ids).then(function (response) {
+            request(dispatch, getState, 'tracks?ids=' + track_ids).then(function (response) {
                 dispatch({
                     type: 'TRACKS_LOADED',
                     tracks: response.tracks
@@ -3954,7 +3986,7 @@ function getFavorites() {
 
         dispatch({ type: 'SPOTIFY_FAVORITES_LOADED', artists: [], tracks: [] });
 
-        $.when(sendRequest(dispatch, getState, 'me/top/artists?limit=' + limit + '&time_range=' + term), sendRequest(dispatch, getState, 'me/top/tracks?limit=' + limit + '&time_range=' + term)).then(function (artists_response, tracks_response) {
+        $.when(request(dispatch, getState, 'me/top/artists?limit=' + limit + '&time_range=' + term), request(dispatch, getState, 'me/top/tracks?limit=' + limit + '&time_range=' + term)).then(function (artists_response, tracks_response) {
             dispatch({
                 type: 'SPOTIFY_FAVORITES_LOADED',
                 artists: artists_response.items,
@@ -4024,7 +4056,7 @@ function getRecommendations() {
             }
         }
 
-        sendRequest(dispatch, getState, endpoint).then(function (response) {
+        request(dispatch, getState, endpoint).then(function (response) {
             var tracks = Object.assign([], response.tracks);
 
             // We only get simple artist objects, so we need to
@@ -4089,7 +4121,7 @@ function getRecommendations() {
  **/
 function getGenres() {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'recommendations/available-genre-seeds').then(function (response) {
+        request(dispatch, getState, 'recommendations/available-genre-seeds').then(function (response) {
             dispatch({
                 type: 'SPOTIFY_GENRES_LOADED',
                 genres: response.genres
@@ -4121,7 +4153,7 @@ function getArtist(uri) {
         var artist = {};
 
         // We need our artist, obviously
-        var requests = [sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
+        var requests = [request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
             Object.assign(artist, response);
         }, function (error) {
             dispatch(coreActions.handleException('Could not load artist', error));
@@ -4130,13 +4162,13 @@ function getArtist(uri) {
         // Do we want a full artist, with all supporting material?
         if (full) {
 
-            requests.push(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+            requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
                 Object.assign(artist, response);
             }, function (error) {
                 dispatch(coreActions.handleException('Could not load artist\'s top tracks', error));
             }));
 
-            requests.push(sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
+            requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
                 dispatch(coreActions.artistsLoaded(response.artists));
                 Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri', response.artists) });
             }, function (error) {
@@ -4157,7 +4189,7 @@ function getArtist(uri) {
 
             // Now go get our artist albums
             if (full) {
-                sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
+                request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
                     dispatch({
                         type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
                         artist_uri: uri,
@@ -4181,7 +4213,7 @@ function getArtists(uris) {
             ids += helpers.getFromUri('artistid', uris[i]);
         }
 
-        sendRequest(dispatch, getState, 'artists/?ids=' + ids).then(function (response) {
+        request(dispatch, getState, 'artists/?ids=' + ids).then(function (response) {
             for (var i = i; i < response.length; i++) {
                 var artist = response;
                 for (var i = 0; i < artist.albums.length; i++) {
@@ -4211,7 +4243,7 @@ function playArtistTopTracks(uri) {
 
             // We need to load the artist's top tracks first
         } else {
-            sendRequest(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+            request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
                 var uris = helpers.arrayOf('uri', response.tracks);
                 dispatch(mopidyActions.playURIs(uris, uri));
             }, function (error) {
@@ -4228,7 +4260,7 @@ function playArtistTopTracks(uri) {
 
 function getUser(uri) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
+        request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
             dispatch(coreActions.userLoaded(helpers.formatUser(response)));
         }, function (error) {
             dispatch(coreActions.handleException('Could not load user', error));
@@ -4240,7 +4272,7 @@ function getUserPlaylists(uri) {
     return function (dispatch, getState) {
 
         // get the first page of playlists
-        sendRequest(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
+        request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
             var playlists = [];
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
@@ -4299,7 +4331,7 @@ function getAlbum(uri) {
     return function (dispatch, getState) {
 
         // get the album
-        sendRequest(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
+        request(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
 
             // dispatch our loaded artists (simple objects)
             dispatch(coreActions.artistsLoaded(response.artists));
@@ -4332,7 +4364,7 @@ function getAlbum(uri) {
             }
 
             // get all album artists as full objects
-            sendRequest(dispatch, getState, 'artists/?ids=' + artist_ids).then(function (response) {
+            request(dispatch, getState, 'artists/?ids=' + artist_ids).then(function (response) {
                 dispatch(coreActions.artistsLoaded(response.artists));
             }, function (error) {
                 dispatch(coreActions.handleException('Could not load album\'s artists', error));
@@ -4348,7 +4380,7 @@ function toggleAlbumInLibrary(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
+        request(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_ALBUM_FOLLOWING',
                 key: uri,
@@ -4375,7 +4407,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
             collaborative: is_collaborative
         };
 
-        sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/', 'POST', data).then(function (response) {
+        request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/', 'POST', data).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_LOADED',
                 key: response.uri,
@@ -4409,12 +4441,12 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
             collaborative: is_collaborative
 
             // Update the playlist fields
-        };sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
+        };request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
             dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
 
             // Save the image
             if (image) {
-                sendRequest(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
+                request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
                     dispatch({
                         type: 'PLAYLIST_UPDATED',
                         key: uri,
@@ -4452,7 +4484,7 @@ function getPlaylist(uri) {
     return function (dispatch, getState) {
 
         // get the main playlist object
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
 
             // convert links in description
             var description = null;
@@ -4500,7 +4532,7 @@ function getLibraryTracksAndPlay(uri) {
 
 function getLibraryTracksAndPlayProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
 
             // Check to see if we've been cancelled
             if (getState().ui.processes['SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'] !== undefined) {
@@ -4563,7 +4595,7 @@ function getPlaylistTracksAndPlay(uri, shuffle) {
 
 function getPlaylistTracksAndPlayProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
 
             // Check to see if we've been cancelled
             if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'] !== undefined) {
@@ -4620,7 +4652,7 @@ function toggleFollowingPlaylist(uri, method) {
     if (method == 'DELETE') var new_state = 0;
 
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
                 key: uri,
@@ -4634,7 +4666,7 @@ function toggleFollowingPlaylist(uri, method) {
 
 function addTracksToPlaylist(uri, tracks_uris) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_ADDED',
                 key: uri,
@@ -4649,7 +4681,7 @@ function addTracksToPlaylist(uri, tracks_uris) {
 
 function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REMOVED',
                 key: uri,
@@ -4664,7 +4696,7 @@ function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
+        request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', { uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id }).then(function (response) {
             dispatch({
                 type: 'PLAYLIST_TRACKS_REORDERED',
                 key: uri,
@@ -4712,7 +4744,7 @@ function getLibraryPlaylists() {
 
 function getLibraryPlaylistsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
                 playlists: response.items
@@ -4771,7 +4803,7 @@ function getLibraryArtists() {
 
 function getLibraryArtistsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
                 artists: response.artists.items
@@ -4829,7 +4861,7 @@ function getLibraryAlbums() {
 
 function getLibraryAlbumsProcessor(data) {
     return function (dispatch, getState) {
-        sendRequest(dispatch, getState, data.next).then(function (response) {
+        request(dispatch, getState, data.next).then(function (response) {
             dispatch({
                 type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
                 albums: response.items
@@ -5546,17 +5578,11 @@ exports.debug = debug;
 exports.getQueueMetadata = getQueueMetadata;
 exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
-exports.getSnapcast = getSnapcast;
-exports.snapcastServerLoaded = snapcastServerLoaded;
-exports.setSnapcastClientName = setSnapcastClientName;
-exports.setSnapcastClientMute = setSnapcastClientMute;
-exports.setSnapcastClientVolume = setSnapcastClientVolume;
-exports.setSnapcastClientLatency = setSnapcastClientLatency;
-exports.setSnapcastClientGroup = setSnapcastClientGroup;
-exports.deleteSnapcastClient = deleteSnapcastClient;
-exports.setSnapcastGroupStream = setSnapcastGroupStream;
-exports.setSnapcastGroupMute = setSnapcastGroupMute;
-exports.setSnapcastGroupVolume = setSnapcastGroupVolume;
+exports.getCommands = getCommands;
+exports.setCommand = setCommand;
+exports.removeCommand = removeCommand;
+exports.sendCommand = sendCommand;
+exports.commandsUpdated = commandsUpdated;
 
 /**
  * Actions and Action Creators
@@ -5763,98 +5789,43 @@ function addQueueMetadata() {
 }
 
 /**
- * Snapcast actions
- * TODO: Figure out how to cleanly split this out to it's own service
- * but still share the pusher middleware connection
+ * Commands (buttons)
  **/
 
-function getSnapcast() {
+function getCommands() {
 	return {
-		type: 'PUSHER_GET_SNAPCAST',
-		data: {
-			method: 'Server.GetStatus'
-		}
+		type: 'PUSHER_GET_COMMANDS'
 	};
 }
 
-function snapcastServerLoaded(server) {
+function setCommand(command) {
 	return {
-		type: 'PUSHER_SNAPCAST_SERVER_LOADED',
-		server: server
+		type: 'PUSHER_SET_COMMAND',
+		command: command
 	};
 }
 
-function setSnapcastClientName(id, name) {
+function removeCommand(id) {
 	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_NAME',
-		id: id,
-		name: name
-	};
-}
-
-function setSnapcastClientMute(id, mute) {
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_MUTE',
-		id: id,
-		mute: mute
-	};
-}
-
-function setSnapcastClientVolume(id, percent) {
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_VOLUME',
-		id: id,
-		percent: percent
-	};
-}
-
-function setSnapcastClientLatency(id, latency) {
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_LATENCY',
-		id: id,
-		latency: latency
-	};
-}
-
-function setSnapcastClientGroup(id, group_id) {
-	return {
-		type: 'PUSHER_SET_SNAPCAST_CLIENT_GROUP',
-		id: id,
-		group_id: group_id
-	};
-}
-
-function deleteSnapcastClient(id) {
-	return {
-		type: 'PUSHER_DELETE_SNAPCAST_CLIENT',
+		type: 'PUSHER_REMOVE_COMMAND',
 		id: id
 	};
 }
 
-function setSnapcastGroupStream(id, stream_id) {
+function sendCommand(id) {
+	var notify = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_STREAM',
+		type: 'PUSHER_SEND_COMMAND',
 		id: id,
-		stream_id: stream_id
+		notify: notify
 	};
 }
 
-function setSnapcastGroupMute(id, mute) {
+function commandsUpdated(commands) {
 	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_MUTE',
-		id: id,
-		mute: mute
-	};
-}
-
-function setSnapcastGroupVolume(id, percent) {
-	var old_percent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-	return {
-		type: 'PUSHER_SET_SNAPCAST_GROUP_VOLUME',
-		id: id,
-		percent: percent,
-		old_percent: old_percent
+		type: 'PUSHER_COMMANDS_UPDATED',
+		commands: commands
 	};
 }
 
@@ -19677,7 +19648,7 @@ var DropdownField = function (_React$Component) {
 				options.push({
 					value: 'select-all',
 					label: 'Select all',
-					className: 'grey-text'
+					className: 'mid_grey-text'
 				});
 			}
 
@@ -20753,7 +20724,7 @@ function getTrackLyrics(uri, path) {
                     });
 
                     var lyrics_html = lyrics.html();
-                    lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
+                    lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
                     lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
                     dispatch(coreActions.trackLoaded({
@@ -21087,9 +21058,6 @@ exports.setClientName = setClientName;
 exports.setClientMute = setClientMute;
 exports.setClientVolume = setClientVolume;
 exports.setClientLatency = setClientLatency;
-exports.setClientCommand = setClientCommand;
-exports.sendClientCommand = sendClientCommand;
-exports.clientCommandsUpdated = clientCommandsUpdated;
 exports.setClientGroup = setClientGroup;
 exports.deleteClient = deleteClient;
 exports.setGroupStream = setGroupStream;
@@ -21137,29 +21105,6 @@ function setClientLatency(id, latency) {
 		type: 'SNAPCAST_SET_CLIENT_LATENCY',
 		id: id,
 		latency: latency
-	};
-}
-
-function setClientCommand(id, command) {
-	return {
-		type: 'SNAPCAST_SET_CLIENT_COMMAND',
-		id: id,
-		command: command
-	};
-}
-
-function sendClientCommand(id, command) {
-	return {
-		type: 'SNAPCAST_SEND_CLIENT_COMMAND',
-		id: id,
-		command: command
-	};
-}
-
-function clientCommandsUpdated(client_commands) {
-	return {
-		type: 'SNAPCAST_CLIENT_COMMANDS_UPDATED',
-		client_commands: client_commands
 	};
 }
 
@@ -21422,7 +21367,7 @@ var GridItem = function (_React$Component) {
 					{ className: 'name' },
 					item.name ? item.name : _react2.default.createElement(
 						'span',
-						{ className: 'dark-grey-text' },
+						{ className: 'dark-mid_grey-text' },
 						item.uri
 					)
 				),
@@ -23356,7 +23301,7 @@ var ErrorBoundary = function (_React$Component) {
 				// You can render any custom fallback UI
 				return _react2.default.createElement(
 					"p",
-					{ className: "grey-text" },
+					{ className: "mid_grey-text" },
 					"Failed to render"
 				);
 			}
@@ -26510,7 +26455,7 @@ var Track = function (_React$Component) {
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'mid_grey-text' },
 						track.uri
 					),
 					track.explicit ? _react2.default.createElement(
@@ -26587,7 +26532,7 @@ var Track = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'span',
-							{ className: 'grey-text from' },
+							{ className: 'mid_grey-text from' },
 							_react2.default.createElement(
 								'span',
 								{ className: 'label' },
@@ -26615,7 +26560,7 @@ var Track = function (_React$Component) {
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'mid_grey-text' },
 						track.uri
 					),
 					track.explicit ? _react2.default.createElement(
@@ -26654,7 +26599,7 @@ var Track = function (_React$Component) {
 					{ className: 'col name', key: 'name' },
 					track.name ? track.name : _react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'mid_grey-text' },
 						track.uri
 					),
 					track.explicit ? _react2.default.createElement(
@@ -27541,6 +27486,10 @@ var _ImageZoom = __webpack_require__(331);
 
 var _ImageZoom2 = _interopRequireDefault(_ImageZoom);
 
+var _EditCommand = __webpack_require__(361);
+
+var _EditCommand2 = _interopRequireDefault(_EditCommand);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -27566,6 +27515,7 @@ _reactDom2.default.render(_react2.default.createElement(
 			_react2.default.createElement(_reactRouter.Route, { path: 'add-to-playlist/:uris', component: _AddToPlaylist2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'image-zoom', component: _ImageZoom2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'share-configuration', component: _ShareConfiguration2.default }),
+			_react2.default.createElement(_reactRouter.Route, { path: 'edit-command(/:id)', component: _EditCommand2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue', component: _Queue2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/history', component: _QueueHistory2.default }),
 			_react2.default.createElement(_reactRouter.Route, { path: 'queue/radio', component: _EditRadio2.default }),
@@ -51377,7 +51327,7 @@ var initialState = {
 		groups: {},
 		clients: {},
 		server: null,
-		client_commands: {}
+		commands: {}
 	}
 };
 
@@ -52057,30 +52007,8 @@ function reducer() {
         case 'PUSHER_CONFIG':
             return Object.assign({}, pusher, { config: action.config });
 
-        case 'PUSHER_SNAPCAST':
-            return Object.assign({}, pusher, {
-                snapcast_streams: action.snapcast_streams,
-                snapcast_groups: action.snapcast_groups,
-                snapcast_clients: action.snapcast_clients
-            });
-
-        case 'PUSHER_SNAPCAST_GROUP_UPDATED':
-            var snapcast_groups = Object.assign({}, pusher.snapcast_groups);
-            var group = snapcast_groups[action.key];
-            snapcast_groups[action.key] = Object.assign({}, group, action.group);
-            return Object.assign({}, pusher, { snapcast_groups: snapcast_groups });
-
-        case 'PUSHER_SNAPCAST_CLIENT_UPDATED':
-            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
-            var client = snapcast_clients[action.key];
-            client.config = Object.assign({}, client.config, action.client.config);
-            snapcast_clients[action.key] = client;
-            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
-
-        case 'PUSHER_SNAPCAST_CLIENT_REMOVED':
-            var snapcast_clients = Object.assign({}, pusher.snapcast_clients);
-            delete snapcast_clients[action.key];
-            return Object.assign({}, pusher, { snapcast_clients: snapcast_clients });
+        case 'PUSHER_COMMANDS_UPDATED':
+            return Object.assign({}, pusher, { commands: action.commands });
 
         default:
             return pusher;
@@ -52711,9 +52639,6 @@ function reducer() {
         case 'SNAPCAST_SERVER_LOADED':
             var server = Object.assign({}, action.server);
             return Object.assign({}, snapcast, { server: server });
-
-        case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
-            return Object.assign({}, snapcast, { client_commands: action.client_commands });
 
         case 'SNAPCAST_CLIENTS_LOADED':
             if (action.flush) {
@@ -54124,7 +54049,7 @@ exports.default = UIMiddleware;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -54236,6 +54161,9 @@ var PusherMiddleware = function () {
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
+                    case 'commands_changed':
+                        store.dispatch(pusherActions.commandsUpdated(message.params.commands));
+                        break;
                     case 'reload':
                         window.location.reload(true);
                         break;
@@ -54297,6 +54225,8 @@ var PusherMiddleware = function () {
     return function (store) {
         return function (next) {
             return function (action) {
+                var pusher = store.getState().pusher;
+
                 switch (action.type) {
 
                     case 'PUSHER_CONNECT':
@@ -54353,6 +54283,7 @@ var PusherMiddleware = function () {
 
                         store.dispatch(pusherActions.getConfig());
                         store.dispatch(pusherActions.getRadio());
+                        store.dispatch(pusherActions.getCommands());
                         store.dispatch(pusherActions.getQueueMetadata());
 
                         // Give things a few moments to setup before we check for version.
@@ -54360,7 +54291,7 @@ var PusherMiddleware = function () {
                         // in subsequent requests.
                         setTimeout(function () {
                             store.dispatch(pusherActions.getVersion());
-                        }, 2000);
+                        }, 500);
                         next(action);
                         break;
 
@@ -54403,7 +54334,7 @@ var PusherMiddleware = function () {
                         request(store, 'add_queue_metadata', {
                             tlids: action.tlids,
                             added_from: action.from_uri,
-                            added_by: store.getState().pusher.username
+                            added_by: pusher.username
                         });
                         break;
 
@@ -54459,6 +54390,92 @@ var PusherMiddleware = function () {
                         return next(action);
                         break;
 
+                    /**
+                     * Commands
+                     **/
+
+                    case 'PUSHER_GET_COMMANDS':
+                        request(store, 'get_commands').then(function (response) {
+                            store.dispatch(pusherActions.commandsUpdated(response.commands));
+                        }, function (error) {
+                            // We're not too worried about capturing errors here
+                            // It's also likely to fail where UI has been updated but
+                            // server hasn't been restarted yet.
+                        });
+                        next(action);
+                        break;
+
+                    case 'PUSHER_SET_COMMAND':
+                        var commands_index = Object.assign({}, pusher.commands);
+
+                        if (commands_index[action.command.id]) {
+                            var command = Object.assign({}, commands_index[action.command.id], action.command);
+                        } else {
+                            var command = action.command;
+                        }
+                        commands_index[action.command.id] = command;
+
+                        request(store, 'set_commands', { commands: commands_index }).then(function (response) {
+                            // No action required, the change will be broadcast
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not set commands', error));
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'PUSHER_REMOVE_COMMAND':
+                        var commands_index = Object.assign({}, pusher.commands);
+                        delete commands_index[action.id];
+
+                        request(store, 'set_commands', { commands: commands_index }).then(function (response) {
+                            // No action required, the change will be broadcast
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not remove command', error));
+                        });
+
+                        next(action);
+                        break;
+
+                    case 'PUSHER_SEND_COMMAND':
+                        var command = Object.assign({}, pusher.commands[action.id]);
+                        var notification_key = 'command_' + action.id;
+
+                        if (action.notify) {
+                            store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                        }
+
+                        try {
+                            var ajax_settings = JSON.parse(command.command);
+                        } catch (error) {
+                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: error }));
+                            break;
+                        }
+
+                        // Handle success and failure
+                        ajax_settings.success = function (response) {
+                            console.log("Command sent, response was:", response);
+
+                            if (action.notify) {
+                                store.dispatch(uiActions.processFinished(notification_key));
+                                store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
+                            }
+                        };
+                        ajax_settings.error = function (xhr, status, error) {
+                            console.error("Command failed, response was:", xhr, error);
+                            store.dispatch(uiActions.processFinished(notification_key));
+                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status + ": " + error }));
+                        };
+
+                        // Actually send the request
+                        $.ajax(ajax_settings);
+
+                        break;
+
+                    /**
+                     * Radio
+                     **/
+
                     case 'PUSHER_GET_RADIO':
                         request(store, 'get_radio').then(function (response) {
                             store.dispatch({
@@ -54508,7 +54525,7 @@ var PusherMiddleware = function () {
                             store.dispatch(pusherActions.deliverBroadcast('notification', {
                                 notification: {
                                     type: 'info',
-                                    content: store.getState().pusher.username + ' is starting radio mode'
+                                    content: pusher.username + ' is starting radio mode'
                                 }
                             }));
                         }
@@ -54535,7 +54552,7 @@ var PusherMiddleware = function () {
                         store.dispatch(pusherActions.deliverBroadcast('notification', {
                             notification: {
                                 type: 'info',
-                                content: store.getState().pusher.username + ' stopped radio mode'
+                                content: pusher.username + ' stopped radio mode'
                             }
                         }));
 
@@ -54658,6 +54675,7 @@ var PusherMiddleware = function () {
 }();
 
 exports.default = PusherMiddleware;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
 
 /***/ }),
 /* 195 */
@@ -60302,7 +60320,7 @@ exports.default = SpotifyMiddleware;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -60539,37 +60557,6 @@ var SnapcastMiddleware = function () {
                         });
                         break;
 
-                    case 'SNAPCAST_SET_CLIENT_COMMAND':
-                        var client_commands_index = Object.assign({}, snapcast.client_commands);
-
-                        if (client_commands_index[action.id]) {
-                            var client_command = Object.assign({}, client_commands_index[action.id], action.command);
-                        } else {
-                            var client_command = action.command;
-                        }
-                        client_commands_index[action.id] = client_command;
-
-                        store.dispatch(snapcastActions.clientCommandsUpdated(client_commands_index));
-
-                        next(action);
-                        break;
-
-                    case 'SNAPCAST_SEND_CLIENT_COMMAND':
-
-                        // Prepare our command
-                        // We try and make it cross-origin compatible
-                        var command = JSON.parse(action.command);
-                        command.crossDomain = true;
-                        command.dataType = "jsonp";
-                        command.success = function (response) {
-                            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Command sent', description: command.url }));
-                        };
-
-                        // Actually send the request
-                        $.ajax(command);
-
-                        break;
-
                     case 'SNAPCAST_SET_CLIENT_GROUP':
 
                         var group = snapcast.groups[action.group_id];
@@ -60748,7 +60735,6 @@ var SnapcastMiddleware = function () {
 }();
 
 exports.default = SnapcastMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
 
 /***/ }),
 /* 221 */
@@ -60938,9 +60924,9 @@ var localstorageMiddleware = function () {
                         helpers.setStorage('spotify', action.data);
                         break;
 
-                    case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
+                    case 'SNAPCAST_COMMANDS_UPDATED':
                         helpers.setStorage('snapcast', {
-                            client_commands: action.client_commands
+                            commands: action.commands
                         });
                         break;
 
@@ -63020,6 +63006,8 @@ var OutputControl = function (_React$Component) {
 		value: function renderOutputs() {
 			var _this2 = this;
 
+			var has_outputs = false;
+
 			var clients = [];
 			for (var key in this.props.snapcast_clients) {
 				if (this.props.snapcast_clients.hasOwnProperty(key)) {
@@ -63032,19 +63020,14 @@ var OutputControl = function (_React$Component) {
 
 			var snapcast_clients = null;
 			if (clients.length > 0) {
+				has_outputs = true;
 				snapcast_clients = _react2.default.createElement(
 					'div',
 					null,
 					clients.map(function (client) {
-
-						var commands = {};
-						if (_this2.props.snapcast_client_commands[client.id]) {
-							commands = _this2.props.snapcast_client_commands[client.id];
-						}
-
 						return _react2.default.createElement(
 							'div',
-							{ className: "output-control__item outputs__item--snapcast" + (commands && commands.power ? " output-control__item--has-power-button" : ''), key: client.id },
+							{ className: 'output-control__item outputs__item--snapcast', key: client.id },
 							_react2.default.createElement(
 								'div',
 								{ className: 'output-control__item__name' },
@@ -63053,13 +63036,6 @@ var OutputControl = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'output-control__item__controls' },
-								commands && commands.power ? _react2.default.createElement(_SnapcastPowerButton2.default, {
-									className: 'output-control__item__power',
-									client: client,
-									onClick: function onClick(e) {
-										return _this2.props.snapcastActions.sendClientCommand(client.id, commands.power);
-									}
-								}) : null,
 								_react2.default.createElement(_MuteControl2.default, {
 									className: 'output-control__item__mute',
 									noTooltip: true,
@@ -63084,6 +63060,7 @@ var OutputControl = function (_React$Component) {
 
 			var local_streaming = null;
 			if (this.props.http_streaming_enabled) {
+				has_outputs = true;
 				local_streaming = _react2.default.createElement(
 					'div',
 					{ className: 'output-control__item outputs__item--icecast' },
@@ -63121,7 +63098,39 @@ var OutputControl = function (_React$Component) {
 				);
 			}
 
-			if (!local_streaming && !snapcast_clients) {
+			var commands = null;
+			if (this.props.pusher_commands) {
+
+				var commands_items = [];
+				for (var key in this.props.pusher_commands) {
+					if (this.props.pusher_commands.hasOwnProperty(key)) {
+						commands_items.push(this.props.pusher_commands[key]);
+					}
+				}
+
+				if (commands_items.length > 0) {
+					has_outputs = true;
+					commands = _react2.default.createElement(
+						'div',
+						{ className: 'output-control__item output-control__item--commands commands' },
+						commands_items.map(function (command) {
+							return _react2.default.createElement(
+								'div',
+								{
+									key: command.id,
+									className: 'commands__item commands__item--interactive',
+									onClick: function onClick(e) {
+										return _this2.props.pusherActions.sendCommand(command.id);
+									} },
+								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
+								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
+							);
+						})
+					);
+				}
+			}
+
+			if (!has_outputs) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'output-control__items output-control__items--no-results' },
@@ -63135,6 +63144,7 @@ var OutputControl = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'output-control__items' },
+					commands,
 					local_streaming,
 					snapcast_clients
 				);
@@ -63199,7 +63209,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		pusher_connected: state.pusher.connected,
 		snapcast_enabled: state.pusher.config ? state.pusher.config.snapcast_enabled : null,
 		snapcast_clients: state.snapcast.clients,
-		snapcast_client_commands: state.snapcast.client_commands ? state.snapcast.client_commands : {}
+		pusher_commands: state.pusher.commands ? state.pusher.commands : {}
 	};
 };
 
@@ -63752,7 +63762,7 @@ var ContextMenu = function (_React$Component) {
 				{ className: 'menu-item-wrapper' },
 				_react2.default.createElement(
 					'span',
-					{ className: 'menu-item grey-text' },
+					{ className: 'menu-item mid_grey-text' },
 					'No writable playlists'
 				)
 			);
@@ -64047,7 +64057,7 @@ var ContextMenu = function (_React$Component) {
 						{ className: 'menu-item' },
 						_react2.default.createElement(
 							'span',
-							{ className: 'label grey-text' },
+							{ className: 'label mid_grey-text' },
 							'Love track'
 						)
 					)
@@ -64639,10 +64649,6 @@ var Notifications = function (_React$Component) {
 				this.props.geniusActions.importAuthorization(configuration.genius.authorization, configuration.genius.me);
 			}
 
-			if (configuration.snapcast_client_commands) {
-				this.props.snapcastActions.clientCommandsUpdated(configuration.snapcast_client_commands);
-			}
-
 			this.props.uiActions.removeNotification(notification_key, true);
 			this.props.uiActions.createNotification({ type: 'info', content: 'Import successful' });
 		}
@@ -64714,11 +64720,6 @@ var Notifications = function (_React$Component) {
 											'li',
 											null,
 											'Genius'
-										) : null,
-										notification.configuration.snapcast_client_commands ? _react2.default.createElement(
-											'li',
-											null,
-											'Snapcast'
 										) : null
 									),
 									_react2.default.createElement(
@@ -64966,7 +64967,7 @@ var DebugInfo = function (_React$Component) {
 			if (!this.props.ui.load_queue) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'debug-info-item grey-text' },
+					{ className: 'debug-info-item mid_grey-text' },
 					'Nothing loading'
 				);
 			}
@@ -64992,7 +64993,7 @@ var DebugInfo = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'debug-info-item grey-text' },
+					{ className: 'debug-info-item mid_grey-text' },
 					'Nothing loading'
 				);
 			}
@@ -65746,7 +65747,7 @@ var Artist = function (_React$Component) {
 						{ className: 'body about' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'col w40 tiles artist-stats' },
+							{ className: 'col col--w40 tiles artist-stats' },
 							artist.images ? _react2.default.createElement(
 								'div',
 								{ className: 'tile thumbnail-wrapper' },
@@ -65793,7 +65794,7 @@ var Artist = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'col w60 biography' },
+							{ className: 'col col--w60 biography' },
 							_react2.default.createElement(
 								'section',
 								null,
@@ -65808,13 +65809,13 @@ var Artist = function (_React$Component) {
 									_react2.default.createElement('br', null),
 									_react2.default.createElement(
 										'div',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'Published: ',
 										artist.biography_publish_date
 									),
 									_react2.default.createElement(
 										'div',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'Origin: ',
 										_react2.default.createElement(
 											'a',
@@ -65868,7 +65869,7 @@ var Artist = function (_React$Component) {
 						{ className: 'body overview' },
 						_react2.default.createElement(
 							'div',
-							{ className: "top-tracks col w" + (artist.related_artists && artist.related_artists.length > 0 ? "70" : "100") },
+							{ className: "top-tracks col col--w" + (artist.related_artists && artist.related_artists.length > 0 ? "70" : "100") },
 							_react2.default.createElement(
 								'h4',
 								null,
@@ -65881,10 +65882,10 @@ var Artist = function (_React$Component) {
 								_react2.default.createElement(_LazyLoadListener2.default, { forceLoader: is_loading_tracks })
 							)
 						),
-						_react2.default.createElement('div', { className: 'col w5' }),
+						_react2.default.createElement('div', { className: 'col col--w5' }),
 						artist.related_artists ? _react2.default.createElement(
 							'div',
-							{ className: 'col w25 related-artists' },
+							{ className: 'col col--w25 related-artists' },
 							_react2.default.createElement(
 								'h4',
 								null,
@@ -66418,7 +66419,7 @@ var Playlist = function (_React$Component) {
 						null,
 						playlist.name
 					),
-					playlist.description ? _react2.default.createElement('h2', { className: 'description grey-text', dangerouslySetInnerHTML: { __html: playlist.description } }) : null,
+					playlist.description ? _react2.default.createElement('h2', { className: 'description mid_grey-text', dangerouslySetInnerHTML: { __html: playlist.description } }) : null,
 					_react2.default.createElement(
 						'ul',
 						{ className: 'details' },
@@ -67076,7 +67077,7 @@ var Track = function (_React$Component) {
 					_react2.default.createElement('div', { className: 'content', dangerouslySetInnerHTML: { __html: this.props.track.lyrics } }),
 					_react2.default.createElement(
 						'div',
-						{ className: 'origin grey-text' },
+						{ className: 'origin mid_grey-text' },
 						'Origin: ',
 						_react2.default.createElement(
 							'a',
@@ -67133,7 +67134,7 @@ var Track = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'h2',
-						{ className: 'grey-text' },
+						{ className: 'mid_grey-text' },
 						track.album && track.album.uri ? _react2.default.createElement(
 							_reactRouter.Link,
 							{ to: global.baseURL + 'album/' + track.album.uri },
@@ -67545,7 +67546,7 @@ var Queue = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'queue-stats grey-text' },
+				{ className: 'queue-stats mid_grey-text' },
 				_react2.default.createElement(
 					'span',
 					null,
@@ -69472,9 +69473,67 @@ var Settings = function (_React$Component) {
 			);
 		}
 	}, {
+		key: 'renderCommands',
+		value: function renderCommands() {
+			var _this2 = this;
+
+			var commands = [];
+			if (this.props.pusher.commands) {
+				for (var id in this.props.pusher.commands) {
+					if (this.props.pusher.commands.hasOwnProperty(id)) {
+						var command = Object.assign({}, this.props.pusher.commands[id]);
+						try {
+							command.command = JSON.parse(command.command);
+						} catch (error) {
+							command.command = null;
+						}
+						commands.push(command);
+					}
+				}
+			}
+
+			if (commands.length <= 0) {
+				return null;
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'list commands-setup' },
+				commands.map(function (command) {
+					return _react2.default.createElement(
+						'div',
+						{ className: 'list__item commands-setup__item', key: command.id },
+						_react2.default.createElement(
+							'span',
+							{ className: 'col col--w90' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
+										return _this2.props.pusherActions.sendCommand(command.id, true);
+									} },
+								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
+								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
+							),
+							'\xA0\xA0',
+							command.command && command.command.url ? command.command.url : "-"
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'commands-setup__item__actions' },
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ className: 'commands-setup__item__edit-button action', to: global.baseURL + 'edit-command/' + command.id },
+								_react2.default.createElement(_Icon2.default, { name: 'edit' })
+							)
+						)
+					);
+				})
+			);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var options = _react2.default.createElement(
 				'span',
@@ -69505,7 +69564,7 @@ var Settings = function (_React$Component) {
 				var upgrade_button = _react2.default.createElement(
 					'button',
 					{ className: 'alternative', onClick: function onClick(e) {
-							return _this2.props.pusherActions.upgrade();
+							return _this3.props.pusherActions.upgrade();
 						} },
 					'Upgrade to ',
 					this.props.pusher.version.latest
@@ -69529,7 +69588,8 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Server'
+						'Server',
+						_react2.default.createElement('a', { name: 'server' })
 					),
 					_react2.default.createElement(
 						'div',
@@ -69563,13 +69623,13 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement('input', {
 								type: 'text',
 								onChange: function onChange(e) {
-									return _this2.handleUsernameChange(e.target.value);
+									return _this3.handleUsernameChange(e.target.value);
 								},
 								onFocus: function onFocus(e) {
-									return _this2.setState({ input_in_focus: 'pusher_username' });
+									return _this3.setState({ input_in_focus: 'pusher_username' });
 								},
 								onBlur: function onBlur(e) {
-									return _this2.handleUsernameBlur(e);
+									return _this3.handleUsernameBlur(e);
 								},
 								value: this.state.pusher_username }),
 							_react2.default.createElement(
@@ -69582,7 +69642,7 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'form',
 						{ onSubmit: function onSubmit(e) {
-								return _this2.setConfig(e);
+								return _this3.setConfig(e);
 							} },
 						_react2.default.createElement(
 							'div',
@@ -69598,13 +69658,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this2.setState({ mopidy_host: e.target.value });
+										return _this3.setState({ mopidy_host: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this2.setState({ input_in_focus: 'mopidy_host' });
+										return _this3.setState({ input_in_focus: 'mopidy_host' });
 									},
 									onBlur: function onBlur(e) {
-										return _this2.setState({ input_in_focus: null });
+										return _this3.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_host })
 							)
@@ -69623,13 +69683,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this2.setState({ mopidy_port: e.target.value });
+										return _this3.setState({ mopidy_port: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this2.setState({ input_in_focus: 'mopidy_port' });
+										return _this3.setState({ input_in_focus: 'mopidy_port' });
 									},
 									onBlur: function onBlur(e) {
-										return _this2.setState({ input_in_focus: null });
+										return _this3.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_port })
 							)
@@ -69639,13 +69699,15 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Services'
+						'Services',
+						_react2.default.createElement('a', { name: 'services' })
 					),
 					_react2.default.createElement(_Services2.default, { active: this.props.params.sub_view }),
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Interface'
+						'Interface',
+						_react2.default.createElement('a', { name: 'interface' })
 					),
 					_react2.default.createElement(
 						'div',
@@ -69667,7 +69729,7 @@ var Settings = function (_React$Component) {
 									value: 'dark',
 									checked: this.props.ui.theme == 'dark',
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ theme: e.target.value });
+										return _this3.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69684,7 +69746,7 @@ var Settings = function (_React$Component) {
 									value: 'light',
 									checked: this.props.ui.theme == 'light',
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ theme: e.target.value });
+										return _this3.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69713,7 +69775,7 @@ var Settings = function (_React$Component) {
 									name: 'log_actions',
 									checked: this.props.ui.clear_tracklist_on_play,
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ clear_tracklist_on_play: !_this2.props.ui.clear_tracklist_on_play });
+										return _this3.props.uiActions.set({ clear_tracklist_on_play: !_this3.props.ui.clear_tracklist_on_play });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69734,7 +69796,7 @@ var Settings = function (_React$Component) {
 									name: 'shortkeys_enabled',
 									checked: this.props.ui.shortkeys_enabled,
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ shortkeys_enabled: !_this2.props.ui.shortkeys_enabled });
+										return _this3.props.uiActions.set({ shortkeys_enabled: !_this3.props.ui.shortkeys_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69750,7 +69812,7 @@ var Settings = function (_React$Component) {
 									name: 'shortkeys_enabled',
 									checked: this.props.ui.disable_parallax,
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ disable_parallax: !_this2.props.ui.disable_parallax });
+										return _this3.props.uiActions.set({ disable_parallax: !_this3.props.ui.disable_parallax });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69807,7 +69869,7 @@ var Settings = function (_React$Component) {
 									name: 'allow_reporting',
 									checked: this.props.ui.allow_reporting,
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
+										return _this3.props.uiActions.set({ allow_reporting: !_this3.props.ui.allow_reporting });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -69818,7 +69880,7 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'description' },
-								'Anonymous usage data is used to identify errors and potential features that make Iris better for everyone. Read the ',
+								'This helps identify errors and potential features that make Iris better for everyone. See ',
 								_react2.default.createElement(
 									'a',
 									{ href: 'https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy', target: '_blank' },
@@ -69829,9 +69891,29 @@ var Settings = function (_React$Component) {
 						)
 					),
 					_react2.default.createElement(
+						'div',
+						{ className: 'field commands-setup' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Commands'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							this.renderCommands(),
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ to: global.baseURL + 'edit-command', className: 'button' },
+								'Add new'
+							)
+						)
+					),
+					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'Advanced'
+						'Advanced',
+						_react2.default.createElement('a', { name: 'advanced' })
 					),
 					_react2.default.createElement(
 						'div',
@@ -69848,10 +69930,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_artists_uri,
 								onChange: function onChange(e) {
-									return _this2.setState({ mopidy_library_artists_uri: e.target.value });
+									return _this3.setState({ mopidy_library_artists_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this2.handleBlur('mopidy', 'library_artists_uri', e.target.value);
+									return _this3.handleBlur('mopidy', 'library_artists_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -69876,10 +69958,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_albums_uri,
 								onChange: function onChange(e) {
-									return _this2.setState({ mopidy_library_albums_uri: e.target.value });
+									return _this3.setState({ mopidy_library_albums_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this2.handleBlur('mopidy', 'library_albums_uri', e.target.value);
+									return _this3.handleBlur('mopidy', 'library_albums_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -69948,18 +70030,19 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: "destructive" + (this.props.mopidy.restarting ? ' working' : ''), onClick: function onClick(e) {
-									return _this2.props.pusherActions.restart();
+									return _this3.props.pusherActions.restart();
 								} },
 							this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'
 						),
 						_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
-								return _this2.resetAllSettings();
+								return _this3.resetAllSettings();
 							} })
 					),
 					_react2.default.createElement(
 						'h4',
 						{ className: 'underline' },
-						'About'
+						'About',
+						_react2.default.createElement('a', { name: 'about' })
 					),
 					_react2.default.createElement(
 						'div',
@@ -70101,7 +70184,7 @@ var PusherConnectionList = function (_React$Component) {
 			if (!this.props.connected) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'pusher-connection-list grey-text' },
+					{ className: 'pusher-connection-list mid_grey-text' },
 					'Not connected'
 				);
 			}
@@ -70116,7 +70199,7 @@ var PusherConnectionList = function (_React$Component) {
 			if (connections.length <= 0) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'pusher-connection-list grey-text' },
+					{ className: 'pusher-connection-list mid_grey-text' },
 					'No connections'
 				);
 			}
@@ -70135,7 +70218,7 @@ var PusherConnectionList = function (_React$Component) {
 						{ className: is_me ? 'connection cf me' : 'connection cf', key: connection.connection_id },
 						_react2.default.createElement(
 							'div',
-							{ className: 'col w30' },
+							{ className: 'col col--w30' },
 							connection.username,
 							' ',
 							is_me ? _react2.default.createElement(
@@ -70146,11 +70229,11 @@ var PusherConnectionList = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'col w70' },
+							{ className: 'col col--w70' },
 							connection.ip,
 							_react2.default.createElement(
 								'span',
-								{ className: 'grey-text' },
+								{ className: 'mid_grey-text' },
 								' (',
 								connection.connection_id,
 								')'
@@ -72173,7 +72256,7 @@ var Services = function (_React$Component) {
 						user_object.name ? user_object.name : user_object.id,
 						!this.props.spotify.authorization ? _react2.default.createElement(
 							'span',
-							{ className: 'grey-text' },
+							{ className: 'mid_grey-text' },
 							'\xA0\xA0(Limited access)'
 						) : null
 					)
@@ -72589,7 +72672,7 @@ var Services = function (_React$Component) {
 								'Authorized'
 							) : _react2.default.createElement(
 								'span',
-								{ className: 'status grey-text' },
+								{ className: 'status mid_grey-text' },
 								'Read-only'
 							)
 						)
@@ -72612,7 +72695,7 @@ var Services = function (_React$Component) {
 								'Authorized'
 							) : _react2.default.createElement(
 								'span',
-								{ className: 'status grey-text' },
+								{ className: 'status mid_grey-text' },
 								'Read-only'
 							)
 						)
@@ -72635,7 +72718,7 @@ var Services = function (_React$Component) {
 								'Authorized'
 							) : _react2.default.createElement(
 								'span',
-								{ className: 'status grey-text' },
+								{ className: 'status mid_grey-text' },
 								'Unauthorized'
 							)
 						)
@@ -72658,7 +72741,7 @@ var Services = function (_React$Component) {
 								'Enabled'
 							) : _react2.default.createElement(
 								'span',
-								{ className: 'status grey-text' },
+								{ className: 'status mid_grey-text' },
 								'Disabled'
 							)
 						)
@@ -72681,7 +72764,7 @@ var Services = function (_React$Component) {
 								'Enabled'
 							) : _react2.default.createElement(
 								'span',
-								{ className: 'status grey-text' },
+								{ className: 'status mid_grey-text' },
 								'Disabled'
 							)
 						)
@@ -72969,6 +73052,10 @@ var _VolumeControl = __webpack_require__(67);
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
 
+var _MuteControl = __webpack_require__(104);
+
+var _MuteControl2 = _interopRequireDefault(_MuteControl);
+
 var _LatencyControl = __webpack_require__(293);
 
 var _LatencyControl2 = _interopRequireDefault(_LatencyControl);
@@ -73079,7 +73166,7 @@ var Snapcast = function (_React$Component) {
 			if (!clients || clients.length <= 0) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'text grey-text' },
+					{ className: 'text mid_grey-text' },
 					'No clients'
 				);
 			}
@@ -73096,12 +73183,6 @@ var Snapcast = function (_React$Component) {
 					}
 
 					if (_this2.state.clients_expanded.includes(client.id)) {
-
-						var commands = {};
-						if (_this2.props.client_commands[client.id]) {
-							commands = _this2.props.client_commands[client.id];
-						}
-
 						return _react2.default.createElement(
 							'div',
 							{ className: class_name + " snapcast__client--expanded", key: client.id },
@@ -73182,15 +73263,18 @@ var Snapcast = function (_React$Component) {
 									_react2.default.createElement(
 										'div',
 										{ className: 'input' },
+										_react2.default.createElement(_MuteControl2.default, {
+											className: 'snapcast__client__mute-control',
+											mute: client.mute,
+											onMuteChange: function onMuteChange(mute) {
+												return _this2.props.snapcastActions.setClientMute(client.id, mute);
+											}
+										}),
 										_react2.default.createElement(_VolumeControl2.default, {
 											className: 'snapcast__client__volume-control',
 											volume: client.volume,
-											mute: client.mute,
 											onVolumeChange: function onVolumeChange(percent) {
 												return _this2.props.snapcastActions.setClientVolume(client.id, percent);
-											},
-											onMuteChange: function onMuteChange(mute) {
-												return _this2.props.snapcastActions.setClientMute(client.id, mute);
 											}
 										})
 									)
@@ -73220,31 +73304,6 @@ var Snapcast = function (_React$Component) {
 												return _this2.props.snapcastActions.setClientLatency(client.id, parseInt(value));
 											},
 											value: String(client.latency)
-										})
-									)
-								),
-								_react2.default.createElement(
-									'div',
-									{ className: 'field' },
-									_react2.default.createElement(
-										'div',
-										{ className: 'name tooltip' },
-										'Power command',
-										_react2.default.createElement(
-											'span',
-											{ className: 'tooltip__content' },
-											'Ajax request to trigger power'
-										)
-									),
-									_react2.default.createElement(
-										'div',
-										{ className: 'input' },
-										_react2.default.createElement(_TextField2.default, {
-											onChange: function onChange(value) {
-												return _this2.props.snapcastActions.setClientCommand(client.id, { power: value });
-											},
-											value: commands.power ? commands.power : "",
-											placeholder: '{"url":"https://myserver.local:8080/sendCommand/power"}'
 										})
 									)
 								)
@@ -73382,7 +73441,7 @@ var Snapcast = function (_React$Component) {
 										' \xA0',
 										_react2.default.createElement(
 											'span',
-											{ className: 'grey-text' },
+											{ className: 'mid_grey-text' },
 											'(',
 											group.id,
 											')'
@@ -73430,15 +73489,18 @@ var Snapcast = function (_React$Component) {
 								_react2.default.createElement(
 									'div',
 									{ className: 'input' },
+									_react2.default.createElement(_MuteControl2.default, {
+										className: 'snapcast__group__mute-control',
+										mute: group.muted,
+										onMuteChange: function onMuteChange(mute) {
+											return _this3.props.snapcastActions.setGroupMute(group.id, mute);
+										}
+									}),
 									_react2.default.createElement(_VolumeControl2.default, {
 										className: 'snapcast__group__volume-control',
 										volume: group_volume,
-										mute: group.muted,
 										onVolumeChange: function onVolumeChange(percent, old_percent) {
 											return _this3.props.snapcastActions.setGroupVolume(group.id, percent, old_percent);
-										},
-										onMuteChange: function onMuteChange(mute) {
-											return _this3.props.snapcastActions.setGroupMute(group.id, mute);
 										}
 									})
 								)
@@ -73474,8 +73536,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
 		streams: state.snapcast.streams ? state.snapcast.streams : null,
 		groups: state.snapcast.groups ? state.snapcast.groups : null,
-		clients: state.snapcast.clients ? state.snapcast.clients : null,
-		client_commands: state.snapcast.client_commands ? state.snapcast.client_commands : {}
+		clients: state.snapcast.clients ? state.snapcast.clients : null
 	};
 };
 
@@ -74271,7 +74332,7 @@ var Discover = function (_React$Component) {
 				{ className: 'content-wrapper recommendations-results cf' },
 				_react2.default.createElement(
 					'section',
-					{ className: 'col w70 tracks' },
+					{ className: 'col col--w70 tracks' },
 					_react2.default.createElement(
 						'h4',
 						null,
@@ -74293,10 +74354,10 @@ var Discover = function (_React$Component) {
 					),
 					_react2.default.createElement(_TrackList2.default, { className: 'discover-track-list', uri: uri, tracks: tracks })
 				),
-				_react2.default.createElement('div', { className: 'col w5' }),
+				_react2.default.createElement('div', { className: 'col col--w5' }),
 				_react2.default.createElement(
 					'div',
-					{ className: 'col w25 others' },
+					{ className: 'col col--w25 others' },
 					_react2.default.createElement(
 						'section',
 						null,
@@ -74362,7 +74423,7 @@ var Discover = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'h2',
-							{ className: 'grey-text' },
+							{ className: 'mid_grey-text' },
 							'Add seeds and musical properties below to build your sound'
 						),
 						_react2.default.createElement(
@@ -76724,7 +76785,7 @@ var AddSeedField = function (_React$Component) {
 				{ className: 'type' },
 				_react2.default.createElement(
 					'h4',
-					{ className: 'grey-text' },
+					{ className: 'mid_grey-text' },
 					type
 				),
 				items.map(function (item) {
@@ -76736,7 +76797,7 @@ var AddSeedField = function (_React$Component) {
 						item.name,
 						type == 'tracks' ? _react2.default.createElement(
 							'span',
-							{ className: 'grey-text' },
+							{ className: 'mid_grey-text' },
 							' ',
 							_react2.default.createElement(_ArtistSentence2.default, { artists: item.artists, nolinks: true })
 						) : null
@@ -80582,7 +80643,7 @@ var EditRadio = function (_React$Component) {
 								{ className: 'list__item', key: seed.uri },
 								seed.unresolved ? _react2.default.createElement(
 									'span',
-									{ className: 'grey-text' },
+									{ className: 'mid_grey-text' },
 									seed.uri
 								) : _react2.default.createElement(
 									'span',
@@ -80591,7 +80652,7 @@ var EditRadio = function (_React$Component) {
 								),
 								!seed.unresolved ? _react2.default.createElement(
 									'span',
-									{ className: 'grey-text' },
+									{ className: 'mid_grey-text' },
 									'\xA0(',
 									seed.type,
 									')'
@@ -80631,7 +80692,7 @@ var EditRadio = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'h2',
-					{ className: 'grey-text' },
+					{ className: 'mid_grey-text' },
 					'Add and remove seeds to shape the sound of your radio. Radio uses Spotify\'s recommendations engine to suggest tracks similar to your seeds.'
 				),
 				_react2.default.createElement(
@@ -80834,7 +80895,7 @@ var AddToQueue = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'h2',
-					{ className: 'grey-text' },
+					{ className: 'mid_grey-text' },
 					'Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).'
 				),
 				_react2.default.createElement(
@@ -81485,7 +81546,6 @@ var ShareConfiguration = function (_React$Component) {
 			spotify: false,
 			lastfm: false,
 			genius: false,
-			snapcast_client_commands: false,
 			ui: false
 		};
 		return _this;
@@ -81534,9 +81594,6 @@ var ShareConfiguration = function (_React$Component) {
 			}
 			if (this.state.ui) {
 				configuration.ui = this.props.ui;
-			}
-			if (this.state.snapcast_client_commands) {
-				configuration.snapcast_client_commands = this.props.snapcast_client_commands;
 			}
 
 			var _iteratorNormalCompletion = true;
@@ -81602,7 +81659,7 @@ var ShareConfiguration = function (_React$Component) {
 								'\xA0',
 								_react2.default.createElement(
 									'span',
-									{ className: 'grey-text' },
+									{ className: 'mid_grey-text' },
 									'(',
 									connection.ip,
 									')'
@@ -81617,7 +81674,7 @@ var ShareConfiguration = function (_React$Component) {
 					{ className: 'input text' },
 					_react2.default.createElement(
 						'span',
-						{ className: 'grey-text' },
+						{ className: 'mid_grey-text' },
 						'No peer connections'
 					)
 				);
@@ -81673,22 +81730,6 @@ var ShareConfiguration = function (_React$Component) {
 									'UI customisation (theme, sorting, filters)'
 								)
 							),
-							this.props.snapcast_client_commands ? _react2.default.createElement(
-								'label',
-								null,
-								_react2.default.createElement('input', {
-									type: 'checkbox',
-									name: 'snapcast_client_commands',
-									checked: this.state.snapcast_client_commands,
-									onChange: function onChange(e) {
-										return _this2.setState({ snapcast_client_commands: !_this2.state.snapcast_client_commands });
-									} }),
-								_react2.default.createElement(
-									'span',
-									{ className: 'label' },
-									'Snapcast client commands'
-								)
-							) : null,
 							this.props.spotify_me && this.props.spotify_authorization ? _react2.default.createElement(
 								'label',
 								null,
@@ -81705,7 +81746,7 @@ var ShareConfiguration = function (_React$Component) {
 									'Spotify authorization ',
 									_react2.default.createElement(
 										'span',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'\xA0Logged in as ',
 										this.props.spotify_me.name
 									)
@@ -81727,7 +81768,7 @@ var ShareConfiguration = function (_React$Component) {
 									'LastFM authorization ',
 									_react2.default.createElement(
 										'span',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'\xA0Logged in as ',
 										this.props.lastfm_me.name
 									)
@@ -81749,7 +81790,7 @@ var ShareConfiguration = function (_React$Component) {
 									'Genius authorization ',
 									_react2.default.createElement(
 										'span',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'\xA0Logged in as ',
 										this.props.genius_me.name
 									)
@@ -81790,7 +81831,6 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		genius_me: state.genius.me,
 		lastfm_authorization: state.lastfm.authorization,
 		lastfm_me: state.lastfm.me,
-		snapcast_client_commands: state.snapcast.client_commands,
 		ui: state.ui,
 		connection_id: state.pusher.connection_id,
 		connections: state.pusher.connections
@@ -81935,7 +81975,7 @@ var AddToPlaylist = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'h2',
-					{ className: 'grey-text' },
+					{ className: 'mid_grey-text' },
 					'Select playlist to add ',
 					this.props.uris.length,
 					' track',
@@ -81975,7 +82015,7 @@ var AddToPlaylist = function (_React$Component) {
 									null,
 									playlist.tracks_total ? _react2.default.createElement(
 										'span',
-										{ className: 'grey-text' },
+										{ className: 'mid_grey-text' },
 										'\xA0',
 										playlist.tracks_total,
 										' tracks'
@@ -82111,6 +82151,438 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 333 */,
+/* 334 */,
+/* 335 */,
+/* 336 */,
+/* 337 */,
+/* 338 */,
+/* 339 */,
+/* 340 */,
+/* 341 */,
+/* 342 */,
+/* 343 */,
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */,
+/* 353 */,
+/* 354 */,
+/* 355 */,
+/* 356 */,
+/* 357 */,
+/* 358 */,
+/* 359 */,
+/* 360 */,
+/* 361 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(4);
+
+var _redux = __webpack_require__(2);
+
+var _reactRouter = __webpack_require__(6);
+
+var _reactGa = __webpack_require__(17);
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
+var _Modal = __webpack_require__(27);
+
+var _Modal2 = _interopRequireDefault(_Modal);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _ColourField = __webpack_require__(362);
+
+var _ColourField2 = _interopRequireDefault(_ColourField);
+
+var _IconField = __webpack_require__(363);
+
+var _IconField2 = _interopRequireDefault(_IconField);
+
+var _actions = __webpack_require__(14);
+
+var pusherActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(3);
+
+var uiActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var EditCommand = function (_React$Component) {
+	_inherits(EditCommand, _React$Component);
+
+	function EditCommand(props) {
+		_classCallCheck(this, EditCommand);
+
+		var _this = _possibleConstructorReturn(this, (EditCommand.__proto__ || Object.getPrototypeOf(EditCommand)).call(this, props));
+
+		_this.state = {
+			id: helpers.generateGuid(),
+			icon: 'power_settings_new',
+			colour: '',
+			command: '{"url":"https://' + window.location.hostname + '/broadlink/sendCommand/power/"}'
+		};
+		return _this;
+	}
+
+	_createClass(EditCommand, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.command) {
+				this.props.uiActions.setWindowTitle("Edit command");
+				this.setState(this.props.command);
+			} else {
+				this.props.uiActions.setWindowTitle("Create command");
+			}
+		}
+	}, {
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			e.preventDefault();
+
+			this.props.pusherActions.setCommand({
+				id: this.state.id,
+				icon: this.state.icon,
+				colour: this.state.colour,
+				command: this.state.command
+			});
+
+			window.history.back();
+
+			return false;
+		}
+	}, {
+		key: 'handleDelete',
+		value: function handleDelete(e) {
+			this.props.pusherActions.removeCommand(this.state.id);
+			window.history.back();
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var icons = ["power_settings_new", "eject", "grade", "query_builder", "settings_input_component", "settings_input_hdmi", "settings_input_svideo", "forward_5", "forward_10", "forward_30", "replay", "replay_5", "replay_10", "replay_30", "skip_next", "skip_previous", "play_arrow", "pause", "stop", "shuffle", "snooze", "volume_down", "volume_off", "volume_up", "done", "done_all", "add", "remove", "clear", "cast", "speaker", "speaker_group", "audiotrack", "videogame_asset", "computer", "tv"];
+
+			return _react2.default.createElement(
+				_Modal2.default,
+				{ className: 'modal--create-command' },
+				_react2.default.createElement(
+					'h1',
+					null,
+					this.props.command ? "Edit" : "Create",
+					' command'
+				),
+				_react2.default.createElement(
+					'form',
+					{ onSubmit: function onSubmit(e) {
+							return _this2.handleSubmit(e);
+						} },
+					_react2.default.createElement(
+						'div',
+						{ className: 'field radio white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Colour'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_ColourField2.default, {
+								colour: this.state.colour,
+								onChange: function onChange(colour) {
+									return _this2.setState({ colour: colour });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field radio white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Icon'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_IconField2.default, {
+								icon: this.state.icon,
+								icons: icons,
+								onChange: function onChange(icon) {
+									return _this2.setState({ icon: icon });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Command'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('textarea', {
+								name: 'command',
+								value: this.state.command,
+								onChange: function onChange(e) {
+									return _this2.setState({ command: e.target.value });
+								} }),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'Ajax request settings. See ',
+								_react2.default.createElement(
+									'a',
+									{ href: 'http://api.jquery.com/jquery.ajax/', target: '_blank', noopener: 'true' },
+									_react2.default.createElement(
+										'code',
+										null,
+										'jquery.ajax'
+									),
+									' documentation'
+								),
+								'.'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'actions centered-text' },
+						this.props.command ? _react2.default.createElement(
+							'button',
+							{ type: 'button', className: 'destructive large', onClick: function onClick(e) {
+									return _this2.handleDelete(e);
+								} },
+							'Delete'
+						) : null,
+						_react2.default.createElement(
+							'button',
+							{ type: 'submit', className: 'primary large' },
+							'Save'
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return EditCommand;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	var id = ownProps.params.id;
+	return {
+		command: id && state.pusher.commands && state.pusher.commands[id] !== undefined ? state.pusher.commands[id] : null
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditCommand);
+
+/***/ }),
+/* 362 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ColourField = function (_React$Component) {
+	_inherits(ColourField, _React$Component);
+
+	function ColourField(props) {
+		_classCallCheck(this, ColourField);
+
+		return _possibleConstructorReturn(this, (ColourField.__proto__ || Object.getPrototypeOf(ColourField)).call(this, props));
+	}
+
+	_createClass(ColourField, [{
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var colours = ['', 'white', 'mid_grey', 'grey', 'dark_grey', 'black', 'turquoise', 'green', 'blue', 'light_blue', 'yellow', 'orange', 'red'];
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'colour-field' },
+				colours.map(function (colour) {
+					switch (colour) {
+						case 'yellow':
+						case 'white':
+						case 'light_blue':
+							var text_colour = "black";
+							break;
+						default:
+							var text_colour = "white";
+							break;
+					}
+					return _react2.default.createElement(
+						'div',
+						{
+							key: colour,
+							className: "colour-field__option " + (colour ? colour + "-background " : "") + (_this2.props.colour == colour ? "colour-field__option--selected" : ""),
+							onClick: function onClick(e) {
+								return _this2.props.onChange(colour);
+							} },
+						_this2.props.colour == colour ? _react2.default.createElement(_Icon2.default, { name: 'check', className: "colour-field__option__icon " + text_colour + "-text" }) : null
+					);
+				})
+			);
+		}
+	}]);
+
+	return ColourField;
+}(_react2.default.Component);
+
+exports.default = ColourField;
+
+/***/ }),
+/* 363 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ColourField = function (_React$Component) {
+	_inherits(ColourField, _React$Component);
+
+	function ColourField(props) {
+		_classCallCheck(this, ColourField);
+
+		return _possibleConstructorReturn(this, (ColourField.__proto__ || Object.getPrototypeOf(ColourField)).call(this, props));
+	}
+
+	_createClass(ColourField, [{
+		key: 'icons',
+		value: function icons() {
+			if (this.props.icons) {
+				return this.props.icons;
+			} else {
+				return ["3d_rotation", "ac_unit", "access_alarm", "access_alarms", "access_time", "accessibility", "accessible", "account_balance", "account_balance_wallet", "account_box", "account_circle", "adb", "add", "add_a_photo", "add_alarm", "add_alert", "add_box", "add_circle", "add_circle_outline", "add_location", "add_shopping_cart", "add_to_photos", "add_to_queue", "adjust", "airline_seat_flat", "airline_seat_flat_angled", "airline_seat_individual_suite", "airline_seat_legroom_extra", "airline_seat_legroom_normal", "airline_seat_legroom_reduced", "airline_seat_recline_extra", "airline_seat_recline_normal", "airplanemode_active", "airplanemode_inactive", "airplay", "airport_shuttle", "alarm", "alarm_add", "alarm_off", "alarm_on", "album", "all_inclusive", "all_out", "android", "announcement", "apps", "archive", "arrow_back", "arrow_downward", "arrow_drop_down", "arrow_drop_down_circle", "arrow_drop_up", "arrow_forward", "arrow_upward", "art_track", "aspect_ratio", "assessment", "assignment", "assignment_ind", "assignment_late", "assignment_return", "assignment_returned", "assignment_turned_in", "assistant", "assistant_photo", "attach_file", "attach_money", "attachment", "audiotrack", "autorenew", "av_timer", "backspace", "backup", "battery_alert", "battery_charging_full", "battery_full", "battery_std", "battery_unknown", "beach_access", "beenhere", "block", "bluetooth", "bluetooth_audio", "bluetooth_connected", "bluetooth_disabled", "bluetooth_searching", "blur_circular", "blur_linear", "blur_off", "blur_on", "book", "bookmark", "bookmark_border", "border_all", "border_bottom", "border_clear", "border_color", "border_horizontal", "border_inner", "border_left", "border_outer", "border_right", "border_style", "border_top", "border_vertical", "branding_watermark", "brightness_1", "brightness_2", "brightness_3", "brightness_4", "brightness_5", "brightness_6", "brightness_7", "brightness_auto", "brightness_high", "brightness_low", "brightness_medium", "broken_image", "brush", "bubble_chart", "bug_report", "build", "burst_mode", "business", "business_center", "cached", "cake", "call", "call_end", "call_made", "call_merge", "call_missed", "call_missed_outgoing", "call_received", "call_split", "call_to_action", "camera", "camera_alt", "camera_enhance", "camera_front", "camera_rear", "camera_roll", "cancel", "card_giftcard", "card_membership", "card_travel", "casino", "cast", "cast_connected", "center_focus_strong", "center_focus_weak", "change_history", "chat", "chat_bubble", "chat_bubble_outline", "check", "check_box", "check_box_outline_blank", "check_circle", "chevron_left", "chevron_right", "child_care", "child_friendly", "chrome_reader_mode", "class", "clear", "clear_all", "close", "closed_caption", "cloud", "cloud_circle", "cloud_done", "cloud_download", "cloud_off", "cloud_queue", "cloud_upload", "code", "collections", "collections_bookmark", "color_lens", "colorize", "comment", "compare", "compare_arrows", "computer", "confirmation_number", "contact_mail", "contact_phone", "contacts", "content_copy", "content_cut", "content_paste", "control_point", "control_point_duplicate", "copyright", "create", "create_new_folder", "credit_card", "crop", "crop_16_9", "crop_3_2", "crop_5_4", "crop_7_5", "crop_din", "crop_free", "crop_landscape", "crop_original", "crop_portrait", "crop_rotate", "crop_square", "dashboard", "data_usage", "date_range", "dehaze", "delete", "delete_forever", "delete_sweep", "description", "desktop_mac", "desktop_windows", "details", "developer_board", "developer_mode", "device_hub", "devices", "devices_other", "dialer_sip", "dialpad", "directions", "directions_bike", "directions_boat", "directions_bus", "directions_car", "directions_railway", "directions_run", "directions_subway", "directions_transit", "directions_walk", "disc_full", "dns", "do_not_disturb", "do_not_disturb_alt", "do_not_disturb_off", "do_not_disturb_on", "dock", "domain", "done", "done_all", "donut_large", "donut_small", "drafts", "drag_handle", "drive_eta", "dvr", "edit", "edit_location", "eject", "email", "enhanced_encryption", "equalizer", "error", "error_outline", "euro_symbol", "ev_station", "event", "event_available", "event_busy", "event_note", "event_seat", "exit_to_app", "expand_less", "expand_more", "explicit", "explore", "exposure", "exposure_neg_1", "exposure_neg_2", "exposure_plus_1", "exposure_plus_2", "exposure_zero", "extension", "face", "fast_forward", "fast_rewind", "favorite", "favorite_border", "featured_play_list", "featured_video", "feedback", "fiber_dvr", "fiber_manual_record", "fiber_new", "fiber_pin", "fiber_smart_record", "file_download", "file_upload", "filter", "filter_1", "filter_2", "filter_3", "filter_4", "filter_5", "filter_6", "filter_7", "filter_8", "filter_9", "filter_9_plus", "filter_b_and_w", "filter_center_focus", "filter_drama", "filter_frames", "filter_hdr", "filter_list", "filter_none", "filter_tilt_shift", "filter_vintage", "find_in_page", "find_replace", "fingerprint", "first_page", "fitness_center", "flag", "flare", "flash_auto", "flash_off", "flash_on", "flight", "flight_land", "flight_takeoff", "flip", "flip_to_back", "flip_to_front", "folder", "folder_open", "folder_shared", "folder_special", "font_download", "format_align_center", "format_align_justify", "format_align_left", "format_align_right", "format_bold", "format_clear", "format_color_fill", "format_color_reset", "format_color_text", "format_indent_decrease", "format_indent_increase", "format_italic", "format_line_spacing", "format_list_bulleted", "format_list_numbered", "format_paint", "format_quote", "format_shapes", "format_size", "format_strikethrough", "format_textdirection_l_to_r", "format_textdirection_r_to_l", "format_underlined", "forum", "forward", "forward_10", "forward_30", "forward_5", "free_breakfast", "fullscreen", "fullscreen_exit", "functions", "g_translate", "gamepad", "games", "gavel", "gesture", "get_app", "gif", "golf_course", "gps_fixed", "gps_not_fixed", "gps_off", "grade", "gradient", "grain", "graphic_eq", "grid_off", "grid_on", "group", "group_add", "group_work", "hd", "hdr_off", "hdr_on", "hdr_strong", "hdr_weak", "headset", "headset_mic", "healing", "hearing", "help", "help_outline", "high_quality", "highlight", "highlight_off", "history", "home", "hot_tub", "hotel", "hourglass_empty", "hourglass_full", "http", "https", "image", "image_aspect_ratio", "import_contacts", "import_export", "important_devices", "inbox", "indeterminate_check_box", "info", "info_outline", "input", "insert_chart", "insert_comment", "insert_drive_file", "insert_emoticon", "insert_invitation", "insert_link", "insert_photo", "invert_colors", "invert_colors_off", "iso", "keyboard", "keyboard_arrow_down", "keyboard_arrow_left", "keyboard_arrow_right", "keyboard_arrow_up", "keyboard_backspace", "keyboard_capslock", "keyboard_hide", "keyboard_return", "keyboard_tab", "keyboard_voice", "kitchen", "label", "label_outline", "landscape", "language", "laptop", "laptop_chromebook", "laptop_mac", "laptop_windows", "last_page", "launch", "layers", "layers_clear", "leak_add", "leak_remove", "lens", "library_add", "library_books", "library_music", "lightbulb_outline", "line_style", "line_weight", "linear_scale", "link", "linked_camera", "list", "live_help", "live_tv", "local_activity", "local_airport", "local_atm", "local_bar", "local_cafe", "local_car_wash", "local_convenience_store", "local_dining", "local_drink", "local_florist", "local_gas_station", "local_grocery_store", "local_hospital", "local_hotel", "local_laundry_service", "local_library", "local_mall", "local_movies", "local_offer", "local_parking", "local_pharmacy", "local_phone", "local_pizza", "local_play", "local_post_office", "local_printshop", "local_see", "local_shipping", "local_taxi", "location_city", "location_disabled", "location_off", "location_on", "location_searching", "lock", "lock_open", "lock_outline", "looks", "looks_3", "looks_4", "looks_5", "looks_6", "looks_one", "looks_two", "loop", "loupe", "low_priority", "loyalty", "mail", "mail_outline", "map", "markunread", "markunread_mailbox", "memory", "menu", "merge_type", "message", "mic", "mic_none", "mic_off", "mms", "mode_comment", "mode_edit", "monetization_on", "money_off", "monochrome_photos", "mood", "mood_bad", "more", "more_horiz", "more_vert", "motorcycle", "mouse", "move_to_inbox", "movie", "movie_creation", "movie_filter", "multiline_chart", "music_note", "music_video", "my_location", "nature", "nature_people", "navigate_before", "navigate_next", "navigation", "near_me", "network_cell", "network_check", "network_locked", "network_wifi", "new_releases", "next_week", "nfc", "no_encryption", "no_sim", "not_interested", "note", "note_add", "notifications", "notifications_active", "notifications_none", "notifications_off", "notifications_paused", "offline_pin", "ondemand_video", "opacity", "open_in_browser", "open_in_new", "open_with", "pages", "pageview", "palette", "pan_tool", "panorama", "panorama_fish_eye", "panorama_horizontal", "panorama_vertical", "panorama_wide_angle", "party_mode", "pause", "pause_circle_filled", "pause_circle_outline", "payment", "people", "people_outline", "perm_camera_mic", "perm_contact_calendar", "perm_data_setting", "perm_device_information", "perm_identity", "perm_media", "perm_phone_msg", "perm_scan_wifi", "person", "person_add", "person_outline", "person_pin", "person_pin_circle", "personal_video", "pets", "phone", "phone_android", "phone_bluetooth_speaker", "phone_forwarded", "phone_in_talk", "phone_iphone", "phone_locked", "phone_missed", "phone_paused", "phonelink", "phonelink_erase", "phonelink_lock", "phonelink_off", "phonelink_ring", "phonelink_setup", "photo", "photo_album", "photo_camera", "photo_filter", "photo_library", "photo_size_select_actual", "photo_size_select_large", "photo_size_select_small", "picture_as_pdf", "picture_in_picture", "picture_in_picture_alt", "pie_chart", "pie_chart_outlined", "pin_drop", "place", "play_arrow", "play_circle_filled", "play_circle_outline", "play_for_work", "playlist_add", "playlist_add_check", "playlist_play", "plus_one", "poll", "polymer", "pool", "portable_wifi_off", "portrait", "power", "power_input", "power_settings_new", "pregnant_woman", "present_to_all", "print", "priority_high", "public", "publish", "query_builder", "question_answer", "queue", "queue_music", "queue_play_next", "radio", "radio_button_checked", "radio_button_unchecked", "rate_review", "receipt", "recent_actors", "record_voice_over", "redeem", "redo", "refresh", "remove", "remove_circle", "remove_circle_outline", "remove_from_queue", "remove_red_eye", "remove_shopping_cart", "reorder", "repeat", "repeat_one", "replay", "replay_10", "replay_30", "replay_5", "reply", "reply_all", "report", "report_problem", "restaurant", "restaurant_menu", "restore", "restore_page", "ring_volume", "room", "room_service", "rotate_90_degrees_ccw", "rotate_left", "rotate_right", "rounded_corner", "router", "rowing", "rss_feed", "rv_hookup", "satellite", "save", "scanner", "schedule", "school", "screen_lock_landscape", "screen_lock_portrait", "screen_lock_rotation", "screen_rotation", "screen_share", "sd_card", "sd_storage", "search", "security", "select_all", "send", "sentiment_dissatisfied", "sentiment_neutral", "sentiment_satisfied", "sentiment_very_dissatisfied", "sentiment_very_satisfied", "settings", "settings_applications", "settings_backup_restore", "settings_bluetooth", "settings_brightness", "settings_cell", "settings_ethernet", "settings_input_antenna", "settings_input_component", "settings_input_composite", "settings_input_hdmi", "settings_input_svideo", "settings_overscan", "settings_phone", "settings_power", "settings_remote", "settings_system_daydream", "settings_voice", "share", "shop", "shop_two", "shopping_basket", "shopping_cart", "short_text", "show_chart", "shuffle", "signal_cellular_4_bar", "signal_cellular_connected_no_internet_4_bar", "signal_cellular_no_sim", "signal_cellular_null", "signal_cellular_off", "signal_wifi_4_bar", "signal_wifi_4_bar_lock", "signal_wifi_off", "sim_card", "sim_card_alert", "skip_next", "skip_previous", "slideshow", "slow_motion_video", "smartphone", "smoke_free", "smoking_rooms", "sms", "sms_failed", "snooze", "sort", "sort_by_alpha", "spa", "space_bar", "speaker", "speaker_group", "speaker_notes", "speaker_notes_off", "speaker_phone", "spellcheck", "star", "star_border", "star_half", "stars", "stay_current_landscape", "stay_current_portrait", "stay_primary_landscape", "stay_primary_portrait", "stop", "stop_screen_share", "storage", "store", "store_mall_directory", "straighten", "streetview", "strikethrough_s", "style", "subdirectory_arrow_left", "subdirectory_arrow_right", "subject", "subscriptions", "subtitles", "subway", "supervisor_account", "surround_sound", "swap_calls", "swap_horiz", "swap_vert", "swap_vertical_circle", "switch_camera", "switch_video", "sync", "sync_disabled", "sync_problem", "system_update", "system_update_alt", "tab", "tab_unselected", "tablet", "tablet_android", "tablet_mac", "tag_faces", "tap_and_play", "terrain", "text_fields", "text_format", "textsms", "texture", "theaters", "thumb_down", "thumb_up", "thumbs_up_down", "time_to_leave", "timelapse", "timeline", "timer", "timer_10", "timer_3", "timer_off", "title", "toc", "today", "toll", "tonality", "touch_app", "toys", "track_changes", "traffic", "train", "tram", "transfer_within_a_station", "transform", "translate", "trending_down", "trending_flat", "trending_up", "tune", "turned_in", "turned_in_not", "tv", "unarchive", "undo", "unfold_less", "unfold_more", "update", "usb", "verified_user", "vertical_align_bottom", "vertical_align_center", "vertical_align_top", "vibration", "video_call", "video_label", "video_library", "videocam", "videocam_off", "videogame_asset", "view_agenda", "view_array", "view_carousel", "view_column", "view_comfy", "view_compact", "view_day", "view_headline", "view_list", "view_module", "view_quilt", "view_stream", "view_week", "vignette", "visibility", "visibility_off", "voice_chat", "voicemail", "volume_down", "volume_mute", "volume_off", "volume_up", "vpn_key", "vpn_lock", "wallpaper", "warning", "watch", "watch_later", "wb_auto", "wb_cloudy", "wb_incandescent", "wb_iridescent", "wb_sunny", "wc", "web", "web_asset", "weekend", "whatshot", "widgets", "wifi", "wifi_lock", "wifi_tethering", "work", "wrap_text", "youtube_searched_for", "zoom_in", "zoom_out", "zoom_out_map"];
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'icon-field' },
+				this.icons().map(function (icon) {
+					return _react2.default.createElement(
+						'div',
+						{
+							key: icon,
+							className: "icon-field__option " + (_this2.props.icon == icon ? "icon-field__option--selected" : ""),
+							onClick: function onClick(e) {
+								return _this2.props.onChange(icon);
+							} },
+						_react2.default.createElement(_Icon2.default, { name: icon, className: 'icon-field__option__icon' })
+					);
+				})
+			);
+		}
+	}]);
+
+	return ColourField;
+}(_react2.default.Component);
+
+exports.default = ColourField;
 
 /***/ })
 /******/ ]);
