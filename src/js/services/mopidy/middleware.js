@@ -1715,7 +1715,22 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
                 if (!last_run){
-                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri } )
+                	var uris = store.getState().mopidy.library_albums_uris.split(',');
+                	var promises = [];
+
+                	// Construct an array of promises
+                	for (var uri of uris){
+                		promises.push(
+                			request(socket, store, 'library.browse', { uri: uri })
+                		);
+                	}
+
+                	// Now run the requests
+					Promise.all(promises).then(responses => {
+						console.log(responses);
+					});
+
+                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uris })
                         .then(response => {
                             if (response.length <= 0) return
 

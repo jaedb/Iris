@@ -59,8 +59,8 @@ var initialState = {
 		progress: 0,
 		play_state: null,
 		uri_schemes: [],
-		library_albums_uri: 'local:directory?type=album',
-		library_artists_uri: 'local:directory?type=artist'
+		library_albums_uris: 'local:directory?type=album',
+		library_artists_uris: 'local:directory?type=artist'
 	},
 	pusher: {
 		connected: false,
