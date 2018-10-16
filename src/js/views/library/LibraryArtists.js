@@ -1,21 +1,22 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
 
-import Header from '../../components/Header'
-import ArtistGrid from '../../components/ArtistGrid'
-import List from '../../components/List'
-import DropdownField from '../../components/Fields/DropdownField'
-import FilterField from '../../components/Fields/FilterField'
-import LazyLoadListener from '../../components/LazyLoadListener'
-import Icon from '../../components/Icon'
+import Header from '../../components/Header';
+import ArtistGrid from '../../components/ArtistGrid';
+import List from '../../components/List';
+import DropdownField from '../../components/Fields/DropdownField';
+import FilterField from '../../components/Fields/FilterField';
+import LazyLoadListener from '../../components/LazyLoadListener';
+import Icon from '../../components/Icon';
 
-import * as helpers from '../../helpers'
-import * as uiActions from '../../services/ui/actions'
-import * as mopidyActions from '../../services/mopidy/actions'
-import * as spotifyActions from '../../services/spotify/actions'
+import * as helpers from '../../helpers';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
+import * as googleActions from '../../services/google/actions';
 
 class LibraryArtists extends React.Component{
 
@@ -36,6 +37,10 @@ class LibraryArtists extends React.Component{
 			this.props.mopidyActions.getLibraryArtists();
 		}
 
+		if (!this.props.gmusic_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')){
+			this.props.googleActions.getLibraryArtists();
+		}
+
 		if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
 			this.props.spotifyActions.getLibraryArtists();
 		}
@@ -53,6 +58,14 @@ class LibraryArtists extends React.Component{
 			if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_artists){
 				this.props.mopidyActions.getLibraryArtists();
 			}			
+		}
+
+		if (newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')){		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (newProps.google_library_artists_status != 'finished' && newProps.google_library_artists_status != 'started'){
+				this.props.googleActions.getLibraryArtists();
+			}
 		}
 
 		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){		
@@ -201,6 +214,13 @@ class LibraryArtists extends React.Component{
 			});
 		}
 
+		if (this.props.google_enabled){
+			source_options.push({
+				value: 'google',
+				label: 'Google'
+			});
+		}
+
 		var view_options = [
 			{
 				label: 'Thumbnails',
@@ -284,9 +304,12 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
 		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),
-		spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
+		spotify_enabled: state.spotify.enabled,
 		spotify_library_artists: state.spotify.library_artists,
 		spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
+		google_enabled: state.google.enabled,
+		google_library_artists: state.google.library_artists,
+		google_library_artists_status: (state.ui.processes.GOOGLE_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.GOOGLE_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
 		artists: state.core.artists,
 		source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
@@ -299,7 +322,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		googleActions: bindActionCreators(googleActions, dispatch)
 	}
 }
 

@@ -28,8 +28,8 @@ class Settings extends React.Component {
 		this.state = {
 			mopidy_host: this.props.mopidy.host,
 			mopidy_port: this.props.mopidy.port,
-			mopidy_library_artists_uris: this.props.mopidy.library_artists_uris,
-			mopidy_library_albums_uris: this.props.mopidy.library_albums_uris,
+			mopidy_library_artists_uri: this.props.mopidy.library_artists_uri,
+			mopidy_library_albums_uri: this.props.mopidy.library_albums_uri,
 			pusher_username: this.props.pusher.username,
 			input_in_focus: null
 		}
@@ -393,12 +393,12 @@ class Settings extends React.Component {
 						<div className="input">
 							<input 
 								type="text"
-								value={this.state.mopidy_library_artists_uris}
+								value={this.state.mopidy_library_artists_uri}
 								onChange={e => this.setState({mopidy_library_artists_uri: e.target.value})}
 								onBlur={e => this.handleBlur('mopidy', 'library_artists_uri', e.target.value)}
 							/>
 							<div className="description">
-								URIs used for collecting library artists (comma-separated list)
+								URI used for collecting library artists
 							</div>
 						</div>
 					</div>
@@ -408,12 +408,12 @@ class Settings extends React.Component {
 						<div className="input">
 							<input 
 								type="text"
-								value={this.state.mopidy_library_albums_uris}
-								onChange={e => this.setState({mopidy_library_albums_uris: e.target.value})}
-								onBlur={e => this.handleBlur('mopidy', 'library_albums_uris', e.target.value)}
+								value={this.state.mopidy_library_albums_uri}
+								onChange={e => this.setState({mopidy_library_albums_uri: e.target.value})}
+								onBlur={e => this.handleBlur('mopidy', 'library_albums_uri', e.target.value)}
 							/>
 							<div className="description">
-								URIs used for collecting library albums (comma-separated list)
+								URI used for collecting library albums
 							</div>
 						</div>
 					</div>
