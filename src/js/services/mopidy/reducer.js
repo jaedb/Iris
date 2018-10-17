@@ -1,5 +1,5 @@
 
-import * as helpers from '../../helpers'
+import * as helpers from '../../helpers';
 
 export default function reducer(mopidy = {}, action){
     switch (action.type){

@@ -8,7 +8,7 @@ export function set(data){
     }
 }
 
-export function request(method, params = null, response_callback = null, error_callback = null){
+export function request(method, params = {}, response_callback = null, error_callback = null){
 	return {
 		type: 'MOPIDY_REQUEST',
 		method: method,

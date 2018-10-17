@@ -37,7 +37,7 @@ class LibraryArtists extends React.Component{
 			this.props.mopidyActions.getLibraryArtists();
 		}
 
-		if (!this.props.gmusic_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')){
+		if (this.props.google_enabled && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')){
 			this.props.googleActions.getLibraryArtists();
 		}
 
@@ -60,10 +60,15 @@ class LibraryArtists extends React.Component{
 			}			
 		}
 
-		if (newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')){		
+		if (newProps.mopidy_connected && newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')){
+
+			// We've just been enabled (or detected as such)
+			if (!this.props.google_enabled){
+				this.props.googleActions.getLibraryArtists();
+			}		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (newProps.google_library_artists_status != 'finished' && newProps.google_library_artists_status != 'started'){
+			if (this.props.source != 'all' && this.props.source != 'google' && !newProps.google_library_artists){
 				this.props.googleActions.getLibraryArtists();
 			}
 		}
@@ -71,7 +76,7 @@ class LibraryArtists extends React.Component{
 		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){		
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
+			if (!newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}
@@ -108,11 +113,30 @@ class LibraryArtists extends React.Component{
 
 		// Mopidy library items
 		if (this.props.mopidy_library_artists && (this.props.source == 'all' || this.props.source == 'local')){
-			for (var i = 0; i < this.props.mopidy_library_artists.length; i++){
+			for (uri of this.props.mopidy_library_artists){
 
 				// Construct item placeholder. This is used as Mopidy needs to 
 				// lookup ref objects to get the full object which can take some time
-				var uri = this.props.mopidy_library_artists[i]
+				var source = helpers.uriSource(uri)
+				var artist = {
+					uri: uri,
+					source: source
+				}
+
+				if (this.props.artists.hasOwnProperty(uri)){
+					artist = this.props.artists[uri]
+				}
+
+				artists.push(artist)
+			}
+		}
+
+		// Google library items
+		if (this.props.google_library_artists && (this.props.source == 'all' || this.props.source == 'google')){
+			for (uri of this.props.google_library_artists){
+
+				// Construct item placeholder. This is used as Mopidy needs to 
+				// lookup ref objects to get the full object which can take some time
 				var source = helpers.uriSource(uri)
 				var artist = {
 					uri: uri,
@@ -303,13 +327,11 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
-		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),
+		google_enabled: state.google.enabled,
+		google_library_artists: state.google.library_artists,
 		spotify_enabled: state.spotify.enabled,
 		spotify_library_artists: state.spotify.library_artists,
 		spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
-		google_enabled: state.google.enabled,
-		google_library_artists: state.google.library_artists,
-		google_library_artists_status: (state.ui.processes.GOOGLE_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.GOOGLE_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
 		artists: state.core.artists,
 		source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
 		sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
