@@ -462,7 +462,7 @@ export let formatArtist = function(data){
 		artist.images = formatImages(artist.images);
 	}
 
-	if (data.followers && data.followers.total){
+	if (data.followers && data.followers.total !== undefined){
 		artist.followers = data.followers.total;
 	}
 

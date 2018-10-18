@@ -57,8 +57,8 @@ export default class GridItem extends React.Component{
 			case 'artist':
 				return (
 					<span>
-						{item.followers ? item.followers.toLocaleString()+' followers' : null}
-						{item.albums_uris ? item.albums_uris.length+' albums' : null}
+						{item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null}
+						{item.albums_uris !== undefined ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
 				break
@@ -66,7 +66,7 @@ export default class GridItem extends React.Component{
 			case 'album':
 				return (
 					<span>
-						{item.artists ? <ArtistSentence artists={item.artists} /> : null}
+						{item.artists !== undefined ? <ArtistSentence artists={item.artists} /> : null}
 					</span>
 				)
 				break
@@ -74,8 +74,8 @@ export default class GridItem extends React.Component{
 			default:
 				return (
 					<span>
-						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-						{ item.followers ? item.followers.toLocaleString()+' followers' : null }
+						{ item.artists !== undefined ? <ArtistSentence artists={ item.artists } /> : null }
+						{ item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null }
 					</span>
 				)
 		}

@@ -57,7 +57,7 @@ class Track extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadTrack(nextProps.params.uri);
 
-			if (nextProps.tracks.artists){
+			if (nextProps.genius_authorized && nextProps.tracks.artists){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 
