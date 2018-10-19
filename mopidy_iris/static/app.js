@@ -3251,6 +3251,12 @@ var request = function request(dispatch, getState, endpoint) {
     var data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
 
+    // Add reference to loader queue
+    // We do this straight away so that even if we're refreshing the token, it still registers as 
+    // loading said endpoint
+    var loader_key = helpers.generateGuid();
+    dispatch(uiActions.startLoading(loader_key, 'spotify_' + endpoint));
+
     return new Promise(function (resolve, reject) {
         getToken(dispatch, getState).then(function (response) {
 
@@ -3279,10 +3285,6 @@ var request = function request(dispatch, getState, endpoint) {
                     config.data = JSON.stringify(data);
                 }
             }
-
-            // add reference to loader queue
-            var loader_key = helpers.generateGuid();
-            dispatch(uiActions.startLoading(loader_key, 'spotify_' + endpoint));
 
             $.ajax(config).then(function (response) {
                 dispatch(uiActions.stopLoading(loader_key));
@@ -70456,7 +70458,7 @@ var Track = function (_React$Component) {
 			if (nextProps.params.uri != this.props.params.uri) {
 				this.props.coreActions.loadTrack(nextProps.params.uri);
 
-				if (nextProps.tracks.artists) {
+				if (nextProps.genius_authorized && nextProps.tracks.artists) {
 					this.props.geniusActions.findTrackLyrics(nextProps.track);
 				}
 
@@ -81500,7 +81502,7 @@ var LibraryArtists = function (_React$Component) {
 			if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
 
 				// Filter changed, but we haven't got this provider's library yet
-				if (!newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started') {
+				if (!newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started' && newProps.spotify_library_artists_status != 'running') {
 					this.props.spotifyActions.getLibraryArtists();
 				}
 			}
