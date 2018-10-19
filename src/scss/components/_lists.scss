@@ -11,11 +11,22 @@
 
 		display: block;
 		position: relative;
-		margin: 0 -10px -1px -10px;
+		margin: 0 -10px 0 -10px;
 		padding: 14px 30px 13px 10px;
 		border-radius: 3px;
-		border-bottom: 1px solid rgba(255,255,255,0.05);
-		border-top: 1px solid rgba(255,255,255,0.05);
+
+		&:before {
+			pointer-events: none;
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			border-top: 3px solid transparent;
+			border-bottom: 1px solid rgba(125,125,125,0.15);
+		}
 
 		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
 			background: rgba(255,255,255,0.03);
@@ -27,22 +38,7 @@
 		}
 
 		&.selected {
-			background: rgba(255,255,255,0.08) !important;
-
-			.select-zone {
-				&::after {
-					background: colour(blue);
-					border-color: colour(blue) !important;
-				}
-			}
-		}
-
-		.light-theme & {
-			border-color: rgba(0,0,0,0.05);
-
-			&.selected {
-				background: colour(faint_grey) !important;
-			}
+			background: rgba(125,125,125,0.15) !important;
 		}
 
 		&.playing {
@@ -81,7 +77,6 @@
 			font-size: 10px;
 			color: colour(grey);
 			text-transform: uppercase;
-			border-top: 0;
 			padding-bottom: 2px;
 		}
 
@@ -128,9 +123,9 @@
 
 			:root .dragging &.hover,
 			&.touch-drag-hover {
-				border-top: 3px solid colour(blue);
-				margin-top: -3px;
-				background: transparent;
+				&:before {
+					border-top-color: colour(blue);
+				}
 			}
 
 			&.has-touch-drag-zone {

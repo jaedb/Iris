@@ -102,7 +102,7 @@ export default class GridItem extends React.Component{
 			<div className={"grid-item "+this.props.type+"-grid-item"} onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
 				<Thumbnail size="medium" images={images} />
 				<div className="name">
-					{item.name ? item.name : <span className="dark-mid_grey-text">{item.uri}</span>}
+					{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
 				</div>
 				<div className="secondary">					
 					{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
