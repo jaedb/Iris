@@ -141,11 +141,13 @@
 			}
 
 			&.about {
-				.col.w40,
-				.col.w60 {
-					@include clearfix();
-					width: 100%;
-					float: none;
+				.col {
+					&--w40,
+					&--w60 {
+						@include clearfix();
+						width: 100%;
+						float: none;
+					}
 				}
 				
 				.biography {

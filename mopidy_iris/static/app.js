@@ -69751,7 +69751,7 @@ var Settings = function (_React$Component) {
 						'div',
 						{ className: 'list__item commands-setup__item', key: command.id },
 						_react2.default.createElement(
-							'span',
+							'div',
 							{ className: 'col col--w90' },
 							_react2.default.createElement(
 								'div',
@@ -69761,8 +69761,11 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
 								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
 							),
-							'\xA0\xA0',
-							command.command && command.command.url ? command.command.url : "-"
+							_react2.default.createElement(
+								'div',
+								{ className: 'commands-setup__item__url commands__item__url' },
+								command.command && command.command.url ? command.command.url : "-"
+							)
 						),
 						_react2.default.createElement(
 							'div',

@@ -6538,12 +6538,10 @@ main header {
     display: none; }
   .artist-view .body.overview .grid-wrapper {
     padding-top: 40px !important; }
-  .artist-view .body.about .col.w40,
-  .artist-view .body.about .col.w60 {
+  .artist-view .body.about .col--w40, .artist-view .body.about .col--w60 {
     width: 100%;
     float: none; }
-    .artist-view .body.about .col.w40::after,
-    .artist-view .body.about .col.w60::after {
+    .artist-view .body.about .col--w40::after, .artist-view .body.about .col--w60::after {
       content: '';
       clear: both;
       display: block; }
@@ -7156,7 +7154,15 @@ main .track-view {
   .settings-view .commands-setup__item {
     position: relative; }
     .settings-view .commands-setup__item .commands__item {
+      float: left;
       margin-bottom: -5px; }
+    .settings-view .commands-setup__item__url {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      padding-top: 5px;
+      padding-left: 10px; }
     .settings-view .commands-setup__item__actions {
       position: absolute;
       top: 16px;
