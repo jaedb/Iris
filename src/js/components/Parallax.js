@@ -5,7 +5,7 @@ export default class Parallax extends React.Component{
 
 	constructor(props){
 		super(props);
-
+/*
 		this._loading = false
 		this._loaded = false
 
@@ -27,9 +27,9 @@ export default class Parallax extends React.Component{
 			// we need to manually bind this as eventListener doesn't work with anonymous functions
 			this.handleResize = this.handleResize.bind(this);
 			this.handleScroll = this.handleScroll.bind(this);
-		}
+		}*/
 	}
-
+/*
 	componentDidMount(){
 		if (!this.props.disabled){
 	        window.addEventListener("resize", this.handleResize);
@@ -209,17 +209,13 @@ export default class Parallax extends React.Component{
 		// And now drop it into place
 		context.fill();
 	}
+	*/
 
 	render(){
 		return (
 			<div className={this.props.blur && !this.props.disabled ? "parallax blur" : "parallax"}>
-
-				<canvas 
-					id="parallax-canvas" 
-					className={!this.state.loading ? 'loaded' : null} 
-					width={this.state.canvas.width} 
-					height={this.state.canvas.height}>
-				</canvas>
+				<div className="parallax__image" style={{backgroundImage: 'url('+this.props.image+')'}}></div>
+				<div className="parallax__overlay"></div>
 			</div>
 		);
 	}

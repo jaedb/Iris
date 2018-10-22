@@ -4364,12 +4364,55 @@ input[type="submit"] {
   .thumbnail:hover .zoom {
     display: block; }
 
+html,
+body {
+  overflow: hidden; }
+
+main {
+  perspective: 2px;
+  transform-style: preserve-3d;
+  overflow-y: scroll;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0; }
+
+.intro {
+  overflow: hidden; }
+
 .parallax {
-  height: 50vh;
-  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #181818;
-  position: relative; }
+  position: absolute;
+  top: -30%;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  transform: translateZ(-2px) scale(2);
+  z-index: -1; }
+  .parallax__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 50%; }
+  .parallax__overlay {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
+    z-index: 1;
+    transform: translateZ(2px) scale(0.5); }
   .parallax canvas {
     width: 110%;
     height: 110%;
@@ -6456,14 +6499,6 @@ main header {
     content: '';
     clear: both;
     display: block; }
-  .artist-view .intro .parallax {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: auto; }
   .artist-view .intro .liner {
     position: relative;
     z-index: 1;
@@ -6554,14 +6589,6 @@ main header {
     content: '';
     clear: both;
     display: block; }
-  .user-view .intro .parallax {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: auto; }
   .user-view .intro .liner {
     position: relative;
     z-index: 1;
@@ -6895,13 +6922,6 @@ main .track-view {
   position: relative;
   padding: 90px 40px 70px;
   z-index: 1; }
-  .discover-view .intro .parallax {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; }
   .discover-view .intro h1 {
     font-size: 3rem;
     line-height: 3rem; }
