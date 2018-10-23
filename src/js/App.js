@@ -321,7 +321,7 @@ class App extends React.Component{
 					<div className="body">
 				        <Sidebar />		        
 				        <PlaybackControls />
-				        <main>
+				        <main id="main">
 				      		{this.props.children}
 				        </main>
 			        </div>

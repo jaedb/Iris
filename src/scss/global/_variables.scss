@@ -237,8 +237,8 @@ $bp_shallow: 650px;
 }
 
 @mixin blur($size: 10px){
-	-webkit-filter: blur($size );
-	filter: blur($size );
+	-webkit-filter: blur($size);
+	filter: blur($size);
 }
 
 @mixin feature_font(){

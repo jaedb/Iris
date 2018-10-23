@@ -2665,59 +2665,39 @@
 
 body,
 html {
-  background: #181818;
   color: #cecac4;
   font-family: "Overpass", Helvetica, Arial, sans-serif;
   font-size: 14px;
   letter-spacing: -0.01rem;
   touch-action: manipulation;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
   body .light-theme,
   html .light-theme {
-    background: #FFFFFF;
     color: #121212; }
 
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px; }
+body.touch-dragging, body.no-scrollbars {
+  overflow-y: hidden; }
 
-*::-webkit-scrollbar-track {
-  background: #181818; }
-
-*::-webkit-scrollbar-thumb {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  background: #383734;
-  border-radius: 4px; }
-  *::-webkit-scrollbar-thumb:hover {
-    background: #a3a19f; }
-
-body {
-  overflow-y: scroll;
-  overflow-x: hidden; }
-  body.touch-dragging, body.no-scrollbars {
-    overflow-y: hidden; }
-  @media (max-width: 800px) {
-    body.context-menu-open {
-      overflow-y: hidden; } }
-
-main,
-footer {
-  margin-left: 220px; }
-  @media (max-height: 650px) {
-    main,
-    footer {
-      padding-bottom: 60px; } }
-  @media (max-width: 800px) {
-    main,
-    footer {
-      margin-left: 0; } }
+@media (max-width: 800px) {
+  body.context-menu-open {
+    overflow-y: hidden; } }
 
 main {
-  position: relative;
-  min-height: 100vh; }
+  position: absolute;
+  top: 0;
+  left: 220px;
+  bottom: 50px;
+  right: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  perspective: 2px;
+  transform-style: preserve-3d;
+  background: #181818; }
+  .light-theme main {
+    background: #FFFFFF; }
   main .content-wrapper {
     padding: 40px 40px 80px; }
   main a {
@@ -2733,10 +2713,12 @@ main {
     line-height: 1.5em;
     white-space: pre-wrap; }
   @media (max-width: 800px) {
-    main .content-wrapper {
-      padding: 20px 10px 60px; }
-    main section.list-wrapper {
-      padding: 10px 0; } }
+    main {
+      left: 0; }
+      main .content-wrapper {
+        padding: 20px 10px 60px; }
+      main section.list-wrapper {
+        padding: 10px 0; } }
   main pre {
     padding: 20px;
     background: #121212;
@@ -4364,35 +4346,21 @@ input[type="submit"] {
   .thumbnail:hover .zoom {
     display: block; }
 
-html,
-body {
-  overflow: hidden; }
-
-main {
-  perspective: 2px;
-  transform-style: preserve-3d;
-  overflow-y: scroll;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0; }
-
-.intro {
-  overflow: hidden; }
+.playback-controls {
+  z-index: 3; }
 
 .parallax {
-  height: 100%;
   overflow: hidden;
   background: #181818;
   position: absolute;
-  top: -30%;
+  top: -10%;
   right: -10px;
-  bottom: -10px;
   left: -10px;
-  transform: translateZ(-2px) scale(2);
-  z-index: -1; }
+  height: 100%;
+  transform: translateZ(-0.6px) scale(1.33334);
+  transform-origin: bottom center;
+  z-index: -1;
+  max-height: 80vh; }
   .parallax__image {
     position: absolute;
     top: 0;
@@ -4401,32 +4369,27 @@ main {
     right: 0;
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: 50% 50%; }
+    background-position: 50% 50%;
+    background-color: #323232; }
   .parallax__overlay {
     content: '';
     display: block;
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 0;
     right: 0;
-    height: 30%;
+    height: 100%;
     background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
-    z-index: 1;
-    transform: translateZ(2px) scale(0.5); }
-  .parallax canvas {
-    width: 110%;
-    height: 110%;
-    opacity: 0;
-    position: absolute;
-    top: -5%;
-    left: -5%; }
-    .parallax canvas.loaded {
-      opacity: 1; }
-  .parallax.blur canvas {
+    z-index: 1; }
+  .parallax--blur .parallax__image {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
   .light-theme .parallax {
     background: #FFFFFF; }
+    .light-theme .parallax__image {
+      background-color: #FFFFFF; }
+    .light-theme .parallax__overlay {
+      background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -7078,14 +7041,6 @@ main .track-view {
   .discover-featured-view .intro header,
   .discover-new-releases-view .intro header {
     margin-bottom: 0; }
-  .discover-featured-view .intro .parallax,
-  .discover-new-releases-view .intro .parallax {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; }
   .discover-featured-view .intro .content,
   .discover-new-releases-view .intro .content {
     padding: 40px;

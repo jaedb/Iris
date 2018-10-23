@@ -63,38 +63,22 @@
 	}
 }
 
-html,
-body {
-	overflow: hidden;
-}
-
-main {
-	perspective: 2px;
-	transform-style: preserve-3d;
-	overflow-y: scroll;
-	height: 100vh;
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-}
-
-.intro {
-	overflow: hidden;
+.playback-controls {
+	z-index: 3;
 }
 
 .parallax {
-	height: 100%;
 	overflow: hidden;
 	background: colour(dark_grey);
 	position: absolute;
-	top: -30%;
+	top: -10%;
 	right: -10px;
-	bottom: -10px;
 	left: -10px;
-	transform: translateZ(-2px) scale(2);
+	height: 100%;
+	transform: translateZ(-0.6px) scale(1.33334);
+	transform-origin: bottom center;
 	z-index: -1;
+	max-height: 80vh;
 
 	&__image {
 		position: absolute;
@@ -105,41 +89,36 @@ main {
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: 50% 50%;
+		background-color: lighten(colour(dark_grey), 10%);
 	}
 
 	&__overlay {
 		content: '';
 		display: block;
 		position: absolute;
-		bottom: 0;
+		bottom: -2px;
 		left: 0;
 		right: 0;
-		height: 30%;
+		height: 100%;
 		background-image: linear-gradient(rgba(24,24,24,0), rgba(24,24,24,1));
 		z-index: 1;
-		transform: translateZ(2px) scale(0.5);
 	}
 
-	canvas {
-		width: 110%;
-		height: 110%;
-		opacity: 0;
-		position: absolute;
-		top: -5%;
-		left: -5%;
-
-		&.loaded {
-			opacity: 1;
-		}
-	}
-
-	&.blur {
-		canvas {
+	&--blur {
+		.parallax__image {
 			@include blur();
 		}
 	}
 
 	.light-theme & {
 		background: colour(white);
+
+		&__image {
+			background-color: colour(white);
+		}
+
+		&__overlay {
+			background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
+		}
 	}
 }

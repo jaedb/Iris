@@ -18781,6 +18781,7 @@ var LazyLoadListener = function (_React$Component) {
 			loadKey: _this.props.loadKey
 		};
 
+		_this.element = document.getElementById('main');
 		_this.handleScroll = helpers.throttle(_this.handleScroll.bind(_this), 50);
 		return _this;
 	}
@@ -18788,12 +18789,12 @@ var LazyLoadListener = function (_React$Component) {
 	_createClass(LazyLoadListener, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			window.addEventListener("scroll", this.handleScroll, false);
+			this.element.addEventListener("scroll", this.handleScroll, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			window.removeEventListener("scroll", this.handleScroll, false);
+			this.element.removeEventListener("scroll", this.handleScroll, false);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -18813,7 +18814,7 @@ var LazyLoadListener = function (_React$Component) {
 			if (this.state.listening) {
 
 				// At, or nearly at the bottom of the page
-				if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+				if (this.element.scrollTop > this.element.scrollHeight - this.element.offsetHeight - 100) {
 
 					// Immediately stop listening to avoid duplicating pagination requests
 					this.setState({ listening: false }, function () {
@@ -19880,218 +19881,19 @@ var Parallax = function (_React$Component) {
 		_classCallCheck(this, Parallax);
 
 		return _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, props));
-		/*
-  		this._loading = false
-  		this._loaded = false
-  
-  		this.state = {
-  			scrollTop: 0,
-  			windowWidth: 0,
-  			windowHeight: 0,
-  			canvas: {
-  				width: 0,
-  				height: 0
-  			},
-  			image: {},
-  			loading: false,
-  			url: false
-  		}
-  
-  		if (!this.props.disabled){
-  
-  			// we need to manually bind this as eventListener doesn't work with anonymous functions
-  			this.handleResize = this.handleResize.bind(this);
-  			this.handleScroll = this.handleScroll.bind(this);
-  		}*/
 	}
-	/*
- 	componentDidMount(){
- 		if (!this.props.disabled){
- 	        window.addEventListener("resize", this.handleResize);
- 	        window.addEventListener("scroll", this.handleScroll);
- 		}
- 
-         this._mounted = true;
- 
-         if (this.props.image){
- 			this._loading = true;
- 			this.setState({url: this.props.image, image: false, loading: true});
- 			this.loadImage(this.props.image)
- 				.then(
- 					response => {
- 						if (this._mounted){
- 							this._loading = false;
- 							this._loaded = true;
- 							this.setState({url: this.props.image, image: response, loading: false});
- 							this.updateCanvas(response);
- 						}
- 					}
- 				)
- 		} else {
- 			this._loaded = true;
- 			this.state.image = false;
- 			this.updateCanvas();
- 		}
- 	}
- 
-     componentWillUnmount(){
- 	    this._mounted = false;
- 
-     	if (!this.props.disabled){
- 	        window.removeEventListener("resize", this.handleResize);
- 	        window.removeEventListener("scroll", this.handleScroll);
- 	    }
- 	}
- 
- 	componentWillReceiveProps(nextProps){
- 		if ((!this.state.url || nextProps.image != this.state.url ) && !this._loading && nextProps.image){
- 			this._loading = true;
- 			this.setState({ url: nextProps.image, image: false, loading: true });
- 			this.loadImage(nextProps.image)
- 				.then(
- 					response => {
- 						if (this._mounted){
- 							this._loading = false;
- 							this._loaded = true;
- 							this.setState({ url: nextProps.image, image: response, loading: false });
- 							this.updateCanvas(response);
- 						}
- 					}
- 				)
- 		}
- 	}
- 
-     handleResize(e){
-     	this.updateCanvas(this.state.image);
-     }
- 
-     handleScroll(e){
-     	// this DOES work, but is in no way high-performing and only on Firefox
-     	if (this._loaded){
- 			this.setState(
- 				{scrollTop: window.scrollY}, 
- 				this.updateCanvas(this.state.image)
- 			)
- 	    }
-     }
- 
- 	loadImage(url){
- 		return new Promise((resolve, reject) => {
- 
- 			var imageObject = new Image();
- 			imageObject.src = url;
- 
- 			// This seems to prevent Dirble images from loading.
- 			// Other domains don't seem to mind any more, so perhaps we can remove for good.
- 			// TODO: Re-test the nature of crossorigin images
- 			// imageObject.crossOrigin = 'anonymous';
- 
- 			imageObject.onload = function(){
- 				var image = {
- 					width: imageObject.naturalWidth,
- 					height: imageObject.naturalHeight,
- 					original_width: imageObject.naturalWidth,
- 					original_height: imageObject.naturalHeight,
- 					object: imageObject
- 				}
- 				resolve(image);
- 			}
- 		})
- 	}
- 
- 	updateCanvas(image = false){
- 		var canvasWidth = $('.parallax').outerWidth();
- 		var canvasHeight = $('.parallax').outerHeight();
- 		if (this.state.canvas.width != canvasWidth || this.state.canvas.height != canvasHeight){
- 			this.setState({
- 				canvas: {
- 					width: canvasWidth,
- 					height: canvasHeight
- 				}
- 			})
- 		}
- 		this.renderCanvas(image);
- 	}
- 
- 	renderCanvas(image = false){
- 		let self = this;
- 		var canvasDOM = document.getElementById('parallax-canvas')
- 		var context = canvasDOM.getContext('2d')
- 
- 		// Fill the background with mid-grey
- 		context.beginPath();
- 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
- 
- 		switch (this.props.theme){
- 			case 'light':
- 				context.fillStyle = "#EDEDED";
- 				break;
- 
- 			case 'dark':
- 			default:
- 				context.fillStyle = "#121212";
- 		}
- 		context.fill();
- 
- 		if (image && !self.state.loading){
- 		
- 			// zoom image to fill canvas, widthwise
- 			if (image.width < this.state.canvas.width || image.width > this.state.canvas.width){
- 				var scale = this.state.canvas.width / image.width;
- 				image.width = image.width * scale;
- 				image.height = image.height * scale;
- 			}
- 			
- 			// now check for fill heightwise, and zoom in if necessary
- 			if (image.height < this.state.canvas.height){
- 				var scale = this.state.canvas.height / image.height;
- 				image.width = image.width * scale;
- 				image.height = image.height * scale;
- 			}
- 			
- 			// figure out where we want the image to be, based on scroll position
- 			var percent = Math.round(self.state.scrollTop / this.state.canvas.height * 100 );
- 			var position = Math.round((this.state.canvas.height / 2) * (percent/100) ) - 100;
- 			
- 			image.x = (this.state.canvas.width / 2 ) - (image.width / 2 );
- 			image.y = ((this.state.canvas.height / 2 ) - (image.height / 2 ) ) + ((percent / 100 ) * 100);
- 
- 			// Actually draw the image on the canvas
- 			context.drawImage(image.object, image.x, image.y, image.width, image.height);
- 
- 			// now update our component
- 			self.setState({ image: image });
- 		}
- 
- 		// Construct a gradient overlay
- 		context.rect(0, 0, this.state.canvas.width, this.state.canvas.height);
- 		let gradient = context.createLinearGradient(0, 0, 0, this.state.canvas.height);
- 
- 		switch (this.props.theme){
- 			case 'light':
- 				gradient.addColorStop(0, 'rgba(255,255,255,0.4)');
- 				gradient.addColorStop(0.9, 'rgba(255,255,255,1)');
- 				break;
- 
- 			case 'dark':
- 			default:
- 				gradient.addColorStop(0, 'rgba(24,24,24,0)');
- 				gradient.addColorStop(0.9, 'rgba(24,24,24,1)');
- 		}
- 
- 		context.fillStyle = gradient;
- 
- 		// And now drop it into place
- 		context.fill();
- 	}
- 	*/
 
 	_createClass(Parallax, [{
 		key: "render",
 		value: function render() {
+			var class_name = "parallax";
+			if (this.props.blur) {
+				class_name += " parallax--blur";
+			}
+
 			return _react2.default.createElement(
 				"div",
-				{ className: this.props.blur && !this.props.disabled ? "parallax blur" : "parallax" },
+				{ className: class_name },
 				_react2.default.createElement("div", { className: "parallax__image", style: { backgroundImage: 'url(' + this.props.image + ')' } }),
 				_react2.default.createElement("div", { className: "parallax__overlay" })
 			);
@@ -61644,7 +61446,7 @@ var App = function (_React$Component) {
 						_react2.default.createElement(_PlaybackControls2.default, null),
 						_react2.default.createElement(
 							'main',
-							null,
+							{ id: 'main' },
 							this.props.children
 						)
 					),
@@ -67911,7 +67713,7 @@ var Queue = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 					'Now playing'
 				),
-				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image, theme: this.props.theme, disabled: this.props.disable_parallax }),
+				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -67972,7 +67774,6 @@ var Queue = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
@@ -70041,27 +69842,6 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'label' },
 									'Enable shortkeys'
-								)
-							),
-							_react2.default.createElement(
-								'label',
-								null,
-								_react2.default.createElement('input', {
-									type: 'checkbox',
-									name: 'shortkeys_enabled',
-									checked: this.props.ui.disable_parallax,
-									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ disable_parallax: !_this3.props.ui.disable_parallax });
-									} }),
-								_react2.default.createElement(
-									'span',
-									{ className: 'label tooltip' },
-									'Disable parallax',
-									_react2.default.createElement(
-										'span',
-										{ className: 'tooltip__content' },
-										'Improves scroll performance on low-powered devices'
-									)
 								)
 							)
 						)
@@ -77898,7 +77678,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: 'intro' },
-					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true, theme: this.props.theme, disabled: this.props.disable_parallax }),
+					_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'content cf' },
@@ -78051,7 +77831,6 @@ var DiscoverNewReleases = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,

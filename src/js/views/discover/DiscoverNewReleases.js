@@ -60,7 +60,7 @@ class DiscoverNewReleases extends React.Component{
 		if (album){
 			return (
 				<div className="intro">
-					<Parallax image={album.images ? album.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
+					<Parallax image={album.images ? album.images.large : null} blur />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'album/'+album.uri}
@@ -155,7 +155,6 @@ class DiscoverNewReleases extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,
