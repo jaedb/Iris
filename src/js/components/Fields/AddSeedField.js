@@ -2,8 +2,9 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 
+import Link from '../Link';
 import ArtistSentence from './../ArtistSentence'
 import * as helpers from '../../helpers'
 import * as coreActions from '../../services/core/actions'

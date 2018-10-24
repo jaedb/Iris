@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router';
+import {Link} from 'react-router';
 
 export default class extends React.Component{
 
@@ -18,7 +18,8 @@ export default class extends React.Component{
 		return (
 			<Link 
 				onClick={e => this.handleClick(e)}
-				className={this.props.className ? this.props.className : null} 
+				className={this.props.className ? this.props.className : null}
+				activeClassName={this.props.activeClassName}
 				to={this.props.to}>
 					{this.props.children}
 			</Link>

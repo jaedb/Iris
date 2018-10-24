@@ -2,8 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 
+import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -223,7 +223,7 @@ class Artist extends React.Component{
 
 						<div className="col col--w5"></div>
 
-						{artist.related_artists ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
+						{artist.related_artists && artist.related_artists.length > 0 ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 

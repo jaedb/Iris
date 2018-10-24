@@ -1,9 +1,9 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
 import { createStore, bindActionCreators } from 'redux'
 
+import Link from '../Link';
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
 import * as lastfmActions from '../../services/lastfm/actions'

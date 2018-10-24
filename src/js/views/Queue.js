@@ -1,7 +1,8 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory, Link } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
 import Icon from '../components/Icon'

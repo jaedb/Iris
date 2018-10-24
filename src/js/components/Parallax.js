@@ -8,7 +8,7 @@ export default class Parallax extends React.Component{
 
 		this.state = {
 			loaded: false,
-			url: ''
+			url: null
 		}
 	}
 
@@ -19,12 +19,21 @@ export default class Parallax extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
-		if ((!this.state.url || nextProps.image != this.state.url ) && nextProps.image){
+		if (nextProps.image != this.state.url){
 			this.loadImage(nextProps.image);
 		}
 	}
 
 	loadImage(url){
+
+		// Reset our image to nothing
+		// This is needed when navigating to new view, but not unmounting the current components
+		// ie one artist to another
+		this.setState({
+			loaded: false,
+			url: null
+		});
+
 		var self = this;
 		var imageObject = new Image();
 		imageObject.src = url;
@@ -46,9 +55,14 @@ export default class Parallax extends React.Component{
 			class_name += " parallax--loaded";
 		}
 
+		var style = {};
+		if (this.state.loaded && this.state.url){
+			style = {backgroundImage: 'url('+this.state.url+')'};
+		}
+
 		return (
 			<div className={class_name}>
-				<div className="parallax__image" style={{backgroundImage: 'url('+this.state.url+')'}}></div>
+				<div className="parallax__image" style={style}></div>
 				<div className="parallax__overlay"></div>
 			</div>
 		);

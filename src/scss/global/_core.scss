@@ -74,8 +74,14 @@ main {
 	overflow-x: hidden;
 	perspective: 100px;
 	background: colour(dark_grey);
-	scroll-behavior: smooth;
 	z-index: 1;
+	
+	/**
+	 This is nice, but confuses the feeling when navigating around
+	 TODO: Implement only when navigating to anchor tags
+	 
+	 scroll-behavior: smooth;
+	 **/
 
 	.notouch & {
 		&::-webkit-scrollbar{

@@ -5380,7 +5380,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Icon = __webpack_require__(5);
 
@@ -5483,7 +5485,7 @@ var Thumbnail = function (_React$Component) {
 			var zoom_icon = null;
 			if (this.props.canZoom && image) {
 				zoom_icon = _react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'zoom', to: global.baseURL + 'image-zoom?url=' + image },
 					_react2.default.createElement(_Icon2.default, { name: 'search' })
 				);
@@ -19886,28 +19888,37 @@ var Parallax = function (_React$Component) {
 
 		_this.state = {
 			loaded: false,
-			url: ''
+			url: null
 		};
 		return _this;
 	}
 
 	_createClass(Parallax, [{
-		key: 'componentWillMount',
+		key: "componentWillMount",
 		value: function componentWillMount() {
 			if (this.props.image) {
 				this.loadImage(this.props.image);
 			}
 		}
 	}, {
-		key: 'componentWillReceiveProps',
+		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
-			if ((!this.state.url || nextProps.image != this.state.url) && nextProps.image) {
+			if (nextProps.image != this.state.url) {
 				this.loadImage(nextProps.image);
 			}
 		}
 	}, {
-		key: 'loadImage',
+		key: "loadImage",
 		value: function loadImage(url) {
+
+			// Reset our image to nothing
+			// This is needed when navigating to new view, but not unmounting the current components
+			// ie one artist to another
+			this.setState({
+				loaded: false,
+				url: null
+			});
+
 			var self = this;
 			var imageObject = new Image();
 			imageObject.src = url;
@@ -19920,7 +19931,7 @@ var Parallax = function (_React$Component) {
 			};
 		}
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 			var class_name = "parallax";
 			if (this.props.blur) {
@@ -19930,11 +19941,16 @@ var Parallax = function (_React$Component) {
 				class_name += " parallax--loaded";
 			}
 
+			var style = {};
+			if (this.state.loaded && this.state.url) {
+				style = { backgroundImage: 'url(' + this.state.url + ')' };
+			}
+
 			return _react2.default.createElement(
-				'div',
+				"div",
 				{ className: class_name },
-				_react2.default.createElement('div', { className: 'parallax__image', style: { backgroundImage: 'url(' + this.state.url + ')' } }),
-				_react2.default.createElement('div', { className: 'parallax__overlay' })
+				_react2.default.createElement("div", { className: "parallax__image", style: style }),
+				_react2.default.createElement("div", { className: "parallax__overlay" })
 			);
 		}
 	}]);
@@ -21243,9 +21259,11 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
-
 var _redux = __webpack_require__(2);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _helpers = __webpack_require__(1);
 
@@ -23409,7 +23427,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Icon = __webpack_require__(5);
 
@@ -26079,7 +26099,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Icon = __webpack_require__(5);
 
@@ -61585,6 +61607,10 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
 
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
+
 var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -61651,13 +61677,13 @@ var Sidebar = function (_React$Component) {
 							'section',
 							null,
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('queue'), to: global.baseURL + "queue" },
 								_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 								'Now playing'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('search'), to: global.baseURL + "search" },
 								_react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' }),
 								'Search'
@@ -61672,25 +61698,25 @@ var Sidebar = function (_React$Component) {
 								'Discover'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('discover/recommendations'), to: global.baseURL + "discover/recommendations" },
 								_react2.default.createElement(_Icon2.default, { name: 'explore', type: 'material' }),
 								'Discover'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('discover/categories'), to: global.baseURL + "discover/categories" },
 								_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
 								'Genre / Mood'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('discover/featured'), to: global.baseURL + "discover/featured" },
 								_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 								'Featured playlists'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('discover/new-releases'), to: global.baseURL + "discover/new-releases" },
 								_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 								'New releases'
@@ -61705,31 +61731,31 @@ var Sidebar = function (_React$Component) {
 								'My Music'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('library/playlists'), to: global.baseURL + "library/playlists" },
 								_react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
 								'Playlists'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('library/artists'), to: global.baseURL + "library/artists" },
 								_react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
 								'Artists'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('library/albums'), to: global.baseURL + "library/albums" },
 								_react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
 								'Albums'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('library/tracks'), to: global.baseURL + "library/tracks" },
 								_react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
 								'Tracks'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('library/browse'), to: global.baseURL + "library/browse" },
 								_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
 								'Browse'
@@ -61739,7 +61765,7 @@ var Sidebar = function (_React$Component) {
 							'section',
 							null,
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: this.linkClassName('settings'), to: global.baseURL + "settings" },
 								_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
 								'Settings',
@@ -62533,7 +62559,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -62817,7 +62845,7 @@ var PlaybackControls = function (_React$Component) {
 					'div',
 					{ className: 'current-track' },
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: 'thumbnail-wrapper', to: global.baseURL + 'kiosk-mode' },
 						_react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
 					),
@@ -63409,6 +63437,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(6);
 
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
+
 var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
@@ -63917,7 +63949,7 @@ var ContextMenu = function (_React$Component) {
 					var style = null;
 
 					return _react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: 'title', to: global.baseURL + context.type + '/' + context.item.uri },
 						style ? _react2.default.createElement('div', { className: 'background', style: style }) : null,
 						_react2.default.createElement(
@@ -64688,6 +64720,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(6);
 
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
+
 var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -64974,7 +65010,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -65579,7 +65617,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _LazyLoadListener = __webpack_require__(24);
 
@@ -65762,7 +65802,7 @@ var Artist = function (_React$Component) {
 				'div',
 				{ className: 'sub-views' },
 				_react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'option', activeClassName: 'active', to: global.baseURL + 'artist/' + this.props.params.uri },
 					_react2.default.createElement(
 						'h4',
@@ -65771,7 +65811,7 @@ var Artist = function (_React$Component) {
 					)
 				),
 				this.props.artist.related_artists_uris ? _react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'option', activeClassName: 'active', to: global.baseURL + 'artist/' + this.props.params.uri + '/related-artists' },
 					_react2.default.createElement(
 						'h4',
@@ -65780,7 +65820,7 @@ var Artist = function (_React$Component) {
 					)
 				) : null,
 				_react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'option', activeClassName: 'active', to: global.baseURL + 'artist/' + this.props.params.uri + '/about' },
 					_react2.default.createElement(
 						'h4',
@@ -65965,7 +66005,7 @@ var Artist = function (_React$Component) {
 							)
 						),
 						_react2.default.createElement('div', { className: 'col col--w5' }),
-						artist.related_artists ? _react2.default.createElement(
+						artist.related_artists && artist.related_artists.length > 0 ? _react2.default.createElement(
 							'div',
 							{ className: 'col col--w25 related-artists' },
 							_react2.default.createElement(
@@ -65979,7 +66019,7 @@ var Artist = function (_React$Component) {
 								_react2.default.createElement(_RelatedArtists2.default, { artists: artist.related_artists.slice(0, 6) })
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ to: global.baseURL + 'artist/' + artist.uri + '/related-artists', className: 'button grey' },
 								'All related artists'
 							)
@@ -66169,6 +66209,10 @@ var _reactRedux = __webpack_require__(4);
 var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -66388,7 +66432,7 @@ var Playlist = function (_React$Component) {
 							'Play'
 						),
 						_react2.default.createElement(
-							_reactRouter.Link,
+							_Link2.default,
 							{ className: 'button secondary', to: global.baseURL + 'playlist/' + encodeURIComponent(this.props.params.uri) + '/edit' },
 							'Edit'
 						),
@@ -66410,7 +66454,7 @@ var Playlist = function (_React$Component) {
 								'Play'
 							),
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ className: 'button secondary', to: global.baseURL + 'playlist/' + encodeURIComponent(this.props.params.uri) + '/edit' },
 								'Edit'
 							),
@@ -66886,7 +66930,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -67218,7 +67264,7 @@ var Track = function (_React$Component) {
 						'h2',
 						{ className: 'mid_grey-text' },
 						track.album && track.album.uri ? _react2.default.createElement(
-							_reactRouter.Link,
+							_Link2.default,
 							{ to: global.baseURL + 'album/' + track.album.uri },
 							track.album.name
 						) : null,
@@ -67308,7 +67354,7 @@ var Track = function (_React$Component) {
 					{ className: 'no-results' },
 					'Want track lyrics? Authorize Genius under ',
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ to: global.baseURL + "settings/service/genius" },
 						'Settings'
 					),
@@ -67380,9 +67426,11 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
-
 var _redux = __webpack_require__(2);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _helpers = __webpack_require__(1);
 
@@ -67508,6 +67556,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -67716,7 +67768,7 @@ var Queue = function (_React$Component) {
 				'span',
 				null,
 				this.props.spotify_enabled ? _react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'button no-hover', to: global.baseURL + 'queue/radio' },
 					_react2.default.createElement(_Icon2.default, { name: 'radio' }),
 					'Radio',
@@ -67727,7 +67779,7 @@ var Queue = function (_React$Component) {
 					) : null
 				) : null,
 				_react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'button no-hover', to: global.baseURL + 'queue/history' },
 					_react2.default.createElement(_Icon2.default, { name: 'history' }),
 					'History'
@@ -67741,7 +67793,7 @@ var Queue = function (_React$Component) {
 					'Clear'
 				),
 				_react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'button no-hover', to: global.baseURL + 'queue/add-uri' },
 					_react2.default.createElement(_Icon2.default, { name: 'playlist_add' }),
 					'Add URI'
@@ -68050,6 +68102,10 @@ var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _actions = __webpack_require__(3);
 
@@ -68582,6 +68638,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -72175,7 +72235,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -72718,7 +72780,7 @@ var Services = function (_React$Component) {
 					'div',
 					{ className: 'menu__inner' },
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: "menu-item" + (this.props.active == 'spotify' ? ' menu-item--active' : ''), to: this.props.active == 'spotify' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/spotify' },
 						_react2.default.createElement(
 							'div',
@@ -72741,7 +72803,7 @@ var Services = function (_React$Component) {
 						)
 					),
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: "menu-item" + (this.props.active == 'lastfm' ? ' menu-item--active' : ''), to: this.props.active == 'lastfm' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/lastfm' },
 						_react2.default.createElement(
 							'div',
@@ -72764,7 +72826,7 @@ var Services = function (_React$Component) {
 						)
 					),
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: "menu-item" + (this.props.active == 'genius' ? ' menu-item--active' : ''), to: this.props.active == 'genius' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/genius' },
 						_react2.default.createElement(
 							'div',
@@ -72787,7 +72849,7 @@ var Services = function (_React$Component) {
 						)
 					),
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: "menu-item" + (this.props.active == 'snapcast' ? ' menu-item--active' : ''), to: this.props.active == 'snapcast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/snapcast' },
 						_react2.default.createElement(
 							'div',
@@ -72810,7 +72872,7 @@ var Services = function (_React$Component) {
 						)
 					),
 					_react2.default.createElement(
-						_reactRouter.Link,
+						_Link2.default,
 						{ className: "menu-item" + (this.props.active == 'icecast' ? ' menu-item--active' : ''), to: this.props.active == 'icecast' ? global.baseURL + 'settings' : global.baseURL + 'settings/service/icecast' },
 						_react2.default.createElement(
 							'div',
@@ -73110,6 +73172,10 @@ var _reactRedux = __webpack_require__(4);
 var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _VolumeControl = __webpack_require__(68);
 
@@ -76730,6 +76796,10 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
 
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
+
 var _ArtistSentence = __webpack_require__(21);
 
 var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
@@ -76944,7 +77014,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _PlaylistGrid = __webpack_require__(49);
 
@@ -77042,7 +77114,7 @@ var DiscoverFeatured = function (_React$Component) {
 						'div',
 						{ className: 'content cf' },
 						_react2.default.createElement(
-							_reactRouter.Link,
+							_Link2.default,
 							{
 								to: global.baseURL + 'playlist/' + playlist.uri,
 								onContextMenu: function onContextMenu(e) {
@@ -77051,7 +77123,7 @@ var DiscoverFeatured = function (_React$Component) {
 							_react2.default.createElement(_Thumbnail2.default, { images: playlist.images })
 						),
 						_react2.default.createElement(
-							_reactRouter.Link,
+							_Link2.default,
 							{ to: global.baseURL + 'playlist/' + playlist.uri },
 							_react2.default.createElement(
 								'h2',
@@ -77606,7 +77678,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Header = __webpack_require__(16);
 
@@ -77720,7 +77794,7 @@ var DiscoverNewReleases = function (_React$Component) {
 						'div',
 						{ className: 'content cf' },
 						_react2.default.createElement(
-							_reactRouter.Link,
+							_Link2.default,
 							{
 								to: global.baseURL + 'album/' + album.uri,
 								onContextMenu: function onContextMenu(e) {
@@ -77732,7 +77806,7 @@ var DiscoverNewReleases = function (_React$Component) {
 							'h2',
 							null,
 							_react2.default.createElement(
-								_reactRouter.Link,
+								_Link2.default,
 								{ to: global.baseURL + 'album/' + album.uri },
 								album.name
 							)
@@ -77910,7 +77984,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Header = __webpack_require__(16);
 
@@ -78388,7 +78464,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _AlbumGrid = __webpack_require__(48);
 
@@ -78930,7 +79008,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _TrackList = __webpack_require__(23);
 
@@ -79125,7 +79205,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _PlaylistGrid = __webpack_require__(49);
 
@@ -79443,7 +79525,7 @@ var LibraryPlaylists = function (_React$Component) {
 					}
 				}),
 				_react2.default.createElement(
-					_reactRouter.Link,
+					_Link2.default,
 					{ className: 'button no-hover', to: global.baseURL + 'playlist/create' },
 					_react2.default.createElement(_Icon2.default, { name: 'add_box' }),
 					'New'
@@ -79527,6 +79609,10 @@ var _reactRedux = __webpack_require__(4);
 var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _Header = __webpack_require__(16);
 
@@ -79975,7 +80061,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -80341,7 +80429,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -80655,7 +80745,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -81067,7 +81159,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -81284,6 +81378,10 @@ var _reactRedux = __webpack_require__(4);
 var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
+
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -81572,7 +81670,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -81758,7 +81858,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _redux = __webpack_require__(2);
 
@@ -82126,7 +82228,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -82426,7 +82530,9 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouter = __webpack_require__(6);
+var _Link = __webpack_require__(366);
+
+var _Link2 = _interopRequireDefault(_Link);
 
 var _reactGa = __webpack_require__(15);
 
@@ -82897,6 +83003,7 @@ var _class = function (_React$Component) {
 						return _this2.handleClick(e);
 					},
 					className: this.props.className ? this.props.className : null,
+					activeClassName: this.props.activeClassName,
 					to: this.props.to },
 				this.props.children
 			);

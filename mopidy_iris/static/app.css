@@ -2697,8 +2697,13 @@ main {
   overflow-x: hidden;
   perspective: 100px;
   background: #181818;
-  scroll-behavior: smooth;
   z-index: 1;
+  /**
+	 This is nice, but confuses the feeling when navigating around
+	 TODO: Implement only when navigating to anchor tags
+	 
+	 scroll-behavior: smooth;
+	 **/
   /* All children between <main> and the parallax need this to work in Firefox */ }
   .notouch main::-webkit-scrollbar {
     width: 8px;

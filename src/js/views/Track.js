@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
 import Header from '../components/Header'
