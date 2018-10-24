@@ -2586,6 +2586,9 @@
 .overlay_light-background {
   background-color: rgba(255, 255, 255, 0.7) !important; }
 
+.opaque-text {
+  opacity: 0.35; }
+
 /**
  * Retrieve colour from $colours map
  * @param  {string} $key [name of colour, as defined in $colours map]
@@ -2662,59 +2665,68 @@
 
 body,
 html {
-  background: #181818;
   color: #cecac4;
   font-family: "Overpass", Helvetica, Arial, sans-serif;
   font-size: 14px;
   letter-spacing: -0.01rem;
   touch-action: manipulation;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004); }
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
   body .light-theme,
   html .light-theme {
-    background: #FFFFFF;
     color: #121212; }
 
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px; }
-
-*::-webkit-scrollbar-track {
-  background: #181818; }
-
-*::-webkit-scrollbar-thumb {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  background: #383734;
-  border-radius: 4px; }
-  *::-webkit-scrollbar-thumb:hover {
-    background: #a3a19f; }
-
 body {
-  overflow-y: scroll;
-  overflow-x: hidden; }
+  transform: translateZ(0px);
+  transform-style: preserve-3d; }
   body.touch-dragging, body.no-scrollbars {
     overflow-y: hidden; }
   @media (max-width: 800px) {
     body.context-menu-open {
       overflow-y: hidden; } }
 
-main,
-footer {
-  margin-left: 220px; }
-  @media (max-height: 650px) {
-    main,
-    footer {
-      padding-bottom: 60px; } }
-  @media (max-width: 800px) {
-    main,
-    footer {
-      margin-left: 0; } }
-
 main {
-  position: relative;
-  min-height: 100vh; }
+  position: fixed;
+  top: 0;
+  left: 220px;
+  bottom: 50px;
+  right: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  perspective: 100px;
+  background: #181818;
+  z-index: 1;
+  /**
+	 This is nice, but confuses the feeling when navigating around
+	 TODO: Implement only when navigating to anchor tags
+	 
+	 scroll-behavior: smooth;
+	 **/
+  /* All children between <main> and the parallax need this to work in Firefox */ }
+  .notouch main::-webkit-scrollbar {
+    width: 8px;
+    height: 8px; }
+  .notouch main::-webkit-scrollbar-track {
+    background: #181818; }
+  .notouch main::-webkit-scrollbar-thumb {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    background: #383734; }
+    .notouch main::-webkit-scrollbar-thumb:hover {
+      background: #a3a19f; }
+  .modal-open main {
+    left: 0;
+    bottom: 0;
+    z-index: 999; }
+  main,
+  main .preserve-3d {
+    transform-style: preserve-3d; }
+  .light-theme main {
+    background: #FFFFFF; }
   main .content-wrapper {
     padding: 40px 40px 80px; }
   main a {
@@ -2730,10 +2742,12 @@ main {
     line-height: 1.5em;
     white-space: pre-wrap; }
   @media (max-width: 800px) {
-    main .content-wrapper {
-      padding: 20px 10px 60px; }
-    main section.list-wrapper {
-      padding: 10px 0; } }
+    main {
+      left: 0; }
+      main .content-wrapper {
+        padding: 20px 10px 60px; }
+      main section.list-wrapper {
+        padding: 10px 0; } }
   main pre {
     padding: 20px;
     background: #121212;
@@ -3904,29 +3918,31 @@ input[type="submit"] {
   user-select: none;
   display: block;
   position: relative;
-  margin: 0 -10px -1px -10px;
+  margin: 0 -10px 0 -10px;
   padding: 14px 30px 13px 10px;
-  border-radius: 3px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.05); }
+  border-radius: 3px; }
   .list__item::after {
     content: '';
     clear: both;
     display: block; }
+  .list__item:before {
+    pointer-events: none;
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-top: 3px solid transparent;
+    border-bottom: 1px solid rgba(125, 125, 125, 0.15); }
   :root .notouch:not(.dragging) .list__item:not(.header):not(.no-click).hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
     .light-theme :root .notouch:not(.dragging) .list__item:not(.header):not(.no-click).hover {
       background: rgba(0, 0, 0, 0.03); }
   .list__item.selected {
-    background: rgba(255, 255, 255, 0.08) !important; }
-    .list__item.selected .select-zone::after {
-      background: #32b5f2;
-      border-color: #32b5f2 !important; }
-  .light-theme .list__item {
-    border-color: rgba(0, 0, 0, 0.05); }
-    .light-theme .list__item.selected {
-      background: #f4f2f0 !important; }
+    background: rgba(125, 125, 125, 0.15) !important; }
   .list__item.playing {
     color: #08d58f; }
   .list__item .select-zone,
@@ -3952,7 +3968,6 @@ input[type="submit"] {
     font-size: 10px;
     color: #383734;
     text-transform: uppercase;
-    border-top: 0;
     padding-bottom: 2px; }
   .list__item.field {
     padding: 0 !important; }
@@ -3977,10 +3992,8 @@ input[type="submit"] {
     width: 7%; }
   .list.track-list .list__item .col.popularity {
     width: 3%; }
-  :root .dragging .list.track-list .list__item.hover, .list.track-list .list__item.touch-drag-hover {
-    border-top: 3px solid #32b5f2;
-    margin-top: -3px;
-    background: transparent; }
+  :root .dragging .list.track-list .list__item.hover:before, .list.track-list .list__item.touch-drag-hover:before {
+    border-top-color: #32b5f2; }
   .list.track-list .list__item.has-touch-drag-zone {
     padding-left: 45px; }
     .list.track-list .list__item.has-touch-drag-zone .drag-zone {
@@ -4362,26 +4375,56 @@ input[type="submit"] {
   .thumbnail:hover .zoom {
     display: block; }
 
+.playback-controls {
+  z-index: 3; }
+
 .parallax {
-  height: 50vh;
-  width: 100%;
   overflow: hidden;
-  background: #181818;
-  position: relative; }
-  .parallax canvas {
-    width: 110%;
-    height: 110%;
-    opacity: 0;
+  position: absolute;
+  top: -10%;
+  right: -10px;
+  left: -10px;
+  height: 100%;
+  transform: translateZ(-50px) scale(2);
+  transform-origin: bottom center;
+  z-index: -1;
+  max-height: 80vh;
+  background-color: #323232; }
+  .parallax__image {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
     position: absolute;
-    top: -5%;
-    left: -5%; }
-    .parallax canvas.loaded {
-      opacity: 1; }
-  .parallax.blur canvas {
+    top: -10px;
+    left: -10px;
+    bottom: -10px;
+    right: -10px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 50%;
+    opacity: 0; }
+  .parallax__overlay {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
+    z-index: 1; }
+  .parallax--blur .parallax__image {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
+  .parallax--loaded .parallax__image {
+    opacity: 1; }
   .light-theme .parallax {
     background: #FFFFFF; }
+    .light-theme .parallax__image {
+      background-color: #FFFFFF; }
+    .light-theme .parallax__overlay {
+      background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -4665,7 +4708,8 @@ $icon-websocket: \e920;
   left: 0;
   height: 50px;
   background: #3e3e3e;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  transform-style: preserve-3d; }
   .playback-controls .current-track {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -4880,10 +4924,10 @@ $icon-websocket: \e920;
           content: '';
           display: block;
           position: fixed;
-          top: 0;
-          left: 0;
           bottom: 0;
           right: 0;
+          width: 100vw;
+          height: 100vh;
           z-index: 99; }
     .playback-controls.expanded {
       height: 135px; }
@@ -5060,7 +5104,8 @@ aside {
   background: #121212;
   border-right: 1px solid #1d1d1d;
   color: #FFFFFF;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  transform-style: preserve-3d; }
   .light-theme aside {
     background: #f8f7f6;
     border-right: none; }
@@ -6454,14 +6499,6 @@ main header {
     content: '';
     clear: both;
     display: block; }
-  .artist-view .intro .parallax {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: auto; }
   .artist-view .intro .liner {
     position: relative;
     z-index: 1;
@@ -6536,12 +6573,10 @@ main header {
     display: none; }
   .artist-view .body.overview .grid-wrapper {
     padding-top: 40px !important; }
-  .artist-view .body.about .col.w40,
-  .artist-view .body.about .col.w60 {
+  .artist-view .body.about .col--w40, .artist-view .body.about .col--w60 {
     width: 100%;
     float: none; }
-    .artist-view .body.about .col.w40::after,
-    .artist-view .body.about .col.w60::after {
+    .artist-view .body.about .col--w40::after, .artist-view .body.about .col--w60::after {
       content: '';
       clear: both;
       display: block; }
@@ -6554,14 +6589,6 @@ main header {
     content: '';
     clear: both;
     display: block; }
-  .user-view .intro .parallax {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: auto; }
   .user-view .intro .liner {
     position: relative;
     z-index: 1;
@@ -6895,13 +6922,6 @@ main .track-view {
   position: relative;
   padding: 90px 40px 70px;
   z-index: 1; }
-  .discover-view .intro .parallax {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; }
   .discover-view .intro h1 {
     font-size: 3rem;
     line-height: 3rem; }
@@ -7058,14 +7078,6 @@ main .track-view {
   .discover-featured-view .intro header,
   .discover-new-releases-view .intro header {
     margin-bottom: 0; }
-  .discover-featured-view .intro .parallax,
-  .discover-new-releases-view .intro .parallax {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; }
   .discover-featured-view .intro .content,
   .discover-new-releases-view .intro .content {
     padding: 40px;
@@ -7154,7 +7166,15 @@ main .track-view {
   .settings-view .commands-setup__item {
     position: relative; }
     .settings-view .commands-setup__item .commands__item {
+      float: left;
       margin-bottom: -5px; }
+    .settings-view .commands-setup__item__url {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      padding-top: 5px;
+      padding-left: 10px; }
     .settings-view .commands-setup__item__actions {
       position: absolute;
       top: 16px;
@@ -7190,14 +7210,10 @@ main .track-view {
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
+  position: relative;
   background: #0d0d0d;
-  overflow-y: auto; }
+  overflow-y: auto;
+  min-height: 100%; }
 
 @keyframes fadein {
   0% {
@@ -7316,7 +7332,10 @@ main .track-view {
       padding-top: 40px; }
       .modal .content .list.playlists .list__item {
         margin: 0 0 20px 0;
-        padding: 5px; }
+        padding: 5px;
+        cursor: pointer; }
+        .modal .content .list.playlists .list__item:before {
+          display: none; }
         .modal .content .list.playlists .list__item .thumbnail {
           float: left;
           margin-right: 20px; }
