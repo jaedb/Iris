@@ -291,8 +291,8 @@ class Artist extends React.Component{
 		}
 
 		return (
-			<div className="view artist-view">
-				<div className="intro">
+			<div className="view artist-view preserve-3d">
+				<div className="intro preserve-3d">
 
 					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 

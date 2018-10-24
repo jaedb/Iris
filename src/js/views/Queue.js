@@ -160,7 +160,7 @@ class Queue extends React.Component{
 		)
 
 		return (
-			<div className="view queue-view">			
+			<div className="view queue-view preserve-3d">			
 				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
 					<Icon name="play_arrow" type="material" />
 					Now playing

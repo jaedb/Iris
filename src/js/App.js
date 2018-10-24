@@ -72,8 +72,11 @@ class App extends React.Component{
 				ReactGA.pageview(window.location.hash);
 			}
 
+			// Scroll to top of <main>
+			document.getElementById('main').scrollTo(0, 0);
+
 			// Hide our sidebar
-			this.props.uiActions.toggleSidebar(false )
+			this.props.uiActions.toggleSidebar(false);
 
 			// Unselect any tracks
 			this.props.uiActions.setSelectedTracks([]);
@@ -316,32 +319,32 @@ class App extends React.Component{
 
 		return (
 			<div className={className}>
-				<ErrorBoundary>
-			
-					<div className="body">
-				        <Sidebar />		        
-				        <PlaybackControls />
-				        <main id="main">
+		
+				<div className="body">
+			        <Sidebar />		        
+			        <PlaybackControls />
+			        <main id="main">
+						<ErrorBoundary>
 				      		{this.props.children}
-				        </main>
-			        </div>
+		        		</ErrorBoundary>
+			        </main>
+		        </div>
 
-			        <ContextMenu />
-			        <Dragger />
-			        <Notifications 
-			        	uiActions={this.props.uiActions} 
-			        	spotifyActions={this.props.spotifyActions} 
-			        	geniusActions={this.props.geniusActions} 
-			        	lastfmActions={this.props.lastfmActions} 
-			        	snapcastActions={this.props.snapcastActions} 
-			        	notifications={this.props.notifications} 
-			        	processes={this.props.processes}
-			        	broadcasts={this.props.broadcasts}
-			        />
+		        <ContextMenu />
+		        <Dragger />
+		        <Notifications 
+		        	uiActions={this.props.uiActions} 
+		        	spotifyActions={this.props.spotifyActions} 
+		        	geniusActions={this.props.geniusActions} 
+		        	lastfmActions={this.props.lastfmActions} 
+		        	snapcastActions={this.props.snapcastActions} 
+		        	notifications={this.props.notifications} 
+		        	processes={this.props.processes}
+		        	broadcasts={this.props.broadcasts}
+		        />
 
-			        {this.props.debug_info ? <DebugInfo /> : null}
+		        {this.props.debug_info ? <DebugInfo /> : null}
 
-		        </ErrorBoundary>
 	        </div>
 		);
 	}

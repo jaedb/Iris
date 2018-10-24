@@ -49,6 +49,8 @@ html {
 }
 
 body {
+	transform: translateZ(0px);
+	transform-style: preserve-3d;
 
 	&.touch-dragging,
 	&.no-scrollbars {
@@ -63,16 +65,49 @@ body {
 }
 
 main {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 220px;
 	bottom: 50px;
 	right: 0;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	perspective: 2px;
-	transform-style: preserve-3d;
+	perspective: 100px;
 	background: colour(dark_grey);
+	scroll-behavior: smooth;
+	z-index: 1;
+
+	.notouch & {
+		&::-webkit-scrollbar{
+			width: 8px;
+			height: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: colour(dark_grey);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			@include animate();
+			background: colour(grey);
+
+			&:hover {
+				background: colour(mid_grey);
+			}
+		}
+	}
+
+	.modal-open & {
+		left: 0;
+		bottom: 0;
+		z-index: 999;
+	}
+
+	/* All children between <main> and the parallax need this to work in Firefox */
+	&,
+	& .preserve-3d {
+		transform-style: preserve-3d;
+	}
 
 	.light-theme & {
 		background: colour(white);

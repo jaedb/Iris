@@ -2678,24 +2678,48 @@ html {
   html .light-theme {
     color: #121212; }
 
-body.touch-dragging, body.no-scrollbars {
-  overflow-y: hidden; }
-
-@media (max-width: 800px) {
-  body.context-menu-open {
-    overflow-y: hidden; } }
+body {
+  transform: translateZ(0px);
+  transform-style: preserve-3d; }
+  body.touch-dragging, body.no-scrollbars {
+    overflow-y: hidden; }
+  @media (max-width: 800px) {
+    body.context-menu-open {
+      overflow-y: hidden; } }
 
 main {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 220px;
   bottom: 50px;
   right: 0;
   overflow-y: scroll;
   overflow-x: hidden;
-  perspective: 2px;
-  transform-style: preserve-3d;
-  background: #181818; }
+  perspective: 100px;
+  background: #181818;
+  scroll-behavior: smooth;
+  z-index: 1;
+  /* All children between <main> and the parallax need this to work in Firefox */ }
+  .notouch main::-webkit-scrollbar {
+    width: 8px;
+    height: 8px; }
+  .notouch main::-webkit-scrollbar-track {
+    background: #181818; }
+  .notouch main::-webkit-scrollbar-thumb {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    background: #383734; }
+    .notouch main::-webkit-scrollbar-thumb:hover {
+      background: #a3a19f; }
+  .modal-open main {
+    left: 0;
+    bottom: 0;
+    z-index: 999; }
+  main,
+  main .preserve-3d {
+    transform-style: preserve-3d; }
   .light-theme main {
     background: #FFFFFF; }
   main .content-wrapper {
@@ -4357,7 +4381,7 @@ input[type="submit"] {
   right: -10px;
   left: -10px;
   height: 100%;
-  transform: translateZ(-0.6px) scale(1.33334);
+  transform: translateZ(-50px) scale(2);
   transform-origin: bottom center;
   z-index: -1;
   max-height: 80vh; }
@@ -4673,7 +4697,8 @@ $icon-websocket: \e920;
   left: 0;
   height: 50px;
   background: #3e3e3e;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  transform-style: preserve-3d; }
   .playback-controls .current-track {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -4888,10 +4913,10 @@ $icon-websocket: \e920;
           content: '';
           display: block;
           position: fixed;
-          top: 0;
-          left: 0;
           bottom: 0;
           right: 0;
+          width: 100vw;
+          height: 100vh;
           z-index: 99; }
     .playback-controls.expanded {
       height: 135px; }
@@ -5068,7 +5093,8 @@ aside {
   background: #121212;
   border-right: 1px solid #1d1d1d;
   color: #FFFFFF;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  transform-style: preserve-3d; }
   .light-theme aside {
     background: #f8f7f6;
     border-right: none; }
@@ -7173,14 +7199,10 @@ main .track-view {
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
+  position: relative;
   background: #0d0d0d;
-  overflow-y: auto; }
+  overflow-y: auto;
+  min-height: 100%; }
 
 @keyframes fadein {
   0% {

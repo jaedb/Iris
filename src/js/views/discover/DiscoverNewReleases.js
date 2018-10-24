@@ -59,7 +59,7 @@ class DiscoverNewReleases extends React.Component{
 	renderIntro(album = null){
 		if (album){
 			return (
-				<div className="intro">
+				<div className="intro preserve-3d">
 					<Parallax image={album.images ? album.images.large : null} blur />
 					<div className="content cf">
 						<Link 
@@ -83,8 +83,8 @@ class DiscoverNewReleases extends React.Component{
 			)
 		} else {
 			return (
-				<div className="intro">
-					<Parallax disabled={this.props.disable_parallax} />
+				<div className="intro preserve-3d">
+					<Parallax />
 				</div>
 			)
 		}
@@ -127,7 +127,7 @@ class DiscoverNewReleases extends React.Component{
 		);
 
 		return (
-			<div className="view discover-new-releases-view">
+			<div className="view discover-new-releases-view preserve-3d">
 				<Header className="overlay" options={options}>
 					<Icon name="new_releases" type="material" />
 					New releases

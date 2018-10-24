@@ -11,11 +11,11 @@ export default class LazyLoadListener extends React.Component{
 			loadKey: this.props.loadKey
 		}
 
-		this.element = document.getElementById('main');
 		this.handleScroll = helpers.throttle(this.handleScroll.bind(this), 50);
 	}
 
-	componentWillMount(){
+	componentDidMount(){
+		this.element = document.getElementById('main');
 		this.element.addEventListener("scroll", this.handleScroll, false);
 	}
 

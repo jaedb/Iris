@@ -444,7 +444,7 @@ class Discover extends React.Component{
 		}
 		
 		return (
-			<div className="content-wrapper recommendations-results cf">
+			<div className="content-wrapper recommendations-results">
 
 				<section className="col col--w70 tracks">
 					<h4>
@@ -500,10 +500,10 @@ class Discover extends React.Component{
 		}
 
 		return (
-			<div className="view discover-view">
-				<div className="intro">
+			<div className="view discover-view preserve-3d">
+				<div className="intro preserve-3d">
 
-					<Parallax image="assets/backgrounds/discover.jpg" theme={this.props.theme} disabled={this.props.disable_parallax} />
+					<Parallax image="assets/backgrounds/discover.jpg" />
 
 					<div className="liner">
 						<h1>Explore new music</h1>

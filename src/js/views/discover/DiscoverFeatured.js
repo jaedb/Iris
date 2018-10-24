@@ -46,8 +46,8 @@ class DiscoverFeatured extends React.Component{
 	renderIntro(playlist = null){
 		if (playlist){
 			return (
-				<div className="intro">
-					<Parallax image={playlist.images ? playlist.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
+				<div className="intro preserve-3d">
+					<Parallax image={playlist.images ? playlist.images.large : null} blur />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'playlist/'+playlist.uri}
@@ -111,7 +111,7 @@ class DiscoverFeatured extends React.Component{
 		);
 
 		return (
-			<div className="view discover-featured-view">
+			<div className="view discover-featured-view preserve-3d">
 				<Header className="overlay" options={options}>
 					<Icon name="star" type="material" />
 					Featured playlists
@@ -125,16 +125,8 @@ class DiscoverFeatured extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,
