@@ -73,7 +73,9 @@ class App extends React.Component{
 			}
 
 			// Scroll to top of <main>
-			document.getElementById('main').scrollTo(0, 0);
+			// This doesn't know the difference between forward or backward navigation
+			// so isn't quite a right fit
+			//document.getElementById('main').scrollTo(0, 0);
 
 			// Hide our sidebar
 			this.props.uiActions.toggleSidebar(false);

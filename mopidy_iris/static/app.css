@@ -4375,7 +4375,6 @@ input[type="submit"] {
 
 .parallax {
   overflow: hidden;
-  background: #181818;
   position: absolute;
   top: -10%;
   right: -10px;
@@ -4384,22 +4383,27 @@ input[type="submit"] {
   transform: translateZ(-50px) scale(2);
   transform-origin: bottom center;
   z-index: -1;
-  max-height: 80vh; }
+  max-height: 80vh;
+  background-color: #323232; }
   .parallax__image {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    top: -10px;
+    left: -10px;
+    bottom: -10px;
+    right: -10px;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
-    background-color: #323232; }
+    opacity: 0; }
   .parallax__overlay {
     content: '';
     display: block;
     position: absolute;
-    bottom: -2px;
+    bottom: -10px;
     left: 0;
     right: 0;
     height: 100%;
@@ -4408,6 +4412,8 @@ input[type="submit"] {
   .parallax--blur .parallax__image {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
+  .parallax--loaded .parallax__image {
+    opacity: 1; }
   .light-theme .parallax {
     background: #FFFFFF; }
     .light-theme .parallax__image {
