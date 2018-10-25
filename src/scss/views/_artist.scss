@@ -21,8 +21,6 @@
 			}
 
 			.actions {
-				padding-bottom: 25px;
-
 				.context-menu-trigger {
 					color: colour(white);
 
@@ -30,6 +28,10 @@
 						color: colour(darkest_grey);
 					}
 				}
+			}
+
+			.sub-views {
+				padding-top: 25px;
 			}
 		}
 

@@ -64,6 +64,10 @@ body {
 	}
 }
 
+.smooth-scroll {
+	 scroll-behavior: smooth;
+}
+
 main {
 	position: fixed;
 	top: 0;
@@ -75,13 +79,6 @@ main {
 	perspective: 100px;
 	background: colour(dark_grey);
 	z-index: 1;
-	
-	/**
-	 This is nice, but confuses the feeling when navigating around
-	 TODO: Implement only when navigating to anchor tags
-	 
-	 scroll-behavior: smooth;
-	 **/
 
 	.notouch & {
 		&::-webkit-scrollbar{

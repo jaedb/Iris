@@ -2,6 +2,8 @@
 import React from 'react';
 import {Link} from 'react-router';
 
+import * as helpers from '../helpers';
+
 /**
  * Extends react-router's Link but provides the ability to hook in to the navigation event
  * which lets us scroll to the top of our <main> for a more traditional navigation experience
@@ -14,7 +16,14 @@ export default class extends React.Component{
 
 	handleClick(e){
 		if (!this.props.retainScroll){
-			document.getElementById('main').scrollTo(0, 0);
+			if (this.props.scrollTo){
+				var element = document.getElementById(this.props.scrollTo);
+				if (element){
+					element.scrollIntoView();
+				}
+			} else {
+				helpers.scrollToTop();
+			}
 		}
 	}
 

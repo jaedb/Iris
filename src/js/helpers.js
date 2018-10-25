@@ -1419,3 +1419,22 @@ export let getIndexedRecords = function(index, uris){
 export let titleCase = function(string){
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+
+/**
+ * Scroll to the top of the page
+ * Our 'content' is housed in the <main> DOM element
+ *
+ **/
+export let scrollToTop = function(){
+	var main = document.getElementById('main');
+
+	// Remove our smooth-scroll class
+	main.classList.remove("smooth-scroll");
+
+	// And now scroll it
+	main.scrollTo(0, 0);
+
+	// Now reinstate smooth scroll
+	main.classList.add("smooth-scroll");
+}

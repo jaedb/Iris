@@ -2687,6 +2687,9 @@ body {
     body.context-menu-open {
       overflow-y: hidden; } }
 
+.smooth-scroll {
+  scroll-behavior: smooth; }
+
 main {
   position: fixed;
   top: 0;
@@ -2698,12 +2701,6 @@ main {
   perspective: 100px;
   background: #181818;
   z-index: 1;
-  /**
-	 This is nice, but confuses the feeling when navigating around
-	 TODO: Implement only when navigating to anchor tags
-	 
-	 scroll-behavior: smooth;
-	 **/
   /* All children between <main> and the parallax need this to work in Firefox */ }
   .notouch main::-webkit-scrollbar {
     width: 8px;
@@ -6507,12 +6504,12 @@ main header {
       padding-bottom: 25px;
       font-size: 5rem;
       line-height: 5rem; }
-    .artist-view .intro .liner .actions {
-      padding-bottom: 25px; }
-      .artist-view .intro .liner .actions .context-menu-trigger {
-        color: #FFFFFF; }
-        .light-theme .artist-view .intro .liner .actions .context-menu-trigger {
-          color: #121212; }
+    .artist-view .intro .liner .actions .context-menu-trigger {
+      color: #FFFFFF; }
+      .light-theme .artist-view .intro .liner .actions .context-menu-trigger {
+        color: #121212; }
+    .artist-view .intro .liner .sub-views {
+      padding-top: 25px; }
 
 .artist-view .body.overview .albums {
   padding-top: 30px; }

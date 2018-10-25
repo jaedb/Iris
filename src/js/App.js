@@ -325,7 +325,7 @@ class App extends React.Component{
 				<div className="body">
 			        <Sidebar />		        
 			        <PlaybackControls />
-			        <main id="main">
+			        <main id="main" className="smooth-scroll">
 						<ErrorBoundary>
 				      		{this.props.children}
 		        		</ErrorBoundary>
