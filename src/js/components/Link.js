@@ -16,14 +16,7 @@ export default class extends React.Component{
 
 	handleClick(e){
 		if (!this.props.retainScroll){
-			if (this.props.scrollTo){
-				var element = document.getElementById(this.props.scrollTo);
-				if (element){
-					element.scrollIntoView();
-				}
-			} else {
-				helpers.scrollToTop();
-			}
+			helpers.scrollTo(this.props.scrollTo, (this.props.scrollTo));
 		}
 	}
 

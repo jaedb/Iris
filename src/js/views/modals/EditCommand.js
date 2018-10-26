@@ -46,12 +46,28 @@ class EditCommand extends React.Component{
 
 		window.history.back();
 
+		// A bit hacky, but wait for a moment to allow the back navigation
+		// and then scroll down to our commands list
+		setTimeout(() => {
+				helpers.scrollTo("commands-setup");
+			},
+			10
+		);
+
 		return false;
 	}
 
 	handleDelete(e){
 		this.props.pusherActions.removeCommand(this.state.id);
 		window.history.back();
+
+		// A bit hacky, but wait for a moment to allow the back navigation
+		// and then scroll down to our commands list
+		setTimeout(() => {
+				helpers.scrollTo("commands-setup");
+			},
+			10
+		);
 	}
 
 	render(){

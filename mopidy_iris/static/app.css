@@ -2701,6 +2701,11 @@ main {
   perspective: 100px;
   background: #181818;
   z-index: 1;
+  /**
+	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
+	 * NOTE: This breaks parallax effects on iOS
+	 **/
+  -webkit-overflow-scrolling: touch;
   /* All children between <main> and the parallax need this to work in Firefox */ }
   .notouch main::-webkit-scrollbar {
     width: 8px;
@@ -2725,7 +2730,7 @@ main {
   .light-theme main {
     background: #FFFFFF; }
   main .content-wrapper {
-    padding: 40px 40px 80px; }
+    padding: 40px 40px 20px 40px; }
   main a {
     color: inherit;
     text-decoration: none;
@@ -2742,7 +2747,7 @@ main {
     main {
       left: 0; }
       main .content-wrapper {
-        padding: 20px 10px 60px; }
+        padding: 20px 10px; }
       main section.list-wrapper {
         padding: 10px 0; } }
   main pre {
@@ -4359,7 +4364,7 @@ input[type="submit"] {
     font-size: 12px;
     cursor: pointer;
     color: #FFFFFF;
-    border: 0; }
+    border: 0 !important; }
     .thumbnail .zoom:hover {
       background: #000000; }
   .thumbnail.small {
@@ -4399,7 +4404,7 @@ input[type="submit"] {
     right: -10px;
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: 50% 50%;
+    background-position: 50% 25%;
     opacity: 0; }
   .parallax__overlay {
     content: '';
@@ -6553,9 +6558,10 @@ main header {
           clear: both;
           display: block; }
       .artist-view .intro .liner .actions {
-        padding: 30px 10px 10px; }
+        padding: 30px 10px 0; }
       .artist-view .intro .liner .sub-views {
-        margin-left: 5px; }
+        margin-left: 5px;
+        padding-top: 10px; }
         .artist-view .intro .liner .sub-views .option {
           margin: 0 8px; }
   .artist-view .body.overview .top-tracks h4 {

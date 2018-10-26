@@ -27,7 +27,7 @@ export default class GridItem extends React.Component{
 		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
 
 			// Scroll to the top
-			helpers.scrollToTop();
+			helpers.scrollTo();
 
 			// And then trigger the click event
 			this.props.onClick(e);

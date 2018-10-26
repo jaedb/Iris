@@ -125,6 +125,7 @@ class App extends React.Component{
 		}
 	}
 
+	/*
 	componentWillReceiveProps(nextProps){
 
 		// We've navigated to a new location
@@ -137,6 +138,7 @@ class App extends React.Component{
 			}
 		}
 	}
+	*/
 
 	shouldTriggerShortcut(e){
 

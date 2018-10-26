@@ -366,7 +366,7 @@ class Settings extends React.Component {
 						</div>
 					</div>}
 
-					<div className="field commands-setup">
+					<div className="field commands-setup" id="commands-setup">
 						<div className="name">
 							Commands
 						</div>

@@ -80,6 +80,12 @@ main {
 	background: colour(dark_grey);
 	z-index: 1;
 
+	/**
+	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
+	 * NOTE: This breaks parallax effects on iOS
+	 **/
+	-webkit-overflow-scrolling: touch;
+
 	.notouch & {
 		&::-webkit-scrollbar{
 			width: 8px;
@@ -117,7 +123,7 @@ main {
 	}
 
 	.content-wrapper {
-		padding: 40px 40px 80px;
+		padding: 40px 40px 20px 40px;
 	}
 
 	a {
@@ -144,7 +150,7 @@ main {
 		left: 0;
 
 		.content-wrapper {
-			padding: 20px 10px 60px;
+			padding: 20px 10px;
 		}
 
 		section.list-wrapper {
