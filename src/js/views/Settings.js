@@ -330,17 +330,6 @@ class Settings extends React.Component {
 									Enable shortkeys
 								</span>
 							</label>
-							<label>
-								<input 
-									type="checkbox"
-									name="shortkeys_enabled"
-									checked={ this.props.ui.disable_parallax }
-									onChange={ e => this.props.uiActions.set({ disable_parallax: !this.props.ui.disable_parallax })} />
-								<span className="label tooltip">
-									Disable parallax
-									<span className="tooltip__content">Improves scroll performance on low-powered devices</span>
-								</span>
-							</label>
 						</div>
 					</div>
 
@@ -377,7 +366,7 @@ class Settings extends React.Component {
 						</div>
 					</div>}
 
-					<div className="field commands-setup">
+					<div className="field commands-setup" id="commands-setup">
 						<div className="name">
 							Commands
 						</div>

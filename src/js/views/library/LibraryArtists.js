@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Link } from 'react-router';
+import Link from '../../components/Link';
 
 import Header from '../../components/Header';
 import ArtistGrid from '../../components/ArtistGrid';
@@ -73,10 +73,10 @@ class LibraryArtists extends React.Component{
 			}
 		}
 
-		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){		
+		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// Filter changed, but we haven't got this provider's library yet
-			if (!newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
+			if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
 				this.props.spotifyActions.getLibraryArtists();
 			}
 		}

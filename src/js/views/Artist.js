@@ -2,8 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 
+import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -37,8 +37,10 @@ class Artist extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadArtist(nextProps.params.uri);
+
 		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
 				this.props.coreActions.loadArtist(nextProps.params.uri);
@@ -105,10 +107,10 @@ class Artist extends React.Component{
 
 	renderSubViewMenu(){
 		return (
-			<div className="sub-views">
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
-				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link> : null}
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
+			<div className="sub-views" id="sub-views-menu">
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri} scrollTo="sub-views-menu"><h4>Overview</h4></Link>
+				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} scrollTo="sub-views-menu"><h4>Related artists</h4></Link> : null}
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'} scrollTo="sub-views-menu"><h4>About</h4></Link>
 			</div>
 		)
 	}
@@ -223,7 +225,7 @@ class Artist extends React.Component{
 
 						<div className="col col--w5"></div>
 
-						{artist.related_artists ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
+						{artist.related_artists && artist.related_artists.length > 0 ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} scrollTo="sub-views-menu" className="button grey">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 
@@ -291,8 +293,8 @@ class Artist extends React.Component{
 		}
 
 		return (
-			<div className="view artist-view">
-				<div className="intro">
+			<div className="view artist-view preserve-3d">
+				<div className="intro preserve-3d">
 
 					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 

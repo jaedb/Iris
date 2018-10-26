@@ -1,7 +1,8 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory, Link } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
 import Icon from '../components/Icon'
@@ -160,12 +161,12 @@ class Queue extends React.Component{
 		)
 
 		return (
-			<div className="view queue-view">			
+			<div className="view queue-view preserve-3d">			
 				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
 					<Icon name="play_arrow" type="material" />
 					Now playing
 				</Header>
-				<Parallax blur image={current_track_image} theme={this.props.theme} disabled={this.props.disable_parallax} />
+				<Parallax blur image={current_track_image} />
 				<div className="content-wrapper">
 				
 					<div className="current-track">
@@ -204,7 +205,6 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,

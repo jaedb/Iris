@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import Link from './Link'
 import { bindActionCreators } from 'redux'
 
 import ProgressSlider from './Fields/ProgressSlider'

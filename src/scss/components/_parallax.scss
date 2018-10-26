@@ -1,0 +1,68 @@
+$parallax: 'parallax';
+
+.#{$parallax} {
+	overflow: hidden;
+	position: absolute;
+	top: -10%;
+	right: -10px;
+	left: -10px;
+	height: 110%;
+	transform: translateZ(-50px) scale(2);
+	transform-origin: bottom center;
+	z-index: -1;
+	max-height: 80vh;
+	background-color: lighten(colour(dark_grey), 10%);
+
+	&__image {
+		@include animate(0.5s);
+		position: absolute;
+		top: -10px;
+		left: -10px;
+		bottom: -10px;
+		right: -10px;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: 50% 25%;
+		opacity: 0;
+	}
+
+	&__overlay {
+		content: '';
+		display: block;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 100%;
+		background-image: linear-gradient(rgba(24,24,24,0), rgba(24,24,24,1));
+		z-index: 1;
+	}
+
+	&--blur {
+		.#{$parallax} {
+			&__image {
+				@include blur();
+			}
+		}
+	}
+
+	&--loaded {
+		.#{$parallax} {
+			&__image {
+				opacity: 1;
+			}
+		}
+	}
+
+	.light-theme & {
+		background: colour(white);
+
+		&__image {
+			background-color: colour(white);
+		}
+
+		&__overlay {
+			background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
+		}
+	}
+}

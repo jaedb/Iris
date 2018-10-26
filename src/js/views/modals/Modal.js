@@ -14,12 +14,12 @@ class Modal extends React.Component{
 	}
 
 	componentWillMount(){
-		$('body').addClass('no-scrollbars');
+		$('body').addClass('modal-open');
 		window.addEventListener("keyup", this.handleKeyUp, false);
 	}
 
 	componentWillUnmount(){
-		$('body').removeClass('no-scrollbars');
+		$('body').removeClass('modal-open');
 		window.removeEventListener("keyup", this.handleKeyUp, false);
 	}
 

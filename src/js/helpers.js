@@ -389,11 +389,12 @@ export let formatAlbum = function(data){
 		'provider',
 		'name',
 		'type',
-		'artists_uris',
-		'tracks_uris',
 		'release_date',
 		'popularity',
-		'images'
+		'images',
+		'artists_uris',
+		'tracks_uris',
+		'artists'	// Array of simple records
 	];
 
 	// Loop fields and import from data
@@ -527,6 +528,10 @@ export let formatPlaylist = function(data){
 		playlist.followers = data.followers.total;
 	}
 
+	if (data.tracks && data.tracks.total !== undefined){
+		playlist.tracks_total = data.tracks.total;
+	}
+
 	if (data.owner){
 		playlist.owner = {
 			id: data.owner.id,
@@ -537,34 +542,13 @@ export let formatPlaylist = function(data){
 	}
 
 	// Spotify upgraded their playlists URI to remove user component (Sept 2018)
-	if (playlist.uri.includes("spotify:user:")){
-		playlist.uri = playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
-	}
+	playlist.uri = upgradeSpotifyPlaylistUri(playlist.uri);
 
 	if (playlist.provider === undefined && playlist.uri !== undefined){
 		playlist.provider = uriSource(playlist.uri);
 	}
 
 	return playlist;
-}
-
-/**
- * Upgrade playlist uris to the new, simplified Spotify syntax (September 2018)
- *
- * @param uris = String or Array
- * @return String or Array
- **/
-export let upgradePlaylistsUris = function(uris){
-	if (Array.isArray(uris)){
-		var upgraded = [];
-		for (var uri of uris){
-			upgraded.push(uri.replace(/spotify:user:([^:]*?):/i, "spotify:"));
-		}
-	} else {
-		var upgraded = uris = uris.replace(/spotify:user:([^:]*?):/i, "spotify:");
-	}
-
-	return upgraded;
 }
 
 
@@ -1413,9 +1397,67 @@ export let getIndexedRecords = function(index, uris){
 /**
  * Uppercase-ify the first character of a string
  *
- * @param string = string
- * @return string
+ * @param string String
+ * @return String
  **/
 export let titleCase = function(string){
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+
+/**
+ * Scroll to the top of the page
+ * Our 'content' is housed in the <main> DOM element
+ *
+ * @param target String (element ID, optional)
+ * @param smooth_scroll Boolean (optional)
+ **/
+export let scrollTo = function(target = null, smooth_scroll = false){
+
+	var main = document.getElementById('main');
+
+	// Remove our smooth-scroll class
+	if (!smooth_scroll){
+		main.classList.remove("smooth-scroll");
+	}
+
+	// And now scroll to it
+	if (target){
+		document.getElementById(target).scrollIntoView();
+	} else {
+		main.scrollTo(0, 0);
+	}
+
+	// Now reinstate smooth scroll
+	if (!smooth_scroll){
+		main.classList.add("smooth-scroll");
+	}
+}
+
+
+/**
+ * Upgrade one or many Spotify Playlist URIs 
+ * This is their new, simplified syntax (September 2018) but they haven't updated it everywhere
+ * So we need to manually strip user:abc to keep things consistent
+ *
+ * @param uris Array|String
+ * @return Array|String
+ **/
+export let upgradeSpotifyPlaylistUris = function(uris){
+	var upgraded = [];
+
+	for (var uri of uris){
+		if (uri.includes("spotify:user:")){
+			uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
+		}
+		upgraded.push(uri);
+	}
+
+	return upgraded;
+}
+
+// As above, but for a single URI
+export let upgradeSpotifyPlaylistUri = function(uri){
+	return upgradeSpotifyPlaylistUris([uri])[0];
+}
+

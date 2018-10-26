@@ -759,32 +759,23 @@ const CoreMiddleware = (function(){
                     var records = action.records_data;
                 }
 
-                // TODO: To avoid double-looping, we could
-                // run a single loop to extract both the formatted record
-                // and the URI
-                switch (action.records_type){
-                    case 'track':
-                        records = helpers.formatTracks(records);
-                        break;
-                    case 'artist':
-                        records = helpers.formatArtists(records);
-                        break;
-                    case 'album':
-                        records = helpers.formatAlbums(records);
-                        break;
-                    case 'playlist':
-                        records = helpers.formatPlaylists(records);
-                        break;
-                    case 'user':
-                        records = helpers.formatUsers(records);
-                        break;
+                // Pre-emptively format tracks
+                // Providers give us tracks in all kinds of structures, so this cleans things first
+                if (action.records_type == 'track'){
+                    records = helpers.formatTracks(records);
                 }
 
                 var records_type_plural = action.records_type+'s';
                 var records_index = {};
                 var records_uris = helpers.arrayOf('uri', records);
 
-                // Append our records_uris array with our new records
+                // If we're a list of playlists, we need to manually filter Spotify's new URI structure
+                // Really poor form because they haven't updated it everywhere, yet
+                if (action.records_type == 'playlist'){
+                	records_uris = helpers.upgradeSpotifyPlaylistUris(records_uris);
+                }
+
+                // Append our parent object's reference to these records
                 var uris = records_uris;
                 if (parent[records_type_plural+'_uris'] !== undefined){
                     uris = [...parent[records_type_plural+'_uris'], ...uris];
@@ -807,9 +798,6 @@ const CoreMiddleware = (function(){
                 };
                 records_action[records_type_plural] = records;
                 store.dispatch(records_action);
-
-                //console.log(parent_action);
-                //console.log(records_action);
 
                 next(action);
                 break;

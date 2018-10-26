@@ -399,7 +399,7 @@ export function getFeaturedPlaylists(){
                         type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                         data: {
                             message: response.message,
-                            playlists: helpers.upgradePlaylistsUris(helpers.arrayOf('uri',response.playlists.items))
+                            playlists: helpers.upgradeSpotifyPlaylistUris(helpers.arrayOf('uri',response.playlists.items))
                         }
                     });
                 },
