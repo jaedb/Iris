@@ -65,7 +65,7 @@ body {
 }
 
 .smooth-scroll {
-	 scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 main {
@@ -74,11 +74,12 @@ main {
 	left: 220px;
 	bottom: 50px;
 	right: 0;
-	overflow-y: scroll;
-	overflow-x: hidden;
 	perspective: 100px;
 	background: colour(dark_grey);
 	z-index: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
 
 	/**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it

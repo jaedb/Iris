@@ -2696,11 +2696,12 @@ main {
   left: 220px;
   bottom: 50px;
   right: 0;
-  overflow-y: scroll;
-  overflow-x: hidden;
   perspective: 100px;
   background: #181818;
   z-index: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   /**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
 	 * NOTE: This breaks parallax effects on iOS
@@ -4146,7 +4147,11 @@ input[type="submit"] {
     .list__item .col.album, .list__item .col.can_edit, .list__item .col.release_date {
       display: none; }
     .list__item.header {
-      display: none; }
+      padding: 0 !important; }
+      .list__item.header:before {
+        border-top: none; }
+      .list__item.header .liner {
+        display: none; }
   .list.queue-track-list .list__item .artists {
     padding-left: 0 !important; }
     .list.queue-track-list .list__item .artists:before {
@@ -6616,6 +6621,9 @@ main header {
 main .album-view {
   padding-left: 30%;
   position: relative; }
+  @media (min-width: 800px) {
+    main .album-view .parallax {
+      display: none; } }
   main .album-view .title h2 a:hover {
     color: #706e6c; }
   main .album-view .title .details {
@@ -6636,38 +6644,36 @@ main .album-view {
       padding-top: 0;
       padding-left: 10px; }
       main .album-view .thumbnail-wrapper {
-        width: 40%;
-        padding: 10px 20px 10px 0;
-        float: left;
-        position: static; }
+        width: 300px;
+        max-width: 60%;
+        padding: 30px 0 0 0;
+        position: static;
+        margin: 0 auto; }
         main .album-view .thumbnail-wrapper .thumbnail {
           float: none;
           max-width: none;
           margin: 0 0 0 0; }
       main .album-view .title {
-        padding: 30px 0 20px 40%; }
+        padding: 40px 0 0 0;
+        text-align: center; }
+        main .album-view .title .description {
+          padding-top: 10px; }
         main .album-view .title .details {
           padding: 5px 0; }
       main .album-view .actions {
-        padding: 10px 0 20px 40%; }
+        text-align: center;
+        padding: 30px 0 20px 0; }
         main .album-view .actions::after {
           content: '';
           clear: both;
           display: block; } }
-  @media (max-width: 500px) {
-    main .album-view .title {
-      padding: 20px 20px 10px 40%;
-      min-height: 20vw; }
-      main .album-view .title::after {
-        content: '';
-        clear: both;
-        display: block; }
-    main .album-view .actions {
-      padding: 0; } }
 
 main .playlist-view {
   padding-left: 30%;
   position: relative; }
+  @media (min-width: 800px) {
+    main .playlist-view .parallax {
+      display: none; } }
   main .playlist-view .title h2 a:hover {
     color: #706e6c; }
   main .playlist-view .title .details {
@@ -6688,34 +6694,29 @@ main .playlist-view {
       padding-top: 0;
       padding-left: 10px; }
       main .playlist-view .thumbnail-wrapper {
-        width: 40%;
-        padding: 10px 20px 10px 0;
-        float: left;
-        position: static; }
+        width: 300px;
+        max-width: 60%;
+        padding: 30px 0 0 0;
+        position: static;
+        margin: 0 auto; }
         main .playlist-view .thumbnail-wrapper .thumbnail {
           float: none;
           max-width: none;
           margin: 0 0 0 0; }
       main .playlist-view .title {
-        padding: 30px 0 20px 40%; }
+        padding: 40px 0 0 0;
+        text-align: center; }
+        main .playlist-view .title .description {
+          padding-top: 10px; }
         main .playlist-view .title .details {
           padding: 5px 0; }
       main .playlist-view .actions {
-        padding: 10px 0 20px 40%; }
+        text-align: center;
+        padding: 30px 0 20px 0; }
         main .playlist-view .actions::after {
           content: '';
           clear: both;
           display: block; } }
-  @media (max-width: 500px) {
-    main .playlist-view .title {
-      padding: 20px 20px 10px 40%;
-      min-height: 20vw; }
-      main .playlist-view .title::after {
-        content: '';
-        clear: both;
-        display: block; }
-    main .playlist-view .actions {
-      padding: 0; } }
 
 main .track-view {
   padding-left: 30%;
@@ -6789,7 +6790,7 @@ main .track-view {
 
 .queue-view .current-track {
   text-align: center;
-  padding: 60px 0; }
+  padding: 40px 0; }
   .queue-view .current-track .artwork {
     position: relative;
     margin: 0 auto;
@@ -6821,6 +6822,9 @@ main .track-view {
     opacity: 0.5;
     position: relative;
     z-index: 2; }
+  @media (max-width: 800px) {
+    .queue-view .current-track .artwork {
+      width: 80%; } }
 
 .search-view .search-form {
   position: absolute;

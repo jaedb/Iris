@@ -385,7 +385,15 @@
 			}
 
 			&.header { 
-				display: none; 
+				padding: 0 !important;
+
+				&:before {
+					border-top: none;
+				}
+
+				.liner {
+					display: none; 
+				}
 			}
 		}
 

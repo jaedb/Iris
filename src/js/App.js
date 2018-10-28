@@ -312,6 +312,9 @@ class App extends React.Component{
 		if (this.props.touch_dragging){
 			className += ' touch-dragging';
 		}
+		if (this.props.context_menu){
+			className += ' context-menu-open';
+		}
 		if (this.props.slim_mode){
 			className += ' slim-mode';
 		}
