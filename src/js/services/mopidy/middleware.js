@@ -2009,9 +2009,9 @@ const MopidyMiddleware = (function(){
                         var existing_artist = store.getState().core.artists[artist.uri];
                         if (existing_artist && !existing_artist.images){
                             if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
                             } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
                             }
                         }
                     })

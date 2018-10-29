@@ -631,12 +631,11 @@ const CoreMiddleware = (function(){
                 	// Already have an artist in the index
                     if (artists_index[artist.uri]){
 
-                        // Don't replace existing images, instead add them as supplementary
-                        // this is to prevent LastFM overwriting Spotify images
-                        if (artists_index[artist.uri].images){
-                            artist.images_additional = artist.images;
-                            delete artist.images;
-                        }
+                    	// And we've already got some images, make sure we merge the arrays,
+                    	// rather than overwriting
+                    	if (artists_index[artist.uri].images && artist.images){
+                    		artist.images = [...artists_index[artist.uri].images, ...artist.images];
+                    	}
 
                         artist = Object.assign({}, artists_index[artist.uri], artist);
                     }
@@ -651,7 +650,6 @@ const CoreMiddleware = (function(){
 
                     artists_loaded.push(artist);
                 };
-
 
                 action.artists = artists_loaded;
 

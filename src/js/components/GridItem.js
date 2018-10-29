@@ -98,9 +98,13 @@ export default class GridItem extends React.Component{
 		}
 		var images = null
 		if (this.props.item.images){
-			images = this.props.item.images
+			if (Array.isArray(this.props.item.images)){
+				images = this.props.item.images[0];
+			} else {
+				images = this.props.item.images;
+			}
 		} else if (this.props.item.icons){
-			images = this.props.item.icons
+			images = this.props.item.icons;
 		}
 
 		return (

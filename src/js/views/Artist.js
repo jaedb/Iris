@@ -41,7 +41,7 @@ class Artist extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadArtist(nextProps.params.uri);
 
-		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
 				this.props.coreActions.loadArtist(nextProps.params.uri);
 			}
@@ -146,12 +146,23 @@ class Artist extends React.Component{
 				)
 
 			case 'about':
+
+				var thumbnails = [];
+				if (artist.images && artist.images.length > 0){
+					for (var i = 0; i < artist.images.length; i++){
+						thumbnails.push(
+							<div className="tile thumbnail-wrapper" key={i}>
+								<Thumbnail size="huge" canZoom images={artist.images[i]} />
+							</div>
+						);
+					}
+				}
+
 				return (
 					<div className="body about">
 
 						<div className="col col--w40 tiles artist-stats">
-							{artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images} /></div> : null}
-							{artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images_additional} /></div> : null}
+							{thumbnails}
 							{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
 							{artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{artist.popularity }% popularity</span></div> : null}
 							{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
@@ -278,8 +289,8 @@ class Artist extends React.Component{
 			}
 		}
 
-		if (this.props.artist && this.props.artist.images){
-			var image = this.props.artist.images.huge;
+		if (this.props.artist && this.props.artist.images && this.props.artist.images.length > 0){
+			var image = this.props.artist.images[0].huge;
 		} else {
 			var image = null;
 		}
