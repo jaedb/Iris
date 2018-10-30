@@ -1,16 +1,17 @@
 
-import ReactGA from 'react-ga'
-import Mopidy from 'mopidy'
+import ReactGA from 'react-ga';
+import Mopidy from 'mopidy';
 import md5 from 'md5';
-import { hashHistory } from 'react-router'
-import * as helpers from '../../helpers'
+import { hashHistory } from 'react-router';
+import * as helpers from '../../helpers';
 
-var mopidyActions = require('./actions.js')
-var coreActions = require('../core/actions.js')
-var uiActions = require('../ui/actions.js')
-var spotifyActions = require('../spotify/actions.js')
-var pusherActions = require('../pusher/actions.js')
-var lastfmActions = require('../lastfm/actions.js')
+var mopidyActions = require('./actions.js');
+var coreActions = require('../core/actions.js');
+var uiActions = require('../ui/actions.js');
+var spotifyActions = require('../spotify/actions.js');
+var pusherActions = require('../pusher/actions.js');
+var googleActions = require('../google/actions.js');
+var lastfmActions = require('../lastfm/actions.js');
 
 const MopidyMiddleware = (function(){
 
@@ -530,21 +531,8 @@ const MopidyMiddleware = (function(){
                             }
 
                             // Enable Iris providers when the backend is available
-                            if (uri_schemes.includes('spotify:')){
-                                store.dispatch({
-                                    type: 'SPOTIFY_SET',
-                                    data: {
-                                        enabled: true
-                                    }
-                                });
-                            } else {
-                                store.dispatch({
-                                    type: 'SPOTIFY_SET',
-                                    data: {
-                                        enabled: false
-                                    }
-                                });
-                            }
+                            store.dispatch(spotifyActions.set({enabled: uri_schemes.includes('spotify:')}));
+                            store.dispatch(googleActions.set({enabled: uri_schemes.includes('gmusic:')}));
 
                             // If we haven't customised our search schemes, add all to search
                             if (store.getState().ui.uri_schemes_search_enabled === undefined){
@@ -1715,7 +1703,7 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
                 if (!last_run){
-                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri } )
+                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
                         .then(response => {
                             if (response.length <= 0) return
 
@@ -2021,9 +2009,9 @@ const MopidyMiddleware = (function(){
                         var existing_artist = store.getState().core.artists[artist.uri];
                         if (existing_artist && !existing_artist.images){
                             if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
                             } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
                             }
                         }
                     })

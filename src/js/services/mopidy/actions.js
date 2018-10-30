@@ -8,7 +8,7 @@ export function set(data){
     }
 }
 
-export function request(method, params = null, response_callback = null, error_callback = null){
+export function request(method, params = {}, response_callback = null, error_callback = null){
 	return {
 		type: 'MOPIDY_REQUEST',
 		method: method,
@@ -357,9 +357,10 @@ export function getTrack(uri){
 	}
 }
 
-export function getLibraryArtists(){
+export function getLibraryArtists(uri = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ARTISTS' 
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS',
+		uri: uri
 	}
 }
 
@@ -399,9 +400,10 @@ export function getAlbums(uris, processor = null){
 	}
 }
 
-export function getLibraryAlbums(){
+export function getLibraryAlbums(uri = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+		type: 'MOPIDY_GET_LIBRARY_ALBUMS',
+		uri: uri
 	}
 }
 

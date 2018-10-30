@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react';
-import { Link, hashHistory } from 'react-router';
+import { hashHistory } from 'react-router'
+import Link from './Link';
 import Icon from './Icon';
 
 export default class Notifications extends React.Component{

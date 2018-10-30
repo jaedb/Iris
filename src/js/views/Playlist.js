@@ -2,11 +2,13 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import ReactGA from 'react-ga'
 
+import Link from '../components/Link';
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
+import Parallax from '../components/Parallax'
 import Dater from '../components/Dater'
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
@@ -199,6 +201,9 @@ class Playlist extends React.Component{
 
 		return (
 			<div className="view playlist-view content-wrapper">
+
+				<Parallax image={playlist.images ? playlist.images.huge : null} blur />
+				
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={playlist.images} />
 				</div>
@@ -209,9 +214,9 @@ class Playlist extends React.Component{
 
 					<ul className="details">
 						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip__content">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
-						{playlist.user_uri && !this.props.slim_mode ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
-						{playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
-						{playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
+						{playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
+						{!this.props.slim_mode && playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
+						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
 						<li>
 							{playlist.tracks_total ? playlist.tracks_total : (playlist.tracks ? playlist.tracks.length : '0')} tracks,&nbsp;
 							<Dater type="total-time" data={playlist.tracks} />

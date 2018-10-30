@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link';
 
 import Header from '../../components/Header'
 import Icon from '../../components/Icon'
@@ -59,8 +59,8 @@ class DiscoverNewReleases extends React.Component{
 	renderIntro(album = null){
 		if (album){
 			return (
-				<div className="intro">
-					<Parallax image={album.images ? album.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
+				<div className="intro preserve-3d">
+					<Parallax image={album.images ? album.images.large : null} blur />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'album/'+album.uri}
@@ -83,8 +83,8 @@ class DiscoverNewReleases extends React.Component{
 			)
 		} else {
 			return (
-				<div className="intro">
-					<Parallax disabled={this.props.disable_parallax} />
+				<div className="intro preserve-3d">
+					<Parallax />
 				</div>
 			)
 		}
@@ -127,7 +127,7 @@ class DiscoverNewReleases extends React.Component{
 		);
 
 		return (
-			<div className="view discover-new-releases-view">
+			<div className="view discover-new-releases-view preserve-3d">
 				<Header className="overlay" options={options}>
 					<Icon name="new_releases" type="material" />
 					New releases
@@ -155,7 +155,6 @@ class DiscoverNewReleases extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,

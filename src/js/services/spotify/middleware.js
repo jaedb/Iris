@@ -197,7 +197,7 @@ const SpotifyMiddleware = (function(){
                 delete action.playlists;
 
                 // Upgrade our URIs
-                action.uris = helpers.upgradePlaylistsUris(action.uris);
+                action.uris = helpers.upgradeSpotifyPlaylistUris(action.uris);
 
                 next(action);
                 break;

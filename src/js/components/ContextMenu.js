@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from './Link'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
@@ -43,8 +44,7 @@ class ContextMenu extends React.Component{
 
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
-			this.setState({ submenu_expanded: false })
-			$('body').addClass('context-menu-open')
+			this.setState({ submenu_expanded: false });
 
 			var context = this.getContext(nextProps);
 
@@ -65,10 +65,6 @@ class ContextMenu extends React.Component{
 					this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
 				}
 			}
-
-		// we DID have one prior, and now we don't
-		} else if (this.props.menu && !nextProps.menu){
-			$('body').removeClass('context-menu-open')
 		}
 	}
 

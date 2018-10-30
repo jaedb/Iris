@@ -1,21 +1,22 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import Link from '../../components/Link';
 
-import Header from '../../components/Header'
-import ArtistGrid from '../../components/ArtistGrid'
-import List from '../../components/List'
-import DropdownField from '../../components/Fields/DropdownField'
-import FilterField from '../../components/Fields/FilterField'
-import LazyLoadListener from '../../components/LazyLoadListener'
-import Icon from '../../components/Icon'
+import Header from '../../components/Header';
+import ArtistGrid from '../../components/ArtistGrid';
+import List from '../../components/List';
+import DropdownField from '../../components/Fields/DropdownField';
+import FilterField from '../../components/Fields/FilterField';
+import LazyLoadListener from '../../components/LazyLoadListener';
+import Icon from '../../components/Icon';
 
-import * as helpers from '../../helpers'
-import * as uiActions from '../../services/ui/actions'
-import * as mopidyActions from '../../services/mopidy/actions'
-import * as spotifyActions from '../../services/spotify/actions'
+import * as helpers from '../../helpers';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
+import * as googleActions from '../../services/google/actions';
 
 class LibraryArtists extends React.Component{
 
@@ -34,6 +35,10 @@ class LibraryArtists extends React.Component{
 
 		if (!this.props.mopidy_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')){
 			this.props.mopidyActions.getLibraryArtists();
+		}
+
+		if (this.props.google_enabled && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')){
+			this.props.googleActions.getLibraryArtists();
 		}
 
 		if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')){
@@ -55,7 +60,20 @@ class LibraryArtists extends React.Component{
 			}			
 		}
 
-		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){		
+		if (newProps.mopidy_connected && newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')){
+
+			// We've just been enabled (or detected as such)
+			if (!this.props.google_enabled){
+				this.props.googleActions.getLibraryArtists();
+			}		
+
+			// Filter changed, but we haven't got this provider's library yet
+			if (this.props.source != 'all' && this.props.source != 'google' && !newProps.google_library_artists){
+				this.props.googleActions.getLibraryArtists();
+			}
+		}
+
+		if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')){
 
 			// Filter changed, but we haven't got this provider's library yet
 			if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started'){
@@ -95,11 +113,30 @@ class LibraryArtists extends React.Component{
 
 		// Mopidy library items
 		if (this.props.mopidy_library_artists && (this.props.source == 'all' || this.props.source == 'local')){
-			for (var i = 0; i < this.props.mopidy_library_artists.length; i++){
+			for (uri of this.props.mopidy_library_artists){
 
 				// Construct item placeholder. This is used as Mopidy needs to 
 				// lookup ref objects to get the full object which can take some time
-				var uri = this.props.mopidy_library_artists[i]
+				var source = helpers.uriSource(uri)
+				var artist = {
+					uri: uri,
+					source: source
+				}
+
+				if (this.props.artists.hasOwnProperty(uri)){
+					artist = this.props.artists[uri]
+				}
+
+				artists.push(artist)
+			}
+		}
+
+		// Google library items
+		if (this.props.google_library_artists && (this.props.source == 'all' || this.props.source == 'google')){
+			for (uri of this.props.google_library_artists){
+
+				// Construct item placeholder. This is used as Mopidy needs to 
+				// lookup ref objects to get the full object which can take some time
 				var source = helpers.uriSource(uri)
 				var artist = {
 					uri: uri,
@@ -201,6 +238,13 @@ class LibraryArtists extends React.Component{
 			});
 		}
 
+		if (this.props.google_enabled){
+			source_options.push({
+				value: 'google',
+				label: 'Google'
+			});
+		}
+
 		var view_options = [
 			{
 				label: 'Thumbnails',
@@ -283,8 +327,9 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_artists: state.mopidy.library_artists,
-		mopidy_library_artists_status: (state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR.status : null),
-		spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
+		google_enabled: state.google.enabled,
+		google_library_artists: state.google.library_artists,
+		spotify_enabled: state.spotify.enabled,
 		spotify_library_artists: state.spotify.library_artists,
 		spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
 		artists: state.core.artists,
@@ -299,7 +344,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		googleActions: bindActionCreators(googleActions, dispatch)
 	}
 }
 

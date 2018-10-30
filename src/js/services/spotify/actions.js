@@ -17,6 +17,12 @@ var helpers = require('../../helpers')
  **/
 const request = (dispatch, getState, endpoint, method = 'GET', data = false) => {
 
+    // Add reference to loader queue
+    // We do this straight away so that even if we're refreshing the token, it still registers as 
+    // loading said endpoint
+    var loader_key = helpers.generateGuid()
+    dispatch(uiActions.startLoading(loader_key, 'spotify_'+endpoint));
+
     return new Promise((resolve, reject) => {         
         getToken(dispatch, getState)
             .then(
@@ -48,10 +54,6 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
                             config.data = JSON.stringify(data)
                         }
                     }
-
-                    // add reference to loader queue
-                    var loader_key = helpers.generateGuid()
-                    dispatch(uiActions.startLoading(loader_key, 'spotify_'+endpoint));
 
                     $.ajax(config).then(
                             response => {
@@ -397,7 +399,7 @@ export function getFeaturedPlaylists(){
                         type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
                         data: {
                             message: response.message,
-                            playlists: helpers.upgradePlaylistsUris(helpers.arrayOf('uri',response.playlists.items))
+                            playlists: helpers.upgradeSpotifyPlaylistUris(helpers.arrayOf('uri',response.playlists.items))
                         }
                     });
                 },

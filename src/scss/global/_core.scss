@@ -33,42 +33,24 @@
 
 body,
 html {
-	background: colour(dark_grey);
 	color: colour(light_grey);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	letter-spacing: -0.01rem;
 	touch-action: manipulation;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 
 	.light-theme {
-		background: colour(white);
 		color: colour(darkest_grey);
 	}
 }
 
-*::-webkit-scrollbar{
-	width: 8px;
-	height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-	background: colour(dark_grey);
-}
-
-*::-webkit-scrollbar-thumb {
-	@include animate();
-	background: colour(grey);
-	border-radius: 4px;
-
-	&:hover {
-		background: colour(mid_grey);
-	}
-}
-
 body {
-	overflow-y: scroll;
-	overflow-x: hidden;
+	transform: translateZ(0px);
+	transform-style: preserve-3d;
 
 	&.touch-dragging,
 	&.no-scrollbars {
@@ -82,25 +64,67 @@ body {
 	}
 }
 
-main,
-footer {
-	margin-left: 220px;
-
-	@include responsive(null, null, $bp_shallow){
-		padding-bottom: 60px;
-	}
-
-	@include responsive($bp_medium){
-		margin-left: 0;
-	}
+.smooth-scroll {
+	scroll-behavior: smooth;
 }
 
 main {
-	position: relative;
-	min-height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 220px;
+	bottom: 50px;
+	right: 0;
+	perspective: 100px;
+	background: colour(dark_grey);
+	z-index: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
+
+	/**
+	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
+	 * NOTE: This breaks parallax effects on iOS
+	 **/
+	-webkit-overflow-scrolling: touch;
+
+	.notouch & {
+		&::-webkit-scrollbar{
+			width: 8px;
+			height: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: colour(dark_grey);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			@include animate();
+			background: colour(grey);
+
+			&:hover {
+				background: colour(mid_grey);
+			}
+		}
+	}
+
+	.modal-open & {
+		left: 0;
+		bottom: 0;
+		z-index: 999;
+	}
+
+	/* All children between <main> and the parallax need this to work in Firefox */
+	&,
+	& .preserve-3d {
+		transform-style: preserve-3d;
+	}
+
+	.light-theme & {
+		background: colour(white);
+	}
 
 	.content-wrapper {
-		padding: 40px 40px 80px;
+		padding: 40px 40px 20px 40px;
 	}
 
 	a {
@@ -124,9 +148,10 @@ main {
 	}
 
 	@include responsive($bp_medium){
+		left: 0;
 
 		.content-wrapper {
-			padding: 20px 10px 60px;
+			padding: 20px 10px;
 		}
 
 		section.list-wrapper {

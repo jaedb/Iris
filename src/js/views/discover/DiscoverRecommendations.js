@@ -307,10 +307,21 @@ class Discover extends React.Component{
 			<div className="seeds">
 				{
 					seeds_objects.map((seed,index) => {
-						var type = helpers.uriType(seed.uri)
+						var type = helpers.uriType(seed.uri);
+						var images = null;
+						if (seed.images){
+							if (type == 'artist'){
+								if (seed.images.length > 0){
+									images = seed.images[0];
+								}
+							} else {
+								images = seed.images;
+							}
+						}
+
 						return (
 							<div className={"seed"+(seed.images ? " has-thumbnail" : "")} key={seed.uri}>
-								{seed.images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={seed.images} circle={seed.type == "artist"} size="small" /></URILink> : null}
+								{images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == "artist"} size="small" /></URILink> : null}
 								<div className="label">
 									{helpers.titleCase(type)}
 									<Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
@@ -444,7 +455,7 @@ class Discover extends React.Component{
 		}
 		
 		return (
-			<div className="content-wrapper recommendations-results cf">
+			<div className="content-wrapper recommendations-results">
 
 				<section className="col col--w70 tracks">
 					<h4>
@@ -500,10 +511,10 @@ class Discover extends React.Component{
 		}
 
 		return (
-			<div className="view discover-view">
-				<div className="intro">
+			<div className="view discover-view preserve-3d">
+				<div className="intro preserve-3d">
 
-					<Parallax image="assets/backgrounds/discover.jpg" theme={this.props.theme} disabled={this.props.disable_parallax} />
+					<Parallax image="assets/backgrounds/discover.jpg" />
 
 					<div className="liner">
 						<h1>Explore new music</h1>

@@ -88,8 +88,8 @@ class User extends React.Component{
 		}
 
 		return (
-			<div className="view user-view">
-				<div className="intro">
+			<div className="view user-view preserve-3d">
+				<div className="intro preserve-3d">
 					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
 					<div className="liner">
 						<h1>{user.name}</h1>

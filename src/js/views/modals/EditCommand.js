@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link'
 import ReactGA from 'react-ga'
 
 import Modal from './Modal';
@@ -46,12 +46,28 @@ class EditCommand extends React.Component{
 
 		window.history.back();
 
+		// A bit hacky, but wait for a moment to allow the back navigation
+		// and then scroll down to our commands list
+		setTimeout(() => {
+				helpers.scrollTo("commands-setup");
+			},
+			10
+		);
+
 		return false;
 	}
 
 	handleDelete(e){
 		this.props.pusherActions.removeCommand(this.state.id);
 		window.history.back();
+
+		// A bit hacky, but wait for a moment to allow the back navigation
+		// and then scroll down to our commands list
+		setTimeout(() => {
+				helpers.scrollTo("commands-setup");
+			},
+			10
+		);
 	}
 
 	render(){

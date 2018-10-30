@@ -1,7 +1,7 @@
 
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var helpers = require('../../helpers')
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var helpers = require('../../helpers');
 
 export function set(data){
     return {
@@ -202,7 +202,7 @@ export function getTrackLyrics(uri, path){
 
 export function findTrackLyrics(track){
     return (dispatch, getState) => {
-
+    	
         var query = '';
         query += track.artists[0].name+' ';
         query += track.name;

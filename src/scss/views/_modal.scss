@@ -1,14 +1,10 @@
 
 .modal {
 	@include fadein();
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	z-index: 999;
+	position: relative;
 	background: darken(colour(darkest_grey), 2%);
 	overflow-y: auto;
+	min-height: 100%;
 
 	.light-theme & {
 		color: colour(white);
@@ -162,6 +158,11 @@
 				.list__item {
 					margin: 0 0 20px 0;
 					padding: 5px;
+					cursor: pointer;
+
+					&:before {
+						display: none;
+					}
 
 					.thumbnail {
 						float: left;

@@ -2,8 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
 
+import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -37,9 +37,11 @@ class Artist extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadArtist(nextProps.params.uri);
-		}else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
+
+		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
 				this.props.coreActions.loadArtist(nextProps.params.uri);
 			}
@@ -105,10 +107,10 @@ class Artist extends React.Component{
 
 	renderSubViewMenu(){
 		return (
-			<div className="sub-views">
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri}><h4>Overview</h4></Link>
-				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'}><h4>Related artists</h4></Link> : null}
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'}><h4>About</h4></Link>
+			<div className="sub-views" id="sub-views-menu">
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri} scrollTo="sub-views-menu"><h4>Overview</h4></Link>
+				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} scrollTo="sub-views-menu"><h4>Related artists</h4></Link> : null}
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'} scrollTo="sub-views-menu"><h4>About</h4></Link>
 			</div>
 		)
 	}
@@ -144,12 +146,23 @@ class Artist extends React.Component{
 				)
 
 			case 'about':
+
+				var thumbnails = [];
+				if (artist.images && artist.images.length > 0){
+					for (var i = 0; i < artist.images.length; i++){
+						thumbnails.push(
+							<div className="tile thumbnail-wrapper" key={i}>
+								<Thumbnail size="huge" canZoom images={artist.images[i]} />
+							</div>
+						);
+					}
+				}
+
 				return (
 					<div className="body about">
 
 						<div className="col col--w40 tiles artist-stats">
-							{artist.images ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images} /></div> : null}
-							{artist.images_additional ? <div className="tile thumbnail-wrapper"><Thumbnail size="huge" canZoom images={artist.images_additional} /></div> : null}
+							{thumbnails}
 							{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
 							{artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{artist.popularity }% popularity</span></div> : null}
 							{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
@@ -223,7 +236,7 @@ class Artist extends React.Component{
 
 						<div className="col col--w5"></div>
 
-						{artist.related_artists ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} className="button grey">All related artists</Link></div> : null}
+						{artist.related_artists && artist.related_artists.length > 0 ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={global.baseURL+'artist/'+artist.uri+'/related-artists'} scrollTo="sub-views-menu" className="button grey">All related artists</Link></div> : null}
 
 						<div className="cf"></div>
 
@@ -276,8 +289,8 @@ class Artist extends React.Component{
 			}
 		}
 
-		if (this.props.artist && this.props.artist.images){
-			var image = this.props.artist.images.huge;
+		if (this.props.artist && this.props.artist.images && this.props.artist.images.length > 0){
+			var image = this.props.artist.images[0].huge;
 		} else {
 			var image = null;
 		}
@@ -291,10 +304,10 @@ class Artist extends React.Component{
 		}
 
 		return (
-			<div className="view artist-view">
-				<div className="intro">
+			<div className="view artist-view preserve-3d">
+				<div className="intro preserve-3d">
 
-					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
+					<Parallax image={image} />
 
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
@@ -324,7 +337,6 @@ class Artist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,

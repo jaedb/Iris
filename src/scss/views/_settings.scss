@@ -39,7 +39,15 @@
 			position: relative;
 
 			.commands__item {
+				float: left;
 				margin-bottom: -5px;
+			}
+
+			&__url {
+				@include one_line_text();
+				max-width: 100%;
+				padding-top: 5px;
+				padding-left: 10px;
 			}
 
 			&__actions {
@@ -79,6 +87,13 @@
 			.text {
 				padding-top: 10px;
 				padding-bottom: 10px;
+			}
+		}
+
+		.commands-setup {
+			&__item {
+				&__url {
+				}
 			}
 		}
 

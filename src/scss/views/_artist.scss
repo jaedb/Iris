@@ -9,16 +9,6 @@
 		position: relative;
 		@include clearfix();
 
-		.parallax {
-			position: absolute;
-			z-index: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			height: auto;
-		}
-
 		.liner {
 			position: relative;
 			z-index: 1;
@@ -31,8 +21,6 @@
 			}
 
 			.actions {
-				padding-bottom: 25px;
-
 				.context-menu-trigger {
 					color: colour(white);
 
@@ -40,6 +28,10 @@
 						color: colour(darkest_grey);
 					}
 				}
+			}
+
+			.sub-views {
+				padding-top: 25px;
 			}
 		}
 
@@ -106,11 +98,12 @@
 				}
 
 				.actions {
-					padding: 30px 10px 10px;
+					padding: 30px 10px 0;
 				}
 
 				.sub-views {
 					margin-left: 5px;
+					padding-top: 10px;
 
 					.option {
 						margin: 0 8px;
@@ -141,11 +134,13 @@
 			}
 
 			&.about {
-				.col.w40,
-				.col.w60 {
-					@include clearfix();
-					width: 100%;
-					float: none;
+				.col {
+					&--w40,
+					&--w60 {
+						@include clearfix();
+						width: 100%;
+						float: none;
+					}
 				}
 				
 				.biography {

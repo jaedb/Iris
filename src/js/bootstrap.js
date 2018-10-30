@@ -10,6 +10,7 @@ import mopidy from './services/mopidy/reducer';
 import lastfm from './services/lastfm/reducer';
 import spotify from './services/spotify/reducer';
 import snapcast from './services/snapcast/reducer';
+import google from './services/google/reducer';
 import genius from './services/genius/reducer';
 
 import thunk from 'redux-thunk';
@@ -20,6 +21,7 @@ import mopidyMiddleware from './services/mopidy/middleware';
 import lastfmMiddleware from './services/lastfm/middleware';
 import geniusMiddleware from './services/genius/middleware';
 import spotifyMiddleware from './services/spotify/middleware';
+import googleMiddleware from './services/google/middleware';
 import snapcastMiddleware from './services/snapcast/middleware';
 import localstorageMiddleware from './services/localstorage/middleware';
 
@@ -84,6 +86,9 @@ var initialState = {
 		autocomplete_results: {},
 		authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php'
 	},
+	google: {
+		enabled: false
+	},
 	snapcast: {
 		streams: {},
 		groups: {},
@@ -101,6 +106,7 @@ initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage(
 initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
 initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
 initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage('genius'));
+initialState.google = Object.assign({}, initialState.google, helpers.getStorage('google'));
 initialState.snapcast = Object.assign({}, initialState.snapcast, helpers.getStorage('snapcast'));
 
 console.log('Bootstrapping', initialState);
@@ -113,6 +119,7 @@ var reducers = combineReducers({
     lastfm,
     genius,
     spotify,
+    google,
     snapcast
 });
 
@@ -129,6 +136,7 @@ export default createStore(
 		spotifyMiddleware, 
 		lastfmMiddleware, 
 		geniusMiddleware, 
+		googleMiddleware, 
 		snapcastMiddleware
 	)
 );
