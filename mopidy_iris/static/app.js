@@ -56222,7 +56222,46 @@ var CoreMiddleware = function () {
                                     // And we've already got some images, make sure we merge the arrays,
                                     // rather than overwriting
                                     if (artists_index[artist.uri].images && artist.images) {
-                                        artist.images = [].concat(_toConsumableArray(artists_index[artist.uri].images), _toConsumableArray(artist.images));
+                                        var existing_images = artists_index[artist.uri].images;
+                                        var are_new_images = true;
+
+                                        // loop all extisting images to make sure we're not adding one that
+                                        // we already have
+                                        var _iteratorNormalCompletion6 = true;
+                                        var _didIteratorError6 = false;
+                                        var _iteratorError6 = undefined;
+
+                                        try {
+                                            for (var _iterator6 = existing_images[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                                var existing_image = _step6.value;
+
+
+                                                // We only need to check one size, the formatter should insist on consistency
+                                                // Note that we depend on having a one-item array of images provided per action
+                                                if (existing_image.huge == artist.images[0].huge) {
+                                                    are_new_images = false;
+                                                }
+                                            }
+
+                                            // Only if they're new images should we merge them in
+                                        } catch (err) {
+                                            _didIteratorError6 = true;
+                                            _iteratorError6 = err;
+                                        } finally {
+                                            try {
+                                                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                                    _iterator6.return();
+                                                }
+                                            } finally {
+                                                if (_didIteratorError6) {
+                                                    throw _iteratorError6;
+                                                }
+                                            }
+                                        }
+
+                                        if (are_new_images) {
+                                            artist.images = Object.assign([], [].concat(_toConsumableArray(existing_images), _toConsumableArray(artist.images)));
+                                        }
                                     }
 
                                     artist = Object.assign({}, artists_index[artist.uri], artist);
@@ -56269,13 +56308,13 @@ var CoreMiddleware = function () {
                         var playlists_loaded = [];
                         var tracks_loaded = [];
 
-                        var _iteratorNormalCompletion6 = true;
-                        var _didIteratorError6 = false;
-                        var _iteratorError6 = undefined;
+                        var _iteratorNormalCompletion7 = true;
+                        var _didIteratorError7 = false;
+                        var _iteratorError7 = undefined;
 
                         try {
-                            for (var _iterator6 = action.playlists[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                                var playlist = _step6.value;
+                            for (var _iterator7 = action.playlists[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                                var playlist = _step7.value;
 
 
                                 playlist = helpers.formatPlaylist(playlist);
@@ -56310,16 +56349,16 @@ var CoreMiddleware = function () {
                                 playlists_loaded.push(playlist);
                             }
                         } catch (err) {
-                            _didIteratorError6 = true;
-                            _iteratorError6 = err;
+                            _didIteratorError7 = true;
+                            _iteratorError7 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                                    _iterator6.return();
+                                if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                                    _iterator7.return();
                                 }
                             } finally {
-                                if (_didIteratorError6) {
-                                    throw _iteratorError6;
+                                if (_didIteratorError7) {
+                                    throw _iteratorError7;
                                 }
                             }
                         }
@@ -56337,13 +56376,13 @@ var CoreMiddleware = function () {
                         var users_index = Object.assign({}, core.users);
                         var users_loaded = [];
 
-                        var _iteratorNormalCompletion7 = true;
-                        var _didIteratorError7 = false;
-                        var _iteratorError7 = undefined;
+                        var _iteratorNormalCompletion8 = true;
+                        var _didIteratorError8 = false;
+                        var _iteratorError8 = undefined;
 
                         try {
-                            for (var _iterator7 = action.users[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                                var user = _step7.value;
+                            for (var _iterator8 = action.users[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                                var user = _step8.value;
 
                                 user = helpers.formatUser(user);
 
@@ -56354,16 +56393,16 @@ var CoreMiddleware = function () {
                                 users_loaded.push(user);
                             }
                         } catch (err) {
-                            _didIteratorError7 = true;
-                            _iteratorError7 = err;
+                            _didIteratorError8 = true;
+                            _iteratorError8 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                                    _iterator7.return();
+                                if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                                    _iterator8.return();
                                 }
                             } finally {
-                                if (_didIteratorError7) {
-                                    throw _iteratorError7;
+                                if (_didIteratorError8) {
+                                    throw _iteratorError8;
                                 }
                             }
                         }
@@ -77705,13 +77744,24 @@ var Discover = function (_React$Component) {
 				{ className: 'seeds' },
 				seeds_objects.map(function (seed, index) {
 					var type = helpers.uriType(seed.uri);
+					var images = null;
+					if (seed.images) {
+						if (type == 'artist') {
+							if (seed.images.length > 0) {
+								images = seed.images[0];
+							}
+						} else {
+							images = seed.images;
+						}
+					}
+
 					return _react2.default.createElement(
 						'div',
 						{ className: "seed" + (seed.images ? " has-thumbnail" : ""), key: seed.uri },
-						seed.images ? _react2.default.createElement(
+						images ? _react2.default.createElement(
 							_URILink2.default,
 							{ className: 'thumbnail-wrapper', type: type, uri: seed.uri },
-							_react2.default.createElement(_Thumbnail2.default, { images: seed.images, circle: seed.type == "artist", size: 'small' })
+							_react2.default.createElement(_Thumbnail2.default, { images: images, circle: seed.type == "artist", size: 'small' })
 						) : null,
 						_react2.default.createElement(
 							'div',

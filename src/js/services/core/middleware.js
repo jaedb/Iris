@@ -634,7 +634,24 @@ const CoreMiddleware = (function(){
                     	// And we've already got some images, make sure we merge the arrays,
                     	// rather than overwriting
                     	if (artists_index[artist.uri].images && artist.images){
-                    		artist.images = [...artists_index[artist.uri].images, ...artist.images];
+                    		var existing_images = artists_index[artist.uri].images;
+                    		var are_new_images = true;
+
+                    		// loop all extisting images to make sure we're not adding one that
+                    		// we already have
+                    		for (var existing_image of existing_images){
+
+                    			// We only need to check one size, the formatter should insist on consistency
+                    			// Note that we depend on having a one-item array of images provided per action
+                    			if (existing_image.huge == artist.images[0].huge){
+                    				are_new_images = false;
+                    			}
+                    		}
+
+                    		// Only if they're new images should we merge them in
+                    		if (are_new_images){
+	                    		artist.images = Object.assign([], [...existing_images, ...artist.images]);
+	                    	}
                     	}
 
                         artist = Object.assign({}, artists_index[artist.uri], artist);

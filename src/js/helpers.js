@@ -460,9 +460,7 @@ export let formatArtist = function(data){
 	}
 
 	if (data.images){
-		artist.images = [
-			formatImages(artist.images)
-		];
+		artist.images = [formatImages(artist.images)];
 	}
 
 	if (data.followers && data.followers.total !== undefined){
