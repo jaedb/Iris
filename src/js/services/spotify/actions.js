@@ -28,10 +28,6 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
             .then(
                 response => {
 
-                    if (!endpoint || enpoint == ""){
-                        console.error("No Spotify endpoint provided????", endpoint, method, data);
-                    }
-
                     // prepend the API baseurl, unless the endpoint already has it (ie pagination requests)
                     var url = 'https://api.spotify.com/v1/'+endpoint
                     if (endpoint.startsWith('https://api.spotify.com/')){
