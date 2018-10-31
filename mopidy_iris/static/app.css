@@ -2696,7 +2696,8 @@ main {
   left: 220px;
   bottom: 50px;
   right: 0;
-  perspective: 100px;
+  perspective: 1000px;
+  perspective-origin: top;
   background: #181818;
   z-index: 1;
   overflow-y: scroll;
@@ -4388,15 +4389,21 @@ input[type="submit"] {
 .parallax {
   overflow: hidden;
   position: absolute;
-  top: -10%;
-  right: -10px;
-  left: -10px;
-  height: 110%;
-  transform: translateZ(-50px) scale(2);
-  transform-origin: bottom center;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
   max-height: 80vh;
+  transform: translateZ(-200px) scale(1.2);
+  transform-origin: top center;
+  z-index: -1;
   background-color: #323232; }
+  .parallax__inner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -6621,9 +6628,8 @@ main header {
 main .album-view {
   padding-left: 30%;
   position: relative; }
-  @media (min-width: 800px) {
-    main .album-view .parallax {
-      display: none; } }
+  main .album-view .parallax {
+    height: 60vh; }
   main .album-view .title h2 a:hover {
     color: #706e6c; }
   main .album-view .title .details {
@@ -6639,6 +6645,9 @@ main .album-view {
     box-sizing: border-box; }
     main .album-view .thumbnail-wrapper .thumbnail {
       max-width: 100%; }
+  @media (min-width: 800px) {
+    main .album-view .parallax {
+      display: none; } }
   @media (max-width: 800px) {
     main .album-view {
       padding-top: 0;
@@ -6671,9 +6680,8 @@ main .album-view {
 main .playlist-view {
   padding-left: 30%;
   position: relative; }
-  @media (min-width: 800px) {
-    main .playlist-view .parallax {
-      display: none; } }
+  main .playlist-view .parallax {
+    height: 60vh; }
   main .playlist-view .title h2 a:hover {
     color: #706e6c; }
   main .playlist-view .title .details {
@@ -6689,6 +6697,9 @@ main .playlist-view {
     box-sizing: border-box; }
     main .playlist-view .thumbnail-wrapper .thumbnail {
       max-width: 100%; }
+  @media (min-width: 800px) {
+    main .playlist-view .parallax {
+      display: none; } }
   @media (max-width: 800px) {
     main .playlist-view {
       padding-top: 0;

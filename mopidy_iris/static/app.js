@@ -3213,6 +3213,10 @@ var request = function request(dispatch, getState, endpoint) {
     return new Promise(function (resolve, reject) {
         getToken(dispatch, getState).then(function (response) {
 
+            if (!endpoint || endpoint == "") {
+                console.error("No Spotify endpoint provided????", endpoint, method, data);
+            }
+
             // prepend the API baseurl, unless the endpoint already has it (ie pagination requests)
             var url = 'https://api.spotify.com/v1/' + endpoint;
             if (endpoint.startsWith('https://api.spotify.com/')) {
@@ -19797,7 +19801,7 @@ var Parallax = function (_React$Component) {
 	}, {
 		key: "render",
 		value: function render() {
-			var class_name = "parallax";
+			var class_name = "parallax preserve-3d";
 			if (this.props.blur) {
 				class_name += " parallax--blur";
 			}
@@ -19813,8 +19817,12 @@ var Parallax = function (_React$Component) {
 			return _react2.default.createElement(
 				"div",
 				{ className: class_name },
-				_react2.default.createElement("div", { className: "parallax__image", style: style }),
-				_react2.default.createElement("div", { className: "parallax__overlay" })
+				_react2.default.createElement(
+					"div",
+					{ className: "parallax__inner preserve-3d" },
+					_react2.default.createElement("div", { className: "parallax__image", style: style }),
+					_react2.default.createElement("div", { className: "parallax__overlay" })
+				)
 			);
 		}
 	}]);
@@ -69974,7 +69982,7 @@ var Playlist = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'view playlist-view content-wrapper' },
+				{ className: 'view playlist-view content-wrapper preserve-3d' },
 				_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
 				_react2.default.createElement(
 					'div',

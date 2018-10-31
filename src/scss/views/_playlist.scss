@@ -3,10 +3,8 @@ main .playlist-view {
 	padding-left: 30%;
 	position: relative;
 
-	@include responsive(null, $bp_medium){
-		.parallax {
-			display: none;
-		}
+	.parallax {
+		height: 60vh;
 	}
 
 	.title {
@@ -35,6 +33,12 @@ main .playlist-view {
 
 		.thumbnail {
 			max-width: 100%;
+		}
+	}
+
+	@include responsive(null, $bp_medium){
+		.parallax {
+			display: none;
 		}
 	}
 

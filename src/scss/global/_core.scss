@@ -74,7 +74,8 @@ main {
 	left: 220px;
 	bottom: 50px;
 	right: 0;
-	perspective: 100px;
+	perspective: 1000px;
+	perspective-origin: top;
 	background: colour(dark_grey);
 	z-index: 1;
 	overflow-y: scroll;
