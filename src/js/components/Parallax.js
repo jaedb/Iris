@@ -47,7 +47,7 @@ export default class Parallax extends React.Component{
 	}
 
 	render(){
-		var class_name = "parallax";
+		var class_name = "parallax preserve-3d";
 		if (this.props.blur){
 			class_name += " parallax--blur";
 		}
@@ -62,8 +62,10 @@ export default class Parallax extends React.Component{
 
 		return (
 			<div className={class_name}>
-				<div className="parallax__image" style={style}></div>
-				<div className="parallax__overlay"></div>
+				<div className="parallax__inner preserve-3d">
+					<div className="parallax__image" style={style}></div>
+					<div className="parallax__overlay"></div>
+				</div>
 			</div>
 		);
 	}

@@ -200,7 +200,7 @@ class Playlist extends React.Component{
 		}
 
 		return (
-			<div className="view playlist-view content-wrapper">
+			<div className="view playlist-view content-wrapper preserve-3d">
 
 				<Parallax image={playlist.images ? playlist.images.huge : null} blur />
 				
