@@ -5,6 +5,7 @@ main .album-view {
 
 	.parallax {
 		height: 60vh;
+		opacity: 0.5;
 	}
 
 	.title {
@@ -35,10 +36,11 @@ main .album-view {
 			max-width: 100%;
 		}
 	}
-	
+
 	@include responsive(null, $bp_medium){
 		.parallax {
-			display: none;
+			height: 30vh;
+			opacity: 0.25;
 		}
 	}
 

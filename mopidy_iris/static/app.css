@@ -6629,7 +6629,8 @@ main .album-view {
   padding-left: 30%;
   position: relative; }
   main .album-view .parallax {
-    height: 60vh; }
+    height: 60vh;
+    opacity: 0.5; }
   main .album-view .title h2 a:hover {
     color: #706e6c; }
   main .album-view .title .details {
@@ -6647,7 +6648,8 @@ main .album-view {
       max-width: 100%; }
   @media (min-width: 800px) {
     main .album-view .parallax {
-      display: none; } }
+      height: 30vh;
+      opacity: 0.25; } }
   @media (max-width: 800px) {
     main .album-view {
       padding-top: 0;
@@ -6681,7 +6683,8 @@ main .playlist-view {
   padding-left: 30%;
   position: relative; }
   main .playlist-view .parallax {
-    height: 60vh; }
+    height: 60vh;
+    opacity: 0.5; }
   main .playlist-view .title h2 a:hover {
     color: #706e6c; }
   main .playlist-view .title .details {
@@ -6699,7 +6702,8 @@ main .playlist-view {
       max-width: 100%; }
   @media (min-width: 800px) {
     main .playlist-view .parallax {
-      display: none; } }
+      height: 30vh;
+      opacity: 0.25; } }
   @media (max-width: 800px) {
     main .playlist-view {
       padding-top: 0;
