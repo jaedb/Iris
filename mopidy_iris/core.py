@@ -1,7 +1,7 @@
 
 from __future__ import unicode_literals
 
-import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import random, string, socket, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -14,7 +14,7 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
-import socket
+from .system import IrisSystemActor
 
 if sys.platform == 'win32':
     import ctypes
@@ -22,7 +22,7 @@ if sys.platform == 'win32':
 # import logger
 logger = logging.getLogger(__name__)
 
-class IrisCore(object):
+class IrisCore(pykka.ThreadingActor):
     version = 0
     spotify_token = False
     queue_metadata = {}
@@ -37,15 +37,34 @@ class IrisCore(object):
         "results": []
     }
     snapcast_listener = False
+    system_actor = False
 
 
     ##
-    # Kick off
+    # Mopidy server is starting
     ##
     def start(self):
+		logger.info('Starting Iris '+self.version)
 
-    	# Load our commands from file
-    	self.commands = self.load_from_file('commands')
+		# Load our commands from file
+		self.commands = self.load_from_file('commands')
+
+		# Start our system actor
+		self.system_actor = IrisSystemActor()
+		self.system_actor.start()
+
+
+    ## 
+    # Mopidy is shutting down
+    ##
+    def stop(self):
+        logger.info('Stopping Iris')
+
+        self.snapcast_disconnect_listener()
+
+        # Stop our system actor
+        self.system_actor.stop()
+
 
 
 	##
@@ -1117,18 +1136,27 @@ class IrisCore(object):
     # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-        data = kwargs.get('data', None)
+        logger.info("Running test")
+        callback = kwargs.get('callback', False)
 
-        self.save_to_file(data,"test")
+        self.broadcast(data={
+            'method': "testing",
+            'params': {}
+        })
+
+        output = self.system_actor.run('test')
+
+        self.broadcast(data={
+            'method': "test_complete",
+            'params': {
+            	'output': output
+            }
+        })
 
         response = {
-            'message': "Saved",
-            'request': data
+            'message': "Running test... please wait"
         }
-
         if (callback):
             callback(response)
-            return
         else:
             return response

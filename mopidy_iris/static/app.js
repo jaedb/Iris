@@ -5652,6 +5652,7 @@ exports.disconnect = disconnect;
 exports.upgrade = upgrade;
 exports.reload = reload;
 exports.restart = restart;
+exports.runLocalScan = runLocalScan;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -5726,6 +5727,12 @@ function reload() {
 function restart() {
 	return {
 		type: 'PUSHER_RESTART'
+	};
+}
+
+function runLocalScan() {
+	return {
+		type: 'PUSHER_RUN_LOCAL_SCAN'
 	};
 }
 
@@ -57985,6 +57992,10 @@ var PusherMiddleware = function () {
                         });
                         break;
 
+                    /**
+                     * Notifications and alerts
+                     **/
+
                     case 'PUSHER_BROWSER_NOTIFICATION':
                         store.dispatch(uiActions.createBrowserNotification(action));
                         break;
@@ -57995,6 +58006,10 @@ var PusherMiddleware = function () {
                         });
                         store.dispatch(uiActions.createNotification(data));
                         break;
+
+                    /**
+                     * Server actions
+                     **/
 
                     case 'PUSHER_RELOAD':
                         // Hard reload. This doesn't strictly clear the cache, but our compiler's
@@ -58017,6 +58032,17 @@ var PusherMiddleware = function () {
                         }
                         request(store, 'upgrade').then(function (response) {
                             store.dispatch(mopidyActions.upgrading());
+                        }, function (error) {
+                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
+                        });
+                        break;
+
+                    case 'PUSHER_RUN_LOCAL_SCAN':
+                        if (store.getState().ui.allow_reporting) {
+                            _reactGa2.default.event({ category: 'Pusher', action: 'Run local scan', label: '' });
+                        }
+                        request(store, 'run_local_scan').then(function (response) {
+                            store.dispatch(mopidyActions.localScanRunning());
                         }, function (error) {
                             store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
                         });
@@ -73171,6 +73197,22 @@ var Settings = function (_React$Component) {
 				var upgrade_button = null;
 			}
 
+			if (this.props.mopidy.local_scan_running) {
+				var local_scan_button = _react2.default.createElement(
+					'button',
+					{ className: 'working' },
+					'Running scan...'
+				);
+			} else {
+				var local_scan_button = _react2.default.createElement(
+					'button',
+					{ onClick: function onClick(e) {
+							return _this3.props.pusherActions.runLocalScan();
+						} },
+					'Run local scan'
+				);
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view settings-view' },
@@ -73494,29 +73536,6 @@ var Settings = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'div',
-						{ className: 'field button-wrapper' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'name' },
-							'Share configuration'
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'input' },
-							_react2.default.createElement(
-								_reactRouter.Link,
-								{ className: 'button', to: global.baseURL + "share-configuration" },
-								'Share'
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'description' },
-								'Send your authorizations and configuration to another Iris client'
-							)
-						)
-					),
-					_react2.default.createElement(
-						'div',
 						{ className: 'field' },
 						_react2.default.createElement(
 							'div',
@@ -73617,6 +73636,16 @@ var Settings = function (_React$Component) {
 									'\xA0 Up-to-date'
 								)
 							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field' },
+						local_scan_button,
+						_react2.default.createElement(
+							_reactRouter.Link,
+							{ className: 'button', to: global.baseURL + "share-configuration" },
+							'Share configuration'
 						)
 					),
 					_react2.default.createElement(

@@ -618,6 +618,11 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+
+            /**
+             * Notifications and alerts
+             **/
+
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
@@ -631,6 +636,11 @@ const PusherMiddleware = (function(){
                 );
                 store.dispatch(uiActions.createNotification(data));
                 break
+
+
+            /**
+             * Server actions
+             **/
 
             case 'PUSHER_RELOAD':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
@@ -659,6 +669,21 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
                             store.dispatch(mopidyActions.upgrading());
+                        },
+                        error => {
+                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
+                        }
+                    );
+                break;
+
+            case 'PUSHER_RUN_LOCAL_SCAN':
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Run local scan', label: '' });
+	            }
+                request(store, 'run_local_scan')
+                    .then(
+                        response => {
+                            store.dispatch(mopidyActions.localScanRunning());
                         },
                         error => {
                             store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));

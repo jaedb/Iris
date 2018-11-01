@@ -202,7 +202,6 @@ class Settings extends React.Component {
 				</a>
 			</span>
 		)
-
 		
 		if (this.props.mopidy.upgrading){
 			var upgrade_button = (
@@ -214,6 +213,16 @@ class Settings extends React.Component {
 			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
 		} else {
 			var upgrade_button = null;
+		}
+		
+		if (this.props.mopidy.local_scan_running){
+			var local_scan_button = (
+				<button className="working">
+					Running scan...
+				</button>
+			);
+		} else {
+			var local_scan_button = <button onClick={e => this.props.pusherActions.runLocalScan()}>Run local scan</button>;
 		}
 
 		return (
@@ -379,16 +388,6 @@ class Settings extends React.Component {
 			        </div>
 
 					<h4 className="underline">Advanced<a name="advanced"></a></h4>
-					
-					<div className="field button-wrapper">
-						<div className="name">Share configuration</div>
-						<div className="input">
-					        <Link className="button" to={global.baseURL+"share-configuration"}>Share</Link>	
-							<div className="description">
-								Send your authorizations and configuration to another Iris client
-							</div>					
-				        </div>
-			        </div>
 
 					<div className="field">
 						<div className="name">Artist library URI</div>
@@ -436,6 +435,11 @@ class Settings extends React.Component {
 				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag dark"><Icon name="cloud_download" className="blue-text" />&nbsp; Upgrade available</span> : <span className="flag dark"><Icon name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
+			        </div>
+					
+					<div className="field">
+				        {local_scan_button}
+				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
 			        </div>
 					
 					<div className="field">

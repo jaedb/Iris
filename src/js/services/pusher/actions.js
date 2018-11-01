@@ -48,6 +48,12 @@ export function restart(){
 	}
 }
 
+export function runLocalScan(){
+	return {
+		type: 'PUSHER_RUN_LOCAL_SCAN'
+	}
+}
+
 export function getConnections(){
 	return {
 		type: 'PUSHER_GET_CONNECTIONS'
