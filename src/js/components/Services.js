@@ -32,13 +32,13 @@ class Services extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined){
+		if ((this.props.spotify.enabled || this.props.spotify.authorization) && (!this.props.spotify.me || this.props.core.users[this.props.spotify.me.id] === undefined)){
 			this.props.spotifyActions.getMe();
 		}
 		if (this.props.lastfm.authorization && this.props.core.users["lastfm:user:"+this.props.lastfm.authorization.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}
-		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined){
+		if (this.props.genius.authorization && (!this.props.genius.me || this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined)){
 			this.props.geniusActions.getMe();
 		}
 	}
