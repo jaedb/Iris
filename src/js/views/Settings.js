@@ -119,10 +119,12 @@ class Settings extends React.Component {
 		var colour = 'grey';
 		var icon = 'help';
 		var status = 'Unknown';
+		var className = null;
 
 		if (this.props.mopidy.connecting || this.props.pusher.connecting){
 			icon = 'autorenew';
-			status = 'Connecting...'
+			status = 'Connecting...';
+			className = 'icon--spin';
 		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
 			colour = 'red';
 			icon = 'close';
@@ -135,7 +137,7 @@ class Settings extends React.Component {
 
 		return (
 			<span className={colour+'-text'}>
-				<Icon name={icon} />{status}
+				<Icon className={className} name={icon} />{status}
 			</span>
 		);
 	}
@@ -377,6 +379,16 @@ class Settings extends React.Component {
 			        </div>
 
 					<h4 className="underline">Advanced<a name="advanced"></a></h4>
+					
+					<div className="field button-wrapper">
+						<div className="name">Share configuration</div>
+						<div className="input">
+					        <Link className="button" to={global.baseURL+"share-configuration"}>Share</Link>	
+							<div className="description">
+								Send your authorizations and configuration to another Iris client
+							</div>					
+				        </div>
+			        </div>
 
 					<div className="field">
 						<div className="name">Artist library URI</div>
@@ -421,13 +433,12 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><Icon type="fontawesome" name="check" className="green-text" />&nbsp; Up-to-date</span>}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag dark"><Icon name="cloud_download" className="blue-text" />&nbsp; Upgrade available</span> : <span className="flag dark"><Icon name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
 					
 					<div className="field">
-				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
 						{upgrade_button}
 				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />

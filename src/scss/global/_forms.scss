@@ -405,6 +405,12 @@ input[type="submit"] {
 		padding: 0;
 	}
 
+	&.button-wrapper {
+		.button {
+			margin-bottom: 0;
+		}
+	}
+
 	.description {
 		display: block;
 		padding: 6px 0 4px;

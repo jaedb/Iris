@@ -727,7 +727,7 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
  **/
 var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 	var playlist = {};
-	var fields = ['uri', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion9 = true;
@@ -60087,8 +60087,10 @@ var MopidyMiddleware = function () {
 
                                     if (item.type === "track") {
                                         tracks_uris.push(item.uri);
+                                        tracks_uris = helpers.sortItems(tracks_uris, 'name');
                                     } else {
                                         subdirectories.push(item);
+                                        subdirectories = helpers.sortItems(subdirectories, 'name');
                                     }
                                 }
                             } catch (err) {
@@ -73042,10 +73044,12 @@ var Settings = function (_React$Component) {
 			var colour = 'grey';
 			var icon = 'help';
 			var status = 'Unknown';
+			var className = null;
 
 			if (this.props.mopidy.connecting || this.props.pusher.connecting) {
 				icon = 'autorenew';
 				status = 'Connecting...';
+				className = 'icon--spin';
 			} else if (!this.props.mopidy.connected || !this.props.pusher.connected) {
 				colour = 'red';
 				icon = 'close';
@@ -73059,7 +73063,7 @@ var Settings = function (_React$Component) {
 			return _react2.default.createElement(
 				'span',
 				{ className: colour + '-text' },
-				_react2.default.createElement(_Icon2.default, { name: icon }),
+				_react2.default.createElement(_Icon2.default, { className: className, name: icon }),
 				status
 			);
 		}
@@ -73490,6 +73494,29 @@ var Settings = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'div',
+						{ className: 'field button-wrapper' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Share configuration'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								_reactRouter.Link,
+								{ className: 'button', to: global.baseURL + "share-configuration" },
+								'Share'
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'description' },
+								'Send your authorizations and configuration to another Iris client'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'field' },
 						_react2.default.createElement(
 							'div',
@@ -73580,12 +73607,13 @@ var Settings = function (_React$Component) {
 								' installed ',
 								this.props.pusher.version.upgrade_available ? _react2.default.createElement(
 									'span',
-									{ className: 'flag blue' },
-									'Upgrade available'
+									{ className: 'flag dark' },
+									_react2.default.createElement(_Icon2.default, { name: 'cloud_download', className: 'blue-text' }),
+									'\xA0 Upgrade available'
 								) : _react2.default.createElement(
 									'span',
 									{ className: 'flag dark' },
-									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'check', className: 'green-text' }),
+									_react2.default.createElement(_Icon2.default, { name: 'check', className: 'green-text' }),
 									'\xA0 Up-to-date'
 								)
 							)
@@ -73594,11 +73622,6 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'field' },
-						_react2.default.createElement(
-							_reactRouter.Link,
-							{ className: 'button', to: global.baseURL + "share-configuration" },
-							'Share configuration'
-						),
 						upgrade_button,
 						_react2.default.createElement(
 							'button',
@@ -83226,7 +83249,7 @@ var LibraryBrowse = function (_React$Component) {
 							_react2.default.createElement(
 								_URILink2.default,
 								{ type: 'browse', uri: uri },
-								uri_element
+								decodeURI(uri_element)
 							)
 						);
 					})
