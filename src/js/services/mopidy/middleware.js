@@ -2230,8 +2230,10 @@ const MopidyMiddleware = (function(){
                         for (var item of response){
                             if (item.type === "track"){
                                 tracks_uris.push(item.uri);
+                                tracks_uris = helpers.sortItems(tracks_uris, 'name');
                             } else {
                                 subdirectories.push(item);
+                                subdirectories = helpers.sortItems(subdirectories, 'name');
                             }
                         }
                         
