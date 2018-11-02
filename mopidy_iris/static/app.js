@@ -5687,7 +5687,6 @@ exports.upgrade = upgrade;
 exports.reload = reload;
 exports.restart = restart;
 exports.localScan = localScan;
-exports.test = test;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -5768,12 +5767,6 @@ function restart() {
 function localScan() {
 	return {
 		type: 'PUSHER_LOCAL_SCAN'
-	};
-}
-
-function test() {
-	return {
-		type: 'PUSHER_TEST'
 	};
 }
 
@@ -54411,7 +54404,7 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.createNotification({ type: 'info', content: 'Restarting server...' }));
                         break;
 
-                    // Upgrade
+                    // Test
                     case 'test_started':
                         store.dispatch(uiActions.updateProcess('test', 'Running test'));
                         break;
@@ -68646,7 +68639,7 @@ var Debug = function (_React$Component) {
 								_react2.default.createElement(
 									'a',
 									{ className: 'button secondary', onClick: function onClick(e) {
-											return _this2.props.pusherActions.test();
+											return _this2.props.pusherActions.request('test');
 										} },
 									'Run test process'
 								)

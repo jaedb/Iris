@@ -122,7 +122,7 @@ class Debug extends React.Component{
 							<div className="name"></div>
 							<div className="input">
 								<a className="button secondary" onClick={e => this.props.uiActions.createNotification({content: 'Test notification'})}>Create notification</a>
-								<a className="button secondary" onClick={e => this.props.pusherActions.test()}>Run test process</a>
+								<a className="button secondary" onClick={e => this.props.pusherActions.request('test')}>Run test process</a>
 							</div>
 						</div>
 					</form>

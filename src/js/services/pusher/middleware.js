@@ -146,7 +146,7 @@ const PusherMiddleware = (function(){
                         store.dispatch(uiActions.createNotification({type: 'info', content: 'Restarting server...'}));
                         break;
 
-                    // Upgrade
+                    // Test
                     case 'test_started':
                         store.dispatch(uiActions.updateProcess('test', 'Running test'));
                         break;

@@ -10,6 +10,7 @@ class IrisSystemThread(Thread):
         Thread.__init__(self)
         self.action = action
         self.callback = callback
+        self.path = os.path.dirname(__file__)
 
     ##
     # Run the defined action
@@ -22,14 +23,17 @@ class IrisSystemThread(Thread):
         except Exception, e:
             logger.error(e)
 
-            # And then, when complete, return to our callback
+            error = {
+                'message': "Permission denied",
+                'description': str(e)
+            }
+
             if self.callback:
-                self.callback(False, "Permission denied")
+                self.callback(False, error)
             
 
         # Run the actual task (this is the process-blocking instruction)
-        path = os.path.dirname(__file__)        
-        output = subprocess.check_output(["sudo "+path+"/system.sh "+self.action], shell=True)
+        output = subprocess.check_output(["sudo "+self.path+"/system.sh "+self.action], shell=True)
 
         # And then, when complete, return to our callback
         if self.callback:
@@ -45,13 +49,13 @@ class IrisSystemThread(Thread):
     # @return boolean or exception
     ##
     def check_system_access(self, *args, **kwargs):
-        path = os.path.dirname(__file__)
 
-        # Attempt the upgrade
-        process = subprocess.Popen("sudo -n "+path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        # Attempt an empty call to our system file
+        process = subprocess.Popen("sudo -n "+self.path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         result, error = process.communicate()
         exitCode = process.wait()
 
+        # Some kind of failure, so we can't run any commands this way
         if exitCode > 0:
             raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
         else:

@@ -54,12 +54,6 @@ export function localScan(){
 	}
 }
 
-export function test(){
-	return {
-		type: 'PUSHER_TEST'
-	}
-}
-
 export function getConnections(){
 	return {
 		type: 'PUSHER_GET_CONNECTIONS'
