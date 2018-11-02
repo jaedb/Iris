@@ -114,13 +114,49 @@ const PusherMiddleware = (function(){
                     case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'update_process':
-                        if (message.params.finished){
-                        	store.dispatch(uiActions.processFinished(message.params.key));
-                        	store.dispatch(uiActions.createNotification(message.params));
-                        } else {
-                        	store.dispatch(uiActions.updateProcess(message.params.key, message.params.message));
-                        }
+
+                    // Local scan
+                    case 'local_scan_started':
+                        store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+                        break;
+                    case 'local_scan_finished':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output}));
+                        break;
+                    case 'local_scan_error':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'bad', content: 'Local scan failed'}));
+                        break;
+
+                    // Upgrade
+                    case 'upgrade_started':
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+                        break;
+                    case 'upgrade_finished':
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
+                        break;
+                    case 'upgrade_error':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Upgrade failed'}));
+                        break;
+
+                    // Restart
+                    case 'restart_started':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Restarting server...'}));
+                        break;
+
+                    // Upgrade
+                    case 'test_started':
+                        store.dispatch(uiActions.updateProcess('test', 'Running test'));
+                        break;
+                    case 'test_finished':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Test finished', description: message.params.output}));
+                        break;
+                    case 'test_error':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Test failed'}));
                         break;
                 }
             }

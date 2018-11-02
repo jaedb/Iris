@@ -580,11 +580,7 @@ class IrisCore(pykka.ThreadingActor):
         IrisSystemThread('restart', self.restart_callback).start()
 
         self.broadcast(data={
-            'method': "update_process",
-            'params': {
-                'key': 'restart',
-                'message': "Restarting"
-            }
+            'method': "restart_started"
         })
 
         response = {
@@ -598,22 +594,12 @@ class IrisCore(pykka.ThreadingActor):
     def restart_callback(self, response, error):
         if error:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'restart',
-                    'type': 'bad',
-                    'message': error,
-                    'finished': True
-                }
+                'method': "restart_error",
+                'params': error
             })
         else:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'restart',
-                    'message': "Restart completed",
-                    'finished': True
-                }
+                'method': "restart_finished"
             })
 
 
@@ -624,11 +610,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "update_process",
-            'params': {
-                'key': 'upgrade',
-                'message': "Upgrade running"
-            }
+            'method': "upgrade_started"
         })
 
         # Trigger the action
@@ -646,23 +628,15 @@ class IrisCore(pykka.ThreadingActor):
     def upgrade_callback(self, response, error):
         if error:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'upgrade',
-                    'type': 'bad',
-                    'message': error,
-                    'finished': True
-                }
+                'method': "upgrade_error",
+                'params': error
             })
         else:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'upgrade',
-                    'message': "Upgrade completed",
-                    'finished': True
-                }
+                'method': "upgrade_finished",
+                'params': response
             })
+            self.restart()
 
 
     ##
@@ -676,11 +650,7 @@ class IrisCore(pykka.ThreadingActor):
         IrisSystemThread('local_scan', self.local_scan_callback).start()
 
         self.broadcast(data={
-            'method': "update_process",
-            'params': {
-                'key': 'local_scan',
-                'message': "Local scan running"
-            }
+            'method': "local_scan_started"
         })
 
         response = {
@@ -694,22 +664,13 @@ class IrisCore(pykka.ThreadingActor):
     def local_scan_callback(self, response, error):
         if error:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'local_scan',
-                    'type': 'bad',
-                    'message': error,
-                    'finished': True
-                }
+                'method': "local_scan_error",
+                'params': error
             })
         else:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'local_scan',
-                    'message': "Local scan completed",
-                    'finished': True
-                }
+                'method': "local_scan_finished",
+                'params': response
             })
 
 
@@ -1143,11 +1104,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
-            'method': "update_process",
-            'params': {
-                'key': 'test',
-                'message': 'Running test'
-            }
+            'method': "test_started"
         })
 
         # Trigger the action
@@ -1164,21 +1121,12 @@ class IrisCore(pykka.ThreadingActor):
     def test_callback(self, response, error):
         if error:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'test',
-                    'type': 'bad',
-                    'message': error,
-                    'finished': True
-                }
+                'method': "test_error",
+                'params': error
             })
         else:
             self.broadcast(data={
-                'method': "update_process",
-                'params': {
-                    'key': 'test',
-                    'message': "Test completed",
-                    'finished': True
-                }
+                'method': "test_finished",
+                'params': response
             })
 

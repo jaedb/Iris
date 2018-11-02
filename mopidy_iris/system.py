@@ -29,10 +29,13 @@ class IrisSystemThread(Thread):
 
         # Run the actual task (this is the process-blocking instruction)
         path = os.path.dirname(__file__)        
-        response = subprocess.check_output(["sudo "+path+"/system.sh "+self.action], shell=True)
+        output = subprocess.check_output(["sudo "+path+"/system.sh "+self.action], shell=True)
 
         # And then, when complete, return to our callback
         if self.callback:
+            response = {
+                'output': output
+            }
             self.callback(response, False)
 
 
