@@ -114,14 +114,13 @@ const PusherMiddleware = (function(){
                     case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'upgrading':
-                    case 'upgrade_started':
-                        store.dispatch(mopidyActions.upgrading());
-                        store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
-                        break;
-                    case 'restarting':
-                        store.dispatch(mopidyActions.restarting());
-                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
+                    case 'update_process':
+                        if (message.params.finished){
+                        	store.dispatch(uiActions.processFinished(message.params.key));
+                        	store.dispatch(uiActions.createNotification(message.params));
+                        } else {
+                        	store.dispatch(uiActions.updateProcess(message.params.key, message.params.message));
+                        }
                         break;
                 }
             }
@@ -649,15 +648,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_RESTART':
-                request(store, 'restart')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.restarting());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'restart');
                 next(action);
                 break
 
@@ -665,30 +656,18 @@ const PusherMiddleware = (function(){
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
 	            }
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.upgrading());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'upgrade');
                 break;
 
-            case 'PUSHER_RUN_LOCAL_SCAN':
+            case 'PUSHER_LOCAL_SCAN':
                 if (store.getState().ui.allow_reporting){
-	                ReactGA.event({ category: 'Pusher', action: 'Run local scan', label: '' });
+	                ReactGA.event({ category: 'Pusher', action: 'Local scan', label: '' });
 	            }
-                request(store, 'run_local_scan')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.localScanRunning());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'local_scan');
+                break;
+
+            case 'PUSHER_TEST':
+                request(store, 'test');
                 break;
 
             case 'PUSHER_VERSION':

@@ -30,18 +30,6 @@ export function connecting(){
 	}
 }
 
-export function upgrading(){
-	return {
-		type: 'MOPIDY_UPGRADING'
-	}
-}
-
-export function restarting(){
-	return {
-		type: 'MOPIDY_RESTARTING'
-	}
-}
-
 export function disconnect(){
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -53,6 +41,42 @@ export function debug(call, value){
 		type: 'MOPIDY_DEBUG',
 		call: call,
 		value: value
+	}
+}
+
+export function restartStarted(){
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	}
+}
+
+export function restartFinished(){
+	return {
+		type: 'MOPIDY_RESTART_FINISHED'
+	}
+}
+
+export function upgradeStarted(){
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	}
+}
+
+export function upgradeFinished(){
+	return {
+		type: 'MOPIDY_UPGRADE_FINISHED'
+	}
+}
+
+export function localScanStarted(){
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_STARTED'
+	}
+}
+
+export function localScanFinished(){
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_FINISHED'
 	}
 }
 

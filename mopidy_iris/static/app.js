@@ -2149,6 +2149,12 @@ function createBrowserNotification(data) {
 }
 
 function createNotification(data) {
+
+    // Allow 'message' as an alias of our content
+    if (data.message) {
+        data.content = data.message;
+    }
+
     return {
         type: 'CREATE_NOTIFICATION',
         notification: Object.assign({
@@ -2576,10 +2582,14 @@ exports.set = set;
 exports.request = request;
 exports.connect = connect;
 exports.connecting = connecting;
-exports.upgrading = upgrading;
-exports.restarting = restarting;
 exports.disconnect = disconnect;
 exports.debug = debug;
+exports.restartStarted = restartStarted;
+exports.restartFinished = restartFinished;
+exports.upgradeStarted = upgradeStarted;
+exports.upgradeFinished = upgradeFinished;
+exports.localScanStarted = localScanStarted;
+exports.localScanFinished = localScanFinished;
 exports.getPlayState = getPlayState;
 exports.play = play;
 exports.pause = pause;
@@ -2675,18 +2685,6 @@ function connecting() {
 	};
 }
 
-function upgrading() {
-	return {
-		type: 'MOPIDY_UPGRADING'
-	};
-}
-
-function restarting() {
-	return {
-		type: 'MOPIDY_RESTARTING'
-	};
-}
-
 function disconnect() {
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -2698,6 +2696,42 @@ function debug(call, value) {
 		type: 'MOPIDY_DEBUG',
 		call: call,
 		value: value
+	};
+}
+
+function restartStarted() {
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	};
+}
+
+function restartFinished() {
+	return {
+		type: 'MOPIDY_RESTART_FINISHED'
+	};
+}
+
+function upgradeStarted() {
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	};
+}
+
+function upgradeFinished() {
+	return {
+		type: 'MOPIDY_UPGRADE_FINISHED'
+	};
+}
+
+function localScanStarted() {
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_STARTED'
+	};
+}
+
+function localScanFinished() {
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_FINISHED'
 	};
 }
 
@@ -5652,7 +5686,8 @@ exports.disconnect = disconnect;
 exports.upgrade = upgrade;
 exports.reload = reload;
 exports.restart = restart;
-exports.runLocalScan = runLocalScan;
+exports.localScan = localScan;
+exports.test = test;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
 exports.connectionChanged = connectionChanged;
@@ -5730,9 +5765,15 @@ function restart() {
 	};
 }
 
-function runLocalScan() {
+function localScan() {
 	return {
-		type: 'PUSHER_RUN_LOCAL_SCAN'
+		type: 'PUSHER_LOCAL_SCAN'
+	};
+}
+
+function test() {
+	return {
+		type: 'PUSHER_TEST'
 	};
 }
 
@@ -54665,21 +54706,29 @@ function reducer() {
 
     switch (action.type) {
 
+        case 'MOPIDY_SET':
+            return Object.assign({}, mopidy, action.data);
+
         case 'MOPIDY_CONNECT':
         case 'MOPIDY_CONNECTING':
-            return Object.assign({}, mopidy, { connected: false, connecting: true });
-
-        case 'MOPIDY_RESTARTING':
-            return Object.assign({}, mopidy, { restarting: true });
-
-        case 'MOPIDY_UPGRADING':
-            return Object.assign({}, mopidy, { upgrading: true });
+            return Object.assign({}, mopidy, {
+                connected: false,
+                connecting: true
+            });
 
         case 'MOPIDY_CONNECTED':
-            return Object.assign({}, mopidy, { connected: true, connecting: false, restarting: false, upgrading: false });
+            return Object.assign({}, mopidy, {
+                connected: true,
+                connecting: false,
+                restart_running: false,
+                upgrade_running: false
+            });
 
         case 'MOPIDY_DISCONNECTED':
-            return Object.assign({}, mopidy, { connected: false, connecting: false });
+            return Object.assign({}, mopidy, {
+                connected: false,
+                connecting: false
+            });
 
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
@@ -54691,8 +54740,23 @@ function reducer() {
                 uri_schemes: action.uri_schemes
             });
 
-        case 'MOPIDY_SET':
-            return Object.assign({}, mopidy, action.data);
+        case 'MOPIDY_RESTART_STARTED':
+            return Object.assign({}, mopidy, { restart_running: true });
+
+        case 'MOPIDY_RESTART_FINISHED':
+            return Object.assign({}, mopidy, { restart_running: false });
+
+        case 'MOPIDY_UPGRADE_STARTED':
+            return Object.assign({}, mopidy, { upgrade_running: true });
+
+        case 'MOPIDY_UPGRADE_FINISHED':
+            return Object.assign({}, mopidy, { upgrade_running: false });
+
+        case 'MOPIDY_LOCAL_SCAN_STARTED':
+            return Object.assign({}, mopidy, { local_scan_running: true });
+
+        case 'MOPIDY_LOCAL_SCAN_FINISHED':
+            return Object.assign({}, mopidy, { local_scan_running: false });
 
         /**
          * State-oriented actions
@@ -57590,14 +57654,13 @@ var PusherMiddleware = function () {
                     case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'upgrading':
-                    case 'upgrade_started':
-                        store.dispatch(mopidyActions.upgrading());
-                        store.dispatch(uiActions.createNotification({ content: 'Upgrading...', type: 'info' }));
-                        break;
-                    case 'restarting':
-                        store.dispatch(mopidyActions.restarting());
-                        store.dispatch(uiActions.createNotification({ content: 'Restarting...', type: 'info' }));
+                    case 'update_process':
+                        if (message.params.finished) {
+                            store.dispatch(uiActions.processFinished(message.params.key));
+                            store.dispatch(uiActions.createNotification(message.params));
+                        } else {
+                            store.dispatch(uiActions.updateProcess(message.params.key, message.params.message));
+                        }
                         break;
                 }
             }
@@ -58018,11 +58081,7 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_RESTART':
-                        request(store, 'restart').then(function (response) {
-                            store.dispatch(mopidyActions.restarting());
-                        }, function (error) {
-                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
-                        });
+                        request(store, 'restart');
                         next(action);
                         break;
 
@@ -58030,22 +58089,18 @@ var PusherMiddleware = function () {
                         if (store.getState().ui.allow_reporting) {
                             _reactGa2.default.event({ category: 'Pusher', action: 'Upgrade', label: '' });
                         }
-                        request(store, 'upgrade').then(function (response) {
-                            store.dispatch(mopidyActions.upgrading());
-                        }, function (error) {
-                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
-                        });
+                        request(store, 'upgrade');
                         break;
 
-                    case 'PUSHER_RUN_LOCAL_SCAN':
+                    case 'PUSHER_LOCAL_SCAN':
                         if (store.getState().ui.allow_reporting) {
-                            _reactGa2.default.event({ category: 'Pusher', action: 'Run local scan', label: '' });
+                            _reactGa2.default.event({ category: 'Pusher', action: 'Local scan', label: '' });
                         }
-                        request(store, 'run_local_scan').then(function (response) {
-                            store.dispatch(mopidyActions.localScanRunning());
-                        }, function (error) {
-                            store.dispatch(uiActions.createNotification({ content: error.message, description: error.description ? error.description : null, type: 'bad' }));
-                        });
+                        request(store, 'local_scan');
+                        break;
+
+                    case 'PUSHER_TEST':
+                        request(store, 'test');
                         break;
 
                     case 'PUSHER_VERSION':
@@ -71830,16 +71885,9 @@ var Debug = function (_React$Component) {
 								_react2.default.createElement(
 									'a',
 									{ className: 'button secondary', onClick: function onClick(e) {
-											return _this2.props.uiActions.startProcess('test_process', 'Test process', { total: 100, remaining: 17 });
+											return _this2.props.pusherActions.test();
 										} },
-									'Start process'
-								),
-								_react2.default.createElement(
-									'a',
-									{ className: 'button secondary', onClick: function onClick(e) {
-											return _this2.props.uiActions.processFinishing('test_process');
-										} },
-									'Stop process'
+									'Run test process'
 								)
 							)
 						)
@@ -73178,41 +73226,6 @@ var Settings = function (_React$Component) {
 				)
 			);
 
-			if (this.props.mopidy.upgrading) {
-				var upgrade_button = _react2.default.createElement(
-					'button',
-					{ className: 'alternative working' },
-					'Upgrading...'
-				);
-			} else if (this.props.pusher.version.upgrade_available) {
-				var upgrade_button = _react2.default.createElement(
-					'button',
-					{ className: 'alternative', onClick: function onClick(e) {
-							return _this3.props.pusherActions.upgrade();
-						} },
-					'Upgrade to ',
-					this.props.pusher.version.latest
-				);
-			} else {
-				var upgrade_button = null;
-			}
-
-			if (this.props.mopidy.local_scan_running) {
-				var local_scan_button = _react2.default.createElement(
-					'button',
-					{ className: 'working' },
-					'Running scan...'
-				);
-			} else {
-				var local_scan_button = _react2.default.createElement(
-					'button',
-					{ onClick: function onClick(e) {
-							return _this3.props.pusherActions.runLocalScan();
-						} },
-					'Run local scan'
-				);
-			}
-
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view settings-view' },
@@ -73641,7 +73654,13 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'field' },
-						local_scan_button,
+						_react2.default.createElement(
+							'button',
+							{ onClick: function onClick(e) {
+									return _this3.props.pusherActions.localScan();
+								} },
+							'Run local scan'
+						),
 						_react2.default.createElement(
 							_reactRouter.Link,
 							{ className: 'button', to: global.baseURL + "share-configuration" },
@@ -73651,13 +73670,20 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'field' },
-						upgrade_button,
+						this.props.pusher.version.upgrade_available ? _react2.default.createElement(
+							'button',
+							{ className: 'alternative', onClick: function onClick(e) {
+									return _this3.props.pusherActions.upgrade();
+								} },
+							'Upgrade to ',
+							this.props.pusher.version.latest
+						) : null,
 						_react2.default.createElement(
 							'button',
 							{ className: "destructive" + (this.props.mopidy.restarting ? ' working' : ''), onClick: function onClick(e) {
 									return _this3.props.pusherActions.restart();
 								} },
-							this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'
+							'Restart server'
 						),
 						_react2.default.createElement(_ConfirmationButton2.default, { className: 'destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
 								return _this3.resetAllSettings();

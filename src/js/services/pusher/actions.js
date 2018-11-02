@@ -48,9 +48,15 @@ export function restart(){
 	}
 }
 
-export function runLocalScan(){
+export function localScan(){
 	return {
-		type: 'PUSHER_RUN_LOCAL_SCAN'
+		type: 'PUSHER_LOCAL_SCAN'
+	}
+}
+
+export function test(){
+	return {
+		type: 'PUSHER_TEST'
 	}
 }
 
