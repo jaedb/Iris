@@ -497,6 +497,7 @@ export let formatPlaylist = function(data){
 	var playlist = {}
 	var fields = [
 		'uri',
+		'snapshot_id',
 		'provider',
 		'type',
 		'name',

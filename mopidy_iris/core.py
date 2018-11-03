@@ -1,7 +1,7 @@
 
 from __future__ import unicode_literals
 
-import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import random, string, socket, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -14,7 +14,7 @@ from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
-import socket
+from .system import IrisSystemThread
 
 if sys.platform == 'win32':
     import ctypes
@@ -22,7 +22,7 @@ if sys.platform == 'win32':
 # import logger
 logger = logging.getLogger(__name__)
 
-class IrisCore(object):
+class IrisCore(pykka.ThreadingActor):
     version = 0
     spotify_token = False
     queue_metadata = {}
@@ -40,29 +40,40 @@ class IrisCore(object):
 
 
     ##
-    # Kick off
+    # Mopidy server is starting
     ##
     def start(self):
+        logger.info('Starting Iris '+self.version)
 
-    	# Load our commands from file
-    	self.commands = self.load_from_file('commands')
+        # Load our commands from file
+        self.commands = self.load_from_file('commands')
 
 
-	##
-	# Save dict object to disk
-	#
-	# @param dict Dict
-	# @param name String
-	# @return void
-	##
+    ## 
+    # Mopidy is shutting down
+    ##
+    def stop(self):
+        logger.info('Stopping Iris')
+
+        self.snapcast_disconnect_listener()
+
+
+
+    ##
+    # Save dict object to disk
+    #
+    # @param dict Dict
+    # @param name String
+    # @return void
+    ##
     def save_to_file(self, dict, name):
 
-    	# Build path to our special Iris folder
-    	path = self.config['core'].get('cache_dir')+'/iris/'
+        # Build path to our special Iris folder
+        path = self.config['core'].get('cache_dir')+'/iris/'
 
-    	# Create the folder if it doesn't yet exist
-    	if not os.path.exists(path):
-    		os.makedirs(path)
+        # Create the folder if it doesn't yet exist
+        if not os.path.exists(path):
+            os.makedirs(path)
 
         # And now open the file, and drop in our dict
         try:
@@ -558,114 +569,109 @@ class IrisCore(object):
             return response
 
 
-    def upgrade(self, *args, **kwargs):
-        logger.info("Upgrading")
-
-        callback = kwargs.get('callback', False)
-
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
-
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
-        self.broadcast(data={
-            'method': "upgrade_started",
-            'params': {}
-        });
-
-        # Run the system task
-        path = os.path.dirname(__file__)
-
-        # Attempt the upgrade
-        upgrade_process = subprocess.Popen("sudo "+path+"/system.sh upgrade", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result, error = upgrade_process.communicate()
-        exitCode = upgrade_process.wait()
-
-        if exitCode > 0:
-            output = error.decode('ascii')
-            logger.error("Upgrade failed: "+output)
-
-            error = {
-                'message': "Upgrade failed",
-                'data': {
-                    'output': output
-                }
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
-        self.broadcast(data={
-            'method': "upgrade_complete",
-            'params': {}
-        });
-
-        output = result.decode();
-
-        response = {
-            'message': "Restart required to complete upgrade",
-            'data': {
-                'output': output
-            }
-        }
-
-        if (callback):
-            callback(response)
-        else:
-            return response
-
-
+    ##
+    # Restart Mopidy
+    # This requires sudo access to system.sh
+    ##
     def restart(self, *args, **kwargs):
-        logger.info("Restarting")
         callback = kwargs.get('callback', False)
 
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
-
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
+        # Trigger the action
+        IrisSystemThread('restart', self.restart_callback).start()
 
         self.broadcast(data={
-            'method': "restarting",
-            'params': {}
+            'method': "restart_started"
         })
 
-        path = os.path.dirname(__file__)
-
-        subprocess.Popen(["sudo "+path+"/system.sh restart 0"], shell=True)
-
         response = {
-            'message': "Restarting... please wait"
+            'message': "Restart started"
         }
         if (callback):
             callback(response)
         else:
             return response
+
+    def restart_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "restart_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "restart_finished"
+            })
+
+
+    ##
+    # Run an upgrade of Iris
+    ##
+    def upgrade(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        self.broadcast(data={
+            'method': "upgrade_started"
+        })
+
+        # Trigger the action
+        IrisSystemThread('upgrade', self.upgrade_callback).start()
+
+        response = {
+            'message': "Upgrade started"
+        }
+
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def upgrade_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "upgrade_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "upgrade_finished",
+                'params': response
+            })
+            self.restart()
+
+
+    ##
+    # Run a mopidy local scan
+    # Essetially an alias to "mopidyctl local scan"
+    ##
+    def local_scan(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        # Trigger the action
+        IrisSystemThread('local_scan', self.local_scan_callback).start()
+
+        self.broadcast(data={
+            'method': "local_scan_started"
+        })
+
+        response = {
+            'message': "Local scan started"
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def local_scan_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "local_scan_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "local_scan_finished",
+                'params': response
+            })
 
 
     ##
@@ -1040,28 +1046,6 @@ class IrisCore(object):
 
 
     ##
-    # Check if we have access to the system script (system.sh)
-    #
-    # @return boolean or exception
-    ##
-    def check_system_access(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-
-        # Run the system task
-        path = os.path.dirname(__file__)
-
-        # Attempt the upgrade
-        process = subprocess.Popen("sudo -n "+path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result, error = process.communicate()
-        exitCode = process.wait()
-
-        if exitCode > 0:
-            raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
-        else:
-            return True
-
-
-    ##
     # Spotify authentication
     #
     # Uses the Client Credentials Flow, so is invisible to the user. We need this token for
@@ -1117,18 +1101,32 @@ class IrisCore(object):
     # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-        data = kwargs.get('data', None)
+        callback = kwargs.get('callback', False)
 
-        self.save_to_file(data,"test")
+        self.broadcast(data={
+            'method': "test_started"
+        })
+
+        # Trigger the action
+        IrisSystemThread('test', self.test_callback).start()
 
         response = {
-            'message': "Saved",
-            'request': data
+            'message': "Running test... please wait"
         }
-
         if (callback):
             callback(response)
-            return
         else:
             return response
+
+    def test_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "test_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "test_finished",
+                'params': response
+            })
+

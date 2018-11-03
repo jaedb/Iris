@@ -90,7 +90,7 @@ class LibraryBrowse extends React.Component{
 							<span key={uri}>
 								{index > 0 ? <span>&nbsp; <Icon type="fontawesome" name="angle-right" /> &nbsp;&nbsp;</span> : null}
 								<URILink type="browse" uri={uri}>
-									{uri_element}
+									{decodeURI(uri_element)}
 								</URILink>
 							</span>
 						);

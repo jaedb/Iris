@@ -8,7 +8,7 @@ $parallax: 'parallax';
 	right: 0;
 	height: 100%;
 	max-height: 80vh;
-	transform: translateZ(-200px) scale(1.2);
+	transform: translateZ(-400px) scale(1.4);
 	transform-origin: top center;
 	z-index: -1;
 	background-color: lighten(colour(dark_grey), 10%);
@@ -30,7 +30,7 @@ $parallax: 'parallax';
 		right: -10px;
 		background-repeat: no-repeat;
 		background-size: cover;
-		background-position: 50% 25%;
+		background-position: 50% 30%;
 		opacity: 0;
 	}
 
