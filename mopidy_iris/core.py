@@ -1,9 +1,8 @@
 
 from __future__ import unicode_literals
 
-import random, string, socket, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
-import tornado.websocket
 import tornado.ioloop
 import tornado.httpclient
 import requests
@@ -15,6 +14,8 @@ from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
 from .system import IrisSystemThread
+from .snapcast import IrisSnapcast
+from .snapcast_thread import IrisSnapcastThread
 
 if sys.platform == 'win32':
     import ctypes
@@ -36,7 +37,7 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": []
     }
-    snapcast_listener = False
+    snapcast_daemon = False
 
 
     ##
@@ -48,6 +49,12 @@ class IrisCore(pykka.ThreadingActor):
         # Load our commands from file
         self.commands = self.load_from_file('commands')
 
+        # Start our TCP watcher with no request, so it becomes our
+        # long-running socket connection
+        if self.config['iris'].get('snapcast_enabled'):
+            self.snapcast_daemon = IrisSnapcastThread(self.config, self.broadcast)
+            self.snapcast_daemon.start()
+
 
     ## 
     # Mopidy is shutting down
@@ -55,8 +62,28 @@ class IrisCore(pykka.ThreadingActor):
     def stop(self):
         logger.info('Stopping Iris')
 
-        self.snapcast_disconnect_listener()
+        if self.snapcast_daemon:
+            self.snapcast_daemon.stop()
 
+
+    ##
+    # Make a request to snapcast
+    ##
+    def snapcast(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+        request_id = kwargs.get('request_id', None)
+        data = kwargs.get('data', {})
+
+        # Start a new thread, just for this request
+        socket = IrisSnapcast(self.config)
+        socket.connect()
+
+        response = socket.request(data)
+
+        if (callback):
+            callback(response)
+        else:
+            return response
 
 
     ##
@@ -99,150 +126,6 @@ class IrisCore(pykka.ThreadingActor):
                 return pickle.load(f)
         except Exception:
             return {}
-
-
-    ##
-    # Create a new snapcast TCP connection
-    #
-    # @return socket
-    ##
-    def new_snapcast_socket(self):
-
-        if not self.config['iris'].get('snapcast_enabled'):
-            logger.error("Iris Snapcast not enabled")
-            raise Exception("Snapcast not enabled")
-
-        try:
-            snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            snapcast.settimeout(10)
-            snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
-        except socket.gaierror, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-        except socket.error, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-
-        return snapcast
-
-
-    ##
-    # Create our ongoing notification listener
-    #
-    # TODO: Make non-blocking
-    ##
-    def create_snapcast_listener(self):
-        try:
-            listener = self.new_snapcast_socket()
-            self.snapcast_listener = listener
-            logger.info("Iris connected to Snapcast")
-        except Exception, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-
-
-    ##
-    # Disconnect our Snapcast listener
-    ##
-    def snapcast_disconnect_listener(self):
-        if self.snapcast_listener:
-            self.snapcast_listener.close()
-            self.snapcast_listener = None
-
-
-    ##
-    # Handle a message from the Snapcast Telnet API
-    # We create a connection for this request, and then drop it once completed. This is because
-    # we have a separate socket for monitoring notifications
-    #
-    # @param data = string
-    ##
-    def snapcast_handle_message(self, data):
-        logger.debug("Iris received Snapcast message: "+data)
-
-        try:
-            data = json.loads(data)
-        except:
-            logger.error("Iris could not digest Snapcast message: "+data)
-
-        print "broadcasting..."
-        print data
-
-        self.broadcast(data)
-
-
-    ##
-    # Send a request to Snapcast
-    #
-    # We create a connection for this request, and then drop it once completed. This is because
-    # we have a separate socket for monitoring notifications
-    ##
-    def snapcast_instruct(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-        request_id = kwargs.get('request_id', None)
-        data = kwargs.get('data', {})
-
-        request = {
-            'id': self.generateGuid(),
-            'jsonrpc': '2.0',
-            'method': data['method'],
-            'params': data['params'] if 'params' in data else {}
-        }
-
-        # Convert to string. For some really nuts reason we need an extra trailing curly brace...
-        request = json.dumps(request)+'}'
-
-        # Create our connection
-        try:
-            snapcast_socket = self.new_snapcast_socket()
-        except Exception, e:
-            callback(response=None, error={
-                'message': "Could not connect to Snapcast",
-                'data': str(e)
-            })
-            return
-
-        # Attempt to send the request
-        try:
-            snapcast_socket.send(request.encode('ascii')+b"\n")
-        except socket.error, e:
-            logger.error("Iris could not send request to Snapcast: %s" % e)
-            callback(response=None, error={
-                'message': "Failed to send request to Snapcast",
-                'data': str(e)
-            })
-            return
-
-        # Wait for response
-        while True:
-            try:
-                response = snapcast_socket.recv(8192)
-            except socket.error, e:
-                logger.error("Iris failed to receive Snapcast response: %s" % e)
-                callback(response=None, error={
-                    'message': "Failed to receive Snapcast response",
-                    'data': str(e)
-                })
-
-            snapcast_socket.close()
-
-            if not len(response):
-                break
-
-            try:
-                response = json.loads(response)
-                if 'result' in response:
-                    callback(response=response['result'])
-                else:
-                    callback(error=response['error'])
-            except:
-                logger.error("Iris received malformed Snapcast response: "+response)
-                callback(response=None, error={
-                    'message': "Malformed Snapcast response",
-                    'data': response
-                })
-                return
-
-            return
 
 
     ##
@@ -291,6 +174,8 @@ class IrisCore(pykka.ThreadingActor):
             "username": username,
             "generated": generated
         }
+
+
 
 
     def send_message(self, *args, **kwargs):

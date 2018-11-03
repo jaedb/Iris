@@ -60725,7 +60725,7 @@ var SnapcastMiddleware = function () {
         var response_callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
         var error_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-        store.dispatch(pusherActions.request('snapcast_instruct', params, response_callback, error_callback));
+        store.dispatch(pusherActions.request('snapcast', params, response_callback, error_callback));
         return;
     };
 

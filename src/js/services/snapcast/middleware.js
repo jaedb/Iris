@@ -13,7 +13,7 @@ const SnapcastMiddleware = (function(){
     const request = (store, params = null, response_callback = null, error_callback = null) => {
         store.dispatch(
         	pusherActions.request(
-        		'snapcast_instruct',
+        		'snapcast',
         		params,
         		response_callback,
         		error_callback
