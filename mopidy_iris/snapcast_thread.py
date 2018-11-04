@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 class IrisSnapcastThread(Thread):
 
+    sock = None
+
     def __init__(self, config, broadcast):
         Thread.__init__(self)
         self.config = config
@@ -19,7 +21,12 @@ class IrisSnapcastThread(Thread):
     ##
     def run(self):
 
-        socket = IrisSnapcast(self.config)
-        socket.connect()
-        socket.listen(self.broadcast)
-        
+        self.sock = IrisSnapcast(self.config)
+        self.sock.listen(self.broadcast)
+
+
+    ##
+    # Instruction to stop this thread
+    ##
+    def close(self):
+        self.sock.stop_listening()

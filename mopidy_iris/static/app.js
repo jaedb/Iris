@@ -21083,6 +21083,7 @@ exports.deleteClient = deleteClient;
 exports.setGroupStream = setGroupStream;
 exports.setGroupMute = setGroupMute;
 exports.setGroupVolume = setGroupVolume;
+exports.eventReceived = eventReceived;
 exports.serverLoaded = serverLoaded;
 exports.clientLoaded = clientLoaded;
 exports.clientsLoaded = clientsLoaded;
@@ -21167,6 +21168,14 @@ function setGroupVolume(id, percent) {
 		id: id,
 		percent: percent,
 		old_percent: old_percent
+	};
+}
+
+function eventReceived(message) {
+	return {
+		type: 'SNAPCAST_EVENT_RECEIVED',
+		method: message.method,
+		params: message.params
 	};
 }
 
@@ -54274,6 +54283,7 @@ var pusherActions = __webpack_require__(14);
 var lastfmActions = __webpack_require__(21);
 var geniusActions = __webpack_require__(41);
 var spotifyActions = __webpack_require__(8);
+var snapcastActions = __webpack_require__(46);
 
 var PusherMiddleware = function () {
     var _this = this;
@@ -54416,6 +54426,11 @@ var PusherMiddleware = function () {
                         store.dispatch(uiActions.processFinished('test'));
                         store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Test failed' }));
                         break;
+                }
+
+                // Pass snapcast events to the Snapcast service
+                if (message.method.startsWith('snapcast_')) {
+                    store.dispatch(snapcastActions.eventReceived(message));
                 }
             }
         }
@@ -61100,6 +61115,39 @@ var SnapcastMiddleware = function () {
                             }
                         }
 
+                        break;
+
+                    case 'SNAPCAST_EVENT_RECEIVED':
+
+                        console.log(action);
+
+                        // Drop the prefix
+                        action.method = action.method.replace('snapcast_', '');
+
+                        switch (action.method) {
+
+                            case 'Client.OnVolumeChanged':
+                                store.dispatch(snapcastActions.clientLoaded({
+                                    id: action.params.id,
+                                    mute: action.params.volume.muted,
+                                    volume: action.params.volume.percent
+                                }));
+                                break;
+
+                            case 'Client.OnLatencyChanged':
+                                store.dispatch(snapcastActions.clientLoaded({
+                                    id: action.params.id,
+                                    latency: action.params.latency
+                                }));
+                                break;
+
+                            case 'Client.OnNameChanged':
+                                store.dispatch(snapcastActions.clientLoaded({
+                                    id: action.params.id,
+                                    name: action.params.name
+                                }));
+                                break;
+                        }
                         break;
 
                     // This action is irrelevant to us, pass it on to the next middleware

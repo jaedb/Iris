@@ -63,7 +63,8 @@ class IrisCore(pykka.ThreadingActor):
         logger.info('Stopping Iris')
 
         if self.snapcast_daemon:
-            self.snapcast_daemon.stop()
+            logger.info('Stoppping Snapcast daemon')
+            self.snapcast_daemon.close()
 
 
     ##

@@ -392,6 +392,45 @@ const SnapcastMiddleware = (function(){
                 }
                 break;
 
+            case 'SNAPCAST_EVENT_RECEIVED':
+
+                console.log(action)
+
+                // Drop the prefix
+                action.method = action.method.replace('snapcast_','');
+
+                switch (action.method){
+
+                    case 'Client.OnVolumeChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                mute: action.params.volume.muted,
+                                volume: action.params.volume.percent
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnLatencyChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                latency: action.params.latency
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnNameChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                name: action.params.name
+                            }
+                        ));
+                        break;
+                }
+                break;
+
             // This action is irrelevant to us, pass it on to the next middleware
             default:
                 return next(action);

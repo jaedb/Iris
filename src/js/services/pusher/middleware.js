@@ -1,14 +1,15 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
 
-var helpers = require('../../helpers')
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var mopidyActions = require('../mopidy/actions')
-var pusherActions = require('./actions')
-var lastfmActions = require('../lastfm/actions')
-var geniusActions = require('../genius/actions')
-var spotifyActions = require('../spotify/actions')
+var helpers = require('../../helpers');
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var mopidyActions = require('../mopidy/actions');
+var pusherActions = require('./actions');
+var lastfmActions = require('../lastfm/actions');
+var geniusActions = require('../genius/actions');
+var spotifyActions = require('../spotify/actions');
+var snapcastActions = require('../snapcast/actions');
 
 const PusherMiddleware = (function(){ 
 
@@ -158,6 +159,11 @@ const PusherMiddleware = (function(){
                         store.dispatch(uiActions.processFinished('test'));
                         store.dispatch(uiActions.createNotification({type: 'bad', content: 'Test failed'}));
                         break;
+                }
+
+                // Pass snapcast events to the Snapcast service
+                if (message.method.startsWith('snapcast_')){
+                    store.dispatch(snapcastActions.eventReceived(message));
                 }
             }
         }
