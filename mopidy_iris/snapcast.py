@@ -56,7 +56,11 @@ class IrisSnapcast(object):
 
         while self.listen:
 
-            readlist, writelist, exceptionlist = select.select([self.sock], [], [], 5)
+            # This loop will run constantly in the background, so we need a relatively short
+            # timeout as this would otherwise block the shutdown sequence
+            timeout = 1
+
+            readlist, writelist, exceptionlist = select.select([self.sock], [], [], timeout)
 
             # Check if we've got any lists
             if [readlist, writelist, exceptionlist] != [[], [], []]:
@@ -64,7 +68,8 @@ class IrisSnapcast(object):
                 # Rread and print the available data on any of the read list
                 for socket in readlist:
 
-                    message = socket.recv(1024)
+                    # Allow a relatively large buffer size to handle large JSON payloads
+                    message = socket.recv(8192)
 
                     try:
                         message = json.loads(message)

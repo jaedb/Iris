@@ -394,12 +394,31 @@ const SnapcastMiddleware = (function(){
 
             case 'SNAPCAST_EVENT_RECEIVED':
 
-                console.log(action)
-
                 // Drop the prefix
                 action.method = action.method.replace('snapcast_','');
 
                 switch (action.method){
+
+                    case 'Client.OnConnect':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.client.id,
+                                name: action.params.client.name,
+                                volume: action.params.client.volume.percent,
+                                mute: action.params.client.volume.muted,
+                                connected: action.params.client.connected
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnDisconnect':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.client.id,
+                                connected: action.params.client.connected
+                            }
+                        ));
+                        break;
 
                     case 'Client.OnVolumeChanged':
                         store.dispatch(snapcastActions.clientLoaded(
@@ -427,6 +446,19 @@ const SnapcastMiddleware = (function(){
                                 name: action.params.name
                             }
                         ));
+                        break;
+
+                    case 'Group.OnMute':
+                        store.dispatch(snapcastActions.groupLoaded(
+                            {
+                                id: action.params.id,
+                                mute: action.params.mute
+                            }
+                        ));
+                        break;
+
+                    case 'Server.OnUpdate':
+                        store.dispatch(snapcastActions.serverLoaded(action.params));
                         break;
                 }
                 break;
