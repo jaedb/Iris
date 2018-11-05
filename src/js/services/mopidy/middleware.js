@@ -228,6 +228,7 @@ const MopidyMiddleware = (function(){
                     var hashed_hostname = md5(window.location.hostname);
 	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
 	            }
+                store.dispatch(uiActions.createNotification({content: 'Mopidy connected'}));
                 next(action);
                 break;
 
@@ -235,6 +236,10 @@ const MopidyMiddleware = (function(){
                 if (socket != null) socket.close()
                 socket = null
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' })
+                break;
+
+            case 'MOPIDY_DISCONNECTED':
+                store.dispatch(uiActions.createNotification({type: 'bad', content: 'Mopidy disconnected'}));
                 break;
 
             case 'MOPIDY_DEBUG':
@@ -758,12 +763,19 @@ const MopidyMiddleware = (function(){
                     store.dispatch(mopidyActions.clearTracklist());
                 }
 
-                var first_uri = action.uris[0];
+                // Shuffle/random mode
+                if (store.getState().mopidy.random){
+                	var first_uri_index = Math.floor(Math.random() * action.uris.length);
+	            } else {
+                	var first_uri_index = 0;
+	            }
+	            var first_uri = action.uris[first_uri_index];
 
                 // add our first track
                 request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
                     .then(
                         response => {
+
                             // play it (only if we got a successful lookup)
                             if (response.length > 0){
                                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));
@@ -780,11 +792,13 @@ const MopidyMiddleware = (function(){
                                 ));
                             }
 
-                            // add the rest of our uris (if any)
-                            action.uris.shift();
+                            // Remove our first_uri as we've already added it
+                            action.uris.splice(first_uri_index, 1);
+
+                            // And add the rest of our uris (if any)
                             if (action.uris.length > 0){
 
-                                // wait 100ms so the server can trigger track_changed etc
+                                // Wait a moment so the server can trigger track_changed etc
                                 // this means our UI feels snappier as the first track shows up quickly
                                 setTimeout(
                                     function(){

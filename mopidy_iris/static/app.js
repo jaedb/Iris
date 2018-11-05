@@ -21420,7 +21420,8 @@ var AlbumGrid = function (_React$Component) {
 				e: e,
 				context: 'album',
 				uris: [item.uri],
-				items: [item]
+				items: [item],
+				tracklist_uri: item.uri
 			};
 			this.props.uiActions.showContextMenu(data);
 		}
@@ -21538,7 +21539,8 @@ var PlaylistGrid = function (_React$Component) {
 				e: e,
 				context: 'playlist',
 				uris: [item.uri],
-				items: [item]
+				items: [item],
+				tracklist_uri: item.uri
 			};
 			this.props.uiActions.showContextMenu(data);
 		}
@@ -58471,6 +58473,7 @@ var MopidyMiddleware = function () {
                             var hashed_hostname = (0, _md2.default)(window.location.hostname);
                             _reactGa2.default.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
                         }
+                        store.dispatch(uiActions.createNotification({ content: 'Mopidy connected' }));
                         next(action);
                         break;
 
@@ -58478,6 +58481,10 @@ var MopidyMiddleware = function () {
                         if (socket != null) socket.close();
                         socket = null;
                         store.dispatch({ type: 'MOPIDY_DISCONNECTED' });
+                        break;
+
+                    case 'MOPIDY_DISCONNECTED':
+                        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Mopidy disconnected' }));
                         break;
 
                     case 'MOPIDY_DEBUG':
@@ -58904,10 +58911,17 @@ var MopidyMiddleware = function () {
                             store.dispatch(mopidyActions.clearTracklist());
                         }
 
-                        var first_uri = action.uris[0];
+                        // Shuffle/random mode
+                        if (store.getState().mopidy.random) {
+                            var first_uri_index = Math.floor(Math.random() * action.uris.length);
+                        } else {
+                            var first_uri_index = 0;
+                        }
+                        var first_uri = action.uris[first_uri_index];
 
                         // add our first track
                         request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 }).then(function (response) {
+
                             // play it (only if we got a successful lookup)
                             if (response.length > 0) {
                                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));
@@ -58921,11 +58935,13 @@ var MopidyMiddleware = function () {
                                 store.dispatch(coreActions.handleException("Mopidy: Failed to add some tracks", response));
                             }
 
-                            // add the rest of our uris (if any)
-                            action.uris.shift();
+                            // Remove our first_uri as we've already added it
+                            action.uris.splice(first_uri_index, 1);
+
+                            // And add the rest of our uris (if any)
                             if (action.uris.length > 0) {
 
-                                // wait 100ms so the server can trigger track_changed etc
+                                // Wait a moment so the server can trigger track_changed etc
                                 // this means our UI feels snappier as the first track shows up quickly
                                 setTimeout(function () {
                                     store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1));
