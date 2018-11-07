@@ -217,9 +217,9 @@ export default class Track extends React.Component{
 
 		if (this.props.context == 'history'){
 			var track_extra_detail = (
-				<span className="list__item__extra-detail list__item__extra-detail--played_at">
+				<div className="list__item__extra-detail list__item__extra-detail--played_at">
 					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : '-'}
-				</span>
+				</div>
 			)
 
 		} else if (this.props.context == 'queue'){
@@ -244,31 +244,29 @@ export default class Track extends React.Component{
 				}
 
 				var track_extra_detail = (
-					<span className="list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added">
+					<div className="list__item__extra-detail list__item__extra-detail--added">
 						<span className="by">{track.added_by} </span>
-						<span className="mid_grey-text from">
-							<span className="label">from </span>
-							{link}
-						</span>
-					</span>
+						<span className="from">(from {link})</span>
+					</div>
 				);
 
 			} else if (track.added_by){
 				var track_extra_detail = (
-					<span className="list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added">
+					<div className="list__item__extra-detail list__item__extra-detail--added">
 						<span className="by">{track.added_by}</span>
-					</span>
+					</div>
 				);
 			}
 		}
 
+		/*
 		if (this.props.show_source_icon){
 			track_details.push(
 				<li className="list__item__details__item list__item__details__item--source" key="source">
 					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
 				</li>
 			)
-		}
+		}*/
 
 		// If we're touchable, and can sort this tracklist
 		var drag_zone = null;
@@ -282,6 +280,10 @@ export default class Track extends React.Component{
 						<Icon name="drag_indicator" />
 				</span>
 			);
+		}
+
+		if (track_extra_detail){
+			className += " list__item--has-extra-detail";
 		}
 
 		return (
@@ -299,7 +301,6 @@ export default class Track extends React.Component{
 					onTouchEnd={e => this.handleTouchEnd(e)}>
 						<div className="list__item__actions">
 							{drag_zone}
-							{track_extra_detail ? track_extra_detail : null}
 							<div className="list__item__actions__item list__item__actions__item--duration">
 								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 							</div>
@@ -309,11 +310,13 @@ export default class Track extends React.Component{
 							<div className="list__item__name">
 								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
+								{track.playing ? <Icon name="playing" type="gif"></Icon> : null}
 							</div>
 							<ul className="list__item__details">
 								{track_details}
 							</ul>
 						</div>
+						{track_extra_detail ? track_extra_detail : null}
 				</div>
 			</ErrorBoundary>
 		);

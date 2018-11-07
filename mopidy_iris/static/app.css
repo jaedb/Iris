@@ -3924,8 +3924,8 @@ input[type="submit"] {
   user-select: none;
   display: block;
   position: relative;
-  margin: 0 -10px 0 -10px;
-  padding: 0 10px;
+  margin: 0 -20px 0 -20px;
+  padding: 0 20px;
   border-radius: 3px; }
   .list__item::after {
     content: '';
@@ -3945,6 +3945,8 @@ input[type="submit"] {
     height: 3px;
     background: #32b5f2;
     opacity: 0; }
+  .list__item:not(:first-child) {
+    border-top: 1px solid rgba(128, 128, 128, 0.05); }
   :root .notouch:not(.dragging) .list__item:not(.no-click).list__item--hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
@@ -3975,9 +3977,10 @@ input[type="submit"] {
   .list__item--playing .list__item__name {
     color: #08d58f; }
   .list__item__content {
-    padding: 14px 0; }
+    padding: 16px 0 12px; }
   .list__item__name {
-    padding-bottom: 2px; }
+    padding-bottom: 2px;
+    font-size: 15px; }
     .light-theme .list__item__name .flag {
       background: #cecac4;
       color: #FFFFFF; }
@@ -3986,7 +3989,8 @@ input[type="submit"] {
     margin: 0;
     opacity: 0.5; }
     .list__item__details__item {
-      display: inline-block; }
+      display: inline;
+      overflow-wrap: break-word; }
       .list__item__details__item:not(:first-child) {
         padding-left: 14px; }
         .list__item__details__item:not(:first-child):before {
@@ -4004,6 +4008,14 @@ input[type="submit"] {
         font-size: 14px; }
         .list__item__actions__item--context-menu-trigger:before {
           display: none !important; }
+  .list__item--has-extra-detail .list__item__content {
+    width: 65%;
+    float: left; }
+  .list__item__extra-detail {
+    float: left;
+    width: 25%;
+    padding-top: 26px;
+    opacity: 0.5; }
 
 .list.track-list .list__item {
   cursor: pointer; }
@@ -4014,12 +4026,13 @@ input[type="submit"] {
     .list.track-list .list__item.has-touch-drag-zone .drag-zone {
       position: absolute;
       top: 0;
-      left: 0;
+      left: 5px;
       height: 100%;
       width: 34px;
       font-size: 14px;
       display: block;
-      color: #a3a19f; }
+      color: #a3a19f;
+      padding: 0; }
       .list.track-list .list__item.has-touch-drag-zone .drag-zone .icon {
         position: absolute;
         top: 50%;
@@ -4059,31 +4072,25 @@ input[type="submit"] {
   cursor: pointer; }
 
 @media (max-width: 800px) {
-  .list__item {
-    padding: 12px !important; }
-    .list__item__details__item--source {
+  .list__item__content {
+    padding: 10px 0; }
+  .list__item__name {
+    font-size: 14px; }
+  .list__item__actions {
+    padding-top: 10px; }
+  .list__item__extra-detail {
+    padding-top: 14px; }
+    .list__item__extra-detail--source {
       display: none; }
-    .list__item__details__item--added {
-      width: auto !important;
-      float: none !important;
-      padding-left: 0.25em; }
-      .list__item__details__item--added .by,
-      .list__item__details__item--added .empty {
-        display: none; }
-      .list__item__details__item--added .from {
-        padding-left: 14px;
-        text-transform: capitalize; }
-        .list__item__details__item--added .from:before {
-          content: '\2022' !important;
-          display: inline-block;
-          margin-left: -8px;
-          padding-right: 6px; }
-        .list__item__details__item--added .from:after {
-          display: none !important; }
-        .list__item__details__item--added .from .label {
-          display: none; }
-    .list__item .context-zone {
-      top: 14px; } }
+    .list__item__extra-detail--added .by,
+    .list__item__extra-detail--added .by-label {
+      display: none; }
+    .list__item__extra-detail--added .from {
+      text-transform: capitalize; }
+    .list__item__extra-detail--added .from-label {
+      display: none; }
+  .list__item .context-zone {
+    top: 14px; } }
 
 .loader {
   height: 120px;
@@ -6521,7 +6528,7 @@ main .track-view {
 
 .queue-view .current-track {
   text-align: center;
-  padding: 40px 0; }
+  padding: 40px 0 60px; }
   .queue-view .current-track .artwork {
     position: relative;
     margin: 0 auto;

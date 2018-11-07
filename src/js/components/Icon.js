@@ -25,6 +25,10 @@ export default class Icon extends React.Component{
 				var src = require('../../assets/icons/'+this.props.name+'.svg');
 				return <img className={className} src={src} onClick={e => this.handleClick(e)} />;
 
+			case 'gif':	
+				var src = require('../../assets/icons/'+this.props.name+'.gif');
+				return <img className={className} src={src} onClick={e => this.handleClick(e)} />;
+
 			case 'fontawesome':	
 				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 

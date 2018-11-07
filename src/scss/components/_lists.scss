@@ -11,8 +11,8 @@
 
 		display: block;
 		position: relative;
-		margin: 0 -10px 0 -10px;
-		padding: 0 10px;
+		margin: 0 -20px 0 -20px;
+		padding: 0 20px;
 		border-radius: 3px;
 
 		&:not(.no-click){
@@ -31,6 +31,10 @@
 			height: 3px;
 			background: colour(blue);
 			opacity: 0;
+		}
+
+		&:not(:first-child){
+			border-top: 1px solid rgba(128,128,128,0.05);
 		}
 
 		:root .notouch:not(.dragging) &:not(.no-click).list__item--hover {
@@ -86,11 +90,12 @@
 		}
 
 		&__content {
-			padding: 14px 0;
+			padding: 16px 0 12px;
 		}
 
 		&__name {
 			padding-bottom: 2px;
+			font-size: 15px;
 
 			.light-theme & .flag {
 				background: colour(light_grey);
@@ -104,7 +109,8 @@
 			opacity: 0.5;
 
 			&__item {
-				display: inline-block;
+				display: inline;
+				overflow-wrap: break-word;
 
 				&:not(:first-child) {
 					@include bullet();
@@ -127,10 +133,23 @@
 						display: none !important;
 					}
 				}
+			}
+		}
 
-				&--added {
+		&--has-extra-detail {
+			.list__item {
+				&__content {
+					width: 65%;
+					float: left;
 				}
 			}
+		}
+
+		&__extra-detail {
+			float: left;
+			width: 25%;
+			padding-top: 26px;
+			opacity: 0.5;
 		}
 	}
 
@@ -151,12 +170,13 @@
 				.drag-zone {
 					position: absolute;
 					top: 0;
-					left: 0;
+					left: 5px;
 					height: 100%;
 					width: 34px;
 					font-size: 14px;
 					display: block;
 					color: colour(mid_grey);
+					padding: 0;
 					
 					.icon {
 						position: absolute;
@@ -213,37 +233,39 @@
 	@include responsive($bp_medium){
 
 		&__item {
-			padding: 12px !important;
 
-			&__details {
-				&__item {
+			&__content {
+				padding: 10px 0;
+			}
 
-					&--source {
+			&__name {
+				font-size: 14px;
+			}
+
+			&__actions {
+				padding-top: 10px;
+			}
+
+			&__extra-detail {
+				padding-top: 14px;
+
+				&--source {
+					display: none;
+				}
+
+				&--added {
+
+					.by,
+					.by-label {
 						display: none;
 					}
 
-					&--added {
-						width: auto !important;
-						float: none !important;
-						padding-left: 0.25em;
+					.from {
+						text-transform: capitalize;
+					}
 
-						.by,
-						.empty {
-							display: none;
-						}
-
-						.from {
-							@include bullet();
-							text-transform: capitalize;
-
-							&:after {
-								display: none !important;
-							}
-
-							.label {
-								display: none;
-							}
-						}
+					.from-label {
+						display: none;
 					}
 				}
 			}
