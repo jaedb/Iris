@@ -182,51 +182,47 @@ export default class Track extends React.Component{
 		}
 
 		var track = this.props.track;
-		var className = 'list__item track mouse-draggable mouse-selectable mouse-contextable';
-		if (this.props.selected) className += ' selected';
-		if (this.props.can_sort) className += ' can-sort';
-		if (track.type !== undefined) className += ' '+track.type;
-		if (track.playing) className += ' playing';
-		if (this.state.hover) className += ' hover';
-		
-		var album = '-';
-		if (track.album){
-			if (track.album.uri){
-				album = <URILink type="album" uri={track.album.uri}>{track.album.name}</URILink>;
-			} else {
-				album = <span>{track.album.name}</span>;
-			}
-		}
+		var className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
+		if (this.props.selected) className += ' list__item--selected';
+		if (this.props.can_sort) className += ' list__item--can-sort';
+		if (track.type !== undefined) className += ' list__item--'+track.type;
+		if (track.playing) className += ' list__item--playing';
+		if (this.state.hover) className += ' list__item--hover';
 
-		let track_columns = [];
+		let track_details = [];
 		let track_actions = [];
 
-		if (this.props.context == 'history'){
-
-			track_columns.push(
-				<span className="col name" key="name">
-					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
-				</span>
-			)
-			track_columns.push(
-				<span className="col artists" key="artists">
+		if (track.artists){
+			track_details.push(
+				<li className="list__item__details__item list__item__details__item--artists" key="artists">
 					{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
-				</span>
+				</li>
 			)
-			track_columns.push(
-				<span className="col album" key="album">
+		}
+
+		if (track.album){
+
+			if (track.album.uri){
+				var album = <URILink type="album" uri={track.album.uri}>{track.album.name}</URILink>;
+			} else {
+				var album = <span>{track.album.name}</span>;
+			}
+
+			track_details.push(
+				<li className="list__item__details__item list__item__details__item--album" key="album">
 					{album}
-				</span>
+				</li>
 			)
-			track_columns.push(
-				<span className="col played_at" key="played_at">
+		}
+
+		if (this.props.context == 'history'){
+			var track_extra_detail = (
+				<span className="list__item__extra-detail list__item__extra-detail--played_at">
 					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : '-'}
 				</span>
 			)
 
 		} else if (this.props.context == 'queue'){
-
 			if (track.added_from && track.added_by){
 				var type = (track.added_from ? helpers.uriType(track.added_from) : null);
 
@@ -247,99 +243,45 @@ export default class Track extends React.Component{
 						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
 
-				var added = <span><span className="by">{track.added_by}</span><span className="mid_grey-text from"><span className="label">from </span>{link}</span></span>
+				var track_extra_detail = (
+					<span className="list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added">
+						<span className="by">{track.added_by} </span>
+						<span className="mid_grey-text from">
+							<span className="label">from </span>
+							{link}
+						</span>
+					</span>
+				);
 
 			} else if (track.added_by){
-				var added = <span className="by">{track.added_by}</span>
-
-			} else {
-				var added = <span className="empty">-</span>
-			}
-
-			track_columns.push(
-				<span className="col name" key="name">
-					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
-				</span>
-			)
-			if (this.props.show_source_icon){
-				track_columns.push(
-					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
-				)
-			}
-			track_columns.push(
-				<span className="col artists" key="artists">
-					{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
-				</span>
-			)
-			track_columns.push(
-				<span className="col album" key="album">
-					{album}
-				</span>
-			)
-			track_columns.push(
-				<span className="col added" key="added">
-					{added}
-				</span>
-			)
-			track_columns.push(
-				<span className="col duration" key="duration">
-					{track.duration ? <Dater type="length" data={track.duration} /> : null}
-				</span>
-			)
-
-		} else {
-
-			track_columns.push(
-				<span className="col name" key="name">
-					{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-					{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
-				</span>
-			)
-			if (this.props.show_source_icon){
-				track_columns.push(
-					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} className="source" key="source" fixedWidth />
-				)
-			}
-			track_columns.push(
-				<span className="col artists" key="artists">
-					{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
-				</span>
-			)
-			track_columns.push(
-				<span className="col album" key="album">
-					{album}
-				</span>
-			)
-			track_columns.push(
-				<span className="col duration" key="duration">
-					{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
-				</span>
-			)
-			if (track.popularity !== undefined){
-				track_columns.push(
-					<span className="col popularity" key="popularity">
-						<Popularity popularity={track.popularity} />
+				var track_extra_detail = (
+					<span className="list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added">
+						<span className="by">{track.added_by}</span>
 					</span>
-				)
+				);
 			}
 		}
 
-		track_actions.push(
-			<ContextMenuTrigger className="subtle" key="context" onTrigger={e => this.props.handleContextMenu(e)} />
-		)
+		if (this.props.show_source_icon){
+			track_details.push(
+				<li className="list__item__details__item list__item__details__item--source" key="source">
+					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
+				</li>
+			)
+		}
 
 		// If we're touchable, and can sort this tracklist
+		var drag_zone = null;
 		if (helpers.isTouchDevice() && this.props.can_sort){
 			className += " has-touch-drag-zone"
 
-			track_actions.push(
+			drag_zone = (
 				<span 
-					className="drag-zone touch-draggable mouse-draggable"
+					className="list__item__actions__item list__item__actions__item--drag-zone drag-zone touch-draggable mouse-draggable"
 					key="drag-zone">
 						<Icon name="drag_indicator" />
 				</span>
-			)
+			);
 		}
 
 		return (
@@ -355,8 +297,23 @@ export default class Track extends React.Component{
 					onContextMenu={e => this.props.handleContextMenu(e)}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
-						{track_actions}
-						{track_columns}
+						<div className="list__item__actions">
+							{drag_zone}
+							{track_extra_detail ? track_extra_detail : null}
+							<div className="list__item__actions__item list__item__actions__item--duration">
+								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
+							</div>
+							<ContextMenuTrigger className="list__item__actions__item list__item__actions__item--context-menu-trigger subtle" key="context" onTrigger={e => this.props.handleContextMenu(e)} />
+						</div>
+						<div className="list__item__content">
+							<div className="list__item__name">
+								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
+								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
+							</div>
+							<ul className="list__item__details">
+								{track_details}
+							</ul>
+						</div>
 				</div>
 			</ErrorBoundary>
 		);

@@ -3925,56 +3925,42 @@ input[type="submit"] {
   display: block;
   position: relative;
   margin: 0 -10px 0 -10px;
-  padding: 14px 30px 13px 10px;
+  padding: 0 10px;
   border-radius: 3px; }
   .list__item::after {
     content: '';
     clear: both;
     display: block; }
+  .list__item:not(.no-click) {
+    cursor: pointer; }
   .list__item:before {
     pointer-events: none;
     content: '';
     display: block;
     position: absolute;
-    top: 0;
+    top: -5px;
     left: 0;
     bottom: 0;
     right: 0;
-    border-top: 3px solid transparent;
-    border-bottom: 1px solid rgba(125, 125, 125, 0.15); }
-  :root .notouch:not(.dragging) .list__item:not(.header):not(.no-click).hover {
+    height: 3px;
+    background: #32b5f2;
+    opacity: 0; }
+  :root .notouch:not(.dragging) .list__item:not(.no-click).list__item--hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
-    .light-theme :root .notouch:not(.dragging) .list__item:not(.header):not(.no-click).hover {
+    .light-theme :root .notouch:not(.dragging) .list__item:not(.no-click).list__item--hover {
       background: rgba(0, 0, 0, 0.03); }
-  .list__item.selected {
-    background: rgba(125, 125, 125, 0.15) !important; }
-  .list__item.playing {
-    color: #08d58f; }
   .list__item .select-zone,
   .list__item .drag-zone {
     display: none; }
     .list__item .select-zone *,
     .list__item .drag-zone * {
       pointer-events: none; }
-  .list__item .context-menu-trigger {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 14px;
-    z-index: 2; }
-    .list__item .context-menu-trigger:before {
-      display: none !important; }
   .list__item .icon.source {
     color: #a3a19f;
     position: absolute;
     top: 16px;
     right: 40px; }
-  .list__item.header {
-    font-size: 10px;
-    color: #383734;
-    text-transform: uppercase;
-    padding-bottom: 2px; }
   .list__item.field {
     padding: 0 !important; }
     .list__item.field > label {
@@ -3984,22 +3970,45 @@ input[type="submit"] {
       cursor: pointer; }
   .list__item .uri-placeholder {
     word-break: break-all; }
+  .list__item--selected {
+    background: rgba(125, 125, 125, 0.15) !important; }
+  .list__item--playing .list__item__name {
+    color: #08d58f; }
+  .list__item__content {
+    padding: 14px 0; }
+  .list__item__name {
+    padding-bottom: 2px; }
+    .light-theme .list__item__name .flag {
+      background: #cecac4;
+      color: #FFFFFF; }
+  .list__item__details {
+    padding: 0;
+    margin: 0;
+    opacity: 0.5; }
+    .list__item__details__item {
+      display: inline-block; }
+      .list__item__details__item:not(:first-child) {
+        padding-left: 14px; }
+        .list__item__details__item:not(:first-child):before {
+          content: '\2022' !important;
+          display: inline-block;
+          margin-left: -8px;
+          padding-right: 6px; }
+  .list__item__actions {
+    float: right;
+    padding-top: 14px; }
+    .list__item__actions__item {
+      padding: 10px 0 0 14px;
+      display: inline-block; }
+      .list__item__actions__item--context-menu-trigger {
+        font-size: 14px; }
+        .list__item__actions__item--context-menu-trigger:before {
+          display: none !important; }
 
 .list.track-list .list__item {
   cursor: pointer; }
-  .list.track-list .list__item .col.name {
-    width: 36%; }
-    .light-theme .list.track-list .list__item .col.name .flag {
-      background: #cecac4;
-      color: #FFFFFF; }
-  .list.track-list .list__item .col.artists, .list.track-list .list__item .col.album {
-    width: 25%; }
-  .list.track-list .list__item .col.duration {
-    width: 7%; }
-  .list.track-list .list__item .col.popularity {
-    width: 3%; }
-  :root .dragging .list.track-list .list__item.hover:before, .list.track-list .list__item.touch-drag-hover:before {
-    border-top-color: #32b5f2; }
+  :root .dragging .list.track-list .list__item--hover:before, .list.track-list .list__item.touch-drag-hover:before {
+    opacity: 1; }
   .list.track-list .list__item.has-touch-drag-zone {
     padding-left: 45px; }
     .list.track-list .list__item.has-touch-drag-zone .drag-zone {
@@ -4017,66 +4026,6 @@ input[type="submit"] {
         left: 10px;
         margin-top: -8px;
         pointer-events: none; }
-
-.list.playlist-list .list__item {
-  cursor: pointer; }
-  .list.playlist-list .list__item .col.name {
-    width: 50%; }
-  .list.playlist-list .list__item .col.owner {
-    width: 20%; }
-  .list.playlist-list .list__item .col.source, .list.playlist-list .list__item .col.can_edit, .list.playlist-list .list__item .col.tracks_total, .list.playlist-list .list__item .col.popularity {
-    width: 10%; }
-
-.list.album-list .list__item {
-  cursor: pointer; }
-  .list.album-list .list__item .col.name, .list.album-list .list__item .col.artists {
-    width: 30%; }
-  .list.album-list .list__item .col.added_at, .list.album-list .list__item .col.release_date {
-    width: 15%; }
-  .list.album-list .list__item .col.tracks_total {
-    width: 10%; }
-
-.list.library-local-album-list .list__item {
-  cursor: pointer; }
-  .list.library-local-album-list .list__item .col.name, .list.library-local-album-list .list__item .col.artists {
-    width: 45%; }
-  .list.library-local-album-list .list__item .col.tracks_total {
-    width: 10%; }
-
-.list.artist-list .list__item {
-  cursor: pointer; }
-  .list.artist-list .list__item .col.name {
-    width: 60%; }
-  .list.artist-list .list__item .col.followers_total {
-    width: 25%; }
-  .list.artist-list .list__item .col.popularity {
-    width: 10%; }
-
-.list.queue-track-list {
-  cursor: pointer; }
-  .list.queue-track-list .list__item {
-    padding-right: 60px; }
-    .list.queue-track-list .list__item .col.name, .list.queue-track-list .list__item .col.artists, .list.queue-track-list .list__item .col.album {
-      width: 25%; }
-    .list.queue-track-list .list__item .col.added {
-      width: 20%; }
-      .list.queue-track-list .list__item .col.added .by {
-        padding-right: 0.25em; }
-      .list.queue-track-list .list__item .col.added .from:before {
-        content: '(';
-        display: inline-block; }
-      .list.queue-track-list .list__item .col.added .from:after {
-        content: ')';
-        display: inline-block; }
-    .list.queue-track-list .list__item .col.duration {
-      width: 5%; }
-
-.list.queue-history-track-list .list__item {
-  cursor: pointer; }
-  .list.queue-history-track-list .list__item .col.name, .list.queue-history-track-list .list__item .col.artists, .list.queue-history-track-list .list__item .col.album {
-    width: 25%; }
-  .list.queue-history-track-list .list__item .col.played_at {
-    width: 15%; }
 
 .list.related-artist-list {
   padding-bottom: 20px;
@@ -4112,96 +4061,29 @@ input[type="submit"] {
 @media (max-width: 800px) {
   .list__item {
     padding: 12px !important; }
-    .list__item .source {
-      position: static;
-      float: none; }
-    .list__item .context-zone {
-      top: 14px; }
-    .list__item .col.name {
-      width: auto !important;
-      padding-right: 10%;
-      display: block;
-      float: none; }
-    .list__item .col.duration {
-      width: auto !important;
-      position: absolute;
-      right: 10px;
-      text-align: right;
-      z-index: 1; }
-    .list__item .col:not(.name):not(.duration):not(.album):not(.added) {
-      color: #a3a19f;
-      display: inline;
+    .list__item__details__item--source {
+      display: none; }
+    .list__item__details__item--added {
       width: auto !important;
       float: none !important;
-      word-wrap: break-word; }
-    .list__item .col.followers_total:after {
-      content: ' followers'; }
-    .list__item .col.tracks_total:after {
-      content: ' tracks'; }
-    .list__item .col.popularity {
-      padding-left: 14px; }
-      .list__item .col.popularity:before {
-        content: '\2022' !important;
-        display: inline-block;
-        margin-left: -8px;
-        padding-right: 6px; }
-      .list__item .col.popularity .popularity-bars {
-        margin: 0.1em 0 0 0; }
-    .list__item .col.album, .list__item .col.can_edit, .list__item .col.release_date {
-      display: none; }
-    .list__item.header {
-      padding: 0 !important; }
-      .list__item.header:before {
-        border-top: none; }
-      .list__item.header .liner {
+      padding-left: 0.25em; }
+      .list__item__details__item--added .by,
+      .list__item__details__item--added .empty {
         display: none; }
-  .list.queue-track-list .list__item .artists {
-    padding-left: 0 !important; }
-    .list.queue-track-list .list__item .artists:before {
-      display: none !important; }
-  .list.queue-track-list .list__item .source {
-    display: none !important; }
-  .list.queue-track-list .list__item .added {
-    width: auto !important;
-    float: none !important;
-    padding-left: 0.25em; }
-    .list.queue-track-list .list__item .added .by,
-    .list.queue-track-list .list__item .added .empty {
-      display: none; }
-    .list.queue-track-list .list__item .added .from {
-      padding-left: 14px;
-      text-transform: capitalize; }
-      .list.queue-track-list .list__item .added .from:before {
-        content: '\2022' !important;
-        display: inline-block;
-        margin-left: -8px;
-        padding-right: 6px; }
-      .list.queue-track-list .list__item .added .from:after {
-        display: none !important; }
-      .list.queue-track-list .list__item .added .from .label {
-        display: none; }
-  .list.queue-history-track-list .list__item .source {
-    display: none !important; }
-  .list.track-list .list__item.can-sort {
-    padding-left: 40px !important; }
-  .list.album-list .list__item .col.added_at, .list.album-list .list__item .col.source {
-    display: none !important; }
-  .list.album-list .list__item .col.tracks_total {
-    padding-left: 14px; }
-    .list.album-list .list__item .col.tracks_total:before {
-      content: '\2022' !important;
-      display: inline-block;
-      margin-left: -8px;
-      padding-right: 6px; }
-  .list.playlist-list .list__item .col.can_edit, .list.playlist-list .list__item .col.source {
-    display: none !important; }
-  .list.playlist-list .list__item .col.tracks_total {
-    padding-left: 14px; }
-    .list.playlist-list .list__item .col.tracks_total:before {
-      content: '\2022' !important;
-      display: inline-block;
-      margin-left: -8px;
-      padding-right: 6px; } }
+      .list__item__details__item--added .from {
+        padding-left: 14px;
+        text-transform: capitalize; }
+        .list__item__details__item--added .from:before {
+          content: '\2022' !important;
+          display: inline-block;
+          margin-left: -8px;
+          padding-right: 6px; }
+        .list__item__details__item--added .from:after {
+          display: none !important; }
+        .list__item__details__item--added .from .label {
+          display: none; }
+    .list__item .context-zone {
+      top: 14px; } }
 
 .loader {
   height: 120px;

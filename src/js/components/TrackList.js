@@ -383,55 +383,11 @@ class TrackList extends React.Component{
 		}
 	}
 
-	renderHeader(){
-		if (this.props.noheader ) return null
-		
-		switch (this.props.context){
-
-			case 'history':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col played_at">Started playing</span>
-						</div>
-					</div>
-				)
-				break
-
-			case 'queue':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col added">Added by</span>
-							<span className="col duration">Duration</span>
-						</div>
-					</div>
-				)
-				break
-
-			default:
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col duration">Duration</span>
-							<span className="col popularity"></span>
-						</div>
-					</div>
-				)
-		}
-	}
 
 	render(){
-		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ) return null
+		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ){
+			return null;
+		}
 
 		var className = 'list track-list '+this.props.context
 		if (this.props.className){
@@ -440,7 +396,6 @@ class TrackList extends React.Component{
 
 		return (
 			<div className={className}>
-				{ this.renderHeader() }
 				{
 					this.props.tracks.map(
 						(track, index) => {

@@ -45,23 +45,6 @@ class List extends React.Component{
 		}
 	}
 
-	renderHeader(){
-		if (!this.props.columns || this.props.noheader) return null
-
-		return (
-			<div className="list__item header cf">
-				<div className="liner">
-					{
-						this.props.columns.map((col, col_index) => {
-							var className = 'col '+col.name.replace('.','_')
-							return <div className={className} key={col_index}>{ col.label ? col.label : col.name }</div>
-						})
-					}
-				</div>
-			</div>
-		)
-	}
-
 	renderValue(row, key_string){
 		var key = key_string.split('.')
 		var value = row
@@ -95,7 +78,6 @@ class List extends React.Component{
 
 		return (
 			<div className={className}>
-				{ this.renderHeader() }
 				{
 					this.props.rows.map((row, row_index) => {
 

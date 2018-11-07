@@ -18711,117 +18711,13 @@ var TrackList = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'renderHeader',
-		value: function renderHeader() {
-			if (this.props.noheader) return null;
-
-			switch (this.props.context) {
-
-				case 'history':
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col played_at' },
-								'Started playing'
-							)
-						)
-					);
-					break;
-
-				case 'queue':
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col added' },
-								'Added by'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col duration' },
-								'Duration'
-							)
-						)
-					);
-					break;
-
-				default:
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col duration' },
-								'Duration'
-							),
-							_react2.default.createElement('span', { className: 'col popularity' })
-						)
-					);
-			}
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') return null;
+			if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') {
+				return null;
+			}
 
 			var className = 'list track-list ' + this.props.context;
 			if (this.props.className) {
@@ -18831,7 +18727,6 @@ var TrackList = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
-				this.renderHeader(),
 				this.props.tracks.map(function (track, index) {
 					var track_key = _this2.buildTrackKey(track, index);
 					track.key = track_key;
@@ -21962,28 +21857,6 @@ var List = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'renderHeader',
-		value: function renderHeader() {
-			if (!this.props.columns || this.props.noheader) return null;
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'list__item header cf' },
-				_react2.default.createElement(
-					'div',
-					{ className: 'liner' },
-					this.props.columns.map(function (col, col_index) {
-						var className = 'col ' + col.name.replace('.', '_');
-						return _react2.default.createElement(
-							'div',
-							{ className: className, key: col_index },
-							col.label ? col.label : col.name
-						);
-					})
-				)
-			);
-		}
-	}, {
 		key: 'renderValue',
 		value: function renderValue(row, key_string) {
 			var key = key_string.split('.');
@@ -22047,7 +21920,6 @@ var List = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
-				this.renderHeader(),
 				this.props.rows.map(function (row, row_index) {
 
 					var class_name = 'list__item';
@@ -26925,71 +26797,59 @@ var Track = function (_React$Component) {
 			}
 
 			var track = this.props.track;
-			var className = 'list__item track mouse-draggable mouse-selectable mouse-contextable';
-			if (this.props.selected) className += ' selected';
-			if (this.props.can_sort) className += ' can-sort';
-			if (track.type !== undefined) className += ' ' + track.type;
-			if (track.playing) className += ' playing';
-			if (this.state.hover) className += ' hover';
+			var className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
+			if (this.props.selected) className += ' list__item--selected';
+			if (this.props.can_sort) className += ' list__item--can-sort';
+			if (track.type !== undefined) className += ' list__item--' + track.type;
+			if (track.playing) className += ' list__item--playing';
+			if (this.state.hover) className += ' list__item--hover';
 
-			var album = '-';
+			var track_details = [];
+			var track_actions = [];
+
+			if (track.artists) {
+				track_details.push(_react2.default.createElement(
+					'li',
+					{ className: 'list__item__details__item list__item__details__item--artists', key: 'artists' },
+					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
+				));
+			}
+
 			if (track.album) {
+
 				if (track.album.uri) {
-					album = _react2.default.createElement(
+					var album = _react2.default.createElement(
 						_URILink2.default,
 						{ type: 'album', uri: track.album.uri },
 						track.album.name
 					);
 				} else {
-					album = _react2.default.createElement(
+					var album = _react2.default.createElement(
 						'span',
 						null,
 						track.album.name
 					);
 				}
-			}
 
-			var track_columns = [];
-			var track_actions = [];
-
-			if (this.props.context == 'history') {
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
+				track_details.push(_react2.default.createElement(
+					'li',
+					{ className: 'list__item__details__item list__item__details__item--album', key: 'album' },
 					album
 				));
-				track_columns.push(_react2.default.createElement(
+			}
+
+			if (this.props.context == 'history') {
+				var track_extra_detail = _react2.default.createElement(
 					'span',
-					{ className: 'col played_at', key: 'played_at' },
+					{ className: 'list__item__extra-detail list__item__extra-detail--played_at' },
 					track.played_at ? _react2.default.createElement(
 						'span',
 						null,
 						_react2.default.createElement(_Dater2.default, { type: 'ago', data: track.played_at }),
 						' ago'
 					) : '-'
-				));
+				);
 			} else if (this.props.context == 'queue') {
-
 				if (track.added_from && track.added_by) {
 					var type = track.added_from ? helpers.uriType(track.added_from) : null;
 
@@ -27026,13 +26886,14 @@ var Track = function (_React$Component) {
 							);
 					}
 
-					var added = _react2.default.createElement(
+					var track_extra_detail = _react2.default.createElement(
 						'span',
-						null,
+						{ className: 'list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added' },
 						_react2.default.createElement(
 							'span',
 							{ className: 'by' },
-							track.added_by
+							track.added_by,
+							' '
 						),
 						_react2.default.createElement(
 							'span',
@@ -27046,114 +26907,38 @@ var Track = function (_React$Component) {
 						)
 					);
 				} else if (track.added_by) {
-					var added = _react2.default.createElement(
+					var track_extra_detail = _react2.default.createElement(
 						'span',
-						{ className: 'by' },
-						track.added_by
+						{ className: 'list__item__actions__item list__item__actions__item--extra-detail list__item__actions__item--added' },
+						_react2.default.createElement(
+							'span',
+							{ className: 'by' },
+							track.added_by
+						)
 					);
-				} else {
-					var added = _react2.default.createElement(
-						'span',
-						{ className: 'empty' },
-						'-'
-					);
-				}
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				if (this.props.show_source_icon) {
-					track_columns.push(_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), className: 'source', key: 'source', fixedWidth: true }));
-				}
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
-					album
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col added', key: 'added' },
-					added
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : null
-				));
-			} else {
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				if (this.props.show_source_icon) {
-					track_columns.push(_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), className: 'source', key: 'source', fixedWidth: true }));
-				}
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
-					album
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
-				));
-				if (track.popularity !== undefined) {
-					track_columns.push(_react2.default.createElement(
-						'span',
-						{ className: 'col popularity', key: 'popularity' },
-						_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
-					));
 				}
 			}
 
-			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'subtle', key: 'context', onTrigger: function onTrigger(e) {
-					return _this2.props.handleContextMenu(e);
-				} }));
+			if (this.props.show_source_icon) {
+				track_details.push(_react2.default.createElement(
+					'li',
+					{ className: 'list__item__details__item list__item__details__item--source', key: 'source' },
+					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+				));
+			}
 
 			// If we're touchable, and can sort this tracklist
+			var drag_zone = null;
 			if (helpers.isTouchDevice() && this.props.can_sort) {
 				className += " has-touch-drag-zone";
 
-				track_actions.push(_react2.default.createElement(
+				drag_zone = _react2.default.createElement(
 					'span',
 					{
-						className: 'drag-zone touch-draggable mouse-draggable',
+						className: 'list__item__actions__item list__item__actions__item--drag-zone drag-zone touch-draggable mouse-draggable',
 						key: 'drag-zone' },
 					_react2.default.createElement(_Icon2.default, { name: 'drag_indicator' })
-				));
+				);
 			}
 
 			return _react2.default.createElement(
@@ -27190,8 +26975,43 @@ var Track = function (_React$Component) {
 						onTouchEnd: function onTouchEnd(e) {
 							return _this2.handleTouchEnd(e);
 						} },
-					track_actions,
-					track_columns
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__actions' },
+						drag_zone,
+						track_extra_detail ? track_extra_detail : null,
+						_react2.default.createElement(
+							'div',
+							{ className: 'list__item__actions__item list__item__actions__item--duration' },
+							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
+						),
+						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__actions__item list__item__actions__item--context-menu-trigger subtle', key: 'context', onTrigger: function onTrigger(e) {
+								return _this2.props.handleContextMenu(e);
+							} })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__content' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'list__item__name' },
+							track.name ? track.name : _react2.default.createElement(
+								'span',
+								{ className: 'mid_grey-text' },
+								track.uri
+							),
+							track.explicit ? _react2.default.createElement(
+								'span',
+								{ className: 'flag dark' },
+								'EXPLICIT'
+							) : null
+						),
+						_react2.default.createElement(
+							'ul',
+							{ className: 'list__item__details' },
+							track_details
+						)
+					)
 				)
 			);
 		}
