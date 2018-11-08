@@ -179,8 +179,9 @@ class LibraryArtists extends React.Component{
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
-						details={['followers','popularity']}
-						extra_detail={['source']}
+						thumbnail={true}
+						details={['followers']}
+						middle_column={['source']}
 						className="artists"
 						link_prefix={global.baseURL+"artist/"} />
 					<LazyLoadListener 

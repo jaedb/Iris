@@ -84,73 +84,93 @@
 
 		&--playing {
 			.list__item {
-				&__name {
-					color: colour(turquoise);
-				}
-			}
-		}
-
-		&__content {
-			padding: 16px 0 12px;
-		}
-
-		&__name {
-			padding-bottom: 2px;
-			font-size: 15px;
-
-			.light-theme & .flag {
-				background: colour(light_grey);
-				color: colour(white);
-			}
-		}
-
-		&__details {
-			padding: 0;
-			margin: 0;
-			opacity: 0.5;
-
-			&__item {
-				display: inline;
-				overflow-wrap: break-word;
-
-				&:not(:first-child) {
-					@include bullet();
-				}
-			}
-		}
-
-		&__actions {
-			float: right;
-			padding-top: 14px;
-
-			&__item {
-				padding: 10px 0 0 14px;
-				display: inline-block;
-
-				&--context-menu-trigger {
-					font-size: 14px;
-
-					&:before {
-						display: none !important;
+				&__column {
+					&__item {
+						&--name {
+							color: colour(turquoise);
+						}
 					}
 				}
 			}
 		}
 
-		&--has-extra-detail {
+		&--has-middle-column {
 			.list__item {
-				&__content {
-					width: 65%;
-					float: left;
+				&__column {
+					&--name {
+						width: 60%;
+						float: left;
+					}
+
+					&--middle {
+						width: 30%;
+						float: left;
+					}
 				}
 			}
 		}
 
-		&__extra-detail {
-			float: left;
-			width: 25%;
-			padding-top: 26px;
-			opacity: 0.5;
+		&__column {
+			padding: 22px 0 18px;
+
+			&--name {
+				padding: 14px 0 10px;
+			}
+
+			&--right {					
+				float: right;
+
+				.list__item {
+					padding: 10px 0 0 14px;
+					display: inline-block;
+				}
+			}
+
+			&__item {
+
+				&--thumbnail {
+					&,
+					&.thumbnail {
+						width: 40px;
+						float: left;
+						margin: -2px 14px 0 -10px;
+					}
+				}
+
+				&--name {
+					padding-bottom: 2px;
+					font-size: 15px;
+				}
+
+				&--details {
+					padding: 0;
+					margin: 0;
+					opacity: 0.5;
+
+					.details__item {
+						display: inline;
+						overflow-wrap: break-word;
+
+						&:not(:first-child) {
+							@include bullet();
+						}
+					}
+				}
+
+				&--context-menu-trigger {
+					font-size: 14px;
+					margin: -14px -14px -14px 0;
+
+					&:before {
+						display: none !important;
+					}
+				}
+
+				.light-theme & .flag {
+					background: colour(light_grey);
+					color: colour(white);
+				}
+			}
 		}
 	}
 

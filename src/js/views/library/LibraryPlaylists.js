@@ -129,8 +129,9 @@ class LibraryPlaylists extends React.Component{
 					<List
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
+						thumbnail={true}
 						details={['owner','tracks_total']}
-						extra_detail={['source']}
+						right_column={['source']}
 						className="playlists"
 						link_prefix={global.baseURL+"playlist/"} />
 					<LazyLoadListener 

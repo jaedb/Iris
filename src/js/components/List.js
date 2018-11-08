@@ -9,6 +9,7 @@ import Dater from './Dater'
 import URILink from './URILink'
 import ContextMenuTrigger from './ContextMenuTrigger'
 import Icon from './Icon'
+import Thumbnail from './Thumbnail'
 import Popularity from './Popularity'
 
 import * as helpers from '../helpers'
@@ -59,9 +60,9 @@ class List extends React.Component{
 			}
 		}
 
-		if (key_string === 'tracks_total') return <span>{value} tracks</span>
+		if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return <span>{value} tracks</span>
 		if (key_string === 'followers') return <span>{value.toLocaleString()} followers</span>
-		if (key_string === 'added_at') return <span><Dater type="ago" data={value} /> ago</span>
+		if (key_string === 'added_at') return <span>Added <Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
 		if (key_string === 'popularity') return <Popularity full popularity={value} />
 		if (key[0] === 'artists') return <ArtistSentence artists={value} />
@@ -84,8 +85,12 @@ class List extends React.Component{
 					this.props.rows.map((row, row_index) => {
 
 						var class_name = 'list__item'
-						if (row.type ){
+						if (row.type){
 							class_name += ' list__item--'+row.type;
+						}
+
+						if (this.props.middle_column){
+							class_name += " list__item--has-middle-column";
 						}
 
 						return (
@@ -95,45 +100,59 @@ class List extends React.Component{
 								onClick={e => this.handleClick(e, row.uri)}
 								onContextMenu={e => this.handleContextMenu(e,row)}>
 
-									<div className="list__item__actions">
+									<div className="list__item__column list__item__column--right">
 										{
-											(this.props.actions ? this.props.actions.map((action, index) => {
+											(this.props.right_column ? this.props.right_column.map((item, index) => {
 												return (
-													<li className={'list__item__actions__item list__item__actions__item--'+action.replace('.','_')} key={index}>
-														{this.renderValue(row, action)}
-													</li>
+													<span className={'list__item__column__item list__item__column__item--'+item.replace('.','_')} key={index}>
+														{this.renderValue(row, item)}
+													</span>
 												)
 											}) : null)
 										}
 
-										{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__actions__item list__item__actions__item--context-menu-trigger subtle" key="context" onTrigger={e => this.handleContextMenu(e, row)} />}
+										{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.handleContextMenu(e, row)} />}
 
 									</div>
 
-									<div className="list__item__content">
+									<div className="list__item__column list__item__column--name">
 
-										<div className="list__item__name">
+										{this.props.thumbnail ? <Thumbnail className="list__item__column__item list__item__column__item--thumbnail" images={(row.images ? row.images : null)} size="small" /> : null}
+
+										<div className="list__item__column__item list__item__column__item--name">
 											{this.renderValue(row, 'name')}
 										</div>
 
-										<ul className="list__item__details">
-											{
-												this.props.details.map((detail, index) => {
-													var value = this.renderValue(row, detail);
+										{this.props.details ?<ul className="list__item__column__item list__item__column__item--details details">
+											 {
+											 	this.props.details.map((item, index) => {
+													var value = this.renderValue(row, item);
 
 													if (!value){
 														return null;
 													}
 
 													return (
-														<li className={'list__item__details__item list__item__details__item--'+detail.replace('.','_')} key={index}>
+														<li className={'details__item details__item--'+item.replace('.','_')} key={index}>
 															{value}
 														</li>
 													)
 												})
 											}
-										</ul>
+										</ul> : null}
 									</div>
+
+									{this.props.middle_column ? <div className="list__item__column list__item__column--middle">
+										{
+											(this.props.middle_column ? this.props.middle_column.map((item, index) => {
+												return (
+													<span className={'list__item__column__item list__item__column__item--'+item.replace('.','_')} key={index}>
+														{this.renderValue(row, item)}
+													</span>
+												)
+											}) : null)
+										}
+									</div> : null}
 							</div>
 						)
 					})

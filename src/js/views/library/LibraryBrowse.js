@@ -107,8 +107,7 @@ class LibraryBrowse extends React.Component{
 			return (
 				<List
 					nocontext
-					columns={[{ name: 'name', width: '100'}]} 
-					rows={subdirectories} 
+					rows={subdirectories}
 					className="library-local-directory-list"
 					link_prefix={global.baseURL+'library/browse/'}
 				/>

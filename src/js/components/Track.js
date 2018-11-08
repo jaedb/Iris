@@ -194,7 +194,7 @@ export default class Track extends React.Component{
 
 		if (track.artists){
 			track_details.push(
-				<li className="list__item__details__item list__item__details__item--artists" key="artists">
+				<li className="details__item details__item--artists" key="artists">
 					{track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
 				</li>
 			)
@@ -209,15 +209,15 @@ export default class Track extends React.Component{
 			}
 
 			track_details.push(
-				<li className="list__item__details__item list__item__details__item--album" key="album">
+				<li className="details__item details__item--album" key="album">
 					{album}
 				</li>
 			)
 		}
 
 		if (this.props.context == 'history'){
-			var track_extra_detail = (
-				<div className="list__item__extra-detail list__item__extra-detail--played_at">
+			var track_middle_column = (
+				<div className="list__item__column__item list__item__column__item--played_at">
 					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : '-'}
 				</div>
 			)
@@ -243,16 +243,16 @@ export default class Track extends React.Component{
 						var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
 				}
 
-				var track_extra_detail = (
-					<div className="list__item__extra-detail list__item__extra-detail--added">
+				var track_middle_column = (
+					<div className="list__item__column__item list__item__column__item--added">
 						<span className="by">{track.added_by} </span>
 						<span className="from">(from {link})</span>
 					</div>
 				);
 
 			} else if (track.added_by){
-				var track_extra_detail = (
-					<div className="list__item__extra-detail list__item__extra-detail--added">
+				var track_middle_column = (
+					<div className="list__item__column__item list__item__column__item--added">
 						<span className="by">{track.added_by}</span>
 					</div>
 				);
@@ -275,15 +275,15 @@ export default class Track extends React.Component{
 
 			drag_zone = (
 				<span 
-					className="list__item__actions__item list__item__actions__item--drag-zone drag-zone touch-draggable mouse-draggable"
+					className="list__item__column__item list__item__column__item--drag-zone drag-zone touch-draggable mouse-draggable"
 					key="drag-zone">
 						<Icon name="drag_indicator" />
 				</span>
 			);
 		}
 
-		if (track_extra_detail){
-			className += " list__item--has-extra-detail";
+		if (track_middle_column){
+			className += " list__item--has-middle-column";
 		}
 
 		return (
@@ -299,24 +299,24 @@ export default class Track extends React.Component{
 					onContextMenu={e => this.props.handleContextMenu(e)}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
-						<div className="list__item__actions">
+						<div className="list__item__column list__item__column--right">
 							{drag_zone}
-							<div className="list__item__actions__item list__item__actions__item--duration">
+							<span className="list__item__column__item list__item__column__item--duration">
 								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
-							</div>
-							<ContextMenuTrigger className="list__item__actions__item list__item__actions__item--context-menu-trigger subtle" key="context" onTrigger={e => this.props.handleContextMenu(e)} />
+							</span>
+							<ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.props.handleContextMenu(e)} />
 						</div>
-						<div className="list__item__content">
-							<div className="list__item__name">
+						<div className="list__item__column list__item__column--name">
+							<div className="list__item__column__item--name">
 								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 								{track.playing ? <Icon name="equalizer"></Icon> : null}
 							</div>
-							<ul className="list__item__details">
+							<ul className="list__item__column__item--details">
 								{track_details}
 							</ul>
 						</div>
-						{track_extra_detail ? track_extra_detail : null}
+						{track_middle_column ? track_middle_column : null}
 				</div>
 			</ErrorBoundary>
 		);
