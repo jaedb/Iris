@@ -32,6 +32,12 @@ export default class Icon extends React.Component{
 			case 'fontawesome':	
 				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
 
+			case 'css':
+				switch (this.props.name){
+					case 'playing':
+						return <i className={className + " icon--playing"}><span></span><span></span><span></span></i>
+				}
+
 			default:
 				return <i className={className} onClick={e => this.handleClick(e)}>{this.props.name}</i>;
 		}

@@ -38,12 +38,22 @@
 			border-top: 1px solid rgba(128,128,128,0.05);
 		}
 
-		:root .notouch:not(.dragging) &:not(.no-click):hover {
-			background: rgba(255,255,255,0.03);
-			cursor: pointer;
+		:root .notouch:not(.dragging) &:not(.no-click) {
+			&:hover {
+				background: rgba(255,255,255,0.03);
+				cursor: pointer;
 
-			.light-theme & {
-				background: rgba(0,0,0,0.03);
+				.light-theme & {
+					background: rgba(0,0,0,0.03);
+				}
+			}
+
+			&:active,
+			&:focus {
+				@include noanimate();
+				-moz-transform: scale(0.997);
+				-webkit-transform: scale(0.997);
+				transform: scale(0.997);
 			}
 		}
 
@@ -88,6 +98,15 @@
 					&__item {
 						&--name {
 							color: colour(turquoise);
+
+							.icon {
+								padding-left: 5px;
+								font-size: 12px;
+
+								@include responsive($bp_medium){
+									display: none;
+								}
+							}
 						}
 					}
 				}
@@ -111,7 +130,7 @@
 		}
 
 		&__column {
-			padding: 22px 0 18px;
+			padding: 24px 0 16px;
 
 			&--name {
 				padding: 14px 0 10px;
@@ -174,11 +193,11 @@
 		}
 	}
 
-	&.track-list {
+	&--tracks {
 		.list__item {
 			cursor: pointer;
 
-			:root .dragging &--hover,
+			:root .dragging &:hover,
 			&.touch-drag-hover {
 				&:before {
 					opacity: 1;
@@ -211,7 +230,7 @@
 		}
 	}
 
-	&.related-artist-list {
+	&--related-artists {
 		padding-bottom: 20px;
 		cursor: pointer;
 		
@@ -241,13 +260,6 @@
 				border-color: colour(turquoise);
 				opacity: 1;
 			}
-		}
-	}
-
-	&.library-local-view,
-	&.library-local-directory-list {
-		.list__item {
-			cursor: pointer;
 		}
 	}
 

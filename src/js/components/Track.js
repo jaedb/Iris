@@ -310,13 +310,13 @@ export default class Track extends React.Component{
 							<div className="list__item__column__item--name">
 								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
-								{track.playing ? <Icon name="equalizer"></Icon> : null}
+								{track.playing ? <Icon className={"js--"+this.props.play_state} name="playing" type="css"></Icon> : null}
 							</div>
 							<ul className="list__item__column__item--details">
 								{track_details}
 							</ul>
 						</div>
-						{track_middle_column ? track_middle_column : null}
+						{track_middle_column ? <div className="list__item__column list__item__column--middle">{track_middle_column}</div> : null}
 				</div>
 			</ErrorBoundary>
 		);

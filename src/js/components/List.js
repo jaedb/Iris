@@ -27,6 +27,7 @@ class List extends React.Component{
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
 			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			helpers.scrollTo();
 		}
 	}
 
@@ -36,6 +37,7 @@ class List extends React.Component{
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
 			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			helpers.scrollTo();
 		}
 	}
 

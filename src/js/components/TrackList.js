@@ -410,6 +410,7 @@ class TrackList extends React.Component{
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
+									play_state={this.props.play_state} 
 									dragger={this.props.dragger} 
 									handleClick={(e) => this.handleClick(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
@@ -429,15 +430,9 @@ class TrackList extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
+		play_state: state.mopidy.play_state,
 		slim_mode: state.ui.slim_mode,
 		selected_tracks: state.ui.selected_tracks,
 		dragger: state.ui.dragger,
