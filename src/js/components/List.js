@@ -46,19 +46,21 @@ class List extends React.Component{
 	}
 
 	renderValue(row, key_string){
-		var key = key_string.split('.')
-		var value = row
+		var key = key_string.split('.');
+		var value = row;
 
 		for (var i = 0; i < key.length; i++){
 			if (value[key[i]] === undefined){
-				return <span>-</span>
+				return null
 			} else if (typeof(value[key[i]]) === 'string' && value[key[i]].replace(' ','') == ''){
-				return <span>-</span>
+				return null
 			} else {
 				value = value[key[i]]
 			}
 		}
 
+		if (key_string === 'tracks_total') return <span>{value} tracks</span>
+		if (key_string === 'followers') return <span>{value.toLocaleString()} followers</span>
 		if (key_string === 'added_at') return <span><Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
 		if (key_string === 'popularity') return <Popularity full popularity={value} />
@@ -82,7 +84,9 @@ class List extends React.Component{
 					this.props.rows.map((row, row_index) => {
 
 						var class_name = 'list__item'
-						if (row.type ) class_name += ' '+row.type
+						if (row.type ){
+							class_name += ' list__item--'+row.type;
+						}
 
 						return (
 							<div
@@ -90,17 +94,46 @@ class List extends React.Component{
 								key={row_index}
 								onClick={e => this.handleClick(e, row.uri)}
 								onContextMenu={e => this.handleContextMenu(e,row)}>
-									{
-										this.props.columns.map((col, col_index) => {
-											var className = 'col '+col.name.replace('.','_')
-											return (
-												<div className={className} key={col_index}>
-													{ this.renderValue(row, col.name) }
-												</div>
-											)
-										})
-									}
-									{this.props.nocontext ? null : <ContextMenuTrigger onTrigger={e => this.handleContextMenu(e, row)} />}
+
+									<div className="list__item__actions">
+										{
+											(this.props.actions ? this.props.actions.map((action, index) => {
+												return (
+													<li className={'list__item__actions__item list__item__actions__item--'+action.replace('.','_')} key={index}>
+														{this.renderValue(row, action)}
+													</li>
+												)
+											}) : null)
+										}
+
+										{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__actions__item list__item__actions__item--context-menu-trigger subtle" key="context" onTrigger={e => this.handleContextMenu(e, row)} />}
+
+									</div>
+
+									<div className="list__item__content">
+
+										<div className="list__item__name">
+											{this.renderValue(row, 'name')}
+										</div>
+
+										<ul className="list__item__details">
+											{
+												this.props.details.map((detail, index) => {
+													var value = this.renderValue(row, detail);
+
+													if (!value){
+														return null;
+													}
+
+													return (
+														<li className={'list__item__details__item list__item__details__item--'+detail.replace('.','_')} key={index}>
+															{value}
+														</li>
+													)
+												})
+											}
+										</ul>
+									</div>
 							</div>
 						)
 					})

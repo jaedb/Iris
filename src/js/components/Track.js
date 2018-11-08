@@ -310,7 +310,7 @@ export default class Track extends React.Component{
 							<div className="list__item__name">
 								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
 								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
-								{track.playing ? <Icon name="playing" type="gif"></Icon> : null}
+								{track.playing ? <Icon name="equalizer"></Icon> : null}
 							</div>
 							<ul className="list__item__details">
 								{track_details}

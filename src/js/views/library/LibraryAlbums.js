@@ -216,8 +216,9 @@ class LibraryAlbums extends React.Component{
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={albums} 
-						columns={columns} 
-						className="album-list"
+						details={['artists','tracks_total']}
+						extra_detail={['added_at']}
+						className="albums"
 						link_prefix={global.baseURL+"album/"} />
 					<LazyLoadListener
 						loadKey={this.state.limit}

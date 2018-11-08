@@ -124,36 +124,14 @@ class LibraryPlaylists extends React.Component{
 		playlists = playlists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Owner',
-					name: 'owner'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Editable',
-					name: 'can_edit'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				}
-			];
-
 			return (
 				<section className="content-wrapper">
 					<List
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
-						columns={columns}
-						className="playlist-list"
+						details={['owner','tracks_total']}
+						extra_detail={['source']}
+						className="playlists"
 						link_prefix={global.baseURL+"playlist/"} />
 					<LazyLoadListener 
 						loadKey={this.state.limit}

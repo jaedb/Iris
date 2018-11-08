@@ -2775,7 +2775,7 @@ h2 {
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 400;
   line-height: 2.2rem; }
   h2 a {
@@ -2789,8 +2789,8 @@ h2 {
 
 h3 {
   font-weight: 100;
-  font-size: 1.4em;
-  line-height: 1.6em; }
+  font-size: 1.8rem;
+  line-height: 1.8rem; }
   h3.bottom-padding {
     padding-bottom: 30px; }
 
@@ -2798,8 +2798,8 @@ h4 {
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
-  font-size: 1.3rem;
-  margin-bottom: 14px;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
   font-weight: 700; }
   h4.underline {
     padding-bottom: 4px;
@@ -3068,13 +3068,17 @@ footer {
 
 @media (max-width: 800px) {
   h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     line-height: 1.8rem; }
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     line-height: 1.5rem; }
   h3 {
-    font-size: 1rem; }
+    font-size: 1.4rem; }
+  h4 {
+    font-size: 1.3rem; }
+  h5 {
+    font-size: 1.1rem; }
   .right-padding {
     padding-right: 20px; }
   .left-padding {
@@ -3916,6 +3920,10 @@ input[type="submit"] {
       padding: 12px; } }
 
 .list__item {
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -3947,10 +3955,10 @@ input[type="submit"] {
     opacity: 0; }
   .list__item:not(:first-child) {
     border-top: 1px solid rgba(128, 128, 128, 0.05); }
-  :root .notouch:not(.dragging) .list__item:not(.no-click).list__item--hover {
+  :root .notouch:not(.dragging) .list__item:not(.no-click):hover {
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer; }
-    .light-theme :root .notouch:not(.dragging) .list__item:not(.no-click).list__item--hover {
+    .light-theme :root .notouch:not(.dragging) .list__item:not(.no-click):hover {
       background: rgba(0, 0, 0, 0.03); }
   .list__item .select-zone,
   .list__item .drag-zone {
@@ -4046,7 +4054,7 @@ input[type="submit"] {
   .list.related-artist-list .artist {
     display: block;
     border: 0;
-    margin: 10px 0; }
+    margin: 20px 0; }
     .list.related-artist-list .artist::after {
       content: '';
       clear: both;
@@ -4057,7 +4065,7 @@ input[type="submit"] {
       -o-transition: all 0.2s ease-in-out;
       transition: all 0.2s ease-in-out;
       border-radius: 50%;
-      width: 50px;
+      width: 60px;
       margin-right: 15px;
       float: left;
       border: 3px solid transparent; }
