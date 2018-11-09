@@ -174,8 +174,8 @@ h1 {
 	@include feature_font();
 	color: colour(white);
 	font-weight: 700;
-	font-size: 3rem;
-	line-height: 3.2rem;
+	font-size: 3.4rem;
+	line-height: 3.4rem;
 
 	.light-theme & {
 		color: colour(dark_grey);
@@ -183,9 +183,9 @@ h1 {
 }
 
 h2 {
-	@include feature_font();
-	font-size: 1.8rem;
 	font-weight: 400;
+	@include feature_font();
+	font-size: 2rem;
 	line-height: 2.2rem;
 
 	a {
@@ -207,8 +207,8 @@ h2 {
 
 h3 {
 	font-weight: 100;
-	font-size: 1.4em;
-	line-height: 1.6em;
+	font-size: 1.8rem;
+	line-height: 1.8rem;
 
 	&.bottom-padding {
 		padding-bottom: 30px;
@@ -217,8 +217,8 @@ h3 {
 
 h4 {
 	@include feature_font();
-	font-size: 1.3rem;
-	margin-bottom: 14px;
+	font-size: 1.5rem;
+	margin-bottom: 16px;
 	font-weight: 700;
 
 	&.underline {
@@ -501,17 +501,25 @@ footer {
 @include responsive($bp_medium){
 	
 	h1 {
-		font-size: 1.8rem;
+		font-size: 2rem;
 		line-height: 1.8rem;
 	}
 	
 	h2 {
-		font-size: 1.2rem;
+		font-size: 1.6rem;
 		line-height: 1.5rem;
 	}
 	
 	h3 {
-		font-size: 1rem;
+		font-size: 1.4rem;
+	}
+	
+	h4 {
+		font-size: 1.3rem;
+	}
+	
+	h5 {
+		font-size: 1.1rem;
 	}
 	
 	.right-padding {

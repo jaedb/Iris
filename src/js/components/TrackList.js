@@ -383,55 +383,11 @@ class TrackList extends React.Component{
 		}
 	}
 
-	renderHeader(){
-		if (this.props.noheader ) return null
-		
-		switch (this.props.context){
-
-			case 'history':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col played_at">Started playing</span>
-						</div>
-					</div>
-				)
-				break
-
-			case 'queue':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col added">Added by</span>
-							<span className="col duration">Duration</span>
-						</div>
-					</div>
-				)
-				break
-
-			default:
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col duration">Duration</span>
-							<span className="col popularity"></span>
-						</div>
-					</div>
-				)
-		}
-	}
 
 	render(){
-		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ) return null
+		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ){
+			return null;
+		}
 
 		var className = 'list track-list '+this.props.context
 		if (this.props.className){
@@ -440,7 +396,6 @@ class TrackList extends React.Component{
 
 		return (
 			<div className={className}>
-				{ this.renderHeader() }
 				{
 					this.props.tracks.map(
 						(track, index) => {
@@ -455,6 +410,7 @@ class TrackList extends React.Component{
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
+									play_state={this.props.play_state} 
 									dragger={this.props.dragger} 
 									handleClick={(e) => this.handleClick(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
@@ -474,15 +430,9 @@ class TrackList extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
+		play_state: state.mopidy.play_state,
 		slim_mode: state.ui.slim_mode,
 		selected_tracks: state.ui.selected_tracks,
 		dragger: state.ui.dragger,

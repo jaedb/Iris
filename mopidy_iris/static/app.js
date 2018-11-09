@@ -606,7 +606,7 @@ var formatUsers = exports.formatUsers = function formatUsers() {
  **/
 var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
 	var album = {};
-	var fields = ['uri', 'provider', 'name', 'type', 'release_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'artists' // Array of simple records
+	var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'artists' // Array of simple records
 	];
 
 	// Loop fields and import from data
@@ -662,7 +662,7 @@ var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
  **/
 var formatArtist = exports.formatArtist = function formatArtist(data) {
 	var artist = {};
-	var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'images', 'popularity', 'followers', 'listeners', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
+	var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'images', 'popularity', 'followers', 'listeners', 'added_at', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion8 = true;
@@ -727,7 +727,7 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
  **/
 var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 	var playlist = {};
-	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion9 = true;
@@ -2546,10 +2546,28 @@ var Icon = function (_React$Component) {
 							return _this2.handleClick(e);
 						} });
 
+				case 'gif':
+					var src = __webpack_require__(292)("./" + this.props.name + '.gif');
+					return _react2.default.createElement('img', { className: className, src: src, onClick: function onClick(e) {
+							return _this2.handleClick(e);
+						} });
+
 				case 'fontawesome':
 					return _react2.default.createElement(_reactFontawesome2.default, { className: className, type: 'fontawesome', name: this.props.name, onClick: function onClick(e) {
 							return _this2.handleClick(e);
 						} });
+
+				case 'css':
+					switch (this.props.name) {
+						case 'playing':
+							return _react2.default.createElement(
+								'i',
+								{ className: className + " icon--playing" },
+								_react2.default.createElement('span', null),
+								_react2.default.createElement('span', null),
+								_react2.default.createElement('span', null)
+							);
+					}
 
 				default:
 					return _react2.default.createElement(
@@ -5598,8 +5616,6 @@ var Thumbnail = function (_React$Component) {
 	_createClass(Thumbnail, [{
 		key: 'mapImageSizes',
 		value: function mapImageSizes() {
-			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
 
 			// Single image
 			if (this.props.image) {
@@ -5607,6 +5623,12 @@ var Thumbnail = function (_React$Component) {
 
 				// Multiple images
 			} else if (this.props.images) {
+				var images = this.props.images;
+
+				// An array of image objects (eg Artists), so just pick the first one
+				if (Array.isArray(images)) {
+					images = images[0];
+				}
 
 				// Default to medium-sized image, but accept size property as override
 				var size = 'medium';
@@ -5614,7 +5636,7 @@ var Thumbnail = function (_React$Component) {
 					size = this.props.size;
 				}
 
-				return this.props.images[size];
+				return images[size];
 			}
 
 			// No images
@@ -5647,7 +5669,7 @@ var Thumbnail = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: class_name },
-				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + (image ? image : __webpack_require__(294)) + '")' } }),
+				_react2.default.createElement('div', { className: 'image loaded', style: { backgroundImage: 'url("' + (image ? image : __webpack_require__(296)) + '")' } }),
 				zoom_icon
 			);
 		}
@@ -18711,117 +18733,13 @@ var TrackList = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'renderHeader',
-		value: function renderHeader() {
-			if (this.props.noheader) return null;
-
-			switch (this.props.context) {
-
-				case 'history':
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col played_at' },
-								'Started playing'
-							)
-						)
-					);
-					break;
-
-				case 'queue':
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col added' },
-								'Added by'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col duration' },
-								'Duration'
-							)
-						)
-					);
-					break;
-
-				default:
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item header track' },
-						_react2.default.createElement(
-							'div',
-							{ className: 'liner' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'col name' },
-								'Name'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col artists' },
-								'Artists'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col album' },
-								'Album'
-							),
-							_react2.default.createElement(
-								'span',
-								{ className: 'col duration' },
-								'Duration'
-							),
-							_react2.default.createElement('span', { className: 'col popularity' })
-						)
-					);
-			}
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') return null;
+			if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') {
+				return null;
+			}
 
 			var className = 'list track-list ' + this.props.context;
 			if (this.props.className) {
@@ -18831,7 +18749,6 @@ var TrackList = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
-				this.renderHeader(),
 				this.props.tracks.map(function (track, index) {
 					var track_key = _this2.buildTrackKey(track, index);
 					track.key = track_key;
@@ -18843,6 +18760,7 @@ var TrackList = function (_React$Component) {
 						context: _this2.props.context,
 						can_sort: _this2.props.context == 'queue' || _this2.props.context == 'editable-playlist',
 						selected: _this2.props.selected_tracks.includes(track_key),
+						play_state: _this2.props.play_state,
 						dragger: _this2.props.dragger,
 						handleClick: function handleClick(e) {
 							return _this2.handleClick(e, track_key);
@@ -18877,14 +18795,9 @@ var TrackList = function (_React$Component) {
 	return TrackList;
 }(_react2.default.Component);
 
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
+		play_state: state.mopidy.play_state,
 		slim_mode: state.ui.slim_mode,
 		selected_tracks: state.ui.selected_tracks,
 		dragger: state.ui.dragger,
@@ -21793,7 +21706,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _captialize = __webpack_require__(328);
+var _captialize = __webpack_require__(330);
 
 Object.defineProperty(exports, 'captialize', {
   enumerable: true,
@@ -21802,7 +21715,7 @@ Object.defineProperty(exports, 'captialize', {
   }
 });
 
-var _clamp = __webpack_require__(329);
+var _clamp = __webpack_require__(331);
 
 Object.defineProperty(exports, 'clamp', {
   enumerable: true,
@@ -21811,7 +21724,7 @@ Object.defineProperty(exports, 'clamp', {
   }
 });
 
-var _distanceTo = __webpack_require__(330);
+var _distanceTo = __webpack_require__(332);
 
 Object.defineProperty(exports, 'distanceTo', {
   enumerable: true,
@@ -21820,7 +21733,7 @@ Object.defineProperty(exports, 'distanceTo', {
   }
 });
 
-var _isDefined = __webpack_require__(331);
+var _isDefined = __webpack_require__(333);
 
 Object.defineProperty(exports, 'isDefined', {
   enumerable: true,
@@ -21829,7 +21742,7 @@ Object.defineProperty(exports, 'isDefined', {
   }
 });
 
-var _isNumber = __webpack_require__(332);
+var _isNumber = __webpack_require__(334);
 
 Object.defineProperty(exports, 'isNumber', {
   enumerable: true,
@@ -21838,7 +21751,7 @@ Object.defineProperty(exports, 'isNumber', {
   }
 });
 
-var _isObject = __webpack_require__(333);
+var _isObject = __webpack_require__(335);
 
 Object.defineProperty(exports, 'isObject', {
   enumerable: true,
@@ -21847,7 +21760,7 @@ Object.defineProperty(exports, 'isObject', {
   }
 });
 
-var _length = __webpack_require__(334);
+var _length = __webpack_require__(336);
 
 Object.defineProperty(exports, 'length', {
   enumerable: true,
@@ -21902,6 +21815,10 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _Thumbnail = __webpack_require__(13);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
 var _Popularity = __webpack_require__(75);
 
 var _Popularity2 = _interopRequireDefault(_Popularity);
@@ -21941,6 +21858,7 @@ var List = function (_React$Component) {
 			if (e.target.tagName.toLowerCase() !== 'a') {
 				e.preventDefault();
 				_reactRouter.hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+				helpers.scrollTo();
 			}
 		}
 	}, {
@@ -21951,6 +21869,7 @@ var List = function (_React$Component) {
 			if (e.target.tagName.toLowerCase() !== 'a') {
 				e.preventDefault();
 				_reactRouter.hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+				helpers.scrollTo();
 			}
 		}
 	}, {
@@ -21962,28 +21881,6 @@ var List = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'renderHeader',
-		value: function renderHeader() {
-			if (!this.props.columns || this.props.noheader) return null;
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'list__item header cf' },
-				_react2.default.createElement(
-					'div',
-					{ className: 'liner' },
-					this.props.columns.map(function (col, col_index) {
-						var className = 'col ' + col.name.replace('.', '_');
-						return _react2.default.createElement(
-							'div',
-							{ className: className, key: col_index },
-							col.label ? col.label : col.name
-						);
-					})
-				)
-			);
-		}
-	}, {
 		key: 'renderValue',
 		value: function renderValue(row, key_string) {
 			var key = key_string.split('.');
@@ -21991,25 +21888,30 @@ var List = function (_React$Component) {
 
 			for (var i = 0; i < key.length; i++) {
 				if (value[key[i]] === undefined) {
-					return _react2.default.createElement(
-						'span',
-						null,
-						'-'
-					);
+					return null;
 				} else if (typeof value[key[i]] === 'string' && value[key[i]].replace(' ', '') == '') {
-					return _react2.default.createElement(
-						'span',
-						null,
-						'-'
-					);
+					return null;
 				} else {
 					value = value[key[i]];
 				}
 			}
 
+			if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return _react2.default.createElement(
+				'span',
+				null,
+				value,
+				' tracks'
+			);
+			if (key_string === 'followers') return _react2.default.createElement(
+				'span',
+				null,
+				value.toLocaleString(),
+				' followers'
+			);
 			if (key_string === 'added_at') return _react2.default.createElement(
 				'span',
 				null,
+				'Added ',
 				_react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
 				' ago'
 			);
@@ -22047,11 +21949,16 @@ var List = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
-				this.renderHeader(),
 				this.props.rows.map(function (row, row_index) {
 
 					var class_name = 'list__item';
-					if (row.type) class_name += ' ' + row.type;
+					if (row.type) {
+						class_name += ' list__item--' + row.type;
+					}
+
+					if (_this2.props.middle_column) {
+						class_name += " list__item--has-middle-column";
+					}
 
 					return _react2.default.createElement(
 						'div',
@@ -22064,17 +21971,58 @@ var List = function (_React$Component) {
 							onContextMenu: function onContextMenu(e) {
 								return _this2.handleContextMenu(e, row);
 							} },
-						_this2.props.columns.map(function (col, col_index) {
-							var className = 'col ' + col.name.replace('.', '_');
-							return _react2.default.createElement(
+						_react2.default.createElement(
+							'div',
+							{ className: 'list__item__column list__item__column--right' },
+							_this2.props.right_column ? _this2.props.right_column.map(function (item, index) {
+								return _react2.default.createElement(
+									'span',
+									{ className: 'list__item__column__item list__item__column__item--' + item.replace('.', '_'), key: index },
+									_this2.renderValue(row, item)
+								);
+							}) : null,
+							_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+									return _this2.handleContextMenu(e, row);
+								} })
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'list__item__column list__item__column--name' },
+							_this2.props.thumbnail ? _react2.default.createElement(_Thumbnail2.default, { className: 'list__item__column__item list__item__column__item--thumbnail', images: row.images ? row.images : null, size: 'small' }) : null,
+							_react2.default.createElement(
 								'div',
-								{ className: className, key: col_index },
-								_this2.renderValue(row, col.name)
-							);
-						}),
-						_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-								return _this2.handleContextMenu(e, row);
-							} })
+								{ className: 'list__item__column__item list__item__column__item--name' },
+								_this2.renderValue(row, 'name')
+							),
+							_this2.props.details ? _react2.default.createElement(
+								'ul',
+								{ className: 'list__item__column__item list__item__column__item--details details' },
+								_this2.props.details.map(function (item, index) {
+									var value = _this2.renderValue(row, item);
+
+									if (!value) {
+										return null;
+									}
+
+									return _react2.default.createElement(
+										'li',
+										{ className: 'details__item details__item--' + item.replace('.', '_'), key: index },
+										value
+									);
+								})
+							) : null
+						),
+						_this2.props.middle_column ? _react2.default.createElement(
+							'div',
+							{ className: 'list__item__column list__item__column--middle' },
+							_this2.props.middle_column ? _this2.props.middle_column.map(function (item, index) {
+								return _react2.default.createElement(
+									'span',
+									{ className: 'list__item__column__item list__item__column__item--' + item.replace('.', '_'), key: index },
+									_this2.renderValue(row, item)
+								);
+							}) : null
+						) : null
 					);
 				})
 			);
@@ -26925,71 +26873,59 @@ var Track = function (_React$Component) {
 			}
 
 			var track = this.props.track;
-			var className = 'list__item track mouse-draggable mouse-selectable mouse-contextable';
-			if (this.props.selected) className += ' selected';
-			if (this.props.can_sort) className += ' can-sort';
-			if (track.type !== undefined) className += ' ' + track.type;
-			if (track.playing) className += ' playing';
-			if (this.state.hover) className += ' hover';
+			var className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
+			if (this.props.selected) className += ' list__item--selected';
+			if (this.props.can_sort) className += ' list__item--can-sort';
+			if (track.type !== undefined) className += ' list__item--' + track.type;
+			if (track.playing) className += ' list__item--playing';
+			if (this.state.hover) className += ' list__item--hover';
 
-			var album = '-';
+			var track_details = [];
+			var track_actions = [];
+
+			if (track.artists) {
+				track_details.push(_react2.default.createElement(
+					'li',
+					{ className: 'details__item details__item--artists', key: 'artists' },
+					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
+				));
+			}
+
 			if (track.album) {
+
 				if (track.album.uri) {
-					album = _react2.default.createElement(
+					var album = _react2.default.createElement(
 						_URILink2.default,
 						{ type: 'album', uri: track.album.uri },
 						track.album.name
 					);
 				} else {
-					album = _react2.default.createElement(
+					var album = _react2.default.createElement(
 						'span',
 						null,
 						track.album.name
 					);
 				}
-			}
 
-			var track_columns = [];
-			var track_actions = [];
-
-			if (this.props.context == 'history') {
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
+				track_details.push(_react2.default.createElement(
+					'li',
+					{ className: 'details__item details__item--album', key: 'album' },
 					album
 				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col played_at', key: 'played_at' },
+			}
+
+			if (this.props.context == 'history') {
+				var track_middle_column = _react2.default.createElement(
+					'div',
+					{ className: 'list__item__column__item list__item__column__item--played_at' },
 					track.played_at ? _react2.default.createElement(
 						'span',
 						null,
 						_react2.default.createElement(_Dater2.default, { type: 'ago', data: track.played_at }),
 						' ago'
 					) : '-'
-				));
+				);
 			} else if (this.props.context == 'queue') {
-
 				if (track.added_from && track.added_by) {
 					var type = track.added_from ? helpers.uriType(track.added_from) : null;
 
@@ -27026,134 +26962,52 @@ var Track = function (_React$Component) {
 							);
 					}
 
-					var added = _react2.default.createElement(
-						'span',
-						null,
+					var track_middle_column = _react2.default.createElement(
+						'div',
+						{ className: 'list__item__column__item list__item__column__item--added' },
+						_react2.default.createElement(
+							'span',
+							{ className: 'by' },
+							track.added_by,
+							' '
+						),
+						_react2.default.createElement(
+							'span',
+							{ className: 'from' },
+							'(from ',
+							link,
+							')'
+						)
+					);
+				} else if (track.added_by) {
+					var track_middle_column = _react2.default.createElement(
+						'div',
+						{ className: 'list__item__column__item list__item__column__item--added' },
 						_react2.default.createElement(
 							'span',
 							{ className: 'by' },
 							track.added_by
-						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'mid_grey-text from' },
-							_react2.default.createElement(
-								'span',
-								{ className: 'label' },
-								'from '
-							),
-							link
 						)
 					);
-				} else if (track.added_by) {
-					var added = _react2.default.createElement(
-						'span',
-						{ className: 'by' },
-						track.added_by
-					);
-				} else {
-					var added = _react2.default.createElement(
-						'span',
-						{ className: 'empty' },
-						'-'
-					);
-				}
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				if (this.props.show_source_icon) {
-					track_columns.push(_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), className: 'source', key: 'source', fixedWidth: true }));
-				}
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
-					album
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col added', key: 'added' },
-					added
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : null
-				));
-			} else {
-
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col name', key: 'name' },
-					track.name ? track.name : _react2.default.createElement(
-						'span',
-						{ className: 'mid_grey-text' },
-						track.uri
-					),
-					track.explicit ? _react2.default.createElement(
-						'span',
-						{ className: 'flag dark' },
-						'EXPLICIT'
-					) : null
-				));
-				if (this.props.show_source_icon) {
-					track_columns.push(_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), className: 'source', key: 'source', fixedWidth: true }));
-				}
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col artists', key: 'artists' },
-					track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col album', key: 'album' },
-					album
-				));
-				track_columns.push(_react2.default.createElement(
-					'span',
-					{ className: 'col duration', key: 'duration' },
-					track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
-				));
-				if (track.popularity !== undefined) {
-					track_columns.push(_react2.default.createElement(
-						'span',
-						{ className: 'col popularity', key: 'popularity' },
-						_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
-					));
 				}
 			}
 
-			track_actions.push(_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'subtle', key: 'context', onTrigger: function onTrigger(e) {
-					return _this2.props.handleContextMenu(e);
-				} }));
-
 			// If we're touchable, and can sort this tracklist
+			var drag_zone = null;
 			if (helpers.isTouchDevice() && this.props.can_sort) {
 				className += " has-touch-drag-zone";
 
-				track_actions.push(_react2.default.createElement(
+				drag_zone = _react2.default.createElement(
 					'span',
 					{
-						className: 'drag-zone touch-draggable mouse-draggable',
+						className: 'list__item__column__item list__item__column__item--drag-zone drag-zone touch-draggable mouse-draggable',
 						key: 'drag-zone' },
 					_react2.default.createElement(_Icon2.default, { name: 'drag_indicator' })
-				));
+				);
+			}
+
+			if (track_middle_column) {
+				className += " list__item--has-middle-column";
 			}
 
 			return _react2.default.createElement(
@@ -27190,8 +27044,53 @@ var Track = function (_React$Component) {
 						onTouchEnd: function onTouchEnd(e) {
 							return _this2.handleTouchEnd(e);
 						} },
-					track_actions,
-					track_columns
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column list__item__column--right' },
+						drag_zone,
+						_react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--duration' },
+							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
+						),
+						this.props.show_source_icon ? _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--source' },
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+						) : null,
+						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+								return _this2.props.handleContextMenu(e);
+							} })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column list__item__column--name' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'list__item__column__item--name' },
+							track.name ? track.name : _react2.default.createElement(
+								'span',
+								{ className: 'mid_grey-text' },
+								track.uri
+							),
+							track.explicit ? _react2.default.createElement(
+								'span',
+								{ className: 'flag dark' },
+								'EXPLICIT'
+							) : null,
+							track.playing ? _react2.default.createElement(_Icon2.default, { className: "js--" + this.props.play_state, name: 'playing', type: 'css' }) : null
+						),
+						_react2.default.createElement(
+							'ul',
+							{ className: 'list__item__column__item--details' },
+							track_details
+						)
+					),
+					track_middle_column ? _react2.default.createElement(
+						'div',
+						{ className: 'list__item__column list__item__column--middle' },
+						track_middle_column
+					) : null
 				)
 			);
 		}
@@ -27252,7 +27151,7 @@ var RelatedArtists = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'list related-artist-list' },
+				{ className: 'related-artists' },
 				this.props.artists.map(function (artist, index) {
 
 					var images = artist.images;
@@ -27263,22 +27162,22 @@ var RelatedArtists = function (_React$Component) {
 					if (artist.uri) {
 						return _react2.default.createElement(
 							_URILink2.default,
-							{ type: 'artist', uri: artist.uri, key: artist.uri, className: 'artist' },
-							_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: images }),
+							{ type: 'artist', uri: artist.uri, key: artist.uri, className: 'related-artists__item related-artists__item--link' },
+							_react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'name' },
+								{ className: 'related-artists__item__name' },
 								artist.name
 							)
 						);
 					} else {
 						return _react2.default.createElement(
 							'span',
-							{ key: artist.uri, className: 'artist' },
-							_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: images }),
+							{ key: artist.uri, className: 'related-artists__item' },
+							_react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'name' },
+								{ className: 'related-artists__item__name' },
 								artist.name
 							)
 						);
@@ -27880,123 +27779,123 @@ var _App = __webpack_require__(251);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _Album = __webpack_require__(302);
+var _Album = __webpack_require__(304);
 
 var _Album2 = _interopRequireDefault(_Album);
 
-var _Artist = __webpack_require__(303);
+var _Artist = __webpack_require__(305);
 
 var _Artist2 = _interopRequireDefault(_Artist);
 
-var _Playlist = __webpack_require__(304);
+var _Playlist = __webpack_require__(306);
 
 var _Playlist2 = _interopRequireDefault(_Playlist);
 
-var _User = __webpack_require__(305);
+var _User = __webpack_require__(307);
 
 var _User2 = _interopRequireDefault(_User);
 
-var _Track = __webpack_require__(306);
+var _Track = __webpack_require__(308);
 
 var _Track2 = _interopRequireDefault(_Track);
 
-var _Queue = __webpack_require__(308);
+var _Queue = __webpack_require__(310);
 
 var _Queue2 = _interopRequireDefault(_Queue);
 
-var _QueueHistory = __webpack_require__(309);
+var _QueueHistory = __webpack_require__(311);
 
 var _QueueHistory2 = _interopRequireDefault(_QueueHistory);
 
-var _Debug = __webpack_require__(310);
+var _Debug = __webpack_require__(312);
 
 var _Debug2 = _interopRequireDefault(_Debug);
 
-var _Search = __webpack_require__(311);
+var _Search = __webpack_require__(313);
 
 var _Search2 = _interopRequireDefault(_Search);
 
-var _Settings = __webpack_require__(313);
+var _Settings = __webpack_require__(315);
 
 var _Settings2 = _interopRequireDefault(_Settings);
 
-var _DiscoverRecommendations = __webpack_require__(324);
+var _DiscoverRecommendations = __webpack_require__(326);
 
 var _DiscoverRecommendations2 = _interopRequireDefault(_DiscoverRecommendations);
 
-var _DiscoverFeatured = __webpack_require__(342);
+var _DiscoverFeatured = __webpack_require__(344);
 
 var _DiscoverFeatured2 = _interopRequireDefault(_DiscoverFeatured);
 
-var _DiscoverCategories = __webpack_require__(343);
+var _DiscoverCategories = __webpack_require__(345);
 
 var _DiscoverCategories2 = _interopRequireDefault(_DiscoverCategories);
 
-var _DiscoverCategory = __webpack_require__(345);
+var _DiscoverCategory = __webpack_require__(347);
 
 var _DiscoverCategory2 = _interopRequireDefault(_DiscoverCategory);
 
-var _DiscoverNewReleases = __webpack_require__(346);
+var _DiscoverNewReleases = __webpack_require__(348);
 
 var _DiscoverNewReleases2 = _interopRequireDefault(_DiscoverNewReleases);
 
-var _LibraryArtists = __webpack_require__(347);
+var _LibraryArtists = __webpack_require__(349);
 
 var _LibraryArtists2 = _interopRequireDefault(_LibraryArtists);
 
-var _LibraryAlbums = __webpack_require__(348);
+var _LibraryAlbums = __webpack_require__(350);
 
 var _LibraryAlbums2 = _interopRequireDefault(_LibraryAlbums);
 
-var _LibraryTracks = __webpack_require__(349);
+var _LibraryTracks = __webpack_require__(351);
 
 var _LibraryTracks2 = _interopRequireDefault(_LibraryTracks);
 
-var _LibraryPlaylists = __webpack_require__(350);
+var _LibraryPlaylists = __webpack_require__(352);
 
 var _LibraryPlaylists2 = _interopRequireDefault(_LibraryPlaylists);
 
-var _LibraryBrowse = __webpack_require__(351);
+var _LibraryBrowse = __webpack_require__(353);
 
 var _LibraryBrowse2 = _interopRequireDefault(_LibraryBrowse);
 
-var _EditPlaylist = __webpack_require__(352);
+var _EditPlaylist = __webpack_require__(354);
 
 var _EditPlaylist2 = _interopRequireDefault(_EditPlaylist);
 
-var _CreatePlaylist = __webpack_require__(353);
+var _CreatePlaylist = __webpack_require__(355);
 
 var _CreatePlaylist2 = _interopRequireDefault(_CreatePlaylist);
 
-var _EditRadio = __webpack_require__(354);
+var _EditRadio = __webpack_require__(356);
 
 var _EditRadio2 = _interopRequireDefault(_EditRadio);
 
-var _AddToQueue = __webpack_require__(355);
+var _AddToQueue = __webpack_require__(357);
 
 var _AddToQueue2 = _interopRequireDefault(_AddToQueue);
 
-var _InitialSetup = __webpack_require__(356);
+var _InitialSetup = __webpack_require__(358);
 
 var _InitialSetup2 = _interopRequireDefault(_InitialSetup);
 
-var _KioskMode = __webpack_require__(357);
+var _KioskMode = __webpack_require__(359);
 
 var _KioskMode2 = _interopRequireDefault(_KioskMode);
 
-var _ShareConfiguration = __webpack_require__(358);
+var _ShareConfiguration = __webpack_require__(360);
 
 var _ShareConfiguration2 = _interopRequireDefault(_ShareConfiguration);
 
-var _AddToPlaylist = __webpack_require__(359);
+var _AddToPlaylist = __webpack_require__(361);
 
 var _AddToPlaylist2 = _interopRequireDefault(_AddToPlaylist);
 
-var _ImageZoom = __webpack_require__(360);
+var _ImageZoom = __webpack_require__(362);
 
 var _ImageZoom2 = _interopRequireDefault(_ImageZoom);
 
-var _EditCommand = __webpack_require__(361);
+var _EditCommand = __webpack_require__(363);
 
 var _EditCommand2 = _interopRequireDefault(_EditCommand);
 
@@ -28006,7 +27905,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Base-level application wrapper
  **/
 
-__webpack_require__(364);
+__webpack_require__(366);
 
 global.baseURL = '/';
 
@@ -64755,23 +64654,23 @@ var _Sidebar = __webpack_require__(252);
 
 var _Sidebar2 = _interopRequireDefault(_Sidebar);
 
-var _PlaybackControls = __webpack_require__(295);
+var _PlaybackControls = __webpack_require__(297);
 
 var _PlaybackControls2 = _interopRequireDefault(_PlaybackControls);
 
-var _ContextMenu = __webpack_require__(298);
+var _ContextMenu = __webpack_require__(300);
 
 var _ContextMenu2 = _interopRequireDefault(_ContextMenu);
 
-var _Dragger = __webpack_require__(299);
+var _Dragger = __webpack_require__(301);
 
 var _Dragger2 = _interopRequireDefault(_Dragger);
 
-var _Notifications = __webpack_require__(300);
+var _Notifications = __webpack_require__(302);
 
 var _Notifications2 = _interopRequireDefault(_Notifications);
 
-var _DebugInfo = __webpack_require__(301);
+var _DebugInfo = __webpack_require__(303);
 
 var _DebugInfo2 = _interopRequireDefault(_DebugInfo);
 
@@ -65263,7 +65162,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Dropzones = __webpack_require__(292);
+var _Dropzones = __webpack_require__(294);
 
 var _Dropzones2 = _interopRequireDefault(_Dropzones);
 
@@ -65943,6 +65842,35 @@ module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGlu
 /* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var map = {
+	"./playing.gif": 293
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 292;
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/gif;base64,R0lGODlhIANYAqIFAP///7+/vz8/P39/fwAAAP///wAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjUyNEIxRUVGQzU4MzExRTQ5QkU3RTg5MjcxRDBEOTNDIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjUyNEIxRUYwQzU4MzExRTQ5QkU3RTg5MjcxRDBEOTNDIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NTI0QjFFRURDNTgzMTFFNDlCRTdFODkyNzFEMEQ5M0MiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NTI0QjFFRUVDNTgzMTFFNDlCRTdFODkyNzFEMEQ5M0MiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4B//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eDf3t3c29rZ2NfW1dTT0tHQz87NzMvKycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaSjoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAh+QQFAwAFACwAAAAAIANYAgAD/0i63P4wykmrvTjrzbv/YCiOZGmeaKqubOu+cCzPdG3feK7vfO//wKBwSCwaj8ikcslsOp/QqHRKrVqv2Kx2y+16v+CweEwum8/otHrNbrvf8Lh8Tq/b7/i8fs/v+/+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/wADChxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsf+jx48gQ4ocSbKkyZMoU6pcybKly5cwY8qcSbOmzZs4c+rcybOnz59AgwodSrSo0aNIkypdyrSp06dQo0qdSrWq1atYs2rdyrWr169gw4odS7as2bNo06pdy7at27dw48qdS7eu3bt48+rdy7ev37+AAwseTLiw4cOIEytezLix48eQI0ueTLmy5cuYM2vezLmz58+gQ4seTbq06dOoU6tezbq169ewY8ueTbu27du4c+vezbu379/AgwsfTry48ePIkytfzry58+fQo0ufTr269evYs2vfzr279+/gw4sfT768+fPo06tfz769+/fw48ufT7++/fv48+vfz7+/////AAYo4IAEFmjggQgmqOCCDDbo4IMQRijhhBRWaOGFGGao4YYcdujhhyCGKOKIJJZo4okopqjiiiy26OKLMMYo44w01mjjjTjmqOOOPPbo449ABinkkEQWaeSRSCap5JJMNunkk1BGKeWUVFZp5ZVYZqnlllx26eWXYIYp5phklmnmmWimqeaabLbp5ptwxinnnHTWaeedeOap55589unnn4AGKuighBZq6KGIJqrooow26uijkEYq6aSUVppcAJhmqummAViqCACghirqqAB4mgipqIZqKiKpprrqIa2i+qohsZI6ayG1jnorIbmKuusgvar6ayDBgjosscUeC0ix/6Uq6wezzj6bbLR8QHuCtdQqgW0J22Z7RLcjgOstEeKGUO64QZz7gbro+sBuB++2u0O8G9ArLw72ZpDvvTXse4G//MoAcAUDB/xCwRMgbDALCkfQ8MIpPPyAxBCbQHEDF1cc7rQWc6zxvB6TkPHHIIysgMkkwxvyxsGmDHLL167sMg0oozyzvjKbm/PNMNS8M88u+Awz0DT/7IHNRFMgdK9JFz00t0Y3DQGnVGcKwdK5Sq1BuVjXqjXOTzPQdaxfY8B11BwgbfDZYbPMdNkWsP12x23DfXXOY7dqN8F4o12v33DLnXXMde+Ncd+Flwx42YJ7Tfjcht9deN6uRu4w4v+Qi7z4142T/fjglk+MOehQJ25553p/7njoDqBeOd2Zs37y6KuXHrvsrsuquueyi00777aT3jsBudu6e+rDzz755v8yL3Xxuh7/evLQ+yq97skT/zvywdc+fPXCwi587+Abe73x2ZffrPjek7/99JqbHrn6KKgdMP0PCKD//vz3L4Dkt2Md/lr3PuxRr4DoO9zy5Ge4ASowgPbjlwN9t8AAhm6CC8Ag7hAYPQJWcHwb/GD7lAdB5zVNg9oTIfCyx8IWuvCFMIyhDGdIwxra8IY4zKEOd8jDHvrwh0AMohCHSMQiGvGISEyiEpfIxCY68YlQjKIUp0jFKlrxiljMohb/t8jFLnrxi2AMoxjHSMYymvGMaEyjGtfIxja68Y1wjKMc50jHOtrxjnjMox73yMc++vGPgAykIAdJyEIa8pCITKQiF8nIRjrykZCMpCQnSclKWvKSmMykJjfJyU568pOgDKUoR0nKUprylKhMpSpXycpWuvKVsIylLGdJy1ra8pa4zKUud8nLXvryl8AMpjCHScxiGvOYyEymMpfJzGY685nQjKY0p0nNalrzmtjMpja3yc1uevOb4AynOMdJznKa85zoTKc618nOdrrznfCMpzznSc962vOe+MynPvfJz376858ADahAB0rQghr0oAhNqEIXytCGOvShEI2oRCdKEtGKWvSiGM2oRjfK0Y561FkJAAAh+QQFAwAFACx8AQsBQABH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"
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
@@ -65962,7 +65890,7 @@ var _reactRouter = __webpack_require__(12);
 
 var _redux = __webpack_require__(2);
 
-var _Dropzone = __webpack_require__(293);
+var _Dropzone = __webpack_require__(295);
 
 var _Dropzone2 = _interopRequireDefault(_Dropzone);
 
@@ -66084,7 +66012,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 293 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66183,13 +66111,13 @@ var Dropzone = function (_React$Component) {
 exports.default = Dropzone;
 
 /***/ }),
-/* 294 */
+/* 296 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMzJweCIgaGVpZ2h0PSIzMnB4IiB2aWV3Qm94PSIwIDAgMzIgMzIiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDMyIDMyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzc3Nzc3NyIgc3Ryb2tlLXdpZHRoPSIwLjE0MTciIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjQuMTY3IiB5MT0iNC4xNjciIHgyPSIyNy44MzMiIHkyPSIyNy44MzMiIG9wYWNpdHk9IjAuMyIgLz4NCjxsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzc3Nzc3NyIgc3Ryb2tlLXdpZHRoPSIwLjE0MTciIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgeDE9IjQuMTY3IiB5MT0iMjcuODMzIiB4Mj0iMjcuODMzIiB5Mj0iNC4xNjciIG9wYWNpdHk9IjAuMyIgLz4NCjwvc3ZnPg0K"
 
 /***/ }),
-/* 295 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66225,7 +66153,7 @@ var _MuteControl = __webpack_require__(74);
 
 var _MuteControl2 = _interopRequireDefault(_MuteControl);
 
-var _OutputControl = __webpack_require__(296);
+var _OutputControl = __webpack_require__(298);
 
 var _OutputControl2 = _interopRequireDefault(_OutputControl);
 
@@ -66644,7 +66572,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 296 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66672,7 +66600,7 @@ var _MuteControl = __webpack_require__(74);
 
 var _MuteControl2 = _interopRequireDefault(_MuteControl);
 
-var _SnapcastPowerButton = __webpack_require__(297);
+var _SnapcastPowerButton = __webpack_require__(299);
 
 var _SnapcastPowerButton2 = _interopRequireDefault(_SnapcastPowerButton);
 
@@ -66983,7 +66911,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ }),
-/* 297 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67067,7 +66995,7 @@ var SnapcastPowerButton = function (_React$Component) {
 exports.default = SnapcastPowerButton;
 
 /***/ }),
-/* 298 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68200,7 +68128,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20), __webpack_require__(10)))
 
 /***/ }),
-/* 299 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68345,7 +68273,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Dragger);
 
 /***/ }),
-/* 300 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68635,7 +68563,7 @@ var Notifications = function (_React$Component) {
 exports.default = Notifications;
 
 /***/ }),
-/* 301 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68910,7 +68838,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DebugInfo);
 
 /***/ }),
-/* 302 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69241,7 +69169,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Album);
 
 /***/ }),
-/* 303 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69835,7 +69763,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 304 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70302,7 +70230,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 305 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70564,7 +70492,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(User);
 
 /***/ }),
-/* 306 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70612,7 +70540,7 @@ var _FollowButton = __webpack_require__(44);
 
 var _FollowButton2 = _interopRequireDefault(_FollowButton);
 
-var _LastfmLoveButton = __webpack_require__(307);
+var _LastfmLoveButton = __webpack_require__(309);
 
 var _LastfmLoveButton2 = _interopRequireDefault(_LastfmLoveButton);
 
@@ -71060,7 +70988,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 307 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -71189,7 +71117,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(FollowButton);
 
 /***/ }),
-/* 308 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -71550,7 +71478,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 309 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -71684,7 +71612,8 @@ var QueueHistory = function (_React$Component) {
 					_react2.default.createElement(_TrackList2.default, {
 						className: 'queue-history-track-list',
 						context: 'history',
-						tracks: tracks
+						tracks: tracks,
+						show_source_icon: true
 					})
 				)
 			);
@@ -71721,7 +71650,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 310 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72264,7 +72193,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 311 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72322,7 +72251,7 @@ var _LazyLoadListener = __webpack_require__(25);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _SearchForm = __webpack_require__(312);
+var _SearchForm = __webpack_require__(314);
 
 var _SearchForm2 = _interopRequireDefault(_SearchForm);
 
@@ -72900,7 +72829,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ }),
-/* 312 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73027,7 +72956,7 @@ exports.default = (0, _reactRedux.connect)(mapDispatchToProps)(SearchForm);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 313 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73053,11 +72982,11 @@ var _ConfirmationButton = __webpack_require__(119);
 
 var _ConfirmationButton2 = _interopRequireDefault(_ConfirmationButton);
 
-var _PusherConnectionList = __webpack_require__(314);
+var _PusherConnectionList = __webpack_require__(316);
 
 var _PusherConnectionList2 = _interopRequireDefault(_PusherConnectionList);
 
-var _SourcesPriority = __webpack_require__(315);
+var _SourcesPriority = __webpack_require__(317);
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
@@ -73077,7 +73006,7 @@ var _URILink = __webpack_require__(23);
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
-var _Services = __webpack_require__(319);
+var _Services = __webpack_require__(321);
 
 var _Services2 = _interopRequireDefault(_Services);
 
@@ -73889,7 +73818,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 314 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74035,7 +73964,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PusherConnectionList);
 
 /***/ }),
-/* 315 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74051,7 +73980,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactSortablejs = __webpack_require__(316);
+var _reactSortablejs = __webpack_require__(318);
 
 var _reactSortablejs2 = _interopRequireDefault(_reactSortablejs);
 
@@ -74137,13 +74066,13 @@ var SourcesPriority = function (_React$Component) {
 exports.default = SourcesPriority;
 
 /***/ }),
-/* 316 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _Sortable = __webpack_require__(317);
+var _Sortable = __webpack_require__(319);
 
 var _Sortable2 = _interopRequireDefault(_Sortable);
 
@@ -74152,7 +74081,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = _Sortable2.default;
 
 /***/ }),
-/* 317 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74183,7 +74112,7 @@ var _reactDom = __webpack_require__(47);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _sortablejs = __webpack_require__(318);
+var _sortablejs = __webpack_require__(320);
 
 var _sortablejs2 = _interopRequireDefault(_sortablejs);
 
@@ -74313,7 +74242,7 @@ var Sortable = (_temp2 = _class = function (_Component) {
 exports.default = Sortable;
 
 /***/ }),
-/* 318 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
@@ -75864,7 +75793,7 @@ exports.default = Sortable;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ }),
-/* 319 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75908,11 +75837,11 @@ var _LastfmAuthenticationFrame = __webpack_require__(121);
 
 var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
 
-var _GeniusAuthenticationFrame = __webpack_require__(320);
+var _GeniusAuthenticationFrame = __webpack_require__(322);
 
 var _GeniusAuthenticationFrame2 = _interopRequireDefault(_GeniusAuthenticationFrame);
 
-var _Snapcast = __webpack_require__(321);
+var _Snapcast = __webpack_require__(323);
 
 var _Snapcast2 = _interopRequireDefault(_Snapcast);
 
@@ -76611,7 +76540,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 320 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76798,7 +76727,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(GeniusAuthenticationFrame);
 
 /***/ }),
-/* 321 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76832,11 +76761,11 @@ var _MuteControl = __webpack_require__(74);
 
 var _MuteControl2 = _interopRequireDefault(_MuteControl);
 
-var _LatencyControl = __webpack_require__(322);
+var _LatencyControl = __webpack_require__(324);
 
 var _LatencyControl2 = _interopRequireDefault(_LatencyControl);
 
-var _TextField = __webpack_require__(323);
+var _TextField = __webpack_require__(325);
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
@@ -77328,7 +77257,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
 
 /***/ }),
-/* 322 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77446,7 +77375,7 @@ var LatencyControl = function (_React$Component) {
 exports.default = LatencyControl;
 
 /***/ }),
-/* 323 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77539,7 +77468,7 @@ var TextField = function (_React$Component) {
 exports.default = TextField;
 
 /***/ }),
-/* 324 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77559,7 +77488,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactInputRange = __webpack_require__(325);
+var _reactInputRange = __webpack_require__(327);
 
 var _reactInputRange2 = _interopRequireDefault(_reactInputRange);
 
@@ -77595,7 +77524,7 @@ var _DropdownField = __webpack_require__(35);
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
-var _AddSeedField = __webpack_require__(341);
+var _AddSeedField = __webpack_require__(343);
 
 var _AddSeedField2 = _interopRequireDefault(_AddSeedField);
 
@@ -78284,7 +78213,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Discover);
 
 /***/ }),
-/* 325 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78294,7 +78223,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _inputRange = __webpack_require__(326);
+var _inputRange = __webpack_require__(328);
 
 var _inputRange2 = _interopRequireDefault(_inputRange);
 
@@ -78348,7 +78277,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 326 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -78375,11 +78304,11 @@ var _autobindDecorator = __webpack_require__(77);
 
 var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
 
-var _valueTransformer = __webpack_require__(327);
+var _valueTransformer = __webpack_require__(329);
 
 var valueTransformer = _interopRequireWildcard(_valueTransformer);
 
-var _defaultClassNames = __webpack_require__(335);
+var _defaultClassNames = __webpack_require__(337);
 
 var _defaultClassNames2 = _interopRequireDefault(_defaultClassNames);
 
@@ -78387,25 +78316,25 @@ var _label = __webpack_require__(122);
 
 var _label2 = _interopRequireDefault(_label);
 
-var _rangePropType = __webpack_require__(336);
+var _rangePropType = __webpack_require__(338);
 
 var _rangePropType2 = _interopRequireDefault(_rangePropType);
 
-var _valuePropType = __webpack_require__(337);
+var _valuePropType = __webpack_require__(339);
 
 var _valuePropType2 = _interopRequireDefault(_valuePropType);
 
-var _slider = __webpack_require__(338);
+var _slider = __webpack_require__(340);
 
 var _slider2 = _interopRequireDefault(_slider);
 
-var _track = __webpack_require__(339);
+var _track = __webpack_require__(341);
 
 var _track2 = _interopRequireDefault(_track);
 
 var _utils = __webpack_require__(51);
 
-var _keyCodes = __webpack_require__(340);
+var _keyCodes = __webpack_require__(342);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -79254,7 +79183,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=input-range.js.map
 
 /***/ }),
-/* 327 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79425,7 +79354,7 @@ function getStepValueFromValue(value, valuePerStep) {
 //# sourceMappingURL=value-transformer.js.map
 
 /***/ }),
-/* 328 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79448,7 +79377,7 @@ module.exports = exports["default"];
 //# sourceMappingURL=captialize.js.map
 
 /***/ }),
-/* 329 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79473,7 +79402,7 @@ module.exports = exports["default"];
 //# sourceMappingURL=clamp.js.map
 
 /***/ }),
-/* 330 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79500,7 +79429,7 @@ module.exports = exports["default"];
 //# sourceMappingURL=distance-to.js.map
 
 /***/ }),
-/* 331 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79523,7 +79452,7 @@ module.exports = exports["default"];
 //# sourceMappingURL=is-defined.js.map
 
 /***/ }),
-/* 332 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79546,7 +79475,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=is-number.js.map
 
 /***/ }),
-/* 333 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79572,7 +79501,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=is-object.js.map
 
 /***/ }),
-/* 334 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79596,7 +79525,7 @@ module.exports = exports["default"];
 //# sourceMappingURL=length.js.map
 
 /***/ }),
-/* 335 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79628,7 +79557,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=default-class-names.js.map
 
 /***/ }),
-/* 336 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79663,7 +79592,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=range-prop-type.js.map
 
 /***/ }),
-/* 337 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79703,7 +79632,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=value-prop-type.js.map
 
 /***/ }),
-/* 338 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80107,7 +80036,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=slider.js.map
 
 /***/ }),
-/* 339 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80409,7 +80338,7 @@ module.exports = exports['default'];
 //# sourceMappingURL=track.js.map
 
 /***/ }),
-/* 340 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80432,7 +80361,7 @@ var UP_ARROW = exports.UP_ARROW = 38;
 //# sourceMappingURL=key-codes.js.map
 
 /***/ }),
-/* 341 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80652,7 +80581,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ }),
-/* 342 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80902,7 +80831,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 343 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80930,7 +80859,7 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _CategoryGrid = __webpack_require__(344);
+var _CategoryGrid = __webpack_require__(346);
 
 var _CategoryGrid2 = _interopRequireDefault(_CategoryGrid);
 
@@ -81047,7 +80976,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverCategories);
 
 /***/ }),
-/* 344 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81117,7 +81046,7 @@ exports.default = CategoryGrid;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 345 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81316,7 +81245,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DiscoverCategory);
 
 /***/ }),
-/* 346 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81622,7 +81551,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 347 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -81915,16 +81844,6 @@ var LibraryArtists = function (_React$Component) {
 			artists = artists.slice(0, this.state.limit);
 
 			if (this.props.view == 'list') {
-				var columns = [{
-					label: 'Name',
-					name: 'name'
-				}, {
-					label: 'Followers',
-					name: 'followers.total'
-				}, {
-					label: 'Popularity',
-					name: 'popularity'
-				}];
 				return _react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -81933,8 +81852,10 @@ var LibraryArtists = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						rows: artists,
-						columns: columns,
-						className: 'artist-list',
+						thumbnail: true,
+						details: ['followers'],
+						middle_column: ['source'],
+						className: 'artists',
 						link_prefix: global.baseURL + "artist/" }),
 					_react2.default.createElement(_LazyLoadListener2.default, {
 						loadKey: this.state.limit,
@@ -82102,7 +82023,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 348 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82467,8 +82388,10 @@ var LibraryAlbums = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						rows: albums,
-						columns: columns,
-						className: 'album-list',
+						thumbnail: true,
+						details: ['artists', 'tracks_uris.length'],
+						right_column: ['added_at'],
+						className: 'albums',
 						link_prefix: global.baseURL + "album/" }),
 					_react2.default.createElement(_LazyLoadListener2.default, {
 						loadKey: this.state.limit,
@@ -82646,7 +82569,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 349 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82843,7 +82766,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryTracks);
 
 /***/ }),
-/* 350 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83043,23 +82966,6 @@ var LibraryPlaylists = function (_React$Component) {
 			playlists = playlists.slice(0, this.state.limit);
 
 			if (this.props.view == 'list') {
-				var columns = [{
-					label: 'Name',
-					name: 'name'
-				}, {
-					label: 'Owner',
-					name: 'owner'
-				}, {
-					label: 'Tracks',
-					name: 'tracks_total'
-				}, {
-					label: 'Editable',
-					name: 'can_edit'
-				}, {
-					label: 'Source',
-					name: 'source'
-				}];
-
 				return _react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -83068,8 +82974,10 @@ var LibraryPlaylists = function (_React$Component) {
 							return _this2.handleContextMenu(e, item);
 						},
 						rows: playlists,
-						columns: columns,
-						className: 'playlist-list',
+						thumbnail: true,
+						details: ['owner', 'tracks_total'],
+						right_column: ['source'],
+						className: 'playlists',
 						link_prefix: global.baseURL + "playlist/" }),
 					_react2.default.createElement(_LazyLoadListener2.default, {
 						loadKey: this.state.limit,
@@ -83246,7 +83154,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 351 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83438,7 +83346,6 @@ var LibraryBrowse = function (_React$Component) {
 			if (this.props.view == 'list') {
 				return _react2.default.createElement(_List2.default, {
 					nocontext: true,
-					columns: [{ name: 'name', width: '100' }],
 					rows: subdirectories,
 					className: 'library-local-directory-list',
 					link_prefix: global.baseURL + 'library/browse/'
@@ -83699,7 +83606,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 352 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84067,7 +83974,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditPlaylist);
 
 /***/ }),
-/* 353 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84383,7 +84290,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(CreatePlaylist);
 
 /***/ }),
-/* 354 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84797,7 +84704,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditRadio);
 
 /***/ }),
-/* 355 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85015,7 +84922,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToQueue);
 
 /***/ }),
-/* 356 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85310,7 +85217,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 357 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85498,7 +85405,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KioskMode);
 
 /***/ }),
-/* 358 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85866,7 +85773,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ShareConfiguration);
 
 /***/ }),
-/* 359 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86081,7 +85988,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToPlaylist);
 
 /***/ }),
-/* 360 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86168,7 +86075,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ImageZoom);
 
 /***/ }),
-/* 361 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86204,11 +86111,11 @@ var _Icon = __webpack_require__(6);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _ColourField = __webpack_require__(362);
+var _ColourField = __webpack_require__(364);
 
 var _ColourField2 = _interopRequireDefault(_ColourField);
 
-var _IconField = __webpack_require__(363);
+var _IconField = __webpack_require__(365);
 
 var _IconField2 = _interopRequireDefault(_IconField);
 
@@ -86431,7 +86338,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditCommand);
 
 /***/ }),
-/* 362 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86510,7 +86417,7 @@ var ColourField = function (_React$Component) {
 exports.default = ColourField;
 
 /***/ }),
-/* 363 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86586,7 +86493,7 @@ var ColourField = function (_React$Component) {
 exports.default = ColourField;
 
 /***/ }),
-/* 364 */
+/* 366 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

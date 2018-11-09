@@ -42,7 +42,7 @@ class Thumbnail extends React.Component{
 	}
 	*/
 
-	mapImageSizes(props = this.props){
+	mapImageSizes(){
 
 		// Single image
 		if (this.props.image){
@@ -50,6 +50,12 @@ class Thumbnail extends React.Component{
 
 		// Multiple images
 		} else if (this.props.images){
+			var images = this.props.images;
+
+			// An array of image objects (eg Artists), so just pick the first one
+			if (Array.isArray(images)){
+				images = images[0];
+			}
 
 			// Default to medium-sized image, but accept size property as override
 			var size = 'medium';
@@ -57,7 +63,7 @@ class Thumbnail extends React.Component{
 				size = this.props.size;
 			}
 
-			return this.props.images[size];
+			return images[size];
 		}
 
 		// No images

@@ -174,27 +174,15 @@ class LibraryArtists extends React.Component{
 		artists = artists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Followers',
-					name: 'followers.total'
-				},
-				{
-					label: 'Popularity',
-					name: 'popularity'
-				}
-			]
 			return (
 				<section className="content-wrapper">
 					<List 
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={artists} 
-						columns={columns} 
-						className="artist-list"
+						thumbnail={true}
+						details={['followers']}
+						middle_column={['source']}
+						className="artists"
 						link_prefix={global.baseURL+"artist/"} />
 					<LazyLoadListener 
 						loadKey={this.state.limit}
