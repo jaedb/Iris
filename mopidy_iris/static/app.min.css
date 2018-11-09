@@ -2766,17 +2766,17 @@ h1 {
   font-weight: 600;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 3rem;
-  line-height: 3.2rem; }
+  font-size: 3.4rem;
+  line-height: 3.4rem; }
   .light-theme h1 {
     color: #181818; }
 
 h2 {
+  font-weight: 400;
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
   font-size: 2rem;
-  font-weight: 400;
   line-height: 2.2rem; }
   h2 a {
     color: inherit;
@@ -3960,6 +3960,14 @@ input[type="submit"] {
     cursor: pointer; }
     .light-theme :root .notouch:not(.dragging) .list__item:not(.no-click):hover {
       background: rgba(0, 0, 0, 0.03); }
+  :root .notouch:not(.dragging) .list__item:not(.no-click):active, :root .notouch:not(.dragging) .list__item:not(.no-click):focus {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+    -moz-transform: scale(0.997);
+    -webkit-transform: scale(0.997);
+    transform: scale(0.997); }
   .list__item .select-zone,
   .list__item .drag-zone {
     display: none; }
@@ -3984,6 +3992,12 @@ input[type="submit"] {
     background: rgba(125, 125, 125, 0.15) !important; }
   .list__item--playing .list__item__column__item--name {
     color: #08d58f; }
+    .list__item--playing .list__item__column__item--name .icon {
+      padding-left: 5px;
+      font-size: 12px; }
+      @media (max-width: 800px) {
+        .list__item--playing .list__item__column__item--name .icon {
+          display: none; } }
   .list__item--has-middle-column .list__item__column--name {
     width: 60%;
     float: left; }
@@ -3991,13 +4005,13 @@ input[type="submit"] {
     width: 30%;
     float: left; }
   .list__item__column {
-    padding: 22px 0 18px; }
+    padding: 24px 0 16px; }
     .list__item__column--name {
       padding: 14px 0 10px; }
     .list__item__column--right {
       float: right; }
-      .list__item__column--right .list__item {
-        padding: 10px 0 0 14px;
+      .list__item__column--right .list__item__column__item {
+        padding-left: 10px;
         display: inline-block; }
     .list__item__column__item--thumbnail, .list__item__column__item--thumbnail.thumbnail {
       width: 40px;
@@ -4029,13 +4043,13 @@ input[type="submit"] {
       background: #cecac4;
       color: #FFFFFF; }
 
-.list.track-list .list__item {
+.list--tracks .list__item {
   cursor: pointer; }
-  :root .dragging .list.track-list .list__item--hover:before, .list.track-list .list__item.touch-drag-hover:before {
+  :root .dragging .list--tracks .list__item:hover:before, .list--tracks .list__item.touch-drag-hover:before {
     opacity: 1; }
-  .list.track-list .list__item.has-touch-drag-zone {
+  .list--tracks .list__item.has-touch-drag-zone {
     padding-left: 45px; }
-    .list.track-list .list__item.has-touch-drag-zone .drag-zone {
+    .list--tracks .list__item.has-touch-drag-zone .drag-zone {
       position: absolute;
       top: 0;
       left: 5px;
@@ -4045,43 +4059,12 @@ input[type="submit"] {
       display: block;
       color: #a3a19f;
       padding: 0; }
-      .list.track-list .list__item.has-touch-drag-zone .drag-zone .icon {
+      .list--tracks .list__item.has-touch-drag-zone .drag-zone .icon {
         position: absolute;
         top: 50%;
         left: 10px;
         margin-top: -8px;
         pointer-events: none; }
-
-.list.related-artist-list {
-  padding-bottom: 20px;
-  cursor: pointer; }
-  .list.related-artist-list .artist {
-    display: block;
-    border: 0;
-    margin: 20px 0; }
-    .list.related-artist-list .artist::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .list.related-artist-list .artist .thumbnail {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      border-radius: 50%;
-      width: 60px;
-      margin-right: 15px;
-      float: left;
-      border: 3px solid transparent; }
-    .list.related-artist-list .artist .name {
-      display: block;
-      padding-top: 20px; }
-  .list.related-artist-list a.artist:hover .thumbnail {
-    border-color: #08d58f;
-    opacity: 1; }
-
-.list.library-local-view .list__item, .list.library-local-directory-list .list__item {
-  cursor: pointer; }
 
 @media (max-width: 800px) {
   .list__item__content {
@@ -4303,10 +4286,10 @@ input[type="submit"] {
   background-color: #323232; }
   .parallax__inner {
     position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0; }
+    top: -1px;
+    right: -1px;
+    left: -1px;
+    bottom: -1px; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -4382,6 +4365,56 @@ input[type="submit"] {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     padding: 0 0.32em !important; }
+  .icon--css.icon--playing {
+    display: inline-block;
+    position: relative;
+    margin-left: 8px;
+    width: 16px;
+    height: 1em; }
+
+@keyframes playing_bar {
+  0% {
+    height: 0%; }
+  12.5% {
+    height: 75%; }
+  25% {
+    height: 100%; }
+  37.5% {
+    height: 10%; }
+  50% {
+    height: 40%; }
+  62.5% {
+    height: 50%; }
+  75% {
+    height: 30%; }
+  87.5% {
+    height: 55%; }
+  100% {
+    height: 0%; } }
+    .icon--css.icon--playing span {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      display: block;
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      height: 100%;
+      background: #08d58f;
+      animation-name: playing_bar;
+      animation-iteration-count: infinite; }
+      .icon--css.icon--playing span:nth-child(1) {
+        left: 0;
+        animation-duration: 2s; }
+      .icon--css.icon--playing span:nth-child(2) {
+        left: 6px;
+        animation-duration: 4s; }
+      .icon--css.icon--playing span:nth-child(3) {
+        left: 12px;
+        animation-duration: 1s; }
+    .icon--css.icon--playing.js--stopped span, .icon--css.icon--playing.js--paused span {
+      animation-play-state: paused; }
 
 .slider {
   position: relative;
@@ -6239,6 +6272,40 @@ main header {
       animation-timing-function: ease-out;
       animation-iteration-count: 1; }
 
+.related-artists {
+  padding-bottom: 20px;
+  cursor: pointer; }
+  .related-artists__item {
+    display: block;
+    border: 0;
+    margin: 20px 0;
+    padding: 0; }
+    .related-artists__item::after {
+      content: '';
+      clear: both;
+      display: block; }
+    .related-artists__item__thumbnail {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      border-radius: 50%;
+      width: 60px;
+      margin-right: 15px;
+      float: left;
+      border: 3px solid transparent; }
+    .related-artists__item__name {
+      display: block;
+      padding-top: 20px; }
+    .related-artists__item--link {
+      border: none !important; }
+      .related-artists__item--link:hover {
+        background: transparent;
+        border: 0; }
+        .related-artists__item--link:hover .related-artists__item__thumbnail {
+          border-color: #08d58f;
+          opacity: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -6366,8 +6433,10 @@ main .album-view {
   main .album-view .parallax {
     height: 60vh;
     opacity: 0.5; }
-  main .album-view .title h2 a:hover {
-    color: #706e6c; }
+  main .album-view .title h2 {
+    padding-top: 10px; }
+    main .album-view .title h2 a:hover {
+      color: #706e6c; }
   main .album-view .title .details {
     padding: 25px 0 30px; }
   main .album-view .actions {
@@ -6420,8 +6489,10 @@ main .playlist-view {
   main .playlist-view .parallax {
     height: 60vh;
     opacity: 0.5; }
-  main .playlist-view .title h2 a:hover {
-    color: #706e6c; }
+  main .playlist-view .title h2 {
+    padding-top: 10px; }
+    main .playlist-view .title h2 a:hover {
+      color: #706e6c; }
   main .playlist-view .title .details {
     padding: 25px 0 30px; }
   main .playlist-view .actions {
