@@ -139,8 +139,8 @@
 			&--right {					
 				float: right;
 
-				.list__item {
-					padding: 10px 0 0 14px;
+				.list__item__column__item {
+					padding-left: 10px;
 					display: inline-block;
 				}
 			}
@@ -226,39 +226,6 @@
 						pointer-events: none;
 					}
 				}
-			}
-		}
-	}
-
-	&--related-artists {
-		padding-bottom: 20px;
-		cursor: pointer;
-		
-		.artist {
-			display: block;
-			border: 0;
-			margin: 20px 0;
-			@include clearfix;
-
-			.thumbnail {
-				@include animate();
-				border-radius: 50%;
-				width: 60px;
-				margin-right: 15px;
-				float: left;
-				border: 3px solid transparent;
-			}
-
-			.name {
-				display: block;
-				padding-top: 20px;
-			}
-		}
-
-		a.artist:hover {
-			.thumbnail {
-				border-color: colour(turquoise);
-				opacity: 1;
 			}
 		}
 	}

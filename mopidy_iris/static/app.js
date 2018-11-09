@@ -26992,15 +26992,6 @@ var Track = function (_React$Component) {
 				}
 			}
 
-			/*
-   if (this.props.show_source_icon){
-   	track_details.push(
-   		<li className="list__item__details__item list__item__details__item--source" key="source">
-   			<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
-   		</li>
-   	)
-   }*/
-
 			// If we're touchable, and can sort this tracklist
 			var drag_zone = null;
 			if (helpers.isTouchDevice() && this.props.can_sort) {
@@ -27062,6 +27053,11 @@ var Track = function (_React$Component) {
 							{ className: 'list__item__column__item list__item__column__item--duration' },
 							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
 						),
+						this.props.show_source_icon ? _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--source' },
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+						) : null,
 						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
 								return _this2.props.handleContextMenu(e);
 							} })
@@ -27155,7 +27151,7 @@ var RelatedArtists = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: 'list related-artist-list' },
+				{ className: 'related-artists' },
 				this.props.artists.map(function (artist, index) {
 
 					var images = artist.images;
@@ -27166,22 +27162,22 @@ var RelatedArtists = function (_React$Component) {
 					if (artist.uri) {
 						return _react2.default.createElement(
 							_URILink2.default,
-							{ type: 'artist', uri: artist.uri, key: artist.uri, className: 'artist' },
-							_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: images }),
+							{ type: 'artist', uri: artist.uri, key: artist.uri, className: 'related-artists__item related-artists__item--link' },
+							_react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'name' },
+								{ className: 'related-artists__item__name' },
 								artist.name
 							)
 						);
 					} else {
 						return _react2.default.createElement(
 							'span',
-							{ key: artist.uri, className: 'artist' },
-							_react2.default.createElement(_Thumbnail2.default, { circle: true, size: 'small', images: images }),
+							{ key: artist.uri, className: 'related-artists__item' },
+							_react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
 							_react2.default.createElement(
 								'span',
-								{ className: 'name' },
+								{ className: 'related-artists__item__name' },
 								artist.name
 							)
 						);
@@ -71616,7 +71612,8 @@ var QueueHistory = function (_React$Component) {
 					_react2.default.createElement(_TrackList2.default, {
 						className: 'queue-history-track-list',
 						context: 'history',
-						tracks: tracks
+						tracks: tracks,
+						show_source_icon: true
 					})
 				)
 			);

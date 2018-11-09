@@ -2766,17 +2766,17 @@ h1 {
   font-weight: 600;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 3rem;
-  line-height: 3.2rem; }
+  font-size: 3.4rem;
+  line-height: 3.4rem; }
   .light-theme h1 {
     color: #181818; }
 
 h2 {
+  font-weight: 400;
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
   font-size: 2rem;
-  font-weight: 400;
   line-height: 2.2rem; }
   h2 a {
     color: inherit;
@@ -4010,8 +4010,8 @@ input[type="submit"] {
       padding: 14px 0 10px; }
     .list__item__column--right {
       float: right; }
-      .list__item__column--right .list__item {
-        padding: 10px 0 0 14px;
+      .list__item__column--right .list__item__column__item {
+        padding-left: 10px;
         display: inline-block; }
     .list__item__column__item--thumbnail, .list__item__column__item--thumbnail.thumbnail {
       width: 40px;
@@ -4065,34 +4065,6 @@ input[type="submit"] {
         left: 10px;
         margin-top: -8px;
         pointer-events: none; }
-
-.list--related-artists {
-  padding-bottom: 20px;
-  cursor: pointer; }
-  .list--related-artists .artist {
-    display: block;
-    border: 0;
-    margin: 20px 0; }
-    .list--related-artists .artist::after {
-      content: '';
-      clear: both;
-      display: block; }
-    .list--related-artists .artist .thumbnail {
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -o-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      border-radius: 50%;
-      width: 60px;
-      margin-right: 15px;
-      float: left;
-      border: 3px solid transparent; }
-    .list--related-artists .artist .name {
-      display: block;
-      padding-top: 20px; }
-  .list--related-artists a.artist:hover .thumbnail {
-    border-color: #08d58f;
-    opacity: 1; }
 
 @media (max-width: 800px) {
   .list__item__content {
@@ -6300,6 +6272,40 @@ main header {
       animation-timing-function: ease-out;
       animation-iteration-count: 1; }
 
+.related-artists {
+  padding-bottom: 20px;
+  cursor: pointer; }
+  .related-artists__item {
+    display: block;
+    border: 0;
+    margin: 20px 0;
+    padding: 0; }
+    .related-artists__item::after {
+      content: '';
+      clear: both;
+      display: block; }
+    .related-artists__item__thumbnail {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      border-radius: 50%;
+      width: 60px;
+      margin-right: 15px;
+      float: left;
+      border: 3px solid transparent; }
+    .related-artists__item__name {
+      display: block;
+      padding-top: 20px; }
+    .related-artists__item--link {
+      border: none !important; }
+      .related-artists__item--link:hover {
+        background: transparent;
+        border: 0; }
+        .related-artists__item--link:hover .related-artists__item__thumbnail {
+          border-color: #08d58f;
+          opacity: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -6427,8 +6433,10 @@ main .album-view {
   main .album-view .parallax {
     height: 60vh;
     opacity: 0.5; }
-  main .album-view .title h2 a:hover {
-    color: #706e6c; }
+  main .album-view .title h2 {
+    padding-top: 10px; }
+    main .album-view .title h2 a:hover {
+      color: #706e6c; }
   main .album-view .title .details {
     padding: 25px 0 30px; }
   main .album-view .actions {
@@ -6481,8 +6489,10 @@ main .playlist-view {
   main .playlist-view .parallax {
     height: 60vh;
     opacity: 0.5; }
-  main .playlist-view .title h2 a:hover {
-    color: #706e6c; }
+  main .playlist-view .title h2 {
+    padding-top: 10px; }
+    main .playlist-view .title h2 a:hover {
+      color: #706e6c; }
   main .playlist-view .title .details {
     padding: 25px 0 30px; }
   main .playlist-view .actions {

@@ -10,6 +10,8 @@ main .playlist-view {
 
 	.title {
 		h2 {
+			padding-top: 10px;
+			
 			a:hover {
 				color: darken(colour(mid_grey), 20%);
 			}

@@ -174,8 +174,8 @@ h1 {
 	@include feature_font();
 	color: colour(white);
 	font-weight: 700;
-	font-size: 3rem;
-	line-height: 3.2rem;
+	font-size: 3.4rem;
+	line-height: 3.4rem;
 
 	.light-theme & {
 		color: colour(dark_grey);
@@ -183,9 +183,9 @@ h1 {
 }
 
 h2 {
+	font-weight: 400;
 	@include feature_font();
 	font-size: 2rem;
-	font-weight: 400;
 	line-height: 2.2rem;
 
 	a {

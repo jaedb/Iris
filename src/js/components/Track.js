@@ -259,15 +259,6 @@ export default class Track extends React.Component{
 			}
 		}
 
-		/*
-		if (this.props.show_source_icon){
-			track_details.push(
-				<li className="list__item__details__item list__item__details__item--source" key="source">
-					<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
-				</li>
-			)
-		}*/
-
 		// If we're touchable, and can sort this tracklist
 		var drag_zone = null;
 		if (helpers.isTouchDevice() && this.props.can_sort){
@@ -304,6 +295,9 @@ export default class Track extends React.Component{
 							<span className="list__item__column__item list__item__column__item--duration">
 								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
 							</span>
+							{this.props.show_source_icon ? <span className="list__item__column__item list__item__column__item--source">
+									<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
+								</span> : null}
 							<ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.props.handleContextMenu(e)} />
 						</div>
 						<div className="list__item__column list__item__column--name">
