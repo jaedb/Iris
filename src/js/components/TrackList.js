@@ -134,7 +134,7 @@ class TrackList extends React.Component{
 			let touch = e.touches[0];
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
 			if (!over.is('.track')){
-				over = over.closest('.track');
+				over = over.closest('.list__item--track');
 			}
 			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
 			if (over.length > 0){
@@ -153,12 +153,12 @@ class TrackList extends React.Component{
 		if (this.touch_dragging_tracks_keys){
 			let touch = e.changedTouches[0];
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
-			if (!over.is('.track')){
-				over = over.closest('.track');
+			if (!over.is('.list__item--track')){
+				over = over.closest('.list__item--track');
 			}
 			if (over.length > 0){
-				let siblings = over.parent().children('.track');
-				let dropped_at = siblings.index(over) - 1;
+				let siblings = over.parent().children('.list__item--track');
+				let dropped_at = siblings.index(over);
 
 				if (this.props.reorderTracks !== undefined){
 					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at);
@@ -389,7 +389,7 @@ class TrackList extends React.Component{
 			return null;
 		}
 
-		var className = 'list track-list '+this.props.context
+		var className = 'list list--tracks '+this.props.context
 		if (this.props.className){
 			className += ' '+this.props.className
 		}

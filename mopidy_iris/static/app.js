@@ -18461,7 +18461,7 @@ var TrackList = function (_React$Component) {
 				var touch = e.touches[0];
 				var over = $(document.elementFromPoint(touch.clientX, touch.clientY));
 				if (!over.is('.track')) {
-					over = over.closest('.track');
+					over = over.closest('.list__item--track');
 				}
 				$(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
 				if (over.length > 0) {
@@ -18481,12 +18481,12 @@ var TrackList = function (_React$Component) {
 			if (this.touch_dragging_tracks_keys) {
 				var touch = e.changedTouches[0];
 				var over = $(document.elementFromPoint(touch.clientX, touch.clientY));
-				if (!over.is('.track')) {
-					over = over.closest('.track');
+				if (!over.is('.list__item--track')) {
+					over = over.closest('.list__item--track');
 				}
 				if (over.length > 0) {
-					var siblings = over.parent().children('.track');
-					var dropped_at = siblings.index(over) - 1;
+					var siblings = over.parent().children('.list__item--track');
+					var dropped_at = siblings.index(over);
 
 					if (this.props.reorderTracks !== undefined) {
 						this.props.reorderTracks(helpers.arrayOf('index', this.digestTracksKeys()), dropped_at);
@@ -18739,7 +18739,7 @@ var TrackList = function (_React$Component) {
 				return null;
 			}
 
-			var className = 'list track-list ' + this.props.context;
+			var className = 'list list--tracks ' + this.props.context;
 			if (this.props.className) {
 				className += ' ' + this.props.className;
 			}
@@ -22089,6 +22089,14 @@ var List = function (_React$Component) {
 
 					if (_this2.props.middle_column) {
 						class_name += " list__item--has-middle-column";
+					}
+
+					if (_this2.props.thumbnail) {
+						class_name += " list__item--has-thumbnail";
+					}
+
+					if (_this2.props.details) {
+						class_name += " list__item--has-details";
 					}
 
 					return _react2.default.createElement(
@@ -26462,12 +26470,6 @@ var Track = function (_React$Component) {
 
 			var track = this.props.track;
 			var className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
-			if (this.props.selected) className += ' list__item--selected';
-			if (this.props.can_sort) className += ' list__item--can-sort';
-			if (track.type !== undefined) className += ' list__item--' + track.type;
-			if (track.playing) className += ' list__item--playing';
-			if (this.state.hover) className += ' list__item--hover';
-
 			var track_details = [];
 			var track_actions = [];
 
@@ -26562,9 +26564,8 @@ var Track = function (_React$Component) {
 						_react2.default.createElement(
 							'span',
 							{ className: 'from' },
-							'(from ',
-							link,
-							')'
+							'from ',
+							link
 						)
 					);
 				} else if (track.added_by) {
@@ -26583,7 +26584,7 @@ var Track = function (_React$Component) {
 			// If we're touchable, and can sort this tracklist
 			var drag_zone = null;
 			if (helpers.isTouchDevice() && this.props.can_sort) {
-				className += " has-touch-drag-zone";
+				className += " list__item--has-drag-zone";
 
 				drag_zone = _react2.default.createElement(
 					'span',
@@ -26594,9 +26595,13 @@ var Track = function (_React$Component) {
 				);
 			}
 
-			if (track_middle_column) {
-				className += " list__item--has-middle-column";
-			}
+			if (this.props.selected) className += ' list__item--selected';
+			if (this.props.can_sort) className += ' list__item--can-sort';
+			if (track.type !== undefined) className += ' list__item--' + track.type;
+			if (track.playing) className += ' list__item--playing';
+			if (this.state.hover) className += ' list__item--hover';
+			if (track_middle_column) className += " list__item--has-middle-column";
+			if (track_details.length > 0) className += " list__item--has-details";
 
 			return _react2.default.createElement(
 				_ErrorBoundary2.default,
@@ -26668,11 +26673,11 @@ var Track = function (_React$Component) {
 							) : null,
 							track.playing ? _react2.default.createElement(_Icon2.default, { className: "js--" + this.props.play_state, name: 'playing', type: 'css' }) : null
 						),
-						_react2.default.createElement(
+						track_details ? _react2.default.createElement(
 							'ul',
 							{ className: 'list__item__column__item--details' },
 							track_details
-						)
+						) : null
 					),
 					track_middle_column ? _react2.default.createElement(
 						'div',

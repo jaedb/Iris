@@ -95,6 +95,14 @@ class List extends React.Component{
 							class_name += " list__item--has-middle-column";
 						}
 
+						if (this.props.thumbnail){
+							class_name += " list__item--has-thumbnail";
+						}
+
+						if (this.props.details){
+							class_name += " list__item--has-details";
+						}
+
 						return (
 							<div
 								className={class_name} 

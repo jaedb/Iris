@@ -3998,16 +3998,29 @@ input[type="submit"] {
       @media (max-width: 800px) {
         .list__item--playing .list__item__column__item--name .icon {
           display: none; } }
+  .list__item--has-drag-zone {
+    padding-left: 45px; }
+    .list__item--has-drag-zone .list__item__column__item--drag-zone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 35px;
+      padding-top: 22px;
+      text-align: center; }
   .list__item--has-middle-column .list__item__column--name {
     width: 60%;
     float: left; }
   .list__item--has-middle-column .list__item__column--middle {
-    width: 30%;
+    width: 25%;
     float: left; }
+  .list__item--has-thumbnail .list__item__column--name {
+    padding-left: 46px; }
+  .list__item--has-details .list__item__column--name {
+    padding-top: 14px;
+    padding-bottom: 10px; }
   .list__item__column {
     padding: 24px 0 16px; }
-    .list__item__column--name {
-      padding: 14px 0 10px; }
     .list__item__column--right {
       float: right; }
       .list__item__column--right .list__item__column__item {
@@ -4015,8 +4028,12 @@ input[type="submit"] {
         display: inline-block; }
     .list__item__column__item--thumbnail, .list__item__column__item--thumbnail.thumbnail {
       width: 40px;
-      float: left;
-      margin: -2px 14px 0 -10px; }
+      position: absolute;
+      top: 12px;
+      left: 12px; }
+      @media (max-width: 800px) {
+        .list__item__column__item--thumbnail, .list__item__column__item--thumbnail.thumbnail {
+          left: 16px; } }
     .list__item__column__item--name {
       padding-bottom: 2px;
       font-size: 15px; }
@@ -4034,6 +4051,10 @@ input[type="submit"] {
             display: inline-block;
             margin-left: -8px;
             padding-right: 6px; }
+    .list__item__column__item--added .from:before {
+      content: '('; }
+    .list__item__column__item--added .from:after {
+      content: ')'; }
     .list__item__column__item--context-menu-trigger {
       font-size: 14px;
       margin: -14px -14px -14px 0; }
@@ -4045,7 +4066,8 @@ input[type="submit"] {
 
 .list--tracks .list__item {
   cursor: pointer; }
-  :root .dragging .list--tracks .list__item:hover:before, .list--tracks .list__item.touch-drag-hover:before {
+  :root .dragging .list--tracks .list__item:hover:before,
+  :root .dragging .list--tracks .list__item--hover:before, .list--tracks .list__item.touch-drag-hover:before {
     opacity: 1; }
   .list--tracks .list__item.has-touch-drag-zone {
     padding-left: 45px; }
@@ -4067,22 +4089,28 @@ input[type="submit"] {
         pointer-events: none; }
 
 @media (max-width: 800px) {
-  .list__item__content {
-    padding: 10px 0; }
-  .list__item__name {
+  :root .notouch:not(.dragging) .list__item:not(.no-click):active, :root .notouch:not(.dragging) .list__item:not(.no-click):focus {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+    -moz-transform: scale(0.98);
+    -webkit-transform: scale(0.98);
+    transform: scale(0.98); }
+  .list__item--has-middle-column .list__item__column--name {
+    width: auto;
+    float: none; }
+  .list__item__column--middle {
+    display: none; }
+  .list__item__column__item--name {
     font-size: 14px; }
-  .list__item__actions {
-    padding-top: 10px; }
-  .list__item__extra-detail {
-    padding-top: 14px; }
-    .list__item__extra-detail--source {
-      display: none; }
-    .list__item__extra-detail--added .by,
-    .list__item__extra-detail--added .by-label {
-      display: none; }
-    .list__item__extra-detail--added .from {
-      text-transform: capitalize; }
-    .list__item__extra-detail--added .from-label {
+  .list__item__column__item--source {
+    display: none !important; }
+  .list__item__column__item--added .by {
+    display: none; }
+  .list__item__column__item--added .from {
+    text-transform: capitalize; }
+    .list__item__column__item--added .from:before, .list__item__column__item--added .from:after {
       display: none; }
   .list__item .context-zone {
     top: 14px; } }

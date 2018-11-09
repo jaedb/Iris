@@ -183,14 +183,8 @@ export default class Track extends React.Component{
 
 		var track = this.props.track;
 		var className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
-		if (this.props.selected) className += ' list__item--selected';
-		if (this.props.can_sort) className += ' list__item--can-sort';
-		if (track.type !== undefined) className += ' list__item--'+track.type;
-		if (track.playing) className += ' list__item--playing';
-		if (this.state.hover) className += ' list__item--hover';
-
-		let track_details = [];
-		let track_actions = [];
+		var track_details = [];
+		var track_actions = [];
 
 		if (track.artists){
 			track_details.push(
@@ -246,7 +240,7 @@ export default class Track extends React.Component{
 				var track_middle_column = (
 					<div className="list__item__column__item list__item__column__item--added">
 						<span className="by">{track.added_by} </span>
-						<span className="from">(from {link})</span>
+						<span className="from">from {link}</span>
 					</div>
 				);
 
@@ -262,7 +256,7 @@ export default class Track extends React.Component{
 		// If we're touchable, and can sort this tracklist
 		var drag_zone = null;
 		if (helpers.isTouchDevice() && this.props.can_sort){
-			className += " has-touch-drag-zone"
+			className += " list__item--has-drag-zone"
 
 			drag_zone = (
 				<span 
@@ -273,9 +267,13 @@ export default class Track extends React.Component{
 			);
 		}
 
-		if (track_middle_column){
-			className += " list__item--has-middle-column";
-		}
+		if (this.props.selected)		className += ' list__item--selected';
+		if (this.props.can_sort)		className += ' list__item--can-sort';
+		if (track.type !== undefined)	className += ' list__item--'+track.type;
+		if (track.playing)				className += ' list__item--playing';
+		if (this.state.hover)			className += ' list__item--hover';
+		if (track_middle_column)		className += " list__item--has-middle-column";
+		if (track_details.length > 0)	className += " list__item--has-details";
 
 		return (
 			<ErrorBoundary>
@@ -306,9 +304,9 @@ export default class Track extends React.Component{
 								{track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
 								{track.playing ? <Icon className={"js--"+this.props.play_state} name="playing" type="css"></Icon> : null}
 							</div>
-							<ul className="list__item__column__item--details">
+							{track_details ? <ul className="list__item__column__item--details">
 								{track_details}
-							</ul>
+							</ul> : null}
 						</div>
 						{track_middle_column ? <div className="list__item__column list__item__column--middle">{track_middle_column}</div> : null}
 				</div>
