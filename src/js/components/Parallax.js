@@ -34,15 +34,17 @@ export default class Parallax extends React.Component{
 			url: null
 		});
 
-		var self = this;
-		var imageObject = new Image();
-		imageObject.src = url;
+		if (url && url !== ""){
+			var self = this;
+			var imageObject = new Image();
+			imageObject.src = url;
 
-		imageObject.onload = function(){
-			self.setState({
-				loaded: true,
-				url: url
-			});
+			imageObject.onload = function(){
+				self.setState({
+					loaded: true,
+					url: url
+				});
+			}
 		}
 	}
 

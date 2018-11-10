@@ -119,10 +119,12 @@ class Settings extends React.Component {
 		var colour = 'grey';
 		var icon = 'help';
 		var status = 'Unknown';
+		var className = null;
 
 		if (this.props.mopidy.connecting || this.props.pusher.connecting){
 			icon = 'autorenew';
-			status = 'Connecting...'
+			status = 'Connecting...';
+			className = 'icon--spin';
 		} else if (!this.props.mopidy.connected || !this.props.pusher.connected){
 			colour = 'red';
 			icon = 'close';
@@ -135,7 +137,7 @@ class Settings extends React.Component {
 
 		return (
 			<span className={colour+'-text'}>
-				<Icon name={icon} />{status}
+				<Icon className={className} name={icon} />{status}
 			</span>
 		);
 	}
@@ -200,19 +202,6 @@ class Settings extends React.Component {
 				</a>
 			</span>
 		)
-
-		
-		if (this.props.mopidy.upgrading){
-			var upgrade_button = (
-				<button className="alternative working">
-					Upgrading...
-				</button>
-			);
-		} else if (this.props.pusher.version.upgrade_available){
-			var upgrade_button = <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button>;
-		} else {
-			var upgrade_button = null;
-		}
 
 		return (
 			<div className="view settings-view">
@@ -421,15 +410,19 @@ class Settings extends React.Component {
 						<div className="name">Version</div>
 						<div className="input">
 				        	<span className="text">
-				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag blue">Upgrade available</span> : <span className="flag dark"><Icon type="fontawesome" name="check" className="green-text" />&nbsp; Up-to-date</span>}
+				        		{this.props.pusher.version.current} installed {this.props.pusher.version.upgrade_available ? <span className="flag dark"><Icon name="cloud_download" className="blue-text" />&nbsp; Upgrade available</span> : <span className="flag dark"><Icon name="check" className="green-text" />&nbsp; Up-to-date</span>}
 				        	</span>
 				        </div>
 			        </div>
 					
 					<div className="field">
+						<button onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
 				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
-						{upgrade_button}
-				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>{this.props.mopidy.restarting ? 'Restarting...' : 'Restart server'}</button>
+			        </div>
+					
+					<div className="field">
+						{this.props.pusher.version.upgrade_available ? <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button> : null }
+				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>Restart server</button>
 				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 

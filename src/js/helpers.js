@@ -389,6 +389,7 @@ export let formatAlbum = function(data){
 		'provider',
 		'name',
 		'type',
+		'added_at',
 		'release_date',
 		'popularity',
 		'images',
@@ -440,6 +441,7 @@ export let formatArtist = function(data){
 		'popularity',
 		'followers',
 		'listeners',
+		'added_at',
 		'biography',
 		'biography_link',
 		'biography_publish_date',
@@ -497,6 +499,7 @@ export let formatPlaylist = function(data){
 	var playlist = {}
 	var fields = [
 		'uri',
+		'snapshot_id',
 		'provider',
 		'type',
 		'name',
@@ -504,6 +507,7 @@ export let formatPlaylist = function(data){
 		'images',
 		'popularity',
 		'followers',
+		'added_at',
 		'last_modified_date',
 		'can_edit',
 		'owner',

@@ -1,14 +1,15 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
 
-var helpers = require('../../helpers')
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var mopidyActions = require('../mopidy/actions')
-var pusherActions = require('./actions')
-var lastfmActions = require('../lastfm/actions')
-var geniusActions = require('../genius/actions')
-var spotifyActions = require('../spotify/actions')
+var helpers = require('../../helpers');
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var mopidyActions = require('../mopidy/actions');
+var pusherActions = require('./actions');
+var lastfmActions = require('../lastfm/actions');
+var geniusActions = require('../genius/actions');
+var spotifyActions = require('../spotify/actions');
+var snapcastActions = require('../snapcast/actions');
 
 const PusherMiddleware = (function(){ 
 
@@ -114,15 +115,55 @@ const PusherMiddleware = (function(){
                     case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'upgrading':
+
+                    // Local scan
+                    case 'local_scan_started':
+                        store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+                        break;
+                    case 'local_scan_finished':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output}));
+                        break;
+                    case 'local_scan_error':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'bad', content: 'Local scan failed'}));
+                        break;
+
+                    // Upgrade
                     case 'upgrade_started':
-                        store.dispatch(mopidyActions.upgrading());
-                        store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
                         break;
-                    case 'restarting':
-                        store.dispatch(mopidyActions.restarting());
-                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
+                    case 'upgrade_finished':
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
                         break;
+                    case 'upgrade_error':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Upgrade failed'}));
+                        break;
+
+                    // Restart
+                    case 'restart_started':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Restarting server...'}));
+                        break;
+
+                    // Test
+                    case 'test_started':
+                        store.dispatch(uiActions.updateProcess('test', 'Running test'));
+                        break;
+                    case 'test_finished':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Test finished', description: message.params.output}));
+                        break;
+                    case 'test_error':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Test failed'}));
+                        break;
+                }
+
+                // Pass snapcast events to the Snapcast service
+                if (message.method.startsWith('snapcast_')){
+                    store.dispatch(snapcastActions.eventReceived(message));
                 }
             }
         }
@@ -618,6 +659,11 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+
+            /**
+             * Notifications and alerts
+             **/
+
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
@@ -632,6 +678,11 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
+
+            /**
+             * Server actions
+             **/
+
             case 'PUSHER_RELOAD':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
@@ -639,15 +690,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_RESTART':
-                request(store, 'restart')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.restarting());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'restart');
                 next(action);
                 break
 
@@ -655,15 +698,18 @@ const PusherMiddleware = (function(){
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
 	            }
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.upgrading());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'upgrade');
+                break;
+
+            case 'PUSHER_LOCAL_SCAN':
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Local scan', label: '' });
+	            }
+                request(store, 'local_scan');
+                break;
+
+            case 'PUSHER_TEST':
+                request(store, 'test');
                 break;
 
             case 'PUSHER_VERSION':

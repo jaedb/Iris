@@ -77,6 +77,14 @@ export function setGroupVolume(id, percent, old_percent = 0){
 	}
 }
 
+export function eventReceived(message){
+	return {
+		type: 'SNAPCAST_EVENT_RECEIVED',
+		method: message.method,
+		params: message.params
+	}
+}
+
 
 
 

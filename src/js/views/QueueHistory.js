@@ -73,6 +73,7 @@ class QueueHistory extends React.Component{
 						className="queue-history-track-list"
 						context="history"
 						tracks={tracks}
+						show_source_icon={true}
 					/>
 				</section>
 				
