@@ -4304,8 +4304,8 @@ input[type="submit"] {
   overflow: hidden;
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: -10px;
+  right: -10px;
   height: 100%;
   max-height: 80vh;
   transform: translateZ(-400px) scale(1.4);
